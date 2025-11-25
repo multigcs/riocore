@@ -1,37 +1,36 @@
+import importlib
 import os
 import sys
-import importlib
-from functools import partial
 import traceback
+from functools import partial
 
-from PyQt5.QtCore import Qt, QPointF, QPoint
-from PyQt5.QtGui import QRadialGradient, QBrush, QPainter, QFont, QPen
-from PyQt5.QtWidgets import (
-    QWidget,
-    QAction,
-    QLineEdit,
-    QSlider,
-    QMenu,
-    QAbstractButton,
-    QPushButton,
-    QCheckBox,
-    QRadioButton,
-    QLabel,
-    QLCDNumber,
-    QListView,
-    QAbstractSpinBox,
-    QDoubleSpinBox,
-    QSpinBox,
-    QGridLayout,
-    QVBoxLayout,
-    QHBoxLayout,
-    QProgressBar,
-    QButtonGroup,
-)
-
-import linuxcnc as emc
 import hal
-from libflexgui import led, actions, commands, dialogs, utilities, probe
+import linuxcnc as emc
+from PyQt5.QtCore import QPoint, QPointF, Qt
+from PyQt5.QtGui import QBrush, QFont, QPainter, QPen, QRadialGradient
+from PyQt5.QtWidgets import (
+    QAbstractButton,
+    QAbstractSpinBox,
+    QAction,
+    QButtonGroup,
+    QCheckBox,
+    QDoubleSpinBox,
+    QGridLayout,
+    QHBoxLayout,
+    QLCDNumber,
+    QLabel,
+    QLineEdit,
+    QListView,
+    QMenu,
+    QProgressBar,
+    QPushButton,
+    QRadioButton,
+    QSlider,
+    QSpinBox,
+    QVBoxLayout,
+    QWidget,
+)
+from libflexgui import actions, commands, dialogs, led, probe, utilities
 
 AXES = ["x", "y", "z", "a", "b", "c", "u", "v", "w"]
 
@@ -632,16 +631,16 @@ def setup_menus(parent):
                             path = parent.settings.value(key)
                             name = os.path.basename(path)
                             a = parent.menuRecent.addAction(name)
-                            a.triggered.connect(partial(getattr(actions, "load_file"), parent, path))
+                            a.triggered.connect(partial(actions.load_file, parent, path))
             if action.objectName() == "actionHoming":  # add homing actions
                 action.setMenu(QMenu("Homing", parent))
 
                 # add Home All if the home sequence is set for all axes
                 if utilities.home_all_check(parent):
-                    setattr(parent, "actionHome_All", QAction("Home All", parent))
-                    getattr(parent, "actionHome_All").setObjectName("actionHome_all")
-                    action.menu().addAction(getattr(parent, "actionHome_All"))
-                    getattr(parent, "actionHome_All").triggered.connect(partial(commands.home_all, parent))
+                    parent.actionHome_All = QAction("Home All", parent)
+                    parent.actionHome_All.setObjectName("actionHome_all")
+                    action.menu().addAction(parent.actionHome_All)
+                    parent.actionHome_All.triggered.connect(partial(commands.home_all, parent))
                     parent.home_controls.append("actionHome_All")
                     parent.state_estop["actionHome_All"] = False
                     parent.state_estop_reset["actionHome_All"] = False
@@ -664,10 +663,10 @@ def setup_menus(parent):
 
             elif action.objectName() == "actionUnhoming":
                 action.setMenu(QMenu("Unhoming", parent))
-                setattr(parent, "actionUnhome_All", QAction("Unome All", parent))
-                getattr(parent, "actionUnhome_All").setObjectName("actionUnhome_All")
-                action.menu().addAction(getattr(parent, "actionUnhome_All"))
-                getattr(parent, "actionUnhome_All").triggered.connect(partial(commands.unhome_all, parent))
+                parent.actionUnhome_All = QAction("Unome All", parent)
+                parent.actionUnhome_All.setObjectName("actionUnhome_All")
+                action.menu().addAction(parent.actionUnhome_All)
+                parent.actionUnhome_All.triggered.connect(partial(commands.unhome_all, parent))
                 parent.unhome_controls.append("actionUnhome_All")
                 parent.state_estop["actionUnhome_All"] = False
                 parent.state_estop_reset["actionUnhome_All"] = False
@@ -948,7 +947,7 @@ def setup_status_labels(parent):
     if "two_vel_lb" in parent.children:
         joint_0 = parent.two_vel_lb.property("joint_0")
         joint_1 = parent.two_vel_lb.property("joint_1")
-        p = getattr(parent, "two_vel_lb").property("precision")
+        p = parent.two_vel_lb.property("precision")
         p = p if p is not None else parent.default_precision
         if None not in (joint_0, joint_1):  # check for None or False
             parent.two_vel["two_vel_lb"] = [joint_0, joint_1, p]
@@ -959,7 +958,7 @@ def setup_status_labels(parent):
         joint_0 = parent.three_vel_lb.property("joint_0")
         joint_1 = parent.three_vel_lb.property("joint_1")
         joint_2 = parent.three_vel_lb.property("joint_2")
-        p = getattr(parent, "three_vel_lb").property("precision")
+        p = parent.three_vel_lb.property("precision")
         p = p if p is not None else parent.default_precision
         if None not in (joint_0, joint_1, joint_2):  # check for None or False
             parent.three_vel["three_vel_lb"] = [joint_0, joint_1, joint_2, p]
@@ -1190,7 +1189,7 @@ def setup_mdi(parent):
         path = os.path.dirname(parent.status.ini_filename)
         mdi_file = os.path.join(path, "mdi_history.txt")
         if os.path.exists(mdi_file):  # load mdi history
-            with open(mdi_file, "r") as f:
+            with open(mdi_file) as f:
                 history_list = f.readlines()
                 for item in history_list:
                     parent.mdi_history_lw.addItem(item.strip())
@@ -1226,8 +1225,8 @@ def setup_jog(parent):
 
         # ok to connect if we get this far
         for item in parent.jog_buttons:  # connect jog buttons
-            getattr(parent, item).pressed.connect(partial(getattr(commands, "jog"), parent))
-            getattr(parent, item).released.connect(partial(getattr(commands, "jog"), parent))
+            getattr(parent, item).pressed.connect(partial(commands.jog, parent))
+            getattr(parent, item).released.connect(partial(commands.jog, parent))
             parent.state_estop[item] = False
             parent.state_estop_reset[item] = False
             parent.state_on[item] = True
@@ -1312,9 +1311,8 @@ def setup_jog(parent):
                                 incr_list.append([item, converted_distance])
                                 parent.jog_modes_cb.addItem(item, converted_distance)
                                 break
-                            else:
-                                msg = f"Malformed INCREMENTS value\n{distance}\nmay be missing comma seperators?"
-                                print(f"Error: {msg}")
+                            msg = f"Malformed INCREMENTS value\n{distance}\nmay be missing comma seperators?"
+                            print(f"Error: {msg}")
                     else:
                         msg = f"INI section DISPLAY value INCREMENTS\n{item} is not a valid jog increment\nand will not be added to the jog options."
                         print(f"Configuration Error: {msg}")
@@ -1339,25 +1337,25 @@ def conv_units(value, suffix, machine_units):
     if machine_units == "inch":
         if suffix == "in" or suffix == "inch":
             return float(value)
-        elif suffix == "mil":
+        if suffix == "mil":
             return float(value) * 0.001
-        elif suffix == "cm":
+        if suffix == "cm":
             return float(value) / 2.54
-        elif suffix == "mm":
+        if suffix == "mm":
             return float(value) / 25.4
-        elif suffix == "um":
+        if suffix == "um":
             return float(value) / 25400
 
     elif machine_units == "mm":
         if suffix == "in" or suffix == "inch":
             return float(value) * 25.4
-        elif suffix == "mil":
+        if suffix == "mil":
             return float(value) * 0.0254
-        elif suffix == "cm":
+        if suffix == "cm":
             return float(value) * 10
-        elif suffix == "mm":
+        if suffix == "mm":
             return float(value)
-        elif suffix == "um":
+        if suffix == "um":
             return float(value) / 1000
 
 
@@ -1365,8 +1363,7 @@ def conv_to_decimal(data):
     if "/" in data:
         p, q = data.split("/")
         return float(p) / float(q)
-    else:
-        return float(data)
+    return float(data)
 
 
 def setup_spindle(parent):
@@ -1476,19 +1473,18 @@ def setup_touchoff(parent):
             source = getattr(parent, item).property("source")
             if source is None:
                 if "touchoff_le" in parent.children:  # check for touchoff_le
-                    getattr(parent, item).clicked.connect(partial(getattr(commands, "touchoff"), parent))
+                    getattr(parent, item).clicked.connect(partial(commands.touchoff, parent))
                     parent.home_required.append(item)
                 else:
                     getattr(parent, item).setEnabled(False)
                     msg = "The Touchoff Button requires\nthe Offset Line Edit touchoff_le\nor a Dynamic Property named source that\nhas the name of the QLineEdit to be used."
                     print(f"Required Item Missing: {msg}")
-            else:  # property source is found
-                if source in parent.children:
-                    getattr(parent, item).clicked.connect(partial(getattr(commands, "touchoff"), parent))
-                    parent.home_required.append(item)
-                else:  # the source was not found
-                    msg = f"The {source} for {item}\nwas not found. The QPushButton\n{item} will be disabled."
-                    print(f"Required Item Missing: {msg}")
+            elif source in parent.children:
+                getattr(parent, item).clicked.connect(partial(commands.touchoff, parent))
+                parent.home_required.append(item)
+            else:  # the source was not found
+                msg = f"The {source} for {item}\nwas not found. The QPushButton\n{item} will be disabled."
+                print(f"Required Item Missing: {msg}")
 
     # setup Axis style touch off buttons
     if "touchoff_selected_pb" in parent.children:
@@ -1506,7 +1502,7 @@ def setup_tools(parent):
     if set(tool_change_required) & set(parent.children):
         # test to make sure all items required are in the ui
         if not all(item in parent.children for item in tool_change_required):
-            missing_items = list(sorted(set(tool_change_required) - set(parent.children)))
+            missing_items = sorted(set(tool_change_required) - set(parent.children))
             missing = " ".join(missing_items)
             msg = f"Tool change requires both\nthe tool_change_cb combo box\nand the tool_change_pb push button.\n{missing} was not found."
             print(f"Required Item Missing: {msg}")
@@ -1519,7 +1515,7 @@ def setup_tools(parent):
         if parent.tool_change_cb.property("option") == "description":
             parent.tool_change_cb.addItem("T0: No Tool in Spindle", 0)
             tools = os.path.join(parent.config_path, parent.tool_table)
-            with open(tools, "r") as t:
+            with open(tools) as t:
                 tool_list = t.readlines()
             for line in tool_list:
                 if line.find("T") >= 0:
@@ -1569,19 +1565,18 @@ def setup_tools(parent):
             source = getattr(parent, item).property("source")
             if source is None:  # check for tool_touchoff_le
                 if "tool_touchoff_le" in parent.children:
-                    getattr(parent, item).clicked.connect(partial(getattr(commands, "tool_touchoff"), parent))
+                    getattr(parent, item).clicked.connect(partial(commands.tool_touchoff, parent))
                     parent.home_required.append(item)
                 else:
                     getattr(parent, item).setEnabled(False)
                     msg = "Tool Touchoff Button requires\nthe Tool Offset Line Edit tool_touchoff_le\nor a Dynamic Property named source that\nhas the name of the QLineEdit to be used."
                     print(f"Required Item Missing: {msg}")
-            else:  # property source is found
-                if source in parent.children:
-                    getattr(parent, item).clicked.connect(partial(getattr(commands, "tool_touchoff"), parent))
-                    parent.home_required.append(item)
-                else:  # the source was not found
-                    msg = f"The {source} for {item}\nwas not found. The QPushButton\n{item} will be disabled."
-                    print(f"Source Name Error: {msg}")
+            elif source in parent.children:
+                getattr(parent, item).clicked.connect(partial(commands.tool_touchoff, parent))
+                parent.home_required.append(item)
+            else:  # the source was not found
+                msg = f"The {source} for {item}\nwas not found. The QPushButton\n{item} will be disabled."
+                print(f"Source Name Error: {msg}")
 
     # Axis style tool touch off
     if "tool_touchoff_selected_pb" in parent.children:
@@ -1658,11 +1653,10 @@ def setup_probing(parent):
         else:
             msg = "The Probing Enable Push Button\nwas not found, all probe controls\nwill be disabled. Did you name it\nprobing_enable_pb?"
             print(f"Object Not Found: {msg}")
-    else:  # no prob controls found
-        if "probing_enable_pb" in parent.children:
-            msg = "The Probing Enable Push Button\nwas found, but no probe controls\nwere found. The button will be set\nto disabled."
-            print(f"Configuration Error: {msg}")
-            parent.probing_enable_pb.setEnabled(False)
+    elif "probing_enable_pb" in parent.children:
+        msg = "The Probing Enable Push Button\nwas found, but no probe controls\nwere found. The button will be set\nto disabled."
+        print(f"Configuration Error: {msg}")
+        parent.probing_enable_pb.setEnabled(False)
 
 
 def setup_mdi_buttons(parent):
@@ -1687,7 +1681,7 @@ def setup_mdi_buttons(parent):
 def setup_set_var(parent):
     # variables are floats so only put them in a QDoubleSpinBox
     var_file = os.path.join(parent.config_path, parent.var_file)
-    with open(var_file, "r") as f:
+    with open(var_file) as f:
         var_list = f.readlines()
 
     parent.set_var = {}
@@ -1723,7 +1717,7 @@ def setup_watch_var(parent):
 
     if len(parent.watch_var) > 0:  # update the labels
         var_file = os.path.join(parent.config_path, parent.var_file)
-        with open(var_file, "r") as f:
+        with open(var_file) as f:
             var_list = f.readlines()
         for key, value in parent.watch_var.items():
             for line in var_list:
@@ -1788,10 +1782,8 @@ class CustomWidgets:
         x_last = 0
         y_last = gheight / self.vmax * self.history[0]
         for vn, value in enumerate(self.history):
-            if value > self.vmax:
-                self.vmax = value
-            if value < self.vmin:
-                self.vmin = value
+            self.vmax = max(self.vmax, value)
+            self.vmin = min(self.vmin, value)
             x = gwidth / self.history_max * vn
             y = gheight / self.vmax * value
             painter.drawLine(int(x_last + xoff), int(height - (y_last + yoff)), int(x + xoff), int(height - (y + yoff)))
@@ -1818,7 +1810,7 @@ def setup_hal(parent):
     children = parent.findChildren(QWidget)
 
     var_file = os.path.join(parent.config_path, parent.var_file)
-    with open(var_file, "r") as f:
+    with open(var_file) as f:
         var_list = f.readlines()
 
     ##### HAL_IO #####
@@ -2150,9 +2142,8 @@ def setup_hal(parent):
 
                 if button.property("required") == "homed":
                     parent.home_required.append(button_name)
-                else:
-                    if button_name != "tool_changed_pb":
-                        parent.state_on[button_name] = True
+                elif button_name != "tool_changed_pb":
+                    parent.state_on[button_name] = True
 
     if len(hal_spinboxes) > 0:  # setup hal spinboxes
         valid_types = ["HAL_FLOAT", "HAL_S32", "HAL_U32"]
@@ -2485,9 +2476,7 @@ def setup_plot(parent):
         for key, value in view_actions.items():
             if key in parent.children:
                 action = getattr(parent, key)
-                action.triggered.connect(
-                    lambda _, v=value: (parent.plotter.makeCurrent(), setattr(parent.plotter, "current_view", v), parent.plotter.set_current_view(), utilities.sync_toolbuttons(parent, v))
-                )
+                action.triggered.connect(lambda _, v=value: (parent.plotter.makeCurrent(), setattr(parent.plotter, "current_view", v), parent.plotter.set_current_view(), utilities.sync_toolbuttons(parent, v)))
 
 
 def setup_fsc(parent):  # mill feed and speed calculator

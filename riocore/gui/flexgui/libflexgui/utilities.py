@@ -1,10 +1,8 @@
 import os
 
-from PyQt5.QtGui import QColor, QTextFormat
-from PyQt5.QtWidgets import QApplication, QTextEdit, QFileDialog
-
 import linuxcnc as emc
-
+from PyQt5.QtGui import QColor, QTextFormat
+from PyQt5.QtWidgets import QApplication, QFileDialog, QTextEdit
 from libflexgui import dialogs
 
 
@@ -56,8 +54,7 @@ def valid_color_string(parent, string, key):
             msg = f"The [FLEXGUI] key {key}\n{string}\nis not a valid color\nSee the INI section of the\ndocuments for proper usage."
             dialogs.warn_msg_ok(parent, msg, "Invalid INI Entry")
             return False
-        else:
-            return True
+        return True
 
 
 def string_to_rgba(parent, string, key):
@@ -66,7 +63,7 @@ def string_to_rgba(parent, string, key):
     if valid_color_string(string, key):
         if string.count(",") == 2:  # rgb
             return f"rgb({string})"
-        elif string.count(",") == 3:  # rgba
+        if string.count(",") == 3:  # rgba
             return f"rgba({string})"
 
 
@@ -81,7 +78,7 @@ def string_to_qcolor(parent, string, key):
         else:
             return False
         return QColor(r, g, b, a)
-    elif string.startswith("#"):
+    if string.startswith("#"):
         color = string.lstrip("#")
         if len(color) != 6:
             return False
@@ -116,8 +113,7 @@ def file_chooser(parent, caption, dialog_type, nc_code_dir=None):
         file_path, file_type = file_dialog.getSaveFileName(None, caption=caption, directory=parent.nc_code_dir, filter=parent.ext_filter, options=options)
     if file_path:
         return file_path
-    else:
-        return False
+    return False
 
 
 def all_homed(parent):
@@ -354,7 +350,7 @@ def var_file_watch(parent):
     var_current_time = os.stat(os.path.join(parent.config_path, parent.var_file)).st_mtime
     if parent.var_mod_time != var_current_time:
         var_file = os.path.join(parent.config_path, parent.var_file)
-        with open(var_file, "r") as f:
+        with open(var_file) as f:
             var_list = f.readlines()
         for key, value in parent.watch_var.items():
             for line in var_list:

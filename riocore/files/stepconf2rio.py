@@ -2,8 +2,9 @@
 #
 #
 
-import sys
 import json
+import sys
+
 from lxml import etree
 
 template = {
@@ -25,7 +26,7 @@ template = {
 }
 
 stepconf = sys.argv[1]
-xml_data = open(stepconf, "r").read()
+xml_data = open(stepconf).read()
 stepconf_keys = {}
 stepconf_values = {}
 stepconf_types = {}

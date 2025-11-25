@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 from riocore.plugins import PluginBase
 
 
@@ -27,7 +28,7 @@ class Plugin(PluginBase):
         }
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         breakout_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
-        jdata = json.loads(open(breakout_file, "r").read())
+        jdata = json.loads(open(breakout_file).read())
 
         if node_type == "rioctrl-shiftio":
             self.VERILOGS = ["shiftreg.v"]

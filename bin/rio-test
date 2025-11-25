@@ -15,15 +15,10 @@ if os.path.isfile(os.path.join("riocore", "__init__.py")):
 elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
     sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-import riocore
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
-    QProxyStyle,
-    QStyle,
-    QScrollArea,
-    QLineEdit,
     QApplication,
     QCheckBox,
     QComboBox,
@@ -32,16 +27,20 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QListWidget,
+    QProxyStyle,
     QPushButton,
+    QScrollArea,
     QSlider,
+    QStyle,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
-    QTabWidget,
 )
 
-
-from riocore.gui.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_TABBAR, STYLESHEET_CHECKBOX_BIG
+import riocore
+from riocore.gui.widgets import STYLESHEET, STYLESHEET_CHECKBOX, STYLESHEET_CHECKBOX_BIG, STYLESHEET_TABBAR
 
 parser = argparse.ArgumentParser()
 if sys.platform.startswith("win"):
@@ -113,9 +112,7 @@ def pidloop(data):
 
 class SliderProxyStyle(QProxyStyle):
     def pixelMetric(self, metric, option, widget):
-        if metric == QStyle.PM_SliderThickness:
-            return 40
-        elif metric == QStyle.PM_SliderLength:
+        if metric == QStyle.PM_SliderThickness or metric == QStyle.PM_SliderLength:
             return 40
         return super().pixelMetric(metric, option, widget)
 
@@ -218,7 +215,7 @@ class WinForm(QWidget):
                 for plugin_instance, haldata in self.haldata.items():
                     if plugin_instance.PLUGIN_TYPE != "gateware":
                         continue
-                    if plugin_instance.NAME != plugin_type:
+                    if plugin_type != plugin_instance.NAME:
                         continue
                     if args.instance_name and plugin_instance.title != args.instance_name:
                         continue
@@ -514,11 +511,8 @@ class WinForm(QWidget):
         port = 2390
         protocol = self.project.config["jdata"].get("protocol", "SPI")
         if protocol:
-            for n in range(0, device.count()):
-                if device.itemText(n) == protocol:
-                    device.setCurrentIndex(n)
-                    break
-                elif protocol == "UART" and device.itemText(n).startswith("/dev/tty"):
+            for n in range(device.count()):
+                if device.itemText(n) == protocol or (protocol == "UART" and device.itemText(n).startswith("/dev/tty")):
                     device.setCurrentIndex(n)
                     break
 
@@ -559,8 +553,7 @@ class WinForm(QWidget):
             if target == "UDP":
                 target = f"{udp_ip.text()}:{udp_port.text()}"
             return target
-        else:
-            return None
+        return None
 
     def slider_reset(self, widget):
         widget.setValue(0)
@@ -647,7 +640,7 @@ class WinForm(QWidget):
                 if not rxdata:
                     print("ERROR({self.errors}): no data reveived")
                     self.errors += 1
-                elif rxdata[0] != 0x61 or rxdata[1] != 0x74 or rxdata[2] != 0x61 and rxdata[3] != 0x64:
+                elif rxdata[0] != 0x61 or rxdata[1] != 0x74 or (rxdata[2] != 0x61 and rxdata[3] != 0x64):
                     print(f"ERROR({self.errors}): reveived data have wrong header: 0x{rxdata[0]:X} 0x{rxdata[1]:X} 0x{rxdata[2]:X} 0x{rxdata[3]:X}")
                     self.errors += 1
                     # return
@@ -774,7 +767,7 @@ class WinForm(QWidget):
                     else:
                         signal[f"widget_{plugin_instance.title}"].setValue(value)
             if args.debug:
-                print("")
+                print()
         except Exception as e:
             print("ERROR", e)
             print(traceback.format_exc())

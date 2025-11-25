@@ -7,8 +7,9 @@ import shutil
 import sys
 import traceback
 
-from .generator.LinuxCNC import LinuxCNC
 from riocore.generator.documentation import documentation
+
+from .generator.LinuxCNC import LinuxCNC
 
 riocore_path = os.path.dirname(__file__)
 
@@ -326,7 +327,7 @@ class Project:
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(os.path.join(riocore_path, path)):
+        if os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
         log(f"path not found: {path} or {os.path.join(riocore_path, path)}")
         exit(1)
@@ -354,9 +355,9 @@ class Project:
                 log("")
                 exit(1)
             try:
-                with open(configuration, "r") as f:
+                with open(configuration) as f:
                     data = f.read()
-            except IOError as err:
+            except OSError as err:
                 log("")
                 log(err)
                 log("")
@@ -383,7 +384,7 @@ class Project:
         modules_path = self.get_path("modules")
         for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
             module = path.split(os.sep)[-2]
-            mdata = open(path, "r").read()
+            mdata = open(path).read()
             project["modules"][module] = json.loads(mdata)
 
         self.config = project

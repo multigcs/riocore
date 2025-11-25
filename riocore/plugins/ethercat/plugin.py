@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 import riocore
 from riocore.plugins import PluginBase
@@ -192,7 +192,7 @@ class Plugin(PluginBase):
                 }
 
         elif os.path.exists(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json")):
-            self.json_data = json.loads(open(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json"), "r").read())
+            self.json_data = json.loads(open(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json")).read())
             self.IMAGE_SHOW = True
             self.IMAGE = f"module_{node_type}.png"
             self.PINDEFAULTS = {}
@@ -262,7 +262,7 @@ class Plugin(PluginBase):
                     bus_list.append(instance)
                     found_next = True
                     break
-                elif instance.plugin_setup.get("pins", {}).get("BUS:in", {}).get("pin") == f"{last}:BUS:out":
+                if instance.plugin_setup.get("pins", {}).get("BUS:in", {}).get("pin") == f"{last}:BUS:out":
                     bus_list.append(instance)
                     found_next = True
                     last = instance.instances_name
@@ -381,9 +381,7 @@ class Plugin(PluginBase):
             parent.halg.net_add(f"{lcec}.pos-actual", f"{cia402}.drv-actual-position", f"j{joint_n}drv-pos")
             parent.halg.net_add(f"{cia402}.controlword", f"{lcec}.control-word", f"j{joint_n}control")
             parent.halg.net_add(f"{cia402}.drv-target-position", f"{lcec}.target-position", f"j{joint_n}target-pos")
-            parent.halg.joint_add(
-                parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname
-            )
+            parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, fault_halname=fault_halname)
             parent.halg.setp_add(f"{cia402}.csp-mode", "1")
         elif self.json_data:
             for option_name, option_data in self.json_data.get("options", {}).items():

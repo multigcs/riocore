@@ -1,3 +1,5 @@
+import sys
+
 from riocore.plugins import PluginBase
 
 
@@ -203,7 +205,7 @@ class Plugin(PluginBase):
             for mode in matching_errors:
                 if matching_errors[mode]:
                     print(f"  mode({mode}): {', '.join(matching_errors[mode])}")
-            exit(1)
+            sys.exit(1)
         if not active:
             self.parport_mode = ""
 

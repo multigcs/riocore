@@ -1,13 +1,12 @@
-import sys
 import json
-
+import sys
 
 json_file = sys.argv[1]
 slot_selection = sys.argv[2]
 xscale = float(sys.argv[3])
 yscale = float(sys.argv[4])
 
-jdata = json.loads(open(json_file, "r").read())
+jdata = json.loads(open(json_file).read())
 
 if slot_selection == "main":
     for pin, pdata in jdata[slot_selection].items():

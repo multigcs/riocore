@@ -1,4 +1,4 @@
-from .config import BUTTON_NAMES, BUTTON_FUNCS, DEFAULTS
+from .config import BUTTON_FUNCS, BUTTON_NAMES, DEFAULTS
 
 
 def hal(parent):

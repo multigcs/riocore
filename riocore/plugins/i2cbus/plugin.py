@@ -1,8 +1,8 @@
 import glob
+import importlib
+import os
 import sys
 from copy import deepcopy
-import os
-import importlib
 
 from riocore.plugins import PluginBase
 
@@ -545,11 +545,10 @@ graph LR;
                     verilog_data.append(f"                            bytes <= {1 + nbytes};")
                     if big_endian:
                         print("TODO")
+                    elif isinstance(value, str):
+                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {value}}};")
                     else:
-                        if isinstance(value, str):
-                            verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {value}}};")
-                        else:
-                            verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
+                        verilog_data.append(f"                            data_out[MAX_BITS-1:MAX_BITS-{size}-8] <= {{8'h{target:X}, {size}'h{value:X}}};")
                     verilog_data.append("                            stop <= 1;")
                     verilog_data.append("                            start <= 1;")
                     verilog_data.append("                        end")
@@ -703,14 +702,13 @@ graph LR;
                     verilog_data += data_in
                 elif var_set:
                     verilog_data.append(f"                                {data['var']} <= {var_set};")
+                elif big_endian:
+                    byte_list = []
+                    for byte_n in range(nbytes):
+                        byte_list.append(f"data_in[{byte_n * 8 + 7}:{byte_n * 8}]")
+                    verilog_data.append(f"                                {data['var']} <= {{{', '.join(byte_list)}}};")
                 else:
-                    if big_endian:
-                        byte_list = []
-                        for byte_n in range(nbytes):
-                            byte_list.append(f"data_in[{byte_n * 8 + 7}:{byte_n * 8}]")
-                        verilog_data.append(f"                                {data['var']} <= {{{', '.join(byte_list)}}};")
-                    else:
-                        verilog_data.append(f"                                {data['var']} <= data_in[{size - 1}:0];")
+                    verilog_data.append(f"                                {data['var']} <= data_in[{size - 1}:0];")
 
                 if until:
                     verilog_data.append("                            end else begin")

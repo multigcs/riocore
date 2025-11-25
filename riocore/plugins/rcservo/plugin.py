@@ -101,7 +101,7 @@ class Plugin(PluginBase):
 
     def firmware_loop(self):
         output = []
-        for pin_name, pin_config in self.pins().items():
+        for pin_name in self.pins():
             output.append(f"    servo_{self.instances_name}.write(value_{pin_name});")
         return "\n".join(output)
 

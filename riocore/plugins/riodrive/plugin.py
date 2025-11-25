@@ -198,6 +198,6 @@ class Plugin(PluginBase):
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "power":
             return "value = value / 10.0;"
-        elif signal_name == "temp":
+        if signal_name == "temp":
             return "value = value / 2.0;"
         return ""

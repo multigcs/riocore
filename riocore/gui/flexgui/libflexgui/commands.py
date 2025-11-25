@@ -1,10 +1,7 @@
 import threading
 
-
 import linuxcnc as emc
-
-from libflexgui import dialogs
-from libflexgui import utilities
+from libflexgui import dialogs, utilities
 
 
 def set_mode_manual(parent):
@@ -107,9 +104,8 @@ def unhome_all(parent):
 def run_mdi(parent, cmd=""):
     if cmd:
         mdi_command = cmd
-    else:
-        if "mdi_command_le" in parent.children:
-            mdi_command = parent.mdi_command_le.text()
+    elif "mdi_command_le" in parent.children:
+        mdi_command = parent.mdi_command_le.text()
     if mdi_command:
         parent.mdi_command = mdi_command
         if parent.status.task_state == emc.STATE_ON:
@@ -126,14 +122,12 @@ def jog_check(parent):
     if "jog_vel_sl" in parent.children:
         if parent.jog_vel_sl.value() > 0.0:
             return True
-        else:
-            msg = "Can not jog at Zero Velocity!"
-            dialogs.warn_msg_ok(parent, msg, "Error")
-            return False
-    else:
-        msg = "Can not jog without a\njog velocity slider."
-        dialogs.warn_msg_ok(msg, "Error")
+        msg = "Can not jog at Zero Velocity!"
+        dialogs.warn_msg_ok(parent, msg, "Error")
         return False
+    msg = "Can not jog without a\njog velocity slider."
+    dialogs.warn_msg_ok(msg, "Error")
+    return False
 
 
 def set_jog_override(parent):
@@ -465,10 +459,9 @@ def flood_toggle(parent):
         if parent.status.task_state == emc.STATE_ON:
             parent.command.flood(emc.FLOOD_ON)
             parent.command.wait_complete()
-    else:
-        if parent.status.task_state == emc.STATE_ON:
-            parent.command.flood(emc.FLOOD_OFF)
-            parent.command.wait_complete()
+    elif parent.status.task_state == emc.STATE_ON:
+        parent.command.flood(emc.FLOOD_OFF)
+        parent.command.wait_complete()
 
 
 def mist_toggle(parent):

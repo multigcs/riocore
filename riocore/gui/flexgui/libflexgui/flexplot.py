@@ -3,23 +3,20 @@
 # import sys
 # import math
 
-from PyQt5.QtCore import pyqtSignal, QSize, Qt, QTimer
+import _thread
+import os
+import re
+import shutil
+import tempfile
+
+import gcode
+import glnav
+import linuxcnc
+from OpenGL import GL, GLU
+from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QOpenGLWidget
-from OpenGL import GL, GLU
-
-import _thread
-
-import glnav
-from rs274 import glcanon
-from rs274 import interpret
-import linuxcnc
-import gcode
-
-import re
-import tempfile
-import shutil
-import os
+from rs274 import glcanon, interpret
 
 
 #################
@@ -132,9 +129,7 @@ class emc_plot(QOpenGLWidget, glcanon.GlCanonDraw, glnav.GlNavBase):
             trajcoordinates = "unknown"
         kinsmodule = self.inifile.find("KINS", "KINEMATICS")
 
-        self.logger = linuxcnc.positionlogger(
-            linuxcnc.stat(), C("backplotjog"), C("backplottraverse"), C("backplotfeed"), C("backplotarc"), C("backplottoolchange"), C("backplotprobing"), self.get_geometry(), self.foam_option
-        )
+        self.logger = linuxcnc.positionlogger(linuxcnc.stat(), C("backplotjog"), C("backplottraverse"), C("backplotfeed"), C("backplotarc"), C("backplottoolchange"), C("backplotprobing"), self.get_geometry(), self.foam_option)
         # start tracking linuxcnc position so we can plot it
         _thread.start_new_thread(self.logger.start, (0.01,))
         glcanon.GlCanonDraw.__init__(self, stat, self.logger)
@@ -236,7 +231,7 @@ class emc_plot(QOpenGLWidget, glcanon.GlCanonDraw, glnav.GlNavBase):
         try:
             s.poll()
         except Exception:
-            return
+            return None
         fingerprint = (
             self.logger.npts,
             self.soft_limits(),
@@ -553,7 +548,7 @@ class emc_plot(QOpenGLWidget, glcanon.GlCanonDraw, glnav.GlNavBase):
 
     def set_current_view(self):
         if self.current_view not in ["p", "x", "y", "y2", "z", "z2"]:
-            return
+            return None
         return getattr(self, "set_view_%s" % self.current_view)()
 
     def clear_live_plotter(self):
@@ -673,11 +668,10 @@ class emc_plot(QOpenGLWidget, glcanon.GlCanonDraw, glnav.GlNavBase):
                     droposstrs.insert(1, droformat % ("Rad", positions[0], "R", axisdtg[0]))
                 else:
                     droposstrs.insert(1, droformat % ("Dia", positions[0] * 2.0, "D", axisdtg[0] * 2.0))
+            elif self.show_lathe_radius:
+                droposstrs.insert(1, droformat % ("Rad", positions[0]))
             else:
-                if self.show_lathe_radius:
-                    droposstrs.insert(1, droformat % ("Rad", positions[0]))
-                else:
-                    droposstrs.insert(1, diaformat % ("Dia", positions[0] * 2.0))
+                droposstrs.insert(1, diaformat % ("Dia", positions[0] * 2.0))
 
         if self.show_velocity:
             posstrs.append(self.dro_vel % (spd))
@@ -750,7 +744,6 @@ class emc_plot(QOpenGLWidget, glcanon.GlCanonDraw, glnav.GlNavBase):
         # self.object = self.makeObject()
         self.realize()
         GL.glEnable(GL.GL_CULL_FACE)
-        return
 
     # redraws the screen aprox every 100ms
     def paintGL(self):

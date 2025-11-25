@@ -1,4 +1,4 @@
-class crc16(object):
+class crc16:
     def __init__(self):
         self.crc = 0xFFFF
 
@@ -11,13 +11,13 @@ class crc16(object):
             data = bytearray([data])
 
         length = len(data) - offset
-        if data is None or offset < 0 or offset > len(data) - 1 and offset + length > len(data):
+        if data is None or offset < 0 or (offset > len(data) - 1 and offset + length > len(data)):
             return 0
         for i in range(length):
             self.crc ^= data[offset + i]
             for j in range(8):
                 if (self.crc & 0x1) == 1:
-                    self.crc = int((self.crc / 2)) ^ 40961
+                    self.crc = int(self.crc / 2) ^ 40961
                 else:
                     self.crc = int(self.crc / 2)
 
@@ -32,20 +32,20 @@ class crc16(object):
     def crc16(self, data: bytearray, offset=0, length=None):
         if length is None:
             length = len(data) - offset
-        if data is None or offset < 0 or offset > len(data) - 1 and offset + length > len(data):
+        if data is None or offset < 0 or (offset > len(data) - 1 and offset + length > len(data)):
             return 0
         crc = 0xFFFF
         for i in range(length):
             crc ^= data[offset + i]
             for j in range(8):
                 if (crc & 0x1) == 1:
-                    crc = int((crc / 2)) ^ 40961
+                    crc = int(crc / 2) ^ 40961
                 else:
                     crc = int(crc / 2)
         return crc & 0xFFFF
 
 
-class crc8(object):
+class crc8:
     digest_size = 1
     block_size = 1
 
@@ -335,7 +335,7 @@ class crc8(object):
     def update(self, bytes_):
         if isinstance(bytes_, str):
             raise TypeError("Unicode-objects must be encoded before hashing")
-        elif not isinstance(bytes_, (bytes, bytearray)):
+        if not isinstance(bytes_, (bytes, bytearray)):
             if isinstance(bytes_, (list)):
                 bytes_ = bytearray(bytes_)
             elif isinstance(bytes_, (int)):

@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 import riocore
 from riocore import Plugins
@@ -90,7 +90,7 @@ graph LR;
             return
 
         if subconfig:
-            subdata_json = open(subconfig, "r").read()
+            subdata_json = open(subconfig).read()
             subdata = json.loads(subdata_json)
             for sub_plugin in subdata["plugins"]:
                 sub_plugin["instance"] = self.plugins.load_plugin(self.sub_plugins_id, sub_plugin, system_setup=self.system_setup, subfix=f"{self.instances_name}_")
@@ -264,11 +264,10 @@ graph LR;
                             verilog_data.append(f"        {rev_direction} reg [{size - 1}:0] {varname} = 0,")
                         else:
                             verilog_data.append(f"        {rev_direction} reg {varname} = 0,")
+                    elif size > 1:
+                        verilog_data.append(f"        {rev_direction} [{size - 1}:0] {varname},")
                     else:
-                        if size > 1:
-                            verilog_data.append(f"        {rev_direction} [{size - 1}:0] {varname},")
-                        else:
-                            verilog_data.append(f"        {rev_direction} {varname},")
+                        verilog_data.append(f"        {rev_direction} {varname},")
                 else:
                     rev_direction = "input"
                     if size > 1:
@@ -504,7 +503,7 @@ endmodule
         signals = instance.signals()
         calc = ""
         if sub_signal_name in signals:
-            for sig, sig_conf in instance.SIGNALS.items():
+            for sig_conf in instance.SIGNALS.values():
                 sig_conf["varname"] = sig_conf["varname"].replace("SIGIN_", f"SIGIN_{self.instances_name.upper()}_".replace("SIGOUT_", f"SIGOUT_{self.instances_name.upper()}_"))
             calc = instance.convert_c(sub_signal_name, signals[sub_signal_name])
         return calc

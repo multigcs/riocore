@@ -1,29 +1,18 @@
 import os
 
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QVBoxLayout, QLabel
-from PyQt5.QtWidgets import QMessageBox, QPlainTextEdit
-from PyQt5.QtWidgets import QSpinBox, QDoubleSpinBox
-from PyQt5.QtGui import QPixmap, QTextCursor
-from PyQt5.QtCore import Qt
-
-import linuxcnc as emc
 import hal
-
-from libflexgui import number_pad
-from libflexgui import gcode_pad
-from libflexgui import keyboard_pad
-from libflexgui import tool_change
-from libflexgui import touchoff
-from libflexgui import tool_touchoff
-from libflexgui import utilities
-from libflexgui import search
+import linuxcnc as emc
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap, QTextCursor
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDoubleSpinBox, QLabel, QMessageBox, QPlainTextEdit, QSpinBox, QVBoxLayout
+from libflexgui import gcode_pad, keyboard_pad, number_pad, search, tool_change, tool_touchoff, touchoff, utilities
 
 
 def spinbox_numbers(parent, obj):
     if obj.isEnabled():
         np = number_pad.number_pad()
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-        with open(stylesheet, "r") as fh:
+        with open(stylesheet) as fh:
             np.setStyleSheet(fh.read())
         result = np.exec()
         if result:
@@ -37,7 +26,7 @@ def spinbox_numbers(parent, obj):
 def numbers(parent, obj):
     np = number_pad.number_pad()
     stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as fh:
+    with open(stylesheet) as fh:
         np.setStyleSheet(fh.read())
     result = np.exec()
     if result:
@@ -47,7 +36,7 @@ def numbers(parent, obj):
 def gcode(parent, obj):
     gp = gcode_pad.gcode_pad()
     stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as fh:
+    with open(stylesheet) as fh:
         gp.setStyleSheet(fh.read())
     result = gp.exec()
     if result:
@@ -60,7 +49,7 @@ def manual_tool_change(parent):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         tc.setStyleSheet(s.read())
     result = tc.exec()
     if result:
@@ -77,7 +66,7 @@ def touchoff_selected(parent):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         to.setStyleSheet(s.read())
     axis = parent.axes_group.checkedButton().text()
     to.axis_lb.setText(f"Axis: {axis}")
@@ -104,7 +93,7 @@ def tool_touchoff_selected(parent):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         tto.setStyleSheet(s.read())
     axis = parent.axes_group.checkedButton().text()
     tto.axis_lb.setText(f"Axis: {axis}")
@@ -149,14 +138,13 @@ def info_msg_ok(parent, msg, title=None):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         msg_box.setStyleSheet(s.read())
 
     returnValue = msg_box.exec()
     if returnValue == QMessageBox.StandardButton.Ok:
         return True
-    else:
-        return False
+    return False
 
 
 def error_msg_ok(parent, msg, title=None):  # plain error message
@@ -170,8 +158,7 @@ def error_msg_ok(parent, msg, title=None):  # plain error message
     returnValue = msg_box.exec()
     if returnValue == QMessageBox.StandardButton.Ok:
         return True
-    else:
-        return False
+    return False
 
 
 def warn_msg_ok(parent, msg, title=None):
@@ -186,14 +173,13 @@ def warn_msg_ok(parent, msg, title=None):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         msg_box.setStyleSheet(s.read())
 
     returnValue = msg_box.exec()
     if returnValue == QMessageBox.StandardButton.Ok:
         return True
-    else:
-        return False
+    return False
 
 
 def warn_msg_yes_no(parent, msg, title=None):
@@ -208,14 +194,13 @@ def warn_msg_yes_no(parent, msg, title=None):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         msg_box.setStyleSheet(s.read())
 
     returnValue = msg_box.exec()
     if returnValue == QMessageBox.StandardButton.Yes:
         return True
-    else:
-        return False
+    return False
 
 
 def critical_msg_ok(parent, msg, title=None):
@@ -230,14 +215,13 @@ def critical_msg_ok(parent, msg, title=None):
         stylesheet = os.path.join(parent.lib_path, f"{parent.theme}.qss")
     else:
         stylesheet = os.path.join(parent.lib_path, "touch.qss")
-    with open(stylesheet, "r") as s:
+    with open(stylesheet) as s:
         msg_box.setStyleSheet(s.read())
 
     returnValue = msg_box.exec()
     if returnValue == QMessageBox.StandardButton.Ok:
         return True
-    else:
-        return False
+    return False
 
 
 def about_dialog(parent):

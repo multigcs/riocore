@@ -202,10 +202,8 @@ class i2c_device:
             value -= signal_setup.get("offset", 0.0)
 
         if units == "deg" and not signal_name.endswith("_z"):
-            if value > 1:
-                value = 1
-            if value < -1:
-                value = -1
+            value = min(value, 1)
+            value = max(value, -1)
             value = math.asin(value) * 57.296
 
         return value

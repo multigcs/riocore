@@ -1,16 +1,12 @@
 import os
-import subprocess
 import shutil
+import subprocess
 from functools import partial
 
-from PyQt5.QtWidgets import QApplication, QFileDialog, QMenu
-
-import linuxcnc as emc
 import hal
-
-from libflexgui import dialogs
-from libflexgui import utilities
-from libflexgui import select
+import linuxcnc as emc
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMenu
+from libflexgui import dialogs, select, utilities
 
 
 def load_file(parent, nc_code_file=None):
@@ -105,7 +101,7 @@ def file_selector(parent):  # touch screen file selector
 
     if item.startswith("/"):
         return
-    elif item == "Open Parent Directory":  # move up one directory
+    if item == "Open Parent Directory":  # move up one directory
         parent.nc_code_dir = os.path.abspath(os.path.join(parent.nc_code_dir, os.pardir))
         utilities.read_dir(parent)
     elif item.endswith("..."):  # a subdirectory
@@ -130,8 +126,7 @@ def action_edit(parent):  # actionEdit
         if response:
             action_open(parent)
             return
-        else:
-            return
+        return
 
     if parent.editor:
         if shutil.which(parent.editor.lower()) is not None:
@@ -211,7 +206,7 @@ def action_save_as(parent):  # actionSave_As
         options=QFileDialog.Option.DontUseNativeDialog,
     )
     if new_gcode_file:
-        with open(current_gcode_file, "r") as cf:
+        with open(current_gcode_file) as cf:
             gcode = cf.read()
         with open(new_gcode_file, "w") as f:
             f.write(gcode)
@@ -251,7 +246,7 @@ def action_reload_tool_table(parent):  # actionReload_Tool_Table
         if parent.tool_change_cb.property("option") == "description":
             parent.tool_change_cb.addItem("T0: No Tool in Spindle", 0)
             tools = os.path.join(parent.config_path, parent.tool_table)
-            with open(tools, "r") as t:
+            with open(tools) as t:
                 tool_list = t.readlines()
             for line in tool_list:
                 if line.find("T") >= 0:

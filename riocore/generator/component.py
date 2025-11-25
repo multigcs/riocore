@@ -1,4 +1,5 @@
 import os
+
 from riocore.generator.cbase import cbase
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))

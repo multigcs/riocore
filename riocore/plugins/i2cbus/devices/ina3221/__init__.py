@@ -170,33 +170,33 @@ class i2c_device:
     def convert(self, signal_name, signal_setup, value):
         if signal_name.endswith("_valid"):
             return value
-        elif signal_name.endswith("_current1"):
+        if signal_name.endswith("_current1"):
             return value / 20
-        elif signal_name.endswith("_voltage1"):
+        if signal_name.endswith("_voltage1"):
             return value / 1000
-        elif signal_name.endswith("_current2"):
+        if signal_name.endswith("_current2"):
             return value / 20
-        elif signal_name.endswith("_voltage2"):
+        if signal_name.endswith("_voltage2"):
             return value / 1000
-        elif signal_name.endswith("_current3"):
+        if signal_name.endswith("_current3"):
             return value / 20
-        elif signal_name.endswith("_voltage3"):
+        if signal_name.endswith("_voltage3"):
             return value / 1000
         return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name.endswith("_valid"):
             return "value = value / 1000;"
-        elif signal_name.endswith("_current1"):
+        if signal_name.endswith("_current1"):
             return "value = value / 20;"
-        elif signal_name.endswith("_voltage1"):
+        if signal_name.endswith("_voltage1"):
             return "value = value / 1000;"
-        elif signal_name.endswith("_current2"):
+        if signal_name.endswith("_current2"):
             return "value = value / 20;"
-        elif signal_name.endswith("_voltage2"):
+        if signal_name.endswith("_voltage2"):
             return "value = value / 1000;"
-        elif signal_name.endswith("_current3"):
+        if signal_name.endswith("_current3"):
             return "value = value / 20;"
-        elif signal_name.endswith("_voltage3"):
+        if signal_name.endswith("_voltage3"):
             return "value = value / 1000;"
         return ""

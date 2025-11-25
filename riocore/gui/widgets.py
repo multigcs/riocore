@@ -1,24 +1,25 @@
-import os
 import json
-import riocore
+import os
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QStandardItem, QPixmap, QFont
+from PyQt5.QtCore import QRect, QSize, Qt, pyqtSignal
+from PyQt5.QtGui import QFont, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
-    QVBoxLayout,
-    QFileDialog,
-    QDialogButtonBox,
-    QDialog,
-    QPushButton,
-    QLabel,
     QCheckBox,
     QComboBox,
+    QDialog,
+    QDialogButtonBox,
     QDoubleSpinBox,
-    QSpinBox,
+    QFileDialog,
+    QLabel,
     QLineEdit,
+    QPushButton,
+    QSpinBox,
     QTextEdit,
+    QVBoxLayout,
 )
+
+import riocore
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -108,9 +109,8 @@ class MyQLabel(QLabel):
         if delta.y() < 0:
             if self.scale > 0.1:
                 self.scale -= 0.1
-        else:
-            if self.scale < 10.0:
-                self.scale += 0.1
+        elif self.scale < 10.0:
+            self.scale += 0.1
         self.load(None)
 
     def load(self, png_data):

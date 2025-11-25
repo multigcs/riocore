@@ -141,6 +141,5 @@ class Plugin(PluginBase):
                     value = {vmax};
                 }}
                 """
-            else:
-                return f"value *= {scale};"
+            return f"value *= {scale};"
         return ""

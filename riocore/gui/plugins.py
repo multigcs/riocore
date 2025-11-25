@@ -3,31 +3,30 @@ import importlib
 import os
 from functools import partial
 
-import riocore
-from riocore import halpins
-
-from riocore.gui.widgets import (
-    MyStandardItem,
-)
-
 from PyQt5 import QtSvg
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
-    QHeaderView,
-    QGroupBox,
-    QLineEdit,
     QDialog,
     QDialogButtonBox,
+    QGroupBox,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
+    QLineEdit,
     QPushButton,
     QScrollArea,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
-    QTabWidget,
     QVBoxLayout,
     QWidget,
+)
+
+import riocore
+from riocore import halpins
+from riocore.gui.widgets import (
+    MyStandardItem,
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -157,9 +156,7 @@ class GuiPlugins:
                     label = QLabel("Drive:")
                     label.setToolTip(tooltip)
                     pin_cols.addWidget(label, stretch=1)
-                    pin_cols.addWidget(
-                        self.parent.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3
-                    )
+                    pin_cols.addWidget(self.parent.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3)
                 else:
                     pin_cols.addWidget(QLabel(""), stretch=8)
 
@@ -473,11 +470,10 @@ class GuiPlugins:
                     type_options = ["none", "led", "rectled"]
                 else:
                     type_options = ["none", "number", "bar", "meter"]
+            elif signal_defaults.get("bool"):
+                type_options = ["none", "checkbutton", "button"]
             else:
-                if signal_defaults.get("bool"):
-                    type_options = ["none", "checkbutton", "button"]
-                else:
-                    type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
+                type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
             display_setup = {
                 "title": {"type": str},
                 "section": {"type": str},
@@ -604,7 +600,7 @@ class GuiPlugins:
                 layout.deleteLater()
                 return
 
-            for widget_no in range(0, layout.count()):
+            for widget_no in range(layout.count()):
                 if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
                     layout.itemAt(widget_no).widget().deleteLater()
                 elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
@@ -1212,7 +1208,7 @@ def md2label(text):
     for line in text.split("\n"):
         if not formated and not line.strip():
             continue
-        elif not formated:
+        if not formated:
             formated.append("<html>\n")
 
         if line.startswith("#"):

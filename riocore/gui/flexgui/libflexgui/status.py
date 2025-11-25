@@ -1,12 +1,10 @@
 from math import sqrt
 
-from PyQt5.QtGui import QTextCursor
-from PyQt5.QtWidgets import QLCDNumber, QAbstractSpinBox, QCheckBox, QSlider
-
-import linuxcnc as emc
 import hal
-
-from libflexgui import utilities, dialogs
+import linuxcnc as emc
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QAbstractSpinBox, QCheckBox, QLCDNumber, QSlider
+from libflexgui import dialogs, utilities
 
 """
 STATE_ESTOP
@@ -506,7 +504,7 @@ def update(parent):
             getattr(parent, key).display(f"{hal_value:.{value[1]}f}")
         else:
             widget = getattr(parent, key)
-            if addValue := getattr(widget, "addValue"):
+            if addValue := widget.addValue:
                 addValue(hal_value)
             else:
                 getattr(parent, key).setText(f"{hal_value:.{value[1]}f}")
@@ -520,51 +518,51 @@ def update(parent):
 
     # axis position no offsets
     for key, value in parent.status_position.items():  # key is label value precision
-        machine_position = getattr(parent, "status").position[value[0]]
+        machine_position = parent.status.position[value[0]]
         getattr(parent, f"{key}").setText(f"{machine_position:.{value[1]}f}")
 
     # axis position including offsets
     for key, value in parent.status_dro.items():  # key is label value tuple position & precision
-        g5x_offset = getattr(parent, "status").g5x_offset[value[0]]
-        g92_offset = getattr(parent, "status").g92_offset[value[0]]
-        machine_position = getattr(parent, "status").position[value[0]]
+        g5x_offset = parent.status.g5x_offset[value[0]]
+        g92_offset = parent.status.g92_offset[value[0]]
+        machine_position = parent.status.position[value[0]]
         relative_position = machine_position - (g5x_offset + g92_offset)
         getattr(parent, f"{key}").setText(f"{relative_position:.{value[1]}f}")
 
     # axis g5x offset
     for key, value in parent.status_g5x_offset.items():  # key is label value tuple position & precision
-        getattr(parent, f"{key}").setText(f"{getattr(parent, 'status').g5x_offset[value[0]]:.{value[1]}f}")
+        getattr(parent, f"{key}").setText(f"{parent.status.g5x_offset[value[0]]:.{value[1]}f}")
 
     # axis g92 offset
     for key, value in parent.status_g92.items():  # key is label value tuple position & precision
-        getattr(parent, f"{key}").setText(f"{getattr(parent, 'status').g92_offset[value[0]]:.{value[1]}f}")
+        getattr(parent, f"{key}").setText(f"{parent.status.g92_offset[value[0]]:.{value[1]}f}")
 
     # axis DTG
     for key, value in parent.status_dtg.items():  # key is label value tuple position & precision
-        getattr(parent, f"{key}").setText(f"{getattr(parent, 'status').dtg[value[0]]:.{value[1]}f}")
+        getattr(parent, f"{key}").setText(f"{parent.status.dtg[value[0]]:.{value[1]}f}")
 
     # axis s.axis[0]['velocity'] parent.status.axis[0]['velocity']
     for key, value in parent.status_axes.items():
-        getattr(parent, f"{key}").setText(f"{getattr(parent, 'status').axis[value[0]][value[1]]:.{value[2]}f}")
+        getattr(parent, f"{key}").setText(f"{parent.status.axis[value[0]][value[1]]:.{value[2]}f}")
 
     # joint velocity parent.status.joint[0]['velocity'] key label value joint precision
     for key, value in parent.joint_vel_sec.items():
-        getattr(parent, key).setText(f"{abs(getattr(parent, 'status').joint[value[0]]['velocity']):.{value[1]}f}")
+        getattr(parent, key).setText(f"{abs(parent.status.joint[value[0]]['velocity']):.{value[1]}f}")
     for key, value in parent.joint_vel_min.items():
-        getattr(parent, key).setText(f"{abs(getattr(parent, 'status').joint[value[0]]['velocity']) * 60:.{value[1]}f}")
+        getattr(parent, key).setText(f"{abs(parent.status.joint[value[0]]['velocity']) * 60:.{value[1]}f}")
 
     # two joint velocity
     for key, value in parent.two_vel.items():
-        vel_0 = getattr(parent, "status").joint[value[0]]["velocity"]
-        vel_1 = getattr(parent, "status").joint[value[1]]["velocity"]
+        vel_0 = parent.status.joint[value[0]]["velocity"]
+        vel_1 = parent.status.joint[value[1]]["velocity"]
         vel = sqrt((vel_0 * vel_0) + (vel_1 * vel_1))
         getattr(parent, key).setText(f"{vel * 60:.{value[2]}f}")
 
     # three joint velocity
     for key, value in parent.three_vel.items():
-        vel_0 = getattr(parent, "status").joint[value[0]]["velocity"]
-        vel_1 = getattr(parent, "status").joint[value[1]]["velocity"]
-        vel_2 = getattr(parent, "status").joint[value[2]]["velocity"]
+        vel_0 = parent.status.joint[value[0]]["velocity"]
+        vel_1 = parent.status.joint[value[1]]["velocity"]
+        vel_2 = parent.status.joint[value[2]]["velocity"]
         vel = sqrt((vel_0 * vel_0) + (vel_1 * vel_1) + (vel_2 * vel_2))
         getattr(parent, key).setText(f"{vel * 60:.{value[3]}f}")
 
@@ -584,19 +582,19 @@ def update(parent):
 
     # spindle s.spindle[0]['brake']
     for key, value in parent.status_spindles.items():
-        getattr(parent, key).setText(f"{getattr(parent, 'status').spindle[0][value]}")
+        getattr(parent, key).setText(f"{parent.status.spindle[0][value]}")
 
     # spindle speed
     for key, value in parent.status_spindle_speed.items():
-        getattr(parent, key).setText(f"{abs(getattr(parent, 'status').spindle[0][value]):.0f}")
+        getattr(parent, key).setText(f"{abs(parent.status.spindle[0][value]):.0f}")
 
     # spindle lcd
     for key, value in parent.status_spindle_lcd.items():
-        getattr(parent, key).display(f"{getattr(parent, 'status').spindle[0][value]:.0f}")
+        getattr(parent, key).display(f"{parent.status.spindle[0][value]:.0f}")
 
     # spindle override parent.spindle[0]['override']
     for key, value in parent.status_spindle_overrides.items():
-        getattr(parent, f"{key}").setText(f"{getattr(parent, 'status').spindle[value]['override'] * 100:.0f}%")
+        getattr(parent, f"{key}").setText(f"{parent.status.spindle[value]['override'] * 100:.0f}%")
 
     # spindle direction
     for key, value in parent.status_spindle_dir.items():

@@ -160,7 +160,7 @@ module axi
         flen = project.buffer_size // 8 // 4
         flen32 = (flen * 8 + 31) // 32 * 4
         pos = project.buffer_size
-        for n in range(0, flen32):
+        for n in range(flen32):
             verilog_data.append(f"                    5'h{n:02x}:")
             end = pos - 32
             size = 32
@@ -235,7 +235,7 @@ module axi
         flen = project.buffer_size // 8 // 4
         flen32 = (flen * 8 + 31) // 32 * 4
         pos = project.buffer_size
-        for n in range(0, flen32):
+        for n in range(flen32):
             end = pos - 32
             size = 32
             if end < 0:

@@ -1,9 +1,9 @@
-import json
 import copy
+import json
 import os
-from riocore.plugins import PluginBase
 
 import riocore
+from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -82,7 +82,7 @@ class Plugin(PluginBase):
             self.PINDEFAULTS = {}
             pin_file = os.path.join(os.path.dirname(__file__), f"{board}.json")
             if os.path.exists(pin_file):
-                pins = json.loads(open(pin_file, "r").read())
+                pins = json.loads(open(pin_file).read())
                 for pin_name, pin_data in pins.items():
                     pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
                     self.PINDEFAULTS[pin_name] = pin_data
@@ -320,9 +320,7 @@ class Plugin(PluginBase):
                     feedback_halname = f"{self.PREFIX}.feedback"
                     enable_halname = f"{self.PREFIX}.enable"
                     scale_halname = f"{self.PREFIX}.step-scale"
-                    parent.halg.joint_add(
-                        parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num
-                    )
+                    parent.halg.joint_add(parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num)
                 else:
                     cmd_halname = f"{self.PREFIX}.command"
                     feedback_halname = f"{self.PREFIX}.command"

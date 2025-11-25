@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 #
 #
-"""
-
-EMBED_TAB_NAME=CamJog
+"""EMBED_TAB_NAME=CamJog
 EMBED_TAB_COMMAND=halcmd loadusr -Wn camjog /data2/src/ICE40-2023/serial-tx/riocore/camjog.py --xid {XID} --camera USB2.0 --width 640 --height 480 --scale 1.5
 
 net camjog_x <= camjog.axis.x.jog-counts
@@ -31,15 +29,17 @@ setp axis.y.jog-scale -0.15
 
 """
 
-import math
 import argparse
+import math
 import os
-import sys
 import signal
+import sys
 from functools import partial
 
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QImage
+import cv2
+import numpy as np
+from PyQt5.QtCore import QThread, Qt, pyqtSignal
+from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -48,9 +48,6 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
-import numpy as np
-import cv2
 
 try:
     import hal
@@ -71,19 +68,19 @@ TWO_PI = math.pi * 2
 
 
 def line_center_2d(p_1, p_2):
-    """gets the center point between 2 points in 2D."""
+    """Gets the center point between 2 points in 2D."""
     center_x = (p_1[0] + p_2[0]) / 2
     center_y = (p_1[1] + p_2[1]) / 2
     return (center_x, center_y)
 
 
 def angle_of_line(p_1, p_2):
-    """gets the angle of a single line."""
+    """Gets the angle of a single line."""
     return math.atan2(p_2[1] - p_1[1], p_2[0] - p_1[0])
 
 
 def angle_2d(p_1, p_2):
-    """gets the angle of a single line (2nd version)."""
+    """Gets the angle of a single line (2nd version)."""
     theta1 = math.atan2(p_1[1], p_1[0])
     theta2 = math.atan2(p_2[1], p_2[0])
     dtheta = theta2 - theta1
@@ -95,7 +92,7 @@ def angle_2d(p_1, p_2):
 
 
 def is_inside_polygon(polygon, point):
-    """checks if a point is inside an polygon."""
+    """Checks if a point is inside an polygon."""
     angle = 0.0
     point_0 = point[0]
     point_1 = point[1]
@@ -127,11 +124,9 @@ class MyImage(QLabel):
         if delta.y() < 0:
             if self.parent.options["zoom"] > 1.0:
                 self.parent.options["zoom"] -= 0.1
-            if self.parent.options["zoom"] < 1.0:
-                self.parent.options["zoom"] = 1.0
-        else:
-            if self.parent.options["zoom"] < 10.0:
-                self.parent.options["zoom"] += 0.1
+            self.parent.options["zoom"] = max(self.parent.options["zoom"], 1.0)
+        elif self.parent.options["zoom"] < 10.0:
+            self.parent.options["zoom"] += 0.1
 
         self.parent.zoom_label.setText(f"{self.parent.options['zoom']:0.1f}")
 
@@ -201,7 +196,7 @@ class WinForm(QWidget):
         elif args.video == -1:
             for index in range(9):
                 if os.path.exists(f"/sys/class/video4linux/video{index}/name"):
-                    name = open(f"/sys/class/video4linux/video{index}/name", "r").read().strip()
+                    name = open(f"/sys/class/video4linux/video{index}/name").read().strip()
                     if args.camera in name:
                         self.video = index
                         break

@@ -1,21 +1,19 @@
+import glob
 import os
 import sys
-import glob
 from functools import partial
-
 
 from PyQt5.QtCore import QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
-    QLineEdit,
     QDialogButtonBox,
     QGridLayout,
     QLabel,
-    QVBoxLayout,
+    QLineEdit,
     QPushButton,
+    QVBoxLayout,
 )
-
 
 plugin_path = os.path.dirname(__file__)
 
@@ -35,13 +33,13 @@ def info():
 def device_get_name(device_path):
     try:
         f = os.open(device_path, os.O_RDWR)
-    except os.error:
-        return
+    except OSError:
+        return None
     try:
         r = fcntl.ioctl(f, (0x80004506 - 2**32) | (1024 << 16), "\0" * 1024)
         return r.decode("utf-8", errors="replace").rstrip("\0")
-    except os.error:
-        return
+    except OSError:
+        return None
 
 
 ALL_ACTIONS = {
@@ -85,19 +83,11 @@ class config:
             action = selected_label.text()
             while device_events.readable():
                 ev = device_events.read_event()
-                if ev.type == "EV_SYN":
-                    continue
-                elif ev.type == "EV_SND":
-                    continue
-                elif ev.type == "EV_MSC":
-                    continue
-                elif ev.type == "EV_LED":
+                if ev.type == "EV_SYN" or ev.type == "EV_SND" or ev.type == "EV_MSC" or ev.type == "EV_LED":
                     continue
 
                 halname = ev.code.lower().replace("_", "-")
-                if ALL_ACTIONS[action] == "axis" and halname.startswith("abs"):
-                    actions[action].setText(halname)
-                elif ALL_ACTIONS[action] == "button" and halname.startswith("btn"):
+                if (ALL_ACTIONS[action] == "axis" and halname.startswith("abs")) or (ALL_ACTIONS[action] == "button" and halname.startswith("btn")):
                     actions[action].setText(halname)
 
         dialog = QDialog()
@@ -117,7 +107,7 @@ class config:
 
         actions = {}
         row = 1
-        for action, atype in ALL_ACTIONS.items():
+        for action in ALL_ACTIONS:
             actions[action] = ClickableLineEdit()
             actions[action].setText(self.plugin_setup.get(action, ""))
             button = QPushButton(action)
@@ -138,7 +128,7 @@ class config:
         timer.start(300)
 
         if dialog.exec():
-            for action, atype in ALL_ACTIONS.items():
+            for action in ALL_ACTIONS:
                 halname = actions[action].text()
                 if halname:
                     self.plugin_setup[action] = halname
@@ -180,6 +170,7 @@ class config:
 if __name__ == "__main__":
     import json
     import sys
+
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)

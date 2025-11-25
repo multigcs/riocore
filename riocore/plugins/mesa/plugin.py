@@ -1,8 +1,9 @@
-import os
-import shutil
 import copy
 import glob
 import json
+import os
+import shutil
+
 import riocore
 from riocore.plugins import PluginBase
 
@@ -339,13 +340,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             if not os.path.exists(posfile):
                 print(f"ERROR: boardfile not found: {posfile}")
                 return
-            board_pins = json.loads(open(posfile, "r").read())
+            board_pins = json.loads(open(posfile).read())
 
             pinfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.pin")
             if not os.path.exists(pinfile):
                 print(f"ERROR: boardfile not found: {pinfile}")
                 return
-            pindata = open(pinfile, "r").read()
+            pindata = open(pinfile).read()
 
             max_pwms = 0
             max_encoders = 0
@@ -645,7 +646,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             else:
                 cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
             return cmd
-        elif node_type == "sserial":
+        if node_type == "sserial":
             project = riocore.Project(copy.deepcopy(config))
             firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
             cmd = f"cd {firmware_path} && make {command}"
@@ -724,17 +725,16 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     else:
                         psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}"
                     input_pin_n += 1
+                elif connected_pin["name"] == "pwm":
+                    self.pins_pwm.append(pin)
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.pwm-{pwm_pin_n:02d}"
+                    pwm_pin_n += 1
                 else:
-                    if connected_pin["name"] == "pwm":
-                        self.pins_pwm.append(pin)
-                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.pwm-{pwm_pin_n:02d}"
-                        pwm_pin_n += 1
-                    else:
-                        self.pins_output.append(pin)
-                        if inverted:
-                            self.output_inverts.append(f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}")
-                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
-                        output_pin_n += 1
+                    self.pins_output.append(pin)
+                    if inverted:
+                        self.output_inverts.append(f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}")
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
+                    output_pin_n += 1
 
     def component_loader(cls, instances):
         output = []
@@ -803,9 +803,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 feedback_halname = f"{self.PREFIX}.position-fb"
                 enable_halname = f"{self.PREFIX}.enable"
                 scale_halname = f"{self.PREFIX}.position-scale"
-                parent.halg.joint_add(
-                    parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num
-                )
+                parent.halg.joint_add(parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num)
                 parent.halg.setp_add(f"{self.PREFIX}.control-type", "1")
                 parent.halg.setp_add(f"{self.PREFIX}.step_type", "0")
 
@@ -864,7 +862,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                 output = []
                 source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
-                for line in open(source, "r").read().split("\n"):
+                for line in open(source).read().split("\n"):
                     if line.strip() == "//defines":
                         output.append(f'#define BOARD "{board}"')
                         if board == "8ch":

@@ -4,19 +4,18 @@
 
 import sys
 from functools import partial
-from PyQt5.QtCore import Qt
+
+from PyQt5.QtCore import QRect, QRectF, QTimer, Qt
+from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen
 from PyQt5.QtWidgets import (
     QApplication,
-    QMainWindow,
     QDoubleSpinBox,
     QHBoxLayout,
     QLabel,
+    QMainWindow,
     QVBoxLayout,
     QWidget,
 )
-
-from PyQt5.QtCore import QRectF, QRect, QTimer
-from PyQt5.QtGui import QPainter, QPen, QBrush, QFont, QColor
 
 
 class HomeAnimation(QWidget):
@@ -271,9 +270,7 @@ class HomeAnimation(QWidget):
         # sense
         painter.setPen(QPen(Qt.black, 2))
         if trigger:
-            if self.invert > 0 and self.slider_pos < (x - self.zero) + 6:
-                painter.setPen(QPen(Qt.red, 2))
-            elif self.invert < 0 and self.slider_pos * self.invert > (x - self.zero) + 1:
+            if (self.invert > 0 and self.slider_pos < (x - self.zero) + 6) or (self.invert < 0 and self.slider_pos * self.invert > (x - self.zero) + 1):
                 painter.setPen(QPen(Qt.red, 2))
         painter.drawLine(x, y - 5, x + 38, y)
         painter.drawLine(x - 5, y - 3, x, y - 5)

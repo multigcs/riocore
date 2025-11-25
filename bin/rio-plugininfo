@@ -27,32 +27,32 @@ if args.list:
         plugins.load_plugins({"plugins": [{"type": plugin["name"]}]})
 
     print("Interfaces:")
-    print("")
+    print()
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "interface":
             print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
-    print("")
+    print()
 
     print("Expansions:")
-    print("")
+    print()
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "expansion":
             print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
-    print("")
+    print()
 
     print("Joints:")
-    print("")
+    print()
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "joint":
             print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
-    print("")
+    print()
 
     print("IO:")
-    print("")
+    print()
     for plugin_instance in plugins.plugin_instances:
         if plugin_instance.TYPE == "io":
             print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
-    print("")
+    print()
 
 elif args.generate:
     plugins = riocore.Plugins()
@@ -83,7 +83,7 @@ elif args.generate:
         # text.append("")
 
         for plugin_instance in plugins.plugin_instances:
-            if plugin_instance.TYPE == ptype:
+            if ptype == plugin_instance.TYPE:
                 image = ""
                 plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
                 image_path = os.path.join(plugin_path, "image.png")

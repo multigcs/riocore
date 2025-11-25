@@ -1,9 +1,9 @@
 import importlib
-import sys
 import os
 import re
 import shutil
 import subprocess
+import sys
 
 
 class Toolchain:
@@ -190,9 +190,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                     f"	nextpnr-himbaechel {nextpnr_logging} --timing-allow-fail --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${{DEVICE_FAMILY}}"
                 )
             else:
-                makefile_data.append(
-                    f"	nextpnr-gowin {nextpnr_logging} --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst"
-                )
+                makefile_data.append(f"	nextpnr-gowin {nextpnr_logging} --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst")
             makefile_data.append('	@echo ""')
             makefile_data.append(f"	@{cmd_loggrep}")
             makefile_data.append('	@echo ""')
@@ -206,9 +204,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append("")
         else:
             makefile_data.append("$(PROJECT).asc: $(PROJECT).json pins.pcf")
-            makefile_data.append(
-                f"	nextpnr-$(FAMILY) {nextpnr_logging} --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc"
-            )
+            makefile_data.append(f"	nextpnr-$(FAMILY) {nextpnr_logging} --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --pcf pins.pcf --asc $(PROJECT).asc")
             makefile_data.append('	@echo ""')
             makefile_data.append(f"	@{cmd_loggrep}")
             makefile_data.append('	@echo ""')

@@ -1,11 +1,12 @@
-import os
 import json
+import os
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
+    QCheckBox,
     QComboBox,
     QDialog,
-    QCheckBox,
     QDialogButtonBox,
     QDoubleSpinBox,
     QGridLayout,
@@ -15,13 +16,12 @@ from PyQt5.QtWidgets import (
     QPlainTextEdit,
     QPushButton,
     QSpinBox,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
-    QTabWidget,
 )
-
 
 DEVICE_TEMPLATES = {
     "NT18B07": {
@@ -401,14 +401,12 @@ class config:
             else:
                 value = data["default"]
             if data["type"] == "combo":
-                for n in range(0, data["widget"].count()):
+                for n in range(data["widget"].count()):
                     if data["widget"].itemText(n) == value or data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
             elif data["type"] is bool:
                 data["widget"].setChecked(value)
-            elif data["type"] is int:
-                data["widget"].setValue(value)
-            elif data["type"] is float:
+            elif data["type"] is int or data["type"] is float:
                 data["widget"].setValue(value)
             else:
                 data["widget"].setText(str(value))
@@ -435,9 +433,7 @@ class config:
                     value = int(value)
             elif data["type"] is bool:
                 value = data["widget"].isChecked()
-            elif data["type"] is int:
-                value = data["widget"].value()
-            elif data["type"] is float:
+            elif data["type"] is int or data["type"] is float:
                 value = data["widget"].value()
             else:
                 value = data["widget"].text()
@@ -477,14 +473,12 @@ class config:
             else:
                 value = self.config[config_name].get(name, data["default"])
             if data["type"] == "combo":
-                for n in range(0, data["widget"].count()):
+                for n in range(data["widget"].count()):
                     if data["widget"].itemText(n) == value or data["widget"].itemText(n).startswith(f"{value} "):
                         data["widget"].setCurrentIndex(n)
             elif data["type"] is bool:
                 data["widget"].setChecked(value)
-            elif data["type"] is int:
-                data["widget"].setValue(value)
-            elif data["type"] is float:
+            elif data["type"] is int or data["type"] is float:
                 data["widget"].setValue(value)
             else:
                 data["widget"].setText(str(value))
@@ -499,7 +493,7 @@ class config:
     def on_type_change(self, item):
         ctype = self.widgets["type"]["widget"].currentText().split()[0]
         is_special = int(ctype) > 100
-        for name, data in self.widgets.items():
+        for data in self.widgets.values():
             if is_special and not data.get("on_special", True):
                 data["widget"].setEnabled(False)
             else:
@@ -705,6 +699,7 @@ class config:
 if __name__ == "__main__":
     import json
     import sys
+
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)

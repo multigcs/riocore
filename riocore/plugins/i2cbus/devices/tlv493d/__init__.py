@@ -90,12 +90,11 @@ class i2c_device:
 
         if self.offsets_cnt > 0:
             self.offsets_cnt -= 1
+        elif signal_name not in self.offsets:
+            self.offsets[signal_name] = value
+            print("", signal_name, value)
         else:
-            if signal_name not in self.offsets:
-                self.offsets[signal_name] = value
-                print("", signal_name, value)
-            else:
-                value -= self.offsets[signal_name]
+            value -= self.offsets[signal_name]
 
         return value
 

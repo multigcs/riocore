@@ -1,8 +1,7 @@
-import sys
 import os
+import sys
 
 import hal
-
 from PyQt5.QtWidgets import QDialog
 from PyQt5.uic import loadUi
 

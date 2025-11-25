@@ -1,9 +1,9 @@
 import importlib
-import re
-import sys
 import os
+import re
 import shutil
 import subprocess
+import sys
 
 
 class Toolchain:
@@ -129,7 +129,7 @@ class Toolchain:
         for verilog in self.config["verilog_files"]:
             source = os.path.join(path, verilog)
             if os.path.isfile(source):
-                modules.append(open(source, "r").read())
+                modules.append(open(source).read())
             else:
                 print(f"ERROR: missing file: {source}")
         open(os.path.join(path, "rio-modules.v"), "w").write("\n\n".join(modules))

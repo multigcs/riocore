@@ -3,16 +3,16 @@
 #
 
 import glob
-import os
-import json
 import importlib
 import inspect
-from riocore.modifiers import Modifiers
+import json
+import os
 
+from riocore.modifiers import Modifiers
 
 examples = {}
 for cpath in sorted(glob.glob(os.path.join("riocore", "configs", "*", "config.json"))):
-    cjdata = open(cpath, "r").read()
+    cjdata = open(cpath).read()
     cdata = json.loads(cjdata)
 
 print("# TOOLCHAINS")
@@ -99,7 +99,7 @@ for name, data in Modifiers().info().items():
             oinfo = option.get("help_text", "")
             if inspect.isclass(otype):
                 otype = otype.__name__
-            output.append(f"| {title} | {str(otype)} | {default} | {oinfo} |")
+            output.append(f"| {title} | {otype!s} | {default} | {oinfo} |")
         output.append("")
 
 output.append("")

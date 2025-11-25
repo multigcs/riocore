@@ -33,7 +33,7 @@ class Plugin(PluginBase):
             if axis.upper() in parent.project.axis_dict:
                 axis_config = parent.project.axis_dict.get(axis.upper())
                 joints = axis_config["joints"]
-                for joint, joint_setup in joints.items():
+                for joint in joints:
                     parent.halg.net_add(f"robojog.joint.{joint}.jog-counts", f"joint.{joint}.jog-counts")
                     parent.halg.net_add(f"joint.{joint}.pos-fb", f"robojog.joint.{joint}.position")
                     parent.halg.setp_add(f"robojog.joint.{joint}.max_limit", 1500.0)

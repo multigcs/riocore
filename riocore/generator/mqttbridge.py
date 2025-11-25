@@ -1,5 +1,6 @@
 import os
 import stat
+
 from riocore.generator.cbase import cbase
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -158,9 +159,7 @@ body {
                             output.append(f"        <td>{unit}</td>")
                         output.append(f'        <td><input type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}" value="0" /></td>')
                     if vmin < 0:
-                        output.append(
-                            f'        <td><button onclick="document.getElementById(\'{self.mqttname(halname)}\').value = 0;" id="{self.mqttname(halname)}_zero" type="button">0</button></td>'
-                        )
+                        output.append(f'        <td><button onclick="document.getElementById(\'{self.mqttname(halname)}\').value = 0;" id="{self.mqttname(halname)}_zero" type="button">0</button></td>')
                     output.append("      </tr>")
                 elif direction == "input":
                     output.append("      <tr>")

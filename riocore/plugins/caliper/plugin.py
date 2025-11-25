@@ -63,8 +63,7 @@ both on the image are working
                 value = 1048576 - value
             if self.signals()["mode"]["value"] == 0:
                 return value / 100.0
-            else:
-                return value / 2000.0 * 25.4
+            return value / 2000.0 * 25.4
         return value
 
     def convert_c(self, signal_name, signal_setup):

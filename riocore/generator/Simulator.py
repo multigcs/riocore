@@ -1,8 +1,8 @@
 import glob
-import sys
 import os
-import stat
 import shutil
+import stat
+import sys
 
 from riocore.generator import cclient
 
@@ -95,7 +95,7 @@ class Simulator:
         if protocol == "UDP":
             for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
                 if protocol == ppath.split(os.sep)[-2]:
-                    rdata = open(ppath, "r").read()
+                    rdata = open(ppath).read()
                     rdata = rdata.replace("rtapi_print", "printf")
                     rdata = rdata.replace("strerror(errno)", '"error"')
                     rdata = rdata.replace("errno", "1")

@@ -1,40 +1,37 @@
-import os
-import json
-import subprocess
-import difflib
-
-
 import copy
+import difflib
+import json
+import os
+import subprocess
 from functools import partial
 
 from PyQt5.QtCore import QMimeData, QTimer, Qt
-from PyQt5.QtGui import QColor, QDrag, QTextCursor, QStandardItemModel, QPixmap
+from PyQt5.QtGui import QColor, QDrag, QPixmap, QStandardItemModel, QTextCursor
 from PyQt5.QtWidgets import (
-    QWidgetItem,
-    QSpacerItem,
-    QTreeView,
-    QTabWidget,
-    QLineEdit,
-    QSplitter,
-    QPlainTextEdit,
+    QDialog,
     QDialogButtonBox,
-    QScrollArea,
     QDoubleSpinBox,
-    QTableWidget,
-    QTableWidgetItem,
+    QHBoxLayout,
     QHeaderView,
     QLabel,
+    QLineEdit,
+    QPlainTextEdit,
     QPushButton,
+    QScrollArea,
+    QSpacerItem,
+    QSplitter,
+    QTabWidget,
+    QTableWidget,
+    QTableWidgetItem,
+    QTreeView,
     QVBoxLayout,
-    QHBoxLayout,
     QWidget,
-    QDialog,
+    QWidgetItem,
 )
 
-
 import riocore
-from riocore.gui.widgets import MyStandardItem
 from riocore.gui.home_helper import HomeAnimation
+from riocore.gui.widgets import MyStandardItem
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -91,7 +88,7 @@ class TabBuilder:
     def runTimer(self):
         running = False
         if "generator" in self.compile_sub:
-            logdata = open("/tmp/buildlog", "r").read()
+            logdata = open("/tmp/buildlog").read()
             if self.output["generator"].verticalScrollBar().maximum() == self.output["generator"].verticalScrollBar().value():
                 self.output["generator"].setPlainText(logdata)
                 self.output["generator"].verticalScrollBar().setValue(self.output["generator"].verticalScrollBar().maximum())
@@ -109,7 +106,7 @@ class TabBuilder:
                 if not plugin_instance.BUILDER:
                     continue
                 if plugin_instance.instances_name in self.compile_sub:
-                    logdata = open(f"/tmp/buildlog-{plugin_instance.instances_name}", "r").read()
+                    logdata = open(f"/tmp/buildlog-{plugin_instance.instances_name}").read()
                     if self.output[plugin_instance.instances_name].verticalScrollBar().maximum() == self.output[plugin_instance.instances_name].verticalScrollBar().value():
                         self.output[plugin_instance.instances_name].setPlainText(logdata)
                         self.output[plugin_instance.instances_name].verticalScrollBar().setValue(self.output[plugin_instance.instances_name].verticalScrollBar().maximum())
@@ -340,13 +337,7 @@ class TabDrawing:
                 continue
             filter_string = filter_string.lower()
 
-            if filter_string in plugin_name.lower():
-                plugins.append(plugin_data)
-            elif filter_string in plugin_data["description"].lower():
-                plugins.append(plugin_data)
-            elif filter_string in plugin_data["info"].lower():
-                plugins.append(plugin_data)
-            elif filter_string in plugin_data["keywords"].lower():
+            if filter_string in plugin_name.lower() or filter_string in plugin_data["description"].lower() or filter_string in plugin_data["info"].lower() or filter_string in plugin_data["keywords"].lower():
                 plugins.append(plugin_data)
 
         ptypes = set()
@@ -559,8 +550,6 @@ class TabAxis:
                 if f"{joint}_{key.lower()}" in self.widgets:
                     self.widgets[f"{joint}_{key.lower()}"].setValue(value)
 
-        return
-
     def scale_calc(self, scale_key):
         dialog = QDialog()
         dialog.setWindowTitle("Scale-Calculator")
@@ -669,7 +658,6 @@ class TabAxis:
         dialog.layout.addWidget(dialog_buttonBox)
         if dialog.exec():
             self.widgets[scale_key].setValue(dialog.scale_value)
-        return
 
     def reload(self, config):
         self.widgets = {}
@@ -1088,9 +1076,7 @@ class TabOptions:
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(os.path.join(riocore_path, path)):
-            return os.path.join(riocore_path, path)
-        elif os.path.exists(os.path.join(riocore_path, "riocore", path)):
+        if os.path.exists(os.path.join(riocore_path, path)) or os.path.exists(os.path.join(riocore_path, "riocore", path)):
             return os.path.join(riocore_path, path)
         riocore.log(f"can not find path: {path}")
         # exit(1)
@@ -1232,7 +1218,7 @@ class TabOptions:
         nrows = self.hal_table.rowCount()
         self.config["linuxcnc"]["net"] = []
         self.config["linuxcnc"]["setp"] = {}
-        for row in range(0, nrows):
+        for row in range(nrows):
             if self.hal_table.item(row, 0) and self.hal_table.item(row, 1):
                 source = str(self.hal_table.item(row, 0).text())
                 target = str(self.hal_table.item(row, 1).text())
@@ -1249,7 +1235,7 @@ class TabOptions:
         # plugin signals
         nrows = self.phal_table.rowCount()
         signals = {}
-        for row in range(0, nrows):
+        for row in range(nrows):
             if self.phal_table.item(row, 1) and self.phal_table.item(row, 2):
                 uid = str(self.phal_table.item(row, 0).text())
                 source = str(self.phal_table.item(row, 1).text())

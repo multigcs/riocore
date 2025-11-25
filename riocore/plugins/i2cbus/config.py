@@ -1,16 +1,16 @@
 import glob
-import graphviz
 import importlib
 import os
 import sys
 
+import graphviz
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
     QAbstractScrollArea,
+    QCheckBox,
     QComboBox,
     QDialog,
-    QCheckBox,
     QDialogButtonBox,
     QDoubleSpinBox,
     QHBoxLayout,
@@ -24,7 +24,7 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
-from riocore.gui.widgets import MyQSvgWidget, STYLESHEET_CHECKBOX
+from riocore.gui.widgets import STYLESHEET_CHECKBOX, MyQSvgWidget
 
 plugin_path = os.path.dirname(__file__)
 
@@ -86,9 +86,7 @@ class config:
                     value |= 1 << ((bitwidth - 1) - bit_n)
         elif data["type"] is bool:
             value = data["widget"].isChecked()
-        elif data["type"] is int:
-            value = data["widget"].value()
-        elif data["type"] is float:
+        elif data["type"] is int or data["type"] is float:
             value = data["widget"].value()
         else:
             value = data["widget"].text()
@@ -99,7 +97,7 @@ class config:
             data["widget"] = QComboBox()
             for option in data["options"]:
                 data["widget"].addItem(option)
-            for n in range(0, data["widget"].count()):
+            for n in range(data["widget"].count()):
                 if data["widget"].itemText(n) == value:
                     data["widget"].setCurrentIndex(n)
 
@@ -115,7 +113,7 @@ class config:
                 vwidget.setLayout(vlayout)
                 bcheck = QCheckBox()
                 bcheck.setStyleSheet(STYLESHEET_CHECKBOX)
-                bcheck.setChecked((value & (1 << bit)))
+                bcheck.setChecked(value & (1 << bit))
                 data["bits"].append(bcheck)
                 vlayout.addWidget(QLabel(f"{bit}"), stretch=0)
                 vlayout.addWidget(bcheck, stretch=0)
@@ -277,7 +275,7 @@ class config:
                 self.widgets["address"]["widget"].addItem(option)
 
             value = self.config["devices"].get(config_name, {}).get("address", data["default"])
-            for n in range(0, self.widgets["address"]["widget"].count()):
+            for n in range(self.widgets["address"]["widget"].count()):
                 if self.widgets["address"]["widget"].itemText(n) == value:
                     self.widgets["address"]["widget"].setCurrentIndex(n)
 
@@ -546,6 +544,7 @@ class config:
 if __name__ == "__main__":
     import json
     import sys
+
     from PyQt5.QtWidgets import QApplication
 
     app = QApplication(sys.argv)

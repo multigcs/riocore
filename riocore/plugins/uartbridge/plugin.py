@@ -1,4 +1,5 @@
 import os
+import sys
 
 from riocore.checksums import crc8, crc16
 from riocore.plugins import PluginBase
@@ -173,18 +174,18 @@ class Plugin(PluginBase):
 
         if rx_buffersize < self.rx_buffersize:
             print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {self.rx_buffersize}")
-            exit(1)
+            sys.exit(1)
         if tx_buffersize < self.tx_buffersize:
             print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {self.tx_buffersize}")
-            exit(1)
+            sys.exit(1)
 
         if (rx_buffersize % 8) != 0:
             print(f"ERROR: {self.NAME}: rx_buffersize must be a multiple of 8: {rx_buffersize}")
-            exit(1)
+            sys.exit(1)
 
         if (tx_buffersize % 8) != 0:
             print(f"ERROR: {self.NAME}: tx_buffersize must be a multiple of 8: {tx_buffersize}")
-            exit(1)
+            sys.exit(1)
 
         self.INTERFACE = {
             "rxdata": {
@@ -251,11 +252,11 @@ class Plugin(PluginBase):
                             signal_bfmt = signal_setup["signal_bfmt"]
                             bytesize = signal_size // 8
                             if signal_bfmt == "lsb":
-                                for byte in range(0, bytesize):
+                                for byte in range(bytesize):
                                     byte_value = frame_data_csum.pop(0)
                                     csum.update(byte_value)
                             else:
-                                for byte in range(0, signal_size // 8):
+                                for byte in range(signal_size // 8):
                                     byte_value = frame_data_csum.pop(0)
                                     csum.update(byte_value)
 
@@ -268,11 +269,11 @@ class Plugin(PluginBase):
                             signal_bfmt = signal_setup["signal_bfmt"]
                             bytesize = signal_size // 8
                             if signal_bfmt == "lsb":
-                                for byte in range(0, bytesize):
+                                for byte in range(bytesize):
                                     byte_value = frame_data.pop(0)
                                     value += byte_value << (8 * byte)
                             else:
-                                for byte in range(0, signal_size // 8):
+                                for byte in range(signal_size // 8):
                                     byte_value = frame_data.pop(0)
                                     value += byte_value << (8 * (bytesize - byte - 1))
                             signal_setup["value"] = value
@@ -305,11 +306,11 @@ class Plugin(PluginBase):
                 signal_bfmt = signal_setup["signal_bfmt"]
                 bytesize = signal_size // 8
                 if signal_bfmt == "lsb":
-                    for byte in range(0, bytesize):
+                    for byte in range(bytesize):
                         byte_value = (value >> (8 * byte)) & 0xFF
                         frame_data.append(byte_value)
                 else:
-                    for byte in range(0, signal_size // 8):
+                    for byte in range(signal_size // 8):
                         byte_value = (value >> (8 * (bytesize - byte - 1))) & 0xFF
                         frame_data.append(byte_value)
 

@@ -1,20 +1,19 @@
 from functools import partial
 
-from riocore.modifiers import Modifiers
-
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-    QHeaderView,
     QDialog,
     QDialogButtonBox,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
 )
+
+from riocore.modifiers import Modifiers
 
 
 class GuiModifiers:

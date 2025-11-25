@@ -198,15 +198,14 @@ class i2c_device:
             return f"""
             value = {self.frequency} * 4095 * value / 1000;
             """
-        elif self.units == "rc %":
+        if self.units == "rc %":
             return """
             value = {self.frequency} * 4095 * (1 / 100 * value + 1.0) / 1000;
             """
-        elif self.units == "rc arc":
+        if self.units == "rc arc":
             return """
             value = {self.frequency} * 4095 * (1 / 180 * value + 1.0) / 1000;
             """
-        else:
-            return """
+        return """
             value = value * 4095 / 100;
             """

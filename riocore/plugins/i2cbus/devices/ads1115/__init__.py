@@ -193,36 +193,35 @@ class i2c_device:
                 float tempC = tempK - 273.15;
                 value = tempC;
             """
-        elif sensor == "pressure":
+        if sensor == "pressure":
             return """
             value = (int16_t)value>>3;
             value /= 1000.0;
             value -= 0.56;
             value *= 2.57;
             """
-        elif sensor == "5A":
+        if sensor == "5A":
             return f"""
             value = (int16_t)value>>3;
             value /= 1000.0;
             value -= {(self.reference / 2.0)};
             value *= (5.0 / {(self.reference / 2.0)});
             """
-        elif sensor == "20A":
+        if sensor == "20A":
             return f"""
             value = (int16_t)value>>3;
             value /= 1000.0;
             value -= {(self.reference / 2.0)};
             value *= (20.0 / {(self.reference / 2.0)});
             """
-        elif sensor == "30A":
+        if sensor == "30A":
             return f"""
             value = (int16_t)value>>3;
             value /= 1000.0;
             value -= {(self.reference / 2.0)};
             value *= (30.0 / {(self.reference / 2.0)});
             """
-        else:
-            return """
+        return """
             value = (int16_t)value>>3;
             value /= 1000.0;
             """

@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, pyqtProperty, QPointF
-from PyQt5.QtGui import QRadialGradient, QBrush, QPainter
+from PyQt5.QtCore import QPointF, Qt, pyqtProperty
+from PyQt5.QtGui import QBrush, QPainter, QRadialGradient
 from PyQt5.QtWidgets import QPushButton
 
 

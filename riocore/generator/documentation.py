@@ -1,10 +1,9 @@
-import shutil
 import json
 import os
+import shutil
 
 import riocore
 from riocore.gui import halgraph
-
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -163,9 +162,7 @@ class documentation:
                 self.struct_clean(data[key])
                 if not data[key]:
                     del data[key]
-            elif data[key] is None:
-                del data[key]
-            elif key in {"instance", "homeswitch"}:
+            elif data[key] is None or key in {"instance", "homeswitch"}:
                 del data[key]
 
     def json_md(self):
@@ -195,7 +192,7 @@ class documentation:
         for plugin_type in self.plugin_infos:
             for instances_name in sorted(plugin_names):
                 plugin_instance = plugin_names[instances_name]
-                if plugin_instance.NAME != plugin_type:
+                if plugin_type != plugin_instance.NAME:
                     continue
                 for signal_name, signal_config in plugin_instance.signals().items():
                     userconfig = signal_config.get("userconfig") or {}
@@ -222,7 +219,7 @@ class documentation:
                     if not net:
                         continue
 
-                    if plugin_instance.NAME != last_type:
+                    if last_type != plugin_instance.NAME:
                         ptype = plugin_instance.NAME
                     if instances_name != last_plugin:
                         pname = instances_name
@@ -269,14 +266,14 @@ class documentation:
         for plugin_type in self.plugin_infos:
             for instances_name in sorted(plugin_names):
                 plugin_instance = plugin_names[instances_name]
-                if plugin_instance.NAME != plugin_type:
+                if plugin_type != plugin_instance.NAME:
                     continue
                 for pin_name, pin_config in plugin_instance.pins().items():
                     row = []
                     pname = ""
                     ptype = ""
 
-                    if plugin_instance.NAME != last_type:
+                    if last_type != plugin_instance.NAME:
                         ptype = plugin_instance.NAME
                     if instances_name != last_plugin:
                         pname = instances_name
@@ -399,7 +396,7 @@ body {font-family: Arial;}
             if os.path.exists(md_path):
                 output.append(f'<div id="{section}" class="tabcontent">')
                 output.append("<github-md>")
-                output.append(open(md_path, "r").read())
+                output.append(open(md_path).read())
                 output.append("</github-md>")
                 output.append("</div>")
         output.append("</body>")

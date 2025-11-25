@@ -1,4 +1,5 @@
 import time
+
 from riocore.plugins import PluginBase
 
 
@@ -491,13 +492,7 @@ on TangNano9k:
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        if node_type == "rioencoder":
-            instance_parameter["ClkFrequency"] = self.system_setup["speed"]
-        elif node_type == "panasonic":
-            instance_parameter["ClkFrequency"] = self.system_setup["speed"]
-        elif node_type == "stepperonline":
-            instance_parameter["ClkFrequency"] = self.system_setup["speed"]
-        elif node_type == "t3d":
+        if node_type == "rioencoder" or node_type == "panasonic" or node_type == "stepperonline" or node_type == "t3d":
             instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         elif node_type == "yaskawa":
             instance_parameter["DELAY"] = int(self.plugin_setup.get("delay", self.OPTIONS["delay"]["default"]))
@@ -553,7 +548,7 @@ on TangNano9k:
         if node_type == "rioencoder":
             if signal_name == "temperature":
                 return "value = value / 10;"
-            elif signal_name == "angle":
+            if signal_name == "angle":
                 varname_revs = self.SIGNALS["revs"]["varname"]
                 varname_pos = self.SIGNALS["position"]["varname"]
                 varname_rps = self.SIGNALS["rps"]["varname"]

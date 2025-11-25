@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 #
 #
-"""
-
-loadusr -Wn spacenav ./spnav.py
+"""loadusr -Wn spacenav ./spnav.py
 
 setp spacenav.axis.x.scale -0.2
 setp spacenav.axis.y.scale -0.2
@@ -38,10 +36,11 @@ setp axis.c.jog-scale 0.01
 
 """
 
+import atexit
 import sys
 import time
+
 import spacenav
-import atexit
 
 JOINTS = 6
 DEADBAND = 50

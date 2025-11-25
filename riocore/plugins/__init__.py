@@ -326,7 +326,7 @@ class PluginBase:
         expansion_pins = []
         if self.TYPE == "expansion":
             bits = self.BITS_OUT
-            for num in range(0, bits):
+            for num in range(bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
         else:
             for data_name, data_config in self.interface_data().items():
@@ -337,7 +337,7 @@ class PluginBase:
                     if bits == 1:
                         expansion_pins.append(f"{variable}")
                     else:
-                        for num in range(0, bits):
+                        for num in range(bits):
                             expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
@@ -345,7 +345,7 @@ class PluginBase:
         expansion_pins = []
         if self.TYPE == "expansion":
             bits = self.BITS_IN
-            for num in range(0, bits):
+            for num in range(bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
         else:
             for data_name, data_config in self.interface_data().items():
@@ -356,7 +356,7 @@ class PluginBase:
                     if bits == 1:
                         expansion_pins.append(f"{variable}")
                     else:
-                        for num in range(0, bits):
+                        for num in range(bits):
                             expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 

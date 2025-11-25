@@ -92,7 +92,7 @@ class i2c_device:
             self.directions[bank] = setup.get(f"directions_{bank}", self.options["config"][f"directions_{bank}"]["default"])
             self.inverts[bank] = setup.get(f"inverts_{bank}", self.options["config"][f"inverts_{bank}"]["default"])
             self.pullups[bank] = setup.get(f"pullups_{bank}", self.options["config"][f"pullups_{bank}"]["default"])
-            for bit in range(0, 8):
+            for bit in range(8):
                 if (1 << bit) & self.directions[bank]:
                     directions[bank].append("1'd0")
                     bitlist_out[bank].append(f"{self.name}_{bank}{bit}out")
@@ -110,7 +110,7 @@ class i2c_device:
                     inverts[bank].append("1'd1")
                 else:
                     inverts[bank].append("1'd0")
-            for bit in range(0, 8):
+            for bit in range(8):
                 if (1 << bit) & self.directions[bank]:
                     self.INTERFACE[f"{self.name}_{bank}{bit}out"] = {
                         "size": 1,
@@ -120,7 +120,7 @@ class i2c_device:
                         "direction": "output",
                         "bool": True,
                     }
-            for bit in range(0, 8):
+            for bit in range(8):
                 if not (1 << bit) & self.directions[bank]:
                     self.INTERFACE[f"{self.name}_{bank}{bit}in"] = {
                         "size": 1,

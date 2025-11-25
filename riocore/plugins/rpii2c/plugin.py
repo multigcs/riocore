@@ -1,8 +1,9 @@
 import re
-from riocore.plugins import PluginBase
 
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import QRectF, Qt
 from PyQt5.QtGui import QFont
+
+from riocore.plugins import PluginBase
 
 fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9_-]*):(?P<fmt>[0-9\.]*)(?P<type>[a-z])\}")
 

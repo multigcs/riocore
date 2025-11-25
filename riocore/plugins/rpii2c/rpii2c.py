@@ -12,6 +12,7 @@
 import re
 import sys
 import time
+
 import hal
 import smbus
 
@@ -50,8 +51,8 @@ class hd44780:
         time.sleep(0.0001)
 
     def writecmd(self, cmd):
-        self.write((cmd & 0xF0))
-        self.write(((cmd << 4) & 0xF0))
+        self.write(cmd & 0xF0)
+        self.write((cmd << 4) & 0xF0)
 
     def writedata(self, cmd, mode=0):
         self.write(0x1 | (cmd & 0xF0))

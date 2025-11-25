@@ -51,7 +51,7 @@ class hal_generator:
     def pin2signal(self, pin, target, signal_name=None):
         if pin.startswith("sig:"):
             return pin.split(":", 2)[-1]
-        elif signal_name:
+        if signal_name:
             if pin in self.inputs2signals:
                 if self.inputs2signals[pin]["signal"] != signal_name:
                     print(f"ERROR: pin ({pin}) already exist as signal: {self.inputs2signals[pin]['signal']} (!= {signal_name})")
@@ -235,7 +235,7 @@ class hal_generator:
         }
         if operation not in operations:
             print(f"ERROR: operation '{operation}' not found")
-            return
+            return None
 
         in_name = operations[operation][1]
         out_name = operations[operation][2]
@@ -270,7 +270,7 @@ class hal_generator:
         }
         if opname not in operations:
             print(f"ERROR: operation '{opname}' not found")
-            return
+            return None
         operation = operations[opname][0]
         arg_names = operations[opname][1]
         in_name = operations[opname][2]
@@ -415,24 +415,22 @@ class hal_generator:
                 if pin_info:
                     if pin_info["boolean"]:
                         return bool
-                    elif part.endswith("32"):
+                    if part.endswith("32"):
                         return int
-                    else:
-                        return float
+                    return float
 
             for mode in ("end", "start"):
                 for check, htype in type_map[mode].items():
                     if mode == "end":
                         if part.endswith(check):
                             return htype
-                    else:
-                        if part.startswith(check):
-                            return htype
+                    elif part.startswith(check):
+                        return htype
         return bool
 
     def net_add(self, input_pin, output_pin, signal_name=None):
         if not input_pin or not output_pin:
-            return
+            return None
 
         # if input is a number, then use setp
         if input_pin.replace(".", "").lstrip("-").isnumeric():
@@ -457,7 +455,7 @@ class hal_generator:
                         signame = f"{signame}_not"
 
                 self.net_add(inpin, outpin, signal_name=signame)
-            return
+            return None
 
         # set default operation by type
         haltype = self.get_type([output_pin] + input_pin.split())
@@ -496,18 +494,14 @@ class hal_generator:
     def get_dios(self):
         dios = 16
         for output, data in self.signals_out.items():
-            if data["expression"].startswith("motion.digital-out-"):
-                dios = max(dios, int(data["expression"].split("-", 2)[-1]) + 1)
-            elif data["expression"].startswith("motion.digital-in-"):
+            if data["expression"].startswith("motion.digital-out-") or data["expression"].startswith("motion.digital-in-"):
                 dios = max(dios, int(data["expression"].split("-", 2)[-1]) + 1)
         return dios
 
     def get_aios(self):
         aios = 16
         for output, data in self.signals_out.items():
-            if data["expression"].startswith("motion.analog-out-"):
-                aios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
-            elif data["expression"].startswith("motion.analog-in-"):
+            if data["expression"].startswith("motion.analog-out-") or data["expression"].startswith("motion.analog-in-"):
                 aios = max(aios, int(data["expression"].split("-", 2)[-1]) + 1)
         return aios
 
@@ -638,7 +632,7 @@ class hal_generator:
         postgui_data.append("")
 
         # joints only
-        for joint in range(0, 12):
+        for joint in range(12):
             found = False
             for pin, value in self.setps.items():
                 if f"[JOINT_{joint}]" in str(value):

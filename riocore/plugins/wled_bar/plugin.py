@@ -64,10 +64,8 @@ class Plugin(PluginBase):
             scale = self.plugin_setup.get("scale", 1.0)
             if scale is not None:
                 value *= scale
-            if value < vmin:
-                value = vmin
-            if value > vmax:
-                value = vmax
+            value = max(value, vmin)
+            value = min(value, vmax)
         return value
 
     def convert_c(self, signal_name, signal_setup):

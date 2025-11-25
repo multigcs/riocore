@@ -3,39 +3,38 @@
 #
 
 import argparse
-import math
-import subprocess
-import shutil
 import copy
-import os
 import json
+import math
+import os
+import shutil
+import subprocess
 import sys
-from math import floor, ceil
 from functools import partial
+from math import ceil, floor
 
-from PyQt5.QtCore import Qt, QPoint, QPointF, QRectF, QRect, QSize, QTimer
-from PyQt5.QtGui import QBrush, QPainter, QPen, QFont, QPainterPath, QImage, QPixmap, QColor, QMouseEvent, QTransform
+from PyQt5.QtCore import QPoint, QPointF, QRect, QRectF, QSize, QTimer, Qt
+from PyQt5.QtGui import QBrush, QColor, QFont, QImage, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QTransform
 from PyQt5.QtWidgets import (
-    QMessageBox,
-    QFileDialog,
-    QStyle,
-    QMainWindow,
-    QToolBar,
-    QTabWidget,
-    QMenu,
     QAction,
-    QLabel,
     QApplication,
+    QDialog,
+    QFileDialog,
     QGraphicsItem,
+    QGraphicsPathItem,
     QGraphicsScene,
     QGraphicsView,
+    QLabel,
+    QMainWindow,
+    QMenu,
+    QMessageBox,
     QPushButton,
+    QStyle,
+    QTabWidget,
+    QToolBar,
     QVBoxLayout,
     QWidget,
-    QGraphicsPathItem,
-    QDialog,
 )
-
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
@@ -44,26 +43,25 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 
 import riocore
-
-from riocore.gui.loader import ConfigLoader
-from riocore.gui.plugins import GuiPlugins
-from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.flow_tabs import (
     TabAxis,
-    TabOptions,
-    TabDrawing,
     TabBuilder,
+    TabDrawing,
     TabJson,
+    TabOptions,
 )
+from riocore.gui.loader import ConfigLoader
+from riocore.gui.modifiers import GuiModifiers
+from riocore.gui.plugins import GuiPlugins
 from riocore.gui.widgets import (
+    edit_avgfilter,
+    edit_bool,
+    edit_combobox,
     edit_file,
     edit_float,
     edit_int,
-    edit_text,
-    edit_bool,
-    edit_combobox,
-    edit_avgfilter,
     edit_multiline,
+    edit_text,
 )
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -81,7 +79,7 @@ colors = []
 cn = 15
 for s in (Qt.SolidLine, Qt.DashLine, Qt.DotLine, Qt.DashDotLine, Qt.DashDotDotLine):
     o = 0
-    for i in range(0, cn):
+    for i in range(cn):
         hue = i / cn + 1 / cn * o / 10
         lightness = 0.7
         saturation = 0.9 / 5 * (10 - o) / 2
@@ -149,15 +147,12 @@ class NodeEdge(QGraphicsPathItem):
             tangent *= xwidth
             tangent_s *= xwidth
             if xwidth > 0:
-                if xwidth > 20:
-                    xwidth = 20
+                xwidth = min(xwidth, 20)
                 tangent += xwidth
                 tangent_s += xwidth
             else:
-                if tangent > 120:
-                    tangent = 120
-                if tangent_s > 20:
-                    tangent_s = 20
+                tangent = min(tangent, 120)
+                tangent_s = min(tangent_s, 20)
             path.cubicTo(QPointF(source_pos.x() + tangent_s, source_pos.y()), QPointF(target_pos.x() - tangent, target_pos.y()), target_pos)
             self.setPath(path)
         else:
@@ -312,11 +307,10 @@ class MyNode(QGraphicsItem):
                     self.scene.selection_source = None
                 else:
                     self.scene.selection_source = (self, self.port_selected(event.pos()))
+            elif self.scene.selection_target == (self, self.port_selected(event.pos())):
+                self.scene.selection_target = None
             else:
-                if self.scene.selection_target == (self, self.port_selected(event.pos())):
-                    self.scene.selection_target = None
-                else:
-                    self.scene.selection_target = (self, self.port_selected(event.pos()))
+                self.scene.selection_target = (self, self.port_selected(event.pos()))
             if self.selected_port != self.port_selected(event.pos()):
                 self.selected_port = self.port_selected(event.pos())
             else:
@@ -476,11 +470,10 @@ class MyNode(QGraphicsItem):
                 path.addRoundedRect(rect, self.radius, self.radius)
                 painter.setClipPath(path)
                 painter.strokePath(path, painter.pen())
+        elif hasattr(self, "title"):
+            self.paintBg(painter, self.title)
         else:
-            if hasattr(self, "title"):
-                self.paintBg(painter, self.title)
-            else:
-                self.paintBg(painter, self.name)
+            self.paintBg(painter, self.name)
 
         painted_ports = []
         for port_name, port_data in self.ports.items():
@@ -496,11 +489,10 @@ class MyNode(QGraphicsItem):
             if key not in painted_ports:
                 if selected:
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red)
+                elif port_data.get("type") == "SIGNAL":
+                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.green)
                 else:
-                    if port_data.get("type") == "SIGNAL":
-                        self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.green)
-                    else:
-                        self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow)
+                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow)
             painted_ports.append(key)
 
             if not self.pixmap:
@@ -909,9 +901,7 @@ class NodeViewer(QGraphicsView):
         self.setTransform(transform)
 
     def mouseDoubleClickEvent(self, event):
-        if self.scene.hover:
-            super().mouseDoubleClickEvent(event)
-        elif self.scene.edge_hover:
+        if self.scene.hover or self.scene.edge_hover:
             super().mouseDoubleClickEvent(event)
         else:
             self.scene.parent.gui_plugins.add_plugin(None)
@@ -1047,42 +1037,41 @@ class NodeViewer(QGraphicsView):
             self.horizontalScrollBar().setValue(int(self.horizontalScrollBar().value() + dx))
             self.verticalScrollBar().setValue(int(self.verticalScrollBar().value() + dy))
 
-        else:
-            if self.scene.hover:
-                position = QPoint(event.pos())
-                position = self.mapToScene(position.x(), position.y())
-                hovername = self.scene.hover.name
-                if hasattr(self.scene.hover, "title") and self.scene.hover.title != self.scene.hover.name:
-                    hovername = f"{self.scene.hover.title} ({self.scene.hover.name})"
-                hoverpos = self.scene.hover.pos()
-                position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
-                port = self.scene.hover.port_selected(position)
-                tootltip = []
-                if port:
-                    pinfo = self.scene.hover.port_info(port)
-                    info_text = []
-                    info_text.append(f"node: {hovername}")
-                    info_text.append(f"port: {port}")
-                    for key, value in pinfo.items():
-                        info_text.append(f"{key.title()}: {value}")
-                    self.scene.parent.drawingtab.pininfo.setPlainText("\n".join(info_text))
-                    self.scene.parent.info.setText(f"{hovername} - {port}")
-                    tootltip.append(self.scene.hover.name)
-                    tootltip.append(f"{'Pin':10s}: {port}")
+        elif self.scene.hover:
+            position = QPoint(event.pos())
+            position = self.mapToScene(position.x(), position.y())
+            hovername = self.scene.hover.name
+            if hasattr(self.scene.hover, "title") and self.scene.hover.title != self.scene.hover.name:
+                hovername = f"{self.scene.hover.title} ({self.scene.hover.name})"
+            hoverpos = self.scene.hover.pos()
+            position = QPointF(position.x() - hoverpos.x(), position.y() - hoverpos.y())
+            port = self.scene.hover.port_selected(position)
+            tootltip = []
+            if port:
+                pinfo = self.scene.hover.port_info(port)
+                info_text = []
+                info_text.append(f"node: {hovername}")
+                info_text.append(f"port: {port}")
+                for key, value in pinfo.items():
+                    info_text.append(f"{key.title()}: {value}")
+                self.scene.parent.drawingtab.pininfo.setPlainText("\n".join(info_text))
+                self.scene.parent.info.setText(f"{hovername} - {port}")
+                tootltip.append(self.scene.hover.name)
+                tootltip.append(f"{'Pin':10s}: {port}")
 
-                    if pinfo.get("comment2") and not pinfo.get("comment"):
-                        pinfo["comment"] = pinfo["comment2"]
-                        del pinfo["comment2"]
-                    for key, value in pinfo.items():
-                        tootltip.append(f"{key.title():10s}: {value}")
-                elif dev_mode:
-                    self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
-                else:
-                    self.scene.parent.info.setText(f"{hovername}")
-
-                self.scene.hover.setToolTip("\n".join(tootltip))
+                if pinfo.get("comment2") and not pinfo.get("comment"):
+                    pinfo["comment"] = pinfo["comment2"]
+                    del pinfo["comment2"]
+                for key, value in pinfo.items():
+                    tootltip.append(f"{key.title():10s}: {value}")
+            elif dev_mode:
+                self.scene.parent.info.setText(f"{hovername} ({position.x():0.1f} {position.y():0.1f})")
             else:
-                self.scene.parent.info.setText("")
+                self.scene.parent.info.setText(f"{hovername}")
+
+            self.scene.hover.setToolTip("\n".join(tootltip))
+        else:
+            self.scene.parent.info.setText("")
 
         super().mouseMoveEvent(event)
 
@@ -1248,17 +1237,13 @@ class NodeScene(QGraphicsScene):
     def disconnect_port(self, node, port):
         for item in self.items():
             if isinstance(item, NodeEdge):
-                if item._target_node == node and item._target_port == port:
-                    self.removeItem(item)
-                elif item._source_node == node and item._source_port == port:
+                if (item._target_node == node and item._target_port == port) or (item._source_node == node and item._source_port == port):
                     self.removeItem(item)
 
     def disconnect_node(self, node):
         for item in self.items():
             if isinstance(item, NodeEdge):
-                if item._target_node == node:
-                    self.removeItem(item)
-                elif item._source_node == node:
+                if item._target_node == node or item._source_node == node:
                     self.removeItem(item)
 
     def drawBackground(self, painter, rect):
@@ -1333,9 +1318,8 @@ class Window(QMainWindow):
         self.loader = ConfigLoader(self)
         if self.args.config:
             self.config_file = args.config
-        else:
-            if not self.loader.select():
-                exit(1)
+        elif not self.loader.select():
+            exit(1)
 
         self.show()
 
@@ -1536,10 +1520,9 @@ class Window(QMainWindow):
             if confirmation == QMessageBox.Yes:
                 self.json_save()
                 return True
-            elif confirmation == QMessageBox.No:
+            if confirmation == QMessageBox.No:
                 return True
-            else:
-                return False
+            return False
         return True
 
     def struct_clean(self, data):
@@ -1597,9 +1580,7 @@ class Window(QMainWindow):
         return config
 
     def keyPressEvent(self, event):
-        if event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
-            self.undo()
-        elif event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
+        if event.key() in {Qt.Key_Escape, Qt.Key_Backspace} or event.key() in {Qt.Key_Escape, Qt.Key_Backspace}:
             self.undo()
         elif event.key() == Qt.Key_Delete:
             self.delete_selection()
@@ -1620,7 +1601,7 @@ class Window(QMainWindow):
     def cfg_reload(self, widget=None, config=None):
         if config is None:
             if self.config_file is not None:
-                jdata = open(self.config_file, "r").read()
+                jdata = open(self.config_file).read()
                 self.config = json.loads(jdata)
                 self.config_original = self.clean_config(self.config)
             elif self.config:
@@ -1644,7 +1625,7 @@ class Window(QMainWindow):
         if board_name:
             boardpath = os.path.join(riocore_path, "plugins", "fpga", f"{board_name}.json")
             riocore.log(f"INFO: converting board {boardpath} into plugin")
-            data = open(boardpath, "r").read()
+            data = open(boardpath).read()
             board = json.loads(data)
             bdict = {
                 "type": "fpga",
@@ -1786,9 +1767,8 @@ class Window(QMainWindow):
                             plugin_setup["pins"][port]["modifier"] = list(reversed(modifiers))
                         else:
                             plugin_setup["pins"][port]["modifier"] = list(modifiers)
-                    else:
-                        if plugin_setup.get("pins") and port in plugin_setup["pins"]:
-                            del plugin_setup["pins"][port]
+                    elif plugin_setup.get("pins") and port in plugin_setup["pins"]:
+                        del plugin_setup["pins"][port]
         self.cfg_check()
 
     def display(self):
@@ -1923,9 +1903,7 @@ class Window(QMainWindow):
     def get_path(self, path):
         if os.path.exists(path):
             return path
-        elif os.path.exists(os.path.join(riocore_path, path)):
-            return os.path.join(riocore_path, path)
-        elif os.path.exists(os.path.join(riocore_path, "riocore", path)):
+        if os.path.exists(os.path.join(riocore_path, path)) or os.path.exists(os.path.join(riocore_path, "riocore", path)):
             return os.path.join(riocore_path, path)
         riocore.log(f"can not find path: {path}")
         # exit(1)
@@ -1996,7 +1974,7 @@ class Window(QMainWindow):
         first = ["base", "expansion"]
         for ptype in first + [""]:
             for plugin_instance in pluginlist:
-                if plugin_instance.TYPE == ptype or (not ptype and plugin_instance.TYPE not in first):
+                if ptype == plugin_instance.TYPE or (not ptype and plugin_instance.TYPE not in first):
                     py += self.insert_plugin(plugin_instance, py)
                     if plugin_instance.SUB_OF:
                         plugin_instance.SUB_OF.SUB_ITEMS.append(plugin_instance)
@@ -2117,9 +2095,7 @@ class Window(QMainWindow):
                 if group == "base":
                     if not isinstance(item, PluginNode) or item.plugin_instance.TYPE != "base":
                         continue
-                elif not isinstance(item, group):
-                    continue
-                elif isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base":
+                elif not isinstance(item, group) or (isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base"):
                     continue
 
                 px = item.pos().x()
@@ -2388,7 +2364,7 @@ class Window(QMainWindow):
             dialog.layout.addWidget(button_config)
         if dialog.exec():
             return dialog.selection
-        return
+        return None
 
     def add_modifier(self):
         modifier_type = ""
@@ -2434,19 +2410,19 @@ class Window(QMainWindow):
 
         if var_setup["type"] == "select":
             return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
-        elif var_setup["type"] == "multiline":
+        if var_setup["type"] == "multiline":
             return edit_multiline(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"), mul=111)
-        elif var_setup["type"] is int:
+        if var_setup["type"] is int:
             return edit_int(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"))
-        elif var_setup["type"] is float:
+        if var_setup["type"] is float:
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"))
-        elif var_setup["type"] is bool:
+        if var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
-        elif var_setup["type"] == "file":
+        if var_setup["type"] == "file":
             return edit_file(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
-        elif var_setup["type"] == "avgfilter":
+        if var_setup["type"] == "avgfilter":
             return edit_avgfilter(self, obj, key, vmin=0, vmax=10000, cb=cb, help_text=help_text, default=var_setup.get("default"))
-        elif var_setup["type"] == "vpins":
+        if var_setup["type"] == "vpins":
             default = var_setup.get("default")
             options = ["sysclk", "ERROR", "ESTOP", "INTERFACE_SYNC"]
             for plugin_instance in self.plugins.plugin_instances:
@@ -2487,7 +2463,7 @@ class Window(QMainWindow):
         for item in self.scene.items():
             if isinstance(item, NodeEdge) and item._target_node == node and item._target_port == port:
                 return (item._source_node, item._source_port, item)
-            elif isinstance(item, NodeEdge) and item._source_node == node and item._source_port == port:
+            if isinstance(item, NodeEdge) and item._source_node == node and item._source_port == port:
                 return (item._target_node, item._target_port, item)
         return None
 
@@ -2500,8 +2476,7 @@ class Window(QMainWindow):
                     modifiers.append(item._source_node.modifier)
                     source = self.get_source(item._source_node, "in", modifiers)
                     return source
-                else:
-                    return (item._source_node, item._source_port)
+                return (item._source_node, item._source_port)
         return None
 
 

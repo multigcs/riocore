@@ -1,4 +1,5 @@
 import copy
+
 from riocore.plugins import PluginBase
 
 

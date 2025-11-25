@@ -665,11 +665,10 @@ class cbase:
                         break
                 if is_float:
                     output.append(f"    float {variable_name};")
+                elif variable_size < 8:
+                    output.append(f"    uint{variable_size_align}_t {variable_name};")
                 else:
-                    if variable_size < 8:
-                        output.append(f"    uint{variable_size_align}_t {variable_name};")
-                    else:
-                        output.append(f"    int{variable_size_align}_t {variable_name};")
+                    output.append(f"    int{variable_size_align}_t {variable_name};")
             else:
                 output.append(f"    bool {variable_name};")
         output.append("")
@@ -865,21 +864,21 @@ class cbase:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
-                    iface_data = open(ppath, "r").read()
+                    iface_data = open(ppath).read()
         elif protocol == "SPI" and rpi5 is True:
             for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c_rpi5")):
                 if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
-                    iface_data = open(ppath, "r").read()
+                    iface_data = open(ppath).read()
         else:
             for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
                 if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
-                    iface_data = open(ppath, "r").read()
+                    iface_data = open(ppath).read()
         if not self.rtapi_mode:
             iface_data = iface_data.replace("rtapi_print", "printf")
             iface_data = iface_data.replace("strerror(errno)", '"error"')
@@ -916,7 +915,7 @@ class cbase:
         output.append("    hal functions")
         output.append("*/")
         if self.filename_functions:
-            output.append(open(os.path.join(riocore_path, "files", self.filename_functions), "r").read())
+            output.append(open(os.path.join(riocore_path, "files", self.filename_functions)).read())
 
         output.append("")
         output.append("/***********************************************************************")
@@ -959,12 +958,11 @@ class cbase:
                 output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
             else:
                 output.append("    if (1) {")
-        else:
-            if self.rtapi_mode:
-                output.append("    if (*data->sys_enable == 0 || *data->sys_status == 0) {")
-                output.append("        *data->sys_status = 0;")
-                output.append("    }")
-                output.append("    if (1) {")
+        elif self.rtapi_mode:
+            output.append("    if (*data->sys_enable == 0 || *data->sys_status == 0) {")
+            output.append("        *data->sys_status = 0;")
+            output.append("    }")
+            output.append("    if (1) {")
 
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
@@ -1007,9 +1005,7 @@ class cbase:
                 f'                    {self.printf}("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
             )
             output.append("                } else {")
-            output.append(
-                f'                    {self.printf}("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
-            )
+            output.append(f'                    {self.printf}("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
             output.append("                }")
         else:
             output.append(f'            {self.printf}("wronng data (%i/3): ", err_counter);')

@@ -3,11 +3,10 @@
 import os
 import sys
 
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QPixmap
-from PyQt5.uic import loadUi
-
 import linuxcnc as emc
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget
+from PyQt5.uic import loadUi
 
 # from libflexgui import utilities
 # from libflexgui import dialogs

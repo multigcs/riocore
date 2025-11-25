@@ -1,15 +1,14 @@
+import copy
 import hashlib
 import importlib
+import json
+import os
 import shutil
 import stat
 
-import json
-import copy
-import os
-from riocore.plugins import PluginBase
-from riocore.generator.cbase import cbase
-
 import riocore
+from riocore.generator.cbase import cbase
+from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -74,7 +73,7 @@ class Plugin(PluginBase):
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         board_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
-        self.jdata = json.loads(open(board_file, "r").read())
+        self.jdata = json.loads(open(board_file).read())
 
         if self.jdata.get("toolchains"):
             self.OPTIONS.update(
@@ -245,7 +244,7 @@ class gateware:
         os.makedirs(self.jdata["output_path"], exist_ok=True)
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):
-            self.jdata["toolchains_json"] = json.loads(open(toolchains_json_path, "r").read())
+            self.jdata["toolchains_json"] = json.loads(open(toolchains_json_path).read())
             if self.jdata["toolchains_json"]:
                 for toolchain, path in self.jdata["toolchains_json"].items():
                     if path and not os.path.isdir(path):
@@ -404,12 +403,7 @@ class gateware:
                 continue
             self.jdata["pinlists"][plugin_instance.instances_name] = {}
             for pin_name, pin_config in plugin_instance.pins().items():
-                if (
-                    "pin" in pin_config
-                    and pin_config["pin"] not in self.parent.expansion_pins
-                    and pin_config["pin"] not in self.parent.virtual_pins
-                    and pin_config["varname"] not in self.parent.linked_pins
-                ):
+                if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins and pin_config["pin"] not in self.parent.virtual_pins and pin_config["varname"] not in self.parent.linked_pins:
                     pin_config["pin"] = self.parent.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     self.jdata["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
                     if pin_config["pin"] not in pinnames:
@@ -456,8 +450,7 @@ class gateware:
                         if multiplexed:
                             self.multiplexed_input += 1
                             self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
-                            if self.multiplexed_input_size < 8:
-                                self.multiplexed_input_size = 8
+                            self.multiplexed_input_size = max(self.multiplexed_input_size, 8)
                         else:
                             self.input_size += variable_size
                 elif data_config["direction"] == "output":
@@ -465,8 +458,7 @@ class gateware:
                         if multiplexed:
                             self.multiplexed_output += 1
                             self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            if self.multiplexed_output_size < 8:
-                                self.multiplexed_output_size = 8
+                            self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
                         else:
                             self.output_size += variable_size
 
@@ -512,8 +504,7 @@ class gateware:
                         if multiplexed:
                             self.sub_multiplexed_input += 1
                             self.sub_multiplexed_input_size = (max(self.sub_multiplexed_input_size, variable_size) + 7) // 8 * 8
-                            if self.sub_multiplexed_input_size < 8:
-                                self.sub_multiplexed_input_size = 8
+                            self.sub_multiplexed_input_size = max(self.sub_multiplexed_input_size, 8)
                         else:
                             self.sub_input_size += variable_size
                 elif data_config["direction"] == "output":
@@ -521,8 +512,7 @@ class gateware:
                         if multiplexed:
                             self.sub_multiplexed_output += 1
                             self.sub_multiplexed_output_size = (max(self.sub_multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            if self.sub_multiplexed_output_size < 8:
-                                self.sub_multiplexed_output_size = 8
+                            self.sub_multiplexed_output_size = max(self.sub_multiplexed_output_size, 8)
                         else:
                             self.sub_output_size += variable_size
 
@@ -933,11 +923,10 @@ class gateware:
                             output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
                         else:
                             output.append(f"    wire [{variable_size - 1}:0] {variable_name};")
+                    elif multiplexed and direction == "output":
+                        output.append(f"    reg {variable_name};")
                     else:
-                        if multiplexed and direction == "output":
-                            output.append(f"    reg {variable_name};")
-                        else:
-                            output.append(f"    wire {variable_name};")
+                        output.append(f"    wire {variable_name};")
         output.append("")
 
         output_variables_string = "\n    ".join(output_variables_list)
@@ -972,7 +961,7 @@ class gateware:
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            for pin_name, pin_config in plugin_instance.pins().items():
+            for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config:
                     if pin_config["pin"] in self.parent.expansion_pins:
                         if pin_config["direction"] == "input":
@@ -986,7 +975,7 @@ class gateware:
             for plugin_instance in self.parent.project.plugin_instances:
                 if plugin_instance.PLUGIN_TYPE != "gateware":
                     continue
-                for pin_name, pin_config in plugin_instance.pins().items():
+                for pin_config in plugin_instance.pins().values():
                     if "pin" in pin_config:
                         if pin_config["pin"] in self.parent.expansion_pins:
                             if pin_config["direction"] == "output":
@@ -995,7 +984,7 @@ class gateware:
             for plugin_instance in self.parent.project.plugin_instances:
                 if plugin_instance.PLUGIN_TYPE != "gateware":
                     continue
-                for data_name, data_config in plugin_instance.interface_data().items():
+                for data_config in plugin_instance.interface_data().values():
                     if data_config.get("expansion"):
                         direction = data_config["direction"]
                         variable = data_config["variable"]
@@ -1007,7 +996,7 @@ class gateware:
                                 if variable not in used_expansion_outputs:
                                     output_exp.append(f"        {variable} <= {size}'d{default};")
                             else:
-                                for bit_num in range(0, size):
+                                for bit_num in range(size):
                                     bitvar = f"{variable}[{bit_num}]"
                                     if bitvar not in used_expansion_outputs:
                                         if default & (1 << bit_n):
@@ -1149,12 +1138,12 @@ class gateware:
         hash_file_compiled = os.path.join(self.jdata["output_path"], "hash_compiled.txt")
         hash_compiled = ""
         if os.path.isfile(hash_file_compiled):
-            hash_compiled = open(hash_file_compiled, "r").read()
+            hash_compiled = open(hash_file_compiled).read()
 
         hash_file_flashed = os.path.join(self.jdata["output_path"], "hash_flashed.txt")
         hash_flashed = ""
         if os.path.isfile(hash_file_flashed):
-            hash_flashed = open(hash_file_flashed, "r").read()
+            hash_flashed = open(hash_file_flashed).read()
 
         hash_md5 = hashlib.md5()
         with open(os.path.join(self.jdata["output_path"], "rio.v"), "rb") as f:

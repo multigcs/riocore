@@ -2,9 +2,7 @@ import os
 
 from PyQt5.QtCore import QSettings
 from PyQt5.QtGui import QColor
-
-from libflexgui import dialogs
-from libflexgui import utilities
+from libflexgui import dialogs, utilities
 
 
 def read(parent):

@@ -1,28 +1,19 @@
 #!/usr/bin/env python3
 
+import importlib
 import os
 import sys
-import importlib
 
 # disable cache usage must be before any local imports
 # sys.dont_write_bytecode = True
-
 from functools import partial
 
+import hal
+import linuxcnc as emc
+from PyQt5.QtCore import QEvent, QObject, QTimer, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import QObject, Qt, QTimer, QEvent
-
-import linuxcnc as emc
-import hal
-
-from libflexgui import read_ini
-from libflexgui import startup
-from libflexgui import status
-from libflexgui import dialogs
-from libflexgui import commands
-from libflexgui import utilities
-from libflexgui import shutdown
+from libflexgui import commands, dialogs, read_ini, shutdown, startup, status, utilities
 
 
 class KeyboardJog(QObject):
@@ -41,28 +32,28 @@ class KeyboardJog(QObject):
                         commands.keyboard_jog(window, True, 0, "neg")
                         window.keyboard_jogging = True
                         return True  # Consume the event
-                    elif event.key() == Qt.Key.Key_Right:
+                    if event.key() == Qt.Key.Key_Right:
                         # print(f'Qt.Key.Key_Right {event.key()}')
                         commands.keyboard_jog(window, True, 0, "pos")
                         window.keyboard_jogging = True
                         event.ignore()  # Ignore right arrow key event
                         return True  # Consume the event
-                    elif event.key() == Qt.Key.Key_Up:
+                    if event.key() == Qt.Key.Key_Up:
                         # print(f'Qt.Key.Key_Up {event.key()}')
                         commands.keyboard_jog(window, True, 1, "pos")
                         window.keyboard_jogging = True
                         return True  # Consume the event
-                    elif event.key() == Qt.Key.Key_Down:
+                    if event.key() == Qt.Key.Key_Down:
                         # print(f'Qt.Key.Key_Down {event.key()}')
                         commands.keyboard_jog(window, True, 1, "neg")
                         window.keyboard_jogging = True
                         return True  # Consume the event
-                    elif event.key() == Qt.Key.Key_PageUp:
+                    if event.key() == Qt.Key.Key_PageUp:
                         # print(f'Qt.Key.Key_PageUp {event.key()}')
                         commands.keyboard_jog(window, True, 2, "pos")
                         window.keyboard_jogging = True
                         return True  # Consume the event
-                    elif event.key() == Qt.Key.Key_PageDown:
+                    if event.key() == Qt.Key.Key_PageDown:
                         # print(f'Qt.Key.Key_PageDown {event.key()}')
                         commands.keyboard_jog(window, True, 2, "neg")
                         window.keyboard_jogging = True
@@ -198,7 +189,7 @@ class flexgui(QMainWindow):
 
         if stylesheet:
             if os.path.isfile(stylesheet):
-                with open(stylesheet, "r") as f:
+                with open(stylesheet) as f:
                     self.setStyleSheet(f.read())
             else:
                 msg = f"The Stylesheet {stylesheet}\nwas not found."

@@ -146,14 +146,13 @@ gpio modes:
                     psetup["pin"] = f"hal_pi_gpio.pin-{pin_number:02d}-out"
                 elif direction == "input":
                     psetup["pin"] = f"hal_pi_gpio.pin-{pin_number:02d}-in"
-            else:
-                if direction == "output":
-                    psetup["pin"] = f"hal_gpio.{pin}-out"
-                elif direction == "input":
-                    if inverted:
-                        psetup["pin"] = f"hal_gpio.{pin}-in-not"
-                    else:
-                        psetup["pin"] = f"hal_gpio.{pin}-in"
+            elif direction == "output":
+                psetup["pin"] = f"hal_gpio.{pin}-out"
+            elif direction == "input":
+                if inverted:
+                    psetup["pin"] = f"hal_gpio.{pin}-in-not"
+                else:
+                    psetup["pin"] = f"hal_gpio.{pin}-in"
 
     def component_loader(cls, instances):
         gpio_mode = instances[0].plugin_setup.get("mode", instances[0].option_default("mode"))

@@ -6,9 +6,7 @@ from math import pi
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.uic import loadUi
-
-from libflexgui import utilities
-from libflexgui import dialogs
+from libflexgui import dialogs, utilities
 
 
 class fs_calc(QWidget):
@@ -36,10 +34,9 @@ class fs_calc(QWidget):
             return False
         if utilities.is_float(self.fsc_chip_load_le.text()):
             return float(self.fsc_chip_load_le.text())
-        else:
-            msg = "Chip Load is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "Chip Load is not a valid number"
+        print(msg, "Error")
+        return False
 
     def check_feed(self):
         if self.fsc_feed_le.text() == "":
@@ -48,10 +45,9 @@ class fs_calc(QWidget):
             return False
         if utilities.is_float(self.fsc_feed_le.text()):
             return float(self.fsc_feed_le.text())
-        else:
-            msg = "Feed is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "Feed is not a valid number"
+        print(msg, "Error")
+        return False
 
     def check_rpm(self):
         if self.fsc_rpm_le.text() == "":
@@ -60,10 +56,9 @@ class fs_calc(QWidget):
             return False
         if utilities.is_float(self.fsc_rpm_le.text()):
             return float(self.fsc_rpm_le.text())
-        else:
-            msg = "RPM is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "RPM is not a valid number"
+        print(msg, "Error")
+        return False
 
     def check_flutes(self):
         if self.fsc_flutes_le.text() == "":
@@ -72,10 +67,9 @@ class fs_calc(QWidget):
             return False
         if utilities.is_int(self.fsc_flutes_le.text()):
             return int(self.fsc_flutes_le.text())
-        else:
-            msg = "Flutes is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "Flutes is not a valid number"
+        print(msg, "Error")
+        return False
 
     def check_dia(self):
         if self.fsc_diameter_le.text() == "":
@@ -84,10 +78,9 @@ class fs_calc(QWidget):
             return False
         if utilities.is_float(self.fsc_diameter_le.text()):
             return float(self.fsc_diameter_le.text())
-        else:
-            msg = "Diameter is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "Diameter is not a valid number"
+        print(msg, "Error")
+        return False
 
     def calc_cl(self):
         feed = self.check_feed()

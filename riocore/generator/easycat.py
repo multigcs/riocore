@@ -1,5 +1,6 @@
 import os
 import stat
+
 from riocore.generator.cbase import cbase
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
@@ -493,9 +494,8 @@ uint32_t fpga_timestamp = 0;
         # if force_mem or vname.endswith("_SCALE") or vname.endswith("_OFFSET") or vname.endswith("_S32") or vname.endswith("_ABS"):
         if force_mem or vname.endswith("_OFFSET") or vname.endswith("_S32") or vname.endswith("_ABS"):
             return f"    data->{vname} = ({vtype}*)malloc(sizeof({vtype}));"
+        if vname.endswith("_SCALE") or vname.endswith("_OFFSET"):
+            bdir = "Out"
         else:
-            if vname.endswith("_SCALE") or vname.endswith("_OFFSET"):
-                bdir = "Out"
-            else:
-                bdir = vdir.title().replace("put", "")
-            return f"    data->{vname} = &EASYCAT.Buffer{bdir}.{vname};"
+            bdir = vdir.title().replace("put", "")
+        return f"    data->{vname} = &EASYCAT.Buffer{bdir}.{vname};"

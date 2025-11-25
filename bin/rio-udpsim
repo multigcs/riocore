@@ -2,10 +2,10 @@
 #
 #
 
-from struct import pack, unpack
 import os
 import socket
 import sys
+from struct import pack, unpack
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
     sys.path.insert(0, os.getcwd())
@@ -153,7 +153,7 @@ def display(project):
                 print(f">{title}: {frame_seq:03d} {frame_data}")
             else:
                 print(f">{title}: {value}")
-    print("")
+    print()
 
 
 def simulate(project):
@@ -219,7 +219,7 @@ def transmit(project):
         variable_size = 8
         byte_start, byte_size, bit_offset = project.get_bype_pos(output_pos, variable_size)
         byte_start = project.buffer_bytes - 1 - byte_start
-        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(0)))[0:byte_size]
+        txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", 0))[0:byte_size]
         output_pos -= variable_size
 
         # print("< MULTIPLEXED", [0] * (variable_size // 8))
@@ -245,9 +245,8 @@ def transmit(project):
                 txdata[byte_start - (byte_size - 1) : byte_start + 1] = value[0:byte_size]
             elif variable_size > 1:
                 txdata[byte_start - (byte_size - 1) : byte_start + 1] = list(pack("<i", int(value)))[0:byte_size]
-            else:
-                if value == 1:
-                    txdata[byte_start] |= 1 << bit_offset
+            elif value == 1:
+                txdata[byte_start] |= 1 << bit_offset
             output_pos -= variable_size
 
             # print("<", plugin_instance.instances_name, data_name, value)

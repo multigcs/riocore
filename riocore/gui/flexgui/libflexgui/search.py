@@ -1,6 +1,5 @@
-from PyQt5.QtWidgets import QDialog, QGridLayout
-from PyQt5.QtWidgets import QLabel, QLineEdit, QCheckBox, QPushButton
 from PyQt5.QtGui import QTextDocument
+from PyQt5.QtWidgets import QCheckBox, QDialog, QGridLayout, QLabel, QLineEdit, QPushButton
 
 
 class FindDialog(QDialog):
@@ -61,12 +60,10 @@ class FindDialog(QDialog):
             if flags:
                 if self.text_edit.find(text_to_find, flags):
                     return
-                else:
-                    self.lineEdit.clear()
-                    self.lineEdit.setPlaceholderText("Not found.")
+                self.lineEdit.clear()
+                self.lineEdit.setPlaceholderText("Not found.")
+            elif self.text_edit.find(text_to_find):
+                return
             else:
-                if self.text_edit.find(text_to_find):
-                    return
-                else:
-                    self.lineEdit.clear()
-                    self.lineEdit.setPlaceholderText("Not found.")
+                self.lineEdit.clear()
+                self.lineEdit.setPlaceholderText("Not found.")

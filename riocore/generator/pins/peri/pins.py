@@ -65,11 +65,10 @@ class Pins:
                         interface.append(f'design.set_property("{pin_config["varname"]}", "DRIVE_STRENGTH", "{drive}")')
                         # if slew == FAST:
                         #    interface.append(f'design.set_property("{pin_config["varname"]}", "SLEW_RATE", "1")')
-                    else:
-                        if pin_config.get("pullup", False) or pin_config.get("pull") == "up":
-                            interface.append(f'design.set_property("{pin_config["varname"]}", "PULL_OPTION", "WEAK_PULLUP")')
-                        elif pin_config.get("pulldown", False) or pin_config.get("pull") == "down":
-                            interface.append(f'design.set_property("{pin_config["varname"]}", "PULL_OPTION", "WEAK_PULLDOWN")')
+                    elif pin_config.get("pullup", False) or pin_config.get("pull") == "up":
+                        interface.append(f'design.set_property("{pin_config["varname"]}", "PULL_OPTION", "WEAK_PULLUP")')
+                    elif pin_config.get("pulldown", False) or pin_config.get("pull") == "down":
+                        interface.append(f'design.set_property("{pin_config["varname"]}", "PULL_OPTION", "WEAK_PULLDOWN")')
 
                     interface.append(f'design.assign_pkg_pin("{pin_config["varname"]}", "{pin_config["pin"]}")')
                 data.append("        </efxpt:gpio>")

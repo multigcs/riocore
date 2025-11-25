@@ -45,7 +45,7 @@ class i2c_device:
 
             # write single bits into data_out byte
             bitlist = []
-            for bit in range(0, 8):
+            for bit in range(8):
                 if (1 << bit) & self.outputs:
                     bitlist.append(f"{self.name}_out{bit}")
                 else:
@@ -54,11 +54,11 @@ class i2c_device:
             setup["value"] = f"{{{', '.join(reversed(bitlist))}}}"
 
             # write data_in into single bits
-            for bit in range(0, 8):
+            for bit in range(8):
                 if (1 << bit) & self.inputs:
                     setup["data_in"].append(f"                                {self.name}_in{bit} <= data_in[{bit}];")
 
-            for bit in range(0, 8):
+            for bit in range(8):
                 if (1 << bit) & self.inputs:
                     self.INTERFACE[f"{self.name}_in{bit}"] = {
                         "size": 1,

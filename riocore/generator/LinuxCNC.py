@@ -7,12 +7,12 @@ import stat
 
 import riocore
 from riocore import halpins
+from riocore.generator.flexvcp import flexvcp
+from riocore.generator.gladevcp import gladevcp
 from riocore.generator.hal import hal_generator
 from riocore.generator.pyvcp import pyvcp
-from riocore.generator.qtvcp import qtvcp
 from riocore.generator.qtpyvcp import qtpyvcp
-from riocore.generator.gladevcp import gladevcp
-from riocore.generator.flexvcp import flexvcp
+from riocore.generator.qtvcp import qtvcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
@@ -209,15 +209,14 @@ class LinuxCNC:
             # run update_prefixes on the first instance of the plugin if exist
             if hasattr(instances[0], "update_prefixes"):
                 instances[0].update_prefixes(self, instances)
+            elif instances[0].TYPE == "base":
+                # base plugins by instance name
+                for instance in instances:
+                    instance.PREFIX = f"{component_type}.{instance.instances_name}"
             else:
-                if instances[0].TYPE == "base":
-                    # base plugins by instance name
-                    for instance in instances:
-                        instance.PREFIX = f"{component_type}.{instance.instances_name}"
-                else:
-                    # io plugins by instance idx
-                    for num, instance in enumerate(instances):
-                        instance.PREFIX = f"{component_type}.{num}"
+                # io plugins by instance idx
+                for num, instance in enumerate(instances):
+                    instance.PREFIX = f"{component_type}.{num}"
 
         machinetype = self.project.config["jdata"].get("linuxcnc", {}).get("machinetype")
         self.project.axis_names = "XYZACBUVW"
@@ -370,13 +369,13 @@ class LinuxCNC:
         list_data = []
         if os.path.isfile(os.path.join(self.configuration_path, "postgui_call_list.hal")):
             # read existing file to keep custom entry's
-            cl_data = open(os.path.join(self.configuration_path, "postgui_call_list.hal"), "r").read()
+            cl_data = open(os.path.join(self.configuration_path, "postgui_call_list.hal")).read()
             for line in cl_data.split("\n"):
                 if line.startswith("source "):
                     source = line.split()[1]
                     if source in self.postgui_call_rm:
                         continue
-                    elif source in self.postgui_call_list:
+                    if source in self.postgui_call_list:
                         self.postgui_call_list.remove(source)
                 list_data.append(line.strip())
 
@@ -387,7 +386,7 @@ class LinuxCNC:
         extra_data = []
         if os.path.isfile(os.path.join(self.configuration_path, "pregui_call_list.hal")):
             # read existing file to keep custom entry's
-            cl_data = open(os.path.join(self.configuration_path, "pregui_call_list.hal"), "r").read()
+            cl_data = open(os.path.join(self.configuration_path, "pregui_call_list.hal")).read()
             for line in cl_data.split("\n"):
                 if line.startswith("source "):
                     source = " ".join(line.split()[1:])
@@ -505,9 +504,8 @@ class LinuxCNC:
                         ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-X"] = "o<x_touch> call"
                     elif axis_name == "Z":
                         ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
-                else:
-                    if axis_name == "Z":
-                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
+                elif axis_name == "Z":
+                    ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
 
         if gui == "axis":
             if gui_type == "pyvcp":
@@ -671,17 +669,13 @@ class LinuxCNC:
                 else:
                     max_angular_velocity = max(max_angular_velocity, joint_setup["MAX_VELOCITY"])
         max_linear_velocity = min(max_linear_velocity, ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"]
-        default_linear_velocity = (
-            min(max_linear_velocity, ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"], ini_setup["TRAJ"]["DEFAULT_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]
-        )
+        default_linear_velocity = min(max_linear_velocity, ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"], ini_setup["TRAJ"]["DEFAULT_LINEAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"]
         ini_setup["DISPLAY"]["MAX_LINEAR_VELOCITY"] = max_linear_velocity
         ini_setup["TRAJ"]["MAX_LINEAR_VELOCITY"] = max_linear_velocity
         ini_setup["DISPLAY"]["DEFAULT_LINEAR_VELOCITY"] = default_linear_velocity
         ini_setup["TRAJ"]["DEFAULT_LINEAR_VELOCITY"] = default_linear_velocity
         max_angular_velocity = min(max_angular_velocity, ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"]
-        default_angular_velocity = (
-            min(max_angular_velocity, ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"], ini_setup["TRAJ"]["DEFAULT_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]
-        )
+        default_angular_velocity = min(max_angular_velocity, ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"], ini_setup["TRAJ"]["DEFAULT_ANGULAR_VELOCITY"]) or ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"]
         ini_setup["DISPLAY"]["MAX_ANGULAR_VELOCITY"] = max_angular_velocity
         ini_setup["TRAJ"]["MAX_ANGULAR_VELOCITY"] = max_angular_velocity
         ini_setup["DISPLAY"]["DEFAULT_ANGULAR_VELOCITY"] = default_angular_velocity
@@ -719,19 +713,13 @@ class LinuxCNC:
                 max_limit = joint_setup["MAX_LIMIT"]
                 backlash = joint_setup.get("BACKLASH", 0.0)
                 ferror = joint_setup.get("FERROR", axis_ferror)
-                if axis_max_velocity > max_velocity:
-                    axis_max_velocity = max_velocity
-                if axis_max_acceleration > max_acceleration:
-                    axis_max_acceleration = max_acceleration
-                if axis_min_limit > min_limit:
-                    axis_min_limit = min_limit
-                if axis_max_limit < max_limit:
-                    axis_max_limit = max_limit
+                axis_max_velocity = min(axis_max_velocity, max_velocity)
+                axis_max_acceleration = min(axis_max_acceleration, max_acceleration)
+                axis_min_limit = min(axis_min_limit, min_limit)
+                axis_max_limit = max(axis_max_limit, max_limit)
 
-                if axis_backlash < backlash:
-                    axis_backlash = backlash
-                if axis_ferror < ferror:
-                    axis_ferror = ferror
+                axis_backlash = max(axis_backlash, backlash)
+                axis_ferror = max(axis_ferror, ferror)
 
                 axis_setup["MAX_VELOCITY"] = axis_max_velocity
                 axis_setup["MAX_ACCELERATION"] = axis_max_acceleration
@@ -913,11 +901,7 @@ class LinuxCNC:
                     axis_leds = True
                 elif function in {"plus", "minus"}:
                     axis_move = True
-                elif function in {"fast"}:
-                    speed_selector = True
-                elif function in {"speed0"}:
-                    speed_selector = True
-                elif function in {"speed1"}:
+                elif function in {"fast"} or function in {"speed0"} or function in {"speed1"}:
                     speed_selector = True
                 elif function in {"position"}:
                     position_display = True
@@ -936,11 +920,7 @@ class LinuxCNC:
 
                 speed_selector_mux = 1
                 for function, halname in self.rio_functions["jog"].items():
-                    if function == "speed0":
-                        speed_selector_mux *= 2
-                    elif function == "speed1":
-                        speed_selector_mux *= 2
-                    elif function == "fast":
+                    if function == "speed0" or function == "speed1" or function == "fast":
                         speed_selector_mux *= 2
 
                 # TODO: using mux-gen ?
@@ -1050,11 +1030,7 @@ class LinuxCNC:
                 speed_selector_mux = 1
 
                 for function, halname in self.rio_functions["jog"].items():
-                    if function == "speed0":
-                        speed_selector_mux *= 2
-                    elif function == "speed1":
-                        speed_selector_mux *= 2
-                    elif function == "fast":
+                    if function == "speed0" or function == "speed1" or function == "fast":
                         speed_selector_mux *= 2
 
                 if speed_selector_mux > 4:
@@ -1237,7 +1213,7 @@ class LinuxCNC:
                         else:
                             shutil.copytree(source, target_path, dirs_exist_ok=True)
 
-                tnc_main = """#!/usr/bin/python3
+                tnc_main = r"""#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import os
 import re
@@ -1760,9 +1736,7 @@ if __name__ == "__main__":
 
         self.halg.fmt_add_top("# load the realtime components")
         self.halg.fmt_add_top("loadrt [KINS]KINEMATICS")
-        self.halg.fmt_add_top(
-            "loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO"
-        )
+        self.halg.fmt_add_top("loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO")
         self.halg.fmt_add_top("")
 
         # update pin-names for connected plugins
@@ -2091,23 +2065,18 @@ if __name__ == "__main__":
                     home_sequence_default = 2
                     if axis_name == "X":
                         home_sequence_default = 2
-                    elif axis_name == "Y":
-                        home_sequence_default = 1
-                    elif axis_name == "Z":
-                        home_sequence_default = 1
-                    elif axis_name == "A":
+                    elif axis_name == "Y" or axis_name == "Z" or axis_name == "A":
                         home_sequence_default = 1
                     elif axis_name == "B":
                         home_sequence_default = 2
                     elif axis_name == "C":
                         home_sequence_default = 1
+                elif axis_name == "Z":
+                    home_sequence_default = 1
+                elif len(axis_data["joints"]) > 1:
+                    home_sequence_default = -2
                 else:
-                    if axis_name == "Z":
-                        home_sequence_default = 1
-                    elif len(axis_data["joints"]) > 1:
-                        home_sequence_default = -2
-                    else:
-                        home_sequence_default = 2
+                    home_sequence_default = 2
 
                 for joint_data in axis_data["joints"]:
                     joint_data["axis"] = axis_name
@@ -2143,13 +2112,10 @@ if __name__ == "__main__":
                             joint_data["TYPE"] = "LINEAR"
                         else:
                             joint_data["TYPE"] = "ANGULAR"
-                    elif machinetype in {"melfa", "melfa_nogl", "puma"}:
+                    elif machinetype in {"melfa", "melfa_nogl", "puma"} or axis_name in {"A", "C", "B"}:
                         joint_data["TYPE"] = "ANGULAR"
                     else:
-                        if axis_name in {"A", "C", "B"}:
-                            joint_data["TYPE"] = "ANGULAR"
-                        else:
-                            joint_data["TYPE"] = "LINEAR"
+                        joint_data["TYPE"] = "LINEAR"
 
                     feedback = joint_data["instance"].plugin_setup.get("joint", {}).get("feedback", "")
                     if feedback:

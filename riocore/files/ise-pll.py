@@ -59,9 +59,9 @@ CLKIN_PERIOD = 1000 / args.input_freq_mhz
 for CLKFBOUT_MULT in range(2, 64 + 1):
     for CLKOUT0_DIVIDE in range(1, 128 + 1):
         VCO = args.input_freq_mhz * CLKFBOUT_MULT
-        if VCO < limits["vco_min"]:
+        if limits["vco_min"] > VCO:
             continue
-        if VCO > limits["vco_max"]:
+        if limits["vco_max"] < VCO:
             continue
 
         CLKOUT = VCO / CLKOUT0_DIVIDE

@@ -1,6 +1,5 @@
-import sys
 import json
-
+import sys
 
 names = sys.argv[1]
 xoff = int(sys.argv[2])

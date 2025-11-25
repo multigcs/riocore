@@ -1,7 +1,7 @@
 import importlib
-import sys
 import os
 import shutil
+import sys
 
 
 class Toolchain:
@@ -51,7 +51,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("$(PROJECT).tcl: $(VERILOGS)")
         makefile_data.append('	@echo "prj_project new -name $(PROJECT) -impl build -dev $(PART) -lpf pins.lpf" > $(PROJECT).tcl')
-        makefile_data.append('	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "prj_src add $$VAR" >> $(PROJECT).tcl; done')
+        makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "prj_src add $$VAR" >> $(PROJECT).tcl; done')
         makefile_data.append('	@echo "prj_impl option top $(TOP)" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "prj_project save" >> $(PROJECT).tcl')
         makefile_data.append('	@echo "prj_project close" >> $(PROJECT).tcl')

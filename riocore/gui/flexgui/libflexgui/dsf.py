@@ -6,7 +6,6 @@ from math import pi
 
 from PyQt5.QtWidgets import QWidget
 from PyQt5.uic import loadUi
-
 from libflexgui import utilities
 
 """
@@ -63,10 +62,9 @@ class dsf_calc(QWidget):
             return False
         if utilities.is_float(self.dfs_diameter_le.text()):
             return float(self.dfs_diameter_le.text())
-        else:
-            msg = "Diameter is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "Diameter is not a valid number"
+        print(msg, "Error")
+        return False
 
     def check_speed(self):
         if self.dfs_surface_speed_le.text() == "":
@@ -75,10 +73,9 @@ class dsf_calc(QWidget):
             return False
         if utilities.is_float(self.dfs_surface_speed_le.text()):
             return float(self.dfs_surface_speed_le.text())
-        else:
-            msg = "Surface Speed is not a valid number"
-            print(msg, "Error")
-            return False
+        msg = "Surface Speed is not a valid number"
+        print(msg, "Error")
+        return False
 
     def calculate(self):
         dia = self.check_dia()

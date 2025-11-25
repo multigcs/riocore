@@ -3,10 +3,11 @@
 #
 
 import argparse
-import os
-import sys
 import json
+import os
 import subprocess
+import sys
+
 import psutil
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
@@ -53,7 +54,7 @@ if args.config:
 
         if args.udpsim or args.simulator:
             # rewrite config for simulator
-            jdata = json.loads(open(config_file, "r").read())
+            jdata = json.loads(open(config_file).read())
             config_dir = os.path.dirname(config_file)
             config_name = os.path.basename(config_file)
             if jdata.get("linuxcnc", {}).get("machinetype", "") in {"melfa"}:
@@ -137,12 +138,12 @@ if args.config:
                         if element in ["clean", "build"]:
                             arguments.append(element)
                     cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
-                    print("")
+                    print()
                     print("running:")
                     print(f"  {cmd}")
                     if sys.platform.startswith("win"):
                         print(f"  cd {os.getcwd()}")
-                    print("")
+                    print()
                     ret = os.system(cmd)
                     if ret != 0:
                         print(f"ERROR: code {ret}")
@@ -155,12 +156,12 @@ if args.config:
                         if element in ["load"]:
                             arguments.append(element)
                     cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
-                    print("")
+                    print()
                     print("running:")
                     print(f"  {cmd}")
                     if sys.platform.startswith("win"):
                         print(f"  cd {os.getcwd()}")
-                    print("")
+                    print()
                     ret = os.system(cmd)
                     if ret != 0:
                         print(f"ERROR: code {ret}")
@@ -174,12 +175,12 @@ if args.config:
                             if element in ["sload"]:
                                 arguments.append(element)
                         cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
-                        print("")
+                        print()
                         print("running:")
                         print(f"  {cmd}")
                         if sys.platform.startswith("win"):
                             print(f"  cd {os.getcwd()}")
-                        print("")
+                        print()
                         ret = os.system(cmd)
                         if ret != 0:
                             print(f"ERROR: code {ret}")
@@ -187,10 +188,10 @@ if args.config:
         if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
             if args.udpsim:
                 cmd = f"sh {simulatorsh_path}"
-                print("")
+                print()
                 print("running:")
                 print(f"  {cmd}")
-                print("")
+                print()
                 proc_sim = subprocess.Popen(cmd, shell=True)
 
             if args.ngc:
@@ -198,10 +199,10 @@ if args.config:
                 cmd = f"sh {startsh_path} {ngc_realpath}"
             else:
                 cmd = f"sh {startsh_path}"
-            print("")
+            print()
             print("running:")
             print(f"  {cmd}")
-            print("")
+            print()
             ret = os.system(cmd)
             if args.udpsim:
                 print(f"stopping {proc_sim.pid} and sub processes..")

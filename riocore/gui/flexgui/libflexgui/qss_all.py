@@ -1,11 +1,6 @@
 from functools import partial
 
-from libflexgui import qss_pushbutton
-from libflexgui import qss_checkbox
-from libflexgui import qss_radiobutton
-from libflexgui import qss_toolbutton
-from libflexgui import qss_spinbox
-from libflexgui import qss_label
+from libflexgui import qss_checkbox, qss_label, qss_pushbutton, qss_radiobutton, qss_spinbox, qss_toolbutton
 
 
 def startup(parent):

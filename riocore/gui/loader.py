@@ -1,22 +1,22 @@
-import os
 import glob
 import json
+import os
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
-    QStyle,
-    QFileDialog,
+    QDialog,
     QDialogButtonBox,
-    QTableWidget,
-    QTableWidgetItem,
+    QFileDialog,
+    QHBoxLayout,
     QHeaderView,
     QLabel,
-    QHBoxLayout,
     QPushButton,
+    QStyle,
+    QTableWidget,
+    QTableWidgetItem,
     QVBoxLayout,
     QWidget,
-    QDialog,
 )
 
 import riocore
@@ -108,7 +108,7 @@ class ConfigLoader:
         def show_config_info(idx):
             config_path = config_list[idx]
             config_name = config_path.split(os.sep)[-1]
-            config_raw = open(config_path, "r").read()
+            config_raw = open(config_path).read()
             config_config = json.loads(config_raw)
 
             image_label.clear()

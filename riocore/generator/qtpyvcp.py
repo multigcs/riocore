@@ -1,5 +1,6 @@
-from lxml import etree
 import os
+
+from lxml import etree
 
 
 class qtpyvcp:
