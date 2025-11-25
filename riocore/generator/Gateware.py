@@ -182,7 +182,7 @@ class Gateware:
                     if pin_config["pin"] not in pinnames:
                         pinnames[pin_config["pin"]] = plugin_instance.instances_name
                     else:
-                        print(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
+                        print(f"ERROR: pin already exists {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
         self.toolchain_generator.generate(self.gateware_path)
 
