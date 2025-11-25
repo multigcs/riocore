@@ -88,9 +88,9 @@ void setup() {
 #endif
     //setup
     Serial.begin(9600); // baudrate doesn't matter, full speed USB always
-    while (!Serial);
+    // while (!Serial);
     SSerial.begin(2500000); // 2.5MBps for Mesa Smart Serial
-    while (!SSerial);
+    // while (!SSerial);
     SSerial.setTimeout(1);
 }
 

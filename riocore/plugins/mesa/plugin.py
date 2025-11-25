@@ -309,7 +309,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             board_old = self.plugin_setup.get("board")
             if board_old:
-                print("INFO: update config")
+                riocore.log("INFO: update config")
                 self.plugin_setup["boardname"] = board_old.split("_")[0]
                 self.plugin_setup["firmware"] = board_old.split("_")[1]
                 del self.plugin_setup["board"]
@@ -338,13 +338,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             posfile = os.path.join(os.path.dirname(__file__), f"{boardname}.json")
             if not os.path.exists(posfile):
-                print(f"ERROR: boardfile not found: {posfile}")
+                riocore.log(f"ERROR: boardfile not found: {posfile}")
                 return
             board_pins = json.loads(open(posfile).read())
 
             pinfile = os.path.join(os.path.dirname(__file__), "mesapins", boardname, f"{boardname}_{firmware}.pin")
             if not os.path.exists(pinfile):
-                print(f"ERROR: boardfile not found: {pinfile}")
+                riocore.log(f"ERROR: boardfile not found: {pinfile}")
                 return
             pindata = open(pinfile).read()
 
@@ -441,7 +441,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 if line.startswith("IO Connections for "):
                     slot = line.split()[3].split("+")[0]
                     pin_n = 0
-                    # print(f"------- {slot} -------")
+                    # riocore.log(f"------- {slot} -------")
                 elif slot is not None and "IOPort" in line:
                     pin_n += 1
                     io = line.split()[1]
@@ -487,7 +487,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         ptype = f"MESA{func}{pinfunc}-{channel}"
                         halname = f"{self.instances_name}:{func_halname}.{int(channel):02d}.{pinfunc.lower()}"
 
-                    # print(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
+                    # riocore.log(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                     if pos:
                         mapping_to_db25 = [0, 1, 14, 2, 15, 3, 16, 4, 17, 5, 6, 7, 8, 9, 10, 11, 12, 13]
                         mpin_n = mapping_to_db25[pin_n]
@@ -687,7 +687,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 pin = connected_pin["pin"]
                 direction = connected_pin["direction"]
                 inverted = connected_pin["inverted"]
-                # print(rawpin, pin, plugin_instance, suffix)
+                # riocore.log(rawpin, pin, plugin_instance, suffix)
                 if pin.startswith("gpio."):
                     if direction == "input":
                         if inverted:
@@ -712,7 +712,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
                 plugin_instance = connected_pin["instance"]
                 if not hasattr(plugin_instance, "hm2_prefix"):
-                    print(f"ERROR: no hm2_prefix found: {connected_pin}")
+                    riocore.log(f"ERROR: no hm2_prefix found: {connected_pin}")
                     continue
                 psetup = connected_pin["setup"]
                 pin = connected_pin["pin"]
@@ -832,7 +832,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                     plugin_instance = connected_pin["instance"]
                     if not hasattr(plugin_instance, "hm2_prefix"):
-                        print(f"ERROR: no hm2_prefix found: {connected_pin}")
+                        riocore.log(f"ERROR: no hm2_prefix found: {connected_pin}")
                         continue
                     psetup = connected_pin["setup"]
                     pin = connected_pin["pin"]
@@ -847,7 +847,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     else:
                         psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
                         output_pin_n += 1
-                    print("+##", connected_pin)
 
                 # create firmware stuff
                 firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
@@ -855,7 +854,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 instance.BUILDER_PATH = firmware_path
                 os.makedirs(os.path.join(firmware_path, "src"), exist_ok=True)
                 os.makedirs(os.path.join(firmware_path, "lib"), exist_ok=True)
-                print(f"  {instance.instances_name}: create firmware structure: {firmware_path}")
+                riocore.log(f"  {instance.instances_name} ({instance.title}): create firmware structure: {firmware_path}")
                 output = []
                 source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
                 for line in open(source).read().split("\n"):
@@ -864,6 +863,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         if board == "8ch":
                             output.append("#define STATUS_LED 23")
                         if board == "pico":
+                            output.append("#define STATUS_LED 25")
                             output.append("#define SSerial Serial1")
                         else:
                             output.append("#define SSerial Serial2")

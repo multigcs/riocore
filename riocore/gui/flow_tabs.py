@@ -87,7 +87,7 @@ class TabBuilder:
 
     def runTimer(self):
         running = False
-        if "generator" in self.compile_sub:
+        if "generator" in self.compile_sub and os.path.exists("/tmp/buildlog"):
             logdata = open("/tmp/buildlog").read()
             if self.output["generator"].verticalScrollBar().maximum() == self.output["generator"].verticalScrollBar().value():
                 self.output["generator"].setPlainText(logdata)
@@ -105,7 +105,7 @@ class TabBuilder:
                 plugin_instance = item.plugin_instance
                 if not plugin_instance.BUILDER:
                     continue
-                if plugin_instance.instances_name in self.compile_sub:
+                if plugin_instance.instances_name in self.compile_sub and os.path.exists(f"/tmp/buildlog-{plugin_instance.instances_name}"):
                     logdata = open(f"/tmp/buildlog-{plugin_instance.instances_name}").read()
                     if self.output[plugin_instance.instances_name].verticalScrollBar().maximum() == self.output[plugin_instance.instances_name].verticalScrollBar().value():
                         self.output[plugin_instance.instances_name].setPlainText(logdata)
