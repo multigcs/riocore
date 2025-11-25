@@ -135,28 +135,18 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                 self.SUB_PLUGINS = []
                 for spn, rpin in enumerate(relais_pins):
-                    self.SUB_PLUGINS.append({
-                        "type": "gpioout",
-                        "rpos": [
-                            410,
-                            15 + spn * 167
-                        ],
-                        "image": "relay_min",
-                        "rotate": 0,
-                        "uid": f"relay{spn}",
-                        "name": "",
-                        "signals": {
-                            "bit": {
-                                "net": ""
-                            }
-                        },
-                        "pins": {
-                            "bit": {
-                                "pin": f"IO:{rpin}"
-                            }
+                    self.SUB_PLUGINS.append(
+                        {
+                            "type": "gpioout",
+                            "rpos": [410, 15 + spn * 167],
+                            "image": "relay_min",
+                            "rotate": 0,
+                            "uid": f"relay{spn}",
+                            "name": "",
+                            "signals": {"bit": {"net": ""}},
+                            "pins": {"bit": {"pin": f"IO:{rpin}"}},
                         }
-                    })
-
+                    )
 
             elif board == "pico":
                 self.PINDEFAULTS = {
@@ -876,7 +866,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
                 for line in open(source, "r").read().split("\n"):
                     if line.strip() == "//defines":
-                        output.append(f"#define BOARD \"{board}\"")
+                        output.append(f'#define BOARD "{board}"')
                         if board == "8ch":
                             output.append("#define STATUS_LED 23")
                         if board == "pico":
