@@ -93,7 +93,7 @@ TODO: csum, pos/revs, cleanup
 for Panasonic and some Bosch/Rexroth Servos with
 mfe0017 encoder
 
-FG      Shield      
+FG      Shield
 VCC-    GND     Black
 VCC+    5V      White
 VB-     GND     Orange

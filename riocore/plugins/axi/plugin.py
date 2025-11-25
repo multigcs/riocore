@@ -225,7 +225,7 @@ module axi
                 axi_rresp  <= 2'b0;
             end else if (axi_rvalid && S_AXI_RREADY) begin
                 axi_rvalid <= 1'b0;
-            end       
+            end
         end
     end
 

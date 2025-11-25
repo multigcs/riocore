@@ -111,7 +111,7 @@ class PluginBase:
             NEW_OPTIONS["image"] = {
                 "default": "generic",
                 "type": "select",
-                "options": ["generic"] + self.IMAGES,
+                "options": ["generic", *self.IMAGES],
                 "description": "hardware type",
             }
             image = self.plugin_setup.get("image", self.option_default("image"))
@@ -194,7 +194,7 @@ class PluginBase:
                     data = [0] * (self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)
                     for n, val in enumerate(txdata):
                         data[n] = val
-                    self.frame = bytes([self.txframe_id, frame_len] + data)
+                    self.frame = bytes([self.txframe_id, frame_len, *data])
 
             self.INTERFACE["txdata"]["value"] = self.frame
         else:
@@ -329,7 +329,7 @@ class PluginBase:
             for num in range(bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
         else:
-            for data_name, data_config in self.interface_data().items():
+            for data_config in self.interface_data().values():
                 direction = data_config["direction"]
                 if data_config.get("expansion") and direction == "output":
                     variable = data_config["variable"]
@@ -348,7 +348,7 @@ class PluginBase:
             for num in range(bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
         else:
-            for data_name, data_config in self.interface_data().items():
+            for data_config in self.interface_data().values():
                 direction = data_config["direction"]
                 if data_config.get("expansion") and direction == "input":
                     variable = data_config["variable"]
@@ -371,7 +371,7 @@ class PluginBase:
                 default = self.plugin_setup.get("default", 0)
                 defines.append(f"reg [{bits_out - 1}:0] {self.expansion_prefix}_OUTPUT = {default};")
 
-        for data_name, data_config in self.interface_data().items():
+        for data_config in self.interface_data().values():
             if data_config.get("expansion"):
                 direction = data_config["direction"]
                 variable = data_config["variable"]

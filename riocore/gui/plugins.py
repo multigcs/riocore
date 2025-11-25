@@ -808,7 +808,7 @@ class GuiPlugins:
                             "inouts": 0,
                             "alls": 0,
                         }
-                        for _pin_id, pin in slot["pins"].items():
+                        for pin in slot["pins"].values():
                             if isinstance(pin, dict):
                                 direction = pin.get("direction") or "all"
                                 slot_has[f"{direction}s"] += 1
