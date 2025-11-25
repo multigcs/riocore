@@ -81,17 +81,38 @@ struct LBP_State {
     .address = 0x0000
 };
 
+void update() {
+    //pdata_out.input
+    //pdata_in.output
+}
+
+#ifdef MULTITHREAD
+TaskHandle_t Task1;
+
+void Task1code(void * pvParameters){
+    for(;;) {
+        update();
+        delay(1);
+    } 
+}
+#endif
+
 void setup() {
 #ifdef STATUS_LED
     pinMode(STATUS_LED, OUTPUT);
     digitalWrite(STATUS_LED, LOW);
 #endif
-    //setup
-    Serial.begin(9600); // baudrate doesn't matter, full speed USB always
+    Serial.begin(115200);
     // while (!Serial);
     SSerial.begin(2500000); // 2.5MBps for Mesa Smart Serial
     // while (!SSerial);
     SSerial.setTimeout(1);
+
+    //setup
+
+#ifdef MULTITHREAD
+    xTaskCreatePinnedToCore(Task1code, "Task1", 10000, NULL, 1, &Task1, 0);
+#endif
 }
 
 uint8_t SSerialRead() {
@@ -144,9 +165,12 @@ void loop() {
                     }
                 }
                 if (!src) {
-                    //Serial.print("invalid read address: ");
-                    //Serial.println(lbp_state.address);
-                    src = 0; // do not block invalid reads
+                    Serial.print("invalid read address: ");
+                    Serial.print(lbp_state.address);
+                    Serial.print(" len:");
+                    Serial.println(readLength);
+                    uint8_t zeros[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                    src = zeros; // do not block invalid reads
                     //return;
                 }
                 uint8_t RESPONSE[sizeof(uint64_t)+1];
@@ -179,13 +203,11 @@ void loop() {
                 break;
                 case LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA: {
                     pdata_out.fault = 0;
-                    //pdata_out.input
                     uint8_t RESPONSE[DISCOVERY_DATA.RxSize+1];
                     memcpy(RESPONSE, &pdata_out, sizeof(pdata_out));
                     RESPONSE[sizeof(RESPONSE)-1] = LBP_CalcCRC(RESPONSE, sizeof(RESPONSE)-1);
                     SSerialWrite(RESPONSE, sizeof(RESPONSE));
-
-                    //pdata_in.output
+                    memcpy(&pdata_in, pdata_in_next, sizeof(pdata_in));
 #ifdef STATUS_LED
                     digitalWrite(STATUS_LED, (millis() & 0x100) ? HIGH : LOW);
 #endif
@@ -286,5 +308,9 @@ void loop() {
         } else {
             Serial.println("unknown command %02X");
         }
+#ifndef MULTITHREAD
+    } else {
+        update();
+#endif
     }
 }
