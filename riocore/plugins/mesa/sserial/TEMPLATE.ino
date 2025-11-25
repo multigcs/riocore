@@ -144,8 +144,10 @@ void loop() {
                     }
                 }
                 if (!src) {
-                    Serial.println("<invalid read address 0x%04X>");
-                    return;
+                    //Serial.print("invalid read address: ");
+                    //Serial.println(lbp_state.address);
+                    src = 0; // do not block invalid reads
+                    //return;
                 }
                 uint8_t RESPONSE[sizeof(uint64_t)+1];
                 memcpy(RESPONSE, src, readLength);

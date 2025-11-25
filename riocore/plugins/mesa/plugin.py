@@ -648,7 +648,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             return cmd
         if node_type == "sserial":
             project = riocore.Project(copy.deepcopy(config))
-            firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
+            firmware_path = os.path.join(project.config["output_path"], "Firmware", self.title)
             cmd = f"cd {firmware_path} && make {command}"
             return cmd
 
@@ -849,7 +849,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         output_pin_n += 1
 
                 # create firmware stuff
-                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
+                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.title)
                 os.makedirs(firmware_path, exist_ok=True)
                 instance.BUILDER_PATH = firmware_path
                 os.makedirs(os.path.join(firmware_path, "src"), exist_ok=True)
