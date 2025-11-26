@@ -142,7 +142,7 @@ bin/rio-generator my_config.json
 loading: my_config.json
 loading board setup: TangNano9K
 writing gateware to: Output/Tangoboard/Gateware
-!!! gateware changed: needs to be build and flash |||
+!!! gateware changed: needs to be built and flashed |||
 loading toolchain gowin
 writing linuxcnc files to: Output/Tangoboard/LinuxCNC
 ```

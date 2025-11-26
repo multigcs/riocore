@@ -52,7 +52,7 @@ riocore/boards/ULX3S/board.png
 ### Pinout informations
 
 you can also add informations about the pins and connectors(slots) on the board (or LEDs/Switches/..),
-this is usefull for a simpler configuration.
+this is useful for a simpler configuration.
 
 LED example:
 ```

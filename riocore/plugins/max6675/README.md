@@ -4,7 +4,7 @@
 
 **SPI temperature sensor**
 
-to messurement very high temperatures of up to 1250 degrees Celsius
+to measurement very high temperatures of up to 1250 degrees Celsius
 
 Keywords: analog adc
 
