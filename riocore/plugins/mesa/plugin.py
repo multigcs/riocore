@@ -477,7 +477,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         halname = f"{self.instances_name}:gpio.{int(io):03d}"
                     elif func.lower() == "sserial":
                         pinfunc = line.split()[5][:-5]
+                        if line.split()[5][-3:-1] == "En":
+                            pinfunc = "TxEnable"
                         channel = f"{line.split()[4]}.{int(line.split()[5][-1]) - 1}"
+                        channel = f"{line.split()[4]}.{int(line.split()[5][-1])}"
                         direction = "all"
                         ptype = f"MESA{func}{pinfunc}-{channel}"
                         halname = f"{self.instances_name}:SSERIAL.{channel}"
@@ -491,8 +494,15 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                     # riocore.log(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                     if pos:
-                        mapping_to_db25 = [0, 1, 14, 2, 15, 3, 16, 4, 17, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+                        mapping_to_db25 = [0, 1, 14, 2, 15, 3, 16, 4, 17, 5, 6, 7, 8, 9, 10, 11, 12, 13, "SS1", "SS2"]
                         mpin_n = mapping_to_db25[pin_n]
+                        if mpin_n in {"SS1", "SS2"}:
+                            if slot == "P2":
+                                print(pinfunc)
+                            elif slot == "P2":
+                                pos = (pos[0], pos[1] + 20)
+                            elif slot == "P7":
+                                pos = (pos[0], pos[1] + 40)
                         self.PINDEFAULTS[f"{slot}:P{mpin_n}"] = {
                             "pin": halname,
                             "comment": f"{func}({channel}) - {pinfunc}",
