@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "freqin"
         self.INFO = "frequency input"
-        self.DESCRIPTION = "to messurement digital frequencies"
+        self.DESCRIPTION = "to measurement digital frequencies"
         self.KEYWORDS = "frequency"
         self.ORIGIN = ""
         self.VERILOGS = ["freqin.v"]

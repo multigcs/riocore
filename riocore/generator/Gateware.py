@@ -669,8 +669,8 @@ class Gateware:
         hash_new = hash_md5.hexdigest()
 
         if hash_compiled != hash_new:
-            print("!!! gateware changed: needs to be build and flash |||")
+            print("!!! gateware changed: needs to be built and flashed |||")
         elif hash_flashed != hash_new:
-            print("!!! gateware changed: needs to flash |||")
+            print("!!! gateware changed: needs to be flashed |||")
         hash_file_new = os.path.join(self.gateware_path, "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
