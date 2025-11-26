@@ -32,6 +32,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     "board",
                     "stepper",
                     "pwm",
+                    "rgb",
                     "encoder",
                     "sserial",
                     "adc",
@@ -632,19 +633,38 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 "pwm": {"direction": "output", "edge": "target", "type": ["MESAPwmPwm", "MESAPWMPWM", "GPIO"]},
             }
 
+        elif node_type == "rgb":
+            self.OPTIONS.update(
+                {
+                    "leds": {
+                        "default": 3,
+                        "type": int,
+                        "min": 1,
+                        "max": 10,
+                        "description": "number of leds",
+                    },
+                }
+            )
+
+            self.TYPE = "io"
+            self.IMAGE_SHOW = True
+            self.IMAGES = ["led"]
+            self.SIGNALS = {}
+            self.PINDEFAULTS = {
+                "rgb": {"direction": "output", "edge": "target", "type": ["GPIO"]},
+            }
+
         elif node_type == "adc":
             self.OPTIONS.update()
 
             self.TYPE = "io"
             self.IMAGE_SHOW = True
             self.IMAGES = ["spindle500w", "laser", "led"]
-            scale = self.plugin_setup.get("scale", self.option_default("scale"))
-            min_limit = self.plugin_setup.get("min_limit", self.option_default("min_limit"))
             self.SIGNALS = {
                 "value": {
                     "direction": "input",
-                    "min": min_limit,
-                    "max": scale,
+                    "min": 0,
+                    "max": 2048,
                 },
             }
             self.PINDEFAULTS = {
@@ -688,6 +708,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             elif node_type == "sserial":
                 cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
                 pwm_n = 0
+                rgb_n = 0
                 adc_n = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                     rawpin = connected_pin["rawpin"]
@@ -700,7 +721,16 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             del plugin_instance.SIGNALS["value"]
                             del plugin_instance.SIGNALS["enable"]
                             pwm_n += 1
-                        if connected_pin["name"] == "adc":
+                        elif connected_pin["name"] == "rgb":
+                            leds = plugin_instance.plugin_setup.get("leds", plugin_instance.option_default("leds"))
+                            instance.leds = leds
+                            plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                            for n in range(0, leds * 3, 3):
+                                plugin_instance.SIGNALS[f"rgb-{n:02d}"] = {"direction": "output", "bool": True, "display": {"title": f"red{n // 3}"}}
+                                plugin_instance.SIGNALS[f"rgb-{n + 1:02d}"] = {"direction": "output", "bool": True, "display": {"title": f"green{n // 3}"}}
+                                plugin_instance.SIGNALS[f"rgb-{n + 2:02d}"] = {"direction": "output", "bool": True, "display": {"title": f"blue{n // 3}"}}
+                            rgb_n += 1
+                        elif connected_pin["name"] == "adc":
                             plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
                             plugin_instance.SIGNALS[f"adc{adc_n}"] = plugin_instance.SIGNALS["value"]
                             del plugin_instance.SIGNALS["value"]
@@ -735,10 +765,12 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.pins_input = []
             self.pins_output = []
             self.pins_pwm = []
+            self.pins_rgb = []
             self.pins_adc = []
             input_pin_n = 0
             output_pin_n = 0
             pwm_pin_n = 0
+            rgb_pin_n = 0
             adc_pin_n = 0
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
                 plugin_instance = connected_pin["instance"]
@@ -753,6 +785,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     self.pins_pwm.append(pin)
                     psetup["pin"] = f"{plugin_instance.hm2_prefix}.pwm-{pwm_pin_n:02d}"
                     pwm_pin_n += 1
+                elif connected_pin["name"] == "rgb":
+                    self.pins_rgb.append(pin)
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.rgb-{rgb_pin_n:02d}"
+                    rgb_pin_n += 1
                 elif connected_pin["name"] == "adc":
                     self.pins_adc.append(pin)
                     psetup["pin"] = f"{plugin_instance.hm2_prefix}.adc-{adc_pin_n:02d}"
@@ -814,7 +850,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}-invert", 1)
         elif node_type == "pwm":
-            if self.PREFIX:
+            if self.PREFIX and ".pwm" in self.PREFIX:
                 scale = self.plugin_setup.get("scale", self.option_default("scale"))
                 parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
         elif node_type == "encoder":
@@ -848,9 +884,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
                 bits_out = len(instance.pins_output)
                 bits_in = len(instance.pins_input)
-                # bits_in = max(1, len(instance.pins_input))  # we need at least 1 bit
+                leds = instance.leds
                 int_size_in = 8
                 int_size_out = 8
+                int_size_leds = 8
                 for int_size in (8, 16, 32):
                     if bits_in <= int_size:
                         int_size_in = int_size
@@ -859,9 +896,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     if bits_out <= int_size:
                         int_size_out = int_size
                         break
+                for int_size in (8, 16, 32):
+                    if leds * 3 <= int_size:
+                        int_size_leds = int_size
+                        break
 
                 byte_size_in = int_size_in // 8
                 byte_size_out = int_size_out // 8
+                byte_size_leds = int_size_leds // 8
 
                 input_pin_n = 0
                 output_pin_n = 0
@@ -904,12 +946,16 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         else:
                             output.append("#define MULTITHREAD")
                             output.append("#define SSerial Serial2")
+                        if instance.pins_rgb:
+                            leds = instance.leds
+                            output.append("#include <Adafruit_NeoPixel.h>")
+                            output.append(f"Adafruit_NeoPixel pixels({leds}, 15, NEO_GRB + NEO_KHZ800);")
                         output.append("")
                     elif line.strip() == "//LBP_Discovery_Data":
                         output.append("static const LBP_Discovery_Data DISCOVERY_DATA =")
                         output.append("{")
                         output.append("  .RxSize = sizeof(ProcessDataOut)+1, // +1 for the fault status, remote transmits")
-                        if bits_out or instance.pins_pwm:
+                        if bits_out or instance.pins_pwm or instance.pins_rgb:
                             output.append("  .TxSize = sizeof(ProcessDataIn), // remote receives")
                         else:
                             output.append("  .TxSize = 0, // remote receives")
@@ -928,12 +974,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         output.append("} pdata_out = {0x00000000};")
                         output.append("")
                     elif line.strip() == "//ProcessDataIn":
-                        if bits_out or instance.pins_pwm:
+                        if bits_out or instance.pins_pwm or instance.pins_rgb:
                             output.append("static struct ProcessDataIn {")
                             if bits_out:
                                 output.append(f"    uint{int_size_out}_t output;")
                             for pwm_num, pwm in enumerate(instance.pins_pwm):
                                 output.append(f"    float pwm{pwm_num};")
+                            for rgb_num, rgb in enumerate(instance.pins_rgb):
+                                output.append(f"    uint{int_size_leds}_t  rgb;")
                             output.append("} pdata_in = {0x00000000};")
                             output.append("")
                     elif line.strip() == "//CARD_NAME":
@@ -983,6 +1031,21 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append("        }")
                             output.append("    },")
                             offset += 4
+                        for rgb_num, rgb in enumerate(instance.pins_rgb):
+                            leds = instance.leds
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append(f"            .DataSize      = {leds * 3},")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                            output.append('            "None\\0Rgb"')
+                            output.append("        }")
+                            output.append("    },")
+                            offset += byte_size_leds
                         for adc_num, adc in enumerate(instance.pins_adc):
                             output.append("    {")
                             output.append("        .pdd = {")
@@ -1010,6 +1073,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         for pwm in instance.pins_pwm:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
+                        for rgb in instance.pins_rgb:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
                         for adc in instance.pins_adc:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
@@ -1031,6 +1097,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         for pwm in instance.pins_pwm:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
+                        for rgb in instance.pins_rgb:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
                         for adc in instance.pins_adc:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
@@ -1046,9 +1115,12 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append(f"    pinMode({pin}, OUTPUT); // PWM({pin_num})")
                         for pin_num, pin in enumerate(instance.pins_adc):
                             output.append(f"    pinMode({pin}, INPUT);  // Adc({pin_num:02d})")
+                        if instance.pins_rgb:
+                            output.append("    pixels.begin();")
+                            output.append("    pixels.clear();")
                         output.append("")
                     elif line.strip() == "//pdata_in_next":
-                        if bits_out or instance.pins_pwm:
+                        if bits_out or instance.pins_pwm or instance.pins_rgb:
                             output.append("            uint8_t pdata_in_next[sizeof(pdata_in)];")
                             output.append("            if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA) {")
                             output.append("                for (size_t i = 0; i < sizeof(pdata_in); i++) {")
@@ -1069,11 +1141,20 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         for pin_num, pin in enumerate(instance.pins_adc):
                             output.append(f"    pdata_out.adc{pin_num} = analogRead({pin});")
                     elif line.strip() == "//pdata_in.output":
-                        if bits_out or instance.pins_pwm:
-                            for pin_num, pin in enumerate(instance.pins_output):
-                                output.append(f"    digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
-                            for pwm_num, pwm in enumerate(instance.pins_pwm):
-                                output.append(f"    analogWrite({pwm}, pdata_in.pwm{pwm_num});")
+                        for pin_num, pin in enumerate(instance.pins_output):
+                            output.append(f"    digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
+                        for pwm_num, pwm in enumerate(instance.pins_pwm):
+                            output.append(f"    analogWrite({pwm}, pdata_in.pwm{pwm_num});")
+
+                        if instance.pins_rgb:
+                            leds = instance.leds
+                            for led in range(0, leds * 3, 3):
+                                output.append(f"    pixels.setPixelColor({led // 3}, pixels.Color(")
+                                output.append(f"        (pdata_in.rgb & (1<<{led})) ? 255 : 0,")
+                                output.append(f"        (pdata_in.rgb & (1<<{led + 1})) ? 255 : 0,")
+                                output.append(f"        (pdata_in.rgb & (1<<{led + 2})) ? 255 : 0")
+                                output.append("    ));")
+                            output.append("    pixels.show();")
 
                     else:
                         output.append(line)

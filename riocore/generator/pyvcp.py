@@ -126,12 +126,14 @@ class pyvcp:
         e_halpin = etree.Element("halpin")
         e_halpin.text = f'"{halpin}"'
         e_scale.append(e_halpin)
-        e_min = etree.Element("min_")
-        e_min.text = str(int(display_min))
-        e_scale.append(e_min)
-        e_max = etree.Element("max_")
-        e_max.text = str(int(display_max))
-        e_scale.append(e_max)
+        if display_min is not None:
+            e_min = etree.Element("min_")
+            e_min.text = str(int(display_min))
+            e_scale.append(e_min)
+        if display_max is not None:
+            e_max = etree.Element("max_")
+            e_max.text = str(int(display_max))
+            e_scale.append(e_max)
         e_resolution = etree.Element("resolution")
         e_resolution.text = str(resolution)
         e_scale.append(e_resolution)
