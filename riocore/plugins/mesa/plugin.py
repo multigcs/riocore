@@ -637,10 +637,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.OPTIONS.update(
                 {
                     "leds": {
-                        "default": 3,
-                        "type": int,
-                        "min": 1,
-                        "max": 10,
+                        "default": 8,
+                        "type": "select",
+                        "options": ["8", "16"],
                         "description": "number of leds",
                     },
                 }
@@ -722,13 +721,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             del plugin_instance.SIGNALS["enable"]
                             pwm_n += 1
                         elif connected_pin["name"] == "rgb":
-                            leds = plugin_instance.plugin_setup.get("leds", plugin_instance.option_default("leds"))
+                            leds = int(plugin_instance.plugin_setup.get("leds", plugin_instance.option_default("leds")))
                             instance.leds = leds
                             plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
-                            for n in range(0, leds * 3, 3):
-                                plugin_instance.SIGNALS[f"rgb-{n:02d}"] = {"direction": "output", "bool": True, "display": {"title": f"red{n // 3}"}}
-                                plugin_instance.SIGNALS[f"rgb-{n + 1:02d}"] = {"direction": "output", "bool": True, "display": {"title": f"green{n // 3}"}}
-                                plugin_instance.SIGNALS[f"rgb-{n + 2:02d}"] = {"direction": "output", "bool": True, "display": {"title": f"blue{n // 3}"}}
+                            for n in range(0, leds):
+                                plugin_instance.SIGNALS[f"red-{n:02d}"] = {"direction": "output", "bool": True}
+                                plugin_instance.SIGNALS[f"green-{n:02d}"] = {"direction": "output", "bool": True}
+                                plugin_instance.SIGNALS[f"blue-{n:02d}"] = {"direction": "output", "bool": True}
                             rgb_n += 1
                         elif connected_pin["name"] == "adc":
                             plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
@@ -762,7 +761,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     del psetup["pin"]
 
         elif node_type == "rgb":
-            self.leds = self.plugin_setup.get("leds", self.option_default("leds"))
+            self.leds = int(self.plugin_setup.get("leds", self.option_default("leds")))
         elif node_type == "sserial":
             self.pins_input = []
             self.pins_output = []
@@ -899,7 +898,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         int_size_out = int_size
                         break
                 for int_size in (8, 16, 32):
-                    if leds * 3 <= int_size:
+                    if leds <= int_size:
                         int_size_leds = int_size
                         break
 
@@ -983,7 +982,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             for pwm_num, pwm in enumerate(instance.pins_pwm):
                                 output.append(f"    float pwm{pwm_num};")
                             for rgb_num, rgb in enumerate(instance.pins_rgb):
-                                output.append(f"    uint{int_size_leds}_t  rgb;")
+                                output.append(f"    uint{int_size_leds}_t  red;")
+                                output.append(f"    uint{int_size_leds}_t  green;")
+                                output.append(f"    uint{int_size_leds}_t  blue;")
                             output.append("} pdata_in = {0x00000000};")
                             output.append("")
                     elif line.strip() == "//CARD_NAME":
@@ -1035,19 +1036,20 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             offset += 4
                         for rgb_num, rgb in enumerate(instance.pins_rgb):
                             leds = instance.leds
-                            output.append("    {")
-                            output.append("        .pdd = {")
-                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append(f"            .DataSize      = {leds * 3},")
-                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
-                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
-                            output.append("            .ParamMin      = 0.0,")
-                            output.append("            .ParamMax      = 0.0,")
-                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
-                            output.append('            "None\\0Rgb"')
-                            output.append("        }")
-                            output.append("    },")
-                            offset += byte_size_leds
+                            for color in ("Red", "Green", "Blue"):
+                                output.append("    {")
+                                output.append("        .pdd = {")
+                                output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                                output.append(f"            .DataSize      = {leds},")
+                                output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                                output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                                output.append("            .ParamMin      = 0.0,")
+                                output.append("            .ParamMax      = 0.0,")
+                                output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                                output.append(f'            "None\\0{color}"')
+                                output.append("        }")
+                                output.append("    },")
+                                offset += byte_size_leds
                         for adc_num, adc in enumerate(instance.pins_adc):
                             output.append("    {")
                             output.append("        .pdd = {")
@@ -1076,8 +1078,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
                         for rgb in instance.pins_rgb:
-                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
-                            offset += 1
+                            for color in ("Red", "Green", "Blue"):
+                                output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                                offset += 1
                         for adc in instance.pins_adc:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
@@ -1100,8 +1103,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
                         for rgb in instance.pins_rgb:
-                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
-                            offset += 1
+                            for color in ("Red", "Green", "Blue"):
+                                output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                                offset += 1
                         for adc in instance.pins_adc:
                             output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
                             offset += 1
@@ -1150,11 +1154,11 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
                         if instance.pins_rgb:
                             leds = instance.leds
-                            for led in range(0, leds * 3, 3):
-                                output.append(f"    pixels.setPixelColor({led // 3}, pixels.Color(")
-                                output.append(f"        (pdata_in.rgb & (1<<{led})) ? 255 : 0,")
-                                output.append(f"        (pdata_in.rgb & (1<<{led + 1})) ? 255 : 0,")
-                                output.append(f"        (pdata_in.rgb & (1<<{led + 2})) ? 255 : 0")
+                            for led in range(0, leds):
+                                output.append(f"    pixels.setPixelColor({led}, pixels.Color(")
+                                output.append(f"        (pdata_in.red & (1<<{led})) ? 255 : 0,")
+                                output.append(f"        (pdata_in.green & (1<<{led})) ? 255 : 0,")
+                                output.append(f"        (pdata_in.blue & (1<<{led})) ? 255 : 0")
                                 output.append("    ));")
                             output.append("    pixels.show();")
 
