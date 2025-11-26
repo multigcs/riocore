@@ -306,7 +306,8 @@ void loop() {
                 }
             }
         } else {
-            Serial.println("unknown command %02X");
+            Serial.print("unknown command: ");
+            Serial.println(cmd.Generic.CommandType);
         }
 #ifndef MULTITHREAD
     } else {

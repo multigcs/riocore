@@ -761,6 +761,8 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 else:
                     del psetup["pin"]
 
+        elif node_type == "rgb":
+            self.leds = self.plugin_setup.get("leds", self.option_default("leds"))
         elif node_type == "sserial":
             self.pins_input = []
             self.pins_output = []
