@@ -4,7 +4,7 @@
     "url": "https://github.com/festlv/rioctrl-hw",
     "toolchain": "icestorm",
     "family": "ecp5",
-    "type": "25k",
+    "type": "12k",
     "package": "CABGA256",
     "clock": {
         "osc": "25000000",
