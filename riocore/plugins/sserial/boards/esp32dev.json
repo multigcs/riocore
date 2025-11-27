@@ -1,4 +1,8 @@
 {
+    "platform": "espressif32",
+    "board": "esp32dev",
+    "multithread": true,
+    "sserial": "Serial2",
     "options": {
         "upload_port": {
             "default": "/dev/ttyUSB0",

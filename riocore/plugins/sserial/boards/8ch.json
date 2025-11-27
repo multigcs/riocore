@@ -1,4 +1,16 @@
 {
+    "platform": "espressif32",
+    "board": "wemos_d1_mini32",
+    "multithread": true,
+    "sserial": "Serial2",
+    "led": "23",
+    "options": {
+        "upload_port": {
+            "default": "/dev/ttyUSB0",
+            "type": "str",
+            "description": "upload-port"
+        }
+    },
     "plugins": [
         {
             "type": "gpioout",

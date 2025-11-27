@@ -1,4 +1,8 @@
 {
+    "platform": "raspberrypi",
+    "board": "pico",
+    "sserial": "Serial1",
+    "led": "25",
     "pins": {
         "SSERIAL:RX": {
             "pin": "RX",

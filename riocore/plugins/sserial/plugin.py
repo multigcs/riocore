@@ -61,20 +61,20 @@ class Plugin(PluginBase):
 
             board = self.plugin_setup.get("board", self.option_default("board"))
             board_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.json")
-            board_data = json.loads(open(board_file).read())
+            self.board_data = json.loads(open(board_file).read())
 
             self.PINDEFAULTS = {}
-            for pin_name, pin_data in board_data["pins"].items():
+            for pin_name, pin_data in self.board_data["pins"].items():
                 pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
                 self.PINDEFAULTS[pin_name] = pin_data
 
-            self.OPTIONS.update(board_data.get("options", {}))
+            self.OPTIONS.update(self.board_data.get("options", {}))
             type_mapping = {"str": str, "bool": bool, "int": int, "float": float}
             for option in self.OPTIONS.values():
                 option["type"] = type_mapping.get(option["type"], option["type"])
 
             self.SUB_PLUGINS = []
-            for spn, sub_plugin in enumerate(board_data.get("plugins", [])):
+            for spn, sub_plugin in enumerate(self.board_data.get("plugins", [])):
                 if "uid" not in sub_plugin:
                     sub_plugin["uid"] = f"{sub_plugin['type']}{spn}"
                 self.SUB_PLUGINS.append(sub_plugin)
@@ -301,14 +301,13 @@ class Plugin(PluginBase):
                 for line in open(source).read().split("\n"):
                     if line.strip() == "//defines":
                         output.append(f'#define BOARD "{board}"')
-                        if board == "8ch":
-                            output.append("#define STATUS_LED 23")
-                        if board == "pico":
-                            output.append("#define STATUS_LED 25")
-                            output.append("#define SSerial Serial1")
-                        else:
+                        if instance.board_data.get("multithread"):
                             output.append("#define MULTITHREAD")
-                            output.append("#define SSerial Serial2")
+                        led = instance.board_data.get("led")
+                        if led:
+                            output.append(f"#define STATUS_LED {led}")
+                        output.append(f"#define SSerial {instance.board_data['sserial']}")
+
                         if instance.pins_rgb:
                             leds = instance.leds
                             output.append("#include <Adafruit_NeoPixel.h>")
@@ -478,16 +477,16 @@ class Plugin(PluginBase):
                 output = [""]
                 output.append(f"[env:{board}]")
                 output.append("framework = arduino")
-                output.append(f"board = {board}")
-                if board == "pico":
-                    output.append("platform = raspberrypi")
-                else:
-                    upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
-                    output.append("platform = espressif32")
+                output.append(f"board = {instance.board_data['board']}")
+                output.append(f"platform = {instance.board_data['platform']}")
+
+                upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
+                if upload_port:
                     output.append("#upload_speed = 115200")
                     output.append("upload_speed = 500000")
                     output.append("monitor_speed = 115200")
                     output.append(f"upload_port = {upload_port}")
+
                 output.append("")
                 output.append("")
                 target = os.path.join(firmware_path, "platformio.ini")
@@ -496,15 +495,20 @@ class Plugin(PluginBase):
                 output = [""]
                 output.append("all: build")
                 output.append("")
-                output.append("~/.platformio/penv/bin/pio:")
-                output.append("	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py")
-                output.append("	python3 /tmp/__get-platformio.py")
-                output.append("	rm -rf /tmp/__get-platformio.py")
-                output.append("")
-                output.append("build: ~/.platformio/penv/bin/pio")
+
+                deps = ""
+                if instance.board_data["platform"] == "raspberrypi":
+                    deps = " ~/.platformio/penv/bin/pio"
+                    output.append("~/.platformio/penv/bin/pio:")
+                    output.append("	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py")
+                    output.append("	python3 /tmp/__get-platformio.py")
+                    output.append("	rm -rf /tmp/__get-platformio.py")
+                    output.append("")
+
+                output.append(f"build:{deps}")
                 output.append("	pio run")
                 output.append("")
-                output.append("load: ~/.platformio/penv/bin/pio")
+                output.append(f"load:{deps}")
                 output.append("	pio run -t nobuild -t upload")
                 output.append("")
                 output.append("")
