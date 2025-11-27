@@ -1666,6 +1666,13 @@ class Window(QMainWindow):
             self.config["plugins"].insert(0, bpdict)
             del self.config["breakouts"][0]
 
+        # upgrade: mesa/sserial -> sserial
+        for pn, plugin in enumerate(list(self.config.get("plugins", []))):
+            if plugin["type"] == "mesa" and plugin.get("node_type") in {"sserial", "rgb", "adc"}:
+                plugin["type"] = "sserial"
+                if not plugin.get("board"):
+                    plugin["board"] = "esp32dev"
+
         self.nesting_all()
         self.optionstab.update(self.config)
         self.redraw()

@@ -100,11 +100,16 @@ class Plugin(PluginBase):
 
             self.TYPE = "io"
             self.IMAGE_SHOW = True
-            self.IMAGES = ["led"]
+            self.IMAGES = ["led", "wled"]
             self.SIGNALS = {}
             self.PINDEFAULTS = {
                 "rgb": {"direction": "output", "edge": "target", "type": ["GPIO"]},
             }
+            leds = int(self.plugin_setup.get("leds", self.option_default("leds")))
+            for n in range(0, leds):
+                self.SIGNALS[f"red-{n:02d}"] = {"direction": "output", "bool": True}
+                self.SIGNALS[f"green-{n:02d}"] = {"direction": "output", "bool": True}
+                self.SIGNALS[f"blue-{n:02d}"] = {"direction": "output", "bool": True}
 
         elif node_type == "adc":
             self.OPTIONS.update()
@@ -156,10 +161,6 @@ class Plugin(PluginBase):
                             leds = int(plugin_instance.plugin_setup.get("leds", plugin_instance.option_default("leds")))
                             instance.leds = leds
                             plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
-                            for n in range(0, leds):
-                                plugin_instance.SIGNALS[f"red-{n:02d}"] = {"direction": "output", "bool": True}
-                                plugin_instance.SIGNALS[f"green-{n:02d}"] = {"direction": "output", "bool": True}
-                                plugin_instance.SIGNALS[f"blue-{n:02d}"] = {"direction": "output", "bool": True}
                             rgb_n += 1
                         elif connected_pin["name"] == "adc":
                             plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"

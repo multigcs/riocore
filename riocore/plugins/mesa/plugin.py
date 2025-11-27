@@ -41,7 +41,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
         if node_type == "board":
             board_list = []
-            for json_file in glob.glob(os.path.join(os.path.dirname(__file__), "*.json")):
+            for json_file in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
                 board = json_file.split("/")[-1][:-5]
                 board_list.append(board)
             self.OPTIONS.update(
@@ -85,7 +85,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             )
             firmware = self.plugin_setup.get("firmware", self.option_default("firmware"))
 
-            posfile = os.path.join(os.path.dirname(__file__), f"{boardname}.json")
+            posfile = os.path.join(os.path.dirname(__file__), "boards", f"{boardname}.json")
             if not os.path.exists(posfile):
                 riocore.log(f"ERROR: boardfile not found: {posfile}")
                 return
@@ -176,7 +176,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
 
             self.TYPE = "base"
             self.IMAGE_SHOW = True
-            self.IMAGE = f"{boardname}.png"
+            self.IMAGE = f"boards/{boardname}.png"
             self.PINDEFAULTS = {}
 
             num_pwms = self.plugin_setup.get("num_pwms", self.option_default("num_pwms"))
@@ -243,11 +243,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     if pos:
                         mapping_to_db25 = [0, 1, 14, 2, 15, 3, 16, 4, 17, 5, 6, 7, 8, 9, 10, 11, 12, 13, "SS1", "SS2"]
                         mpin_n = mapping_to_db25[pin_n]
-                        if mpin_n in {"SS1", "SS2"}:
-                            if slot == "P2":
-                                pos = (pos[0], pos[1] + 20)
-                            elif slot == "P7":
-                                pos = (pos[0], pos[1] + 40)
                         self.PINDEFAULTS[f"{slot}:P{mpin_n}"] = {
                             "pin": halname,
                             "comment": f"{func}({channel}) - {pinfunc}",
