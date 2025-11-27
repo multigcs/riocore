@@ -1,0 +1,280 @@
+{
+    "pins": {
+        "SSERIAL:RX": {
+            "pin": "RX",
+            "direction": "all",
+            "pos": [
+                235,
+                257
+            ],
+            "edge": "target",
+            "type": [
+                "MESASSerialTX"
+            ]
+        },
+        "SSERIAL:TX": {
+            "pin": "TX",
+            "direction": "all",
+            "pos": [
+                235,
+                234
+            ],
+            "edge": "target",
+            "type": [
+                "MESASSerialRX"
+            ]
+        },
+        "IO:36": {
+            "pin": "36",
+            "direction": "all",
+            "pos": [
+                10,
+                73
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:39": {
+            "pin": "39",
+            "direction": "all",
+            "pos": [
+                10,
+                96
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:34": {
+            "pin": "34",
+            "direction": "all",
+            "pos": [
+                10,
+                119
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:35": {
+            "pin": "35",
+            "direction": "all",
+            "pos": [
+                10,
+                142
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:32": {
+            "pin": "32",
+            "direction": "all",
+            "pos": [
+                10,
+                165
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:33": {
+            "pin": "33",
+            "direction": "all",
+            "pos": [
+                10,
+                188
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:25": {
+            "pin": "25",
+            "direction": "all",
+            "pos": [
+                10,
+                211
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:26": {
+            "pin": "26",
+            "direction": "all",
+            "pos": [
+                10,
+                234
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:27": {
+            "pin": "27",
+            "direction": "all",
+            "pos": [
+                10,
+                257
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:14": {
+            "pin": "14",
+            "direction": "all",
+            "pos": [
+                10,
+                280
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:12": {
+            "pin": "12",
+            "direction": "all",
+            "pos": [
+                10,
+                303
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:13": {
+            "pin": "13",
+            "direction": "all",
+            "pos": [
+                10,
+                326
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:23": {
+            "pin": "23",
+            "direction": "all",
+            "pos": [
+                235,
+                50
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:22": {
+            "pin": "22",
+            "direction": "all",
+            "pos": [
+                235,
+                73
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:21": {
+            "pin": "21",
+            "direction": "all",
+            "pos": [
+                235,
+                142
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:19": {
+            "pin": "19",
+            "direction": "all",
+            "pos": [
+                235,
+                165
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:18": {
+            "pin": "18",
+            "direction": "all",
+            "pos": [
+                235,
+                188
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:5": {
+            "pin": "5",
+            "direction": "all",
+            "pos": [
+                235,
+                211
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:4": {
+            "pin": "4",
+            "direction": "all",
+            "pos": [
+                235,
+                280
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:2": {
+            "pin": "2",
+            "direction": "all",
+            "pos": [
+                235,
+                303
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        },
+        "IO:15": {
+            "pin": "15",
+            "direction": "all",
+            "pos": [
+                235,
+                326
+            ],
+            "edge": "source",
+            "type": [
+                "GPIO"
+            ]
+        }
+    }
+}

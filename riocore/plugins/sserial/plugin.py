@@ -38,13 +38,17 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
 
         if node_type == "sserial":
+            board_list = []
+            for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
+                board_list.append(os.path.basename(jboard).replace(".json", ""))
             self.OPTIONS.update(
                 {
                     "board": {
                         "default": "esp32dev",
                         "type": "select",
-                        "options": ["esp32dev", "wemos_d1_mini32", "pico", "8ch"],
+                        "options": board_list,
                         "description": "board type",
+                        "reload": True,
                     },
                     "cardname": {
                         "default": "9r01",
@@ -52,83 +56,31 @@ class Plugin(PluginBase):
                         "options": ["9r01", "9r02", "9r03", "9r04"],
                         "description": "card name",
                     },
-                    "upload_port": {
-                        "default": "/dev/ttyUSB0",
-                        "type": str,
-                        "description": "upload-port",
-                    },
                 },
             )
 
             board = self.plugin_setup.get("board", self.option_default("board"))
+            board_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.json")
+            board_data = json.loads(open(board_file).read())
+
+            self.PINDEFAULTS = {}
+            for pin_name, pin_data in board_data["pins"].items():
+                pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
+                self.PINDEFAULTS[pin_name] = pin_data
+
+            if board != "pico":
+                self.OPTIONS.update(
+                    {
+                        "upload_port": {
+                            "default": "/dev/ttyUSB0",
+                            "type": str,
+                            "description": "upload-port",
+                        },
+                    },
+                )
 
             if board == "8ch":
                 relais_pins = (32, 33, 25, 26, 27, 14, 12, 13)
-                self.PINDEFAULTS = {
-                    "SSERIAL:RX": {
-                        "pin": f"{self.instances_name}:RX",
-                        "direction": "all",
-                        "pos": (92 + 5 * 23, 360),
-                        "edge": "target",
-                        "type": ["MESASSerialTX"],
-                    },
-                    "SSERIAL:TX": {
-                        "pin": f"{self.instances_name}:TX",
-                        "direction": "all",
-                        "pos": (92 + 5 * 23, 383),
-                        "edge": "target",
-                        "type": ["MESASSerialRX"],
-                    },
-                }
-                for pin_num, pin in enumerate((-1, -1, 21, 19, 5, -1, 0, 15, -1, -1)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (92 + pin_num * 23, 360),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                    if pin in relais_pins:
-                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
-                for pin_num, pin in enumerate((-1, 22, -1, -1, 18, -1, 4, 2, -1, -1)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (92 + pin_num * 23, 383),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                    if pin in relais_pins:
-                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
-                for pin_num, pin in enumerate((-1, -1, -1, 35, 33, 26, 14, 13, -1, -1)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (92 + pin_num * 23, 644),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                    if pin in relais_pins:
-                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
-                for pin_num, pin in enumerate((-1, -1, 34, 32, 25, 27, 12, -1, -1, -1)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (92 + pin_num * 23, 667),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                    if pin in relais_pins:
-                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
-
                 self.SUB_PLUGINS = []
                 for spn, rpin in enumerate(relais_pins):
                     self.SUB_PLUGINS.append(
@@ -144,142 +96,8 @@ class Plugin(PluginBase):
                         }
                     )
 
-            elif board == "pico":
-                self.PINDEFAULTS = {
-                    "SSERIAL:RX": {
-                        "pin": f"{self.instances_name}:RX",
-                        "direction": "all",
-                        "pos": (10, 23 + 1 * 23),
-                        "edge": "target",
-                        "type": ["MESASSerialTX"],
-                    },
-                    "SSERIAL:TX": {
-                        "pin": f"{self.instances_name}:TX",
-                        "direction": "all",
-                        "pos": (10, 23 + 0 * 23),
-                        "edge": "target",
-                        "type": ["MESASSerialRX"],
-                    },
-                }
-                for pin_num, pin in enumerate((-1, -1, -1, 2, 3, 4, 5, -1, 6, 7, 8, 9, -1, 10, 11, 12, 13, -1, 14, 15)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (10, 23 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                for pin_num, pin in enumerate((-1, -1, -1, -1, -1, -1, 28, -1, 27, 26, -1, 22, -1, 21, 20, 19, 18, -1, 17, 16)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (177, 23 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-
-            elif board == "esp32dev":
-                self.PINDEFAULTS = {
-                    "SSERIAL:RX": {
-                        "pin": f"{self.instances_name}:RX",
-                        "direction": "all",
-                        "pos": (235, 50 + 9 * 23),
-                        "edge": "target",
-                        "type": ["MESASSerialTX"],
-                    },
-                    "SSERIAL:TX": {
-                        "pin": f"{self.instances_name}:TX",
-                        "direction": "all",
-                        "pos": (235, 50 + 8 * 23),
-                        "edge": "target",
-                        "type": ["MESASSerialRX"],
-                    },
-                }
-                for pin_num, pin in enumerate((-1, 36, 39, 34, 35, 32, 33, 25, 26, 27, 14, 12, 13)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (10, 50 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                for pin_num, pin in enumerate((23, 22, -1, -1, 21, 19, 18, 5, -1, -1, 4, 2, 15)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (235, 50 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-
-            else:
-                self.PINDEFAULTS = {
-                    "SSERIAL:RX": {
-                        "pin": f"{self.instances_name}:RX",
-                        "direction": "all",
-                        "pos": (240, 69 + 5 * 23),
-                        "edge": "target",
-                        "type": ["MESASSerialTX"],
-                    },
-                    "SSERIAL:TX": {
-                        "pin": f"{self.instances_name}:TX",
-                        "direction": "all",
-                        "pos": (240, 69 + 4 * 23),
-                        "edge": "target",
-                        "type": ["MESASSerialRX"],
-                    },
-                }
-                for pin_num, pin in enumerate((-1, -1, 39, 35, 33, 34, 14, -1, 9)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (12, 69 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                for pin_num, pin in enumerate((-1, 36, 26, 18, 19, 23, 5, 13, 10)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (36, 69 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                for pin_num, pin in enumerate((-1, -1, 22, 21, -1, -1, -1, -1, 15)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (240, 69 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-                for pin_num, pin in enumerate((-1, 27, 25, 32, 12, 4, 0, 2)):
-                    if pin == -1:
-                        continue
-                    self.PINDEFAULTS[f"IO:{pin}"] = {
-                        "pin": f"{self.instances_name}:{pin}",
-                        "direction": "all",
-                        "pos": (263, 69 + pin_num * 23),
-                        "edge": "source",
-                        "type": ["GPIO"],
-                    }
-
             self.IMAGE_SHOW = True
-            self.IMAGE = f"{board}.png"
+            self.IMAGE = f"boards/{board}.png"
             self.BUILDER = [
                 "build",
                 "load",
@@ -339,11 +157,7 @@ class Plugin(PluginBase):
                 rgb_n = 0
                 adc_n = 0
                 for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
-                    rawpin = connected_pin["rawpin"]
                     plugin_instance = connected_pin["instance"]
-
-                    print(plugin_instance)
-
                     if hasattr(instance, "SSERIAL_NUM"):
                         plugin_instance.hm2_prefix = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
                         if connected_pin["name"] == "pwm":
@@ -432,7 +246,6 @@ class Plugin(PluginBase):
             if node_type == "sserial":
                 board = instance.plugin_setup.get("board", instance.option_default("board"))
                 cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
-                upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
                 bits_out = len(instance.pins_output)
                 bits_in = len(instance.pins_input)
                 leds = instance.leds
@@ -727,6 +540,7 @@ class Plugin(PluginBase):
                 if board == "pico":
                     output.append("platform = raspberrypi")
                 else:
+                    upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
                     output.append("platform = espressif32")
                     output.append("#upload_speed = 115200")
                     output.append("upload_speed = 500000")

@@ -1,8 +1,6 @@
-import copy
 import glob
 import json
 import os
-import shutil
 
 import riocore
 from riocore.plugins import PluginBase
@@ -390,7 +388,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 "pwm": {"direction": "output", "edge": "target", "type": ["MESAPwmPwm", "MESAPWMPWM", "GPIO"]},
             }
 
-
     def builder(self, config, command):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "board":
@@ -510,4 +507,3 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 parent.halg.joint_add(parent, axis_name, joint_n, "velocity", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname, pid_num=pid_num)
                 parent.halg.setp_add(f"{self.PREFIX}.control-type", "1")
                 parent.halg.setp_add(f"{self.PREFIX}.step_type", "0")
-
