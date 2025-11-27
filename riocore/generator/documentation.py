@@ -71,6 +71,7 @@ class documentation:
         self.builds_md()
         self.halgraph_png()
         self.config_md()
+        self.axis_md()
         self.pins_md()
         self.signals_md()
         self.json_md()
@@ -114,6 +115,31 @@ class documentation:
         output.append("")
         open(os.path.join(self.doc_path, "BUILDS.md"), "w").write("\n".join(output))
 
+    def axis_md(self):
+        output = ["# Axis/Joints"]
+        output.append("## Overview")
+        output.append("| Axis | Joint | Plugin | Home-Seq. | Setup |")
+        output.append("| --- | --- | --- | --- | --- |")
+        for axis_name, axis_config in self.project.axis_dict.items():
+            for joint_setup in axis_config["joints"]:
+                joint = joint_setup["num"]
+                plugin_instance = joint_setup["instance"]
+                link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
+                plugin = plugin_instance.instances_name
+                home_seq = joint_setup["HOME_SEQUENCE"]
+                setup = []
+                for key in {"mode", "homeswitch", "TYPE", "MIN_LIMIT", "MAX_LIMIT", "MAX_VELOCITY", "MAX_ACCELERATION", "SCALE_OUT", "SCALE_IN"}:
+                    value = joint_setup.get(key)
+                    if value is None:
+                        continue
+                    if key in {"instance", "homeswitch"}:
+                        value = value.instances_name
+                    setup.append(f"{key.replace('_', '-').title()}: {value}")
+                output.append(f"| {axis_name} | {joint} | {plugin} ({link}) | {home_seq} | {'<br>'.join(setup)} |")
+
+        output.append("")
+        open(os.path.join(self.doc_path, "AXIS.md"), "w").write("\n".join(output))
+
     def config_md(self):
         output = [f"# {self.project.config['name']}"]
         jdata = self.project.config["jdata"]
@@ -128,19 +154,6 @@ class documentation:
         if self.project.config["json_file"]:
             output.append(f"* Config-Path: {self.project.config['json_file']}")
         output.append(f"* Output-Path: {self.project.config['output_path']}")
-        output.append("")
-
-        output.append("## Axis/Joints")
-        output.append("| Axis | Joint | Plugin | Home-Seq. |")
-        output.append("| --- | --- | --- | --- |")
-        for axis_name, axis_config in self.project.axis_dict.items():
-            for joint_setup in axis_config["joints"]:
-                joint = joint_setup["num"]
-                plugin_instance = joint_setup["instance"]
-                link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
-                plugin = plugin_instance.instances_name
-                home_seq = joint_setup["HOME_SEQUENCE"]
-                output.append(f"| {axis_name} | {joint} | {plugin} ({link}) | {home_seq} | ")
         output.append("")
 
         self.plugin_infos = {}
@@ -408,7 +421,7 @@ body {font-family: Arial;}
         output.append("</header>")
         output.append("<body>")
 
-        sections = ("CONFIG", "PINS", "SIGNALS", "BUILDS", "INTERFACE", "LINUXCNC", "JSON")
+        sections = ("CONFIG", "AXIS", "PINS", "SIGNALS", "BUILDS", "INTERFACE", "LINUXCNC", "JSON")
         output.append('<div class="tab">')
         for section in sections:
             md_path = os.path.join(self.doc_path, f"{section}.md")
@@ -450,6 +463,7 @@ openSection(event, \'CONFIG\');
         output = [""]
         output.append("## Table of Contents")
         output.append("- [Config](./CONFIG.md)")
+        output.append("- [Axis/Joints](./AXIS.md)")
         output.append("- [Pins](./PINS.md)")
         output.append("- [Builds](./BUILDS.md)")
         output.append("- [Interface](./INTERFACE.md)")
