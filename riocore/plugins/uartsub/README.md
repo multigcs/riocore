@@ -1,12 +1,12 @@
-# uart
+# uartsub
 
 <img align="right" width="320" src="image.png">
 
-**uart interface for host cominucation**
+**uartsub interface for host cominucation**
 
-simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
+simple uartsub interface, not usable for realtime stuff in LinuxCNC / only for testing
 
-Keywords: serial uart interface
+Keywords: serial uartsub interface
 
 ## Pins:
 *FPGA-pins*
@@ -41,11 +41,11 @@ serial baud rate
  * default: 1000000
  * unit: bit/s
 
-### csum:
-activate checksums
+### subboard:
+sub board
 
- * type: bool
- * default: False
+ * type: str
+ * default: 
 
 
 ## Signals:
@@ -59,7 +59,7 @@ activate checksums
 ## Basic-Example:
 ```
 {
-    "type": "uart",
+    "type": "uartsub",
     "pins": {
         "rx": {
             "pin": "0"
@@ -77,10 +77,10 @@ activate checksums
 ## Full-Example:
 ```
 {
-    "type": "uart",
+    "type": "uartsub",
     "name": "",
     "baud": 1000000,
-    "csum": false,
+    "subboard": "",
     "pins": {
         "rx": {
             "pin": "0",
@@ -112,7 +112,7 @@ activate checksums
 ```
 
 ## Verilogs:
- * [uart.v](uart.v)
+ * [uartsub.v](uartsub.v)
  * [uart_baud.v](uart_baud.v)
  * [uart_rx.v](uart_rx.v)
  * [uart_tx.v](uart_tx.v)

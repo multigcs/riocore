@@ -2,10 +2,10 @@
     "name": "Ninja",
     "flow": {
         "view": {
-            "scale": 1.28,
+            "scale": 0.84,
             "pos": [
-                349,
-                -603
+                463,
+                -316
             ]
         },
         "board": {
@@ -107,9 +107,9 @@
             "node_type": "board",
             "pos": [
                 670.0,
-                -250.0
+                -170.0
             ],
-            "rotate": 90,
+            "rotate": -90,
             "uid": "ninja0",
             "board": "w5500-evb-pico-parport"
         },
@@ -342,11 +342,11 @@
             },
             "uid": "gpioout3",
             "pos": [
-                740.0,
-                140.0
+                680.0,
+                -250.0
             ],
             "image": "led",
-            "rotate": 90,
+            "rotate": -90,
             "name": "led"
         },
         {
