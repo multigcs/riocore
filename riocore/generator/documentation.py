@@ -68,8 +68,7 @@ class documentation:
                     self.iface_out.append([variable_name, size, hal_name])
         """
 
-        # self.builds_md()
-
+        self.builds_md()
         self.halgraph_png()
         self.config_md()
         self.pins_md()
@@ -107,7 +106,9 @@ class documentation:
                 output.append("")
 
             for command in plugin_instance.BUILDER:
-                cmd = plugin_instance.builder(self.project.config, command)
+                cmd = plugin_instance.builder(self.project, command)
+                cmd = ""
+
                 output.append(f"### {command}")
                 output.append(f"```{cmd}```")
             output.append("")

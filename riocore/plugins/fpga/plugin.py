@@ -173,7 +173,11 @@ class Plugin(PluginBase):
         return "\n".join(output)
 
     def builder(self, config, command):
-        project = riocore.Project(copy.deepcopy(config))
+        if not isinstance(config, dict):
+            project = config
+        else:
+            project = riocore.Project(copy.deepcopy(config))
+        project = config
         gateware_path = os.path.join(project.config["output_path"], "Gateware", self.instances_name)
         cmd = f"cd {gateware_path} && make {command}"
         return cmd

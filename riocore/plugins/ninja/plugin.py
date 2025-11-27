@@ -331,7 +331,10 @@ class Plugin(PluginBase):
                     parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)
 
     def builder(self, config, command):
-        project = riocore.Project(copy.deepcopy(config))
+        if not isinstance(config, dict):
+            project = config
+        else:
+            project = riocore.Project(copy.deepcopy(config))
         firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
         cmd = f"cd {firmware_path} && make {command}"
         return cmd

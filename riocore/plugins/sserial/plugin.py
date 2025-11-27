@@ -126,7 +126,10 @@ class Plugin(PluginBase):
     def builder(self, config, command):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "sserial":
-            project = riocore.Project(copy.deepcopy(config))
+            if not isinstance(config, dict):
+                project = config
+            else:
+                project = riocore.Project(copy.deepcopy(config))
             firmware_path = os.path.join(project.config["output_path"], "Firmware", self.title)
             cmd = f"cd {firmware_path} && make {command}"
             return cmd
