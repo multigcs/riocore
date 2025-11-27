@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 
@@ -12,22 +13,20 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.PLUGIN_TYPE = "breakout"
         self.PINDEFAULTS = {}
+        board_list = []
+        for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
+            board_list.append(os.path.basename(jboard).replace(".json", ""))
         self.OPTIONS = {
             "node_type": {
                 "default": "china-bob5x",
                 "type": "select",
-                "options": [
-                    "china-bob5x",
-                    "db25-1205",
-                    "rpi-db25hat",
-                    "rio-icebreaker3x",
-                    "rioctrl-shiftio",
-                ],
+                "options": board_list,
                 "description": "board type",
+                "reload": True,
             },
         }
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        breakout_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
+        breakout_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
         jdata = json.loads(open(breakout_file).read())
 
         if node_type == "rioctrl-shiftio":
@@ -56,7 +55,7 @@ class Plugin(PluginBase):
             self.BITS_OUT = 8
             self.BITS_IN = 8
 
-        self.IMAGE = f"{node_type}.png"
+        self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
         self.INFO = jdata.get("comment", "")
         for pin, data in jdata.get("main", {}).items():
