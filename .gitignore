@@ -3,6 +3,8 @@ pyvenv/
 tests/unit/output/
 riocore/toolchains/
 
+*.bak
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

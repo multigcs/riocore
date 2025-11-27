@@ -1,4 +1,5 @@
 import copy
+import glob
 import hashlib
 import importlib
 import json
@@ -26,38 +27,16 @@ class Plugin(PluginBase):
         self.PLUGIN_TYPE = "fpga"
         self.BUILDER = ["clean", "build", "load"]
         self.URL = ""
+        board_list = []
+        for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
+            board_list.append(os.path.basename(jboard).replace(".json", ""))
         self.OPTIONS = {
             "node_type": {
                 "default": "Tangbob",
                 "type": "select",
-                "options": [
-                    "Altera10M08Eval",
-                    "Basys2",
-                    "Colorlight5A-75B-v8.0",
-                    "Colorlight5A-75E",
-                    "Colorlight_i5-v7_0",
-                    "CYC1000",
-                    "EBAZ4205",
-                    "EP2C5T144",
-                    "EP4CE6E22C8",
-                    "ICEBreakerV1.0e",
-                    "IceShield",
-                    "LX9MicroBoard",
-                    "Mesa7c80",
-                    "Mesa7c81",
-                    "MotoMan",
-                    "Numato-Spartan6",
-                    "OctoBot",
-                    "Olimex-ICE40HX8K-EVB",
-                    "rioctrl",
-                    "Tangbob",
-                    "TangNano20K",
-                    "TangNano9K",
-                    "Tangoboard",
-                    "TangPrimer20K",
-                    "TangPrimer25K",
-                ],
+                "options": board_list,
                 "description": "board type",
+                "reload": True,
             },
             "protocol": {
                 "default": "SPI",
@@ -71,11 +50,9 @@ class Plugin(PluginBase):
                 "description": "simulation mode",
             },
         }
-
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        board_file = os.path.join(os.path.dirname(__file__), f"{node_type}.json")
+        board_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
         self.jdata = json.loads(open(board_file).read())
-
         if self.jdata.get("toolchains"):
             self.OPTIONS.update(
                 {
@@ -98,7 +75,7 @@ class Plugin(PluginBase):
             }
         )
 
-        self.IMAGE = f"{node_type}.png"
+        self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
         self.DESCRIPTION = self.jdata.get("comment", "")
         self.INFO = self.jdata.get("description", "")
