@@ -84,7 +84,7 @@ static const LBP_PDD PDD[] = {
             .DataDirection = LBP_PDD_DIRECTION_OUTPUT,
             .ParamMin      = 0.0,
             .ParamMax      = 0.0,
-            .ParamAddress  = PARAM_BASE_ADDRESS,
+            .ParamAddress  = PARAM_BASE_ADDRESS + 0,
             "None\0Output"
         }
     },

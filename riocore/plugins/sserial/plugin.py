@@ -223,6 +223,22 @@ class Plugin(PluginBase):
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}-invert", 1)
 
+    def pdd_entry(cls, name, direction, ptype, size, offset, param_min=0.0, param_max=0.0):
+        output = []
+        output.append("    {")
+        output.append("        .pdd = {")
+        output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+        output.append(f"            .DataSize      = {size},")
+        output.append(f"            .DataType      = LBP_PDD_DATA_TYPE_{ptype.upper()},")
+        output.append(f"            .DataDirection = LBP_PDD_DIRECTION_{direction.upper()},")
+        output.append(f"            .ParamMin      = {param_min},")
+        output.append(f"            .ParamMax      = {param_max},")
+        output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+        output.append(f'            "None\\0{name}"')
+        output.append("        }")
+        output.append("    },")
+        return output
+
     def extra_files(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
@@ -339,76 +355,21 @@ class Plugin(PluginBase):
                     elif line.strip() == "//PDD":
                         offset = 0
                         if bits_out:
-                            output.append("    {")
-                            output.append("        .pdd = {")
-                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append(f"            .DataSize      = {bits_out},")
-                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
-                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
-                            output.append("            .ParamMin      = 0.0,")
-                            output.append("            .ParamMax      = 0.0,")
-                            output.append("            .ParamAddress  = PARAM_BASE_ADDRESS,")
-                            output.append('            "None\\0Output"')
-                            output.append("        }")
-                            output.append("    },")
+                            output += cls.pdd_entry("Output", "output", "bits", bits_out, offset)
                             offset += byte_size_out
                         if bits_in:
-                            output.append("    {")
-                            output.append("        .pdd = {")
-                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append(f"            .DataSize      = {bits_in},")
-                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
-                            output.append("            .DataDirection = LBP_PDD_DIRECTION_INPUT,")
-                            output.append("            .ParamMin      = 0.0,")
-                            output.append("            .ParamMax      = 0.0,")
-                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
-                            output.append('            "None\\0Input"')
-                            output.append("        }")
-                            output.append("    },")
+                            output += cls.pdd_entry("Input", "input", "bits", bits_out, offset)
                             offset += byte_size_in
                         for pwm_num, pwm in enumerate(instance.pins_pwm):
-                            output.append("    {")
-                            output.append("        .pdd = {")
-                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append("            .DataSize      = 32,")
-                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_FLOAT,")
-                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
-                            output.append("            .ParamMin      = 0.0,")
-                            output.append("            .ParamMax      = 0.0,")
-                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
-                            output.append(f'            "None\\0Pwm{pwm_num}"')
-                            output.append("        }")
-                            output.append("    },")
+                            output += cls.pdd_entry(f"Pwm{pwm_num}", "output", "float", 32, offset)
                             offset += 4
                         for rgb_num, rgb in enumerate(instance.pins_rgb):
                             leds = instance.leds
                             for color in ("Red", "Green", "Blue"):
-                                output.append("    {")
-                                output.append("        .pdd = {")
-                                output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                                output.append(f"            .DataSize      = {leds},")
-                                output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
-                                output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
-                                output.append("            .ParamMin      = 0.0,")
-                                output.append("            .ParamMax      = 0.0,")
-                                output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
-                                output.append(f'            "None\\0{color}"')
-                                output.append("        }")
-                                output.append("    },")
+                                output += cls.pdd_entry(color, "output", "bits", leds, offset)
                                 offset += byte_size_leds
                         for adc_num, adc in enumerate(instance.pins_adc):
-                            output.append("    {")
-                            output.append("        .pdd = {")
-                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
-                            output.append("            .DataSize      = 32,")
-                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_FLOAT,")
-                            output.append("            .DataDirection = LBP_PDD_DIRECTION_INPUT,")
-                            output.append("            .ParamMin      = 0.0,")
-                            output.append("            .ParamMax      = 0.0,")
-                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
-                            output.append(f'            "None\\0Adc{adc_num}"')
-                            output.append("        }")
-                            output.append("    },")
+                            output += cls.pdd_entry(f"Adc{adc_num}", "input", "float", 32, offset)
                             offset += 4
                         output.append("")
                     elif line.strip() == "//PTOC":
@@ -497,7 +458,6 @@ class Plugin(PluginBase):
                             output.append(f"    digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
                         for pwm_num, pwm in enumerate(instance.pins_pwm):
                             output.append(f"    analogWrite({pwm}, pdata_in.pwm{pwm_num});")
-
                         if instance.pins_rgb:
                             leds = instance.leds
                             for led in range(0, leds):
@@ -507,7 +467,6 @@ class Plugin(PluginBase):
                                 output.append(f"        (pdata_in.blue & (1<<{led})) ? 255 : 0")
                                 output.append("    ));")
                             output.append("    pixels.show();")
-
                     else:
                         output.append(line)
                 target = os.path.join(firmware_path, "src", "main.ino")
