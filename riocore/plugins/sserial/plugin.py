@@ -1,0 +1,761 @@
+import copy
+import glob
+import json
+import os
+import shutil
+
+import riocore
+from riocore.plugins import PluginBase
+
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
+
+class Plugin(PluginBase):
+    def setup(self):
+        self.NAME = "sserial"
+        self.COMPONENT = "sserial"
+        self.INFO = "support for custom mesa-sserial devices"
+        self.DESCRIPTION = ""
+        self.KEYWORDS = "smart-serial rgb wled rs422"
+        self.TYPE = "base"
+        self.IMAGE_SHOW = False
+        self.PLUGIN_TYPE = "sserial"
+        self.URL = ""
+        self.OPTIONS = {
+            "node_type": {
+                "default": "sserial",
+                "type": "select",
+                "options": [
+                    "sserial",
+                    "rgb",
+                    "adc",
+                ],
+                "description": "instance type",
+                "reload": True,
+            },
+        }
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        self.SIGNALS = {}
+
+        if node_type == "sserial":
+            self.OPTIONS.update(
+                {
+                    "board": {
+                        "default": "esp32dev",
+                        "type": "select",
+                        "options": ["esp32dev", "wemos_d1_mini32", "pico", "8ch"],
+                        "description": "board type",
+                    },
+                    "cardname": {
+                        "default": "9r01",
+                        "type": "select",
+                        "options": ["9r01", "9r02", "9r03", "9r04"],
+                        "description": "card name",
+                    },
+                    "upload_port": {
+                        "default": "/dev/ttyUSB0",
+                        "type": str,
+                        "description": "upload-port",
+                    },
+                },
+            )
+
+            board = self.plugin_setup.get("board", self.option_default("board"))
+
+            if board == "8ch":
+                relais_pins = (32, 33, 25, 26, 27, 14, 12, 13)
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (92 + 5 * 23, 360),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (92 + 5 * 23, 383),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, -1, 21, 19, 5, -1, 0, 15, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 360),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+                for pin_num, pin in enumerate((-1, 22, -1, -1, 18, -1, 4, 2, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 383),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+                for pin_num, pin in enumerate((-1, -1, -1, 35, 33, 26, 14, 13, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 644),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+                for pin_num, pin in enumerate((-1, -1, 34, 32, 25, 27, 12, -1, -1, -1)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (92 + pin_num * 23, 667),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                    if pin in relais_pins:
+                        self.PINDEFAULTS[f"IO:{pin}"]["comment"] = f"Relais-{relais_pins.index(pin)}"
+
+                self.SUB_PLUGINS = []
+                for spn, rpin in enumerate(relais_pins):
+                    self.SUB_PLUGINS.append(
+                        {
+                            "type": "gpioout",
+                            "rpos": [410, 15 + spn * 167],
+                            "image": "relay_min",
+                            "rotate": 0,
+                            "uid": f"relay{spn}",
+                            "name": "",
+                            "signals": {"bit": {"net": ""}},
+                            "pins": {"bit": {"pin": f"IO:{rpin}"}},
+                        }
+                    )
+
+            elif board == "pico":
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (10, 23 + 1 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (10, 23 + 0 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, -1, -1, 2, 3, 4, 5, -1, 6, 7, 8, 9, -1, 10, 11, 12, 13, -1, 14, 15)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (10, 23 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, -1, -1, -1, -1, -1, 28, -1, 27, 26, -1, 22, -1, 21, 20, 19, 18, -1, 17, 16)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (177, 23 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+
+            elif board == "esp32dev":
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (235, 50 + 9 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (235, 50 + 8 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, 36, 39, 34, 35, 32, 33, 25, 26, 27, 14, 12, 13)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (10, 50 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((23, 22, -1, -1, 21, 19, 18, 5, -1, -1, 4, 2, 15)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (235, 50 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+
+            else:
+                self.PINDEFAULTS = {
+                    "SSERIAL:RX": {
+                        "pin": f"{self.instances_name}:RX",
+                        "direction": "all",
+                        "pos": (240, 69 + 5 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialTX"],
+                    },
+                    "SSERIAL:TX": {
+                        "pin": f"{self.instances_name}:TX",
+                        "direction": "all",
+                        "pos": (240, 69 + 4 * 23),
+                        "edge": "target",
+                        "type": ["MESASSerialRX"],
+                    },
+                }
+                for pin_num, pin in enumerate((-1, -1, 39, 35, 33, 34, 14, -1, 9)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (12, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, 36, 26, 18, 19, 23, 5, 13, 10)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (36, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, -1, 22, 21, -1, -1, -1, -1, 15)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (240, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+                for pin_num, pin in enumerate((-1, 27, 25, 32, 12, 4, 0, 2)):
+                    if pin == -1:
+                        continue
+                    self.PINDEFAULTS[f"IO:{pin}"] = {
+                        "pin": f"{self.instances_name}:{pin}",
+                        "direction": "all",
+                        "pos": (263, 69 + pin_num * 23),
+                        "edge": "source",
+                        "type": ["GPIO"],
+                    }
+
+            self.IMAGE_SHOW = True
+            self.IMAGE = f"{board}.png"
+            self.BUILDER = [
+                "build",
+                "load",
+            ]
+
+        elif node_type == "rgb":
+            self.OPTIONS.update(
+                {
+                    "leds": {
+                        "default": 8,
+                        "type": "select",
+                        "options": ["8", "16"],
+                        "description": "number of leds",
+                    },
+                }
+            )
+
+            self.TYPE = "io"
+            self.IMAGE_SHOW = True
+            self.IMAGES = ["led"]
+            self.SIGNALS = {}
+            self.PINDEFAULTS = {
+                "rgb": {"direction": "output", "edge": "target", "type": ["GPIO"]},
+            }
+
+        elif node_type == "adc":
+            self.OPTIONS.update()
+
+            self.TYPE = "io"
+            self.IMAGE_SHOW = True
+            self.IMAGES = ["spindle500w", "laser", "led"]
+            self.SIGNALS = {
+                "value": {
+                    "direction": "input",
+                    "min": 0,
+                    "max": 2048,
+                },
+            }
+            self.PINDEFAULTS = {
+                "adc": {"direction": "input", "edge": "target", "type": ["GPIO"]},
+            }
+
+    def builder(self, config, command):
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if node_type == "sserial":
+            project = riocore.Project(copy.deepcopy(config))
+            firmware_path = os.path.join(project.config["output_path"], "Firmware", self.title)
+            cmd = f"cd {firmware_path} && make {command}"
+            return cmd
+
+    def update_prefixes(cls, parent, instances):
+        for instance in instances:
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            if node_type == "sserial":
+                cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
+                pwm_n = 0
+                rgb_n = 0
+                adc_n = 0
+                for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                    rawpin = connected_pin["rawpin"]
+                    plugin_instance = connected_pin["instance"]
+
+                    print(plugin_instance)
+
+                    if hasattr(instance, "SSERIAL_NUM"):
+                        plugin_instance.hm2_prefix = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                        if connected_pin["name"] == "pwm":
+                            plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                            plugin_instance.SIGNALS[f"pwm{pwm_n}"] = plugin_instance.SIGNALS["value"]
+                            del plugin_instance.SIGNALS["value"]
+                            del plugin_instance.SIGNALS["enable"]
+                            pwm_n += 1
+                        elif connected_pin["name"] == "rgb":
+                            leds = int(plugin_instance.plugin_setup.get("leds", plugin_instance.option_default("leds")))
+                            instance.leds = leds
+                            plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                            for n in range(0, leds):
+                                plugin_instance.SIGNALS[f"red-{n:02d}"] = {"direction": "output", "bool": True}
+                                plugin_instance.SIGNALS[f"green-{n:02d}"] = {"direction": "output", "bool": True}
+                                plugin_instance.SIGNALS[f"blue-{n:02d}"] = {"direction": "output", "bool": True}
+                            rgb_n += 1
+                        elif connected_pin["name"] == "adc":
+                            plugin_instance.PREFIX = f"{instance.PREFIX}.{cardname}.{instance.SSERIAL_NUM}"
+                            plugin_instance.SIGNALS[f"adc{adc_n}"] = plugin_instance.SIGNALS["value"]
+                            del plugin_instance.SIGNALS["value"]
+                            adc_n += 1
+
+    def update_pins(self, parent):
+        self.outputs = []
+        self.output_inverts = []
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if node_type == "sserial":
+            self.pins_input = []
+            self.pins_output = []
+            self.pins_pwm = []
+            self.pins_rgb = []
+            self.pins_adc = []
+            self.leds = 0
+            input_pin_n = 0
+            output_pin_n = 0
+            pwm_pin_n = 0
+            rgb_pin_n = 0
+            adc_pin_n = 0
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+                plugin_instance = connected_pin["instance"]
+                if not hasattr(plugin_instance, "hm2_prefix"):
+                    riocore.log(f"ERROR: no hm2_prefix found: {connected_pin}")
+                    continue
+                psetup = connected_pin["setup"]
+                pin = connected_pin["pin"]
+                direction = connected_pin["direction"]
+                inverted = connected_pin["inverted"]
+                if connected_pin["name"] == "pwm":
+                    self.pins_pwm.append(pin)
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.pwm-{pwm_pin_n:02d}"
+                    pwm_pin_n += 1
+                elif connected_pin["name"] == "rgb":
+                    self.pins_rgb.append(pin)
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.rgb-{rgb_pin_n:02d}"
+                    rgb_pin_n += 1
+                elif connected_pin["name"] == "adc":
+                    self.pins_adc.append(pin)
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.adc-{adc_pin_n:02d}"
+                    adc_pin_n += 1
+                elif direction == "input":
+                    self.pins_input.append(pin)
+                    if inverted:
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}-not"
+                    else:
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}"
+                    input_pin_n += 1
+                else:
+                    self.pins_output.append(pin)
+                    if inverted:
+                        self.output_inverts.append(f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}")
+                    psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
+                    output_pin_n += 1
+        elif node_type == "rgb":
+            self.leds = int(self.plugin_setup.get("leds", self.option_default("leds")))
+
+    def hal(self, parent):
+        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if node_type == "sserial":
+            for pin in self.output_inverts:
+                parent.halg.setp_add(f"{pin}-invert", 1)
+
+    def extra_files(cls, parent, instances):
+        for instance in instances:
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            if node_type == "sserial":
+                board = instance.plugin_setup.get("board", instance.option_default("board"))
+                cardname = instance.plugin_setup.get("cardname", instance.option_default("cardname"))
+                upload_port = instance.plugin_setup.get("upload_port", instance.option_default("upload_port"))
+                bits_out = len(instance.pins_output)
+                bits_in = len(instance.pins_input)
+                leds = instance.leds
+                int_size_in = 8
+                int_size_out = 8
+                int_size_leds = 8
+                for int_size in (8, 16, 32):
+                    if bits_in <= int_size:
+                        int_size_in = int_size
+                        break
+                for int_size in (8, 16, 32):
+                    if bits_out <= int_size:
+                        int_size_out = int_size
+                        break
+                for int_size in (8, 16, 32):
+                    if leds <= int_size:
+                        int_size_leds = int_size
+                        break
+
+                byte_size_in = int_size_in // 8
+                byte_size_out = int_size_out // 8
+                byte_size_leds = int_size_leds // 8
+
+                input_pin_n = 0
+                output_pin_n = 0
+                for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                    plugin_instance = connected_pin["instance"]
+                    if not hasattr(plugin_instance, "hm2_prefix"):
+                        riocore.log(f"ERROR: no hm2_prefix found: {connected_pin}")
+                        continue
+                    psetup = connected_pin["setup"]
+                    pin = connected_pin["pin"]
+                    direction = connected_pin["direction"]
+                    inverted = connected_pin["inverted"]
+                    if direction == "input":
+                        if inverted:
+                            psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}-not"
+                        else:
+                            psetup["pin"] = f"{plugin_instance.hm2_prefix}.input-{input_pin_n:02d}"
+                        input_pin_n += 1
+                    else:
+                        psetup["pin"] = f"{plugin_instance.hm2_prefix}.output-{output_pin_n:02d}"
+                        output_pin_n += 1
+
+                # create firmware stuff
+                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.title)
+                os.makedirs(firmware_path, exist_ok=True)
+                instance.BUILDER_PATH = firmware_path
+                os.makedirs(os.path.join(firmware_path, "src"), exist_ok=True)
+                os.makedirs(os.path.join(firmware_path, "lib"), exist_ok=True)
+                riocore.log(f"  {instance.instances_name} ({instance.title}): create firmware structure: {firmware_path}")
+                output = []
+                source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
+                for line in open(source).read().split("\n"):
+                    if line.strip() == "//defines":
+                        output.append(f'#define BOARD "{board}"')
+                        if board == "8ch":
+                            output.append("#define STATUS_LED 23")
+                        if board == "pico":
+                            output.append("#define STATUS_LED 25")
+                            output.append("#define SSerial Serial1")
+                        else:
+                            output.append("#define MULTITHREAD")
+                            output.append("#define SSerial Serial2")
+                        if instance.pins_rgb:
+                            leds = instance.leds
+                            output.append("#include <Adafruit_NeoPixel.h>")
+                            output.append(f"Adafruit_NeoPixel pixels({leds}, 15, NEO_GRB + NEO_KHZ800);")
+                        output.append("")
+                    elif line.strip() == "//LBP_Discovery_Data":
+                        output.append("static const LBP_Discovery_Data DISCOVERY_DATA =")
+                        output.append("{")
+                        output.append("  .RxSize = sizeof(ProcessDataOut)+1, // +1 for the fault status, remote transmits")
+                        if bits_out or instance.pins_pwm or instance.pins_rgb:
+                            output.append("  .TxSize = sizeof(ProcessDataIn), // remote receives")
+                        else:
+                            output.append("  .TxSize = 0, // remote receives")
+                        output.append("  .ptoc   = PTOC_BASE_ADDRESS,")
+                        output.append("  .gtoc   = GTOC_BASE_ADDRESS")
+                        output.append("};")
+                        output.append("")
+                    elif line.strip() == "//ProcessDataOut":
+                        output.append("static struct ProcessDataOut {")
+                        output.append("    uint8_t fault;")
+                        if bits_in:
+                            output.append(f"    uint{int_size_in}_t input;")
+                        if instance.pins_adc:
+                            for adc_num, adc in enumerate(instance.pins_adc):
+                                output.append(f"    float adc{adc_num};")
+                        output.append("} pdata_out = {0x00000000};")
+                        output.append("")
+                    elif line.strip() == "//ProcessDataIn":
+                        if bits_out or instance.pins_pwm or instance.pins_rgb:
+                            output.append("static struct ProcessDataIn {")
+                            if bits_out:
+                                output.append(f"    uint{int_size_out}_t output;")
+                            for pwm_num, pwm in enumerate(instance.pins_pwm):
+                                output.append(f"    float pwm{pwm_num};")
+                            for rgb_num, rgb in enumerate(instance.pins_rgb):
+                                output.append(f"    uint{int_size_leds}_t  red;")
+                                output.append(f"    uint{int_size_leds}_t  green;")
+                                output.append(f"    uint{int_size_leds}_t  blue;")
+                            output.append("} pdata_in = {0x00000000};")
+                            output.append("")
+                    elif line.strip() == "//CARD_NAME":
+                        output.append(f'static const char CARD_NAME[] = "{cardname}";')
+                        output.append("")
+                    elif line.strip() == "//PDD":
+                        offset = 0
+                        if bits_out:
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append(f"            .DataSize      = {bits_out},")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append("            .ParamAddress  = PARAM_BASE_ADDRESS,")
+                            output.append('            "None\\0Output"')
+                            output.append("        }")
+                            output.append("    },")
+                            offset += byte_size_out
+                        if bits_in:
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append(f"            .DataSize      = {bits_in},")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_INPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                            output.append('            "None\\0Input"')
+                            output.append("        }")
+                            output.append("    },")
+                            offset += byte_size_in
+                        for pwm_num, pwm in enumerate(instance.pins_pwm):
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append("            .DataSize      = 32,")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_FLOAT,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                            output.append(f'            "None\\0Pwm{pwm_num}"')
+                            output.append("        }")
+                            output.append("    },")
+                            offset += 4
+                        for rgb_num, rgb in enumerate(instance.pins_rgb):
+                            leds = instance.leds
+                            for color in ("Red", "Green", "Blue"):
+                                output.append("    {")
+                                output.append("        .pdd = {")
+                                output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                                output.append(f"            .DataSize      = {leds},")
+                                output.append("            .DataType      = LBP_PDD_DATA_TYPE_BITS,")
+                                output.append("            .DataDirection = LBP_PDD_DIRECTION_OUTPUT,")
+                                output.append("            .ParamMin      = 0.0,")
+                                output.append("            .ParamMax      = 0.0,")
+                                output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                                output.append(f'            "None\\0{color}"')
+                                output.append("        }")
+                                output.append("    },")
+                                offset += byte_size_leds
+                        for adc_num, adc in enumerate(instance.pins_adc):
+                            output.append("    {")
+                            output.append("        .pdd = {")
+                            output.append("            .RecordType    = LBP_PDD_RECORD_TYPE_NORMAL,")
+                            output.append("            .DataSize      = 32,")
+                            output.append("            .DataType      = LBP_PDD_DATA_TYPE_FLOAT,")
+                            output.append("            .DataDirection = LBP_PDD_DIRECTION_INPUT,")
+                            output.append("            .ParamMin      = 0.0,")
+                            output.append("            .ParamMax      = 0.0,")
+                            output.append(f"            .ParamAddress  = PARAM_BASE_ADDRESS + {offset},")
+                            output.append(f'            "None\\0Adc{adc_num}"')
+                            output.append("        }")
+                            output.append("    },")
+                            offset += 4
+                        output.append("")
+                    elif line.strip() == "//PTOC":
+                        output.append("static const uint16_t PTOC[] = {")
+                        offset = 2
+                        if bits_out:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        if bits_in:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        for pwm in instance.pins_pwm:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        for rgb in instance.pins_rgb:
+                            for color in ("Red", "Green", "Blue"):
+                                output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                                offset += 1
+                        for adc in instance.pins_adc:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        output.append("    0x0000")
+                        output.append("};")
+                        output.append("")
+                    elif line.strip() == "//GTOC":
+                        output.append("static const uint16_t GTOC[] = {")
+                        output.append("    PDD_BASE_ADDRESS,")
+                        offset = 1
+                        output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                        offset += 1
+                        if bits_out:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        if bits_in:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        for pwm in instance.pins_pwm:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        for rgb in instance.pins_rgb:
+                            for color in ("Red", "Green", "Blue"):
+                                output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                                offset += 1
+                        for adc in instance.pins_adc:
+                            output.append(f"    PDD_BASE_ADDRESS+{offset}*sizeof(LBP_PDD),")
+                            offset += 1
+                        output.append("    0x0000")
+                        output.append("};")
+                        output.append("")
+                    elif line.strip() == "//setup":
+                        for pin_num, pin in enumerate(instance.pins_output):
+                            output.append(f"    pinMode({pin}, OUTPUT); // Output({pin_num:02d})")
+                        for pin_num, pin in enumerate(instance.pins_input):
+                            output.append(f"    pinMode({pin}, INPUT_PULLUP); // Input({pin_num:02d})")
+                        for pin_num, pin in enumerate(instance.pins_pwm):
+                            output.append(f"    pinMode({pin}, OUTPUT); // PWM({pin_num})")
+                        for pin_num, pin in enumerate(instance.pins_adc):
+                            output.append(f"    pinMode({pin}, INPUT);  // Adc({pin_num:02d})")
+                        if instance.pins_rgb:
+                            output.append("    pixels.begin();")
+                            output.append("    pixels.clear();")
+                        output.append("")
+                    elif line.strip() == "//pdata_in_next":
+                        if bits_out or instance.pins_pwm or instance.pins_rgb:
+                            output.append("            uint8_t pdata_in_next[sizeof(pdata_in)];")
+                            output.append("            if (cmd.value == LBP_COMMAND_RPC_SMARTSERIAL_PROCESS_DATA) {")
+                            output.append("                for (size_t i = 0; i < sizeof(pdata_in); i++) {")
+                            output.append("                    while (!SSerial.available()) {yield();}")
+                            output.append("                    const uint8_t c = SSerial.read();")
+                            output.append("                    crc = LBP_CalcNextCRC(c, crc);")
+                            output.append("                    pdata_in_next[i] = c;")
+                            output.append("                }")
+                            output.append("            }")
+                            output.append("")
+                    elif line.strip() == "//pdata_out.input":
+                        if bits_in:
+                            output.append("    pdata_out.input = 0;")
+                            for pin_num, pin in enumerate(instance.pins_input):
+                                output.append(f"    if (digitalRead({pin})) {{")
+                                output.append(f"        pdata_out.input |= (1<<{pin_num});")
+                                output.append("    }")
+                        for pin_num, pin in enumerate(instance.pins_adc):
+                            output.append(f"    pdata_out.adc{pin_num} = analogRead({pin});")
+                    elif line.strip() == "//pdata_in.output":
+                        for pin_num, pin in enumerate(instance.pins_output):
+                            output.append(f"    digitalWrite({pin}, (pdata_in.output & (1<<{pin_num})) ? HIGH : LOW);")
+                        for pwm_num, pwm in enumerate(instance.pins_pwm):
+                            output.append(f"    analogWrite({pwm}, pdata_in.pwm{pwm_num});")
+
+                        if instance.pins_rgb:
+                            leds = instance.leds
+                            for led in range(0, leds):
+                                output.append(f"    pixels.setPixelColor({led}, pixels.Color(")
+                                output.append(f"        (pdata_in.red & (1<<{led})) ? 255 : 0,")
+                                output.append(f"        (pdata_in.green & (1<<{led})) ? 255 : 0,")
+                                output.append(f"        (pdata_in.blue & (1<<{led})) ? 255 : 0")
+                                output.append("    ));")
+                            output.append("    pixels.show();")
+
+                    else:
+                        output.append(line)
+                target = os.path.join(firmware_path, "src", "main.ino")
+                open(target, "w").write("\n".join(output))
+
+                if board == "8ch":
+                    board = "wemos_d1_mini32"
+
+                output = [""]
+                output.append(f"[env:{board}]")
+                output.append("framework = arduino")
+                output.append(f"board = {board}")
+                if board == "pico":
+                    output.append("platform = raspberrypi")
+                else:
+                    output.append("platform = espressif32")
+                    output.append("#upload_speed = 115200")
+                    output.append("upload_speed = 500000")
+                    output.append("monitor_speed = 115200")
+                    output.append(f"upload_port = {upload_port}")
+                output.append("")
+                output.append("")
+                target = os.path.join(firmware_path, "platformio.ini")
+                open(target, "w").write("\n".join(output))
+
+                output = [""]
+                output.append("all: build")
+                output.append("")
+                output.append("~/.platformio/penv/bin/pio:")
+                output.append("	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py")
+                output.append("	python3 /tmp/__get-platformio.py")
+                output.append("	rm -rf /tmp/__get-platformio.py")
+                output.append("")
+                output.append("build: ~/.platformio/penv/bin/pio")
+                output.append("	pio run")
+                output.append("")
+                output.append("load: ~/.platformio/penv/bin/pio")
+                output.append("	pio run -t nobuild -t upload")
+                output.append("")
+                output.append("")
+                target = os.path.join(firmware_path, "Makefile")
+                open(target, "w").write("\n".join(output))
+
+                for filename in ("LBP.cpp", "LBP.h"):
+                    source = os.path.join(os.path.dirname(__file__), "sserial", filename)
+                    target = os.path.join(firmware_path, "src", filename)
+                    shutil.copy(source, target)

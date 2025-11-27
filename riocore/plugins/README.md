@@ -87,3 +87,4 @@
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> | GPIO  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> | GPIO  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> | GPIO  |
+|  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |

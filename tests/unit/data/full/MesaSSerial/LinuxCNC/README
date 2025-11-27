@@ -3,7 +3,8 @@ RIO - MesaSSerial
 Configuration: tests/unit/data/full/MesaSSerial.json
 
 Plugins:
-  mesa (5x)
+  mesa (4x)
+  sserial (1x)
   gpioin (1x)
   gpioout (1x)
 

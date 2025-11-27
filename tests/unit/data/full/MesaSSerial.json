@@ -146,7 +146,7 @@
             }
         },
         {
-            "type": "mesa",
+            "type": "sserial",
             "node_type": "sserial",
             "uid": "mesa5",
             "pos": [
