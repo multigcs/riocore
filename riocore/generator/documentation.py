@@ -107,8 +107,6 @@ class documentation:
 
             for command in plugin_instance.BUILDER:
                 cmd = plugin_instance.builder(self.project, command)
-                cmd = ""
-
                 output.append(f"### {command}")
                 output.append(f"```{cmd}```")
             output.append("")
