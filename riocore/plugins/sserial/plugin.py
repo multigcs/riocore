@@ -44,7 +44,7 @@ class Plugin(PluginBase):
             self.OPTIONS.update(
                 {
                     "board": {
-                        "default": "esp32dev",
+                        "default": board_list[0],
                         "type": "select",
                         "options": board_list,
                         "description": "board type",
@@ -470,9 +470,6 @@ class Plugin(PluginBase):
                         output.append(line)
                 target = os.path.join(firmware_path, "src", "main.ino")
                 open(target, "w").write("\n".join(output))
-
-                if board == "8ch":
-                    board = "wemos_d1_mini32"
 
                 output = [""]
                 output.append(f"[env:{board}]")

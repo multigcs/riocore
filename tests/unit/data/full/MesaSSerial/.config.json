@@ -148,6 +148,7 @@
         {
             "type": "sserial",
             "node_type": "sserial",
+            "board": "esp32dev",
             "uid": "mesa5",
             "pos": [
                 1550.0,
