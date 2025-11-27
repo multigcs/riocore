@@ -1,7 +1,10 @@
+import os
 import time
 
 import riocore
 from riocore.modifiers import Modifiers
+
+riocore_path = os.path.dirname(riocore.__file__)
 
 
 class PluginBase:
@@ -146,6 +149,15 @@ class PluginBase:
 
     def cfg_info(self):
         return ""
+
+    def image_path(self):
+        plugin_path = os.path.join(riocore_path, "plugins", self.NAME)
+        image_path = os.path.join(plugin_path, "image.png")
+        if self.IMAGE_SHOW and self.IMAGE and os.path.isfile(os.path.join(riocore_path, "plugins", self.NAME, self.IMAGE)):
+            image_path = os.path.join(riocore_path, "plugins", self.NAME, self.IMAGE)
+        if os.path.isfile(image_path):
+            return image_path
+        return
 
     def signed(self, n, byte_count):
         return int.from_bytes(n.to_bytes(byte_count, "little", signed=False), "little", signed=True)

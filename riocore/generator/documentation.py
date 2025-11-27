@@ -68,6 +68,8 @@ class documentation:
                     self.iface_out.append([variable_name, size, hal_name])
         """
 
+        # self.builds_md()
+
         self.halgraph_png()
         self.config_md()
         self.pins_md()
@@ -88,12 +90,36 @@ class documentation:
         except Exception as error:
             print(f"WARING: failed to write halgraph.png: {error}")
 
+    def builds_md(self):
+        output = ["# builds"]
+
+        for plugin_instance in self.project.plugin_instances:
+            if not plugin_instance.BUILDER:
+                continue
+
+            output.append(f"## {plugin_instance.title}")
+            image_path = plugin_instance.image_path()
+            if os.path.isfile(image_path):
+                target = os.path.join(self.doc_path, f"build_{plugin_instance.NAME}.png")
+                shutil.copy(image_path, target)
+                image = f'<img style="float: right;" src="build_{plugin_instance.NAME}.png" height="128" />'
+                output.append(image)
+                output.append("")
+
+            for command in plugin_instance.BUILDER:
+                cmd = plugin_instance.builder(self.project.config, command)
+                output.append(f"### {command}")
+                output.append(f"```{cmd}```")
+            output.append("")
+
+        output.append("")
+        open(os.path.join(self.doc_path, "BUILDS.md"), "w").write("\n".join(output))
+
     def config_md(self):
         output = [f"# {self.project.config['name']}"]
         jdata = self.project.config["jdata"]
 
         flow_path = os.path.join(self.doc_path, "flow.png")
-        img_path = ""
         if os.path.exists(flow_path):
             image = '<img align="right" height="320" src="flow.png">'
             output.append(image)
@@ -124,10 +150,10 @@ class documentation:
             info = plugin_instance.INFO
             if plugin_instance.NAME not in self.plugin_infos:
                 image = "-"
-                img_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "image.png")
-                if os.path.exists(img_path):
+                image_path = plugin_instance.image_path()
+                if os.path.exists(image_path):
                     target = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
-                    shutil.copy(img_path, target)
+                    shutil.copy(image_path, target)
                     image = f'<img src="{plugin_instance.NAME}.png" height="48">'
                 self.plugin_infos[plugin_instance.NAME] = {
                     "info": info,
@@ -383,7 +409,7 @@ body {font-family: Arial;}
         output.append("</header>")
         output.append("<body>")
 
-        sections = ("CONFIG", "PINS", "SIGNALS", "INTERFACE", "LINUXCNC", "JSON")
+        sections = ("CONFIG", "PINS", "SIGNALS", "BUILDS", "INTERFACE", "LINUXCNC", "JSON")
         output.append('<div class="tab">')
         for section in sections:
             md_path = os.path.join(self.doc_path, f"{section}.md")
@@ -426,6 +452,7 @@ openSection(event, \'CONFIG\');
         output.append("## Table of Contents")
         output.append("- [Config](./CONFIG.md)")
         output.append("- [Pins](./PINS.md)")
+        output.append("- [Builds](./BUILDS.md)")
         output.append("- [Interface](./INTERFACE.md)")
         output.append("- [LinuxCNC](./LINUXCNC.md)")
         output.append("")

@@ -25,9 +25,6 @@ from PyQt5.QtWidgets import (
 
 import riocore
 from riocore import halpins
-from riocore.gui.widgets import (
-    MyStandardItem,
-)
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -699,12 +696,7 @@ class GuiPlugins:
         self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
 
         right_layout = QVBoxLayout()
-        plugin_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME)
-
-        image_path = os.path.join(plugin_path, "image.png")
-        if self.plugin_instance.IMAGE_SHOW and self.plugin_instance.IMAGE and os.path.isfile(os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)):
-            image_path = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
-
+        image_path = self.plugin_instance.image_path()
         if os.path.isfile(image_path):
             ilabel = QLabel()
             pixmap = QPixmap(image_path).scaled(400, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -1117,10 +1109,6 @@ class GuiPlugins:
 
                 if hasattr(self.parent, "insert_plugin"):
                     self.parent.insert_plugin(plugin_instance)
-                elif hasattr(self.parent, "tree_plugins"):
-                    self.tree_add_plugin(self.parent.tree_plugins, plugin_instance, expand=True)
-                    self.parent.display()
-                    self.edit_plugin(plugin_instance, None, is_new=True)
 
             return dialog.selected
 
@@ -1133,71 +1121,6 @@ class GuiPlugins:
         if hasattr(self.parent, "config_load"):
             self.parent.config_load()
             # self.display()
-
-    def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
-        name = plugin_instance.plugin_setup.get("name")
-        if name:
-            title = f"{name} ({plugin_instance.NAME})"
-        else:
-            title = f"{plugin_instance.title} ({plugin_instance.NAME})"
-        help_text = plugin_instance.INFO
-
-        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
-        image_path = os.path.join(plugin_path, "image.png")
-
-        iconItem = MyStandardItem("", help_text=help_text)
-        aitem = MyStandardItem()
-        parent.appendRow(
-            [
-                iconItem,
-                aitem,
-            ]
-        )
-
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setContentsMargins(0, 0, 0, 0)
-        buttons_widget = QWidget()
-        buttons_widget.setLayout(buttons_layout)
-
-        title_layout = QHBoxLayout()
-        title_layout.setContentsMargins(0, 0, 0, 0)
-        title_widget = QWidget()
-        title_widget.setLayout(title_layout)
-
-        ilabel = QLabel()
-        ilabel.setFixedSize(24, 24)
-        if os.path.isfile(image_path):
-            pixmap = QPixmap(image_path)
-            ilabel.setPixmap(pixmap)
-            ilabel.setScaledContents(True)
-
-        title_layout.addWidget(ilabel)
-        title_layout.addWidget(QLabel(title))
-        self.parent.treeview.setIndexWidget(iconItem.index(), title_widget)
-
-        # buttons_layout.addWidget(ilabel)
-
-        button_edit = QPushButton("edit")
-        bcb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
-        button_edit.clicked.connect(bcb)
-        button_edit.setMaximumSize(button_edit.sizeHint())
-        buttons_layout.addWidget(button_edit)
-
-        if not nopins:
-            button_delete = QPushButton("delete")
-            bcb = partial(self.del_plugin, plugin_instance)
-            button_delete.clicked.connect(bcb)
-            button_delete.setMaximumSize(button_delete.sizeHint())
-            buttons_layout.addWidget(button_delete)
-
-        if plugin_instance.PLUGIN_CONFIG:
-            button_config = QPushButton("config")
-            bcb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_config.clicked.connect(bcb)
-            button_config.setMaximumSize(button_config.sizeHint())
-            buttons_layout.addWidget(button_config)
-        buttons_layout.addStretch()
-        self.parent.treeview.setIndexWidget(aitem.index(), buttons_widget)
 
 
 def md2label(text):
