@@ -1,4 +1,5 @@
 import copy
+import glob
 import json
 import os
 
@@ -30,21 +31,22 @@ class Plugin(PluginBase):
                     "encoder",
                 ],
                 "description": "instance type",
+                "reload": True,
             },
         }
         self.SIGNALS = {}
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "board":
+            board_list = []
+            for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
+                board_list.append(os.path.basename(jboard).replace(".json", ""))
             self.OPTIONS.update(
                 {
                     "board": {
                         "default": "w5500-evb-pico",
                         "type": "select",
-                        "options": [
-                            "w5500-evb-pico",
-                            "w5500-evb-pico-parport",
-                        ],
+                        "options": board_list,
                         "description": "board type",
                     },
                     "mac": {
@@ -78,9 +80,9 @@ class Plugin(PluginBase):
             self.TYPE = "base"
             self.BUILDER = ["build", "install"]
             self.IMAGE_SHOW = True
-            self.IMAGE = f"{board}.png"
+            self.IMAGE = f"boards/{board}.png"
             self.PINDEFAULTS = {}
-            pin_file = os.path.join(os.path.dirname(__file__), f"{board}.json")
+            pin_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.json")
             if os.path.exists(pin_file):
                 pins = json.loads(open(pin_file).read())
                 for pin_name, pin_data in pins.items():
