@@ -51,7 +51,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"hm2_7i92.0.9r01.0.0.input-00"</halpin>
+          <halpin>"hm2_7i92.0.9r01.0.1.input-00"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -72,7 +72,7 @@
           <width>15</width>
         </label>
         <checkbutton>
-          <halpin>"hm2_7i92.0.9r01.0.0.output-00"</halpin>
+          <halpin>"hm2_7i92.0.9r01.0.1.output-00"</halpin>
           <anchor>"e"</anchor>
           <width>13</width>
         </checkbutton>

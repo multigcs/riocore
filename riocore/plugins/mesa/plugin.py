@@ -778,6 +778,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.pins_pwm = []
             self.pins_rgb = []
             self.pins_adc = []
+            self.leds = 0
             input_pin_n = 0
             output_pin_n = 0
             pwm_pin_n = 0
