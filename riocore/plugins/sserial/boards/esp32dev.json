@@ -1,4 +1,11 @@
 {
+    "options": {
+        "upload_port": {
+            "default": "/dev/ttyUSB0",
+            "type": "str",
+            "description": "upload-port"
+        }
+    },
     "pins": {
         "SSERIAL:RX": {
             "pin": "RX",

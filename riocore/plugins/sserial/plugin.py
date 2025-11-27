@@ -68,33 +68,16 @@ class Plugin(PluginBase):
                 pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
                 self.PINDEFAULTS[pin_name] = pin_data
 
-            if board != "pico":
-                self.OPTIONS.update(
-                    {
-                        "upload_port": {
-                            "default": "/dev/ttyUSB0",
-                            "type": str,
-                            "description": "upload-port",
-                        },
-                    },
-                )
+            self.OPTIONS.update(board_data.get("options", {}))
+            type_mapping = {"str": str, "bool": bool, "int": int, "float": float}
+            for option in self.OPTIONS.values():
+                option["type"] = type_mapping.get(option["type"], option["type"])
 
-            if board == "8ch":
-                relais_pins = (32, 33, 25, 26, 27, 14, 12, 13)
-                self.SUB_PLUGINS = []
-                for spn, rpin in enumerate(relais_pins):
-                    self.SUB_PLUGINS.append(
-                        {
-                            "type": "gpioout",
-                            "rpos": [410, 15 + spn * 167],
-                            "image": "relay_min",
-                            "rotate": 0,
-                            "uid": f"relay{spn}",
-                            "name": "",
-                            "signals": {"bit": {"net": ""}},
-                            "pins": {"bit": {"pin": f"IO:{rpin}"}},
-                        }
-                    )
+            self.SUB_PLUGINS = []
+            for spn, sub_plugin in enumerate(board_data.get("plugins", [])):
+                if "uid" not in sub_plugin:
+                    sub_plugin["uid"] = f"{sub_plugin['type']}{spn}"
+                self.SUB_PLUGINS.append(sub_plugin)
 
             self.IMAGE_SHOW = True
             self.IMAGE = f"boards/{board}.png"

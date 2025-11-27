@@ -1,4 +1,118 @@
 {
+    "plugins": [
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                15
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:32"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                182
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:33"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                349
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:25"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                516
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:26"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                683
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:27"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                850
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:14"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                1017
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:12"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "rpos": [
+                410,
+                1184
+            ],
+            "image": "relay_min",
+            "rotate": 0,
+            "pins": {
+                "bit": {
+                    "pin": "IO:13"
+                }
+            }
+        }
+    ],
     "pins": {
         "SSERIAL:RX": {
             "pin": "RX",
