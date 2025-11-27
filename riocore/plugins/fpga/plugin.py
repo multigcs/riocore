@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             board_list.append(os.path.basename(jboard).replace(".json", ""))
         self.OPTIONS = {
             "node_type": {
-                "default": "Tangbob",
+                "default": board_list[0],
                 "type": "select",
                 "options": board_list,
                 "description": "board type",
