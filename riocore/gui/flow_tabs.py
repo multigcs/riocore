@@ -959,6 +959,10 @@ class TabOptions:
         self.tab_widget.addTab(self.tab_ini, "INI-Defaults")
         self.tab_widget.addTab(self.tab_hal, "HAL-Signals")
 
+        button = QPushButton("add entry")
+        button.clicked.connect(partial(self.add_entry, "halui"))
+        self.layout_ini.addWidget(button)
+
         self.treeview = QTreeView()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Value"])
@@ -981,10 +985,11 @@ class TabOptions:
         self.hal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Type"))
         self.layout_hal.addWidget(self.hal_table)
 
-    def update(self, config):
+    def update(self, config=None):
         self.update_flag = True
+        if config is not None:
+            self.config = config
 
-        self.config = config
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
         for key, data in self.items.items():
@@ -1090,6 +1095,50 @@ class TabOptions:
         riocore.log(f"can not find path: {path}")
         # exit(1)
 
+    def add_entry(self, section):
+        dialog = QDialog()
+        dialog.setWindowTitle("add entry")
+        dialog.setMinimumWidth(500)
+        dialog.layout = QVBoxLayout()
+        dialog.setLayout(dialog.layout)
+        dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
+        dialog_buttonBox.accepted.connect(dialog.accept)
+        dialog_buttonBox.rejected.connect(dialog.reject)
+
+        vbox = QVBoxLayout()
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel("Section"), stretch=1)
+        section_w = QLineEdit(section.upper())
+        hbox.addWidget(section_w, stretch=2)
+        vbox.addLayout(hbox)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel("Name"), stretch=1)
+        name_w = QLineEdit("")
+        hbox.addWidget(name_w, stretch=2)
+        vbox.addLayout(hbox)
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(QLabel("Value"), stretch=1)
+        value_w = QLineEdit("")
+        hbox.addWidget(value_w, stretch=2)
+        vbox.addLayout(hbox)
+
+        dialog.layout.addLayout(vbox)
+        dialog.layout.addWidget(dialog_buttonBox)
+
+        if dialog.exec():
+            section = section_w.text().upper()
+            name = name_w.text()
+            value = value_w.text()
+            if section and name and value:
+                if section not in self.config["linuxcnc"]["ini"]:
+                    self.config["linuxcnc"]["ini"][section] = {}
+                self.config["linuxcnc"]["ini"][section][name] = value
+                self.parent.cfg_check()
+                self.update(self.config)
+
     def load_tree_linuxcnc_ini(self, parent_tree):
         if "ini" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["ini"] = {}
@@ -1106,7 +1155,6 @@ class TabOptions:
                         if f"{section}_{key}" not in self.ini_items:
                             continue
                         self.ini_items[f"{section}_{key}"].update(section_config)
-
             return
 
         tree_lcncini = parent_tree
