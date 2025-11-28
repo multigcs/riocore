@@ -7,7 +7,7 @@ import stat
 import sys
 
 import riocore
-from riocore.generator.cbase import cbase
+from .cbase import cbase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
