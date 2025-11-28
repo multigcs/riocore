@@ -135,7 +135,6 @@ class Plugin(PluginBase):
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
                 plugin_instance.master = instance.instances_name
                 plugin_instance.gmaster = instance.instances_name
-
                 if subs.get(instance.instances_name):
                     master = subs[instance.instances_name]
                     plugin_instance.PREFIX = f"{master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
