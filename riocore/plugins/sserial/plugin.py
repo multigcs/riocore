@@ -523,3 +523,8 @@ class Plugin(PluginBase):
                     source = os.path.join(os.path.dirname(__file__), "sserial", filename)
                     target = os.path.join(firmware_path, "src", filename)
                     shutil.copy(source, target)
+
+                for filename in ("Adafruit_NeoPixel", ):
+                    source = os.path.join(os.path.dirname(__file__), "sserial", filename)
+                    target = os.path.join(firmware_path, "lib", filename)
+                    shutil.copytree(source, target, dirs_exist_ok=True)

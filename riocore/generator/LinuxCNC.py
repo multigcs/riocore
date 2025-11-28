@@ -1735,7 +1735,7 @@ if __name__ == "__main__":
         components = {}
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.BASETHREAD:
-                self.INI_DEFAULTS["EMCMOT"]["BASE_PERIOD"] = 25000
+                self.ini_setup["EMCMOT"]["BASE_PERIOD"] = 25000
             if plugin_instance.COMPONENT:
                 if plugin_instance.COMPONENT not in components:
                     components[plugin_instance.COMPONENT] = []
