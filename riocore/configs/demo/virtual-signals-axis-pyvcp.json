@@ -688,7 +688,7 @@
         "simulation": true,
         "gui": "axis",
         "vcp_type": "pyvcp",
-        "net": [
+        "_net": [
             {
                 "source": "oneshot(riov.Bool1-toggle.value, 1, 1, 0)",
                 "target": "MDI_COMMAND|_p1: G1 X0 Y10 F1000"
