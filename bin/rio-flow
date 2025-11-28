@@ -1623,7 +1623,7 @@ class Window(QMainWindow):
         board_name = self.config.get("boardcfg")
         board_uid = "board0"
         if board_name:
-            boardpath = os.path.join(riocore_path, "plugins", "fpga", f"{board_name}.json")
+            boardpath = os.path.join(riocore_path, "plugins", "fpga", "boards", f"{board_name}.json")
             riocore.log(f"INFO: converting board {boardpath} into plugin")
             data = open(boardpath).read()
             board = json.loads(data)

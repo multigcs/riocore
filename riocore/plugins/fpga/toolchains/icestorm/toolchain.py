@@ -83,16 +83,16 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 print("  example: export PATH=$PATH:/opt/oss-cad-suite/bin")
 
         if family == "ecp5":
-            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
+            pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.lpf")
             bitfileName = "$(PROJECT).bit"
         elif family == "gatemate":
-            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ccf")
+            pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.ccf")
             bitfileName = "$(PROJECT).bit"
         elif family in {"gowin", "himbaechel"}:
-            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.cst")
+            pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.cst")
             bitfileName = "$(PROJECT).fs"
         else:
-            pins_generator = importlib.import_module(".pins", "riocore.generator.pins.pcf")
+            pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.pcf")
             bitfileName = "$(PROJECT).bin"
 
         pins_generator.Pins(self.config).generate(path)

@@ -46,7 +46,7 @@ class gateware:
 
         self.parent.generate_pll = generate_pll
         riocore.log(f"  loading toolchain {self.jdata['toolchain']}")
-        self.jdata["toolchain_generator"] = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{self.jdata['toolchain']}").Toolchain(self.jdata)
+        self.jdata["toolchain_generator"] = importlib.import_module(".toolchain", f"riocore.plugins.fpga.toolchains.{self.jdata['toolchain']}").Toolchain(self.jdata)
 
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:

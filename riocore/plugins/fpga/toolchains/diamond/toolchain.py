@@ -22,7 +22,7 @@ class Toolchain:
         return info
 
     def generate(self, path):
-        pins_generator = importlib.import_module(".pins", "riocore.generator.pins.lpf")
+        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.lpf")
         pins_generator.Pins(self.config).generate(path)
 
         if sys.platform == "linux":

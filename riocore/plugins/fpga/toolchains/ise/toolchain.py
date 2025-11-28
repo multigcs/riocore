@@ -44,7 +44,7 @@ class Toolchain:
                 self.config["speed"] = new_speed
 
     def generate(self, path):
-        pins_generator = importlib.import_module(".pins", "riocore.generator.pins.ucf")
+        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.ucf")
         pins_generator.Pins(self.config).generate(path)
 
         if sys.platform == "linux":
