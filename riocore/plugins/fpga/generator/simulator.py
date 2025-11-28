@@ -68,7 +68,6 @@ class simulator:
                     if pinname not in self.virtual_pins:
                         self.virtual_pins.append(pinname)
 
-
         self.calc_buffersize()
         self.cclient.riocore_h()
         self.cclient.riocore_c()
@@ -225,7 +224,7 @@ class simulator:
             hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
             hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
 
-        #for plugin_instance, data_name, data_config in self.get_signal_data():
+        # for plugin_instance, data_name, data_config in self.get_signal_data():
         #    hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
         #    key = f"rio.{plugin_instance.signal_prefix}.{data_name}"
         #    if key not in hal2varnames:

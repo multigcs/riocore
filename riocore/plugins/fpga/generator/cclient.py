@@ -10,7 +10,6 @@ class cclient:
         self.calc_buffersize()
         self.project.buffer_size = self.buffer_size
 
-
     def riocore_h(self):
         sysclk_speed = self.project.config["speed"]
         ip = "192.168.10.194"
@@ -75,7 +74,6 @@ class cclient:
         output.append("")
 
         open(os.path.join(self.simulator_path, "riocore.h"), "w").write("\n".join(output))
-
 
     def riocore_c(self):
         output = []
@@ -289,4 +287,3 @@ class cclient:
                     if data_config["size"] == size:
                         interface_data.append([size, plugin_instance, data_name, data_config])
         return interface_data
-
