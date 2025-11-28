@@ -313,10 +313,10 @@
             "simulation": false,
             "protocol": "UDP",
             "sub": {
-                "w5500": {
+                "fpga0_w5500": {
                     "ip": "192.168.11.194"
                 },
-                "wled": {
+                "fpga0_wled": {
                     "signals": {
                         "0_green": {
                             "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused",
