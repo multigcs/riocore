@@ -190,7 +190,7 @@ class hal_generator:
             else:
                 output_pin = f"{fname}.out"
 
-        self.function_cache[expression] = output_pin
+        # self.function_cache[expression] = output_pin
         return output_pin
 
     def text_in_bracket(self, text, right):
@@ -433,7 +433,7 @@ class hal_generator:
             return None
 
         # if input is a number, then use setp
-        if input_pin.replace(".", "").lstrip("-").isnumeric():
+        if input_pin.replace(".", "").lstrip("-").lstrip("-").isnumeric():
             return self.setp_add(output_pin, input_pin)
 
         # replace some command/operation words

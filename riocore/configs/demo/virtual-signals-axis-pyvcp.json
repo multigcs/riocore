@@ -18,6 +18,9 @@
             "sub": {
                 "w5500": {
                     "ip": "192.168.11.194"
+                },
+                "board0_w5500": {
+                    "ip": "192.168.11.194"
                 }
             },
             "simulation": true
@@ -619,6 +622,46 @@
         },
         {
             "type": "signal",
+            "name": "Bool1-oneshot-up",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "oneshot(riov.Bool1.value, 0.3, 1, 0)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "pos": [
+                540.0,
+                60.0
+            ],
+            "uid": "signal23"
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-oneshot-down",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "oneshot(riov.Bool1.value, 0.3, 0, 1)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "pos": [
+                540.0,
+                60.0
+            ],
+            "uid": "signal24"
+        },
+        {
+            "type": "signal",
             "name": "Mux",
             "dir": "output",
             "signals": {
@@ -644,14 +687,30 @@
         "_debug_info": true,
         "simulation": true,
         "gui": "axis",
-        "vcp_type": "pyvcp"
+        "vcp_type": "pyvcp",
+        "net": [
+            {
+                "source": "oneshot(riov.Bool1-toggle.value, 1, 1, 0)",
+                "target": "MDI_COMMAND|_p1: G1 X0 Y10 F1000"
+            },
+            {
+                "source": "oneshot(riov.Bool1-toggle.value, 1, 0, 1)",
+                "target": "MDI_COMMAND|_p2: G1 X10 Y0 F1000"
+            }
+        ],
+        "_ini": {
+            "HALUI": {
+                "MDI_COMMAND|on": "G1 X0 Y10 F1000",
+                "MDI_COMMAND|off": "G1 X10 Y1 F1000"
+            }
+        }
     },
     "flow": {
         "view": {
-            "scale": 0.36,
+            "scale": 0.8454545454545455,
             "pos": [
-                -349,
-                -25
+                -984.9090909090909,
+                -25.0
             ]
         }
     }

@@ -193,6 +193,8 @@ class LinuxCNC:
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"
 
+        self.ini_setup = copy.deepcopy(self.INI_DEFAULTS)
+
         # expand JOINT_DEFAULTS
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.JOINT_DEFAULTS:
@@ -410,28 +412,33 @@ class LinuxCNC:
 
     def ini_mdi_command(self, command, title=None):
         """Used by addons to add mdi-command's and prevent doubles"""
-        jdata = self.project.config["jdata"]
-        ini = self.ini_defaults(jdata, num_joints=5, axis_dict=self.project.axis_dict, gui_type=self.gui_type)
         mdi_index = None
         mdi_n = 0
-        for key, value in ini["HALUI"].items():
+        for key, value in self.ini_setup["HALUI"].items():
             if key.startswith("MDI_COMMAND|"):
                 if value == command:
                     mdi_index = mdi_n
+                    title = key.split("|", 1)[1]
                     break
                 mdi_n += 1
         if mdi_index is None:
             mdi_index = mdi_n
             if title:
-                ini["HALUI"][f"MDI_COMMAND|{title}"] = command
+                if f"MDI_COMMAND|{title}" in self.ini_setup["HALUI"]:
+                    riocore.log(f"ERROR: overwriting MDI command title: {title} -> {command}")
+                self.ini_setup["HALUI"][f"MDI_COMMAND|{title}"] = command
             else:
-                ini["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
+                # self.ini_setup["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
+                self.ini_setup["HALUI"][f"MDI_COMMAND|{command}"] = command
+
         return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
-    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16, gui_type="pyvcp"):
+    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16, gui_type="pyvcp", ini_setup=None):
         linuxcnc_config = jdata.get("linuxcnc", {})
-        ini_setup = cls.INI_DEFAULTS.copy()
+        if not ini_setup:
+            ini_setup = copy.deepcopy(cls.INI_DEFAULTS)
+
         gui = linuxcnc_config.get("gui", "axis")
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         machinetype = linuxcnc_config.get("machinetype")
@@ -638,7 +645,7 @@ class LinuxCNC:
         if aios > 64:
             riocore.log("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type)
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type, ini_setup=self.ini_setup)
 
         if not self.mqtt_publisher:
             del ini_setup["MQTT"]
@@ -1149,7 +1156,7 @@ class LinuxCNC:
         vcp_sections = linuxcnc_config.get("vcp_sections", [])
         vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
-        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, gui_type=self.gui_type)
+        ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, gui_type=self.gui_type, ini_setup=self.ini_setup)
 
         if gui in {"flexgui"}:
             os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
@@ -1511,6 +1518,8 @@ if __name__ == "__main__":
                                 gui_gen.draw_hbox_end()
                                 gui_gen.draw_frame_end()
                         mdi_title = command.split("|")[-1]
+                        if mdi_title[0] == "_":
+                            continue
                         halpin = f"halui.mdi-command-{mdi_num:02d}"
                         pname = gui_gen.draw_button(mdi_title, halpin)
                         self.halg.net_add(pname, halpin)
@@ -1914,13 +1923,6 @@ if __name__ == "__main__":
         for key, value in linuxcnc_setp.items():
             self.halg.setp_add(f"{key}", value)
 
-        for net in linuxcnc_config.get("net", []):
-            net_source = net.get("source")
-            net_target = net.get("target")
-            net_name = net.get("name") or None
-            if net_source and net_target:
-                self.halg.net_add(f"({net_source})", net_target, net_name)
-
         for plugin_instance in self.project.plugin_instances:
             for name in plugin_instance.FILES:
                 plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
@@ -2007,12 +2009,26 @@ if __name__ == "__main__":
                         else:
                             self.halg.net_add(halname, f"{rprefix}{halname}")
 
-        found_user_anbale = False
+        found_user_enable = False
         for value in self.halg.signals_out.values():
             if "iocontrol.0.user-enable-out" in value["expression"]:
-                found_user_anbale = True
-        if not found_user_anbale:
+                found_user_enable = True
+        if not found_user_enable:
             self.halg.net_add("&iocontrol.0.user-enable-out", "iocontrol.0.emc-enable-in", "user-enable-out")
+
+        for net in linuxcnc_config.get("net", []):
+            net_source = net.get("source")
+            net_target = net.get("target")
+            net_name = net.get("name") or None
+            if net_source and net_target:
+                if net_target.startswith("MDI"):
+                    mdi, cmd = net_target.split(":")
+                    cmd = cmd.strip()
+                    title = None
+                    if "|" in mdi:
+                        title = mdi.split("|")[1].strip()
+                    net_target = self.ini_mdi_command(cmd, title)
+                self.halg.net_add(f"({net_source})", net_target, net_name)
 
     def create_axis_config(self, project, prefix=""):
         linuxcnc_config = project.config["jdata"].get("linuxcnc", {})

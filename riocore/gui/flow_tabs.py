@@ -959,10 +959,6 @@ class TabOptions:
         self.tab_widget.addTab(self.tab_ini, "INI-Defaults")
         self.tab_widget.addTab(self.tab_hal, "HAL-Signals")
 
-        button = QPushButton("add entry")
-        button.clicked.connect(partial(self.add_entry, "halui"))
-        self.layout_ini.addWidget(button)
-
         self.treeview = QTreeView()
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Value"])
@@ -977,21 +973,26 @@ class TabOptions:
         self.phal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Target"))
         self.phal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Type"))
         self.layout_hal.addWidget(self.phal_table)
+        self.phal_table.itemChanged.connect(self.table_updated)
 
         self.hal_table = QTableWidget()
         self.hal_table.setColumnCount(3)
-        self.hal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Source"))
-        self.hal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Target"))
+        self.hal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Target"))
+        self.hal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Source"))
         self.hal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Type"))
         self.layout_hal.addWidget(self.hal_table)
+        self.hal_table.itemChanged.connect(self.table_updated)
 
-    def update(self, config=None):
+    def update(self, config=None, full=False):
+        if self.update_flag:
+            return
         self.update_flag = True
         if config is not None:
             self.config = config
 
         if "linuxcnc" not in self.config:
             self.config["linuxcnc"] = {}
+
         for key, data in self.items.items():
             if "item" in data:
                 data["item"].update(self.config["linuxcnc"])
@@ -1001,8 +1002,9 @@ class TabOptions:
                 data["item3"].update()
 
         # ini
-        self.load_tree_linuxcnc_ini(self.model)
-        self.treeview.setColumnWidth(0, 280)
+        self.load_tree_linuxcnc_ini(self.model, full)
+        self.treeview.resizeColumnToContents(0)
+        self.treeview.header().setStretchLastSection(True)
 
         # hal
         row = 0
@@ -1010,9 +1012,12 @@ class TabOptions:
         for entry in self.config["linuxcnc"].get("net", []):
             source = entry.get("source", "")
             target = entry.get("target", "")
-            self.hal_table.setItem(row, 0, QTableWidgetItem(source))
-            self.hal_table.setItem(row, 1, QTableWidgetItem(target))
-            item = QTableWidgetItem("net")
+            self.hal_table.setItem(row, 0, QTableWidgetItem(target))
+            self.hal_table.setItem(row, 1, QTableWidgetItem(source))
+            if source.replace(".", "").lstrip("-").lstrip("-").isnumeric():
+                item = QTableWidgetItem("setp")
+            else:
+                item = QTableWidgetItem("net")
             item.setFlags(Qt.ItemFlag.ItemIsEnabled)
             self.hal_table.setItem(row, 2, item)
             row += 1
@@ -1031,7 +1036,6 @@ class TabOptions:
         self.hal_table.resizeColumnToContents(2)
         self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.hal_table.itemChanged.connect(self.table_updated)
 
         row = 0
         for sitem in self.parent.scene.items():
@@ -1064,7 +1068,6 @@ class TabOptions:
         self.phal_table.resizeColumnToContents(1)
         self.phal_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         self.phal_table.resizeColumnToContents(3)
-        self.phal_table.itemChanged.connect(self.table_updated)
 
         # Misc
         machinetype = self.config["linuxcnc"].get("machinetype", "mill")
@@ -1095,7 +1098,14 @@ class TabOptions:
         riocore.log(f"can not find path: {path}")
         # exit(1)
 
-    def add_entry(self, section):
+    def remove_ini_entry(self, section, key):
+        confirmation = QMessageBox.question(self.parent, "Confirmation", f"realy remove {key} from {section} ?", QMessageBox.Yes | QMessageBox.No)
+        if confirmation == QMessageBox.Yes and key in self.config["linuxcnc"]["ini"][section]:
+            del self.config["linuxcnc"]["ini"][section][key]
+            self.parent.cfg_check()
+            self.update(self.config, True)
+
+    def add_ini_entry(self, section):
         dialog = QDialog()
         dialog.setWindowTitle("add entry")
         dialog.setMinimumWidth(500)
@@ -1137,15 +1147,16 @@ class TabOptions:
                     self.config["linuxcnc"]["ini"][section] = {}
                 self.config["linuxcnc"]["ini"][section][name] = value
                 self.parent.cfg_check()
-                self.update(self.config)
+                self.update(self.config, True)
 
-    def load_tree_linuxcnc_ini(self, parent_tree):
+    def load_tree_linuxcnc_ini(self, parent_tree, full=False):
         if "ini" not in self.config["linuxcnc"]:
             self.config["linuxcnc"]["ini"] = {}
         ini_config = self.config["linuxcnc"]["ini"]
+
         ini_data = riocore.generator.LinuxCNC.LinuxCNC.ini_defaults(self.config)
 
-        if self.ini_items:
+        if self.ini_items and not full:
             for section, section_data in ini_data.items():
                 if section not in ini_config:
                     ini_config[section] = {}
@@ -1157,7 +1168,10 @@ class TabOptions:
                         self.ini_items[f"{section}_{key}"].update(section_config)
             return
 
+        self.ini_items = {}
         tree_lcncini = parent_tree
+        tree_lcncini.removeRows(0, tree_lcncini.rowCount())
+
         for section, section_data in ini_data.items():
             if section not in ini_config:
                 ini_config[section] = {}
@@ -1166,14 +1180,27 @@ class TabOptions:
             aitem = MyStandardItem()
             tree_lcncini.appendRow(
                 [
-                    MyStandardItem(section),
+                    aitem,
                     MyStandardItem(""),
                 ]
             )
+
+            widget = QWidget()
+            hbox = QHBoxLayout()
+            label = QLabel(section)
+            hbox.addWidget(label, stretch=1)
+            button = QPushButton("add entry")
+            button.setFixedWidth(120)
+            button.clicked.connect(partial(partial(self.add_ini_entry, section)))
+            hbox.addWidget(button, stretch=0)
+            widget.setLayout(hbox)
+            self.treeview.setIndexWidget(aitem.index(), widget)
+
             lcncsec_view = tree_lcncini.item(tree_lcncini.rowCount() - 1)
             for key, value in section_data.items():
                 if value is not None and not isinstance(value, list):
-                    var_setup = {"type": type(value), "default": value}
+                    # var_setup = {"type": type(value), "default": value}
+                    var_setup = {"type": type(value)}
                     if section == "DISPLAY" and key == "POSITION_OFFSET":
                         var_setup["type"] = "select"
                         var_setup["options"] = ["RELATIVE", "MACHINE"]
@@ -1203,14 +1230,28 @@ class TabOptions:
                     if "|" in key:
                         key_title = f"{key.split('|')[0]} ({key.split('|')[1]})"
                     aitem = MyStandardItem()
+                    bitem = MyStandardItem()
                     lcncsec_view.appendRow(
                         [
-                            MyStandardItem(key_title, help_text=var_setup.get("tooltip")),
                             aitem,
+                            bitem,
                         ]
                     )
-                    widget = self.parent.edit_item(section_config, key, var_setup, cb=self.updated)
+                    widget = QWidget()
+                    hbox = QHBoxLayout()
+                    label = QLabel(key_title)
+                    hbox.addWidget(label, stretch=1)
+                    if key in self.config["linuxcnc"]["ini"][section]:
+                        button = QPushButton("remove")
+                        button.setFixedWidth(120)
+                        button.clicked.connect(partial(partial(self.remove_ini_entry, section, key)))
+                        hbox.addWidget(button, stretch=0)
+                    widget.setLayout(hbox)
                     self.treeview.setIndexWidget(aitem.index(), widget)
+
+                    widget = self.parent.edit_item(section_config, key, var_setup, cb=self.updated)
+                    self.treeview.setIndexWidget(bitem.index(), widget)
+
                     self.ini_items[f"{section}_{key}"] = widget
         self.treeview.expandAll()
 
@@ -1276,19 +1317,18 @@ class TabOptions:
         self.config["linuxcnc"]["net"] = []
         self.config["linuxcnc"]["setp"] = {}
         for row in range(nrows):
-            if self.hal_table.item(row, 0) and self.hal_table.item(row, 1):
-                source = str(self.hal_table.item(row, 0).text())
-                target = str(self.hal_table.item(row, 1).text())
-                if source or target:
-                    if target.replace(".", "").isnumeric():
-                        self.config["linuxcnc"]["setp"][source] = target
-                    else:
-                        self.config["linuxcnc"]["net"].append(
-                            {
-                                "source": source,
-                                "target": target,
-                            }
-                        )
+            target = str(self.hal_table.item(row, 0).text())
+            source = str(self.hal_table.item(row, 1).text())
+            if target:
+                self.config["linuxcnc"]["net"].append(
+                    {
+                        "source": source,
+                        "target": target,
+                    }
+                )
+                if target in self.config["linuxcnc"]["setp"]:
+                    del self.config["linuxcnc"]["setp"][target]
+
         # plugin signals
         nrows = self.phal_table.rowCount()
         signals = {}
@@ -1306,13 +1346,13 @@ class TabOptions:
                 plugin_config = item.plugin_instance.plugin_setup
                 uid = item.plugin_instance.plugin_setup["uid"]
                 if uid in signals:
-                    for source, target in signals[uid].items():
+                    for target, source in signals[uid].items():
                         if "signals" not in plugin_config:
                             plugin_config["signals"] = {}
-                        if target.replace(".", "").isnumeric():
-                            plugin_config["signals"][source] = {"setp": target}
-                        else:
-                            plugin_config["signals"][source] = {"net": target}
+                        plugin_config["signals"][target]["net"] = source
+                        if "setp" in plugin_config["signals"][target]:
+                            # moved into net / splitted later in hal-generator
+                            plugin_config["signals"][target]["setp"]
 
         self.updated()
 
