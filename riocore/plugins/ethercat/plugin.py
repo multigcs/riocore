@@ -83,6 +83,8 @@ class Plugin(PluginBase):
             px = 263
             self.SUB_PLUGINS = []
             puid = self.plugin_setup.get("uid")
+            for key in self.plugin_setup.get("sub", {}).keys():
+                self.plugin_setup["sub"][key]["keep"] = False
             for mn, module in enumerate(modules.split()):
                 mn = str(mn)
                 key = f"{self.instances_name}-{mn}"
@@ -97,8 +99,15 @@ class Plugin(PluginBase):
                 self.plugin_setup["sub"][key]["node_type"] = module
                 self.plugin_setup["sub"][key]["rpos"] = [px, 0.0]
                 self.plugin_setup["sub"][key]["uid"] = f"{puid}-{mn}"
+                self.plugin_setup["sub"][key]["keep"] = True
                 self.SUB_PLUGINS.append(self.plugin_setup["sub"][key])
                 px += 75
+
+            for key in list(self.plugin_setup.get("sub", {}).keys()):
+                if self.plugin_setup["sub"][key]["keep"]:
+                    del self.plugin_setup["sub"][key]["keep"]
+                else:
+                    del self.plugin_setup["sub"][key]
 
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
