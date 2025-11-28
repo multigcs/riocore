@@ -32,30 +32,20 @@
             "uid": "ethercat2",
             "pos": [
                 390.0,
-                20.0
+                50.0
             ],
             "modules": "el1008 el1008 el2008 el2008 el4002",
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat1:BUS:out"
+                }
+            },
             "sub": {
-                "0": {
-                    "node_type": "el1008"
-                },
-                "1": {
-                    "node_type": "el1008"
-                },
                 "ethercat2-0": {
                     "node_type": "el1008"
                 },
                 "ethercat2-1": {
-                    "node_type": "el2008"
-                },
-                "2": {
-                    "node_type": "el2008"
-                },
-                "3": {
-                    "node_type": "el2008"
-                },
-                "4": {
-                    "node_type": "el4002"
+                    "node_type": "el1008"
                 },
                 "ethercat2-2": {
                     "node_type": "el2008"
@@ -66,20 +56,15 @@
                 "ethercat2-4": {
                     "node_type": "el4002"
                 }
-            },
-            "pins": {
-                "BUS:in": {
-                    "pin": "ethercat1:BUS:out"
-                }
             }
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.88,
+            "scale": 0.93,
             "pos": [
-                -228,
-                -97
+                -7,
+                -78
             ]
         }
     }

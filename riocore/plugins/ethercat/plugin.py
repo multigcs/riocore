@@ -54,7 +54,7 @@ class Plugin(PluginBase):
 
         elif node_type == "ek1100":
             self.IMAGE_SHOW = True
-            self.IMAGE = "ek1100.png"
+            self.IMAGE = "modules/ek1100.png"
 
             self.PINDEFAULTS = {
                 "BUS:in": {
@@ -85,19 +85,24 @@ class Plugin(PluginBase):
             puid = self.plugin_setup.get("uid")
             for mn, module in enumerate(modules.split()):
                 mn = str(mn)
+                key = f"{self.instances_name}-{mn}"
                 if "sub" not in self.plugin_setup:
                     self.plugin_setup["sub"] = {}
-                if mn not in self.plugin_setup["sub"]:
-                    self.plugin_setup["sub"][mn] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0]}
-                self.plugin_setup["sub"][mn]["node_type"] = module
-                self.plugin_setup["sub"][mn]["rpos"] = [px, 0.0]
-                self.plugin_setup["sub"][mn]["uid"] = f"{puid}-{mn}"
-                self.SUB_PLUGINS.append(self.plugin_setup["sub"][mn])
+                if key not in self.plugin_setup["sub"]:
+                    self.plugin_setup["sub"][key] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0]}
+                else:
+                    if self.plugin_setup["sub"][key]["node_type"] != module:
+                        self.plugin_setup["sub"][key] = {"type": "ethercat", "node_type": module, "uid": f"{puid}-{mn}", "rpos": [px, 0.0]}
+                    self.plugin_setup["sub"][key]["type"] = "ethercat"
+                self.plugin_setup["sub"][key]["node_type"] = module
+                self.plugin_setup["sub"][key]["rpos"] = [px, 0.0]
+                self.plugin_setup["sub"][key]["uid"] = f"{puid}-{mn}"
+                self.SUB_PLUGINS.append(self.plugin_setup["sub"][key])
                 px += 75
 
         elif node_type == "Servo/Stepper":
             self.TYPE = "joint"
-            self.IMAGE = "ethercat-servo.png"
+            self.IMAGE = "modules/ethercat-servo.png"
             self.IMAGE_SHOW = True
             self.JOINT_MODE = "position"
             self.OPTIONS.update(
@@ -192,10 +197,10 @@ class Plugin(PluginBase):
                     "bool": True,
                 }
 
-        elif os.path.exists(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json")):
-            self.json_data = json.loads(open(os.path.join(os.path.dirname(__file__), f"module_{node_type}.json")).read())
+        elif os.path.exists(os.path.join(os.path.dirname(__file__), "modules", f"module_{node_type}.json")):
+            self.json_data = json.loads(open(os.path.join(os.path.dirname(__file__), "modules", f"module_{node_type}.json")).read())
             self.IMAGE_SHOW = True
-            self.IMAGE = f"module_{node_type}.png"
+            self.IMAGE = f"modules/module_{node_type}.png"
             self.PINDEFAULTS = {}
             self.SIGNALS = {}
             for pin_name, pin_data in self.json_data["pins"].items():
