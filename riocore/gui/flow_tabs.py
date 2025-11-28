@@ -8,6 +8,7 @@ from functools import partial
 from PyQt5.QtCore import QMimeData, QTimer, Qt
 from PyQt5.QtGui import QColor, QDrag, QPixmap, QStandardItemModel, QTextCursor
 from PyQt5.QtWidgets import (
+    QMessageBox,
     QDialog,
     QDialogButtonBox,
     QDoubleSpinBox,
@@ -153,12 +154,20 @@ class TabBuilder:
         if plugin_instance.instances_name in self.compile_sub:
             print("wait to finish already running command")
             return
-
         if not self.parent.save_check():
             # cancel pressed
             return
 
         cmd = plugin_instance.builder(self.parent.config, command)
+        if cmd is None:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setWindowTitle("Error")
+            msg.setInformativeText("can not run command, please press\n\n'Generate files'\n\nfirst")
+            msg.exec_()
+            return
+
         self.output[plugin_instance.instances_name].setPlainText(f"running cmd; {cmd}...")
         print(f"running cmd; {cmd}...")
         self.compile_sub[plugin_instance.instances_name] = subprocess.Popen(f"{cmd} > /tmp/buildlog-{plugin_instance.instances_name} 2>&1", shell=True, close_fds=True)
