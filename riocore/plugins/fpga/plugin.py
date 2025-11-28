@@ -6,9 +6,9 @@ import os
 import riocore
 from riocore.plugins import PluginBase
 
-from .gateware import gateware
-from .component import component
-from .rosbridge import rosbridge
+from .generator.gateware import gateware
+from .generator.component import component
+from .generator.rosbridge import rosbridge
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 

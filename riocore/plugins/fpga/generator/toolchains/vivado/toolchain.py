@@ -41,7 +41,7 @@ class Toolchain:
             self.config["speed"] = clock_in
 
     def generate(self, path):
-        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.xdc")
+        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.xdc")
         pins_generator.Pins(self.config).generate(path)
 
         if sys.platform == "linux":

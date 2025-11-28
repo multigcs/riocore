@@ -55,7 +55,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             self.config["speed"] = clock_in
 
     def generate(self, path):
-        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.cst")
+        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
 
         if sys.platform == "linux":

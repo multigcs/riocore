@@ -53,7 +53,7 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
             self.config["speed"] = clock_in
 
     def generate(self, path):
-        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.qdf")
+        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
         if sys.platform == "linux" and not self.toolchain_path:
             quartus_sh = shutil.which("quartus_sh")

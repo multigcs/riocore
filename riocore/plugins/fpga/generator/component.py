@@ -2,7 +2,7 @@ import os
 
 from .cbase import cbase
 
-riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
 class component(cbase):

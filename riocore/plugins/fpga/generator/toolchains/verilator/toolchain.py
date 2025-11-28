@@ -22,7 +22,7 @@ class Toolchain:
         return info
 
     def generate(self, path):
-        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.pins.qdf")
+        pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.qdf")
         pins_generator.Pins(self.config).generate(path)
         if sys.platform == "linux":
             verilator = shutil.which("verilator")

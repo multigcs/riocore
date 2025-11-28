@@ -2,7 +2,7 @@ import glob
 import os
 import sys
 
-riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
 class cbase:
@@ -859,21 +859,21 @@ class cbase:
         generic_spi = self.project.config["jdata"].get("generic_spi", False)
         rpi5 = self.project.config["jdata"].get("rpi5", False)
         if protocol == "SPI" and generic_spi is True:
-            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "interfaces", "*", "*.c_generic")):
+            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c_generic")):
                 if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
                     iface_data = open(ppath).read()
         elif protocol == "SPI" and rpi5 is True:
-            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "interfaces", "*", "*.c_rpi5")):
+            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c_rpi5")):
                 if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                     output.append("*/")
                     iface_data = open(ppath).read()
         else:
-            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "interfaces", "*", "*.c")):
+            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
                 if protocol == ppath.split(os.sep)[-2]:
                     output.append("/*")
                     output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
@@ -915,7 +915,7 @@ class cbase:
         output.append("    hal functions")
         output.append("*/")
         if self.filename_functions:
-            output.append(open(os.path.join(riocore_path, "plugins", "fpga", "files", self.filename_functions)).read())
+            output.append(open(os.path.join(riocore_path, "plugins", "fpga", "generator", "files", self.filename_functions)).read())
 
         output.append("")
         output.append("/***********************************************************************")
