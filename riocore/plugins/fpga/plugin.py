@@ -133,13 +133,13 @@ class Plugin(PluginBase):
                 instance.hal_prefix = instance.instances_name
                 plugin_instance = connected_pin["instance"]
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
-                connected_pin["instance"].master = instance.instances_name
-                connected_pin["instance"].gmaster = instance.instances_name
+                plugin_instance.master = instance.instances_name
+                plugin_instance.gmaster = instance.instances_name
 
                 if subs.get(instance.instances_name):
                     master = subs[instance.instances_name]
                     plugin_instance.PREFIX = f"{master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
-                    connected_pin["instance"].gmaster = master
+                    plugin_instance.gmaster = master
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
