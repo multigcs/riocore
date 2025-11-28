@@ -37,7 +37,7 @@ class simulator:
         if machinetype in {"melfa"} and os.path.isdir(self.webots_home):
             self.webots = True
             self.glsim = True
-            source = os.path.join(riocore_path, "", "generator", "glsim", f"webots-{machinetype}.c")
+            source = os.path.join(riocore_path, "plugins", "fpga", "generator", "glsim", f"webots-{machinetype}.c")
             target = os.path.join(self.simulator_path, "glsim.c")
             shutil.copy(source, target)
         elif machinetype in {"mill", "corexy", "melfa"}:
@@ -45,7 +45,7 @@ class simulator:
                 self.glsim = False
             else:
                 self.glsim = True
-            source = os.path.join(riocore_path, "", "generator", "glsim", f"{machinetype}.c")
+            source = os.path.join(riocore_path, "plugins", "fpga", "generator", "glsim", f"{machinetype}.c")
             target = os.path.join(self.simulator_path, "glsim.c")
             shutil.copy(source, target)
 
