@@ -1,9 +1,9 @@
 import os
 import stat
 
-from riocore.generator.cbase import cbase
+from .cbase import cbase
 
-riocore_path = os.path.dirname(os.path.dirname(__file__))
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 class rosbridge(cbase):
@@ -39,9 +39,11 @@ class rosbridge(cbase):
         "LICENSE": "GPL v2",
     }
 
-    def __init__(self, project):
+    def __init__(self, project, instance):
         self.project = project
-        self.ros_path = os.path.join(self.project.config["output_path"], "ROS")
+        self.instance = instance
+        self.prefix = instance.hal_prefix
+        self.ros_path = os.path.join(self.project.config["output_path"], "ROS", instance.instances_name)
         self.base_path = os.path.join(self.ros_path, "src", "rosbridge")
 
         self.rosbridge_path = os.path.join(self.base_path, "src")
@@ -50,7 +52,7 @@ class rosbridge(cbase):
         self.ros_cmake()
         self.ros_package()
 
-        output = self.mainc(project)
+        output = self.mainc()
         output += self.ros_functions()
 
         open(os.path.join(self.rosbridge_path, "rosbridge.cpp"), "w").write("\n".join(output))
@@ -105,6 +107,8 @@ class rosbridge(cbase):
     def ros_functions(self):
         output = []
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
@@ -135,6 +139,8 @@ class rosbridge(cbase):
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
@@ -163,6 +169,8 @@ class rosbridge(cbase):
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]

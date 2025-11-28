@@ -6,7 +6,9 @@ import os
 import riocore
 from riocore.plugins import PluginBase
 
-from .generator import gateware, component
+from .gateware import gateware
+from .component import component
+from .rosbridge import rosbridge
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -213,3 +215,4 @@ class Plugin(PluginBase):
             protocol = parent.project.config["protocol"] = instance.jdata["protocol"]
             if protocol != "UART":
                 component(parent.project, instance=instance)
+                rosbridge(parent.project, instance=instance)
