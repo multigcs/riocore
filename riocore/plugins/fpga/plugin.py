@@ -109,7 +109,9 @@ class Plugin(PluginBase):
         self.SUB_PLUGINS = []
         for spn, sub_plugin in enumerate(self.jdata.get("plugins", [])):
             if "uid" not in sub_plugin:
-                sub_plugin["uid"] = f"{sub_plugin['type']}{spn}"
+                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['type']}{spn}"
+            else:
+                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
             self.SUB_PLUGINS.append(sub_plugin)
 
     def update_prefixes(cls, parent, instances):

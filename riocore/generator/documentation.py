@@ -292,8 +292,8 @@ class documentation:
                 self.expansion_pins.append(pin)
 
         output = ["# Pins"]
-        output.append("| Plugin | ID | Name | Board | Alias |")
-        output.append("| --- | --- | --- | --- | --- |")
+        output.append("| Plugin | ID | Name | Board | Pin | Alias |")
+        output.append("| --- | --- | --- | --- | --- | --- |")
 
         plugin_names = {}
         for plugin_instance in self.project.plugin_instances:
@@ -319,6 +319,11 @@ class documentation:
                     row.append(ptype)
                     row.append(pname)
                     row.append(pin_name)
+
+                    if hasattr(plugin_instance, "master") and plugin_instance.master:
+                        row.append(plugin_instance.master)
+                    else:
+                        row.append("---")
 
                     if "pin" not in pin_config:
                         row.append("-")
