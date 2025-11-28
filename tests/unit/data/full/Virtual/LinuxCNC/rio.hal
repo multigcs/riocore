@@ -90,14 +90,14 @@ net user-request-enable                  <= iocontrol.0.user-request-enable
 #################################################################################
 # board0
 #################################################################################
+net sig_pyvcp_board0_board0_wled_0_blue  => board0.board0_wled.0_blue
+net sig_pyvcp_board0_board0_wled_0_green => board0.board0_wled.0_green
+net sig_pyvcp_board0_board0_wled_0_red   => board0.board0_wled.0_red
+
 net sig_halui_machine_is-on              => board0.machine-on
 net user-enable-out                      => board0.sys-enable
 net user-request-enable                  => board0.sys-enable-request
 net sig_board0_sys-status                <= board0.sys-status
-
-net sig_pyvcp_board0_wled_0_blue         => board0.wled.0_blue
-net sig_pyvcp_board0_wled_0_green        => board0.wled.0_green
-net sig_pyvcp_board0_wled_0_red          => board0.wled.0_red
 
 #################################################################################
 # halui

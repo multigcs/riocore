@@ -8,11 +8,11 @@
     Package   : 
     Clock     : 27.0 Mhz
 
-    PINOUT_W5500_MOSI -> 32 
-    PININ_W5500_MISO <- 48 
-    PINOUT_W5500_SCLK -> 31 
-    PINOUT_W5500_SEL -> 49 
-    PINOUT_WLED_DATA -> 54 
+    PINOUT_BOARD0_W5500_MOSI -> 32 
+    PININ_BOARD0_W5500_MISO <- 48 
+    PINOUT_BOARD0_W5500_SCLK -> 31 
+    PINOUT_BOARD0_W5500_SEL -> 49 
+    PINOUT_BOARD0_WLED_DATA -> 54 
     PINOUT_STEPDIR0_STEP -> 85 
     PINOUT_STEPDIR0_DIR -> 83 
     PINOUT_STEPDIR1_STEP -> 81 
@@ -27,11 +27,11 @@
 module rio (
         // RIO
         input sysclk_in,
-        output PINOUT_W5500_MOSI,
-        input PININ_W5500_MISO,
-        output PINOUT_W5500_SCLK,
-        output PINOUT_W5500_SEL,
-        output PINOUT_WLED_DATA,
+        output PINOUT_BOARD0_W5500_MOSI,
+        input PININ_BOARD0_W5500_MISO,
+        output PINOUT_BOARD0_W5500_SCLK,
+        output PINOUT_BOARD0_W5500_SEL,
+        output PINOUT_BOARD0_WLED_DATA,
         output PINOUT_STEPDIR0_STEP,
         output PINOUT_STEPDIR0_DIR,
         output PINOUT_STEPDIR1_STEP,
@@ -79,9 +79,9 @@ module rio (
         timestamp <= timestamp + 1'd1;
     end
 
-    wire VAROUT1_WLED_0_GREEN;
-    wire VAROUT1_WLED_0_BLUE;
-    wire VAROUT1_WLED_0_RED;
+    wire VAROUT1_BOARD0_WLED_0_GREEN;
+    wire VAROUT1_BOARD0_WLED_0_BLUE;
+    wire VAROUT1_BOARD0_WLED_0_RED;
     wire [31:0] VAROUT32_STEPDIR0_VELOCITY;
     wire VAROUT1_STEPDIR0_ENABLE;
     wire [31:0] VARIN32_STEPDIR0_POSITION;
@@ -97,9 +97,9 @@ module rio (
     assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[103:96], rx_data[111:104], rx_data[119:112], rx_data[127:120]};
     assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[71:64], rx_data[79:72], rx_data[87:80], rx_data[95:88]};
     assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[39:32], rx_data[47:40], rx_data[55:48], rx_data[63:56]};
-    assign VAROUT1_WLED_0_GREEN = {rx_data[31]};
-    assign VAROUT1_WLED_0_BLUE = {rx_data[30]};
-    assign VAROUT1_WLED_0_RED = {rx_data[29]};
+    assign VAROUT1_BOARD0_WLED_0_GREEN = {rx_data[31]};
+    assign VAROUT1_BOARD0_WLED_0_BLUE = {rx_data[30]};
+    assign VAROUT1_BOARD0_WLED_0_RED = {rx_data[29]};
     assign VAROUT1_STEPDIR0_ENABLE = {rx_data[28]};
     assign VAROUT1_STEPDIR1_ENABLE = {rx_data[27]};
     assign VAROUT1_STEPDIR2_ENABLE = {rx_data[26]};
@@ -116,14 +116,14 @@ module rio (
 
 
 
-    // Name: w5500 (w5500)
-    wire PINOUT_W5500_MOSI_RAW;
-    wire PINOUT_W5500_SCLK_RAW;
-    wire PINOUT_W5500_SEL_RAW;
-    wire UNUSED_PIN_W5500_RST;
-    assign PINOUT_W5500_MOSI = PINOUT_W5500_MOSI_RAW;
-    assign PINOUT_W5500_SCLK = PINOUT_W5500_SCLK_RAW;
-    assign PINOUT_W5500_SEL = PINOUT_W5500_SEL_RAW;
+    // Name: board0_w5500 (w5500)
+    wire PINOUT_BOARD0_W5500_MOSI_RAW;
+    wire PINOUT_BOARD0_W5500_SCLK_RAW;
+    wire PINOUT_BOARD0_W5500_SEL_RAW;
+    wire UNUSED_PIN_BOARD0_W5500_RST;
+    assign PINOUT_BOARD0_W5500_MOSI = PINOUT_BOARD0_W5500_MOSI_RAW;
+    assign PINOUT_BOARD0_W5500_SCLK = PINOUT_BOARD0_W5500_SCLK_RAW;
+    assign PINOUT_BOARD0_W5500_SEL = PINOUT_BOARD0_W5500_SEL_RAW;
     w5500 #(
         .MAC_ADDR({8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C}),
         .IP_ADDR({8'd192, 8'd168, 8'd11, 8'd194}),
@@ -133,38 +133,38 @@ module rio (
         .BUFFER_SIZE(BUFFER_SIZE),
         .MSGID(32'h74697277),
         .DIVIDER(0)
-    ) w5500 (
+    ) board0_w5500 (
         .clk(sysclk),
-        .mosi(PINOUT_W5500_MOSI_RAW),
-        .miso(PININ_W5500_MISO),
-        .sclk(PINOUT_W5500_SCLK_RAW),
-        .sel(PINOUT_W5500_SEL_RAW),
-        .rst(UNUSED_PIN_W5500_RST),
+        .mosi(PINOUT_BOARD0_W5500_MOSI_RAW),
+        .miso(PININ_BOARD0_W5500_MISO),
+        .sclk(PINOUT_BOARD0_W5500_SCLK_RAW),
+        .sel(PINOUT_BOARD0_W5500_SEL_RAW),
+        .rst(UNUSED_PIN_BOARD0_W5500_RST),
         .intr(1'd0),
         .rx_data(rx_data),
         .tx_data(tx_data),
         .sync(INTERFACE_SYNC)
     );
 
-    // Name: wled (wled)
-    wire PINOUT_WLED_DATA_RAW;
-    wire [0:0] WLED_GREEN;
-    wire [0:0] WLED_BLUE;
-    wire [0:0] WLED_RED;
-    assign PINOUT_WLED_DATA = PINOUT_WLED_DATA_RAW;
-    assign WLED_GREEN[0] = VAROUT1_WLED_0_GREEN;
-    assign WLED_BLUE[0] = VAROUT1_WLED_0_BLUE;
-    assign WLED_RED[0] = VAROUT1_WLED_0_RED;
+    // Name: board0_wled (wled)
+    wire PINOUT_BOARD0_WLED_DATA_RAW;
+    wire [0:0] BOARD0_WLED_GREEN;
+    wire [0:0] BOARD0_WLED_BLUE;
+    wire [0:0] BOARD0_WLED_RED;
+    assign PINOUT_BOARD0_WLED_DATA = PINOUT_BOARD0_WLED_DATA_RAW;
+    assign BOARD0_WLED_GREEN[0] = VAROUT1_BOARD0_WLED_0_GREEN;
+    assign BOARD0_WLED_BLUE[0] = VAROUT1_BOARD0_WLED_0_BLUE;
+    assign BOARD0_WLED_RED[0] = VAROUT1_BOARD0_WLED_0_RED;
     wled #(
         .NUM_LEDS(1),
         .LEVEL(127),
         .CLK_MHZ(27)
-    ) wled (
+    ) board0_wled (
         .clk(sysclk),
-        .data(PINOUT_WLED_DATA_RAW),
-        .green(WLED_GREEN),
-        .blue(WLED_BLUE),
-        .red(WLED_RED)
+        .data(PINOUT_BOARD0_WLED_DATA_RAW),
+        .green(BOARD0_WLED_GREEN),
+        .blue(BOARD0_WLED_BLUE),
+        .red(BOARD0_WLED_RED)
     );
 
     // Name: stepdir0 (stepdir)

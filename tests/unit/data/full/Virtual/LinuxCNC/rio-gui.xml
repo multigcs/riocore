@@ -45,13 +45,13 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"wled-0_green"</text>
+          <text>"board0_wled-0_green"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
           <width>15</width>
         </label>
         <checkbutton>
-          <halpin>"board0.wled.0_green"</halpin>
+          <halpin>"board0.board0_wled.0_green"</halpin>
           <anchor>"e"</anchor>
           <width>13</width>
         </checkbutton>
@@ -61,13 +61,13 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"wled-0_blue"</text>
+          <text>"board0_wled-0_blue"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
           <width>15</width>
         </label>
         <checkbutton>
-          <halpin>"board0.wled.0_blue"</halpin>
+          <halpin>"board0.board0_wled.0_blue"</halpin>
           <anchor>"e"</anchor>
           <width>13</width>
         </checkbutton>
@@ -77,13 +77,13 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"wled-0_red"</text>
+          <text>"board0_wled-0_red"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
           <width>15</width>
         </label>
         <checkbutton>
-          <halpin>"board0.wled.0_red"</halpin>
+          <halpin>"board0.board0_wled.0_red"</halpin>
           <anchor>"e"</anchor>
           <width>13</width>
         </checkbutton>

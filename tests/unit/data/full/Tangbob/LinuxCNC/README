@@ -5,7 +5,7 @@ Protocol: UDP
 Configuration: tests/unit/data/full/Tangbob.json
 
 UDP-Configuration:
-  Target-IP: 192.168.11.191
+  Target-IP: 192.168.11.194
   Target-Port: 2390
 
 Plugins:

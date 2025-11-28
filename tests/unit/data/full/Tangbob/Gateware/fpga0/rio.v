@@ -24,11 +24,11 @@
     PININ_BITIN0_BIT <- 39 
     PININ_BITIN1_BIT <- 36 
     PININ_BITIN2_BIT <- 37 
-    PINOUT_W5500_MOSI -> 32 
-    PININ_W5500_MISO <- 48 
-    PINOUT_W5500_SCLK -> 31 
-    PINOUT_W5500_SEL -> 49 
-    PINOUT_WLED_DATA -> 54 
+    PINOUT_FPGA0_W5500_MOSI -> 32 
+    PININ_FPGA0_W5500_MISO <- 48 
+    PINOUT_FPGA0_W5500_SCLK -> 31 
+    PINOUT_FPGA0_W5500_SEL -> 49 
+    PINOUT_FPGA0_WLED_DATA -> 54 
     PINOUT_BITOUT0_BIT -> 30 
 
 */
@@ -54,11 +54,11 @@ module rio (
         input PININ_BITIN0_BIT,
         input PININ_BITIN1_BIT,
         input PININ_BITIN2_BIT,
-        output PINOUT_W5500_MOSI,
-        input PININ_W5500_MISO,
-        output PINOUT_W5500_SCLK,
-        output PINOUT_W5500_SEL,
-        output PINOUT_WLED_DATA,
+        output PINOUT_FPGA0_W5500_MOSI,
+        input PININ_FPGA0_W5500_MISO,
+        output PINOUT_FPGA0_W5500_SCLK,
+        output PINOUT_FPGA0_W5500_SEL,
+        output PINOUT_FPGA0_WLED_DATA,
         output PINOUT_BITOUT0_BIT
     );
 
@@ -119,9 +119,9 @@ module rio (
     wire VARIN1_BITIN0_BIT;
     wire VARIN1_BITIN1_BIT;
     wire VARIN1_BITIN2_BIT;
-    wire VAROUT1_WLED_0_GREEN;
-    wire VAROUT1_WLED_0_BLUE;
-    wire VAROUT1_WLED_0_RED;
+    wire VAROUT1_FPGA0_WLED_0_GREEN;
+    wire VAROUT1_FPGA0_WLED_0_BLUE;
+    wire VAROUT1_FPGA0_WLED_0_RED;
     wire VAROUT1_BITOUT0_BIT;
 
     // PC -> FPGA (263 + FILL)
@@ -133,9 +133,9 @@ module rio (
     assign VAROUT1_STEPDIR0_ENABLE = {rx_data[63]};
     assign VAROUT1_STEPDIR1_ENABLE = {rx_data[62]};
     assign VAROUT1_STEPDIR2_ENABLE = {rx_data[61]};
-    assign VAROUT1_WLED_0_GREEN = {rx_data[60]};
-    assign VAROUT1_WLED_0_BLUE = {rx_data[59]};
-    assign VAROUT1_WLED_0_RED = {rx_data[58]};
+    assign VAROUT1_FPGA0_WLED_0_GREEN = {rx_data[60]};
+    assign VAROUT1_FPGA0_WLED_0_BLUE = {rx_data[59]};
+    assign VAROUT1_FPGA0_WLED_0_RED = {rx_data[58]};
     assign VAROUT1_BITOUT0_BIT = {rx_data[57]};
     // assign FILL = rx_data[56:0];
 
@@ -304,55 +304,55 @@ module rio (
     assign PININ_BITIN2_BIT_INVERTED = ~PININ_BITIN2_BIT;
     assign VARIN1_BITIN2_BIT = PININ_BITIN2_BIT_INVERTED;
 
-    // Name: w5500 (w5500)
-    wire PINOUT_W5500_MOSI_RAW;
-    wire PINOUT_W5500_SCLK_RAW;
-    wire PINOUT_W5500_SEL_RAW;
-    wire UNUSED_PIN_W5500_RST;
-    assign PINOUT_W5500_MOSI = PINOUT_W5500_MOSI_RAW;
-    assign PINOUT_W5500_SCLK = PINOUT_W5500_SCLK_RAW;
-    assign PINOUT_W5500_SEL = PINOUT_W5500_SEL_RAW;
+    // Name: fpga0_w5500 (w5500)
+    wire PINOUT_FPGA0_W5500_MOSI_RAW;
+    wire PINOUT_FPGA0_W5500_SCLK_RAW;
+    wire PINOUT_FPGA0_W5500_SEL_RAW;
+    wire UNUSED_PIN_FPGA0_W5500_RST;
+    assign PINOUT_FPGA0_W5500_MOSI = PINOUT_FPGA0_W5500_MOSI_RAW;
+    assign PINOUT_FPGA0_W5500_SCLK = PINOUT_FPGA0_W5500_SCLK_RAW;
+    assign PINOUT_FPGA0_W5500_SEL = PINOUT_FPGA0_W5500_SEL_RAW;
     w5500 #(
         .MAC_ADDR({8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C}),
-        .IP_ADDR({8'd192, 8'd168, 8'd11, 8'd191}),
+        .IP_ADDR({8'd192, 8'd168, 8'd11, 8'd194}),
         .NET_MASK({8'd255, 8'd255, 8'd255, 8'd0}),
         .GW_ADDR({8'd192, 8'd168, 8'd10, 8'd1}),
         .PORT(2390),
         .BUFFER_SIZE(BUFFER_SIZE),
         .MSGID(32'h74697277),
         .DIVIDER(0)
-    ) w5500 (
+    ) fpga0_w5500 (
         .clk(sysclk),
-        .mosi(PINOUT_W5500_MOSI_RAW),
-        .miso(PININ_W5500_MISO),
-        .sclk(PINOUT_W5500_SCLK_RAW),
-        .sel(PINOUT_W5500_SEL_RAW),
-        .rst(UNUSED_PIN_W5500_RST),
+        .mosi(PINOUT_FPGA0_W5500_MOSI_RAW),
+        .miso(PININ_FPGA0_W5500_MISO),
+        .sclk(PINOUT_FPGA0_W5500_SCLK_RAW),
+        .sel(PINOUT_FPGA0_W5500_SEL_RAW),
+        .rst(UNUSED_PIN_FPGA0_W5500_RST),
         .intr(1'd0),
         .rx_data(rx_data),
         .tx_data(tx_data),
         .sync(INTERFACE_SYNC)
     );
 
-    // Name: wled (wled)
-    wire PINOUT_WLED_DATA_RAW;
-    wire [0:0] WLED_GREEN;
-    wire [0:0] WLED_BLUE;
-    wire [0:0] WLED_RED;
-    assign PINOUT_WLED_DATA = PINOUT_WLED_DATA_RAW;
-    assign WLED_GREEN[0] = VAROUT1_WLED_0_GREEN;
-    assign WLED_BLUE[0] = VAROUT1_WLED_0_BLUE;
-    assign WLED_RED[0] = VAROUT1_WLED_0_RED;
+    // Name: fpga0_wled (wled)
+    wire PINOUT_FPGA0_WLED_DATA_RAW;
+    wire [0:0] FPGA0_WLED_GREEN;
+    wire [0:0] FPGA0_WLED_BLUE;
+    wire [0:0] FPGA0_WLED_RED;
+    assign PINOUT_FPGA0_WLED_DATA = PINOUT_FPGA0_WLED_DATA_RAW;
+    assign FPGA0_WLED_GREEN[0] = VAROUT1_FPGA0_WLED_0_GREEN;
+    assign FPGA0_WLED_BLUE[0] = VAROUT1_FPGA0_WLED_0_BLUE;
+    assign FPGA0_WLED_RED[0] = VAROUT1_FPGA0_WLED_0_RED;
     wled #(
         .NUM_LEDS(1),
         .LEVEL(127),
         .CLK_MHZ(27)
-    ) wled (
+    ) fpga0_wled (
         .clk(sysclk),
-        .data(PINOUT_WLED_DATA_RAW),
-        .green(WLED_GREEN),
-        .blue(WLED_BLUE),
-        .red(WLED_RED)
+        .data(PINOUT_FPGA0_WLED_DATA_RAW),
+        .green(FPGA0_WLED_GREEN),
+        .blue(FPGA0_WLED_BLUE),
+        .red(FPGA0_WLED_RED)
     );
 
     // Name: bitout0 (bitout)

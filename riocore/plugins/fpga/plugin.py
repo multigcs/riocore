@@ -9,6 +9,8 @@ from riocore.plugins import PluginBase
 from .generator.gateware import gateware
 from .generator.component import component
 from .generator.rosbridge import rosbridge
+from .generator.mqttbridge import mqttbridge
+from .generator.jslib import jslib
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -216,3 +218,5 @@ class Plugin(PluginBase):
             if protocol != "UART":
                 component(parent.project, instance=instance)
                 rosbridge(parent.project, instance=instance)
+                mqttbridge(parent.project, instance=instance)
+                jslib(parent.project, instance=instance)

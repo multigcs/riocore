@@ -1,0 +1,216 @@
+<html>
+  <head>
+    <title>RIO MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  </head>
+  <style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+.item {
+    background-color: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+ 
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+  </style>
+  <body>
+    <div class="container">
+        <div class="item">
+    <B>board0_wled</B>
+    <table>
+      <tr>
+        <td>0_green</td>
+        <td><input type="checkbox" id="board0/board0/board0_wled/0_green" /></td>
+      </tr>
+      <tr>
+        <td>0_blue</td>
+        <td><input type="checkbox" id="board0/board0/board0_wled/0_blue" /></td>
+      </tr>
+      <tr>
+        <td>0_red</td>
+        <td><input type="checkbox" id="board0/board0/board0_wled/0_red" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir0</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="board0/board0/stepdir0/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir0/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('board0/board0/stepdir0/velocity').value = 0;" id="board0/board0/stepdir0/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="board0/board0/stepdir0/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/stepdir0/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir1</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="board0/board0/stepdir1/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir1/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('board0/board0/stepdir1/velocity').value = 0;" id="board0/board0/stepdir1/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="board0/board0/stepdir1/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/stepdir1/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir2</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="board0/board0/stepdir2/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir2/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('board0/board0/stepdir2/velocity').value = 0;" id="board0/board0/stepdir2/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="board0/board0/stepdir2/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/stepdir2/enable" /></td>
+      </tr>
+    </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var clientID = "ID-" + Math.round(Math.random() * 1000);
+        var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
+
+        document.getElementById("board0/board0/board0_wled/0_green").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/board0_wled/0_green").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/board0_wled/0_blue").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/board0_wled/0_blue").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/board0_wled/0_red").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/board0_wled/0_red").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir0/velocity").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir0/velocity").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir0/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("board0/board0/stepdir0/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir0/enable").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir1/velocity").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir1/velocity").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir1/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("board0/board0/stepdir1/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir1/enable").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir2/velocity").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir2/velocity").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir2/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("board0/board0/stepdir2/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir2/enable").addEventListener("input", publish, false);
+        client.connect({onSuccess:onConnect});
+        client.onMessageArrived = onMessage;
+
+        function onConnect() {
+            console.log("connected");
+            client.subscribe("board0/board0/stepdir0/position");
+            client.subscribe("board0/board0/stepdir1/position");
+            client.subscribe("board0/board0/stepdir2/position");
+            console.log("connected");
+        }
+
+
+        function publish() {
+            var topic = this.attributes.id.value.replace("_zero", "");
+            element = document.getElementById(topic);
+            var value = "0";
+            if (element.attributes.type.value == "checkbox") {
+                if (element.checked) {
+                    value = "1";
+                }
+            } else {
+                value = element.value;
+            }
+            console.log("publish", topic, value);
+
+            fb_element = document.getElementById(topic + "_fb");
+            if (fb_element) {
+                fb_element.innerHTML = value;
+            }
+
+
+            var message = new Paho.MQTT.Message(value);
+            message.destinationName = topic;
+            client.send(message);
+        }
+
+        function onMessage(message) {
+            // console.log("msg", message.destinationName, message.payloadString);
+            if (message.destinationName == "board0/board0/stepdir0/position") {
+                document.getElementById("board0/board0/stepdir0/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/stepdir1/position") {
+                document.getElementById("board0/board0/stepdir1/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/stepdir2/position") {
+                document.getElementById("board0/board0/stepdir2/position").innerHTML = message.payloadString;
+            }
+        }
+
+    </script>
+  </body>
+</html>

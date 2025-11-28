@@ -1,9 +1,9 @@
 import os
 import stat
 
-from riocore.generator.cbase import cbase
+from .cbase import cbase
 
-riocore_path = os.path.dirname(os.path.dirname(__file__))
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
 class mqttbridge(cbase):
@@ -36,16 +36,18 @@ class mqttbridge(cbase):
         "LICENSE": "GPL v2",
     }
 
-    def __init__(self, project):
+    def __init__(self, project, instance):
         self.project = project
-        self.mqtt_path = os.path.join(self.project.config["output_path"], "MQTT")
+        self.instance = instance
+        self.prefix = instance.hal_prefix
+        self.mqtt_path = os.path.join(self.project.config["output_path"], "MQTT", instance.instances_name)
         os.makedirs(self.mqtt_path, exist_ok=True)
 
         self.mqtt_makefile()
         self.mqtt_startscript()
         self.mqtt_page()
 
-        output = self.mainc(project)
+        output = self.mainc()
         output += self.mqtt_functions()
 
         open(os.path.join(self.mqtt_path, "mqttbridge.c"), "w").write("\n".join(output))
@@ -126,6 +128,8 @@ body {
         output.append('    <div class="container">')
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             signals = plugin_instance.signals()
             if not signals:
                 continue
@@ -183,6 +187,8 @@ body {
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             signals = plugin_instance.signals()
             if not signals:
                 continue
@@ -208,6 +214,8 @@ body {
         output.append('            console.log("connected");')
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             signals = plugin_instance.signals()
             if not signals:
                 continue
@@ -253,6 +261,8 @@ body {
         output.append('            // console.log("msg", message.destinationName, message.payloadString);')
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             signals = plugin_instance.signals()
             if not signals:
                 continue
@@ -296,6 +306,8 @@ body {
         # output.append("    printf(\"###    message: %.*s\\n\", message->payloadlen, (char*)message->payload);")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
@@ -367,6 +379,8 @@ body {
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
@@ -386,6 +400,8 @@ body {
         output.append("    while (1) {")
         output.append("        rio_readwrite(NULL, 0);")
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]

@@ -22,7 +22,7 @@ MODULE_LICENSE("GPL v2");
 #define JOINTS 3
 #define BUFFER_SIZE 40
 #define OSC_CLOCK 27000000
-#define UDP_IP "192.168.11.191"
+#define UDP_IP "192.168.11.194"
 #define SRC_PORT 2391
 #define DST_PORT 2390
 #define SERIAL_PORT "/dev/ttyUSB1"
@@ -109,9 +109,9 @@ typedef struct {
     hal_bit_t   *SIGIN_FPGA0_BITIN1_BIT_not;
     hal_bit_t   *SIGIN_FPGA0_BITIN2_BIT;
     hal_bit_t   *SIGIN_FPGA0_BITIN2_BIT_not;
-    hal_bit_t   *SIGOUT_FPGA0_WLED_0_GREEN;
-    hal_bit_t   *SIGOUT_FPGA0_WLED_0_BLUE;
-    hal_bit_t   *SIGOUT_FPGA0_WLED_0_RED;
+    hal_bit_t   *SIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
+    hal_bit_t   *SIGOUT_FPGA0_FPGA0_WLED_0_BLUE;
+    hal_bit_t   *SIGOUT_FPGA0_FPGA0_WLED_0_RED;
     hal_bit_t   *SIGOUT_FPGA0_BITOUT0_BIT;
     // raw variables
     uint8_t VARIN128_MODBUS0_RXDATA[16];
@@ -130,9 +130,9 @@ typedef struct {
     bool VARIN1_BITIN0_BIT;
     bool VARIN1_BITIN1_BIT;
     bool VARIN1_BITIN2_BIT;
-    bool VAROUT1_WLED_0_GREEN;
-    bool VAROUT1_WLED_0_BLUE;
-    bool VAROUT1_WLED_0_RED;
+    bool VAROUT1_FPGA0_WLED_0_GREEN;
+    bool VAROUT1_FPGA0_WLED_0_BLUE;
+    bool VAROUT1_FPGA0_WLED_0_RED;
     bool VAROUT1_BITOUT0_BIT;
 
 } data_t;
@@ -156,9 +156,9 @@ void register_signals(void) {
     data->VARIN1_BITIN0_BIT = 0;
     data->VARIN1_BITIN1_BIT = 0;
     data->VARIN1_BITIN2_BIT = 0;
-    data->VAROUT1_WLED_0_GREEN = 0;
-    data->VAROUT1_WLED_0_BLUE = 0;
-    data->VAROUT1_WLED_0_RED = 0;
+    data->VAROUT1_FPGA0_WLED_0_GREEN = 0;
+    data->VAROUT1_FPGA0_WLED_0_BLUE = 0;
+    data->VAROUT1_FPGA0_WLED_0_RED = 0;
     data->VAROUT1_BITOUT0_BIT = 0;
 
     if (retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "fpga0.sys-status") != 0) error_handler(retval);
@@ -268,12 +268,12 @@ void register_signals(void) {
     *data->SIGIN_FPGA0_BITIN2_BIT = 0;
     if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT_not), comp_id, "fpga0.bitin2.bit-not") != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN2_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN2_BIT;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_WLED_0_GREEN), comp_id, "fpga0.wled.0_green") != 0) error_handler(retval);
-    *data->SIGOUT_FPGA0_WLED_0_GREEN = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_WLED_0_BLUE), comp_id, "fpga0.wled.0_blue") != 0) error_handler(retval);
-    *data->SIGOUT_FPGA0_WLED_0_BLUE = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_WLED_0_RED), comp_id, "fpga0.wled.0_red") != 0) error_handler(retval);
-    *data->SIGOUT_FPGA0_WLED_0_RED = 0;
+    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN), comp_id, "fpga0.fpga0_wled.0_green") != 0) error_handler(retval);
+    *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = 0;
+    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE), comp_id, "fpga0.fpga0_wled.0_blue") != 0) error_handler(retval);
+    *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = 0;
+    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_RED), comp_id, "fpga0.fpga0_wled.0_red") != 0) error_handler(retval);
+    *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = 0;
     if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_BITOUT0_BIT), comp_id, "fpga0.bitout0.bit") != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_BITOUT0_BIT = 0;
 }
@@ -653,22 +653,22 @@ void convert_varout1_stepdir2_enable(data_t *data){
     data->VAROUT1_STEPDIR2_ENABLE = value;
 }
 
-void convert_varout1_wled_0_green(data_t *data){
-    bool value = *data->SIGOUT_FPGA0_WLED_0_GREEN;
+void convert_varout1_fpga0_wled_0_green(data_t *data){
+    bool value = *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
     
-    data->VAROUT1_WLED_0_GREEN = value;
+    data->VAROUT1_FPGA0_WLED_0_GREEN = value;
 }
 
-void convert_varout1_wled_0_blue(data_t *data){
-    bool value = *data->SIGOUT_FPGA0_WLED_0_BLUE;
+void convert_varout1_fpga0_wled_0_blue(data_t *data){
+    bool value = *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE;
     
-    data->VAROUT1_WLED_0_BLUE = value;
+    data->VAROUT1_FPGA0_WLED_0_BLUE = value;
 }
 
-void convert_varout1_wled_0_red(data_t *data){
-    bool value = *data->SIGOUT_FPGA0_WLED_0_RED;
+void convert_varout1_fpga0_wled_0_red(data_t *data){
+    bool value = *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED;
     
-    data->VAROUT1_WLED_0_RED = value;
+    data->VAROUT1_FPGA0_WLED_0_RED = value;
 }
 
 void convert_varout1_bitout0_bit(data_t *data){
@@ -853,9 +853,9 @@ void convert_outputs(void) {
     convert_varout1_stepdir1_enable(data);
     convert_varout32_stepdir2_velocity(data);
     convert_varout1_stepdir2_enable(data);
-    convert_varout1_wled_0_green(data);
-    convert_varout1_wled_0_blue(data);
-    convert_varout1_wled_0_red(data);
+    convert_varout1_fpga0_wled_0_green(data);
+    convert_varout1_fpga0_wled_0_blue(data);
+    convert_varout1_fpga0_wled_0_red(data);
     convert_varout1_bitout0_bit(data);
 }
 
@@ -891,9 +891,9 @@ void write_txbuffer(uint8_t *txBuffer) {
     txBuffer[32] |= (data->VAROUT1_STEPDIR0_ENABLE<<7); // 64
     txBuffer[32] |= (data->VAROUT1_STEPDIR1_ENABLE<<6); // 63
     txBuffer[32] |= (data->VAROUT1_STEPDIR2_ENABLE<<5); // 62
-    txBuffer[32] |= (data->VAROUT1_WLED_0_GREEN<<4); // 61
-    txBuffer[32] |= (data->VAROUT1_WLED_0_BLUE<<3); // 60
-    txBuffer[32] |= (data->VAROUT1_WLED_0_RED<<2); // 59
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_GREEN<<4); // 61
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_BLUE<<3); // 60
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_RED<<2); // 59
     txBuffer[32] |= (data->VAROUT1_BITOUT0_BIT<<1); // 58
     // FILL: 57
 }

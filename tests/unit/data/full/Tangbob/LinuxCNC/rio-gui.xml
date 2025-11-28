@@ -169,57 +169,48 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"wled-0_green"</text>
+          <text>"fpga0_wled-0_green"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>30</width>
+          <width>15</width>
         </label>
-        <led>
-          <halpin>"fpga0.wled.0_green"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.0_green"</halpin>
           <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
+          <width>13</width>
+        </checkbutton>
       </hbox>
       <hbox>
         <boxexpand expand="yes"/>
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"wled-0_blue"</text>
+          <text>"fpga0_wled-0_blue"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>30</width>
+          <width>15</width>
         </label>
-        <led>
-          <halpin>"fpga0.wled.0_blue"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.0_blue"</halpin>
           <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
+          <width>13</width>
+        </checkbutton>
       </hbox>
       <hbox>
         <boxexpand expand="yes"/>
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"wled-0_red"</text>
+          <text>"fpga0_wled-0_red"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
-          <width>30</width>
+          <width>15</width>
         </label>
-        <led>
-          <halpin>"fpga0.wled.0_red"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.0_red"</halpin>
           <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
+          <width>13</width>
+        </checkbutton>
       </hbox>
       <hbox>
         <boxexpand expand="yes"/>

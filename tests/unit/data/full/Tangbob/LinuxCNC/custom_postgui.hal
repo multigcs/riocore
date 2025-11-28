@@ -2,10 +2,12 @@
 # networks
 #################################################################################
 net tool-changed                         <= hal_manualtoolchange.changed
-net sig_axisui_error                     <= axisui.error
 net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
 net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
 net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_fpga0_fpga0_wled_0_green   <= pyvcp.fpga0.fpga0_wled.0_green
+net sig_pyvcp_fpga0_fpga0_wled_0_blue    <= pyvcp.fpga0.fpga0_wled.0_blue
+net sig_pyvcp_fpga0_fpga0_wled_0_red     <= pyvcp.fpga0.fpga0_wled.0_red
 net tool-prep-number                     => hal_manualtoolchange.number
 net tool-change                          => hal_manualtoolchange.change
 net sig_fpga0_modbus0_temperature        => pyvcp.fpga0.modbus0.temperature
@@ -14,9 +16,6 @@ net sig_fpga0_i2cbus0_lm75_0_valid       => pyvcp.fpga0.i2cbus0.lm75_0_valid
 net sig_fpga0_bitin0_bit                 => pyvcp.fpga0.bitin0.bit
 net sig_fpga0_bitin1_bit                 => pyvcp.fpga0.bitin1.bit
 net sig_fpga0_bitin2_bit                 => pyvcp.fpga0.bitin2.bit
-net func_or_0_4_or                       => pyvcp.fpga0.wled.0_green
-net sig_halui_mode_is-auto               => pyvcp.fpga0.wled.0_blue
-net sig_axisui_error                     => pyvcp.fpga0.wled.0_red
 net sig_spindle_0_on                     => pyvcp.fpga0.bitout0.bit
 
 #################################################################################
