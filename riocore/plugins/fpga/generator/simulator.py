@@ -4,28 +4,34 @@ import shutil
 import stat
 import sys
 
-from riocore.generator import cclient
+from .cclient import cclient
 
-riocore_path = os.path.dirname(os.path.dirname(__file__))
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
-class Simulator:
-    def __init__(self, project):
+class simulator:
+    def __init__(self, project, instance):
         self.project = project
+        self.instance = instance
+        self.prefix = instance.hal_prefix
         self.webots_home = os.path.join("usr", "local", "webots")
         self.webots = False
         self.glsim = False
         project.config["riocore_path"] = riocore_path
 
-    def generator(self, generate_pll=True):
-        self.config = self.project.config.copy()
-        jdata = self.config["jdata"]
-        linuxcnc_config = jdata.get("linuxcnc", {})
         if self.project.config["output_path"]:
-            self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator")
+            self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator", self.instance.instances_name)
             os.makedirs(self.simulator_path, exist_ok=True)
         else:
             return
+
+        self.generator()
+
+    def generator(self):
+        self.cclient = cclient(self.project, self.instance, self.simulator_path)
+        self.config = self.project.config.copy()
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
         machinetype = linuxcnc_config.get("machinetype", "mill")
 
         if machinetype in {"melfa"} and os.path.isdir(self.webots_home):
@@ -45,6 +51,8 @@ class Simulator:
 
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for pin in plugin_instance.expansion_outputs():
                 self.expansion_pins.append(pin)
             for pin in plugin_instance.expansion_inputs():
@@ -52,14 +60,19 @@ class Simulator:
 
         self.virtual_pins = []
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
                     if pinname not in self.virtual_pins:
                         self.virtual_pins.append(pinname)
 
-        cclient.riocore_h(self.project, self.simulator_path)
-        cclient.riocore_c(self.project, self.simulator_path)
+
+        self.calc_buffersize()
+        self.cclient.riocore_h()
+        self.cclient.riocore_c()
+
         self.interface_c()
         self.simulation_c()
         self.simulation_h()
@@ -93,7 +106,7 @@ class Simulator:
     def interface_c(self):
         protocol = self.project.config["jdata"].get("protocol", "SPI")
         if protocol == "UDP":
-            for ppath in glob.glob(os.path.join(riocore_path, "interfaces", "*", "*.c")):
+            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
                 if protocol == ppath.split(os.sep)[-2]:
                     rdata = open(ppath).read()
                     rdata = rdata.replace("rtapi_print", "printf")
@@ -208,15 +221,15 @@ class Simulator:
 
         hal2instances = {}
         hal2varnames = {}
-        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
             hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
             hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
 
-        for plugin_instance, data_name, data_config in self.project.get_signal_data():
-            hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
-            key = f"rio.{plugin_instance.signal_prefix}.{data_name}"
-            if key not in hal2varnames:
-                hal2varnames[key] = data_config["varname"]
+        #for plugin_instance, data_name, data_config in self.get_signal_data():
+        #    hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+        #    key = f"rio.{plugin_instance.signal_prefix}.{data_name}"
+        #    if key not in hal2varnames:
+        #        hal2varnames[key] = data_config["varname"]
 
         output.append("void simulation(void) {")
         output.append("    float newpos = 0.0;")
@@ -251,7 +264,7 @@ class Simulator:
 
         home_n = 0
         bitout_n = 0
-        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
@@ -293,7 +306,7 @@ class Simulator:
 
         output.append("")
         output.append('    printf("\\n\\n");')
-        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
             # multiplexed = data_config.get("multiplexed", False)
             # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
@@ -301,7 +314,7 @@ class Simulator:
                 if plugin_instance.TYPE != "frameio":
                     output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
         output.append('    printf("\\n");')
-        for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
             # multiplexed = data_config.get("multiplexed", False)
             # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
@@ -385,3 +398,56 @@ class Simulator:
             output.append("	./simulator")
         output.append("")
         open(os.path.join(self.simulator_path, "Makefile"), "w").write("\n".join(output))
+
+    def calc_buffersize(self):
+        self.timestamp_size = 32
+        self.header_size = 32
+        self.input_size = 0
+        self.output_size = 0
+        self.interface_sizes = set()
+        self.multiplexed_input = 0
+        self.multiplexed_input_size = 0
+        self.multiplexed_output = 0
+        self.multiplexed_output_size = 0
+        self.multiplexed_output_id = 0
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
+            for data_config in plugin_instance.interface_data().values():
+                self.interface_sizes.add(data_config["size"])
+                variable_size = data_config["size"]
+                multiplexed = data_config.get("multiplexed", False)
+                expansion = data_config.get("expansion", False)
+                if expansion:
+                    continue
+                if data_config["direction"] == "input":
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_input += 1
+                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
+                            self.multiplexed_input_size = max(self.multiplexed_input_size, 8)
+                        else:
+                            self.input_size += variable_size
+                elif data_config["direction"] == "output":
+                    if not data_config.get("expansion"):
+                        if multiplexed:
+                            self.multiplexed_output += 1
+                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
+                            self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
+                        else:
+                            self.output_size += variable_size
+
+        if self.multiplexed_input:
+            self.input_size += self.multiplexed_input_size + 8
+        if self.multiplexed_output:
+            self.output_size += self.multiplexed_output_size + 8
+
+        self.input_size = self.input_size + self.header_size + self.timestamp_size
+        self.output_size = self.output_size + self.header_size
+        self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
+        self.buffer_bytes = self.buffer_size // 8
+        # self.config["buffer_size"] = self.buffer_size
+
+        # log("# PC->FPGA", self.output_size)
+        # log("# FPGA->PC", self.input_size)
+        # log("# MAX", self.buffer_size)
