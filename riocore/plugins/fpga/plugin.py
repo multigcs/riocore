@@ -177,8 +177,10 @@ class Plugin(PluginBase):
             project = config
         else:
             project = riocore.Project(copy.deepcopy(config))
-        project = config
         gateware_path = os.path.join(project.config["output_path"], "Gateware", self.instances_name)
+        if not os.path.exists(gateware_path):
+            riocore.log(f"ERROR: path not exist, please run generator first: {gateware_path}")
+            return
         cmd = f"cd {gateware_path} && make {command}"
         return cmd
 
