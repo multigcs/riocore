@@ -136,7 +136,7 @@ class Plugin(PluginBase):
             axis_name = joint_data["axis"]
             joint_n = joint_data["num"]
             pid_num = joint_n
-            prefix = f"rio.{self.title}"
+            prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
             cmd_halname = f"{prefix}.dty"
             enable_halname = f"{prefix}.enable"
             scale_halname = f"{prefix}.dty-scale"
