@@ -2,6 +2,7 @@ import importlib
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 
@@ -107,6 +108,12 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         prepack_data.append("")
         open(os.path.join(path, "prepack.py"), "w").write("\n".join(prepack_data))
 
+        if family in {"gowin", "himbaechel"}:
+            source = os.path.join(self.riocore_path, "files", "fs2bin.py")
+            target = os.path.join(path, "fs2bin.py")
+            shutil.copy(source, target)
+            os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
         if sys.platform.startswith("win"):
             cmd_cp = "copy"
             cmd_del = "del /q"
@@ -197,6 +204,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append("")
             makefile_data.append("$(PROJECT).fs: $(PROJECT)_pnr.json")
             makefile_data.append("	gowin_pack -d ${DEVICE_FAMILY} -o $(PROJECT).fs $(PROJECT)_pnr.json")
+            makefile_data.append("	./fs2bin.py $(PROJECT).fs $(PROJECT).bin")
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_compiled.txt")
             makefile_data.append("")
             makefile_data.append("clean:")

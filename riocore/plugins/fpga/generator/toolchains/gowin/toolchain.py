@@ -102,6 +102,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append("	rm -rf $(PROJECT).fs $(PROJECT).json $(PROJECT)_pnr.json $(PROJECT).tcl abc.history impl")
         makefile_data.append("")
         makefile_data.append("$(PROJECT).tcl: pins.cst $(VERILOGS)")
+
         if sys.platform.startswith("win"):
             makefile_data.append("	@echo set_device -name $(FAMILY_GOWIN) $(DEVICE) > $(PROJECT).tcl")
             for verilog in self.config["verilog_files"]:
