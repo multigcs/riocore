@@ -331,6 +331,8 @@ class MyNode(QGraphicsItem):
     def load_image(self, image):
         if os.path.exists(image):
             rotate = self.flow_cfg.get("rotate", 0)
+            if master_node := self.master_node():
+                rotate += master_node.flow_cfg["rotate"]
             pixmap = QPixmap.fromImage(QImage(image))
             pixmap = pixmap.transformed(QTransform().rotate(rotate))
             pixmap_width = pixmap.width()
@@ -588,8 +590,20 @@ class PluginNode(MyNode):
     def master_pos(self):
         if master_node := self.master_node():
             if rpos := self.flow_cfg.get("rpos"):
+                rotate = master_node.flow_cfg["rotate"]
                 mpos = master_node.pos()
-                self.setPos(mpos.x() + rpos[0] / 2, mpos.y() + rpos[1] / 2)
+                mwidth = master_node.width
+                mheight = master_node.height
+                center_x = mwidth / 2
+                center_y = mheight / 2
+                scenter_x = rpos[0] / 2 + self.width / 2
+                scenter_y = rpos[1] / 2 + self.height / 2
+
+                pos_x, pos_y = self.scene.rotate_point((center_x, center_y), (scenter_x, scenter_y), rotate)
+                pos_x -= self.width / 2
+                pos_y -= self.height / 2
+
+                self.setPos(mpos.x() + pos_x, mpos.y() + pos_y)
 
     def reload(self):
         self.master_pos()
@@ -1215,6 +1229,8 @@ class NodeScene(QGraphicsScene):
 
         if len(items) > 1:
             for item in items:
+                if not hasattr(item, "height"):
+                    continue
                 if hasattr(item, "plugin_instance") and item.plugin_instance.SUB_OF:
                     continue
                 pos = item.pos()
@@ -1225,6 +1241,8 @@ class NodeScene(QGraphicsScene):
             center_x = min_x + (max_x - min_x) / 2
             center_y = min_y + (max_y - min_y) / 2
             for item in items:
+                if not hasattr(item, "height"):
+                    continue
                 if hasattr(item, "plugin_instance") and item.plugin_instance.SUB_OF:
                     continue
                 pos = item.pos()
@@ -1452,9 +1470,18 @@ class Window(QMainWindow):
         icon = self.style().standardIcon(QStyle.SP_ArrowLeft)
         undo_action = QAction(icon, "&Undo", self)
         undo_action.setStatusTip("Undo")
-        # load_action.setShortcut("Ctrl+Z")
+        undo_action.setShortcut("Ctrl+Z")
         undo_action.triggered.connect(self.undo)
         toolbar.addAction(undo_action)
+
+        toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
+        selall_action = QAction(icon, "&SelectAll", self)
+        selall_action.setStatusTip("selall")
+        selall_action.setShortcut("Ctrl+A")
+        selall_action.triggered.connect(self.select_all)
+        toolbar.addAction(selall_action)
 
         toolbar.addSeparator()
 
@@ -1695,6 +1722,10 @@ class Window(QMainWindow):
             return False
         self.tabwidget.tabBar().setTabTextColor(3, QColor(0, 0, 0))
         return True
+
+    def select_all(self):
+        for item in self.scene.items():
+            item.setSelected(True)
 
     def undo(self):
         if len(self.snapshots) > 1:
