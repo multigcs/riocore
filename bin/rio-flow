@@ -925,8 +925,6 @@ class NodeViewer(QGraphicsView):
     def mouseDoubleClickEvent(self, event):
         if self.scene.hover or self.scene.edge_hover:
             super().mouseDoubleClickEvent(event)
-        else:
-            self.scene.parent.gui_plugins.add_plugin(None)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         super().mousePressEvent(event)
