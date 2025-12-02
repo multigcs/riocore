@@ -1191,26 +1191,18 @@ class NodeScene(QGraphicsScene):
         menu.exec_(event.screenPos())
 
     def rotate_point(self, origin, point, angle):
-        ox, oy = origin
-        px, py = point
+        origin_x, origin_y = origin
+        point_x, point_y = point
         radians = math.radians(angle)
-        qx = ox + math.cos(angle) * (px - ox) - math.sin(radians) * (py - oy)
-        qy = oy + math.sin(angle) * (px - ox) + math.cos(radians) * (py - oy)
-        return qx, qy
+        new_x = origin_x + math.cos(radians) * (point_x - origin_x) - math.sin(radians) * (point_y - origin_y)
+        new_y = origin_y + math.sin(radians) * (point_x - origin_x) + math.cos(radians) * (point_y - origin_y)
+        return (new_x, new_y)
 
     def rotate(self, direction, items):
         min_x = max_size
         min_y = max_size
         max_x = -max_size
         max_y = -max_size
-        for item in items:
-            pos = item.pos()
-            min_x = min(min_x, pos.x())
-            max_x = max(max_x, pos.x() + item.width)
-            min_y = min(min_y, pos.y())
-            max_y = max(max_y, pos.y() + item.height)
-        center_x = min_x + (max_x - min_x) / 2
-        center_y = min_y + (max_y - min_y) / 2
 
         rotate = 90
         if direction == "ccw":
@@ -1223,12 +1215,24 @@ class NodeScene(QGraphicsScene):
 
         if len(items) > 1:
             for item in items:
+                if hasattr(item, "plugin_instance") and item.plugin_instance.SUB_OF:
+                    continue
                 pos = item.pos()
-                pos_x = pos.x()  # + item.width / 2
-                pos_y = pos.y()  # + item.height / 2
+                min_x = min(min_x, pos.x() + item.width / 2)
+                min_y = min(min_y, pos.y() + item.height / 2)
+                max_x = max(max_x, pos.x() + item.width / 2)
+                max_y = max(max_y, pos.y() + item.height / 2)
+            center_x = min_x + (max_x - min_x) / 2
+            center_y = min_y + (max_y - min_y) / 2
+            for item in items:
+                if hasattr(item, "plugin_instance") and item.plugin_instance.SUB_OF:
+                    continue
+                pos = item.pos()
+                pos_x = pos.x() + item.width / 2
+                pos_y = pos.y() + item.height / 2
                 px, py = self.rotate_point((center_x, center_y), (pos_x, pos_y), rotate)
-                # px -= item.width / 2
-                # py -= item.height / 2
+                px -= item.width / 2
+                py -= item.height / 2
                 item.setPos(px, py)
 
         self.update()
