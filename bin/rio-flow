@@ -338,7 +338,7 @@ class MyNode(QGraphicsItem):
         if os.path.exists(image):
             rotate = self.flow_cfg.get("rotate", 0)
             if master_node := self.master_node():
-                rotate += master_node.flow_cfg["rotate"]
+                rotate += master_node.flow_cfg.get("rotate", 0)
             pixmap = QPixmap.fromImage(QImage(image))
             pixmap = pixmap.transformed(QTransform().rotate(rotate))
             pixmap_width = pixmap.width()
@@ -598,7 +598,7 @@ class PluginNode(MyNode):
     def master_pos(self):
         if master_node := self.master_node():
             if rpos := self.flow_cfg.get("rpos"):
-                rotate = master_node.flow_cfg["rotate"]
+                rotate = master_node.flow_cfg.get("rotate", 0)
                 mpos = master_node.pos()
                 mwidth = master_node.width
                 mheight = master_node.height
@@ -2107,7 +2107,7 @@ class Window(QMainWindow):
                 x_pos_list = []
                 y_pos_list = []
                 for edge_item in self.scene.items():
-                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item:
+                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item and edge_item._source_node is not None:
                         pos = edge_item._source_node.port_pos(edge_item._source_port)
                         x_pos_list.append(pos.x())
                         y_pos_list.append(pos.y())

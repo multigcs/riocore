@@ -1,14 +1,26 @@
 {
     "name": "IceShield",
     "description": "RIO-IceShield on Raspberry PI4",
-    "boardcfg": "IceShield",
     "protocol": "SPI",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "IceShield",
+            "toolchain": "icestorm",
+            "flashcmd": "./spiflash.sh rio.bin",
+            "protocol": "SPI",
+            "uid": "board0",
+            "pos": [
+                150.0,
+                350.0
+            ],
+            "rotate": -90
+        },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:G"
+                    "pin": "board0:LED:G"
                 }
             },
             "frequency": 1.0,
@@ -24,16 +36,16 @@
             "type": "spi",
             "pins": {
                 "mosi": {
-                    "pin": "14"
+                    "pin": "board0:14"
                 },
                 "miso": {
-                    "pin": "17"
+                    "pin": "board0:17"
                 },
                 "sclk": {
-                    "pin": "15"
+                    "pin": "board0:15"
                 },
                 "sel": {
-                    "pin": "32"
+                    "pin": "board0:32"
                 }
             },
             "uid": "spi0",
@@ -47,7 +59,7 @@
             "name": "enable",
             "pins": {
                 "bit": {
-                    "pin": "45",
+                    "pin": "board0:45",
                     "modifier": [
                         {
                             "type": "invert",
@@ -77,10 +89,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "13"
+                    "pin": "board0:13"
                 },
                 "dir": {
-                    "pin": "12"
+                    "pin": "board0:12"
                 }
             },
             "is_joint": true,
@@ -102,10 +114,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "11"
+                    "pin": "board0:11"
                 },
                 "dir": {
-                    "pin": "10"
+                    "pin": "board0:10"
                 }
             },
             "is_joint": true,
@@ -127,10 +139,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "9"
+                    "pin": "board0:9"
                 },
                 "dir": {
-                    "pin": "6"
+                    "pin": "board0:6"
                 }
             },
             "is_joint": true,
@@ -152,10 +164,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "4"
+                    "pin": "board0:4"
                 },
                 "dir": {
-                    "pin": "3"
+                    "pin": "board0:3"
                 }
             },
             "is_joint": true,
@@ -177,10 +189,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "2"
+                    "pin": "board0:2"
                 },
                 "dir": {
-                    "pin": "48"
+                    "pin": "board0:48"
                 }
             },
             "is_joint": true,
@@ -197,10 +209,10 @@
             "type": "stepdir",
             "pins": {
                 "step": {
-                    "pin": "47"
+                    "pin": "board0:47"
                 },
                 "dir": {
-                    "pin": "46"
+                    "pin": "board0:46"
                 }
             },
             "is_joint": true,
@@ -217,7 +229,7 @@
             "name": "Output1",
             "pins": {
                 "bit": {
-                    "pin": "44",
+                    "pin": "board0:44",
                     "modifier": [
                         {
                             "type": "invert",
@@ -240,7 +252,7 @@
             "name": "Output2",
             "pins": {
                 "bit": {
-                    "pin": "43",
+                    "pin": "board0:43",
                     "modifier": [
                         {
                             "type": "invert",
@@ -263,7 +275,7 @@
             "name": "LED",
             "pins": {
                 "bit": {
-                    "pin": "LED:R",
+                    "pin": "board0:LED:R",
                     "modifier": [
                         {
                             "type": "invert",
@@ -288,7 +300,7 @@
             "name": "Input1",
             "pins": {
                 "bit": {
-                    "pin": "41",
+                    "pin": "board0:41",
                     "modifier": [
                         {
                             "type": "invert",
@@ -312,7 +324,7 @@
             "name": "Input2",
             "pins": {
                 "bit": {
-                    "pin": "40",
+                    "pin": "board0:40",
                     "modifier": [
                         {
                             "type": "invert",
@@ -336,7 +348,7 @@
             "name": "Input3",
             "pins": {
                 "bit": {
-                    "pin": "39",
+                    "pin": "board0:39",
                     "modifier": [
                         {
                             "type": "invert",
@@ -360,7 +372,7 @@
             "name": "Input4",
             "pins": {
                 "bit": {
-                    "pin": "38",
+                    "pin": "board0:38",
                     "modifier": [
                         {
                             "type": "invert",
@@ -384,7 +396,7 @@
             "name": "Input5",
             "pins": {
                 "bit": {
-                    "pin": "37",
+                    "pin": "board0:37",
                     "modifier": [
                         {
                             "type": "invert",
@@ -408,7 +420,7 @@
             "name": "Input6",
             "pins": {
                 "bit": {
-                    "pin": "36",
+                    "pin": "board0:36",
                     "modifier": [
                         {
                             "type": "invert",
@@ -432,7 +444,7 @@
             "name": "Input7",
             "pins": {
                 "bit": {
-                    "pin": "42",
+                    "pin": "board0:42",
                     "modifier": [
                         {
                             "type": "invert",
@@ -456,7 +468,7 @@
             "name": "Input8",
             "pins": {
                 "bit": {
-                    "pin": "34",
+                    "pin": "board0:34",
                     "modifier": [
                         {
                             "type": "invert",
@@ -489,10 +501,10 @@
     },
     "flow": {
         "view": {
-            "scale": 0.7,
+            "scale": 1.12,
             "pos": [
-                -691,
-                -106
+                -134.97378277153558,
+                56.0
             ]
         },
         "board": {

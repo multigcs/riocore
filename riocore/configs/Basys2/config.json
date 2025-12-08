@@ -1,13 +1,25 @@
 {
     "name": "Basys2",
     "description": "Basys2 - test configuration",
-    "boardcfg": "Basys2",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "Basys2",
+            "toolchain": "ise",
+            "flashcmd": "djtgcfg init -d Basys2 ; djtgcfg prog -d Basys2 -i 0 -f rio.bit",
+            "protocol": "SPI",
+            "uid": "board0",
+            "pos": [
+                290.0,
+                250.0
+            ],
+            "rotate": -90
+        },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LEDS:LED1"
+                    "pin": "board0:LEDS:LED1"
                 }
             },
             "uid": "blink0",
@@ -24,16 +36,16 @@
             "port": 2390,
             "pins": {
                 "sclk": {
-                    "pin": "PMOD_JA:P1"
+                    "pin": "board0:PMOD_JA:P1"
                 },
                 "sel": {
-                    "pin": "PMOD_JA:P2"
+                    "pin": "board0:PMOD_JA:P2"
                 },
                 "mosi": {
-                    "pin": "PMOD_JA:P3"
+                    "pin": "board0:PMOD_JA:P3"
                 },
                 "miso": {
-                    "pin": "PMOD_JA:P4"
+                    "pin": "board0:PMOD_JA:P4"
                 }
             },
             "uid": "w55000",
@@ -48,19 +60,19 @@
             "type": "dis7seg",
             "pins": {
                 "en1": {
-                    "pin": "7SEG:EN1"
+                    "pin": "board0:7SEG:EN1"
                 },
                 "en2": {
-                    "pin": "7SEG:EN2"
+                    "pin": "board0:7SEG:EN2"
                 },
                 "en3": {
-                    "pin": "7SEG:EN3"
+                    "pin": "board0:7SEG:EN3"
                 },
                 "en4": {
-                    "pin": "7SEG:EN4"
+                    "pin": "board0:7SEG:EN4"
                 },
                 "seg_a": {
-                    "pin": "7SEG:A",
+                    "pin": "board0:7SEG:A",
                     "modifier": [
                         {
                             "type": "invert",
@@ -72,7 +84,7 @@
                     ]
                 },
                 "seg_b": {
-                    "pin": "7SEG:B",
+                    "pin": "board0:7SEG:B",
                     "modifier": [
                         {
                             "type": "invert",
@@ -84,7 +96,7 @@
                     ]
                 },
                 "seg_c": {
-                    "pin": "7SEG:C",
+                    "pin": "board0:7SEG:C",
                     "modifier": [
                         {
                             "type": "invert",
@@ -96,7 +108,7 @@
                     ]
                 },
                 "seg_d": {
-                    "pin": "7SEG:D",
+                    "pin": "board0:7SEG:D",
                     "modifier": [
                         {
                             "type": "invert",
@@ -108,7 +120,7 @@
                     ]
                 },
                 "seg_e": {
-                    "pin": "7SEG:E",
+                    "pin": "board0:7SEG:E",
                     "modifier": [
                         {
                             "type": "invert",
@@ -120,7 +132,7 @@
                     ]
                 },
                 "seg_f": {
-                    "pin": "7SEG:F",
+                    "pin": "board0:7SEG:F",
                     "modifier": [
                         {
                             "type": "invert",
@@ -132,7 +144,7 @@
                     ]
                 },
                 "seg_g": {
-                    "pin": "7SEG:G",
+                    "pin": "board0:7SEG:G",
                     "modifier": [
                         {
                             "type": "invert",
@@ -154,7 +166,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "BUTTONS:BTN1"
+                    "pin": "board0:BUTTONS:BTN1"
                 }
             },
             "uid": "bitin0",
@@ -167,7 +179,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "BUTTONS:BTN2"
+                    "pin": "board0:BUTTONS:BTN2"
                 }
             },
             "uid": "bitin1",
@@ -180,7 +192,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "BUTTONS:BTN3"
+                    "pin": "board0:BUTTONS:BTN3"
                 }
             },
             "uid": "bitin2",
@@ -193,7 +205,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "BUTTONS:BTN4"
+                    "pin": "board0:BUTTONS:BTN4"
                 }
             },
             "uid": "bitin3",
@@ -206,7 +218,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW1"
+                    "pin": "board0:SWITCHES:SW1"
                 }
             },
             "uid": "bitin4",
@@ -219,7 +231,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW2"
+                    "pin": "board0:SWITCHES:SW2"
                 }
             },
             "uid": "bitin5",
@@ -232,7 +244,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW3"
+                    "pin": "board0:SWITCHES:SW3"
                 }
             },
             "uid": "bitin6",
@@ -245,7 +257,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW4"
+                    "pin": "board0:SWITCHES:SW4"
                 }
             },
             "uid": "bitin7",
@@ -258,7 +270,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW5"
+                    "pin": "board0:SWITCHES:SW5"
                 }
             },
             "uid": "bitin8",
@@ -271,7 +283,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW6"
+                    "pin": "board0:SWITCHES:SW6"
                 }
             },
             "uid": "bitin9",
@@ -284,7 +296,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW7"
+                    "pin": "board0:SWITCHES:SW7"
                 }
             },
             "uid": "bitin10",
@@ -297,7 +309,7 @@
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "SWITCHES:SW8"
+                    "pin": "board0:SWITCHES:SW8"
                 }
             },
             "uid": "bitin11",
@@ -310,7 +322,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED2"
+                    "pin": "board0:LEDS:LED2"
                 }
             },
             "uid": "bitout0",
@@ -323,7 +335,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED3"
+                    "pin": "board0:LEDS:LED3"
                 }
             },
             "uid": "bitout1",
@@ -336,7 +348,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED4"
+                    "pin": "board0:LEDS:LED4"
                 }
             },
             "uid": "bitout2",
@@ -349,7 +361,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED5"
+                    "pin": "board0:LEDS:LED5"
                 }
             },
             "uid": "bitout3",
@@ -362,7 +374,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED6"
+                    "pin": "board0:LEDS:LED6"
                 }
             },
             "uid": "bitout4",
@@ -375,7 +387,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED7"
+                    "pin": "board0:LEDS:LED7"
                 }
             },
             "uid": "bitout5",
@@ -388,7 +400,7 @@
             "type": "bitout",
             "pins": {
                 "bit": {
-                    "pin": "LEDS:LED8"
+                    "pin": "board0:LEDS:LED8"
                 }
             },
             "uid": "bitout6",
@@ -400,10 +412,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 1.198989898989899,
+            "scale": 0.88,
             "pos": [
-                -73,
-                -97
+                -68.28787878787875,
+                -45.0
             ]
         },
         "board": {

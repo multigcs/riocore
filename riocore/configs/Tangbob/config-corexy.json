@@ -1,32 +1,53 @@
 {
     "name": "Tangbob",
-    "boardcfg": "Tangbob",
     "description": "Tangbob with one 5x china BOB",
     "protocol": "UDP",
     "plugins": [
         {
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                180.0,
+                1060.0
+            ],
+            "rotate": 0,
+            "sub": {
+                "board0_w5500": {
+                    "ip": "192.168.11.194"
+                }
+            }
+        },
+        {
             "type": "w5500",
             "pins": {
                 "mosi": {
-                    "pin": "SPI:MOSI"
+                    "pin": "board0:SPI:MOSI"
                 },
                 "miso": {
-                    "pin": "SPI:MISO"
+                    "pin": "board0:SPI:MISO"
                 },
                 "sclk": {
-                    "pin": "SPI:SCLK"
+                    "pin": "board0:SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "SPI:SEL"
+                    "pin": "board0:SPI:SEL"
                 }
             },
-            "uid": "w55000"
+            "uid": "w55000",
+            "pos": [
+                850.0,
+                608.0
+            ]
         },
         {
             "type": "wled",
             "pins": {
                 "data": {
-                    "pin": "WLED:DATA"
+                    "pin": "board0:WLED:DATA"
                 }
             },
             "signals": {
@@ -40,40 +61,52 @@
                     "net": "halui.mode.is-auto"
                 }
             },
-            "uid": "wled0"
+            "uid": "wled0",
+            "pos": [
+                850.0,
+                713.0
+            ]
         },
         {
             "type": "modbus",
             "pins": {
                 "tx": {
-                    "pin": "MODBUS:TX"
+                    "pin": "board0:MODBUS:TX"
                 },
                 "rx": {
-                    "pin": "MODBUS:RX"
+                    "pin": "board0:MODBUS:RX"
                 },
                 "tx_enable": {
-                    "pin": "MODBUS:TX_ENABLE"
+                    "pin": "board0:MODBUS:TX_ENABLE"
                 }
             },
-            "uid": "modbus0"
+            "uid": "modbus0",
+            "pos": [
+                850.0,
+                778.0
+            ]
         },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "10"
+                    "pin": "board0:10"
                 }
             },
-            "uid": "blink0"
+            "uid": "blink0",
+            "pos": [
+                850.0,
+                853.0
+            ]
         },
         {
             "type": "i2cbus",
             "pins": {
                 "sda": {
-                    "pin": "I2C:sda"
+                    "pin": "board0:I2C:sda"
                 },
                 "scl": {
-                    "pin": "I2C:scl"
+                    "pin": "board0:I2C:scl"
                 }
             },
             "uid": "i2cbus0",
@@ -85,6 +118,16 @@
                         "subbus": "none"
                     }
                 }
+            },
+            "pos": [
+                850.0,
+                918.0
+            ],
+            "sub_pos": {
+                "dev-lm75_0(0x48)": [
+                    1100.0,
+                    918.0
+                ]
             }
         },
         {
@@ -94,16 +137,28 @@
                 "bit": {
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                360.0,
+                                810.0
+                            ]
                         },
                         {
-                            "type": "onerror"
+                            "type": "onerror",
+                            "pos": [
+                                360.0,
+                                840.0
+                            ]
                         },
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                360.0,
+                                930.0
+                            ]
                         }
                     ],
-                    "pin": "LEFT:P14"
+                    "pin": "board0:LEFT:P14"
                 }
             },
             "signals": {
@@ -113,7 +168,11 @@
                     "setp": ""
                 }
             },
-            "uid": "bitout0"
+            "uid": "bitout0",
+            "pos": [
+                850.0,
+                993.0
+            ]
         },
         {
             "type": "bitin",
@@ -121,7 +180,7 @@
             "pins": {
                 "bit": {
                     "pull": "up",
-                    "pin": "LEFT:P12"
+                    "pin": "board0:LEFT:P12"
                 }
             },
             "signals": {
@@ -131,7 +190,11 @@
                     "setp": ""
                 }
             },
-            "uid": "bitin0"
+            "uid": "bitin0",
+            "pos": [
+                850.0,
+                1058.0
+            ]
         },
         {
             "type": "bitin",
@@ -139,7 +202,7 @@
             "pins": {
                 "bit": {
                     "pull": "up",
-                    "pin": "LEFT:P13"
+                    "pin": "board0:LEFT:P13"
                 }
             },
             "signals": {
@@ -149,7 +212,11 @@
                     "setp": ""
                 }
             },
-            "uid": "bitin1"
+            "uid": "bitin1",
+            "pos": [
+                850.0,
+                1123.0
+            ]
         },
         {
             "type": "bitin",
@@ -157,7 +224,7 @@
             "pins": {
                 "bit": {
                     "pull": "up",
-                    "pin": "LEFT:P15"
+                    "pin": "board0:LEFT:P15"
                 }
             },
             "signals": {
@@ -167,7 +234,11 @@
                     "setp": ""
                 }
             },
-            "uid": "bitin2"
+            "uid": "bitin2",
+            "pos": [
+                850.0,
+                1188.0
+            ]
         },
         {
             "type": "bitout",
@@ -176,10 +247,14 @@
                 "bit": {
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                360.0,
+                                870.0
+                            ]
                         }
                     ],
-                    "pin": "LEFT:P17"
+                    "pin": "board0:LEFT:P17"
                 }
             },
             "signals": {
@@ -189,7 +264,11 @@
                     "setp": ""
                 }
             },
-            "uid": "bitout1"
+            "uid": "bitout1",
+            "pos": [
+                850.0,
+                1253.0
+            ]
         },
         {
             "type": "pwmout",
@@ -198,13 +277,21 @@
                 "pwm": {
                     "modifier": [
                         {
-                            "type": "invert"
+                            "type": "invert",
+                            "pos": [
+                                360.0,
+                                900.0
+                            ]
                         }
                     ],
-                    "pin": "LEFT:P1"
+                    "pin": "board0:LEFT:P1"
                 }
             },
-            "uid": "pwmout0"
+            "uid": "pwmout0",
+            "pos": [
+                850.0,
+                1318.0
+            ]
         },
         {
             "type": "bitin",
@@ -212,10 +299,14 @@
             "pins": {
                 "bit": {
                     "pull": "up",
-                    "pin": "LEFT:P10"
+                    "pin": "board0:LEFT:P10"
                 }
             },
-            "uid": "bitin3"
+            "uid": "bitin3",
+            "pos": [
+                850.0,
+                1393.0
+            ]
         },
         {
             "type": "bitin",
@@ -223,10 +314,14 @@
             "pins": {
                 "bit": {
                     "pull": "up",
-                    "pin": "LEFT:P11"
+                    "pin": "board0:LEFT:P11"
                 }
             },
-            "uid": "bitin4"
+            "uid": "bitin4",
+            "pos": [
+                850.0,
+                1458.0
+            ]
         },
         {
             "name": "joint-0",
@@ -235,12 +330,16 @@
             "uid": "stepdir0",
             "pins": {
                 "step": {
-                    "pin": "LEFT:P2"
+                    "pin": "board0:LEFT:P2"
                 },
                 "dir": {
-                    "pin": "LEFT:P3"
+                    "pin": "board0:LEFT:P3"
                 }
-            }
+            },
+            "pos": [
+                850.0,
+                1523.0
+            ]
         },
         {
             "name": "joint-1",
@@ -249,15 +348,19 @@
             "uid": "stepdir1",
             "pins": {
                 "step": {
-                    "pin": "LEFT:P4"
+                    "pin": "board0:LEFT:P4"
                 },
                 "dir": {
-                    "pin": "LEFT:P5"
+                    "pin": "board0:LEFT:P5"
                 }
             },
             "joint": {
                 "home_search_vel": 30.0
-            }
+            },
+            "pos": [
+                850.0,
+                1598.0
+            ]
         },
         {
             "name": "joint-2",
@@ -266,12 +369,16 @@
             "uid": "stepdir2",
             "pins": {
                 "step": {
-                    "pin": "LEFT:P6"
+                    "pin": "board0:LEFT:P6"
                 },
                 "dir": {
-                    "pin": "LEFT:P7"
+                    "pin": "board0:LEFT:P7"
                 }
-            }
+            },
+            "pos": [
+                850.0,
+                1673.0
+            ]
         },
         {
             "name": "joint-3",
@@ -280,15 +387,28 @@
             "uid": "stepdir3",
             "pins": {
                 "step": {
-                    "pin": "LEFT:P8"
+                    "pin": "board0:LEFT:P8"
                 },
                 "dir": {
-                    "pin": "LEFT:P9"
+                    "pin": "board0:LEFT:P9"
                 }
-            }
+            },
+            "pos": [
+                850.0,
+                1748.0
+            ]
         }
     ],
     "linuxcnc": {
         "machinetype": "corexy"
+    },
+    "flow": {
+        "view": {
+            "scale": 0.35,
+            "pos": [
+                -107,
+                22
+            ]
+        }
     }
 }
