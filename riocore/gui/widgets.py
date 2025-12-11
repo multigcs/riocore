@@ -2,9 +2,10 @@ import json
 import os
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, QSize, Qt, pyqtSignal
+from PyQt5.QtCore import QRect, QSize, Qt, pyqtSignal, QSortFilterProxyModel
 from PyQt5.QtGui import QFont, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
+    QCompleter,
     QCheckBox,
     QComboBox,
     QDialog,
@@ -570,7 +571,18 @@ class edit_combobox(QComboBox):
             self.options_clean.append("")
         for option in self.options:
             self.addItem(option)
+
         self.setEditable(True)
+        self.setInsertPolicy(QComboBox.NoInsert)
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+        self.completer = QCompleter(self.pFilterModel, self)
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
         if key in obj:
             if str(obj[key]) in self.options_clean:
                 self.setCurrentIndex(self.options_clean.index(str(obj[key])))
@@ -589,6 +601,12 @@ class edit_combobox(QComboBox):
         else:
             self.editTextChanged.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
 
     def update(self, obj=None):
         if obj is not None:
