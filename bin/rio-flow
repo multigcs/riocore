@@ -1409,21 +1409,8 @@ class Window(QMainWindow):
         if not self.save_check():
             # cancel pressed
             return
-        project = self.generate()
-        start_sh = os.path.join(project.config["output_path"], "LinuxCNC", "start.sh")
-        cmd = f"/bin/sh {start_sh}"
-        riocore.log("")
-        riocore.log("--- running generator ---")
-        riocore.log(cmd)
-        riocore.log("-------------------------")
-        run = subprocess.run(f"{cmd} 2>&1", shell=True, close_fds=True, capture_output=True)
-        riocore.log(run.stdout.decode())
-        riocore.log("-------------------------")
-        if run.returncode == 0:
-            riocore.log("DONE")
-        else:
-            riocore.log(f"FAILED: {run.returncode}")
-        riocore.log("-------------------------")
+        QTabWidget.setCurrentIndex(self.tabwidget, 4)
+        self.buildertab.generator_run("-s")
 
     def runTimer(self):
         infotext = []
@@ -1515,8 +1502,8 @@ class Window(QMainWindow):
         toolbar.addSeparator()
 
         icon = self.style().standardIcon(QStyle.SP_MediaPlay)
-        run_action = QAction(icon, "&Generator (F5)", self)
-        run_action.setStatusTip("Generator")
+        run_action = QAction(icon, "&generate and run (F5)", self)
+        run_action.setStatusTip("generate and run")
         run_action.setShortcut("F5")
         run_action.triggered.connect(self.generator_run)
         toolbar.addAction(run_action)
@@ -1524,8 +1511,8 @@ class Window(QMainWindow):
         toolbar.addSeparator()
 
         icon = self.style().standardIcon(QStyle.SP_MessageBoxInformation)
-        run_action = QAction(icon, "&Prebuild (F12)", self)
-        run_action.setStatusTip("Prebuild")
+        run_action = QAction(icon, "&Documentation (F12)", self)
+        run_action.setStatusTip("Documentation")
         run_action.setShortcut("F12")
         run_action.triggered.connect(self.prebuild)
         toolbar.addAction(run_action)

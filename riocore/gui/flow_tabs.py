@@ -125,32 +125,18 @@ class TabBuilder:
             self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(0, 0, 0))
             self.block = False
 
-    def generator_run(self):
+    def generator_run(self, options=None):
         if "generator" in self.compile_sub:
             print("wait to finish already running command")
             return
 
         generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
-        cmd = f"{generator_path} {self.parent.config_file}"
+        cmd = f"{generator_path} {options or ''} {self.parent.config_file}"
         self.output["generator"].setPlainText(f"running cmd; {cmd}...")
         print(f"running cmd: {cmd}...")
         self.compile_sub["generator"] = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
 
-    def generator_run_build(self):
-        if "generator" in self.compile_sub:
-            print("wait to finish already running command")
-            return
-        if not self.parent.save_check():
-            # cancel pressed
-            return
-
-        generator_path = os.path.join(os.path.dirname(riocore_path), "bin/rio-generator")
-        cmd = f"{generator_path} -b {self.parent.config_file}"
-        self.output["generator"].setPlainText(f"running cmd; {cmd}...")
-        print(f"running cmd: {cmd}...")
-        self.compile_sub["generator"] = subprocess.Popen(f"{cmd} > /tmp/buildlog 2>&1", shell=True, close_fds=True)
-
-    def bulder_run(self, plugin_instance, command):
+    def builder_run(self, plugin_instance, command):
         if plugin_instance.instances_name in self.compile_sub:
             print("wait to finish already running command")
             return
@@ -210,7 +196,7 @@ class TabBuilder:
 
                 for command in plugin_instance.BUILDER:
                     button = QPushButton(command)
-                    button.clicked.connect(partial(self.bulder_run, plugin_instance, command))
+                    button.clicked.connect(partial(self.builder_run, plugin_instance, command))
                     vbox.addWidget(button)
 
         self.left.addStretch()
