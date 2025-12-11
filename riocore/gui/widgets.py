@@ -608,6 +608,12 @@ class edit_combobox(QComboBox):
             self.setCurrentIndex(index)
             self.activated[str].emit(self.itemText(index))
 
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.change()
+        else:
+            QComboBox.keyPressEvent(self, event)
+
     def update(self, obj=None):
         if obj is not None:
             self.obj = obj

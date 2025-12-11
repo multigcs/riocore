@@ -5,9 +5,11 @@ import os
 import subprocess
 from functools import partial
 
-from PyQt5.QtCore import QMimeData, QTimer, Qt
+from PyQt5.QtCore import QMimeData, QTimer, Qt, QSortFilterProxyModel
 from PyQt5.QtGui import QColor, QDrag, QPixmap, QStandardItemModel, QTextCursor
 from PyQt5.QtWidgets import (
+    QCompleter,
+    QComboBox,
     QMessageBox,
     QDialog,
     QDialogButtonBox,
@@ -838,6 +840,34 @@ class TabAxis:
         return self.tab_axis
 
 
+class SearchComboBox(QComboBox):
+    def __init__(self, cb):
+        super().__init__()
+        self.cb = cb
+        self.setEditable(True)
+        self.setInsertPolicy(QComboBox.NoInsert)
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+        self.completer = QCompleter(self.pFilterModel, self)
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.cb()
+        else:
+            QComboBox.keyPressEvent(self, event)
+
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
+
+
 class TabJson:
     def __init__(self, parent=None, diff_only=True, line_numbers=True):
         self.parent = parent
@@ -1023,6 +1053,8 @@ class TabOptions:
         self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
+        self.comboBoxes = {}
+
         row = 0
         for sitem in self.parent.scene.items():
             if hasattr(sitem, "plugin_instance"):
@@ -1038,14 +1070,28 @@ class TabOptions:
                     item = QTableWidgetItem(signal)
                     item.setFlags(Qt.ItemFlag.ItemIsEnabled)
                     self.phal_table.setItem(row, 1, item)
+
+                    value = ""
+                    itype = ""
                     if net:
-                        self.phal_table.setItem(row, 2, QTableWidgetItem(str(net)))
-                        item = QTableWidgetItem("net")
+                        value = net
+                        itype = "net"
                     elif setp:
-                        self.phal_table.setItem(row, 2, QTableWidgetItem(str(setp)))
-                        item = QTableWidgetItem("setp")
-                    else:
-                        item = QTableWidgetItem("")
+                        itype = "setp"
+
+                    self.phal_table.setItem(row, 2, QTableWidgetItem())
+                    self.comboBoxes[row] = SearchComboBox(self.table_updated)
+                    self.comboBoxes[row].addItem(str(value))
+
+                    for signal_direction in ("input", "output"):
+                        for halpin, halpin_info in riocore.halpins.LINUXCNC_SIGNALS[signal_direction].items():
+                            self.comboBoxes[row].addItem(halpin)
+
+                    self.phal_table.setCellWidget(row, 2, self.comboBoxes[row])
+                    self.comboBoxes[row].currentIndexChanged.connect(self.table_updated)
+                    self.comboBoxes[row].textActivated.connect(self.table_updated)
+
+                    item = QTableWidgetItem(itype)
                     item.setFlags(Qt.ItemFlag.ItemIsEnabled)
                     self.phal_table.setItem(row, 3, item)
                     row += 1
@@ -1322,7 +1368,7 @@ class TabOptions:
             if self.phal_table.item(row, 1) and self.phal_table.item(row, 2):
                 uid = str(self.phal_table.item(row, 0).text())
                 source = str(self.phal_table.item(row, 1).text())
-                target = str(self.phal_table.item(row, 2).text())
+                target = str(self.comboBoxes[row].currentText())
                 if target:
                     if uid not in signals:
                         signals[uid] = {}
