@@ -2024,6 +2024,13 @@ class Window(QMainWindow):
         self.optionstab.update(self.config)
         self.buildertab.update()
 
+    def list_plugin_instances(self):
+        instances = []
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                instances.append(item.plugin_instance)
+        return instances
+
     def grid_align(self):
         items = self.scene.selectedItems()
         if not items:

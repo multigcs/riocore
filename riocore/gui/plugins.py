@@ -241,7 +241,11 @@ class GuiPlugins:
             option_row.addWidget(option_label, stretch=3)
             if option == "feedback":
                 options = [""]
-                for plugin_instance in self.parent.plugins.plugin_instances:
+                if hasattr(self.parent, "list_plugin_instances"):
+                    instances = self.parent.list_plugin_instances()
+                else:
+                    instances = self.parent.plugins.plugin_instances
+                for plugin_instance in instances:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         if signal_name == "position":
                             options.append(f"{plugin_instance.title}:{signal_name}")
