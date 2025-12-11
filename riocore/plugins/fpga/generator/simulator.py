@@ -235,31 +235,26 @@ class simulator:
         for axis_name, axis_config in self.project.axis_dict.items():
             joints = axis_config["joints"]
             for joint_setup in joints:
-                # joint = joint_setup["num"]
-                # TODO: rewrite to new axis_dict
-                pass
-                """
+                joint = joint_setup["num"]
                 position_mode = joint_setup.get("position_mode", "velocity")
                 if position_mode == "velocity":
-                    feedback_halname = joint_setup["feedback_halname"]
-                    position_halname = joint_setup["position_halname"]
-                    velocity_var = hal2varnames[position_halname]
-                    feedback_var = hal2varnames[feedback_halname]
                     plugin_instance = joint_setup["instance"]
                     interface_data = plugin_instance.interface_data()
                     enable_var = interface_data.get("enable", {}).get("variable", "1")
-                    output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
-                    output.append(f"        newpos = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0 * {joint_setup['SCALE_OUT']} / {joint_setup['SCALE_IN']};")
-                    output.append("        if ((int32_t)newpos == 0 && newpos > 0.0) {")
-                    output.append("            newpos = 1.0;")
-                    output.append("        } else if ((int32_t)newpos == 0 && newpos < 0.0) {")
-                    output.append("            newpos = -1.0;")
-                    output.append("        }")
-                    output.append('        printf(" # %f \\n", newpos);')
-                    output.append(f"        {feedback_var} += (int32_t)newpos;")
-                    output.append("    }")
+                    if "velocity" in interface_data and "position" in interface_data:
+                        velocity_var = interface_data["velocity"]["variable"]
+                        feedback_var = interface_data["position"]["variable"]
+                        output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
+                        output.append(f"        newpos = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0 * {joint_setup['SCALE_OUT']} / {joint_setup['SCALE_IN']};")
+                        output.append("        if ((int32_t)newpos == 0 && newpos > 0.0) {")
+                        output.append("            newpos = 1.0;")
+                        output.append("        } else if ((int32_t)newpos == 0 && newpos < 0.0) {")
+                        output.append("            newpos = -1.0;")
+                        output.append("        }")
+                        output.append('        printf(" # %f \\n", newpos);')
+                        output.append(f"        {feedback_var} += (int32_t)newpos;")
+                        output.append("    }")
                 output.append(f"    joint_position[{joint}] = {feedback_var};")
-                """
 
         home_n = 0
         bitout_n = 0
