@@ -886,13 +886,31 @@ class cbase:
         if iface_data:
             output.append(iface_data)
 
-        output.append("int interface_init(void) {")
+        output.append("int interface_init(int argc, char **argv) {")
         if protocol == "UART":
             output.append("    uart_init();")
         elif protocol == "SPI":
             output.append("    spi_init();")
         elif protocol == "UDP":
-            output.append("    udp_init(UDP_IP, DST_PORT, SRC_PORT);")
+            output.append("    char* dstAddress[1024];")
+            output.append("    int dstPort = DST_PORT;")
+            output.append("    if (argc > 1) {")
+            output.append("        int ip0 = 0;")
+            output.append("        int ip1 = 0;")
+            output.append("        int ip2 = 0;")
+            output.append("        int ip3 = 0;")
+            output.append("        int port = 0;")
+            output.append('        int ret = sscanf(argv[1], "%d.%d.%d.%d:%d", &ip0, &ip1, &ip2, &ip3, &port);')
+            output.append("        if (ret >= 4) {")
+            output.append('            sprintf(dstAddress, "%d.%d.%d.%d", ip0, ip1, ip2, ip3);')
+            output.append("            if (ret == 5) {")
+            output.append("                dstPort = port;")
+            output.append("            }")
+            output.append("        }")
+            output.append("        udp_init(dstAddress, dstPort, SRC_PORT);")
+            output.append("    } else {")
+            output.append("        udp_init(UDP_IP, DST_PORT, SRC_PORT);")
+            output.append("    }")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)

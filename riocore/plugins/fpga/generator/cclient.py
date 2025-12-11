@@ -130,8 +130,8 @@ class cclient:
         output.append(f"    // memcpy(&header, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}) // {input_pos};")
         input_pos -= variable_size
 
-        if self.multiplexed_input:
-            variable_size = self.multiplexed_input_size
+        if self.multiplexed_output:
+            variable_size = self.multiplexed_output_size
             byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
             byte_start = self.buffer_bytes - 1 - byte_start
             output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_VALUE, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")

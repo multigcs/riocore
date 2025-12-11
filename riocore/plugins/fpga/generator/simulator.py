@@ -195,13 +195,13 @@ class simulator:
             output.append(f"int {axis.lower()}_joints[NUM_JOINTS_{axis}] = {{{', '.join([str(j['num']) for j in joints])}}};")
         output.append("")
 
-        output.append("int interface_init(void) {")
+        output.append("int interface_init() {")
         if protocol == "UART":
             output.append("    uart_init();")
         elif protocol == "SPI":
             output.append("    spi_init();")
         elif protocol == "UDP":
-            output.append("    udp_init(UDP_IP, DST_PORT, SRC_PORT);")
+            output.append('    udp_init("0.0.0.0", DST_PORT, SRC_PORT);')
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
@@ -326,7 +326,7 @@ class simulator:
         output.append("void* simThread(void* vargp) {")
         output.append("    uint16_t ret = 0;")
         output.append("")
-        output.append("    interface_init();")
+        output.append("    interface_init(0, NULL);")
         output.append("")
         output.append("    while (sim_running) {")
         output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE);")
