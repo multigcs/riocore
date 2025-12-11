@@ -159,17 +159,28 @@ class jslib:
         open(os.path.join(self.mqtt_path, "rio.js"), "w").write("\n".join(output))
 
     def client_js(self):
+        http_support = True
+
         output = ["#!/usr/bin/env node"]
         output.append("")
         output.append("")
+        if http_support:
+            output.append("var http = require('http');")
+            output.append("var url = require('url');")
+            output.append("")
         output.append("const rio = require('./rio');")
         output.append("const dgram = require('node:dgram');")
         output.append("const { Buffer } = require('node:buffer');")
         output.append("")
+        if http_support:
+            output.append("HTTP_PORT = 8080;")
         output.append("SOURCE_PORT = 2391;")
         output.append("TARGET_PORT = 2390;")
         output.append("TARGET_IP = '127.0.0.1';")
         output.append("")
+        if http_support:
+            output.append("rio_rx = {};")
+            output.append("")
         output.append("const server = dgram.createSocket('udp4');")
         output.append("")
         output.append("server.on('error', (err) => {")
@@ -179,29 +190,36 @@ class jslib:
         output.append("")
         output.append("server.on('listening', () => {")
         output.append("    const address = server.address();")
-        output.append("    console.log(`server listening ${address.address}:${address.port}`);")
+        if not http_support:
+            output.append("    console.log(`server listening ${address.address}:${address.port}`);")
         output.append("});")
         output.append("")
 
         output.append("server.on('message', (msg, rinfo) => {")
-        output.append("    console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);")
+        if not http_support:
+            output.append("    console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);")
         output.append("    data = msg.slice()")
-        output.append("    console.log(data);")
+        if not http_support:
+            output.append("    console.log(data);")
         output.append("    rio_rx = rio.get_rx(data);")
-        for plugin, values in self.rx_dict.items():
-            for key, value in values.items():
-                output.append(f'    console.log("{plugin}.{key} = ", rio_rx["{plugin}"]["{key}"]);')
+        if not http_support:
+            for plugin, values in self.rx_dict.items():
+                for key, value in values.items():
+                    output.append(f'    console.log("{plugin}.{key} = ", rio_rx["{plugin}"]["{key}"]);')
         output.append("});")
         output.append("")
         output.append("function send() {")
-        for plugin, values in self.tx_dict.items():
-            for key, value in values.items():
-                output.append(f'    rio.output["{plugin}"]["{key}"] = 0;')
-        output.append("")
+        if not http_support:
+            for plugin, values in self.tx_dict.items():
+                for key, value in values.items():
+                    output.append(f'    rio.output["{plugin}"]["{key}"] = 0;')
+            output.append("")
         output.append("    message = rio.set_tx(rio.output);")
-        output.append("    console.log(message);")
+        if not http_support:
+            output.append("    console.log(message);")
         output.append("    server.send(message, TARGET_PORT, TARGET_IP, (err) => {")
-        output.append('        console.log("send ok");')
+        if not http_support:
+            output.append('        console.log("send ok");')
         output.append("    });")
         output.append("}")
         output.append("")
@@ -213,6 +231,44 @@ class jslib:
         output.append("    send();")
         output.append("}, 10);")
         output.append("")
+
+        if http_support:
+            output.append("console.log(`http server listening ${HTTP_PORT}`);")
+            output.append("")
+            for plugin, values in self.tx_dict.items():
+                for key, value in values.items():
+                    output.append(f'rio.output["{plugin}"]["{key}"] = 0;')
+            output.append("")
+            output.append("http.createServer(function (req, res) {")
+            output.append("    var q = url.parse(req.url, true);")
+            output.append('    var filename = "." + q.pathname;')
+            output.append("    res.writeHead(200, {'Content-Type': 'text/html'});")
+            output.append("")
+
+            for plugin, values in self.tx_dict.items():
+                for key, value in values.items():
+                    output.append(f'    if ("{plugin}.{key}" in q.query) {{')
+                    output.append(f'        rio.output["{plugin}"]["{key}"] = parseInt(q.query["{plugin}.{key}"]);')
+                    output.append("    }")
+            output.append("")
+
+            output.append("    res.write(\"<form action='/'>\");")
+            for plugin, values in self.tx_dict.items():
+                for key, value in values.items():
+                    output.append(f"    res.write(\"{plugin}.{key}: <input type='text' id='{plugin}.{key}' name='{plugin}.{key}' value='\" + String(rio.output[\"{plugin}\"][\"{key}\"]) + \"'><br/>\");")
+            output.append("    res.write(\"  <input type='submit' value='Submit'>\");")
+            output.append('    res.write("</form>");')
+            output.append("")
+
+            for plugin, values in self.rx_dict.items():
+                for key, value in values.items():
+                    output.append(f'    res.write("{plugin}.{key} = ");')
+                    output.append(f'    res.write(String(rio_rx["{plugin}"]["{key}"]));')
+                    output.append('    res.write("<br/>");')
+            output.append("")
+            output.append("    res.end();")
+            output.append("}).listen(HTTP_PORT);")
+            output.append("")
 
         output.append("")
 
