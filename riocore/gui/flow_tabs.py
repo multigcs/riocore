@@ -787,7 +787,7 @@ class TabAxis:
                         brow.addWidget(button)
 
                     button = QPushButton("scale-calc")
-                    button.clicked.connect(partial(self.scale_calc, f"{joint}_scale"))
+                    button.clicked.connect(partial(self.scale_calc, f"{joint}_scale_out"))
                     brow.addWidget(button)
                     joint_edits.addLayout(brow)
 
