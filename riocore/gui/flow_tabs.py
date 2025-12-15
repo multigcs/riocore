@@ -979,7 +979,6 @@ class TabOptions:
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Value"])
         self.treeview.setModel(self.model)
-        self.treeview.setUniformRowHeights(True)
         self.layout_ini.addWidget(self.treeview)
 
         self.phal_table = QTableWidget()
