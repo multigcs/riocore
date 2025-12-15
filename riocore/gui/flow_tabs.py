@@ -950,6 +950,7 @@ class TabOptions:
         self.config = parent.config
         self.update_flag = False
         self.ini_items = {}
+        self.filter_text = ""
         self.items = {}
         self.help_img1 = None
         self.help_img2 = None
@@ -979,6 +980,13 @@ class TabOptions:
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Name", "Value"])
         self.treeview.setModel(self.model)
+
+        hbox_search = QHBoxLayout()
+        self.filter_entry = QLineEdit("")
+        self.filter_entry.textChanged.connect(self.filter)
+        hbox_search.addWidget(QLabel("Filter"))
+        hbox_search.addWidget(self.filter_entry)
+        self.layout_ini.addLayout(hbox_search)
         self.layout_ini.addWidget(self.treeview)
 
         self.phal_table = QTableWidget()
@@ -997,6 +1005,10 @@ class TabOptions:
         self.hal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Type"))
         self.layout_hal.addWidget(self.hal_table)
         self.hal_table.itemChanged.connect(self.table_updated)
+
+    def filter(self, text):
+        self.filter_text = text
+        self.update(full=True)
 
     def update(self, config=None, full=False):
         if self.update_flag:
@@ -1229,6 +1241,9 @@ class TabOptions:
 
             lcncsec_view = tree_lcncini.item(tree_lcncini.rowCount() - 1)
             for key, value in section_data.items():
+                if self.filter_text and self.filter_text.lower() not in key.lower():
+                    continue
+
                 if value is not None and not isinstance(value, list):
                     var_setup = {"type": type(value), "default": value}
                     if section == "DISPLAY" and key == "POSITION_OFFSET":
