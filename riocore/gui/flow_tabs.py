@@ -1231,8 +1231,7 @@ class TabOptions:
             lcncsec_view = tree_lcncini.item(tree_lcncini.rowCount() - 1)
             for key, value in section_data.items():
                 if value is not None and not isinstance(value, list):
-                    # var_setup = {"type": type(value), "default": value}
-                    var_setup = {"type": type(value)}
+                    var_setup = {"type": type(value), "default": value}
                     if section == "DISPLAY" and key == "POSITION_OFFSET":
                         var_setup["type"] = "select"
                         var_setup["options"] = ["RELATIVE", "MACHINE"]
