@@ -352,7 +352,21 @@ class LinuxCNC:
 
         output_hal = []
         output_postgui = []
+
         (network_hal, network_postgui) = self.halg.net_write()
+
+        # some hal checks
+        if gui != "axis":
+            for halpin in self.halg.halpins:
+                if halpin.startswith("axisui."):
+                    riocore.log(f"## ERROR: you are using halpin '{halpin}', but gui is not set to 'axis'")
+        if not self.gui_type:
+            gui_prefixes = ["pyvcp", "qtpyvcp", "gladevcp", "qtdragon", "flexhal", "rio-gui"]
+            for prefix in gui_prefixes:
+                for halpin in self.halg.halpins:
+                    if halpin.startswith(f"{prefix}."):
+                        riocore.log(f"## ERROR: you are using halpin '{halpin}', but there is no VCP gui enabled")
+
         output_hal += network_hal
         output_postgui += network_postgui
         output_postgui += [""]

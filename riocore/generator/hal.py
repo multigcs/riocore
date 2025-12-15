@@ -506,6 +506,7 @@ class hal_generator:
         return aios
 
     def net_write(self):
+        self.halpins = []
         hal_data = []
         hal_data_addf_read = []
         hal_data_addf_other = []
@@ -593,11 +594,13 @@ class hal_generator:
                     component = pin.split(".", 1)[0]
                     if component in self.POSTGUI_COMPONENTS:
                         postgui_data.append(f"net {data['signal']:36s} <= {pin}")
+                        self.halpins.append(pin)
                     elif component not in self.VIRTUAL_COMPONENTS:
                         prefix = pin.split(".")[0]
                         if prefix not in sections:
                             sections[prefix] = {}
                         sections[prefix][pin] = ("<=", data["signal"])
+                        self.halpins.append(data["signal"])
 
         for target in self.signals_out:
             for pin, data in self.outputs2signals.items():
@@ -608,6 +611,7 @@ class hal_generator:
                             continue
                         if component in self.POSTGUI_COMPONENTS:
                             postgui_data.append(f"net {signal:36s} => {pin}")
+                            self.halpins.append(pin)
                         elif component not in self.VIRTUAL_COMPONENTS:
                             prefix = pin.split(".")[0]
                             if prefix not in sections:
@@ -674,10 +678,12 @@ class hal_generator:
                     if component in self.POSTGUI_COMPONENTS:
                         hal_data.append(f"# net {data['signal']:36s} <= {pin} (in postgui)")
                         postgui_data.append(f"net {data['signal']:36s} <= {pin}")
+                        self.halpins.append(pin)
                     elif component in self.VIRTUAL_COMPONENTS:
                         hal_data.append(f"# net {data['signal']:36s} <= {pin} (virtual pin)")
                     else:
                         hal_data.append(f"net {data['signal']:36s} <= {pin}")
+                        self.halpins.append(pin)
 
             for pin, data in self.outputs2signals.items():
                 component = pin.split(".", 1)[0]
@@ -686,10 +692,12 @@ class hal_generator:
                         if component in self.POSTGUI_COMPONENTS:
                             hal_data.append(f"# net {signal:36s} => {pin} (in postgui)")
                             postgui_data.append(f"net {signal:36s} => {pin}")
+                            self.halpins.append(pin)
                         elif component in self.VIRTUAL_COMPONENTS:
                             hal_data.append(f"# net {signal:36s} => {pin} (virtual pin)")
                         else:
                             hal_data.append(f"net {signal:36s} => {pin}")
+                            self.halpins.append(pin)
 
             hal_data.append("")
 
