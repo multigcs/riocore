@@ -353,8 +353,26 @@ int udp_rx(uint8_t *rxBuffer, uint16_t size, uint8_t udp_async) {
 void udp_exit(void) {
 }
 
-int interface_init(void) {
-    udp_init(UDP_IP, DST_PORT, SRC_PORT);
+int interface_init(int argc, char **argv) {
+    char* dstAddress[1024];
+    int dstPort = DST_PORT;
+    if (argc > 1) {
+        int ip0 = 0;
+        int ip1 = 0;
+        int ip2 = 0;
+        int ip3 = 0;
+        int port = 0;
+        int ret = sscanf(argv[1], "%d.%d.%d.%d:%d", &ip0, &ip1, &ip2, &ip3, &port);
+        if (ret >= 4) {
+            sprintf(dstAddress, "%d.%d.%d.%d", ip0, ip1, ip2, ip3);
+            if (ret == 5) {
+                dstPort = port;
+            }
+        }
+        udp_init(dstAddress, dstPort, SRC_PORT);
+    } else {
+        udp_init(UDP_IP, DST_PORT, SRC_PORT);
+    }
     return 0;
 }
 

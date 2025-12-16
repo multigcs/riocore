@@ -9,5 +9,5 @@ echo "compile package:"
 (cd "$DIRNAME" && make clean all)
 
 echo "running mqttbridge:"
-$DIRNAME/mqttbridge
+$DIRNAME/mqttbridge $@
 

@@ -36,43 +36,41 @@ uint8_t VAROUT1_BITOUT0_BIT = 0;
 // PC -> MC
 void read_rxbuffer(uint8_t *rxBuffer) {
     // memcpy(&header, &rxBuffer[0], 4) // 320;
-    memcpy(&MULTIPLEXER_OUTPUT_VALUE, &rxBuffer[4], 2);
-    memcpy(&MULTIPLEXER_OUTPUT_ID, &rxBuffer[6], 1);
-    memcpy(&VAROUT128_MODBUS0_TXDATA, &rxBuffer[7], 16); // 264
-    memcpy(&VAROUT32_STEPDIR0_VELOCITY, &rxBuffer[23], 4); // 136
-    memcpy(&VAROUT32_STEPDIR1_VELOCITY, &rxBuffer[27], 4); // 104
-    memcpy(&VAROUT32_STEPDIR2_VELOCITY, &rxBuffer[31], 4); // 72
-    if ((rxBuffer[35] & (1<<7)) == 0) {
+    memcpy(&VAROUT128_MODBUS0_TXDATA, &rxBuffer[4], 16); // 288
+    memcpy(&VAROUT32_STEPDIR0_VELOCITY, &rxBuffer[20], 4); // 160
+    memcpy(&VAROUT32_STEPDIR1_VELOCITY, &rxBuffer[24], 4); // 128
+    memcpy(&VAROUT32_STEPDIR2_VELOCITY, &rxBuffer[28], 4); // 96
+    if ((rxBuffer[32] & (1<<7)) == 0) {
         VAROUT1_STEPDIR0_ENABLE = 0;
     } else {
         VAROUT1_STEPDIR0_ENABLE = 1;
     }
-    if ((rxBuffer[35] & (1<<6)) == 0) {
+    if ((rxBuffer[32] & (1<<6)) == 0) {
         VAROUT1_STEPDIR1_ENABLE = 0;
     } else {
         VAROUT1_STEPDIR1_ENABLE = 1;
     }
-    if ((rxBuffer[35] & (1<<5)) == 0) {
+    if ((rxBuffer[32] & (1<<5)) == 0) {
         VAROUT1_STEPDIR2_ENABLE = 0;
     } else {
         VAROUT1_STEPDIR2_ENABLE = 1;
     }
-    if ((rxBuffer[35] & (1<<4)) == 0) {
+    if ((rxBuffer[32] & (1<<4)) == 0) {
         VAROUT1_FPGA0_WLED_0_GREEN = 0;
     } else {
         VAROUT1_FPGA0_WLED_0_GREEN = 1;
     }
-    if ((rxBuffer[35] & (1<<3)) == 0) {
+    if ((rxBuffer[32] & (1<<3)) == 0) {
         VAROUT1_FPGA0_WLED_0_BLUE = 0;
     } else {
         VAROUT1_FPGA0_WLED_0_BLUE = 1;
     }
-    if ((rxBuffer[35] & (1<<2)) == 0) {
+    if ((rxBuffer[32] & (1<<2)) == 0) {
         VAROUT1_FPGA0_WLED_0_RED = 0;
     } else {
         VAROUT1_FPGA0_WLED_0_RED = 1;
     }
-    if ((rxBuffer[35] & (1<<1)) == 0) {
+    if ((rxBuffer[32] & (1<<1)) == 0) {
         VAROUT1_BITOUT0_BIT = 0;
     } else {
         VAROUT1_BITOUT0_BIT = 1;

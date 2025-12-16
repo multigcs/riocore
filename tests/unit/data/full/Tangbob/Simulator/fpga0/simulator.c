@@ -20,8 +20,8 @@ int x_joints[NUM_JOINTS_X] = {0};
 int y_joints[NUM_JOINTS_Y] = {1};
 int z_joints[NUM_JOINTS_Z] = {2};
 
-int interface_init(void) {
-    udp_init(UDP_IP, DST_PORT, SRC_PORT);
+int interface_init() {
+    udp_init("0.0.0.0", DST_PORT, SRC_PORT);
 }
 
 void interface_exit(void) {
@@ -30,6 +30,39 @@ void interface_exit(void) {
 
 void simulation(void) {
     float newpos = 0.0;
+    if (VAROUT1_STEPDIR0_ENABLE == 1 && VAROUT32_STEPDIR0_VELOCITY != 0) {
+        newpos = ((float)CLOCK_SPEED / (float)VAROUT32_STEPDIR0_VELOCITY / 2.0) / 1000.0 * -800.0 / -800.0;
+        if ((int32_t)newpos == 0 && newpos > 0.0) {
+            newpos = 1.0;
+        } else if ((int32_t)newpos == 0 && newpos < 0.0) {
+            newpos = -1.0;
+        }
+        printf(" # %f \n", newpos);
+        VARIN32_STEPDIR0_POSITION += (int32_t)newpos;
+    }
+    joint_position[0] = VARIN32_STEPDIR0_POSITION;
+    if (VAROUT1_STEPDIR1_ENABLE == 1 && VAROUT32_STEPDIR1_VELOCITY != 0) {
+        newpos = ((float)CLOCK_SPEED / (float)VAROUT32_STEPDIR1_VELOCITY / 2.0) / 1000.0 * 800.0 / 800.0;
+        if ((int32_t)newpos == 0 && newpos > 0.0) {
+            newpos = 1.0;
+        } else if ((int32_t)newpos == 0 && newpos < 0.0) {
+            newpos = -1.0;
+        }
+        printf(" # %f \n", newpos);
+        VARIN32_STEPDIR1_POSITION += (int32_t)newpos;
+    }
+    joint_position[1] = VARIN32_STEPDIR1_POSITION;
+    if (VAROUT1_STEPDIR2_ENABLE == 1 && VAROUT32_STEPDIR2_VELOCITY != 0) {
+        newpos = ((float)CLOCK_SPEED / (float)VAROUT32_STEPDIR2_VELOCITY / 2.0) / 1000.0 * -1600.0 / -1600.0;
+        if ((int32_t)newpos == 0 && newpos > 0.0) {
+            newpos = 1.0;
+        } else if ((int32_t)newpos == 0 && newpos < 0.0) {
+            newpos = -1.0;
+        }
+        printf(" # %f \n", newpos);
+        VARIN32_STEPDIR2_POSITION += (int32_t)newpos;
+    }
+    joint_position[2] = VARIN32_STEPDIR2_POSITION;
     if (joint_position[0] < 0.0) {
         VARIN1_BITIN0_BIT = 1;
     } else {
@@ -75,7 +108,7 @@ void simulation(void) {
 void* simThread(void* vargp) {
     uint16_t ret = 0;
 
-    interface_init();
+    interface_init(0, NULL);
 
     while (sim_running) {
         ret = udp_rx(rxBuffer, BUFFER_SIZE);

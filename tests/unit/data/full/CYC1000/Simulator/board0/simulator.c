@@ -18,7 +18,7 @@ volatile int32_t bitout_stat[NUM_BITOUTS];
 
 int x_joints[NUM_JOINTS_X] = {0};
 
-int interface_init(void) {
+int interface_init() {
     spi_init();
 }
 
@@ -28,6 +28,17 @@ void interface_exit(void) {
 
 void simulation(void) {
     float newpos = 0.0;
+    if (VAROUT1_STEPDIR0_ENABLE == 1 && VAROUT32_STEPDIR0_VELOCITY != 0) {
+        newpos = ((float)CLOCK_SPEED / (float)VAROUT32_STEPDIR0_VELOCITY / 2.0) / 1000.0 * 320.0 / 320.0;
+        if ((int32_t)newpos == 0 && newpos > 0.0) {
+            newpos = 1.0;
+        } else if ((int32_t)newpos == 0 && newpos < 0.0) {
+            newpos = -1.0;
+        }
+        printf(" # %f \n", newpos);
+        VARIN32_STEPDIR0_POSITION += (int32_t)newpos;
+    }
+    joint_position[0] = VARIN32_STEPDIR0_POSITION;
     bitout_stat[0] = VAROUT1_BITOUT0_BIT;
     bitout_stat[1] = VAROUT1_BITOUT1_BIT;
 
@@ -46,7 +57,7 @@ void simulation(void) {
 void* simThread(void* vargp) {
     uint16_t ret = 0;
 
-    interface_init();
+    interface_init(0, NULL);
 
     while (sim_running) {
         ret = udp_rx(rxBuffer, BUFFER_SIZE);

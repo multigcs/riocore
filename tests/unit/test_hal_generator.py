@@ -15,7 +15,7 @@ def test_generator():
 #################################################################################
 # logic and calc components
 #################################################################################
-loadrt logic names=func.and_0.1,func.and_2.1,func.or_3.1,func.and_6.1,func.or_7.1,func.and_7.2,func.or_8.1,func.or_10.1 personality=0x102,0x102,0x204,0x102,0x203,0x103,0x202,0x202
+loadrt logic names=func.and_0.1,func.and_2.1,func.or_3.1,func.and_6.1,func.or_7.1,func.and_7.2,func.or_8.1,func.or_9.1,func.or_11.1 personality=0x102,0x102,0x204,0x102,0x203,0x103,0x202,0x202,0x202
 addf func.and_0.1 servo-thread
 addf func.and_2.1 servo-thread
 addf func.or_3.1 servo-thread
@@ -23,16 +23,17 @@ addf func.and_6.1 servo-thread
 addf func.or_7.1 servo-thread
 addf func.and_7.2 servo-thread
 addf func.or_8.1 servo-thread
-addf func.or_10.1 servo-thread
+addf func.or_9.1 servo-thread
+addf func.or_11.1 servo-thread
 
 loadrt not names=func.not_pio_input1,func.not_pio_input2,func.not_oio_bit9
 addf func.not_pio_input1 servo-thread
 addf func.not_pio_input2 servo-thread
 addf func.not_oio_bit9 servo-thread
 
-loadrt sum2 names=func.sum2_4.1,func.sum2_9.1
+loadrt sum2 names=func.sum2_4.1,func.sum2_10.1
 addf func.sum2_4.1 servo-thread
-addf func.sum2_9.1 servo-thread
+addf func.sum2_10.1 servo-thread
 
 loadrt mult2 names=func.mult2_5.1,func.mult2_5.2
 addf func.mult2_5.1 servo-thread
@@ -45,13 +46,13 @@ addf func.div2_5.3 servo-thread
 # rio
 #################################################################################
 net sig_rio_bit                          <= rio.bit
-net func_or_10_1_or                      => rio.bitor0
+net func_or_11_1_or                      => rio.bitor0
 net sig_rio_float                        <= rio.float
 net sig_rio_float_1                      <= rio.float_1
 net sig_rio_float_2                      <= rio.float_2
 net sig_rio_float_3                      <= rio.float_3
 net sig_rio_float_4                      <= rio.float_4
-net func_sum2_9_1_out                    => rio.fout
+net func_sum2_10_1_out                   => rio.fout
 net sig_rio_input1                       <= rio.input1
 net sig_rio_input1-not                   <= rio.input1-not
 net sig_rio_input2                       <= rio.input2
@@ -63,7 +64,7 @@ net sig_rio_input6                       <= rio.input6
 net sig_rio_input7                       <= rio.input7
 net sig_rio_input8                       <= rio.input8
 net func_or_8_1_or                       => rio.orout1
-net func_or_8_1_or                       => rio.orout2
+net func_or_9_1_or                       => rio.orout2
 net sig_rio_s32_1                        <= rio.s32_1
 net sig_rio_s32_2                        <= rio.s32_2
 net sig_rio_s32_3                        <= rio.s32_3
@@ -107,8 +108,8 @@ net func_not_pio_input1_out              <= func.not_pio_input1.out
 net sig_pio_input2                       => func.not_pio_input2.in
 net func_not_pio_input2_out              <= func.not_pio_input2.out
 
-net sig_rio_bit                          => func.or_10.1.in-00
-net func_or_10_1_or                      <= func.or_10.1.or
+net sig_rio_bit                          => func.or_11.1.in-00
+net func_or_11_1_or                      <= func.or_11.1.or
 
 net sig_rio_input2                       => func.or_3.1.in-00
 net sig_pyvcp_input3                     => func.or_3.1.in-01
@@ -125,15 +126,19 @@ net sig_rio_input5                       => func.or_8.1.in-00
 net sig_rio_input6                       => func.or_8.1.in-01
 net func_or_8_1_or                       <= func.or_8.1.or
 
+net sig_rio_input5                       => func.or_9.1.in-00
+net sig_rio_input6                       => func.or_9.1.in-01
+net func_or_9_1_or                       <= func.or_9.1.or
+
+net sig_rio_float                        => func.sum2_10.1.in0
+net func_sum2_10_1_out                   <= func.sum2_10.1.out
+
 net sig_rio_s32_1                        => func.sum2_4.1.in0
 net sig_rio_s32_2                        => func.sum2_4.1.in1
 net sig_rio_s32_3                        => func.sum2_4.1.in2
 net sig_rio_s32_1                        => func.sum2_4.1.in3
 net sig_rio_s32_2                        => func.sum2_4.1.in4
 net func_sum2_4_1_out                    <= func.sum2_4.1.out
-
-net sig_rio_float                        => func.sum2_9.1.in0
-net func_sum2_9_1_out                    <= func.sum2_9.1.out
 
 #################################################################################
 # pio
@@ -164,8 +169,8 @@ net func_and_2_1_and                     => hal.pio_output3
 #################################################################################
 # setp
 #################################################################################
-setp func.or_10.1.in-01                     0
-setp func.sum2_9.1.in1                      10
+setp func.or_11.1.in-01                     0
+setp func.sum2_10.1.in1                     10
 # setp pyvcp.outval                           123    (in postgui)
 # setp rio.orout1                             0      (already linked to func_or_8_1_or)
 setp rio.outval                             123
