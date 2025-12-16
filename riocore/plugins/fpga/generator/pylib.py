@@ -375,7 +375,110 @@ body {
         output.append("import ctypes")
         output.append("import pathlib")
         output.append("")
+
+        output.append("class RioData(ctypes.Structure):")
+        output.append("    _fields_ = [")
+        output.append('      ("sys_enable", ctypes.POINTER(ctypes.c_bool)),')
+        output.append('      ("sys_enable_request", ctypes.POINTER(ctypes.c_bool)),')
+        output.append('      ("sys_status", ctypes.POINTER(ctypes.c_bool)),')
+        output.append('      ("machine_on", ctypes.POINTER(ctypes.c_bool)),')
+        output.append('      ("sys_simulation", ctypes.POINTER(ctypes.c_bool)),')
+        output.append('      ("fpga_timestamp", ctypes.POINTER(ctypes.c_int)),')
+        output.append('      ("duration", ctypes.POINTER(ctypes.c_float)),')
+
+        if self.instance.gateware.multiplexed_output:
+            output.append('      ("MULTIPLEXER_OUTPUT_VALUE", ctypes.POINTER(ctypes.c_float)),')
+            output.append('      ("MULTIPLEXER_OUTPUT_ID", ctypes.POINTER(ctypes.c_char)),')
+        if self.instance.gateware.multiplexed_input:
+            output.append('      ("MULTIPLEXER_INPUT_VALUE", ctypes.c_float),')
+            output.append('      ("MULTIPLEXER_INPUT_ID", ctypes.c_char),')
+
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
+            for signal_name, signal_config in plugin_instance.signals().items():
+                varname = signal_config["varname"]
+                # var_prefix = signal_config["var_prefix"]
+                direction = signal_config["direction"]
+                boolean = signal_config.get("bool")
+                signal_source = signal_config.get("source")
+                hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                vtype = self.typemap.get(hal_type, hal_type)
+                virtual = signal_config.get("virtual")
+                component = signal_config.get("component")
+                if virtual and component:
+                    # swap direction vor virt signals in component
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
+                elif virtual:
+                    continue
+                if not boolean:
+                    output.append(f'      ("{varname}", ctypes.POINTER(ctypes.c_{vtype})),')
+                    if not signal_source and not signal_config.get("helper", False):
+                        if direction == "input" and hal_type == "float":
+                            output.append(f'      ("{varname}_ABS", ctypes.POINTER(ctypes.c_{vtype})),')
+                            output.append(f'      ("{varname}_S32", ctypes.POINTER(ctypes.c_int32)),')
+                            output.append(f'      ("{varname}_U32_ABS", ctypes.POINTER(ctypes.c_uint32)),')
+                        if not virtual:
+                            output.append(f'      ("{varname}_SCALE", ctypes.POINTER(ctypes.c_float)),')
+                            output.append(f'      ("{varname}_OFFSET", ctypes.POINTER(ctypes.c_float)),')
+                else:
+                    output.append(f'      ("{varname}", ctypes.POINTER(ctypes.c_bool)),')
+                    if direction == "input":
+                        output.append(f'      ("{varname}_not", ctypes.POINTER(ctypes.c_bool)),')
+                    if signal_config.get("is_index_out"):
+                        output.append(f'      ("{varname}_INDEX_RESET", ctypes.POINTER(ctypes.c_bool)),')
+                        output.append(f'      ("{varname}_INDEX_WAIT", ctypes.POINTER(ctypes.c_bool)),')
+
+        output.append("      # raw variables")
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
+            expansion = data_config.get("expansion", False)
+            if expansion:
+                continue
+            variable_name = data_config["variable"]
+            variable_size = data_config["size"]
+            is_float = data_config.get("is_float", False)
+            variable_bytesize = variable_size // 8
+            if plugin_instance.TYPE == "frameio":
+                output.append(f'      ("{variable_name}", ctypes.c_char * {variable_bytesize}),')
+            elif variable_size > 1:
+                variable_size_align = 8
+                for isize in (8, 16, 32, 64):
+                    variable_size_align = isize
+                    if isize >= variable_size:
+                        break
+                if is_float:
+                    output.append(f'      ("{variable_name}", ctypes.c_float),')
+                elif variable_size < 8:
+                    output.append(f'      ("{variable_name}", ctypes.c_uint{variable_size_align}),')
+                else:
+                    output.append(f'      ("{variable_name}", ctypes.c_uint{variable_size_align}),')
+            else:
+                output.append(f'      ("{variable_name}", ctypes.c_bool),')
+        output.append("    ]")
+        output.append("")
+        output.append("rio_data = None")
+        output.append("dataPtr = ctypes.POINTER(RioData)")
+        output.append("")
+
+        output.append("def data_get(name):")
+        output.append("    var = getattr(rio_data.contents, name)")
+        output.append('    if hasattr(var, "contents"):')
+        output.append("        return var.contents.value")
+        output.append("    return var")
+        output.append("")
+
+        output.append("def data_set(name, value):")
+        output.append("    var = getattr(rio_data.contents, name)")
+        output.append('    if hasattr(var, "contents"):')
+        output.append("        var.contents.value = value")
+        output.append("    var = value")
+        output.append("")
+
         output.append("def load_rio():")
+        output.append("    global rio_data")
         output.append('    libname = pathlib.Path().absolute() / "librio.so"')
         output.append("    rio = ctypes.CDLL(libname)")
         for plugin_instance in self.project.plugin_instances:
@@ -400,9 +503,11 @@ body {
                     else:
                         output.append(f"    rio.set_{halname}.argtypes = [ctypes.c_float]")
         output.append("")
+        output.append("    rio.init.restype = dataPtr")
+        output.append("")
         output.append("    p_args = list((arg.encode() for arg in sys.argv))")
         output.append("    args = (ctypes.c_char_p * len(p_args))(*p_args)")
-        output.append("    rio.init(len(args), args)")
+        output.append("    rio_data = rio.init(len(args), args)")
         output.append("")
         output.append("    return rio")
         output.append("")
@@ -413,7 +518,7 @@ body {
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"].replace(".", "_")
-                # varname = signal_config["varname"]
+                varname = signal_config["varname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
                 virtual = signal_config.get("virtual")
@@ -421,9 +526,9 @@ body {
                     continue
                 if direction == "output":
                     if boolean:
-                        output.append(f"    rio.set_{halname}(0)")
+                        output.append(f'    data_set("{varname}", 0)')
                     else:
-                        output.append(f"    rio.set_{halname}(0.0)")
+                        output.append(f'    data_set("{varname}", 0.0)')
         output.append("")
 
         output.append("def print_values():")
@@ -432,14 +537,14 @@ body {
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"].replace(".", "_")
-                # varname = signal_config["varname"]
+                varname = signal_config["varname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
                 virtual = signal_config.get("virtual")
                 if virtual:
                     continue
                 if direction == "input":
-                    output.append(f"    value = rio.get_{halname}()")
+                    output.append(f'    value = data_get("{varname}")')
                     output.append(f'    print("{halname}", value)')
         output.append('    print("")')
         output.append("")
