@@ -10,6 +10,7 @@ from .generator.gateware import gateware
 from .generator.component import component
 from .generator.rosbridge import rosbridge
 from .generator.mqttbridge import mqttbridge
+from .generator.pylib import pylib
 from .generator.simulator import simulator
 from .generator.jslib import jslib
 
@@ -219,5 +220,6 @@ class Plugin(PluginBase):
                 component(parent.project, instance=instance)
                 rosbridge(parent.project, instance=instance)
                 mqttbridge(parent.project, instance=instance)
+                pylib(parent.project, instance=instance)
                 simulator(parent.project, instance=instance)
                 jslib(parent.project, instance=instance)
