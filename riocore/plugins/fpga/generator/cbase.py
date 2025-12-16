@@ -461,7 +461,7 @@ class cbase:
             output.append("        data->MULTIPLEXER_OUTPUT_ID = 0;")
             output.append("    };")
         mpid = 0
-        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             if not multiplexed:
                 continue
@@ -487,7 +487,7 @@ class cbase:
             output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
             output_pos -= variable_size
 
-        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
@@ -546,7 +546,7 @@ class cbase:
             output.append(f"    memcpy(&data->MULTIPLEXER_INPUT_ID, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")
             input_pos -= variable_size
 
-        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
@@ -570,7 +570,7 @@ class cbase:
             exit(1)
 
         mpid = 0
-        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             if not multiplexed:
                 continue
@@ -647,7 +647,7 @@ class cbase:
                         output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_WAIT;")
 
         output.append("    // raw variables")
-        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             expansion = data_config.get("expansion", False)
             if expansion:
                 continue
@@ -682,7 +682,7 @@ class cbase:
         if libmode:
             output.append("    data = (data_t*)malloc(sizeof(data_t));")
 
-        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             expansion = data_config.get("expansion", False)
             if expansion:
                 continue

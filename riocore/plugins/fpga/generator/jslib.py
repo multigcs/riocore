@@ -1,7 +1,8 @@
 import os
+from .base import generator_base
 
 
-class jslib:
+class jslib(generator_base):
     def __init__(self, project, instance):
         self.project = project
         self.instance = instance
@@ -11,7 +12,7 @@ class jslib:
 
         self.iface_in = []
         self.iface_out = []
-        self.calc_buffersize()
+        self.calc_buffersize(self.project)
         output_pos = self.buffer_size
 
         variable_name = "header_rx"
@@ -45,7 +46,7 @@ class jslib:
                 output_pos -= 8
             self.iface_out.append([variable_name, size])
 
-        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             if multiplexed:
                 continue
@@ -273,67 +274,3 @@ class jslib:
         output.append("")
 
         open(os.path.join(self.mqtt_path, "client.js"), "w").write("\n".join(output))
-
-    def calc_buffersize(self):
-        self.timestamp_size = 32
-        self.header_size = 32
-        self.input_size = 0
-        self.output_size = 0
-        self.interface_sizes = set()
-        self.multiplexed_input = 0
-        self.multiplexed_input_size = 0
-        self.multiplexed_output = 0
-        self.multiplexed_output_size = 0
-        self.multiplexed_output_id = 0
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                continue
-            for data_config in plugin_instance.interface_data().values():
-                self.interface_sizes.add(data_config["size"])
-                variable_size = data_config["size"]
-                multiplexed = data_config.get("multiplexed", False)
-                expansion = data_config.get("expansion", False)
-                if expansion:
-                    continue
-                if data_config["direction"] == "input":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_input += 1
-                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_input_size = max(self.multiplexed_input_size, 8)
-                        else:
-                            self.input_size += variable_size
-                elif data_config["direction"] == "output":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_output += 1
-                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
-                        else:
-                            self.output_size += variable_size
-
-        if self.multiplexed_input:
-            self.input_size += self.multiplexed_input_size + 8
-        if self.multiplexed_output:
-            self.output_size += self.multiplexed_output_size + 8
-
-        self.input_size = self.input_size + self.header_size + self.timestamp_size
-        self.output_size = self.output_size + self.header_size
-        self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
-        self.buffer_bytes = self.buffer_size // 8
-        # self.config["buffer_size"] = self.buffer_size
-
-        # log("# PC->FPGA", self.output_size)
-        # log("# FPGA->PC", self.input_size)
-        # log("# MAX", self.buffer_size)
-
-    def get_interface_data(self):
-        interface_data = []
-        for size in sorted(self.interface_sizes, reverse=True):
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                    continue
-                for data_name, data_config in plugin_instance.interface_data().items():
-                    if data_config["size"] == size:
-                        interface_data.append([size, plugin_instance, data_name, data_config])
-        return interface_data

@@ -4,12 +4,13 @@ import shutil
 import stat
 import sys
 
+from .base import generator_base
 from .cclient import cclient
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
-class simulator:
+class simulator(generator_base):
     def __init__(self, project, instance):
         self.project = project
         self.instance = instance
@@ -68,7 +69,7 @@ class simulator:
                     if pinname not in self.virtual_pins:
                         self.virtual_pins.append(pinname)
 
-        self.calc_buffersize()
+        self.calc_buffersize(self.project)
         self.cclient.riocore_h()
         self.cclient.riocore_c()
 
@@ -220,7 +221,7 @@ class simulator:
 
         hal2instances = {}
         hal2varnames = {}
-        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
             hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
 
@@ -258,7 +259,7 @@ class simulator:
 
         home_n = 0
         bitout_n = 0
-        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
@@ -300,7 +301,7 @@ class simulator:
 
         output.append("")
         output.append('    printf("\\n\\n");')
-        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             # multiplexed = data_config.get("multiplexed", False)
             # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
@@ -308,7 +309,7 @@ class simulator:
                 if plugin_instance.TYPE != "frameio":
                     output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
         output.append('    printf("\\n");')
-        for size, plugin_instance, data_name, data_config in self.cclient.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             # multiplexed = data_config.get("multiplexed", False)
             # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
@@ -392,56 +393,3 @@ class simulator:
             output.append("	./simulator")
         output.append("")
         open(os.path.join(self.simulator_path, "Makefile"), "w").write("\n".join(output))
-
-    def calc_buffersize(self):
-        self.timestamp_size = 32
-        self.header_size = 32
-        self.input_size = 0
-        self.output_size = 0
-        self.interface_sizes = set()
-        self.multiplexed_input = 0
-        self.multiplexed_input_size = 0
-        self.multiplexed_output = 0
-        self.multiplexed_output_size = 0
-        self.multiplexed_output_id = 0
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                continue
-            for data_config in plugin_instance.interface_data().values():
-                self.interface_sizes.add(data_config["size"])
-                variable_size = data_config["size"]
-                multiplexed = data_config.get("multiplexed", False)
-                expansion = data_config.get("expansion", False)
-                if expansion:
-                    continue
-                if data_config["direction"] == "input":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_input += 1
-                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_input_size = max(self.multiplexed_input_size, 8)
-                        else:
-                            self.input_size += variable_size
-                elif data_config["direction"] == "output":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_output += 1
-                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
-                        else:
-                            self.output_size += variable_size
-
-        if self.multiplexed_input:
-            self.input_size += self.multiplexed_input_size + 8
-        if self.multiplexed_output:
-            self.output_size += self.multiplexed_output_size + 8
-
-        self.input_size = self.input_size + self.header_size + self.timestamp_size
-        self.output_size = self.output_size + self.header_size
-        self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
-        self.buffer_bytes = self.buffer_size // 8
-        # self.config["buffer_size"] = self.buffer_size
-
-        # log("# PC->FPGA", self.output_size)
-        # log("# FPGA->PC", self.input_size)
-        # log("# MAX", self.buffer_size)

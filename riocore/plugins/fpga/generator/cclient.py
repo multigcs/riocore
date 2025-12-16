@@ -1,13 +1,15 @@
 import os
 
+from .base import generator_base
 
-class cclient:
+
+class cclient(generator_base):
     def __init__(self, project, instance, simulator_path):
         self.project = project
         self.instance = instance
         self.prefix = instance.hal_prefix
         self.simulator_path = simulator_path
-        self.calc_buffersize()
+        self.calc_buffersize(self.project)
         self.project.buffer_size = self.buffer_size
 
     def riocore_h(self):
@@ -142,7 +144,7 @@ class cclient:
             output.append(f"    memcpy(&MULTIPLEXER_OUTPUT_ID, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});")
             input_pos -= variable_size
 
-        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
@@ -196,7 +198,7 @@ class cclient:
             output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
             output_pos -= variable_size
 
-        for size, plugin_instance, data_name, data_config in self.get_interface_data():
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
@@ -217,73 +219,9 @@ class cclient:
         output.append("")
         open(os.path.join(self.simulator_path, "riocore.c"), "w").write("\n".join(output))
 
-    def calc_buffersize(self):
-        self.timestamp_size = 32
-        self.header_size = 32
-        self.input_size = 0
-        self.output_size = 0
-        self.interface_sizes = set()
-        self.multiplexed_input = 0
-        self.multiplexed_input_size = 0
-        self.multiplexed_output = 0
-        self.multiplexed_output_size = 0
-        self.multiplexed_output_id = 0
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                continue
-            for data_config in plugin_instance.interface_data().values():
-                self.interface_sizes.add(data_config["size"])
-                variable_size = data_config["size"]
-                multiplexed = data_config.get("multiplexed", False)
-                expansion = data_config.get("expansion", False)
-                if expansion:
-                    continue
-                if data_config["direction"] == "input":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_input += 1
-                            self.multiplexed_input_size = (max(self.multiplexed_input_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_input_size = max(self.multiplexed_input_size, 8)
-                        else:
-                            self.input_size += variable_size
-                elif data_config["direction"] == "output":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_output += 1
-                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
-                        else:
-                            self.output_size += variable_size
-
-        if self.multiplexed_input:
-            self.input_size += self.multiplexed_input_size + 8
-        if self.multiplexed_output:
-            self.output_size += self.multiplexed_output_size + 8
-
-        self.input_size = self.input_size + self.header_size + self.timestamp_size
-        self.output_size = self.output_size + self.header_size
-        self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
-        self.buffer_bytes = self.buffer_size // 8
-        # self.config["buffer_size"] = self.buffer_size
-
-        # log("# PC->FPGA", self.output_size)
-        # log("# FPGA->PC", self.input_size)
-        # log("# MAX", self.buffer_size)
-
     def get_bype_pos(self, bitpos, variable_size):
         byte_pos = (bitpos + 7) // 8
         byte_size = (variable_size + 7) // 8
         byte_start = byte_pos - byte_size
         bit_offset = (bitpos - variable_size) % 8
         return (byte_start, byte_size, bit_offset)
-
-    def get_interface_data(self):
-        interface_data = []
-        for size in sorted(self.interface_sizes, reverse=True):
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                    continue
-                for data_name, data_config in plugin_instance.interface_data().items():
-                    if data_config["size"] == size:
-                        interface_data.append([size, plugin_instance, data_name, data_config])
-        return interface_data

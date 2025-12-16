@@ -18,7 +18,6 @@ class pylib(cbase):
     printf = "printf"
     prefix = "/rio"
     header_list = [
-        #        "Python.h",
         "time.h",
         "unistd.h",
         "stdint.h",
