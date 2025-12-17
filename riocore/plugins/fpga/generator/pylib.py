@@ -257,14 +257,11 @@ class pylib(cbase):
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-
             is_joint = plugin_instance.OPTIONS.get("is_joint", {}).get("default", False)
-
             ui_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "widget.ui")
             plugin_ui = ""
             if os.path.isfile(ui_path):
                 plugin_ui = open(ui_path, "r").read()
-
             output.append(f'            "{plugin_instance.instances_name}": {{')
             output.append(f'                "type": "{plugin_instance.NAME}",')
             output.append(f'                "title": "{plugin_instance.title}",')
@@ -307,6 +304,7 @@ class pylib(cbase):
                 varname = signal_config["varname"]
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
+                unit = signal_config.get("unit") or ""
                 netname = signal_config["netname"] or ""
                 boolean = signal_config.get("bool")
                 signal_source = signal_config.get("source")
@@ -322,11 +320,13 @@ class pylib(cbase):
                         direction = "input"
                 elif virtual:
                     continue
+
                 output.append(f'            "{varname}": {{')
                 output.append(f'                "plugin": "{plugin_instance.instances_name}",')
                 output.append(f'                "direction": "{direction}",')
                 output.append(f'                "signal_name": "{signal_name}",')
                 output.append(f'                "userconfig": {userconfig},')
+                output.append(f'                "unit": "{unit}",')
                 output.append(f'                "halname": "{halname}",')
                 output.append(f'                "netname": "{netname}",')
                 if not boolean:
