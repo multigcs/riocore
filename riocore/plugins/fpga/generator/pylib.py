@@ -136,8 +136,6 @@ class pylib(cbase):
 
     def pylib_wrapper(self):
         output = [""]
-        output.append("import sys")
-        output.append("import time")
         output.append("import ctypes")
         output.append("import pathlib")
         output.append("")
@@ -225,11 +223,11 @@ class pylib(cbase):
         output.append("    ]")
         output.append("")
         output.append("class RioWrapper():")
-        output.append("    def __init__(self):")
+        output.append("    def __init__(self, argv=[]):")
         output.append('        libname = pathlib.Path().absolute() / "librio.so"')
         output.append("        self.rio = ctypes.CDLL(libname)")
         output.append("        self.rio.init.restype = ctypes.POINTER(RioData)")
-        output.append("        p_args = list((arg.encode() for arg in sys.argv))")
+        output.append("        p_args = list((arg.encode() for arg in argv))")
         output.append("        args = (ctypes.c_char_p * len(p_args))(*p_args)")
         output.append("        self.rio_data = self.rio.init(len(args), args)")
         output.append("")
@@ -248,11 +246,20 @@ class pylib(cbase):
         output.append("            var.contents.value = value")
         output.append("        var = value")
         output.append("")
-        output.append("    def data_info(self):")
+
+        output.append("    def plugin_info(self):")
         output.append("        return {")
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
+
+            is_joint = plugin_instance.OPTIONS.get("is_joint", {}).get("default", False)
+
+            output.append(f'            "{plugin_instance.instances_name}": {{')
+            output.append(f'                "type": "{plugin_instance.NAME}",')
+            output.append(f'                "title": "{plugin_instance.title}",')
+            output.append(f'                "is_joint": {is_joint},')
+            output.append('                "variables": [')
             for signal_name, signal_config in plugin_instance.signals().items():
                 varname = signal_config["varname"]
                 halname = signal_config["halname"]
@@ -272,8 +279,42 @@ class pylib(cbase):
                         direction = "input"
                 elif virtual:
                     continue
+                output.append(f'                    "{varname}",')
+            output.append("                ],")
+            output.append("            },")
+        output.append("        }")
+        output.append("")
+
+        output.append("    def data_info(self):")
+        output.append("        return {")
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
+            for signal_name, signal_config in plugin_instance.signals().items():
+                userconfig = signal_config["userconfig"]
+                varname = signal_config["varname"]
+                halname = signal_config["halname"]
+                direction = signal_config["direction"]
+                netname = signal_config["netname"] or ""
+                boolean = signal_config.get("bool")
+                signal_source = signal_config.get("source")
+                hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                vtype = self.typemap.get(hal_type, hal_type)
+                virtual = signal_config.get("virtual")
+                component = signal_config.get("component")
+                if virtual and component:
+                    # swap direction vor virt signals in component
+                    if direction == "input":
+                        direction = "output"
+                    else:
+                        direction = "input"
+                elif virtual:
+                    continue
                 output.append(f'            "{varname}": {{')
+                output.append(f'                "plugin": "{plugin_instance.instances_name}",')
                 output.append(f'                "direction": "{direction}",')
+                output.append(f'                "signal_name": "{signal_name}",')
+                output.append(f'                "userconfig": {userconfig},')
                 output.append(f'                "halname": "{halname}",')
                 output.append(f'                "netname": "{netname}",')
                 if not boolean:
@@ -404,7 +445,7 @@ class pylib(cbase):
         output.append("            print(f'{config[\"halname\"]} = {rio.data_get(name)}')")
         output.append('    print("")')
         output.append("")
-        output.append("rio = RioWrapper()")
+        output.append("rio = RioWrapper(sys.argv)")
         output.append("")
         output.append("while True:")
         output.append("    set_values(rio)")
