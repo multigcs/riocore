@@ -1,8 +1,6 @@
 
-import sys
-import time
+import os
 import ctypes
-import pathlib
 
 class RioData(ctypes.Structure):
     _fields_ = [
@@ -63,11 +61,11 @@ class RioData(ctypes.Structure):
     ]
 
 class RioWrapper():
-    def __init__(self):
-        libname = pathlib.Path().absolute() / "librio.so"
+    def __init__(self, argv=[]):
+        libname = os.path.join(os.path.dirname(__file__), "librio.so")
         self.rio = ctypes.CDLL(libname)
         self.rio.init.restype = ctypes.POINTER(RioData)
-        p_args = list((arg.encode() for arg in sys.argv))
+        p_args = list((arg.encode() for arg in argv))
         args = (ctypes.c_char_p * len(p_args))(*p_args)
         self.rio_data = self.rio.init(len(args), args)
 
@@ -86,36 +84,106 @@ class RioWrapper():
             var.contents.value = value
         var = value
 
+    def plugin_info(self):
+        return {
+            "board0": {
+                "type": "fpga",
+                "title": "board0",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "board0_w5500": {
+                "type": "w5500",
+                "title": "board0_w5500",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "board0_wled": {
+                "type": "wled",
+                "title": "board0_wled",
+                "is_joint": False,
+                "variables": [
+                    "SIGOUT_BOARD0_BOARD0_WLED_0_GREEN",
+                    "SIGOUT_BOARD0_BOARD0_WLED_0_BLUE",
+                    "SIGOUT_BOARD0_BOARD0_WLED_0_RED",
+                ],
+            },
+            "stepdir0": {
+                "type": "stepdir",
+                "title": "stepdir0",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_BOARD0_STEPDIR0_VELOCITY",
+                    "SIGIN_BOARD0_STEPDIR0_POSITION",
+                    "SIGOUT_BOARD0_STEPDIR0_ENABLE",
+                ],
+            },
+            "stepdir1": {
+                "type": "stepdir",
+                "title": "stepdir1",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_BOARD0_STEPDIR1_VELOCITY",
+                    "SIGIN_BOARD0_STEPDIR1_POSITION",
+                    "SIGOUT_BOARD0_STEPDIR1_ENABLE",
+                ],
+            },
+            "stepdir2": {
+                "type": "stepdir",
+                "title": "stepdir2",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_BOARD0_STEPDIR2_VELOCITY",
+                    "SIGIN_BOARD0_STEPDIR2_POSITION",
+                    "SIGOUT_BOARD0_STEPDIR2_ENABLE",
+                ],
+            },
+        }
+
     def data_info(self):
         return {
             "SIGOUT_BOARD0_BOARD0_WLED_0_GREEN": {
+                "plugin": "board0_wled",
                 "direction": "output",
+                "signal_name": "0_green",
+                "userconfig": {},
                 "halname": "board0.board0_wled.0_green",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_BOARD0_WLED_0_BLUE": {
+                "plugin": "board0_wled",
                 "direction": "output",
+                "signal_name": "0_blue",
+                "userconfig": {},
                 "halname": "board0.board0_wled.0_blue",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_BOARD0_WLED_0_RED": {
+                "plugin": "board0_wled",
                 "direction": "output",
+                "signal_name": "0_red",
+                "userconfig": {},
                 "halname": "board0.board0_wled.0_red",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_STEPDIR0_VELOCITY": {
+                "plugin": "stepdir0",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "board0.stepdir0.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE": {"type": "float"},
@@ -123,9 +191,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_BOARD0_STEPDIR0_POSITION": {
+                "plugin": "stepdir0",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "board0.stepdir0.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_BOARD0_STEPDIR0_POSITION_ABS": {"type": "float"},
@@ -136,17 +207,23 @@ class RioWrapper():
                 },
             },
             "SIGOUT_BOARD0_STEPDIR0_ENABLE": {
+                "plugin": "stepdir0",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "board0.stepdir0.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_STEPDIR1_VELOCITY": {
+                "plugin": "stepdir1",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "board0.stepdir1.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_BOARD0_STEPDIR1_VELOCITY_SCALE": {"type": "float"},
@@ -154,9 +231,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_BOARD0_STEPDIR1_POSITION": {
+                "plugin": "stepdir1",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "board0.stepdir1.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_BOARD0_STEPDIR1_POSITION_ABS": {"type": "float"},
@@ -167,17 +247,23 @@ class RioWrapper():
                 },
             },
             "SIGOUT_BOARD0_STEPDIR1_ENABLE": {
+                "plugin": "stepdir1",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "board0.stepdir1.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_STEPDIR2_VELOCITY": {
+                "plugin": "stepdir2",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "board0.stepdir2.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_BOARD0_STEPDIR2_VELOCITY_SCALE": {"type": "float"},
@@ -185,9 +271,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_BOARD0_STEPDIR2_POSITION": {
+                "plugin": "stepdir2",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "board0.stepdir2.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_BOARD0_STEPDIR2_POSITION_ABS": {"type": "float"},
@@ -198,9 +287,12 @@ class RioWrapper():
                 },
             },
             "SIGOUT_BOARD0_STEPDIR2_ENABLE": {
+                "plugin": "stepdir2",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "board0.stepdir2.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },

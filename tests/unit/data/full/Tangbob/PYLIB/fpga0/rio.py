@@ -1,8 +1,6 @@
 
-import sys
-import time
+import os
 import ctypes
-import pathlib
 
 class RioData(ctypes.Structure):
     _fields_ = [
@@ -95,11 +93,11 @@ class RioData(ctypes.Structure):
     ]
 
 class RioWrapper():
-    def __init__(self):
-        libname = pathlib.Path().absolute() / "librio.so"
+    def __init__(self, argv=[]):
+        libname = os.path.join(os.path.dirname(__file__), "librio.so")
         self.rio = ctypes.CDLL(libname)
         self.rio.init.restype = ctypes.POINTER(RioData)
-        p_args = list((arg.encode() for arg in sys.argv))
+        p_args = list((arg.encode() for arg in argv))
         args = (ctypes.c_char_p * len(p_args))(*p_args)
         self.rio_data = self.rio.init(len(args), args)
 
@@ -118,12 +116,129 @@ class RioWrapper():
             var.contents.value = value
         var = value
 
+    def plugin_info(self):
+        return {
+            "modbus0": {
+                "type": "modbus",
+                "title": "modbus0",
+                "is_joint": False,
+                "variables": [
+                    "SIGIN_FPGA0_MODBUS0_TEMPERATURE",
+                ],
+            },
+            "blink0": {
+                "type": "blink",
+                "title": "blink0",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "i2cbus0": {
+                "type": "i2cbus",
+                "title": "i2cbus0",
+                "is_joint": False,
+                "variables": [
+                    "SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP",
+                    "SIGIN_FPGA0_I2CBUS0_LM75_0_VALID",
+                ],
+            },
+            "stepdir0": {
+                "type": "stepdir",
+                "title": "stepdir0",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_FPGA0_STEPDIR0_VELOCITY",
+                    "SIGIN_FPGA0_STEPDIR0_POSITION",
+                    "SIGOUT_FPGA0_STEPDIR0_ENABLE",
+                ],
+            },
+            "stepdir1": {
+                "type": "stepdir",
+                "title": "stepdir1",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_FPGA0_STEPDIR1_VELOCITY",
+                    "SIGIN_FPGA0_STEPDIR1_POSITION",
+                    "SIGOUT_FPGA0_STEPDIR1_ENABLE",
+                ],
+            },
+            "stepdir2": {
+                "type": "stepdir",
+                "title": "stepdir2",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_FPGA0_STEPDIR2_VELOCITY",
+                    "SIGIN_FPGA0_STEPDIR2_POSITION",
+                    "SIGOUT_FPGA0_STEPDIR2_ENABLE",
+                ],
+            },
+            "bitin0": {
+                "type": "bitin",
+                "title": "home-x",
+                "is_joint": False,
+                "variables": [
+                    "SIGIN_FPGA0_BITIN0_BIT",
+                ],
+            },
+            "bitin1": {
+                "type": "bitin",
+                "title": "home-y",
+                "is_joint": False,
+                "variables": [
+                    "SIGIN_FPGA0_BITIN1_BIT",
+                ],
+            },
+            "bitin2": {
+                "type": "bitin",
+                "title": "home-z",
+                "is_joint": False,
+                "variables": [
+                    "SIGIN_FPGA0_BITIN2_BIT",
+                ],
+            },
+            "fpga0": {
+                "type": "fpga",
+                "title": "fpga0",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "fpga0_w5500": {
+                "type": "w5500",
+                "title": "fpga0_w5500",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "fpga0_wled": {
+                "type": "wled",
+                "title": "fpga0_wled",
+                "is_joint": False,
+                "variables": [
+                    "SIGOUT_FPGA0_FPGA0_WLED_0_GREEN",
+                    "SIGOUT_FPGA0_FPGA0_WLED_0_BLUE",
+                    "SIGOUT_FPGA0_FPGA0_WLED_0_RED",
+                ],
+            },
+            "bitout0": {
+                "type": "bitout",
+                "title": "bitout0",
+                "is_joint": False,
+                "variables": [
+                    "SIGOUT_FPGA0_BITOUT0_BIT",
+                ],
+            },
+        }
+
     def data_info(self):
         return {
             "SIGIN_FPGA0_MODBUS0_TEMPERATURE": {
+                "plugin": "modbus0",
                 "direction": "input",
+                "signal_name": "temperature",
+                "userconfig": {},
                 "halname": "fpga0.modbus0.temperature",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_FPGA0_MODBUS0_TEMPERATURE_ABS": {"type": "float"},
@@ -134,9 +249,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP": {
+                "plugin": "i2cbus0",
                 "direction": "input",
+                "signal_name": "lm75_0_temp",
+                "userconfig": {},
                 "halname": "fpga0.i2cbus0.lm75_0_temp",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS": {"type": "float"},
@@ -147,18 +265,24 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_I2CBUS0_LM75_0_VALID": {
+                "plugin": "i2cbus0",
                 "direction": "input",
+                "signal_name": "lm75_0_valid",
+                "userconfig": {},
                 "halname": "fpga0.i2cbus0.lm75_0_valid",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                     "SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not": {"type": "bool"},
                 },
             },
             "SIGOUT_FPGA0_STEPDIR0_VELOCITY": {
+                "plugin": "stepdir0",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "fpga0.stepdir0.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE": {"type": "float"},
@@ -166,9 +290,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_STEPDIR0_POSITION": {
+                "plugin": "stepdir0",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "fpga0.stepdir0.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_FPGA0_STEPDIR0_POSITION_ABS": {"type": "float"},
@@ -179,17 +306,23 @@ class RioWrapper():
                 },
             },
             "SIGOUT_FPGA0_STEPDIR0_ENABLE": {
+                "plugin": "stepdir0",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "fpga0.stepdir0.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_FPGA0_STEPDIR1_VELOCITY": {
+                "plugin": "stepdir1",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "fpga0.stepdir1.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE": {"type": "float"},
@@ -197,9 +330,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_STEPDIR1_POSITION": {
+                "plugin": "stepdir1",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "fpga0.stepdir1.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_FPGA0_STEPDIR1_POSITION_ABS": {"type": "float"},
@@ -210,17 +346,23 @@ class RioWrapper():
                 },
             },
             "SIGOUT_FPGA0_STEPDIR1_ENABLE": {
+                "plugin": "stepdir1",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "fpga0.stepdir1.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_FPGA0_STEPDIR2_VELOCITY": {
+                "plugin": "stepdir2",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "fpga0.stepdir2.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE": {"type": "float"},
@@ -228,9 +370,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_STEPDIR2_POSITION": {
+                "plugin": "stepdir2",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "fpga0.stepdir2.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_FPGA0_STEPDIR2_POSITION_ABS": {"type": "float"},
@@ -241,15 +386,21 @@ class RioWrapper():
                 },
             },
             "SIGOUT_FPGA0_STEPDIR2_ENABLE": {
+                "plugin": "stepdir2",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "fpga0.stepdir2.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGIN_FPGA0_BITIN0_BIT": {
+                "plugin": "bitin0",
                 "direction": "input",
+                "signal_name": "bit",
+                "userconfig": {'net': 'joint.0.home-sw-in'},
                 "halname": "fpga0.bitin0.bit",
                 "netname": "joint.0.home-sw-in",
                 "type": "bool",
@@ -258,7 +409,10 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_BITIN1_BIT": {
+                "plugin": "bitin1",
                 "direction": "input",
+                "signal_name": "bit",
+                "userconfig": {'net': 'joint.1.home-sw-in'},
                 "halname": "fpga0.bitin1.bit",
                 "netname": "joint.1.home-sw-in",
                 "type": "bool",
@@ -267,7 +421,10 @@ class RioWrapper():
                 },
             },
             "SIGIN_FPGA0_BITIN2_BIT": {
+                "plugin": "bitin2",
                 "direction": "input",
+                "signal_name": "bit",
+                "userconfig": {'net': 'joint.2.home-sw-in'},
                 "halname": "fpga0.bitin2.bit",
                 "netname": "joint.2.home-sw-in",
                 "type": "bool",
@@ -276,31 +433,43 @@ class RioWrapper():
                 },
             },
             "SIGOUT_FPGA0_FPGA0_WLED_0_GREEN": {
+                "plugin": "fpga0_wled",
                 "direction": "output",
+                "signal_name": "0_green",
+                "userconfig": {},
                 "halname": "fpga0.fpga0_wled.0_green",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_FPGA0_FPGA0_WLED_0_BLUE": {
+                "plugin": "fpga0_wled",
                 "direction": "output",
+                "signal_name": "0_blue",
+                "userconfig": {},
                 "halname": "fpga0.fpga0_wled.0_blue",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_FPGA0_FPGA0_WLED_0_RED": {
+                "plugin": "fpga0_wled",
                 "direction": "output",
+                "signal_name": "0_red",
+                "userconfig": {},
                 "halname": "fpga0.fpga0_wled.0_red",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_FPGA0_BITOUT0_BIT": {
+                "plugin": "bitout0",
                 "direction": "output",
+                "signal_name": "bit",
+                "userconfig": {'net': 'spindle.0.on'},
                 "halname": "fpga0.bitout0.bit",
                 "netname": "spindle.0.on",
                 "type": "bool",

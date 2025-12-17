@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #
 #
 
@@ -20,7 +20,7 @@ def print_values(rio):
             print(f'{config["halname"]} = {rio.data_get(name)}')
     print("")
 
-rio = RioWrapper()
+rio = RioWrapper(sys.argv)
 
 while True:
     set_values(rio)

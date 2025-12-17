@@ -10,5 +10,5 @@ echo "compile package:"
 
 echo "running rioclient:"
 # LD_LIBRARY_PATH=$DIRNAME $DIRNAME/rioclient $@
-cd "$DIRNAME" && python3 rioclient.py $@
+$DIRNAME/testgui.py $@
 

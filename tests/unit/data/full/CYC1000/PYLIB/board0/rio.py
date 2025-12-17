@@ -1,8 +1,6 @@
 
-import sys
-import time
+import os
 import ctypes
-import pathlib
 
 class RioData(ctypes.Structure):
     _fields_ = [
@@ -44,11 +42,11 @@ class RioData(ctypes.Structure):
     ]
 
 class RioWrapper():
-    def __init__(self):
-        libname = pathlib.Path().absolute() / "librio.so"
+    def __init__(self, argv=[]):
+        libname = os.path.join(os.path.dirname(__file__), "librio.so")
         self.rio = ctypes.CDLL(libname)
         self.rio.init.restype = ctypes.POINTER(RioData)
-        p_args = list((arg.encode() for arg in sys.argv))
+        p_args = list((arg.encode() for arg in argv))
         args = (ctypes.c_char_p * len(p_args))(*p_args)
         self.rio_data = self.rio.init(len(args), args)
 
@@ -67,37 +65,117 @@ class RioWrapper():
             var.contents.value = value
         var = value
 
+    def plugin_info(self):
+        return {
+            "board0": {
+                "type": "fpga",
+                "title": "board0",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "blink0": {
+                "type": "blink",
+                "title": "blink0",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "bitin0": {
+                "type": "bitin",
+                "title": "bitin0",
+                "is_joint": False,
+                "variables": [
+                    "SIGIN_BOARD0_BITIN0_BIT",
+                ],
+            },
+            "bitout0": {
+                "type": "bitout",
+                "title": "bitout0",
+                "is_joint": False,
+                "variables": [
+                    "SIGOUT_BOARD0_BITOUT0_BIT",
+                ],
+            },
+            "bitout1": {
+                "type": "bitout",
+                "title": "bitout1",
+                "is_joint": False,
+                "variables": [
+                    "SIGOUT_BOARD0_BITOUT1_BIT",
+                ],
+            },
+            "pwmout0": {
+                "type": "pwmout",
+                "title": "pwmout0",
+                "is_joint": False,
+                "variables": [
+                    "SIGOUT_BOARD0_PWMOUT0_DTY",
+                    "SIGOUT_BOARD0_PWMOUT0_ENABLE",
+                ],
+            },
+            "w55000": {
+                "type": "w5500",
+                "title": "w55000",
+                "is_joint": False,
+                "variables": [
+                ],
+            },
+            "stepdir0": {
+                "type": "stepdir",
+                "title": "stepdir0",
+                "is_joint": True,
+                "variables": [
+                    "SIGOUT_BOARD0_STEPDIR0_VELOCITY",
+                    "SIGIN_BOARD0_STEPDIR0_POSITION",
+                    "SIGOUT_BOARD0_STEPDIR0_ENABLE",
+                ],
+            },
+        }
+
     def data_info(self):
         return {
             "SIGIN_BOARD0_BITIN0_BIT": {
+                "plugin": "bitin0",
                 "direction": "input",
+                "signal_name": "bit",
+                "userconfig": {},
                 "halname": "board0.bitin0.bit",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                     "SIGIN_BOARD0_BITIN0_BIT_not": {"type": "bool"},
                 },
             },
             "SIGOUT_BOARD0_BITOUT0_BIT": {
+                "plugin": "bitout0",
                 "direction": "output",
+                "signal_name": "bit",
+                "userconfig": {},
                 "halname": "board0.bitout0.bit",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_BITOUT1_BIT": {
+                "plugin": "bitout1",
                 "direction": "output",
+                "signal_name": "bit",
+                "userconfig": {},
                 "halname": "board0.bitout1.bit",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_PWMOUT0_DTY": {
+                "plugin": "pwmout0",
                 "direction": "output",
+                "signal_name": "dty",
+                "userconfig": {},
                 "halname": "board0.pwmout0.dty",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_BOARD0_PWMOUT0_DTY_SCALE": {"type": "float"},
@@ -105,17 +183,23 @@ class RioWrapper():
                 },
             },
             "SIGOUT_BOARD0_PWMOUT0_ENABLE": {
+                "plugin": "pwmout0",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "board0.pwmout0.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
             },
             "SIGOUT_BOARD0_STEPDIR0_VELOCITY": {
+                "plugin": "stepdir0",
                 "direction": "output",
+                "signal_name": "velocity",
+                "userconfig": {},
                 "halname": "board0.stepdir0.velocity",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE": {"type": "float"},
@@ -123,9 +207,12 @@ class RioWrapper():
                 },
             },
             "SIGIN_BOARD0_STEPDIR0_POSITION": {
+                "plugin": "stepdir0",
                 "direction": "input",
+                "signal_name": "position",
+                "userconfig": {},
                 "halname": "board0.stepdir0.position",
-                "netname": "None",
+                "netname": "",
                 "type": "float",
                 "subs": {
                     "SIGIN_BOARD0_STEPDIR0_POSITION_ABS": {"type": "float"},
@@ -136,9 +223,12 @@ class RioWrapper():
                 },
             },
             "SIGOUT_BOARD0_STEPDIR0_ENABLE": {
+                "plugin": "stepdir0",
                 "direction": "output",
+                "signal_name": "enable",
+                "userconfig": {},
                 "halname": "board0.stepdir0.enable",
-                "netname": "None",
+                "netname": "",
                 "type": "bool",
                 "subs": {
                 },
