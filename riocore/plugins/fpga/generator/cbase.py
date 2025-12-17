@@ -946,35 +946,6 @@ class cbase:
             output.append("}")
             output.append("")
 
-            for plugin_instance in self.project.plugin_instances:
-                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                    continue
-                for signal_name, signal_config in plugin_instance.signals().items():
-                    halname = signal_config["halname"].replace(".", "_")
-                    varname = signal_config["varname"]
-                    direction = signal_config["direction"]
-                    boolean = signal_config.get("bool")
-                    virtual = signal_config.get("virtual")
-                    if virtual:
-                        continue
-                    if direction == "input":
-                        if boolean:
-                            output.append(f"bool get_{halname}() {{")
-                        else:
-                            output.append(f"float get_{halname}() {{")
-                        output.append(f"    return *data->{varname};")
-                        output.append("}")
-                        output.append("")
-
-                    elif direction == "output":
-                        if boolean:
-                            output.append(f"void set_{halname}(bool value) {{")
-                        else:
-                            output.append(f"void set_{halname}(float value) {{")
-                        output.append(f"    *data->{varname} = value;")
-                        output.append("}")
-                        output.append("")
-
         output.append("void interface_exit(void) {")
         if protocol == "UART":
             output.append("    uart_exit();")
