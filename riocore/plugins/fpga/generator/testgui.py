@@ -79,7 +79,7 @@ class WinForm(QWidget):
                     # tab_layout.addWidget(QLabel(f"{plugin_config['title']}:"))
                     plugin_frame = QGroupBox()
                     plugin_frame.setTitle(f"{plugin_config['title']}:")
-                    plugin_frame.setToolTip("frame")
+                    plugin_frame.setToolTip(plugin_name)
                     plugin_layout = QVBoxLayout()
                     plugin_frame.setLayout(plugin_layout)
                     tab_layout.addWidget(plugin_frame)
