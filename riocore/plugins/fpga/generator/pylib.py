@@ -260,9 +260,16 @@ class pylib(cbase):
 
             is_joint = plugin_instance.OPTIONS.get("is_joint", {}).get("default", False)
 
+            ui_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "widget.ui")
+            plugin_ui = ""
+            if os.path.isfile(ui_path):
+                plugin_ui = open(ui_path, "r").read()
+
             output.append(f'            "{plugin_instance.instances_name}": {{')
             output.append(f'                "type": "{plugin_instance.NAME}",')
             output.append(f'                "title": "{plugin_instance.title}",')
+            if plugin_ui:
+                output.append(f'                "plugin_ui": """{plugin_ui}""",')
             output.append(f'                "is_joint": {is_joint},')
             output.append('                "variables": [')
             for signal_name, signal_config in plugin_instance.signals().items():
