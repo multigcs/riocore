@@ -1,4 +1,5 @@
 import os
+import shutil
 import stat
 
 from .cbase import cbase
@@ -52,6 +53,10 @@ class pylib(cbase):
         # clients
         self.client_c()
         self.client_py()
+        source = os.path.join(os.path.dirname(os.path.dirname(__file__)), "generator", "testgui.py")
+        target = os.path.join(self.pylib_path, "testgui.py")
+        shutil.copy(source, target)
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
         # misc
         self.pylib_page()
@@ -136,8 +141,8 @@ class pylib(cbase):
 
     def pylib_wrapper(self):
         output = [""]
+        output.append("import os")
         output.append("import ctypes")
-        output.append("import pathlib")
         output.append("")
         output.append("class RioData(ctypes.Structure):")
         output.append("    _fields_ = [")
@@ -224,7 +229,7 @@ class pylib(cbase):
         output.append("")
         output.append("class RioWrapper():")
         output.append("    def __init__(self, argv=[]):")
-        output.append('        libname = pathlib.Path().absolute() / "librio.so"')
+        output.append('        libname = os.path.join(os.path.dirname(__file__), "librio.so")')
         output.append("        self.rio = ctypes.CDLL(libname)")
         output.append("        self.rio.init.restype = ctypes.POINTER(RioData)")
         output.append("        p_args = list((arg.encode() for arg in argv))")
@@ -413,7 +418,7 @@ class pylib(cbase):
         open(os.path.join(self.pylib_path, "rioclient.c"), "w").write("\n".join(output))
 
     def client_py(self):
-        output = ["#!/usr/bin/python3"]
+        output = ["#!/usr/bin/env python3"]
         output.append("#")
         output.append("#")
         output.append("")
@@ -468,7 +473,7 @@ class pylib(cbase):
         output.append("")
         output.append('echo "running rioclient:"')
         output.append("# LD_LIBRARY_PATH=$DIRNAME $DIRNAME/rioclient $@")
-        output.append('cd "$DIRNAME" && python3 rioclient.py $@')
+        output.append("$DIRNAME/testgui.py $@")
         output.append("")
         output.append("")
         os.makedirs(self.pylib_path, exist_ok=True)
