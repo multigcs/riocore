@@ -39,7 +39,7 @@
                     ]
                 }
             },
-            "frequency": 1.0,
+            "frequency": 10.0,
             "uid": "blink0",
             "pos": [
                 190.0,
@@ -63,7 +63,6 @@
                     ]
                 }
             },
-            "frequency": 2.0,
             "uid": "blink1",
             "pos": [
                 190.0,
@@ -521,10 +520,10 @@
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 0.42,
+            "scale": 0.88,
             "pos": [
-                -177,
-                -112
+                -219,
+                176
             ]
         },
         "board": {
