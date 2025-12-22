@@ -18,6 +18,7 @@ else:
     found = False
     min_x = 999999999999
     min_y = 999999999999
+    print(jdata.keys())
     for slot in jdata["slots"]:
         if slot_selection == slot["name"]:
             found = True
