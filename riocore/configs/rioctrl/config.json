@@ -91,29 +91,9 @@
                     "setp": ""
                 }
             },
-            "pins": {
-                "step": {
-                    "pin": "board0:SB:S9",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                430.0,
-                                800.0
-                            ]
-                        }
-                    ]
-                },
-                "dir": {
-                    "pin": "board0:SB:S10"
-                },
-                "en": {
-                    "pin": "board0:SB:S11"
-                }
-            },
             "pos": [
-                610.0,
-                720.0
+                1010.0,
+                -390.0
             ],
             "joint": {
                 "feedback": "encoder-0:position",
@@ -123,7 +103,19 @@
                 "scale": 2000.0,
                 "max_velocity": 200.0
             },
-            "pulse_len": 1.0
+            "pulse_len": 1.0,
+            "pins": {
+                "step": {
+                    "pin": "breakout2:JOINT0:STEP"
+                },
+                "dir": {
+                    "pin": "breakout2:JOINT0:DIR"
+                },
+                "en": {
+                    "pin": "breakout2:JOINT0:EN"
+                }
+            },
+            "image": "stepper"
         },
         {
             "name": "joint-1",
@@ -147,31 +139,23 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                1010.0,
+                150.0
+            ],
+            "pulse_len": 1.0,
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S6",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                430.0,
-                                860.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout2:JOINT2:STEP"
                 },
                 "dir": {
-                    "pin": "board0:SB:S7"
+                    "pin": "breakout2:JOINT2:DIR"
                 },
                 "en": {
-                    "pin": "board0:SB:S8"
+                    "pin": "breakout2:JOINT2:EN"
                 }
             },
-            "pos": [
-                610.0,
-                880.0
-            ],
-            "pulse_len": 1.0
+            "image": "stepper"
         },
         {
             "name": "joint-2",
@@ -195,31 +179,23 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                1010.0,
+                -120.0
+            ],
+            "pulse_len": 1.0,
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S3",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                430.0,
-                                830.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout2:JOINT1:STEP"
                 },
                 "dir": {
-                    "pin": "board0:SB:S4"
+                    "pin": "breakout2:JOINT1:DIR"
                 },
                 "en": {
-                    "pin": "board0:SB:S5"
+                    "pin": "breakout2:JOINT1:EN"
                 }
             },
-            "pos": [
-                610.0,
-                800.0
-            ],
-            "pulse_len": 1.0
+            "image": "stepper"
         },
         {
             "name": "joint-3",
@@ -243,31 +219,23 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                1010.0,
+                420.0
+            ],
+            "pulse_len": 1.0,
             "pins": {
                 "step": {
-                    "pin": "board0:SB:S0",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                430.0,
-                                890.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout2:JOINT3:STEP"
                 },
                 "dir": {
-                    "pin": "board0:SB:S1"
+                    "pin": "breakout2:JOINT3:DIR"
                 },
                 "en": {
-                    "pin": "board0:SB:S2"
+                    "pin": "breakout2:JOINT3:EN"
                 }
             },
-            "pos": [
-                610.0,
-                960.0
-            ],
-            "pulse_len": 1.0
+            "image": "stepper"
         },
         {
             "name": "encoder-0",
@@ -301,31 +269,31 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                530.0,
+                -200.0
+            ],
+            "quad_type": 0,
             "pins": {
                 "a": {
-                    "pin": "board0:SA:S11"
+                    "pin": "breakout1:ENC0:A"
                 },
                 "b": {
-                    "pin": "board0:SA:S10"
+                    "pin": "breakout1:ENC0:B"
                 },
                 "z": {
-                    "pin": "board0:SA:S9",
+                    "pin": "breakout1:ENC0:Z",
                     "modifier": [
                         {
                             "type": "invert",
                             "pos": [
-                                230.0,
-                                -100.0
+                                410.0,
+                                -160.0
                             ]
                         }
                     ]
                 }
-            },
-            "pos": [
-                420.0,
-                -210.0
-            ],
-            "quad_type": 0
+            }
         },
         {
             "name": "encoder-1",
@@ -358,31 +326,31 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                530.0,
+                0.0
+            ],
+            "quad_type": 0,
             "pins": {
                 "a": {
-                    "pin": "board0:SA:S8"
+                    "pin": "breakout1:ENC2:A"
                 },
                 "b": {
-                    "pin": "board0:SA:S7"
+                    "pin": "breakout1:ENC2:B"
                 },
                 "z": {
-                    "pin": "board0:SA:S6",
+                    "pin": "breakout1:ENC2:Z",
                     "modifier": [
                         {
                             "type": "invert",
                             "pos": [
-                                230.0,
-                                -40.0
+                                410.0,
+                                40.0
                             ]
                         }
                     ]
                 }
-            },
-            "pos": [
-                420.0,
-                -10.0
-            ],
-            "quad_type": 0
+            }
         },
         {
             "name": "encoder-2",
@@ -415,31 +383,31 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                530.0,
+                -100.0
+            ],
+            "quad_type": 0,
             "pins": {
                 "a": {
-                    "pin": "board0:SA:S5"
+                    "pin": "breakout1:ENC1:A"
                 },
                 "b": {
-                    "pin": "board0:SA:S4"
+                    "pin": "breakout1:ENC1:B"
                 },
                 "z": {
-                    "pin": "board0:SA:S3",
+                    "pin": "breakout1:ENC1:Z",
                     "modifier": [
                         {
                             "type": "invert",
                             "pos": [
-                                230.0,
-                                -70.0
+                                410.0,
+                                -60.0
                             ]
                         }
                     ]
                 }
-            },
-            "pos": [
-                420.0,
-                -110.0
-            ],
-            "quad_type": 0
+            }
         },
         {
             "name": "encoder-3",
@@ -472,31 +440,31 @@
                     "setp": ""
                 }
             },
+            "pos": [
+                530.0,
+                100.0
+            ],
+            "quad_type": 0,
             "pins": {
                 "a": {
-                    "pin": "board0:SA:S2"
+                    "pin": "breakout1:ENC3:A"
                 },
                 "b": {
-                    "pin": "board0:SA:S1"
+                    "pin": "breakout1:ENC3:B"
                 },
                 "z": {
-                    "pin": "board0:SA:S0",
+                    "pin": "breakout1:ENC3:Z",
                     "modifier": [
                         {
                             "type": "invert",
                             "pos": [
-                                230.0,
-                                -10.0
+                                410.0,
+                                140.0
                             ]
                         }
                     ]
                 }
-            },
-            "pos": [
-                420.0,
-                90.0
-            ],
-            "quad_type": 0
+            }
         },
         {
             "type": "bitout",
@@ -515,15 +483,156 @@
                     "net": "halui.machine.is-on"
                 }
             }
+        },
+        {
+            "type": "breakout",
+            "node_type": "rioctrl-quadenc4",
+            "uid": "breakout0",
+            "pos": [
+                520.0,
+                220.0
+            ],
+            "pins": {
+                "SLOT:S0": {
+                    "pin": "board0:SC:S0"
+                },
+                "SLOT:S1": {
+                    "pin": "board0:SC:S1"
+                },
+                "SLOT:S2": {
+                    "pin": "board0:SC:S2"
+                },
+                "SLOT:S3": {
+                    "pin": "board0:SC:S3"
+                },
+                "SLOT:S4": {
+                    "pin": "board0:SC:S4"
+                },
+                "SLOT:S5": {
+                    "pin": "board0:SC:S5"
+                },
+                "SLOT:S6": {
+                    "pin": "board0:SC:S6"
+                },
+                "SLOT:S7": {
+                    "pin": "board0:SC:S7"
+                },
+                "SLOT:S8": {
+                    "pin": "board0:SC:S8"
+                },
+                "SLOT:S9": {
+                    "pin": "board0:SC:S9"
+                },
+                "SLOT:S10": {
+                    "pin": "board0:SC:S10"
+                },
+                "SLOT:S11": {
+                    "pin": "board0:SC:S11"
+                }
+            }
+        },
+        {
+            "type": "breakout",
+            "node_type": "rioctrl-quadenc4",
+            "uid": "breakout1",
+            "pos": [
+                310.0,
+                220.0
+            ],
+            "pins": {
+                "SLOT:S0": {
+                    "pin": "board0:SA:S0"
+                },
+                "SLOT:S1": {
+                    "pin": "board0:SA:S1"
+                },
+                "SLOT:S2": {
+                    "pin": "board0:SA:S2"
+                },
+                "SLOT:S3": {
+                    "pin": "board0:SA:S3"
+                },
+                "SLOT:S4": {
+                    "pin": "board0:SA:S4"
+                },
+                "SLOT:S5": {
+                    "pin": "board0:SA:S5"
+                },
+                "SLOT:S6": {
+                    "pin": "board0:SA:S6"
+                },
+                "SLOT:S7": {
+                    "pin": "board0:SA:S7"
+                },
+                "SLOT:S8": {
+                    "pin": "board0:SA:S8"
+                },
+                "SLOT:S9": {
+                    "pin": "board0:SA:S9"
+                },
+                "SLOT:S10": {
+                    "pin": "board0:SA:S10"
+                },
+                "SLOT:S11": {
+                    "pin": "board0:SA:S11"
+                }
+            }
+        },
+        {
+            "type": "breakout",
+            "node_type": "rioctrl-stepdir",
+            "uid": "breakout2",
+            "pos": [
+                410.0,
+                220.0
+            ],
+            "pins": {
+                "SLOT:S0": {
+                    "pin": "board0:SB:S0"
+                },
+                "SLOT:S1": {
+                    "pin": "board0:SB:S1"
+                },
+                "SLOT:S2": {
+                    "pin": "board0:SB:S2"
+                },
+                "SLOT:S3": {
+                    "pin": "board0:SB:S3"
+                },
+                "SLOT:S4": {
+                    "pin": "board0:SB:S4"
+                },
+                "SLOT:S5": {
+                    "pin": "board0:SB:S5"
+                },
+                "SLOT:S6": {
+                    "pin": "board0:SB:S6"
+                },
+                "SLOT:S7": {
+                    "pin": "board0:SB:S7"
+                },
+                "SLOT:S8": {
+                    "pin": "board0:SB:S8"
+                },
+                "SLOT:S9": {
+                    "pin": "board0:SB:S9"
+                },
+                "SLOT:S10": {
+                    "pin": "board0:SB:S10"
+                },
+                "SLOT:S11": {
+                    "pin": "board0:SB:S11"
+                }
+            }
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 0.88,
+            "scale": 1.24,
             "pos": [
-                -219,
-                176
+                -552,
+                -291
             ]
         },
         "board": {

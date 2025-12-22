@@ -1,0 +1,221 @@
+{
+    "comment": "rioctrl-stepdir",
+    "main": {
+        "S0": {
+          "pin": "T13",
+          "pos": [
+            20.0,
+            510.0
+          ]
+        },
+        "S1": {
+          "pin": "T14",
+          "pos": [
+            20.0,
+            480.0
+          ]
+        },
+        "S2": {
+          "pin": "T15",
+          "pos": [
+            20.0,
+            450.0
+          ]
+        },
+        "S3": {
+          "pin": "P13",
+          "pos": [
+            20.0,
+            420.0
+          ]
+        },
+        "S4": {
+          "pin": "R16",
+          "pos": [
+            20.0,
+            390.0
+          ]
+        },
+        "S5": {
+          "pin": "P15",
+          "pos": [
+            20.0,
+            360.0
+          ]
+        },
+        "S6": {
+          "pin": "R13",
+          "pos": [
+            41.0,
+            510.0
+          ]
+        },
+        "S7": {
+          "pin": "R14",
+          "pos": [
+            41.0,
+            480.0
+          ]
+        },
+        "S8": {
+          "pin": "R15",
+          "pos": [
+            41.0,
+            450.0
+          ]
+        },
+        "S9": {
+          "pin": "P14",
+          "pos": [
+            41.0,
+            420.0
+          ]
+        },
+        "S10": {
+          "pin": "P16",
+          "pos": [
+            41.0,
+            390.0
+          ]
+        },
+        "S11": {
+          "pin": "N16",
+          "pos": [
+            41.0,
+            360.0
+          ]
+        }
+
+    },
+    "slots": [
+        {
+            "name": "JOINT0",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "STEP": {
+                    "pin": "S0",
+                    "pos": [
+                        75,
+                        93
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "S1",
+                    "pos": [
+                        75,
+                        133
+                    ],
+                    "direction": "output"
+                },
+                "EN": {
+                    "pin": "S2",
+                    "pos": [
+                        75,
+                        173
+                    ],
+                    "direction": "output"
+                }
+
+            }
+        },
+        {
+            "name": "JOINT1",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "STEP": {
+                    "pin": "S3",
+                    "pos": [
+                        75,
+                        283
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "S4",
+                    "pos": [
+                        75,
+                        323
+                    ],
+                    "direction": "output"
+                },
+                "EN": {
+                    "pin": "S5",
+                    "pos": [
+                        75,
+                        363
+                    ],
+                    "direction": "output"
+                }
+
+            }
+        },
+        {
+            "name": "JOINT2",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "STEP": {
+                    "pin": "S6",
+                    "pos": [
+                        75,
+                        478
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "S7",
+                    "pos": [
+                        75,
+                        518
+                    ],
+                    "direction": "output"
+                },
+                "EN": {
+                    "pin": "S8",
+                    "pos": [
+                        75,
+                        558
+                    ],
+                    "direction": "output"
+                }
+
+            }
+        },
+        {
+            "name": "JOINT3",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "STEP": {
+                    "pin": "S9",
+                    "pos": [
+                        75,
+                        673
+                    ],
+                    "direction": "output"
+                },
+                "DIR": {
+                    "pin": "S10",
+                    "pos": [
+                        75,
+                        713
+                    ],
+                    "direction": "output"
+                },
+                "EN": {
+                    "pin": "S11",
+                    "pos": [
+                        75,
+                        753
+                    ],
+                    "direction": "output"
+                }
+
+            }
+        }
+
+    ]
+}

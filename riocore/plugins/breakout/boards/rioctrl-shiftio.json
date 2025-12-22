@@ -1,5 +1,5 @@
 {
-    "comment": "5Axis China-BOB",
+    "comment": "rioctrl-shiftio",
     "main": {
         "S0": {
           "pin": "T13",
@@ -223,13 +223,6 @@
                     "direction": "all"
                 }
 
-
-
-
-
-
-
-
             }
         },
         {
@@ -373,176 +366,6 @@
                     "direction": "all"
                 }
 
-            }
-        },
-        {
-            "name": "RELAIS",
-            "comment": "",
-            "default": "bitout",
-            "pins": {
-                "out": {
-                    "pin": "P17",
-                    "comment": "shared with B dir",
-                    "pos": [
-                        190,
-                        28
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "PWM",
-            "comment": "",
-            "default": "pwmout",
-            "pins": {
-                "analog": {
-                    "pin": "P1",
-                    "pos": [
-                        327,
-                        28
-                    ],
-                    "direction": "output"
-                },
-                "digital": {
-                    "pin": "P1",
-                    "pos": [
-                        592,
-                        223
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "B",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P17",
-                    "pos": [
-                        592,
-                        268
-                    ],
-                    "comment": "shared with relais",
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P16",
-                    "pos": [
-                        592,
-                        313
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "ALL",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "en": {
-                    "pin": "P14",
-                    "pos": [
-                        592,
-                        358
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "A",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P9",
-                    "pos": [
-                        592,
-                        403
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P8",
-                    "pos": [
-                        592,
-                        448
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "Z",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P7",
-                    "pos": [
-                        592,
-                        493
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P6",
-                    "pos": [
-                        592,
-                        538
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "Y",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P5",
-                    "pos": [
-                        592,
-                        583
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P4",
-                    "pos": [
-                        592,
-                        628
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "X",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P3",
-                    "pos": [
-                        592,
-                        673
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P2",
-                    "pos": [
-                        592,
-                        718
-                    ],
-                    "direction": "output"
-                }
             }
         }
     ]
