@@ -65,6 +65,16 @@ class Plugin(PluginBase):
                     }
                 }
             )
+        if self.jdata.get("types"):
+            self.OPTIONS.update(
+                {
+                    "chip_type": {
+                        "default": self.jdata.get("type"),
+                        "type": "select",
+                        "options": self.jdata["types"],
+                    }
+                }
+            )
 
         self.OPTIONS.update(
             {
@@ -198,6 +208,12 @@ class Plugin(PluginBase):
             instance.jdata["json_path"] = parent.project.config["json_path"]
             instance.jdata["riocore_path"] = riocore_path
             instance.jdata["output_path"] = gateware_path
+            # overwrite flash commant if exsist
+            if "flashcmd" in parent.project.config["jdata"]:
+                instance.jdata["flashcmd"] = parent.project.config["jdata"]["flashcmd"]
+            # overwrite chip type if exsist
+            if "chip_type" in instance.plugin_setup:
+                instance.jdata["type"] = instance.plugin_setup["chip_type"]
             instance.BUILDER_PATH = gateware_path
 
             # clean None pins
