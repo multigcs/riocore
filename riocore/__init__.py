@@ -504,3 +504,7 @@ class PluginImages:
     def encoder(self):
         setup = {"image": "encoder.png", "pins": [(210, 27), (210, 51), (210, 78)], "signals": [(80, 75), (80, 100), (80, 50)]}
         return setup
+
+    def encoder_optical(self):
+        setup = {"image": "encoder_optical.png", "pins": [(12, 120), (12, 142), (12, 164)], "signals": [(112, 120), (112, 142), (112, 164)]}
+        return setup

@@ -270,8 +270,8 @@
                 }
             },
             "pos": [
-                530.0,
-                -200.0
+                610.0,
+                -330.0
             ],
             "quad_type": 0,
             "pins": {
@@ -282,18 +282,11 @@
                     "pin": "breakout1:ENC0:B"
                 },
                 "z": {
-                    "pin": "breakout1:ENC0:Z",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                410.0,
-                                -160.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout1:ENC0:Z"
                 }
-            }
+            },
+            "image": "encoder_optical",
+            "rotate": 0
         },
         {
             "name": "encoder-1",
@@ -327,8 +320,8 @@
                 }
             },
             "pos": [
-                530.0,
-                0.0
+                610.0,
+                -70.0
             ],
             "quad_type": 0,
             "pins": {
@@ -339,18 +332,11 @@
                     "pin": "breakout1:ENC2:B"
                 },
                 "z": {
-                    "pin": "breakout1:ENC2:Z",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                410.0,
-                                40.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout1:ENC2:Z"
                 }
-            }
+            },
+            "image": "encoder_optical",
+            "rotate": 0
         },
         {
             "name": "encoder-2",
@@ -384,8 +370,8 @@
                 }
             },
             "pos": [
-                530.0,
-                -100.0
+                610.0,
+                -200.0
             ],
             "quad_type": 0,
             "pins": {
@@ -396,18 +382,11 @@
                     "pin": "breakout1:ENC1:B"
                 },
                 "z": {
-                    "pin": "breakout1:ENC1:Z",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                410.0,
-                                -60.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout1:ENC1:Z"
                 }
-            }
+            },
+            "image": "encoder_optical",
+            "rotate": 0
         },
         {
             "name": "encoder-3",
@@ -441,8 +420,8 @@
                 }
             },
             "pos": [
-                530.0,
-                100.0
+                610.0,
+                60.0
             ],
             "quad_type": 0,
             "pins": {
@@ -453,18 +432,11 @@
                     "pin": "breakout1:ENC3:B"
                 },
                 "z": {
-                    "pin": "breakout1:ENC3:Z",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                410.0,
-                                140.0
-                            ]
-                        }
-                    ]
+                    "pin": "breakout1:ENC3:Z"
                 }
-            }
+            },
+            "image": "encoder_optical",
+            "rotate": 0
         },
         {
             "type": "bitout",
@@ -629,10 +601,10 @@
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.24,
+            "scale": 1.12,
             "pos": [
-                -552,
-                -291
+                91,
+                -199
             ]
         },
         "board": {

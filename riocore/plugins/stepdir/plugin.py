@@ -7,8 +7,8 @@ class Plugin(PluginBase):
         self.INFO = "step/dir output for stepper drivers"
         self.DESCRIPTION = "to control motor drivers via step/dir pin's and an optional enable pin"
         self.KEYWORDS = "stepper servo joint"
-        self.IMAGES = ["stepper", "servo42", "stepstick"]
         self.ORIGIN = ""
+        self.IMAGES = ["stepper", "servo42", "stepstick"]
         self.VERILOGS = ["stepdir.v"]
         self.TYPE = "joint"
         self.PINDEFAULTS = {

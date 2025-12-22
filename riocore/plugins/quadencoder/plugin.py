@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "feedback encoder rotary linear glassscale"
         self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoder.v"]
+        self.IMAGES = ["encoder", "encoder_optical"]
         self.PINDEFAULTS = {
             "a": {
                 "direction": "input",

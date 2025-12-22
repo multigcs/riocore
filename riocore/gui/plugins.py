@@ -1,6 +1,7 @@
 import copy
 import importlib
 import os
+import textwrap
 from functools import partial
 
 from PyQt5 import QtSvg
@@ -577,7 +578,7 @@ class GuiPlugins:
             options.addWidget(button_config)
 
         descriptiontext = plugin_instance.DESCRIPTION
-        label = QLabel(f"{descriptiontext}\n")
+        label = QLabel(f"{textwrap.fill(descriptiontext, 50)}\n")
         options.addWidget(label)
 
         options_widget = QWidget()
