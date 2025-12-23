@@ -653,7 +653,7 @@ class GuiPlugins:
 
     def update_image(self):
         image_path = self.plugin_instance.image_path()
-        if os.path.isfile(image_path):
+        if image_path and os.path.isfile(image_path):
             pixmap = QPixmap(image_path).scaled(400, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.ilabel.setPixmap(pixmap)
         else:

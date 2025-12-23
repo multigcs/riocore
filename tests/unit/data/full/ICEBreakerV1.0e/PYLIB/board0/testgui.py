@@ -2,13 +2,16 @@
 #
 #
 
+import io
 import sys
 from functools import partial
 
 from rio import RioWrapper
 
+from PyQt5 import uic
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (
+    QGroupBox,
     QProxyStyle,
     QStyle,
     QScrollArea,
@@ -33,6 +36,18 @@ class SliderProxyStyle(QProxyStyle):
         elif metric == QStyle.PM_SliderLength:
             return 40
         return super().pixelMetric(metric, option, widget)
+
+
+class PluginUI(QWidget):
+    def __init__(self, template):
+        super(PluginUI, self).__init__()
+        f = io.StringIO(template)
+        uic.loadUi(f, self)
+
+    def widget(self, name):
+        if hasattr(self, name):
+            return getattr(self, name)
+        return None
 
 
 class WinForm(QWidget):
@@ -61,13 +76,57 @@ class WinForm(QWidget):
             tab_layout = self.add_tab(plugin_type)
             for plugin_name, plugin_config in self.rio.plugin_info().items():
                 if plugin_config["variables"] and plugin_config["type"] == plugin_type:
-                    tab_layout.addWidget(QLabel(f"{plugin_config['title']}:"))
-                    for variable in plugin_config["variables"]:
-                        row_layout = self.draw_instance(plugin_name, plugin_config, variable, self.data_info[variable])
-                        tab_layout.addLayout(row_layout)
+                    # tab_layout.addWidget(QLabel(f"{plugin_config['title']}:"))
+                    plugin_frame = QGroupBox()
+                    plugin_frame.setTitle(f"{plugin_config['title']}:")
+                    plugin_frame.setToolTip(plugin_name)
+                    plugin_layout = QVBoxLayout()
+                    plugin_frame.setLayout(plugin_layout)
+                    tab_layout.addWidget(plugin_frame)
 
+                    ptype = plugin_config.get("type")
+                    if ptype == "wled":
+                        for variable in plugin_config["variables"]:
+                            variable_info = self.data_info[variable]
+                            signal_name = variable_info.get("signal_name")
+                            if signal_name.endswith("_green"):
+                                num = signal_name.split("_")[0]
+                                row_layout = QHBoxLayout()
+                                row_layout.addWidget(QLabel(f"LED {num}"), stretch=0)
+                                row_layout.addStretch()
+                                for color in ("red", "green", "blue"):
+                                    wid = f"widget_{variable.replace('GREEN', color.upper())}"
+                                    self.widgets[wid] = QCheckBox()
+                                    self.widgets[wid].setChecked(False)
+                                    row_layout.addWidget(QLabel(color))
+                                    row_layout.addWidget(self.widgets[wid], stretch=0)
+                                plugin_layout.addLayout(row_layout)
+                    else:
+                        ui_xml = plugin_config.get("plugin_ui")
+                        plugin_ui = None
+                        if ui_xml:
+                            plugin_ui = PluginUI(ui_xml)
+                        if plugin_ui:
+                            plugin_layout.addWidget(plugin_ui)
+                            for variable in plugin_config["variables"]:
+                                halname = self.data_info[variable]["halname"]
+                                wname = halname.split(".")[-1]
+                                wid = f"widget_{variable}"
+                                self.widgets[wid] = plugin_ui.widget(wname)
+                                if self.widgets[wid] is None:
+                                    print(f"ERROR: widget not found in ui: {plugin_name} {wname}")
+                                    sys.exit(1)
+                                button = plugin_ui.widget(f"{wname}_zero")
+                                if button:
+                                    button.clicked.connect(partial(self.slider_reset, self.widgets[wid]))
+                                value_out = plugin_ui.widget(f"{wname}_out")
+                                if value_out:
+                                    self.widgets[f"widget_out_{variable}"] = plugin_ui.widget(f"{wname}_out")
+                        else:
+                            for variable in plugin_config["variables"]:
+                                row_layout = self.draw_instance(plugin_name, plugin_config, variable, self.data_info[variable])
+                                plugin_layout.addLayout(row_layout)
             tab_layout.addStretch()
-
         self.errors = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
@@ -93,16 +152,20 @@ class WinForm(QWidget):
         signal_name = variable_info.get("signal_name")
         direction = variable_info.get("direction")
         userconfig = variable_info.get("userconfig")
-        row_layout = QHBoxLayout()
-        row_layout.addWidget(QLabel(f"    {signal_name}"), stretch=2)
+        unit = variable_info.get("unit") or ""
+
         wid = f"widget_{variable}"
+        row_layout = QHBoxLayout()
+        row_layout.addWidget(QLabel(signal_name), stretch=0)
+        row_layout.addStretch()
+
         if variable_info.get("type") == "bool":
             self.widgets[wid] = QCheckBox()
             self.widgets[wid].setChecked(False)
-            row_layout.addWidget(self.widgets[wid], stretch=6)
+            row_layout.addWidget(self.widgets[wid], stretch=0)
         elif direction == "input":
             self.widgets[wid] = QLabel("---")
-            row_layout.addWidget(self.widgets[wid], stretch=6)
+            row_layout.addWidget(self.widgets[wid], stretch=0)
         else:
             vmin = 0
             vmax = 1000
@@ -126,7 +189,11 @@ class WinForm(QWidget):
             row_layout.addWidget(self.widgets[wid], stretch=6)
             button = QPushButton("0")
             button.clicked.connect(partial(self.slider_reset, self.widgets[wid]))
-            row_layout.addWidget(button, stretch=1)
+            row_layout.addWidget(button, stretch=0)
+
+        unit_label = QLabel(unit)
+        row_layout.addWidget(unit_label, stretch=0)
+
         return row_layout
 
     def slider_reset(self, widget):
@@ -137,6 +204,8 @@ class WinForm(QWidget):
             if plugin_config["variables"]:
                 for variable in plugin_config["variables"]:
                     wid = f"widget_{variable}"
+                    if wid not in self.widgets:
+                        continue
                     direction = self.data_info[variable].get("direction")
                     if direction == "output":
                         if self.data_info[variable].get("type") == "bool":
@@ -148,7 +217,11 @@ class WinForm(QWidget):
                             value = self.widgets[wid].value()
                             self.rio.data_set(variable, value)
                             if f"widget_out_{variable}" in self.widgets:
-                                self.widgets[f"widget_out_{variable}"].setText(str(value))
+                                widget = self.widgets[f"widget_out_{variable}"]
+                                if hasattr(widget, "setText"):
+                                    widget.setText(str(value))
+                                else:
+                                    widget.setValue(value)
 
         self.rio.rio_readwrite()
 
@@ -156,12 +229,17 @@ class WinForm(QWidget):
             if plugin_config["variables"]:
                 for variable in plugin_config["variables"]:
                     wid = f"widget_{variable}"
+                    if wid not in self.widgets:
+                        continue
                     direction = self.data_info[variable].get("direction")
                     if direction == "input":
                         if self.data_info[variable].get("type") == "bool":
                             self.widgets[wid].setChecked(self.rio.data_get(variable))
                         else:
-                            self.widgets[wid].setText(str(self.rio.data_get(variable)))
+                            if hasattr(self.widgets[wid], "setText"):
+                                self.widgets[wid].setText(str(self.rio.data_get(variable)))
+                            else:
+                                self.widgets[wid].display(self.rio.data_get(variable))
 
 
 if __name__ == "__main__":

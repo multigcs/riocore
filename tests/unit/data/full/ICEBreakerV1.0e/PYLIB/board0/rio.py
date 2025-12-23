@@ -119,6 +119,180 @@ class RioWrapper():
             "stepdir0": {
                 "type": "stepdir",
                 "title": "stepdir0",
+                "plugin_ui": """<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>418</width>
+    <height>138</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="position_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>17</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Position:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="position">
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="unit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>units</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="velocity_zero">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <widget class="QScrollBar" name="velocity">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="minimum">
+      <number>-100000</number>
+     </property>
+     <property name="maximum">
+      <number>100000</number>
+     </property>
+     <property name="pageStep">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="velocity_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Velocity:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="velocity_out">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="unit_out">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Hz</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="enable_lbael">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enable">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+""",
                 "is_joint": True,
                 "variables": [
                     "SIGOUT_BOARD0_STEPDIR0_VELOCITY",
@@ -129,6 +303,180 @@ class RioWrapper():
             "stepdir1": {
                 "type": "stepdir",
                 "title": "stepdir1",
+                "plugin_ui": """<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>418</width>
+    <height>138</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="position_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>17</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Position:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="position">
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="unit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>units</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="velocity_zero">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <widget class="QScrollBar" name="velocity">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="minimum">
+      <number>-100000</number>
+     </property>
+     <property name="maximum">
+      <number>100000</number>
+     </property>
+     <property name="pageStep">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="velocity_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Velocity:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="velocity_out">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="unit_out">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Hz</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="enable_lbael">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enable">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+""",
                 "is_joint": True,
                 "variables": [
                     "SIGOUT_BOARD0_STEPDIR1_VELOCITY",
@@ -154,6 +502,180 @@ class RioWrapper():
             "stepdir2": {
                 "type": "stepdir",
                 "title": "stepdir2",
+                "plugin_ui": """<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>418</width>
+    <height>138</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="position_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>17</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Position:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="position">
+         <property name="font">
+          <font>
+           <pointsize>18</pointsize>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="unit">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>units</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="velocity_zero">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <widget class="QScrollBar" name="velocity">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="minimum">
+      <number>-100000</number>
+     </property>
+     <property name="maximum">
+      <number>100000</number>
+     </property>
+     <property name="pageStep">
+      <number>100</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="velocity_label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Velocity:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="velocity_out">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="unit_out">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Hz</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="enable_lbael">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="enable">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
+""",
                 "is_joint": True,
                 "variables": [
                     "SIGOUT_BOARD0_STEPDIR2_VELOCITY",
@@ -226,6 +748,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "velocity",
                 "userconfig": {},
+                "unit": "Hz",
                 "halname": "board0.stepdir0.velocity",
                 "netname": "",
                 "type": "float",
@@ -239,6 +762,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "position",
                 "userconfig": {},
+                "unit": "steps",
                 "halname": "board0.stepdir0.position",
                 "netname": "",
                 "type": "float",
@@ -255,6 +779,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "enable",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.stepdir0.enable",
                 "netname": "",
                 "type": "bool",
@@ -266,6 +791,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "velocity",
                 "userconfig": {},
+                "unit": "Hz",
                 "halname": "board0.stepdir1.velocity",
                 "netname": "",
                 "type": "float",
@@ -279,6 +805,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "position",
                 "userconfig": {},
+                "unit": "steps",
                 "halname": "board0.stepdir1.position",
                 "netname": "",
                 "type": "float",
@@ -295,6 +822,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "enable",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.stepdir1.enable",
                 "netname": "",
                 "type": "bool",
@@ -306,6 +834,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitin0.bit",
                 "netname": "",
                 "type": "bool",
@@ -318,6 +847,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "velocity",
                 "userconfig": {},
+                "unit": "Hz",
                 "halname": "board0.stepdir2.velocity",
                 "netname": "",
                 "type": "float",
@@ -331,6 +861,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "position",
                 "userconfig": {},
+                "unit": "steps",
                 "halname": "board0.stepdir2.position",
                 "netname": "",
                 "type": "float",
@@ -347,6 +878,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "enable",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.stepdir2.enable",
                 "netname": "",
                 "type": "bool",
@@ -358,6 +890,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitout0.bit",
                 "netname": "",
                 "type": "bool",
@@ -369,6 +902,7 @@ class RioWrapper():
                 "direction": "output",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitout1.bit",
                 "netname": "",
                 "type": "bool",
@@ -380,6 +914,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitin1.bit",
                 "netname": "",
                 "type": "bool",
@@ -392,6 +927,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitin2.bit",
                 "netname": "",
                 "type": "bool",
@@ -404,6 +940,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitin3.bit",
                 "netname": "",
                 "type": "bool",
@@ -416,6 +953,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitin4.bit",
                 "netname": "",
                 "type": "bool",
@@ -428,6 +966,7 @@ class RioWrapper():
                 "direction": "input",
                 "signal_name": "bit",
                 "userconfig": {},
+                "unit": "",
                 "halname": "board0.bitin5.bit",
                 "netname": "",
                 "type": "bool",

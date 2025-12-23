@@ -133,8 +133,6 @@ class PluginBase:
         return ""
 
     def image_update(self):
-        self.IMAGE_SHOW = False
-        self.IMAGE = ""
         if self.IMAGES:
             image = self.plugin_setup.get("image", self.option_default("image"))
             self.plugin_images = riocore.PluginImages()
@@ -153,6 +151,9 @@ class PluginBase:
                             self.SIGNALS[pin]["pos"] = image_setup["signals"][pn]
                 else:
                     riocore.log(f"ERROR: image-config not found for: ({image})")
+            else:
+                self.IMAGE_SHOW = False
+                self.IMAGE = ""
 
     def image_path(self):
         self.image_update()
