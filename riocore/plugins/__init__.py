@@ -117,6 +117,25 @@ class PluginBase:
                 "options": ["generic", *self.IMAGES],
                 "description": "hardware type",
             }
+            self.image_update()
+
+        # add new options at top of dict
+        if NEW_OPTIONS:
+            NEW_OPTIONS.update(self.OPTIONS)
+            self.OPTIONS = NEW_OPTIONS
+
+        self.update_title()
+        self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+        if self.TYPE == "expansion":
+            self.expansion_prefix = self.instances_name.upper()
+
+    def cfg_info(self):
+        return ""
+
+    def image_update(self):
+        self.IMAGE_SHOW = False
+        self.IMAGE = ""
+        if self.IMAGES:
             image = self.plugin_setup.get("image", self.option_default("image"))
             self.plugin_images = riocore.PluginImages()
             if image and not image.endswith(".png"):
@@ -135,27 +154,12 @@ class PluginBase:
                 else:
                     riocore.log(f"ERROR: image-config not found for: ({image})")
 
-        # add new options at top of dict
-        if NEW_OPTIONS:
-            NEW_OPTIONS.update(self.OPTIONS)
-            self.OPTIONS = NEW_OPTIONS
-
-        self.update_title()
-
-        self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
-
-        if self.TYPE == "expansion":
-            self.expansion_prefix = self.instances_name.upper()
-
-    def cfg_info(self):
-        return ""
-
     def image_path(self):
+        self.image_update()
         plugin_path = os.path.join(riocore_path, "plugins", self.NAME)
         image_path = os.path.join(plugin_path, "image.png")
         if self.IMAGE_SHOW and self.IMAGE and os.path.isfile(os.path.join(plugin_path, self.IMAGE)):
             image_path = os.path.join(plugin_path, self.IMAGE)
-            print(image_path)
         if os.path.isfile(image_path):
             return image_path
         return

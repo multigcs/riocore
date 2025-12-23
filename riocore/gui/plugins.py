@@ -651,6 +651,14 @@ class GuiPlugins:
                     if signal_selected is not None:
                         self.tab_widget.setCurrentWidget(self.signals_tab)
 
+    def update_image(self):
+        image_path = self.plugin_instance.image_path()
+        if os.path.isfile(image_path):
+            pixmap = QPixmap(image_path).scaled(400, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.ilabel.setPixmap(pixmap)
+        else:
+            self.ilabel.clear()
+
     def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None, cb=None):
         self.pins_tab = None
         self.joint_tab = None
@@ -668,6 +676,7 @@ class GuiPlugins:
             if autoreload:
                 self.plugin_instance.setup()
                 self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
+            self.update_image()
 
         self.dialog = QDialog()
         self.dialog.setMinimumWidth(800)
@@ -701,13 +710,10 @@ class GuiPlugins:
         self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
 
         right_layout = QVBoxLayout()
-        image_path = self.plugin_instance.image_path()
-        if os.path.isfile(image_path):
-            ilabel = QLabel()
-            pixmap = QPixmap(image_path).scaled(400, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            ilabel.setPixmap(pixmap)
-            right_layout.addWidget(ilabel)
-            right_layout.addStretch()
+        self.ilabel = QLabel()
+        self.update_image()
+        right_layout.addWidget(self.ilabel)
+        right_layout.addStretch()
 
         hlayout = QHBoxLayout()
         hlayout.addWidget(self.tab_widget)
