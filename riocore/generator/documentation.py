@@ -91,7 +91,7 @@ class documentation:
             print(f"WARING: failed to write halgraph.png: {error}")
 
     def builds_md(self):
-        output = ["# builds"]
+        output = ["# Builds"]
 
         for plugin_instance in self.project.plugin_instances:
             if not plugin_instance.BUILDER:
@@ -156,6 +156,7 @@ class documentation:
         output.append(f"* Output-Path: {self.project.config['output_path']}")
         output.append("")
 
+        self.board_infos = {}
         self.plugin_infos = {}
         for plugin_instance in self.project.plugin_instances:
             link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
@@ -167,13 +168,42 @@ class documentation:
                     target = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
                     shutil.copy(image_path, target)
                     image = f'<img src="{plugin_instance.NAME}.png" height="48">'
-                self.plugin_infos[plugin_instance.NAME] = {
-                    "info": info,
-                    "instances": [],
-                    "link": link,
-                    "image": image,
-                }
-            self.plugin_infos[plugin_instance.NAME]["instances"].append(plugin_instance.instances_name)
+                if plugin_instance.BUILDER:
+                    options = {}
+                    for key, setup in plugin_instance.OPTIONS.items():
+                        if key not in {"name"}:
+                            value = plugin_instance.plugin_setup.get("key", setup.get("default"))
+                            options[key] = value
+                    self.board_infos[plugin_instance.title] = {
+                        "type": plugin_instance.NAME,
+                        "info": info,
+                        "instances": [],
+                        "link": link,
+                        "image": f"{plugin_instance.NAME}.png",
+                        "options": options,
+                    }
+                else:
+                    self.plugin_infos[plugin_instance.NAME] = {
+                        "info": info,
+                        "instances": [],
+                        "link": link,
+                        "image": image,
+                    }
+            if not plugin_instance.BUILDER:
+                self.plugin_infos[plugin_instance.NAME]["instances"].append(plugin_instance.instances_name)
+
+        output.append("## Boards")
+        for name, board in self.board_infos.items():
+            output.append(f"### {name} ({board['type']})")
+            output.append(f"Description: {board['info']}")
+            output.append("")
+            output.append(f'<img align="right" height="200" src="{board["image"]}">')
+            output.append("")
+            output.append("| Name | Value |")
+            output.append("| --- | --- |")
+            for key, value in board["options"].items():
+                output.append(f"| {key.replace('_', '-').title()} | {value} |")
+            output.append("")
 
         output.append("## Plugins")
         output.append("| Type | Info | Instance | Image |")

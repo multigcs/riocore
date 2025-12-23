@@ -149,7 +149,7 @@ class PluginBase:
                     for pn, pin in enumerate(self.SIGNALS):
                         if pn < signals_max:
                             self.SIGNALS[pin]["pos"] = image_setup["signals"][pn]
-                else:
+                elif image != "generic":
                     riocore.log(f"ERROR: image-config not found for: ({image})")
             else:
                 self.IMAGE_SHOW = False
