@@ -123,7 +123,7 @@ class PluginBase:
                 if hasattr(self.plugin_images, image):
                     image_setup = getattr(self.plugin_images, image)()
                     self.IMAGE_SHOW = True
-                    self.IMAGE = image_setup["image"]
+                    self.IMAGE = os.path.join(riocore_path, "files", "images", image_setup["image"])
                     pins_max = len(image_setup.get("pins", []))
                     signals_max = len(image_setup.get("signals", []))
                     for pn, pin in enumerate(self.PINDEFAULTS):
@@ -153,8 +153,9 @@ class PluginBase:
     def image_path(self):
         plugin_path = os.path.join(riocore_path, "plugins", self.NAME)
         image_path = os.path.join(plugin_path, "image.png")
-        if self.IMAGE_SHOW and self.IMAGE and os.path.isfile(os.path.join(riocore_path, "plugins", self.NAME, self.IMAGE)):
-            image_path = os.path.join(riocore_path, "plugins", self.NAME, self.IMAGE)
+        if self.IMAGE_SHOW and self.IMAGE and os.path.isfile(os.path.join(plugin_path, self.IMAGE)):
+            image_path = os.path.join(plugin_path, self.IMAGE)
+            print(image_path)
         if os.path.isfile(image_path):
             return image_path
         return
