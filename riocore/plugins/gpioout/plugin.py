@@ -8,7 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "gpio output"
         self.DESCRIPTION = ""
         self.KEYWORDS = "output"
-        self.IMAGES = ["relay", "ssr", "ssr2a", "led"]
+        self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""

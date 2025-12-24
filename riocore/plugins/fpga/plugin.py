@@ -62,6 +62,7 @@ class Plugin(PluginBase):
                         "default": self.jdata.get("toolchain"),
                         "type": "select",
                         "options": self.jdata["toolchains"],
+                        "description": "used toolchain",
                     }
                 }
             )
@@ -72,6 +73,7 @@ class Plugin(PluginBase):
                         "default": self.jdata.get("type"),
                         "type": "select",
                         "options": self.jdata["types"],
+                        "description": "used chip-type",
                     }
                 }
             )
@@ -83,6 +85,8 @@ class Plugin(PluginBase):
                     "type": int,
                     "min": 1000000,
                     "max": 500000000,
+                    "unit": "Hz",
+                    "description": "FPGA clock speed",
                 }
             }
         )

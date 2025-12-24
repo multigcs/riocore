@@ -55,8 +55,7 @@
                 130.0,
                 405.0
             ],
-            "image": "wled1.png",
-            "rotate": 180
+            "image": "wled1"
         }
     ],
     "slots": [

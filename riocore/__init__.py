@@ -445,6 +445,17 @@ class PluginImages:
             px += 137
         return setup
 
+    def wled1(self):
+        setup = {"image": "wled1.png", "pins": [(10, 36)], "signals": []}
+        px = 50
+        for led in range(3):
+            py = 10
+            for color in range(3):
+                setup["signals"].append((px, py))
+                py += 26
+            px += 137
+        return setup
+
     def proximity(self):
         setup = {"image": "proximity.png", "pins": [(10, 60)], "signals": [(360, 60), (340, 60)]}
         return setup

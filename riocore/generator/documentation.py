@@ -68,7 +68,6 @@ class documentation:
                     self.iface_out.append([variable_name, size, hal_name])
         """
 
-        self.builds_md()
         self.halgraph_png()
         self.config_md()
         self.axis_md()
@@ -89,31 +88,6 @@ class documentation:
                 open(svg_path, "wb").write(svg_data)
         except Exception as error:
             print(f"WARING: failed to write halgraph.png: {error}")
-
-    def builds_md(self):
-        output = ["# Builds"]
-
-        for plugin_instance in self.project.plugin_instances:
-            if not plugin_instance.BUILDER:
-                continue
-
-            output.append(f"## {plugin_instance.title}")
-            image_path = plugin_instance.image_path()
-            if os.path.isfile(image_path):
-                target = os.path.join(self.doc_path, f"build_{plugin_instance.NAME}.png")
-                shutil.copy(image_path, target)
-                image = f'<img style="float: right;" src="build_{plugin_instance.NAME}.png" height="128" />'
-                output.append(image)
-                output.append("")
-
-            for command in plugin_instance.BUILDER:
-                cmd = plugin_instance.builder(self.project, command)
-                output.append(f"### {command}")
-                output.append(f"```{cmd}```")
-            output.append("")
-
-        output.append("")
-        open(os.path.join(self.doc_path, "BUILDS.md"), "w").write("\n".join(output))
 
     def axis_md(self):
         output = ["# Axis/Joints"]
@@ -178,7 +152,11 @@ class documentation:
                 for key, setup in plugin_instance.OPTIONS.items():
                     if key not in {"name"}:
                         value = plugin_instance.plugin_setup.get("key", setup.get("default"))
-                        options[key] = value
+                        description = setup.get("description")
+                        if unit := setup.get("unit"):
+                            value = f"{value} {unit}"
+                        options[key] = (value, description)
+                options["commands"] = (", ".join(plugin_instance.BUILDER), "make commands")
                 self.board_infos[instances_type] = {
                     "type": plugin_instance.NAME,
                     "info": info,
@@ -189,9 +167,23 @@ class documentation:
             else:
                 instances = self.plugin_infos.get(instances_type, {}).get("instances", [])
                 instances.append(instances_name)
+
+                signals = []
+                for signal_name, signal_setup in plugin_instance.plugin_setup.get("signals", {}).items():
+                    if signal_name in plugin_instance.SIGNALS:
+                        direction = plugin_instance.SIGNALS[signal_name].get("direction")
+                        netset = signal_setup.get("net", signal_setup.get("setp"))
+                        arrow = "<=>"
+                        if direction == "input":
+                            arrow = "=>"
+                        elif direction == "output":
+                            arrow = "<="
+                        signals.append(f"{signal_name} {arrow} {netset}")
+
                 self.plugin_infos[instances_type] = {
                     "info": info,
                     "instances": instances,
+                    "signals": signals,
                     "link": link,
                     "image": f'<img src="{instances_type}.png" height="48">',
                 }
@@ -203,17 +195,17 @@ class documentation:
             output.append("")
             output.append(f'<img align="right" height="200" src="{board["image"]}">')
             output.append("")
-            output.append("| Name | Value |")
-            output.append("| --- | --- |")
-            for key, value in board["options"].items():
-                output.append(f"| {key.replace('_', '-').title()} | {value} |")
+            output.append("| Name | Value | Description |")
+            output.append("| --- | --- | --- |")
+            for key, data in board["options"].items():
+                output.append(f"| {key.replace('_', '-').title()} | {data[0]} | {data[1]} |")
             output.append("")
 
         output.append("## Plugins")
-        output.append("| Type | Info | Instance | Image |")
-        output.append("| --- | --- | --- | --- |")
+        output.append("| Type | Info | Instance | Signals | Image |")
+        output.append("| --- | --- | --- | --- | --- |")
         for name, plugin in self.plugin_infos.items():
-            output.append(f"| {plugin['link']} | {plugin['info']} | {', '.join(plugin['instances'])} | {plugin['image']} |")
+            output.append(f"| {plugin['link']} | {plugin['info']} | {', '.join(plugin['instances'])} | {'<br/>'.join(plugin['signals'])} | {plugin['image']} |")
         output.append("")
         open(os.path.join(self.doc_path, "CONFIG.md"), "w").write("\n".join(output))
 
@@ -460,7 +452,7 @@ body {font-family: Arial;}
         output.append("</header>")
         output.append("<body>")
 
-        sections = ("CONFIG", "AXIS", "PINS", "SIGNALS", "BUILDS", "INTERFACE", "LINUXCNC", "JSON")
+        sections = ("CONFIG", "AXIS", "PINS", "SIGNALS", "INTERFACE", "LINUXCNC", "JSON")
         output.append('<div class="tab">')
         for section in sections:
             md_path = os.path.join(self.doc_path, f"{section}.md")
@@ -504,7 +496,6 @@ openSection(event, \'CONFIG\');
         output.append("- [Config](./CONFIG.md)")
         output.append("- [Axis/Joints](./AXIS.md)")
         output.append("- [Pins](./PINS.md)")
-        output.append("- [Builds](./BUILDS.md)")
         output.append("- [Interface](./INTERFACE.md)")
         output.append("- [LinuxCNC](./LINUXCNC.md)")
         output.append("")
