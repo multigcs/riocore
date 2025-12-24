@@ -136,7 +136,7 @@ class documentation:
             info = plugin_instance.INFO
             instances_name = plugin_instance.instances_name
             instances_type = plugin_instance.NAME
-            node_type = plugin_instance.plugin_setup.get("node_type").replace("/", "_")
+            node_type = plugin_instance.plugin_setup.get("node_type", "").replace("/", "_")
             if node_type:
                 instances_name = f"{instances_name}({node_type})"
             if node_type:
