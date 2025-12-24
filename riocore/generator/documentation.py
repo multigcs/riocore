@@ -159,38 +159,42 @@ class documentation:
         self.board_infos = {}
         self.plugin_infos = {}
         for plugin_instance in self.project.plugin_instances:
-            link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
             info = plugin_instance.INFO
-            if plugin_instance.NAME not in self.plugin_infos:
-                image = "-"
-                image_path = plugin_instance.image_path()
-                if os.path.exists(image_path):
-                    target = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
-                    shutil.copy(image_path, target)
-                    image = f'<img src="{plugin_instance.NAME}.png" height="48">'
-                if plugin_instance.BUILDER:
-                    options = {}
-                    for key, setup in plugin_instance.OPTIONS.items():
-                        if key not in {"name"}:
-                            value = plugin_instance.plugin_setup.get("key", setup.get("default"))
-                            options[key] = value
-                    self.board_infos[plugin_instance.title] = {
-                        "type": plugin_instance.NAME,
-                        "info": info,
-                        "instances": [],
-                        "link": link,
-                        "image": f"{plugin_instance.NAME}.png",
-                        "options": options,
-                    }
-                else:
-                    self.plugin_infos[plugin_instance.NAME] = {
-                        "info": info,
-                        "instances": [],
-                        "link": link,
-                        "image": image,
-                    }
-            if not plugin_instance.BUILDER:
-                self.plugin_infos[plugin_instance.NAME]["instances"].append(plugin_instance.instances_name)
+            instances_name = plugin_instance.instances_name
+            instances_type = plugin_instance.NAME
+            node_type = plugin_instance.plugin_setup.get("node_type")
+            if node_type:
+                instances_name = f"{instances_name}({node_type})"
+            if node_type:
+                instances_type = f"{instances_type}_{node_type}"
+            link = f"[{instances_type}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
+            image = "-"
+            image_path = plugin_instance.image_path()
+            if os.path.exists(image_path):
+                target = os.path.join(self.doc_path, f"{instances_type}.png")
+                shutil.copy(image_path, target)
+            if plugin_instance.BUILDER:
+                options = {}
+                for key, setup in plugin_instance.OPTIONS.items():
+                    if key not in {"name"}:
+                        value = plugin_instance.plugin_setup.get("key", setup.get("default"))
+                        options[key] = value
+                self.board_infos[instances_type] = {
+                    "type": plugin_instance.NAME,
+                    "info": info,
+                    "link": link,
+                    "image": f"{instances_type}.png",
+                    "options": options,
+                }
+            else:
+                instances = self.plugin_infos.get(instances_type, {}).get("instances", [])
+                instances.append(instances_name)
+                self.plugin_infos[instances_type] = {
+                    "info": info,
+                    "instances": instances,
+                    "link": link,
+                    "image": f'<img src="{instances_type}.png" height="48">',
+                }
 
         output.append("## Boards")
         for name, board in self.board_infos.items():
