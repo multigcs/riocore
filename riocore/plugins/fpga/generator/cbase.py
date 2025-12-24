@@ -913,7 +913,7 @@ class cbase:
         elif protocol == "SPI":
             output.append("    spi_init();")
         elif protocol == "UDP":
-            output.append("    char* dstAddress[1024];")
+            output.append("    char dstAddress[1024];")
             output.append("    int dstPort = DST_PORT;")
             output.append("    if (argc > 1) {")
             output.append("        int ip0 = 0;")
