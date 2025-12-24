@@ -18,7 +18,7 @@
             "image": "ethercatservo",
             "pos": [
                 180.0,
-                -30.0
+                -20.0
             ],
             "pins": {
                 "BUS:in": {
@@ -31,13 +31,13 @@
             "node_type": "ek1100",
             "uid": "ethercat2",
             "pos": [
-                390.0,
-                50.0
+                740.0,
+                20.0
             ],
             "modules": "el1008 el1008 el2008 el2008 el4002",
             "pins": {
                 "BUS:in": {
-                    "pin": "ethercat1:BUS:out"
+                    "pin": "ethercat4:BUS:out"
                 }
             },
             "sub": {
@@ -57,14 +57,48 @@
                     "node_type": "el4002"
                 }
             }
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ethercat3",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                340.0,
+                -20.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat1:BUS:out"
+                }
+            },
+            "name": ""
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ethercat4",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                500.0,
+                -20.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat3:BUS:out"
+                }
+            },
+            "name": ""
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.93,
+            "scale": 0.62,
             "pos": [
-                -7,
-                -78
+                -22,
+                -140
             ]
         }
     }

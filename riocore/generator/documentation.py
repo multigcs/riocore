@@ -136,7 +136,7 @@ class documentation:
             info = plugin_instance.INFO
             instances_name = plugin_instance.instances_name
             instances_type = plugin_instance.NAME
-            node_type = plugin_instance.plugin_setup.get("node_type")
+            node_type = plugin_instance.plugin_setup.get("node_type").replace("/", "_")
             if node_type:
                 instances_name = f"{instances_name}({node_type})"
             if node_type:
@@ -190,18 +190,19 @@ class documentation:
                     "image": f'<img src="{instances_type}.png" height="48">',
                 }
 
-        output.append("## Boards")
-        for name, board in self.board_infos.items():
-            output.append(f"### {name} ({board['type']})")
-            output.append(f"Description: {board['info']}")
-            output.append("")
-            output.append(f'<img align="right" height="200" src="{board["image"]}">')
-            output.append("")
-            output.append("| Name | Value | Description |")
-            output.append("| --- | --- | --- |")
-            for key, data in board["options"].items():
-                output.append(f"| {key.replace('_', '-').title()} | {data[0]} | {data[1]} |")
-            output.append("")
+        if self.board_infos:
+            output.append("## Boards")
+            for name, board in self.board_infos.items():
+                output.append(f"### {name} ({board['type']})")
+                output.append(f"Description: {board['info']}")
+                output.append("")
+                output.append(f'<img align="right" height="200" src="{board["image"]}">')
+                output.append("")
+                output.append("| Name | Value | Description |")
+                output.append("| --- | --- | --- |")
+                for key, data in board["options"].items():
+                    output.append(f"| {key.replace('_', '-').title()} | {data[0]} | {data[1]} |")
+                output.append("")
 
         output.append("## Plugins")
         output.append("| Type | Info | Instance | Signals | Image |")
