@@ -173,6 +173,8 @@ class documentation:
                     if signal_name in plugin_instance.SIGNALS:
                         direction = plugin_instance.SIGNALS[signal_name].get("direction")
                         netset = signal_setup.get("net", signal_setup.get("setp"))
+                        if not netset:
+                            continue
                         arrow = "<=>"
                         if direction == "input":
                             arrow = "=>"
