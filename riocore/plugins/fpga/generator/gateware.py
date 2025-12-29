@@ -826,3 +826,111 @@ class gateware(generator_base):
             riocore.log("  !!! gateware changed: needs to flash |||")
         hash_file_new = os.path.join(self.jdata["output_path"], "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
+
+        main_cpp = []
+
+        main_cpp.append("""
+#include "Vrio.h"
+#include "verilated.h"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#define BUFFER_BIT 40
+#define BUFFER_BYTES (BUFFER_BIT / 8)
+
+int main(int argc, char** argv) {
+
+    uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};
+    uint8_t spi_rx[BUFFER_BYTES];
+    int spi_rx_num = 0;
+    int spi_rx_bit = 0;
+    int spi_rx_cs = 1;
+
+    VerilatedContext* contextp = new VerilatedContext;
+    contextp->commandArgs(argc, argv);
+    Vrio* rio = new Vrio{contextp};
+    rio->PINOUT_BITOUT0_BIT = 0;
+    rio->PININ_SPI0_MOSI = 0;
+    rio->PINOUT_SPI0_MISO = 0;
+    rio->PININ_SPI0_SCLK = 0;
+    rio->PININ_SPI0_SEL = 0;
+    rio->sysclk_in = 0;
+    rio->eval();
+
+    int counter = 0;
+    int last = 0;
+    while (!contextp->gotFinish()) {
+        rio->sysclk_in = 1 - rio->sysclk_in;
+        rio->eval();
+        rio->sysclk_in = 1 - rio->sysclk_in;
+        rio->eval();
+
+        if (rio->PINOUT_BITOUT0_BIT != last) {
+            fprintf(stdout, "PINOUT_BITOUT0_BIT=%i ", rio->PINOUT_BITOUT0_BIT);
+            fprintf(stdout, "PINOUT_SPI0_MISO=%i ", rio->PINOUT_SPI0_MISO);
+            fprintf(stdout, "\\n");
+        }
+        last = rio->PINOUT_BITOUT0_BIT;
+
+        if (counter++ > 100000) {
+            counter = 0;
+            if (rio->PININ_SPI0_SEL == 0) {
+                if (rio->PININ_SPI0_SCLK == 0) {
+                    if (spi_rx_bit < 8) {
+                        if ((spi_tx[spi_rx_num] & (1<<(7-spi_rx_bit))) > 0) {
+                            rio->PININ_SPI0_MOSI = 1;
+                        } else {
+                            rio->PININ_SPI0_MOSI = 0;
+                        }
+                    }
+                    rio->PININ_SPI0_SCLK = 1;
+                } else if (spi_rx_num < BUFFER_BYTES) {
+                    if (spi_rx_bit < 8) {
+                        if (rio->PINOUT_SPI0_MISO == 1) {
+                            spi_rx[spi_rx_num] |= (1<<(7-spi_rx_bit));
+                        }
+                        spi_rx_bit++;
+                        if (spi_rx_bit == 8) {
+                            spi_rx_bit = 0;
+                            spi_rx_num++;
+                            if (spi_rx_num == BUFFER_BYTES) {
+                                int fd_rx = open("/dev/shm/verilog.rx", O_WRONLY);
+                                write(fd_rx, spi_rx, BUFFER_BYTES);
+                                close(fd_rx);
+                            } else {
+                                spi_rx[spi_rx_num] = 0;
+                            }
+                        }
+                    }
+                    if (spi_rx_num < BUFFER_BYTES) {
+                        rio->PININ_SPI0_SCLK = 0;
+                    }
+                } else {
+                    rio->PININ_SPI0_SEL = 1;
+                    spi_rx_bit = 0;
+                    spi_rx_num = 0;
+                }
+            } else if (rio->PININ_SPI0_SEL == 1) {
+                int fd_tx = open("/dev/shm/verilog.tx", O_RDONLY);
+                read(fd_tx, spi_tx, BUFFER_BYTES);
+                close(fd_tx);
+                spi_rx_bit = 0;
+                spi_rx_num = 0;
+                spi_rx[spi_rx_num] = 0;
+                rio->PININ_SPI0_SEL = 0;
+                rio->PININ_SPI0_SCLK = 0;
+            }
+        }
+    }
+    delete rio;
+    delete contextp;
+    return 0;
+}
+
+        """)
+
+        open(os.path.join(self.jdata["output_path"], "main.cpp"), "w").write("\n".join(main_cpp))

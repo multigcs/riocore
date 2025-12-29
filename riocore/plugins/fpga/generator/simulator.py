@@ -238,6 +238,7 @@ class simulator(generator_base):
             for joint_setup in joints:
                 joint = joint_setup["num"]
                 position_mode = joint_setup.get("position_mode", "velocity")
+                feedback_var = None
                 if position_mode == "velocity":
                     plugin_instance = joint_setup["instance"]
                     interface_data = plugin_instance.interface_data()
@@ -255,7 +256,8 @@ class simulator(generator_base):
                         output.append('        printf(" # %f \\n", newpos);')
                         output.append(f"        {feedback_var} += (int32_t)newpos;")
                         output.append("    }")
-                output.append(f"    joint_position[{joint}] = {feedback_var};")
+                if feedback_var:
+                    output.append(f"    joint_position[{joint}] = {feedback_var};")
 
         home_n = 0
         bitout_n = 0

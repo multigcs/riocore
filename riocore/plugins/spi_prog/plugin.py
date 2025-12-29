@@ -73,6 +73,7 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
+        instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         instance_parameter["MSGID"] = "32'h74697277"
         return instances
