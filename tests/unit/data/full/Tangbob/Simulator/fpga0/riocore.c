@@ -7,8 +7,8 @@
 #include <time.h>
 #include <riocore.h>
 
-uint8_t rxBuffer[BUFFER_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t txBuffer[BUFFER_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t rxBuffer[BUFFER_SIZE_RX] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t txBuffer[BUFFER_SIZE_TX] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 float MULTIPLEXER_OUTPUT_VALUE;
 uint8_t MULTIPLEXER_OUTPUT_ID;
 uint8_t VARIN128_MODBUS0_RXDATA[16];
@@ -80,7 +80,7 @@ void read_rxbuffer(uint8_t *rxBuffer) {
 // MC -> PC
 void write_txbuffer(uint8_t *txBuffer) {
     int n = 0;
-    for (n = 0; n < BUFFER_SIZE; n++) {
+    for (n = 0; n < BUFFER_SIZE_TX; n++) {
         txBuffer[n] = 0;
     }
     txBuffer[0] = 97;

@@ -13,12 +13,12 @@ class jslib(generator_base):
         self.iface_in = []
         self.iface_out = []
         self.calc_buffersize(self.project)
-        output_pos = self.buffer_size
+        input_pos = self.buffer_size_in
 
         variable_name = "header_rx"
         size = 32
         for bit_num in range(0, size, 8):
-            output_pos -= 8
+            input_pos -= 8
         self.iface_out.append(["RX_HEADER", size])
         self.iface_in.append(["TX_HEADER", size])
         self.iface_in.append(["TITMESTAMP", size])
@@ -38,12 +38,12 @@ class jslib(generator_base):
             variable_name = "MULTIPLEXED_OUTPUT_VALUE"
             size = self.project.multiplexed_output_size
             for bit_num in range(0, size, 8):
-                output_pos -= 8
+                input_pos -= 8
             self.iface_out.append([variable_name, size])
             variable_name = "MULTIPLEXED_OUTPUT_ID"
             size = 8
             for bit_num in range(0, size, 8):
-                output_pos -= 8
+                input_pos -= 8
             self.iface_out.append([variable_name, size])
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
@@ -64,18 +64,18 @@ class jslib(generator_base):
                 if not data_config.get("expansion"):
                     if size >= 8:
                         for bit_num in range(0, size, 8):
-                            output_pos -= 8
+                            input_pos -= 8
                     elif size > 1:
-                        output_pos -= size
+                        input_pos -= size
                     else:
-                        output_pos -= 1
+                        input_pos -= 1
                     self.iface_out.append([variable_name, size])
 
                     if plugin_instance.instances_name not in self.tx_dict:
                         self.tx_dict[plugin_instance.instances_name] = {}
                     self.tx_dict[plugin_instance.instances_name][data_name] = variable_name
 
-        self.byte_size = self.buffer_size // 8
+        # self.byte_size = self.buffer_size // 8
 
         self.rio_js()
         self.client_js()
@@ -93,7 +93,7 @@ class jslib(generator_base):
         output.append("")
 
         output.append("  set_tx: function (rio_tx) {")
-        output.append(f"    data = Buffer.alloc({self.byte_size}, 0);")
+        output.append(f"    data = Buffer.alloc({self.buffer_size_out // 8}, 0);")
         output.append('    RX_HEADER = Buffer.from("74697277", "hex").readInt32LE(0);')
         for plugin, values in self.tx_dict.items():
             for key, value in values.items():

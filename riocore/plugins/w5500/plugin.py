@@ -108,7 +108,8 @@ class Plugin(PluginBase):
         instance_parameter["NET_MASK"] = f"{{8'd{maskl[0]}, 8'd{maskl[1]}, 8'd{maskl[2]}, 8'd{maskl[3]}}}"
         instance_parameter["GW_ADDR"] = f"{{8'd{gwl[0]}, 8'd{gwl[1]}, 8'd{gwl[2]}, 8'd{gwl[3]}}}"
         instance_parameter["PORT"] = port
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
+        instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         instance_parameter["MSGID"] = "32'h74697277"
 
         divider = self.system_setup["speed"] // speed // 5

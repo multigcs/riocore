@@ -2,7 +2,8 @@
 
 module w5500
     #(
-         parameter BUFFER_SIZE=16'd64,
+         parameter BUFFER_SIZE_RX=16'd64,
+         parameter BUFFER_SIZE_TX=16'd64,
          parameter MSGID=32'h74697277,
          parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
          parameter NET_MASK={8'd255, 8'd255, 8'd255, 8'd0},
@@ -19,8 +20,8 @@ module w5500
          output sel,
          input intr,
          output rst,
-         input [BUFFER_SIZE-1:0] tx_data,
-         output [BUFFER_SIZE-1:0] rx_data,
+         input [BUFFER_SIZE_TX-1:0] tx_data,
+         output [BUFFER_SIZE_RX-1:0] rx_data,
          output reg sync = 0
      );
 
@@ -40,7 +41,7 @@ module w5500
 
     reg send_flag = 0;
     reg flush_requested = 1'b0;
-    reg [BUFFER_SIZE-1:0] data_to_ethernet = 0;
+    reg [BUFFER_SIZE_TX-1:0] data_to_ethernet = 0;
     reg data_out_valid = 1'b0;
     wire ethernet_available;
     reg do_transmit = 0;
@@ -72,7 +73,7 @@ module w5500
         end
     end
 
-    wiznet5500 #(.IP_ADDR(IP_ADDR), .NET_MASK(NET_MASK), .GW_ADDR(GW_ADDR), .MAC_ADDR(MAC_ADDR), .PORT(PORT), .BUFFER_SIZE_RX(BUFFER_SIZE), .BUFFER_SIZE_TX(BUFFER_SIZE), .MSGID(MSGID)) eth_iface (
+    wiznet5500 #(.IP_ADDR(IP_ADDR), .NET_MASK(NET_MASK), .GW_ADDR(GW_ADDR), .MAC_ADDR(MAC_ADDR), .PORT(PORT), .BUFFER_SIZE_RX(BUFFER_SIZE_RX), .BUFFER_SIZE_TX(BUFFER_SIZE_TX), .MSGID(MSGID)) eth_iface (
                    .clk(mclk),
                    .rst(rst),
                    .miso(miso),

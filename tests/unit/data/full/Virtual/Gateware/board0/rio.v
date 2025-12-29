@@ -40,7 +40,8 @@ module rio (
         output PINOUT_STEPDIR2_DIR
     );
 
-    localparam BUFFER_SIZE = 16'd160; // 20 bytes
+    localparam BUFFER_SIZE_TX = 16'd160; // 20 bytes
+    localparam BUFFER_SIZE_RX = 16'd160; // 20 bytes
 
     reg INTERFACE_TIMEOUT = 0;
     wire INTERFACE_SYNC;
@@ -70,8 +71,8 @@ module rio (
         end
     end
 
-    wire [BUFFER_SIZE-1:0] rx_data;
-    wire [BUFFER_SIZE-1:0] tx_data;
+    wire [BUFFER_SIZE_RX-1:0] rx_data;
+    wire [BUFFER_SIZE_TX-1:0] tx_data;
 
     reg [31:0] timestamp = 0;
     reg signed [31:0] header_tx = 32'h64617461;
@@ -92,7 +93,7 @@ module rio (
     wire VAROUT1_STEPDIR2_ENABLE;
     wire [31:0] VARIN32_STEPDIR2_POSITION;
 
-    // PC -> FPGA (134 + FILL)
+    // PC -> FPGA / OUT (134 + FILL = 160)
     // assign header_rx = {rx_data[135:128], rx_data[143:136], rx_data[151:144], rx_data[159:152]};
     assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[103:96], rx_data[111:104], rx_data[119:112], rx_data[127:120]};
     assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[71:64], rx_data[79:72], rx_data[87:80], rx_data[95:88]};
@@ -105,7 +106,7 @@ module rio (
     assign VAROUT1_STEPDIR2_ENABLE = {rx_data[26]};
     // assign FILL = rx_data[25:0];
 
-    // FPGA -> PC (160 + FILL)
+    // FPGA -> PC IN (160 + FILL = 160)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],
@@ -130,7 +131,8 @@ module rio (
         .NET_MASK({8'd255, 8'd255, 8'd255, 8'd0}),
         .GW_ADDR({8'd192, 8'd168, 8'd10, 8'd1}),
         .PORT(2390),
-        .BUFFER_SIZE(BUFFER_SIZE),
+        .BUFFER_SIZE_RX(BUFFER_SIZE_RX),
+        .BUFFER_SIZE_TX(BUFFER_SIZE_TX),
         .MSGID(32'h74697277),
         .DIVIDER(0)
     ) board0_w5500 (

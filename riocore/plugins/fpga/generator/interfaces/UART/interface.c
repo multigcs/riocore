@@ -39,24 +39,24 @@ int uart_init(void) {
     uart_set_interface_attribs(uart_serial_fd, SERIAL_BAUD, 0);
 }
 
-int uart_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
+int uart_trx(uint8_t *txBuffer, uint16_t size_tx, uint8_t *rxBuffer, uint16_t size_rx) {
     int n = 0;
     int cnt = 0;
     int rec = 0;
     /*
     printf("tx:");
-    for (n = 0; n < size; n++) {
+    for (n = 0; n < size_tx; n++) {
         printf(" %d,", txBuffer[n]);
     }
     printf("\n");
     */
 
-    int ret = write(uart_serial_fd, txBuffer, BUFFER_SIZE);
+    int ret = write(uart_serial_fd, txBuffer, size_tx);
     tcdrain(uart_serial_fd);
     tcflush(uart_serial_fd, TCIFLUSH);
 
 
-    while((rec = read(uart_serial_fd, rxBuffer, size * 2)) < size && cnt++ < 250) {
+    while((rec = read(uart_serial_fd, rxBuffer, size_rx * 2)) < size_rx && cnt++ < 250) {
         usleep(1000);
     }
 

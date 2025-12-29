@@ -439,7 +439,7 @@ class cbase:
         output.append("void write_txbuffer(uint8_t *txBuffer) {")
         output.append(f"    // PC -> FPGA ({self.instance.gateware.output_size} + {diff})")
         output.append("    int i = 0;")
-        output.append("    for (i = 0; i < BUFFER_SIZE; i++) {")
+        output.append("    for (i = 0; i < BUFFER_SIZE_TX; i++) {")
         output.append("        txBuffer[i] = 0;")
         output.append("    }")
         output.append("    // raw vars to txBuffer")
@@ -800,7 +800,8 @@ class cbase:
             "MODNAME": f'"riocomp-{self.instance.instances_name}"',
             "PREFIX": f'"{self.prefix}"',
             "JOINTS": "3",
-            "BUFFER_SIZE": self.instance.gateware.buffer_bytes,
+            "BUFFER_SIZE_RX": self.instance.gateware.buffer_size_in // 8,
+            "BUFFER_SIZE_TX": self.instance.gateware.buffer_size_out // 8,
             "OSC_CLOCK": self.instance.gateware.jdata["speed"],
         }
 
@@ -985,8 +986,8 @@ class cbase:
         output.append("void rio_readwrite(void *inst, long period) {")
         output.append("    int ret = 0;")
         output.append("    uint8_t i = 0;")
-        output.append("    uint8_t rxBuffer[BUFFER_SIZE * 2];")
-        output.append("    uint8_t txBuffer[BUFFER_SIZE * 2];")
+        output.append("    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];")
+        output.append("    uint8_t txBuffer[BUFFER_SIZE_TX * 2];")
         output.append("    if (*data->sys_enable_request == 1) {")
         output.append("        *data->sys_status = 1;")
         output.append("    }")
@@ -1016,24 +1017,24 @@ class cbase:
         output.append("            write_txbuffer(txBuffer);")
 
         if protocol == "UART":
-            output.append("            uart_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+            output.append("            uart_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
         elif protocol == "SPI":
-            output.append("            spi_trx(txBuffer, rxBuffer, BUFFER_SIZE);")
+            output.append("            spi_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
 
         elif protocol == "UDP":
             output.append("#ifdef UDP_ASYNC")
-            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE, 1);")
-            output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 1);")
+            output.append("            udp_tx(txBuffer, BUFFER_SIZE_TX);")
             output.append("#else")
-            output.append("            udp_tx(txBuffer, BUFFER_SIZE);")
-            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE, 0);")
+            output.append("            udp_tx(txBuffer, BUFFER_SIZE_TX);")
+            output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 0);")
             output.append("#endif")
         else:
             print("ERROR: unsupported interface")
             sys.exit(1)
 
         if protocol == "UDP":
-            output.append("            if (ret == BUFFER_SIZE && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+            output.append("            if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         else:
             output.append("            if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         output.append("                if (err_counter > 0) {")
@@ -1046,9 +1047,9 @@ class cbase:
         output.append("                err_counter += 1;")
         output.append("                err_total += 1;")
         if protocol == "UDP":
-            output.append("                if (ret != BUFFER_SIZE) {")
+            output.append("                if (ret != BUFFER_SIZE_RX) {")
             output.append(
-                f'                    {self.printf}("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
+                f'                    {self.printf}("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
             )
             output.append("                } else {")
             output.append(f'                    {self.printf}("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
@@ -1058,8 +1059,8 @@ class cbase:
         if protocol == "UDP":
             output.append("                for (i = 0; i < ret; i++) {")
         else:
-            output.append("                for (i = 0; i < BUFFER_SIZE; i++) {")
-        output.append(f'                    {self.printf}("%d ",rxBuffer[i]);')
+            output.append("                for (i = 0; i < BUFFER_SIZE_RX; i++) {")
+        output.append(f'                    {self.printf}("%d ", rxBuffer[i]);')
         output.append("                }")
         output.append(f'                {self.printf}("\\n");')
         output.append("                if (err_counter > 3) {")

@@ -6,7 +6,8 @@
 #include <time.h>
 
 #define CLOCK_SPEED 30000000
-#define BUFFER_SIZE 21 // 168 bits
+#define BUFFER_SIZE_RX 21 // 168 bits
+#define BUFFER_SIZE_TX 21 // 168 bits
 #define UDP_IP "192.168.11.194"
 #define SRC_PORT 2390
 #define DST_PORT 2391
@@ -14,8 +15,8 @@
 void read_rxbuffer(uint8_t *rxBuffer);
 void write_txbuffer(uint8_t *txBuffer);
 
-extern uint8_t rxBuffer[BUFFER_SIZE];
-extern uint8_t txBuffer[BUFFER_SIZE];
+extern uint8_t rxBuffer[BUFFER_SIZE_RX];
+extern uint8_t txBuffer[BUFFER_SIZE_TX];
 extern int32_t VAROUT32_STEPDIR0_VELOCITY;
 extern uint8_t VAROUT1_STEPDIR0_ENABLE;
 extern int32_t VARIN32_STEPDIR0_POSITION;

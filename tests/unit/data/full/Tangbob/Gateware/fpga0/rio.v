@@ -62,7 +62,8 @@ module rio (
         output PINOUT_BITOUT0_BIT
     );
 
-    localparam BUFFER_SIZE = 16'd320; // 40 bytes
+    localparam BUFFER_SIZE_TX = 16'd320; // 40 bytes
+    localparam BUFFER_SIZE_RX = 16'd320; // 40 bytes
 
     reg INTERFACE_TIMEOUT = 0;
     wire INTERFACE_SYNC;
@@ -92,8 +93,8 @@ module rio (
         end
     end
 
-    wire [BUFFER_SIZE-1:0] rx_data;
-    wire [BUFFER_SIZE-1:0] tx_data;
+    wire [BUFFER_SIZE_RX-1:0] rx_data;
+    wire [BUFFER_SIZE_TX-1:0] tx_data;
 
     reg [31:0] timestamp = 0;
     reg signed [31:0] header_tx = 32'h64617461;
@@ -124,7 +125,7 @@ module rio (
     wire VAROUT1_FPGA0_WLED_0_RED;
     wire VAROUT1_BITOUT0_BIT;
 
-    // PC -> FPGA (263 + FILL)
+    // PC -> FPGA / OUT (263 + FILL = 320)
     // assign header_rx = {rx_data[295:288], rx_data[303:296], rx_data[311:304], rx_data[319:312]};
     assign VAROUT128_MODBUS0_TXDATA = {rx_data[167:160], rx_data[175:168], rx_data[183:176], rx_data[191:184], rx_data[199:192], rx_data[207:200], rx_data[215:208], rx_data[223:216], rx_data[231:224], rx_data[239:232], rx_data[247:240], rx_data[255:248], rx_data[263:256], rx_data[271:264], rx_data[279:272], rx_data[287:280]};
     assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[135:128], rx_data[143:136], rx_data[151:144], rx_data[159:152]};
@@ -139,7 +140,7 @@ module rio (
     assign VAROUT1_BITOUT0_BIT = {rx_data[57]};
     // assign FILL = rx_data[56:0];
 
-    // FPGA -> PC (315 + FILL)
+    // FPGA -> PC IN (315 + FILL = 320)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],
@@ -318,7 +319,8 @@ module rio (
         .NET_MASK({8'd255, 8'd255, 8'd255, 8'd0}),
         .GW_ADDR({8'd192, 8'd168, 8'd10, 8'd1}),
         .PORT(2390),
-        .BUFFER_SIZE(BUFFER_SIZE),
+        .BUFFER_SIZE_RX(BUFFER_SIZE_RX),
+        .BUFFER_SIZE_TX(BUFFER_SIZE_TX),
         .MSGID(32'h74697277),
         .DIVIDER(0)
     ) fpga0_w5500 (

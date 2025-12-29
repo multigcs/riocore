@@ -35,7 +35,8 @@ class cclient(generator_base):
         output.append("#include <time.h>")
         output.append("")
         output.append(f"#define CLOCK_SPEED {sysclk_speed}")
-        output.append(f"#define BUFFER_SIZE {self.buffer_size // 8} // {self.buffer_size} bits")
+        output.append(f"#define BUFFER_SIZE_RX {self.buffer_size_out // 8} // {self.buffer_size_out} bits")
+        output.append(f"#define BUFFER_SIZE_TX {self.buffer_size_in // 8} // {self.buffer_size_in} bits")
         if port and ip:
             output.append(f'#define UDP_IP "{ip}"')
             output.append(f"#define SRC_PORT {dst_port}")
@@ -46,8 +47,8 @@ class cclient(generator_base):
         output.append("void write_txbuffer(uint8_t *txBuffer);")
         output.append("")
 
-        output.append("extern uint8_t rxBuffer[BUFFER_SIZE];")
-        output.append("extern uint8_t txBuffer[BUFFER_SIZE];")
+        output.append("extern uint8_t rxBuffer[BUFFER_SIZE_RX];")
+        output.append("extern uint8_t txBuffer[BUFFER_SIZE_TX];")
 
         if self.multiplexed_output:
             output.append("extern float MULTIPLEXER_INPUT_VALUE;")
@@ -91,8 +92,8 @@ class cclient(generator_base):
 
         buffer_size_bytes = self.project.buffer_size // 8
         buffer_init = ["0"] * buffer_size_bytes
-        output.append(f"uint8_t rxBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
-        output.append(f"uint8_t txBuffer[BUFFER_SIZE] = {{{', '.join(buffer_init)}}};")
+        output.append(f"uint8_t rxBuffer[BUFFER_SIZE_RX] = {{{', '.join(buffer_init)}}};")
+        output.append(f"uint8_t txBuffer[BUFFER_SIZE_TX] = {{{', '.join(buffer_init)}}};")
 
         if self.multiplexed_output:
             output.append("float MULTIPLEXER_INPUT_VALUE;")
@@ -172,7 +173,7 @@ class cclient(generator_base):
         output_pos = self.buffer_size
 
         output.append("    int n = 0;")
-        output.append("    for (n = 0; n < BUFFER_SIZE; n++) {")
+        output.append("    for (n = 0; n < BUFFER_SIZE_TX; n++) {")
         output.append("        txBuffer[n] = 0;")
         output.append("    }")
 

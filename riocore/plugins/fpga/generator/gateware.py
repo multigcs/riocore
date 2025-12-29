@@ -201,7 +201,7 @@ class gateware(generator_base):
         output_variables_list = []
         self.parent.iface_in = []
         self.parent.iface_out = []
-        output_pos = self.sub_buffer_size
+        output_pos = self.sub_buffer_size_out
 
         variable_name = "header_rx"
         size = 32
@@ -254,8 +254,8 @@ class gateware(generator_base):
             diff = self.sub_buffer_size - self.sub_input_size
             input_variables_list.append(f"{diff}'d0")
 
-        diff = self.sub_buffer_size - self.sub_output_size
-        if self.sub_buffer_size > self.sub_output_size:
+        diff = self.sub_buffer_size_out - self.sub_output_size
+        if self.sub_buffer_size_out > self.sub_output_size:
             output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
@@ -298,7 +298,7 @@ class gateware(generator_base):
         output_variables_list = []
         self.parent.iface_in = []
         self.parent.iface_out = []
-        output_pos = self.buffer_size
+        output_pos = self.buffer_size_out
 
         variable_name = "header_rx"
         size = 32
@@ -306,7 +306,7 @@ class gateware(generator_base):
         for bit_num in range(0, size, 8):
             pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
             output_pos -= 8
-        output_variables_list.append(f"// PC -> FPGA ({self.output_size} + FILL)")
+        output_variables_list.append(f"// PC -> FPGA / OUT ({self.output_size} + FILL = {self.buffer_size_out})")
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
         self.parent.iface_out.append(["RX_HEADER", size])
         self.parent.iface_in.append(["TX_HEADER", size])
@@ -379,12 +379,13 @@ class gateware(generator_base):
                     output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
                     self.parent.iface_out.append([variable_name, size])
 
-        if self.buffer_size > self.input_size:
-            diff = self.buffer_size - self.input_size
-            input_variables_list.append(f"{diff}'d0")
+        if self.buffer_size_in > self.input_size:
+            diff = self.buffer_size_in - self.input_size
+            if diff:
+                input_variables_list.append(f"{diff}'d0")
 
-        diff = self.buffer_size - self.output_size
-        if self.buffer_size > self.output_size:
+        diff = self.buffer_size_out - self.output_size
+        if self.buffer_size_out > self.output_size:
             output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
 
         if output_pos != diff:
@@ -451,7 +452,8 @@ class gateware(generator_base):
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
-        output.append(f"    localparam BUFFER_SIZE = 16'd{self.buffer_size}; // {self.buffer_size // 8} bytes")
+        output.append(f"    localparam BUFFER_SIZE_TX = 16'd{self.buffer_size_in}; // {self.buffer_size_in // 8} bytes")
+        output.append(f"    localparam BUFFER_SIZE_RX = 16'd{self.buffer_size_out}; // {self.buffer_size_out // 8} bytes")
         output.append("")
         output.append("    reg INTERFACE_TIMEOUT = 0;")
         output.append("    wire INTERFACE_SYNC;")
@@ -526,8 +528,8 @@ class gateware(generator_base):
         output.append("        end")
         output.append("    end")
         output.append("")
-        output.append("    wire [BUFFER_SIZE-1:0] rx_data;")
-        output.append("    wire [BUFFER_SIZE-1:0] tx_data;")
+        output.append("    wire [BUFFER_SIZE_RX-1:0] rx_data;")
+        output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
         output.append("")
         output.append("    reg [31:0] timestamp = 0;")
         output.append("    reg signed [31:0] header_tx = 32'h64617461;")
@@ -599,7 +601,7 @@ class gateware(generator_base):
         output_variables_string = "\n    ".join(output_variables_list)
         output.append(f"    {output_variables_string}")
         output.append("")
-        output.append(f"    // FPGA -> PC ({self.input_size} + FILL)")
+        output.append(f"    // FPGA -> PC IN ({self.input_size} + FILL = {self.buffer_size_in})")
         output.append("    assign tx_data = {")
         input_variables_string = ",\n        ".join(input_variables_list)
         output.append(f"        {input_variables_string}")

@@ -18,7 +18,8 @@
 #define MODNAME "riocomp-board0"
 #define PREFIX "board0"
 #define JOINTS 3
-#define BUFFER_SIZE 21
+#define BUFFER_SIZE_RX 21
+#define BUFFER_SIZE_TX 21
 #define OSC_CLOCK 50000000
 #define UDP_IP "192.168.11.194"
 #define SRC_PORT 2391
@@ -297,7 +298,7 @@ void udp_exit(void) {
 }
 
 int interface_init(int argc, char **argv) {
-    char* dstAddress[1024];
+    char dstAddress[1024];
     int dstPort = DST_PORT;
     if (argc > 1) {
         int ip0 = 0;
@@ -529,7 +530,7 @@ void convert_inputs(void) {
 void write_txbuffer(uint8_t *txBuffer) {
     // PC -> FPGA (132 + 36)
     int i = 0;
-    for (i = 0; i < BUFFER_SIZE; i++) {
+    for (i = 0; i < BUFFER_SIZE_TX; i++) {
         txBuffer[i] = 0;
     }
     // raw vars to txBuffer
@@ -562,8 +563,8 @@ void read_rxbuffer(uint8_t *rxBuffer) {
 void rio_readwrite(void *inst, long period) {
     int ret = 0;
     uint8_t i = 0;
-    uint8_t rxBuffer[BUFFER_SIZE * 2];
-    uint8_t txBuffer[BUFFER_SIZE * 2];
+    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];
+    uint8_t txBuffer[BUFFER_SIZE_TX * 2];
     if (*data->sys_enable_request == 1) {
         *data->sys_status = 1;
     }
@@ -579,13 +580,13 @@ void rio_readwrite(void *inst, long period) {
         if (*data->sys_simulation != 1) {
             write_txbuffer(txBuffer);
 #ifdef UDP_ASYNC
-            ret = udp_rx(rxBuffer, BUFFER_SIZE, 1);
-            udp_tx(txBuffer, BUFFER_SIZE);
+            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 1);
+            udp_tx(txBuffer, BUFFER_SIZE_TX);
 #else
-            udp_tx(txBuffer, BUFFER_SIZE);
-            ret = udp_rx(rxBuffer, BUFFER_SIZE, 0);
+            udp_tx(txBuffer, BUFFER_SIZE_TX);
+            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 0);
 #endif
-            if (ret == BUFFER_SIZE && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {
+            if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {
                 if (err_counter > 0) {
                     err_counter = 0;
                     printf("recovered..\n");
@@ -595,13 +596,13 @@ void rio_readwrite(void *inst, long period) {
             } else {
                 err_counter += 1;
                 err_total += 1;
-                if (ret != BUFFER_SIZE) {
-                    printf("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                if (ret != BUFFER_SIZE_RX) {
+                    printf("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 } else {
                     printf("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 }
                 for (i = 0; i < ret; i++) {
-                    printf("%d ",rxBuffer[i]);
+                    printf("%d ", rxBuffer[i]);
                 }
                 printf("\n");
                 if (err_counter > 3) {

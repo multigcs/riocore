@@ -86,11 +86,11 @@ void* simThread(void* vargp) {
     interface_init(0, NULL);
 
     while (sim_running) {
-        ret = udp_rx(rxBuffer, BUFFER_SIZE);
-        if (ret == BUFFER_SIZE && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {
+        ret = udp_rx(rxBuffer, BUFFER_SIZE_RX);
+        if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {
             read_rxbuffer(rxBuffer);
             write_txbuffer(txBuffer);
-            udp_tx(txBuffer, BUFFER_SIZE);
+            udp_tx(txBuffer, BUFFER_SIZE_TX);
 
             simulation();
         }

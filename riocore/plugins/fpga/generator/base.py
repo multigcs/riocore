@@ -1,5 +1,7 @@
 class generator_base:
     def calc_buffersize(self, project):
+        self.sym_io = True
+        # self.sym_io = False
         self.timestamp_size = 32
         self.header_size = 32
         self.input_size = 0
@@ -45,8 +47,15 @@ class generator_base:
         self.input_size = self.input_size + self.header_size + self.timestamp_size
         self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
+        self.buffer_size_in = (self.input_size + 7) // 8 * 8
+        self.buffer_size_out = (self.output_size + 7) // 8 * 8
         self.buffer_bytes = self.buffer_size // 8
-        # self.config["buffer_size"] = self.buffer_size
+        self.buffer_bytes_in = self.buffer_size_in // 8
+        self.buffer_bytes_out = self.buffer_size_out // 8
+
+        if self.sym_io:
+            self.buffer_size_in = self.buffer_size
+            self.buffer_size_out = self.buffer_size
 
         # log("# PC->FPGA", self.output_size)
         # log("# FPGA->PC", self.input_size)
@@ -100,6 +109,11 @@ class generator_base:
         self.sub_output_size = self.sub_output_size + self.header_size
         self.sub_buffer_size = (max(self.sub_input_size, self.sub_output_size) + 7) // 8 * 8
         self.sub_buffer_bytes = self.sub_buffer_size // 8
+        self.sub_buffer_size_in = (self.sub_input_size + 7) // 8 * 8
+        self.sub_buffer_size_out = (self.sub_output_size + 7) // 8 * 8
+        if self.sym_io:
+            self.sub_buffer_size_in = self.sub_buffer_size
+            self.sub_buffer_size_out = self.sub_buffer_size
 
     def get_interface_data(self, project):
         interface_data = []
