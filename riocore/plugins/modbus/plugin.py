@@ -135,17 +135,31 @@ class Plugin(PluginBase):
                                 "plugin_setup": config,
                             }
                 else:
-                    self.SIGNALS[signal_name] = {
-                        "direction": config["direction"],
-                        "unit": config.get("unit", ""),
-                        "scale": config.get("scale", 1.0),
-                        "format": config.get("format", "07d"),
-                        "plugin_setup": config,
-                        "min": vmin,
-                        "max": vmax,
-                        "bool": is_bool,
-                        "display": {"section": "modbus", "title": signal_name.title()},
-                    }
+                    if config.get("cmdmapping"):
+                        cmdmapping = config["cmdmapping"]
+                        for cmdsig in cmdmapping.split(","):
+                            cmdname = cmdsig.split(":")[0].strip()
+                            if cmdname[0] == "!":
+                                cmdname = cmdname[1:]
+                            self.SIGNALS[f"{signal_name}_{cmdname}"] = {
+                                "direction": config["direction"],
+                                "plugin_setup": config,
+                                "bool": True,
+                                "display": {"section": "modbus", "title": cmdname},
+                            }
+                    else:
+                        self.SIGNALS[signal_name] = {
+                            "direction": config["direction"],
+                            "unit": config.get("unit", ""),
+                            "scale": config.get("scale", 1.0),
+                            "format": config.get("format", "07d"),
+                            "plugin_setup": config,
+                            "min": vmin,
+                            "max": vmax,
+                            "bool": is_bool,
+                            "display": {"section": "modbus", "title": signal_name.title()},
+                        }
+
                     if config["direction"] == "input":
                         self.SIGNALS[f"{signal_name}_valid"] = {
                             "direction": "input",
@@ -859,6 +873,25 @@ class Plugin(PluginBase):
                             output.append(f"                frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
                         output.append(f"                frame_len = {8 + vn * 2};")
                 else:
+                    if signal_config.get("cmdmapping"):
+                        cmdmapping = signal_config["cmdmapping"]
+                        output.append("                // cmdmapping")
+                        default_value = signal_config.get("error_values") or 0
+                        output.append(f"                static uint16_t value_{signal_name} = {default_value};")
+                        for cmd_n, cmdsig in enumerate(cmdmapping.split(",")):
+                            cmdname = cmdsig.split(":")[0].strip()
+                            checkvalue = 1
+                            if cmdname[0] == "!":
+                                cmdname = cmdname[1:]
+                                checkvalue = 0
+                            cmdvalue = cmdsig.split(":")[1].strip()
+                            if cmd_n == 0:
+                                output.append(f"                if (value_{signal_name}_{cmdname} == {checkvalue}) {{")
+                            else:
+                                output.append(f"                }} else if (value_{signal_name}_{cmdname} == {checkvalue}) {{")
+                            output.append(f"                    value_{signal_name} = {cmdvalue};")
+                        output.append("                }")
+
                     if ctype == 5:
                         output.append("                // set coil value")
                     else:

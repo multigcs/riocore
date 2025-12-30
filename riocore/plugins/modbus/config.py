@@ -388,6 +388,12 @@ class config:
                 "default": 0,
                 "tab": "misc",
             },
+            "cmdmapping": {
+                "description": "mapping single bool outputs to int cmd value (for some FVD's)",
+                "type": str,
+                "default": "",
+                "tab": "misc",
+            },
         }
 
         for fc_id, fc_data in self.fc_mapping.items():
