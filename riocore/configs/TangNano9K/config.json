@@ -1,17 +1,29 @@
 {
     "name": "TangNano9K",
     "description": "TangNano9K over UART for testing basic functions",
-    "boardcfg": "TangNano9K",
     "protocol": "UART",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "TangNano9K",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UART",
+            "uid": "board0",
+            "pos": [
+                330.0,
+                170.0
+            ],
+            "rotate": 90
+        },
         {
             "type": "uart",
             "pins": {
                 "rx": {
-                    "pin": "18"
+                    "pin": "board0:UART:RX"
                 },
                 "tx": {
-                    "pin": "17"
+                    "pin": "board0:UART:TX"
                 }
             },
             "baud": 1000000,
@@ -25,7 +37,7 @@
             "type": "flipflop_in",
             "pins": {
                 "set": {
-                    "pin": "SW:S1",
+                    "pin": "board0:SW:S1",
                     "modifier": [
                         {
                             "type": "invert"
@@ -33,7 +45,7 @@
                     ]
                 },
                 "reset": {
-                    "pin": "SW:S2",
+                    "pin": "board0:SW:S2",
                     "modifier": [
                         {
                             "type": "invert",
@@ -43,6 +55,9 @@
                             ]
                         }
                     ]
+                },
+                "setbit": {
+                    "pin": "board0:SW:S1"
                 }
             },
             "uid": "flipflop_in0",
@@ -64,7 +79,7 @@
                             ]
                         }
                     ],
-                    "pin": "LED:L1"
+                    "pin": "board0:LED:L1"
                 },
                 "out1": {
                     "modifier": [
@@ -76,7 +91,7 @@
                             ]
                         }
                     ],
-                    "pin": "LED:L2"
+                    "pin": "board0:LED:L2"
                 },
                 "out2": {
                     "modifier": [
@@ -88,7 +103,7 @@
                             ]
                         }
                     ],
-                    "pin": "LED:L3"
+                    "pin": "board0:LED:L3"
                 }
             },
             "phases": 3,
@@ -102,7 +117,7 @@
             "type": "pdmout",
             "pins": {
                 "pdm": {
-                    "pin": "LED:L6",
+                    "pin": "board0:LED:L6",
                     "modifier": [
                         {
                             "type": "invert",
@@ -118,13 +133,14 @@
             "pos": [
                 730.0,
                 390.0
-            ]
+            ],
+            "is_joint": true
         },
         {
             "type": "bitcopy",
             "pins": {
                 "bit": {
-                    "pin": "PIN:48"
+                    "pin": "board0:PIN:48"
                 }
             },
             "origin": "PINOUT_SINEPWM2_OUT0",
@@ -138,7 +154,7 @@
             "type": "bitcopy",
             "pins": {
                 "bit": {
-                    "pin": "PIN:49"
+                    "pin": "board0:PIN:49"
                 }
             },
             "origin": "PINOUT_SINEPWM2_OUT1",
@@ -152,7 +168,7 @@
             "type": "bitcopy",
             "pins": {
                 "bit": {
-                    "pin": "PIN:31"
+                    "pin": "board0:PIN:31"
                 }
             },
             "origin": "PINOUT_SINEPWM2_OUT2",
@@ -166,10 +182,10 @@
     "toolchain": "icestorm",
     "flow": {
         "view": {
-            "scale": 1.914516129032258,
+            "scale": 0.77,
             "pos": [
-                -50,
-                -50
+                139,
+                -5
             ]
         },
         "board": {
