@@ -29,6 +29,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 ### quad_type:
 The count from the encoder will be bitshifted by the value of QUAD_TYPE.
 Use 0 for 4x mode.  The position-scale should match.
@@ -97,6 +103,7 @@ calculates revolutions per minute
 {
     "type": "quadencoder",
     "name": "",
+    "image": "generic",
     "quad_type": 2,
     "rps_sum": 10,
     "pins": {

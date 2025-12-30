@@ -30,6 +30,14 @@ module testb_debouncer;
         din = 0;
         #11
         din = 1;
+        #3
+        din = 0;
+        #6
+        din = 1;
+        #1
+        din = 0;
+        #11
+        din = 1;
         #100
         din = 0;
         #10

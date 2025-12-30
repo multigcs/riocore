@@ -20,11 +20,10 @@ output = []
 output.append("# TOOLCHAINS")
 output.append("| Name | Info |")
 output.append("| --- | --- |")
-
-for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains", "*", "toolchain.py"))):
+for ppath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "generator", "toolchains", "*", "toolchain.py"))):
     toolchain_name = os.path.basename(os.path.dirname(ppath))
     print(toolchain_name)
-    toolchain = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain_name}")
+    toolchain = importlib.import_module(".toolchain", f"riocore.plugins.fpga.generator.toolchains.{toolchain_name}")
     info = toolchain.Toolchain.info(None)
     if info:
         url = info.get("url", "")
@@ -55,13 +54,13 @@ for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains",
             toutput.append("")
 
         toutput.append("")
-        open(os.path.join("riocore", "generator", "toolchains", toolchain_name, "README.md"), "w").write("\n".join(toutput))
+        open(os.path.join("riocore", "plugins", "fpga", "generator", "toolchains", toolchain_name, "README.md"), "w").write("\n".join(toutput))
 
 
 output.append("")
 
 
-open("riocore/generator/toolchains/README.md", "w").write("\n".join(output))
+open("riocore/plugins/fpga/generator/toolchains/README.md", "w").write("\n".join(output))
 
 
 print("# MODIFIERS")
@@ -85,11 +84,14 @@ for name, data in Modifiers().info().items():
     title = data.get("title", name.title())
     options = data.get("options")
     output.append(f"## {title}")
+
+    if os.path.isfile(f"doc/images/mod_{name}.png"):
+        output.append(f'<img align="right" height="200" src="images/mod_{name}.png">')
+
     output.append(info)
     output.append("")
     if options:
         output.append("**Options:**")
-
         output.append("| Name | Type | Default | Info |")
         output.append("| --- | --- | --- | --- |")
         for key, option in options.items():

@@ -18,6 +18,7 @@ holds the pin at 0 when an error has occurred
 | Invert | bool | False | Inverts the Logic |
 
 ## Debounce
+<img align="right" height="200" src="images/mod_debounce.png">
 to filter noisy signals
 
 **Options:**
@@ -26,6 +27,7 @@ to filter noisy signals
 | Delay | float | 2.5 | Delay in ms |
 
 ## Delay
+<img align="right" height="200" src="images/mod_delay.png">
 to delay signal edges
 
 **Options:**
@@ -36,6 +38,7 @@ to delay signal edges
 | Falling-Edge | bool | False | do delay on falling edge |
 
 ## PWM
+<img align="right" height="200" src="images/mod_pwm.png">
 pwm generator
 
 **Options:**
@@ -45,6 +48,7 @@ pwm generator
 | DTY | int | 50 | PWM Duty Cycle |
 
 ## Oneshot
+<img align="right" height="200" src="images/mod_oneshot.png">
 creates a variable-length output pulse when the input changes state
 
 **Options:**
@@ -56,6 +60,7 @@ creates a variable-length output pulse when the input changes state
 | Edge | select | RISING | edge to trigger |
 
 ## Toggle
+<img align="right" height="200" src="images/mod_toggle.png">
 toggle pin on rising edge
 
 ## Invert

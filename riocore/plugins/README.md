@@ -4,7 +4,6 @@
 | --- | :---: | --- | :---: | :---: |
 | Interfaces | [arty_mii](arty_mii/README.md) | udp interface for host comunication - Arty7-35t only | <img src="arty_mii/image.png" height="48"> | Experimental  |
 |  | [axi](axi/README.md) | axi interface for armcore comunication | <img src="axi/image.png" height="48"> | Experimental  |
-|  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
 |  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | Experimental  |
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |  |
 |  | [spi_prog](spi_prog/README.md) | spi interface for host comunication and flash programming | <img src="spi_prog/image.png" height="48"> |  |
@@ -37,7 +36,6 @@
 |  | [encoder](encoder/README.md) | software counting of quadrature encoder signals | <img src="encoder/image.png" height="48"> | GPIO  |
 |  | [flipflop_in](flipflop_in/README.md) | flipflop input | <img src="flipflop_in/image.png" height="48"> |  |
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
-|  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
 |  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> | GPIO  |
@@ -63,6 +61,14 @@
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
@@ -71,13 +77,12 @@
 | FrameIO | [modbus](modbus/README.md) | generic modbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
-|  | [rioctrl_io](rioctrl_io/README.md) | Expansion to add I/O's via shiftregister's | <img src="rioctrl_io/image.png" height="48"> |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface acting as an expansion port | <img src="wled/image.png" height="48"> |  |
 | Misc | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> | GPIO  |
 |  | [camjog](camjog/README.md) | gui component to jog via camera image | <img src="camjog/image.png" height="48"> | GPIO  |
 |  | [ethercat](ethercat/README.md) | experimental ethercat plugin | <img src="ethercat/image.png" height="48"> | Experimental GPIO  |
-|  | [fpga](fpga/README.md) | TangNano9K - cheap GW1NR-9 Devboard |  |  |
+|  | [fpga](fpga/README.md) | TangNano20K - GW2AR-18 devboard |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> | GPIO  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> | GPIO  |
 |  | [mesa](mesa/README.md) | support for mesa-cards with hm2 firmware | <img src="mesa/image.png" height="48"> |  |
