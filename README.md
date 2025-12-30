@@ -118,9 +118,9 @@ Using a TangNano9k or other board supported by the open-cad-suite? Check out the
 
 ## Usage <a name="usage"></a>
 
-you can edit your configuration file by hand (text-editor) or using the setup tool (rio-setup):
+you can edit your configuration file by hand (text-editor) or using the config tool (rio-flow):
 ```
-bin/rio-setup my_config.json
+bin/rio-flow  riocore/configs/Tangbob/config.json
 ```
 
 ![basic setup](./doc/images/basic_setup.png)
