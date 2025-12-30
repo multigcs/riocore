@@ -66,7 +66,7 @@ list of all boards: [BOARDS](riocore/boards/README.md)
 list of all plugins: [PLUGINS](riocore/plugins/README.md)
 
 ## supported Toolchains <a name = "toolchains"></a>
-list of all  toolchains: [TOOLCHAINS](riocore/generator/toolchains/README.md)
+list of all  toolchains: [TOOLCHAINS](riocore/plugins/fpga/generator/toolchains/README.md)
 
 ## Getting Started <a name = "getting_started"></a>
 
