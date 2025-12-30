@@ -86,7 +86,7 @@ for name, data in Modifiers().info().items():
     output.append(f"## {title}")
 
     if os.path.isfile(f"doc/images/mod_{name}.png"):
-        output.append(f'<img align="right" height="200" src="images/mod_{name}.png">')
+        output.append(f'<img align="right" width="300" src="images/mod_{name}.png">')
 
     output.append(info)
     output.append("")
