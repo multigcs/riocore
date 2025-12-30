@@ -424,6 +424,8 @@ class PluginBase:
                 if modifier_function:
                     pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname, modifier, self.system_setup)
         if direction == "output":
+            if f"wire {pin_varname};" not in instance_predefines:
+                instance_predefines.append(f"wire {pin_varname};")
             instances[f"{self.instances_name}_{pin_name}_RAW"] = {
                 "predefines": [
                     f"assign {pin_varname_org} = {pin_varname};",
