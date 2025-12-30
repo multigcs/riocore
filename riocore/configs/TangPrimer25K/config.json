@@ -26,8 +26,8 @@
                             "type": "onerror",
                             "invert": true,
                             "pos": [
-                                -40.0,
-                                -70.0
+                                60.0,
+                                -60.0
                             ]
                         }
                     ]
@@ -36,7 +36,7 @@
             "name": "status",
             "uid": "blink0",
             "pos": [
-                90.0,
+                190.0,
                 -60.0
             ],
             "image": "smdled"
@@ -51,7 +51,7 @@
             "name": "LED",
             "uid": "bitout0",
             "pos": [
-                90.0,
+                190.0,
                 -30.0
             ],
             "image": "smdled"
@@ -154,7 +154,7 @@
             "is_joint": true,
             "image": "stepstick",
             "pos": [
-                -150.0,
+                130.0,
                 480.0
             ],
             "pins": {
@@ -176,7 +176,7 @@
             "is_joint": true,
             "image": "stepstick",
             "pos": [
-                -150.0,
+                130.0,
                 390.0
             ],
             "pins": {
@@ -196,7 +196,7 @@
             "is_joint": true,
             "image": "stepstick",
             "pos": [
-                -150.0,
+                130.0,
                 300.0
             ],
             "pins": {
@@ -372,10 +372,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 1.78,
+            "scale": 0.88,
             "pos": [
-                -556,
-                -182
+                -202.35,
+                -72.0
             ]
         }
     }

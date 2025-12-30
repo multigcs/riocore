@@ -2,10 +2,10 @@
     "name": "ICEBreakerV1.0e",
     "flow": {
         "view": {
-            "scale": 1.64,
+            "scale": 1.1,
             "pos": [
-                1534,
-                214
+                987,
+                23
             ]
         },
         "board": {
@@ -83,7 +83,7 @@
             "uid": "stepdir0",
             "pos": [
                 1660.0,
-                190.0
+                180.0
             ],
             "image": "stepstick",
             "is_joint": true,
@@ -110,7 +110,7 @@
             "uid": "stepdir1",
             "pos": [
                 1570.0,
-                190.0
+                180.0
             ],
             "name": "",
             "image": "stepstick",
@@ -165,7 +165,7 @@
             "uid": "stepdir2",
             "pos": [
                 1480.0,
-                190.0
+                180.0
             ],
             "name": "",
             "image": "stepstick",

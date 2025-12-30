@@ -1,17 +1,29 @@
 {
     "name": "EP4CE6E22C8",
-    "boardcfg": "EP4CE6E22C8",
     "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "EP4CE6E22C8",
+            "toolchain": "quartus",
+            "flashcmd": "",
+            "protocol": "SPI",
+            "uid": "board0",
+            "pos": [
+                320.0,
+                180.0
+            ],
+            "rotate": 0
+        },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:D1"
+                    "pin": "board0:LED:D1"
                 }
             },
             "uid": "blink1",
             "pos": [
-                500.0,
+                510.0,
                 210.0
             ],
             "image": "led",
@@ -21,12 +33,12 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:D2"
+                    "pin": "board0:LED:D2"
                 }
             },
             "uid": "blink2",
             "pos": [
-                500.0,
+                510.0,
                 240.0
             ],
             "frequency": 2.0,
@@ -37,12 +49,12 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:D3"
+                    "pin": "board0:LED:D3"
                 }
             },
             "uid": "blink3",
             "pos": [
-                500.0,
+                510.0,
                 270.0
             ],
             "frequency": 3.0,
@@ -53,12 +65,12 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:D4"
+                    "pin": "board0:LED:D4"
                 }
             },
             "uid": "blink4",
             "pos": [
-                500.0,
+                510.0,
                 300.0
             ],
             "frequency": 4.0,
@@ -69,12 +81,12 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:D5"
+                    "pin": "board0:LED:D5"
                 }
             },
             "uid": "blink5",
             "pos": [
-                500.0,
+                510.0,
                 330.0
             ],
             "frequency": 5.0,
@@ -84,10 +96,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 0.88,
+            "scale": 1.5,
             "pos": [
-                149,
-                143
+                408,
+                125
             ]
         },
         "board": {
