@@ -106,7 +106,11 @@ class GuiModifiers:
         moptions = Modifiers().info()
         if modifier_type in moptions:
             for key, option in moptions[modifier_type].get("options", {}).items():
-                dialog.layout.addWidget(QLabel(option.get("title", key.title())))
+                title = option.get("title", key.title())
+                units = option.get("units")
+                if units:
+                    title = f"{title} ({units})"
+                dialog.layout.addWidget(QLabel(title))
                 dialog.layout.addWidget(self.parent.edit_item(modifier_config, key, option, cb=None))
 
         dialog.mlabel = QLabel("")

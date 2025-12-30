@@ -12,14 +12,14 @@ class Modifiers:
                 "title": "Debounce",
                 "info": "to filter noisy signals",
                 "options": {
-                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
+                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms", "units": "ms"},
                 },
             },
             "delay": {
                 "title": "Delay",
                 "info": "to delay signal edges",
                 "options": {
-                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
+                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms", "units": "ms"},
                     "rising_edge": {"title": "Rising-Edge", "type": bool, "default": True, "help_text": "do delay on rising edge"},
                     "falling_edge": {"title": "Falling-Edge", "type": bool, "default": False, "help_text": "do delay on falling edge"},
                 },
@@ -28,15 +28,15 @@ class Modifiers:
                 "title": "PWM",
                 "info": "pwm generator",
                 "options": {
-                    "frequency": {"title": "Frequency", "type": int, "default": 1, "help_text": "PWM Frequency"},
-                    "dty": {"title": "DTY", "type": int, "default": 50, "help_text": "PWM Duty Cycle"},
+                    "frequency": {"title": "Frequency", "type": int, "default": 1, "help_text": "PWM Frequency", "units": "Hz"},
+                    "dty": {"title": "DTY", "type": int, "default": 50, "help_text": "PWM Duty Cycle", "units": "%"},
                 },
             },
             "oneshot": {
                 "title": "Oneshot",
                 "info": "creates a variable-length output pulse when the input changes state",
                 "options": {
-                    "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
+                    "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms", "units": "ms"},
                     "retrigger": {"title": "Retrigger", "type": bool, "default": False, "help_text": "retrigger the time pulse"},
                     "hold": {"title": "Hold", "type": bool, "default": False, "help_text": "hold the puls while input is set"},
                     "edge": {"title": "Edge", "type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"},

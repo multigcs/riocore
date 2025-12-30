@@ -800,6 +800,18 @@ class gateware(generator_base):
         output.append("")
         output.append("endmodule")
         output.append("")
+
+        if self.jdata["toolchain"] == "verilator":
+            output.append("function integer clog2;")
+            output.append("  input integer value;")
+            output.append("  begin")
+            output.append("    value = value-1;")
+            output.append("    for (clog2=0; value>0; clog2=clog2+1)")
+            output.append("      value = value>>1;")
+            output.append("  end")
+            output.append("endfunction")
+            output.append("")
+
         riocore.log(f"  writing gateware to: {self.jdata['output_path']}")
         open(os.path.join(self.jdata["output_path"], "rio.v"), "w").write("\n".join(output))
 
@@ -827,23 +839,16 @@ class gateware(generator_base):
         hash_file_new = os.path.join(self.jdata["output_path"], "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
 
-        main_cpp = []
-
-        main_cpp.append("""
-#include "Vrio.h"
-#include "verilated.h"
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-#define BUFFER_BIT 40
-#define BUFFER_BYTES (BUFFER_BIT / 8)
+        if self.jdata["toolchain"] == "verilator":
+            main_cpp = []
+            for include in ("Vrio.h", "verilated.h", "stdio.h", "sys/types.h", "sys/stat.h", "fcntl.h", "unistd.h"):
+                main_cpp.append(f"#include <{include}>")
+            main_cpp.append("")
+            main_cpp.append(f"#define BUFFER_BIT {self.buffer_size}")
+            main_cpp.append("#define BUFFER_BYTES (BUFFER_BIT / 8)")
+            main_cpp.append("""
 
 int main(int argc, char** argv) {
-
     uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};
     uint8_t spi_rx[BUFFER_BYTES];
     int spi_rx_num = 0;
@@ -853,29 +858,48 @@ int main(int argc, char** argv) {
     VerilatedContext* contextp = new VerilatedContext;
     contextp->commandArgs(argc, argv);
     Vrio* rio = new Vrio{contextp};
-    rio->PINOUT_BITOUT0_BIT = 0;
-    rio->PININ_SPI0_MOSI = 0;
-    rio->PINOUT_SPI0_MISO = 0;
-    rio->PININ_SPI0_SCLK = 0;
-    rio->PININ_SPI0_SEL = 0;
-    rio->sysclk_in = 0;
-    rio->eval();
+""")
 
-    int counter = 0;
-    int last = 0;
+            for plugin_instance in self.parent.project.plugin_instances:
+                if plugin_instance.master != self.instance.instances_name:
+                    continue
+                for pin_config in plugin_instance.pins().values():
+                    if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
+                        main_cpp.append(f"    rio->{pin_config['varname']} = 0;")
+            main_cpp.append("    rio->sysclk_in = 0;")
+            main_cpp.append("    rio->eval();")
+
+            for plugin_instance in self.parent.project.plugin_instances:
+                if plugin_instance.master != self.instance.instances_name:
+                    continue
+                if plugin_instance.NAME == "spi":
+                    continue
+                for pin_config in plugin_instance.pins().values():
+                    if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
+                        main_cpp.append(f"    int {pin_config['varname']}_last = 0;")
+
+            main_cpp.append("""    int counter = 0;
     while (!contextp->gotFinish()) {
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
+""")
 
-        if (rio->PINOUT_BITOUT0_BIT != last) {
-            fprintf(stdout, "PINOUT_BITOUT0_BIT=%i ", rio->PINOUT_BITOUT0_BIT);
-            fprintf(stdout, "PINOUT_SPI0_MISO=%i ", rio->PINOUT_SPI0_MISO);
-            fprintf(stdout, "\\n");
-        }
-        last = rio->PINOUT_BITOUT0_BIT;
+            for plugin_instance in self.parent.project.plugin_instances:
+                if plugin_instance.master != self.instance.instances_name:
+                    continue
+                if plugin_instance.NAME == "spi":
+                    continue
+                for pin_config in plugin_instance.pins().values():
+                    if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
+                        main_cpp.append(f"""        if (rio->{pin_config["varname"]} != {pin_config["varname"]}_last) {{
+            fprintf(stdout, "{pin_config["varname"]}=%i\\n", rio->{pin_config["varname"]});
+        }}
+        {pin_config["varname"]}_last = rio->{pin_config["varname"]};
+""")
 
+            main_cpp.append("""
         if (counter++ > 100000) {
             counter = 0;
             if (rio->PININ_SPI0_SEL == 0) {
@@ -931,6 +955,5 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-        """)
-
-        open(os.path.join(self.jdata["output_path"], "main.cpp"), "w").write("\n".join(main_cpp))
+""")
+            open(os.path.join(self.jdata["output_path"], "main.cpp"), "w").write("\n".join(main_cpp))
