@@ -276,6 +276,7 @@ Output
 ├┬─ BOARD_NAME ········· for each board
 |├── Gateware ·········· Gateware-Files for the FPGA
 |├── LinuxCNC ·········· LinuxCNC configuration (hal/ini/component)
+|├── PYLIB ············· C and Python lib with testgui.py
 |├── MQTT ·············· MQTT-Bridge
 |├── ROS ··············· ROS-Bridge
 |├── Simulator ········· Simulator-Sources
