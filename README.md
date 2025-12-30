@@ -262,16 +262,10 @@ riocore
 ├── doc ················ documentation
 ├── dockerfiles ········ files to run the docker container
 ├┬─ ricore ············· main directory 
-|├── boards ············ board configurations
-|├── chipdata ·········· pin-information about the different FPGAs
 |├── configs ··········· some demo configurations
 |├── gui ··············· widgets and functions for the gui tools
 |├── files ············· helper scripts and files
-|├┬── generator ········ the generators for the GateWare and LinuxCNC configuration
-||├── addons ··········· generator addons for LinuxCNC (like joystick/mpg/...)
-||├── pins ············· the different pin generators, used by the toolchains
-||├── toolchains ······· location of the different toolchain generators
-|├── modules ··········· break out board and external modules configuration
+|├── generator ········ the generator for the LinuxCNC configuration
 |├── plugins ··········· location of the plugins
 ├── tests ·············· unit tests
 ```
