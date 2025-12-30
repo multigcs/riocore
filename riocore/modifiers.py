@@ -133,6 +133,9 @@ class Modifiers:
         instances[f"oneshot{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "oneshot",
             "parameter": {"PULSE_LEN": pulselen_divider, "RETRIGGER": retrigger, "HOLD": hold, "EDGE": edge},
+            "predefines": [
+                f"wire {pin_varname}_ONESHOT;",
+            ],
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,
@@ -150,6 +153,9 @@ class Modifiers:
         instances[f"pwm{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "pwmmod",
             "parameter": {"DIVIDER_FREQ": frequency_divider, "DIVIDER_DTY": dty_divider},
+            "predefines": [
+                f"wire {pin_varname}_PWM;",
+            ],
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,

@@ -405,7 +405,9 @@ class PluginBase:
                     else:
                         defines.append(f"reg [{size - 1}:0] {variable} = {size}'d{default};")
                 else:
-                    defines.append(f"wire [{size - 1}:0] {variable};")
+                    wire = f"wire [{size - 1}:0] {variable};"
+                    if wire not in defines:
+                        defines.append(wire)
 
         return defines
 
@@ -415,7 +417,9 @@ class PluginBase:
         modifier_list = pin_config.get("modifier", [])
         pin_varname_org = pin_varname
         if direction == "output":
-            instance_predefines.append(f"wire {pin_varname_org}_RAW;")
+            wire = f"wire {pin_varname_org}_RAW;"
+            if wire not in instance_predefines:
+                instance_predefines.append(wire)
             pin_varname = f"{pin_varname_org}_RAW"
         for modifier_num, modifier in enumerate(modifier_list):
             if modifier:
@@ -424,8 +428,9 @@ class PluginBase:
                 if modifier_function:
                     pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname, modifier, self.system_setup)
         if direction == "output":
-            if f"wire {pin_varname};" not in instance_predefines:
-                instance_predefines.append(f"wire {pin_varname};")
+            wire = f"wire {pin_varname};"
+            # if wire not in instance_predefines:
+            #    instance_predefines.append(wire)
             instances[f"{self.instances_name}_{pin_name}_RAW"] = {
                 "predefines": [
                     f"assign {pin_varname_org} = {pin_varname};",
@@ -440,7 +445,6 @@ class PluginBase:
         instance_predefines = instance["predefines"]
         instance_arguments = instance["arguments"]
         pin_varname = None
-
         if direct is False:
             instance_arguments["clk"] = "sysclk"
         for pin_name, pin_config in self.pins().items():
@@ -452,7 +456,9 @@ class PluginBase:
                 instance_arguments[pin_name] = pin_config.get("default", "1'd0")
             else:
                 instance_arguments[pin_name] = pin_varname
-                instance_predefines.append(f"wire {pin_varname};")
+                wire = f"wire {pin_varname};"
+                if wire not in instance_predefines:
+                    instance_predefines.append(wire)
 
         if direct is False:
             for interface_name, interface_setup in self.interface_data().items():
