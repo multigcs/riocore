@@ -2,6 +2,7 @@
     "name": "Tangoboard",
     "description": "based on TangNano9k",
     "url": "https://github.com/multigcs/LinuxCNC-RIO/tree/main/configs/Tangoboard",
+    "board": "TangNano9K",
     "type": "GW1NR-LV9QN88PC6/I5",
     "family": "GW1N-9C",
     "pinimage": "board.png",
@@ -419,6 +420,14 @@
                 },
                 "DIR": {
                     "pin": "86",
+                    "pos": [
+                        120,
+                        55
+                    ],
+                    "direction": "output"
+                },
+                "EN": {
+                    "pin": "73",
                     "pos": [
                         145,
                         55
