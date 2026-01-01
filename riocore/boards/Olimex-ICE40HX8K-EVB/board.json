@@ -346,6 +346,45 @@
                     "direction": "all"
                 }
             }
+        },
+        {
+            "name": "OnBoard",
+            "comment": "Items on Board",
+            "pins": {
+		            "LED2": {
+		                "pin": "R16",
+		                "comment": "PIO2_43/LED2",
+		                "pos": [
+                        515,
+                        50
+                    ],
+                    "direction": "output"
+		            },
+            	  "LED1": {
+                    "pin": "M12",
+                    "pos": [
+                        478,
+                        50
+                    ],
+                    "direction": "output"
+                },
+                "BUT1": {
+                    "pin": "K11",
+                    "pos": [
+                        26,
+                        249
+                    ],
+                    "direction": "input"
+                },
+                "BUT2": {
+                    "pin": "P13",
+                    "pos": [
+                        26,
+                        395
+                    ],
+                    "direction": "input"
+                }
+            }
         }
     ]
 }
