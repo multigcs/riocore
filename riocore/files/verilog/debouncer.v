@@ -7,8 +7,7 @@ module debouncer
         output reg dout = 0
     );
 
-    //localparam DELAY_BITS = clog2(DELAY + 1);
-    localparam DELAY_BITS = 32;
+    localparam DELAY_BITS = clog2(DELAY + 1);
     reg [DELAY_BITS:0] din_cnt = 0;
 
     always @(posedge clk) begin
