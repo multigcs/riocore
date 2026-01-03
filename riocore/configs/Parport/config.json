@@ -3,10 +3,10 @@
     "_boardcfg": "",
     "flow": {
         "view": {
-            "scale": 0.98,
+            "scale": 1.01,
             "pos": [
-                306,
-                246
+                -339,
+                -278
             ]
         },
         "board": {
@@ -160,7 +160,7 @@
                 }
             },
             "joint": {
-                "scale": 800.0,
+                "scale": -800.0,
                 "home_search_vel": -10.0,
                 "home_final_vel": 20.0,
                 "min_limit": 0.0,
