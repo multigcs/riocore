@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "led relais relay valve lamp motor magnet"
         self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w"]
         self.ORIGIN = ""
+        self.PLUGIN_CONFIG = "Wizard"
         self.PINDEFAULTS = {
             "bit": {
                 "direction": "output",
