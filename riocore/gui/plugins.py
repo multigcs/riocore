@@ -754,6 +754,9 @@ class GuiPlugins:
             config_box.run()
             self.options_update()
 
+            self.plugin_instance.setup()
+            self.reload()
+
         if hasattr(self.parent, "config_load"):
             self.parent.config_load()
             # self.parent.load_tree()

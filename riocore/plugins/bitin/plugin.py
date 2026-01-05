@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "switch limit estop keyboard"
         self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton"]
         self.ORIGIN = ""
+        self.PLUGIN_CONFIG = "Wizard"
         self.PINDEFAULTS = {
             "bit": {
                 "direction": "input",
