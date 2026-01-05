@@ -475,7 +475,8 @@ module testb;
         .b(b),
         .z(z),
         .indexenable(indexenable),
-        .indexout(indexout)
+        .indexout(indexout),
+        .cntreset(1)
     );
 
 endmodule

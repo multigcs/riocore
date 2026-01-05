@@ -10,6 +10,7 @@ module quadencoderz
          input b,
          input z,
          input indexenable,
+         input cntreset,
          output reg indexout = 0,
          output signed [BITS-1:0] position
      );
@@ -27,6 +28,9 @@ module quadencoderz
     always @(posedge clk) begin
         if (indexenable == 1 && indexout == 1 && quadZ_delayed == 1) begin
             indexout <= 0;
+            if (cntreset == 1) begin
+                count <= 0;
+            end
             indexwait <= 1;
         end else begin
             if (indexenable == 1 && indexwait == 0 && indexout == 0) begin

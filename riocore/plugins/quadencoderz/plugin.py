@@ -41,6 +41,10 @@ class Plugin(PluginBase):
                 "size": 32,
                 "direction": "input",
             },
+            "cntreset": {
+                "size": 1,
+                "direction": "output",
+            },
         }
         self.OPTIONS = {
             "quad_type": {
@@ -87,6 +91,11 @@ For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your
                 "is_index_out": True,
                 "direction": "input",
                 "bool": True,
+            },
+            "cntreset": {
+                "direction": "output",
+                "bool": True,
+                "description": "set counter to zero on index in hardware",
             },
             "position": {
                 "is_index_position": True,
