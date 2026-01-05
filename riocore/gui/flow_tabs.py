@@ -816,12 +816,14 @@ class TabAxis:
                         erow.addWidget(widget, stretch=4)
                         erow.addWidget(ulabel, stretch=1)
                         home_edits.addLayout(erow)
-                    button = QPushButton("home-plugin")
                     if plugin_instance_home:
+                        button = QPushButton("home-plugin")
                         self.signature.append("h")
                         button.clicked.connect(partial(jedit, plugin_instance_home))
                     else:
-                        button.setEnabled(False)
+                        button = QPushButton("select input")
+                        self.signature.append("sh")
+                        button.clicked.connect(partial(self.select_home, joint))
 
                     brow = QHBoxLayout()
                     brow.addWidget(button)
@@ -835,6 +837,42 @@ class TabAxis:
                         self.signature.append("e")
 
                     axis_box_joints.addLayout(row)
+
+    def select_home(self, jnum):
+        dialog = QDialog()
+        dialog.setWindowTitle(f"select home plugin for joint {jnum}")
+        dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        dialog.buttonBox.accepted.connect(dialog.accept)
+
+        dialog.layout = QVBoxLayout()
+        halpin = QComboBox()
+        halpin.addItem("")
+        plugin_instances = {}
+
+        for item in self.parent.scene.items():
+            if hasattr(item, "plugin_instance"):
+                if "bit" in item.plugin_instance.SIGNALS and item.plugin_instance.SIGNALS["bit"].get("direction") == "input":
+                    if item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net"):
+                        continue
+                    title = f"{item.plugin_instance.title}"
+                    halpin.addItem(title)
+                    plugin_instances[title] = item.plugin_instance
+
+        dialog.layout.addWidget(halpin)
+        dialog.layout.addWidget(dialog.buttonBox)
+        dialog.setLayout(dialog.layout)
+
+        if dialog.exec():
+            title = halpin.currentText()
+            if title:
+                plugin_setup = plugin_instances[title].plugin_setup
+                if "signals" not in plugin_setup:
+                    plugin_setup["signals"] = {}
+                if "bit" not in plugin_setup["signals"]:
+                    plugin_setup["signals"]["bit"] = {}
+                plugin_setup["signals"]["bit"]["net"] = f"joint.{jnum}.home-sw-in"
+                self.parent.scene.parent.redraw()
+                self.parent.scene.parent.snapshot()
 
     def widget(self):
         return self.tab_axis
