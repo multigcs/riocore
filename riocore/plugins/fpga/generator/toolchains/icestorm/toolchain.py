@@ -141,7 +141,8 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append(f"PACKAGE   := {self.config['package']}")
         makefile_data.append(f"VERILOGS  := {verilogs}")
         makefile_data.append("")
-        makefile_data.append("all: build")
+        makefile_data.append("all: clean build load")
+        makefile_data.append("")
         makefile_data.append(f"build: {bitfileName}")
         makefile_data.append("")
         # yosys_logging = "-q -l yosys.log"

@@ -319,11 +319,11 @@
                 "fpga0_wled": {
                     "signals": {
                         "0_green": {
-                            "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused",
+                            "net": "(!halui.mode.is-auto) or halui.program.is-paused",
                             "setp": ""
                         },
                         "0_red": {
-                            "net": "axisui.error",
+                            "net": "",
                             "setp": ""
                         },
                         "0_blue": {
@@ -358,10 +358,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 1.25,
+            "scale": 0.5640744797371303,
             "pos": [
-                312,
-                -9
+                9.548740416210308,
+                -36.0
             ]
         },
         "hal": {

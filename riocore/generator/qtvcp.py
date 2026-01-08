@@ -266,6 +266,12 @@ QLabel {{
         """)
         return f"{self.prefix}.{halpin}"
 
+    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        if "resolution" not in setup:
+            setup["resolution"] = 1
+        self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"{self.prefix}.{halpin}-s"
+
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)

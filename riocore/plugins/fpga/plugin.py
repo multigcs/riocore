@@ -27,7 +27,7 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "fpga"
-        self.BUILDER = ["clean", "build", "load"]
+        self.BUILDER = ["clean", "build", "load", "all"]
         self.URL = ""
         board_list = []
         for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):

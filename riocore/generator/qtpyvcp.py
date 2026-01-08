@@ -423,10 +423,17 @@ class UserTab(QWidget):
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
 
+    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        if "resolution" not in setup:
+            setup["resolution"] = 1
+        pname = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"conv({pname},float,s32)"
+
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         halpin = halpin.replace("_", "-")
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
+        display_initval = setup.get("initval", 0)
         title = setup.get("title", name)
         self.draw_hbox_begin()
         self.draw_title(title)
@@ -441,6 +448,7 @@ class UserTab(QWidget):
         self.cfgxml_data.append("           <verstretch>0</verstretch>")
         self.cfgxml_data.append("          </sizepolicy>")
         self.cfgxml_data.append("         </property>")
+        self.add_property("value", int(int(display_initval) * 100.0))
         self.add_property("minimum", int(int(display_min) * 100.0))
         self.add_property("maximum", int(int(display_max) * 100.0))
         self.add_property("orientation", "Qt::Horizontal", ptype="enum")
@@ -579,11 +587,13 @@ class UserTab(QWidget):
         halpin = halpin.replace("_", "-")
         width = setup.get("width", 16)
         height = setup.get("height", 16)
+        display_initval = setup.get("initval", 0)
         self.draw_hbox_begin()
         if title:
             self.draw_title(title)
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append(f'     <widget class="HalCheckBox" name="rio.{halpin}">')
+        self.add_property("checked", int(display_initval))
         self.cfgxml_data.append('        <property name="pinBaseName" stdset="0">')
         self.cfgxml_data.append(f"          <string>{halpin}</string>")
         self.cfgxml_data.append("        </property>")

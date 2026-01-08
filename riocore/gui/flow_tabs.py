@@ -479,6 +479,8 @@ class TabAxis:
 
                     if plugin_instance_home:
                         signature.append("h")
+                    else:
+                        self.signature.append("sh")
 
                     if plugin_instance_encoder:
                         signature.append("e")

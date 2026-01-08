@@ -481,6 +481,7 @@ class pyvcp:
 
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
+        display_initval = setup.get("initval", 0)
         self.draw_hbox_begin()
         self.draw_title(title)
         e_checkbutton = etree.Element("checkbutton")
@@ -491,6 +492,9 @@ class pyvcp:
         e_anchor = etree.Element("anchor")
         e_anchor.text = '"e"'
         e_checkbutton.append(e_anchor)
+        e_initval = etree.Element("initval")
+        e_initval.text = str(int(display_initval))
+        e_checkbutton.append(e_initval)
         e_width = etree.Element("width")
         e_width.text = "13"
         e_checkbutton.append(e_width)

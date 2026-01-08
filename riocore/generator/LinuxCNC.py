@@ -1347,10 +1347,6 @@ if __name__ == "__main__":
             function = userconfig.get("function", "")
             displayconfig = userconfig.get("display", signal_config.get("display", {}))
             initval = signal_config.get("default", 0)
-            if not displayconfig and initval:
-                displayconfig["initval"] = initval
-            if not displayconfig.get("title"):
-                displayconfig["title"] = f"{plugin_instance.title}-{signal_name}"
             if vcp_mode == "CONFIGURED" and not displayconfig.get("type") and not displayconfig.get("title"):
                 return
             if function and not virtual:
@@ -1361,6 +1357,11 @@ if __name__ == "__main__":
                 return
             if halname in self.feedbacks:
                 return
+
+            if not displayconfig and initval:
+                displayconfig["initval"] = initval
+            if not displayconfig.get("title"):
+                displayconfig["title"] = f"{plugin_instance.title}-{signal_name}"
 
             vmin = signal_config.get("min", -1000)
             vmax = signal_config.get("max", 1000)
@@ -1566,8 +1567,8 @@ if __name__ == "__main__":
                 if linuxcnc_config.get("scurve"):
                     gui_gen.draw_frame_begin("S-Curve")
                     gui_gen.draw_vbox_begin()
-                    pname = gui_gen.draw_scale_s32("Enable", "traj_planner_type", {"resolution": 1, "min": 0, "max": 1, "initval": 1})
-                    self.halg.net_add("ini.traj_planner_type", pname)
+                    pname = gui_gen.draw_checkbutton("Enable", "traj_planner_type", {"initval": 1})
+                    self.halg.net_add(f"conv({pname},bit,s32)", "ini.traj_planner_type")
                     gui_gen.draw_vbox_end()
                     gui_gen.draw_frame_end()
 

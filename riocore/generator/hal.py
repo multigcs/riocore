@@ -345,7 +345,6 @@ class hal_generator:
                 if c == ")":
                     expression = self.text_in_bracket(input_pin, n + 1)
                     inside = expression.lstrip("(").rstrip(")")
-
                     function = ""
                     if expression.split("(")[0]:
                         inside = expression.split("(", 1)[1].rstrip(")").split(",")[0]
@@ -354,7 +353,6 @@ class hal_generator:
                             function_params = expression.split("(", 1)[1].rstrip(")").split(",")[1:]
                         else:
                             function_params = []
-
                     if " " in inside:
                         new_pin = self.logic2signal(inside, output_pin)
                         input_pin = input_pin.replace(expression, new_pin)
