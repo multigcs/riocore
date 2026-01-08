@@ -47,4 +47,4 @@ class component(cbase):
     def vinit(self, vname, vtype, halstr=None, vdir="input"):
         vtype = {"bool": "bit"}.get(vtype, vtype)
         direction = {"output": "IN", "input": "OUT", "inout": "IO"}.get(vdir, vdir)
-        return f'    if (retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "{halstr}") != 0) error_handler(retval);'
+        return f'    if ((retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "{halstr}")) != 0) error_handler(retval);'

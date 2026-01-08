@@ -23,12 +23,12 @@ int error_handler(int retval) {
         hal_exit(comp_id);
         return -1;
     }
+    return 0;
 }
 
 int rtapi_app_main(void) {
     char name[HAL_NAME_LEN + 1];
     int retval = 0;
-    int n = 0;
     data = hal_malloc(sizeof(data_t));
     comp_id = hal_init(modname);
     if (comp_id < 0) {

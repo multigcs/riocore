@@ -16,6 +16,8 @@ from riocore.generator.qtvcp import qtvcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
+MAX_HAL_LEN = 40
+
 
 class LinuxCNC:
     AXIS_DEFAULTS = {
@@ -26,6 +28,7 @@ class LinuxCNC:
         "MIN_FERROR": 0.01,
         "FERROR": 2.0,
         "BACKLASH": 0.0,
+        "MAX_JERK": 1000.0,
     }
     PID_DEFAULTS = {
         "P": 250.0,
@@ -154,6 +157,9 @@ class LinuxCNC:
             "MAX_ANGULAR_VELOCITY": 100.0,
             "NO_FORCE_HOMING": 1,
             "SPINDLES": 1,
+            "PLANNER_TYPE": 0,
+            "MAX_LINEAR_JERK": 1000.0,
+            "DEFAULT_LINEAR_JERK": 500.0,
         },
         "EMCIO": {
             "EMCIO": "io",
@@ -178,6 +184,8 @@ class LinuxCNC:
         "pwmgen": "pwm",
         "stepgen": "sg",
         "gpio": "io",
+        "speed": "spd",
+        "tolerance": "tol",
     }
 
     def __init__(self, project):
@@ -457,6 +465,10 @@ class LinuxCNC:
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
+        scurve = linuxcnc_config.get("scurve")
+
+        if scurve:
+            ini_setup["TRAJ"]["PLANNER_TYPE"] = 1
 
         netlist = []
         for plugin in jdata.get("plugins", []):
@@ -1601,16 +1613,16 @@ if __name__ == "__main__":
                     # string len shortener
                     def short_str(halname):
                         for string, short in self.SHORTENER.items():
-                            if len(halname) < 47 - len(self.gui_prefix):
+                            if len(halname) < MAX_HAL_LEN - len(self.gui_prefix):
                                 break
                             halname = halname.replace(string, short)
                         return halname
 
-                    # max = 47 characters
+                    # max = MAX_HAL_LEN(40) characters
                     halname_short = short_str(halname)
                     halname_full = f"{self.gui_prefix}.{halname_short}"
-                    if len(halname_short) >= 47 - len(self.gui_prefix):
-                        riocore.log(f"ERROR: halname too long (>47): {halname_short} ({halname_full})")
+                    if len(halname_short) >= MAX_HAL_LEN - len(self.gui_prefix):
+                        riocore.log(f"ERROR: halname too long (>{MAX_HAL_LEN}): {halname_short} ({halname_full})")
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname_short, setup=displayconfig)
 
                     # fselect handling

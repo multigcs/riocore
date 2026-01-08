@@ -1,5 +1,4 @@
 import sys
-from struct import unpack
 
 from riocore.checksums import crc16
 from riocore.plugins import PluginBase
@@ -375,191 +374,6 @@ class Plugin(PluginBase):
     def list2int(self, data):
         return (data[0] << 8) + data[1]
 
-    def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
-        if "config" not in self.plugin_setup:
-            return
-        signal_name = list(self.plugin_setup["config"])[self.signal_active]
-        config = self.plugin_setup["config"][signal_name]
-        if config["type"] == 101:
-            config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
-        elif frame_new:
-            # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
-
-            if frame_len > 4:
-                address = frame_data[0]
-                ctype = frame_data[1]
-                csum = crc16()
-                csum.update(frame_data[:-2])
-                csum_calc = csum.intdigest()
-                if csum_calc != frame_data[-2:]:
-                    print(f"ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
-                elif self.signal_values > 1:
-                    for vn in range(self.signal_values):
-                        value_name = f"{self.signal_name}_{vn}"
-                        if value_name not in self.SIGNALS:
-                            print(f"ERROR: no config: {value_name}")
-                        else:
-                            signal_config = self.SIGNALS[value_name].get("plugin_setup", {})
-                            direction = signal_config.get("direction")
-                            signal_address = signal_config.get("address")
-                            if address != signal_address:
-                                print(f"ERROR: wrong address {address} != {signal_address}")
-                            elif direction == "input":
-                                vlen = 2
-                                if self.datatype == "float":
-                                    vlen = 4
-                                start_pos = 3 + vn * vlen
-                                if ctype == 2:
-                                    if frame_data[3] & (1 << vn) != 0:
-                                        self.SIGNALS[value_name]["value"] = 1
-                                        if direction == "input":
-                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
-                                    else:
-                                        self.SIGNALS[value_name]["value"] = 0
-                                        if direction == "input":
-                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
-                                else:
-                                    value_list = frame_data[start_pos : start_pos + vlen]
-                                    if value_list and len(value_list) == vlen:
-                                        vscale = self.SIGNALS[value_name]["scale"]
-                                        direction = self.SIGNALS[value_name]["direction"]
-                                        if self.datatype == "float" and value_list and len(value_list) == vlen:
-                                            self.SIGNALS[value_name]["value"] = unpack(">f", bytearray(value_list))[0]
-                                        else:
-                                            self.SIGNALS[value_name]["value"] = self.list2int(value_list)
-                                        if vscale:
-                                            self.SIGNALS[value_name]["value"] *= vscale
-                                        if direction == "input":
-                                            self.SIGNALS[f"{value_name}_valid"]["value"] = 1
-                elif self.signal_name not in self.SIGNALS:
-                    print(f"ERROR: no signal_config: {self.signal_name}")
-                else:
-                    signal_config = self.SIGNALS[self.signal_name].get("plugin_setup", {})
-                    signal_address = signal_config.get("address")
-                    if address != signal_address:
-                        print(f"ERROR: wrong address {address} != {signal_address}")
-                    else:
-                        vscale = self.SIGNALS[self.signal_name]["scale"]
-                        direction = self.SIGNALS[self.signal_name]["direction"]
-                        if self.datatype == "float":
-                            self.SIGNALS[self.signal_name]["value"] = unpack(">f", bytearray(frame_data[3:-2]))[0]
-                        else:
-                            self.SIGNALS[self.signal_name]["value"] = self.list2int(frame_data[3:-2])
-
-                        if vscale:
-                            self.SIGNALS[self.signal_name]["value"] *= vscale
-                        if direction == "input":
-                            self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 1
-
-    def frameio_tx(self, frame_ack, frame_timeout):
-        if "config" not in self.plugin_setup:
-            return None
-        # if frame_ack:
-        #    print("ACK")
-        if frame_timeout:
-            if self.signal_values > 1:
-                for vn in range(self.signal_values):
-                    value_name = f"{self.signal_name}_{vn}"
-                    if f"{value_name}_valid" in self.SIGNALS:
-                        self.SIGNALS[f"{value_name}_valid"]["value"] = 0
-                        self.SIGNALS[f"{value_name}_errors"]["value"] += 1
-            elif f"{self.signal_name}_valid" in self.SIGNALS:
-                self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 0
-                self.SIGNALS[f"{self.signal_name}_errors"]["value"] += 1
-        if self.signal_active < len(self.plugin_setup.get("config", {})) - 1:
-            self.signal_active += 1
-        else:
-            self.signal_active = 0
-        signal_name = list(self.plugin_setup["config"])[self.signal_active]
-        config = self.plugin_setup["config"][signal_name]
-
-        if config["type"] == 101:
-            cmd = config["instance"].frameio_tx(frame_ack, frame_timeout)
-
-        elif config["type"] == 201:
-            # custom boolean command
-            direction = config["direction"]
-            self.delay = config.get("delay", self.DELAY) * 2
-            self.timeout = config.get("timeout", self.TIMEOUT) + self.delay
-            address = config["address"]
-            custom_on = config["on"]
-            custom_off = config["off"]
-            self.signal_name = signal_name
-            self.signal_address = address
-            value = self.SIGNALS[signal_name]["value"]
-            if value == 1:
-                cmd = [address, *custom_on]
-            else:
-                cmd = [address, *custom_off]
-
-        else:
-            cmd = []
-            direction = config["direction"]
-            self.delay = config.get("delay", self.DELAY) * 2
-            self.timeout = config.get("timeout", self.TIMEOUT) + self.delay
-            address = config["address"]
-            ctype = config["type"]
-            self.signal_name = signal_name
-            self.signal_address = address
-            self.is_float = config.get("is_float", False)
-            dt_default = "int"
-            if self.is_float:
-                dt_default = "float"
-            self.datatype = config.get("datatype", dt_default)
-            self.signal_values = config.get("values", 1)
-            register = self.int2list(config["register"])
-            n_values = self.int2list(self.signal_values)
-            if direction == "output":
-                if self.signal_values > 1:
-                    if ctype == 15:
-                        cmd = [address, ctype, *register, *n_values, 1]
-                        bitvalues = 0
-                        for vn in range(self.signal_values):
-                            value_name = f"{self.signal_name}_{vn}"
-                            value = self.SIGNALS[value_name]["value"]
-                            if value == 1:
-                                bitvalues = bitvalues | (1 << vn)
-                        cmd.append(bitvalues)
-
-                    elif ctype == 6 and self.datatype == "bool":
-                        cmd = [address, ctype, *register]
-                        bitvalues = [0, 0]
-                        for vn in range(self.signal_values):
-                            value_name = f"{self.signal_name}_{vn}"
-                            value = self.SIGNALS[value_name]["value"]
-                            if value == 1:
-                                if vn < 8:
-                                    bitvalues[1] |= 1 << vn
-                                else:
-                                    bitvalues[0] |= 1 << (vn - 8)
-                        cmd += bitvalues
-
-                    else:
-                        cmd = [address, ctype, *register, *n_values]
-                        for vn in range(self.signal_values):
-                            value_name = f"{self.signal_name}_{vn}"
-                            value = self.SIGNALS[value_name]["value"]
-                            cmd += self.int2list(value)
-                else:
-                    value = self.SIGNALS[signal_name]["value"]
-                    if ctype == 5:
-                        value *= 65280
-                    cmd = [address, ctype, *register, *self.int2list(value)]
-            elif self.datatype == "float":
-                n_values = self.int2list(self.signal_values * 2)
-                cmd = [address, ctype, *register, *n_values]
-            else:
-                cmd = [address, ctype, *register, *n_values]
-
-        csum = crc16()
-        csum.update(cmd)
-        csum_calc = csum.intdigest()
-        frame_data = cmd + csum_calc
-
-        # print(f"tx frame -- {len(frame_data)}: {frame_data}")
-
-        return frame_data
-
     def globals_c(self):
         output = []
         output.append(f"uint8_t {self.instances_name}_signal_active = 0;")
@@ -574,9 +388,14 @@ class Plugin(PluginBase):
         output = []
         output.append("    if (frame_new == 1) {")
         output.append("        uint8_t n = 0;")
-        output.append("        uint8_t data_len = 0;")
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            direction = signal_config["direction"]
+            ctype = signal_config["type"]
+            if ctype != 101 and direction == "input":
+                output.append("        uint8_t data_len = 0;")
+                break
         output.append("        uint8_t data_addr = frame_data[0];")
-        output.append("        uint8_t data_type = frame_data[1];")
+        # output.append("        uint8_t data_type = frame_data[1];")
         output.append("        uint16_t crc = 0xFFFF;")
         output.append("        for (n = 0; n < frame_len - 2; n++) {")
         output.append("           crc = crc16_update(crc, frame_data[n]);")
@@ -678,6 +497,9 @@ class Plugin(PluginBase):
         return "\n".join(output)
 
     def frameio_tx_c(self):
+        if not self.plugin_setup.get("config"):
+            return ""
+
         output = []
         output.append("    if (frame_timeout == 1) {")
         output.append(f'            // rtapi_print("rx error: timeout: %d\\n", {self.instances_name}_signal_active);')
@@ -765,14 +587,18 @@ class Plugin(PluginBase):
 
                 sn += 1
 
-        output.append("        {")
-        output.append(f"            if ({self.instances_name}_signal_next < {len(self.plugin_setup.get('config', {})) - 1}) {{")
-        output.append(f"                {self.instances_name}_signal_next++;")
-        output.append("            } else {")
-        output.append(f"                {self.instances_name}_signal_next = 0;")
-        output.append("            }")
-        output.append(f"            {self.instances_name}_signal_active = {self.instances_name}_signal_next;")
-        output.append("        }")
+        max_next = len(self.plugin_setup.get("config", {})) - 1
+        if max_next:
+            output.append("        {")
+            output.append(f"            if ({self.instances_name}_signal_next < {max_next}) {{")
+            output.append(f"                {self.instances_name}_signal_next++;")
+            output.append("            } else {")
+            output.append(f"                {self.instances_name}_signal_next = 0;")
+            output.append("            }")
+            output.append(f"            {self.instances_name}_signal_active = {self.instances_name}_signal_next;")
+            output.append("        }")
+        else:
+            output.append(f"        {self.instances_name}_signal_active = {max_next};")
         output.append("")
         output.append(f"        switch ({self.instances_name}_signal_active) {{")
         sn = 0
@@ -798,7 +624,7 @@ class Plugin(PluginBase):
 
             if ctype == 101:
                 output.append("                // handle hy_vfd")
-                output += signal_config["instance"].frameio_tx_c()
+                output += [f"                {line}" for line in signal_config["instance"].frameio_tx_c()]
 
             elif ctype == 201:
                 # custom boolean command
@@ -938,7 +764,6 @@ class Plugin(PluginBase):
             output.append("            }")
             sn += 1
         output.append("        }")
-        output.append("")
         output.append("")
         output.append("        if (frame_len == 0) {")
         output.append("            delay = 0;")

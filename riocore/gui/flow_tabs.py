@@ -1370,11 +1370,12 @@ class TabOptions:
             "vcp_pos": {"type": "select", "options": ["RIGHT", "BOTTOM", "TAB"], "default": "RIGHT", "help_text": "position of the vcp gui for extra controls"},
             "vcp_type": {"type": "select", "options": ["auto", "pyvcp", "qtvcp", "gladevcp"], "default": "auto", "help_text": "vcp type, depends on the gui"},
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
+            "scurve": {"type": bool, "help_text": "enable scurve support (linuxcnc >= v2.10)", "default": False},
             "debug_info": {"type": bool, "help_text": "Displays some debug infos in VCP", "default": False},
         }.items():
             row = QHBoxLayout()
             vbox.addLayout(row)
-            label = QLabel(key.title())
+            label = QLabel(key.replace("_", " ").title())
             if "help_text" in var_setup:
                 label.setToolTip(var_setup["help_text"])
             row.addWidget(label)

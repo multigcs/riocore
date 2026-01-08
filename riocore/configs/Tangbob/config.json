@@ -154,7 +154,7 @@
             "joint": {
                 "scale": -800.0,
                 "max_velocity": 25.0,
-                "min_limit": 0.0,
+                "min_limit": -100.0,
                 "max_limit": 230.0,
                 "home_search_vel": -10.0,
                 "home_latch_vel": -1.0,
@@ -181,7 +181,7 @@
             "joint": {
                 "scale": 800.0,
                 "max_velocity": 25.0,
-                "min_limit": 0.0,
+                "min_limit": -100.0,
                 "max_limit": 160.0,
                 "home_search_vel": -10.0,
                 "home_latch_vel": -1.0,
@@ -209,7 +209,7 @@
                 "scale": -1600.0,
                 "max_velocity": 15.0,
                 "min_limit": -32.0,
-                "max_limit": 0.0,
+                "max_limit": 100.0,
                 "home_search_vel": 10.0,
                 "home_latch_vel": 1.0,
                 "home_final_vel": 10.0
@@ -358,10 +358,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 0.5640744797371303,
+            "scale": 1.25,
             "pos": [
-                9.548740416210308,
-                -36.0
+                312,
+                -9
             ]
         },
         "hal": {
@@ -403,6 +403,7 @@
             "EMCMOT": {
                 "SERVO_PERIOD": 500000
             }
-        }
+        },
+        "scurve": true
     }
 }

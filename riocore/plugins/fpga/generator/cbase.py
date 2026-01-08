@@ -39,7 +39,7 @@ class cbase:
                         output.append(f"    static uint8_t frame_io[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append(f"    static uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append("    float frame_time = 0.0;")
-                        output.append("    uint8_t frame_id_last = 0;")
+                        # output.append("    uint8_t frame_id_last = 0;")
                         output.append("    uint8_t frame_id_ack = 0;")
                         output.append("    uint8_t frame_timeout = 0;")
                         output.append("    uint8_t frame_ack = 0;")
@@ -57,7 +57,7 @@ class cbase:
                         output.append("    }")
                         output.append("")
                         output.append(f"    if (timeout == 0 || frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - {plugin_instance.instances_name}_last_rx) / 1000000.0 > delay)) {{")
-                        output.append("        frame_id_last = frame_id;")
+                        # output.append("        frame_id_last = frame_id;")
                         output.append("        frame_id += 1;")
 
                         output.append("")
@@ -323,14 +323,19 @@ class cbase:
                                     output.append("        }")
                                     output.append("    }")
 
+                                convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
+
                                 if not boolean and direction == "input" and hal_type == "float":
                                     output.append(f"    float offset = *data->{varname}_OFFSET;")
                                     output.append(f"    float scale = *data->{varname}_SCALE;")
-                                    output.append(f"    float last_value = *data->{varname};")
-                                    output.append("    static float last_raw_value = 0.0;")
-                                    output.append("    float raw_value = value;")
+                                    if convert_c:
+                                        if "last_value" in convert_c:
+                                            output.append(f"    float last_value = *data->{varname};")
+                                        if "last_raw_value" in convert_c:
+                                            output.append("    static float last_raw_value = 0.0;")
+                                        if "raw_value" in convert_c:
+                                            output.append("    float raw_value = value;")
 
-                                convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
                                 if convert_c:
                                     output.append("    // -- calc --")
                                     output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
@@ -350,9 +355,9 @@ class cbase:
                                         output.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
                                         output.append("    }")
 
-                                    output.append(f"    *data->{varname}_ABS = abs(value);")
+                                    output.append(f"    *data->{varname}_ABS = fabs(value);")
                                     output.append(f"    *data->{varname}_S32 = value;")
-                                    output.append(f"    *data->{varname}_U32_ABS = abs(value);")
+                                    output.append(f"    *data->{varname}_U32_ABS = fabs(value);")
                                 output.append(f"    *data->{varname} = value;")
                                 if boolean:
                                     if direction == "input":
@@ -367,8 +372,9 @@ class cbase:
                                     output.append(f"    *data->{tvarname} = value_{target};")
 
                                 if not boolean and direction == "input" and hal_type == "float":
-                                    output.append("")
-                                    output.append("    last_raw_value = raw_value;")
+                                    if convert_c and "last_raw_value" in convert_c:
+                                        output.append("")
+                                        output.append("    last_raw_value = raw_value;")
                         output.append("}")
                         output.append("")
         output.append("")
@@ -992,7 +998,7 @@ class cbase:
         output.append("        *data->sys_status = 1;")
         output.append("    }")
         output.append("    long stamp_new = rtapi_get_time();")
-        output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
+        # output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
 
         output.append("    float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;")
@@ -1049,10 +1055,10 @@ class cbase:
         if protocol == "UDP":
             output.append("                if (ret != BUFFER_SIZE_RX) {")
             output.append(
-                f'                    {self.printf}("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
+                f'                    {self.printf}("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
             )
             output.append("                } else {")
-            output.append(f'                    {self.printf}("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
+            output.append(f'                    {self.printf}("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
             output.append("                }")
         else:
             output.append(f'            {self.printf}("wronng data (%i/3): ", err_counter);')
