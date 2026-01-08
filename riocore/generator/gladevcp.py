@@ -14,6 +14,7 @@ class gladevcp:
     def __init__(self, prefix="gladevcp", vcp_pos=None):
         self.prefix = prefix
         self.vcp_pos = vcp_pos
+        self.inits = []
 
     def check(self, configuration_path):
         return True
@@ -55,9 +56,9 @@ class gladevcp:
     def save(self, configuration_path):
         ui_filename = os.path.join(configuration_path, "rio-gui.ui")
         gvcp_filename = os.path.join(configuration_path, "rio-gui.py")
-
+        inits = "\n        ".join(self.inits)
         handler_py = []
-        handler_py.append("""
+        handler_py.append(f"""
 import hal
 import glib
 import time
@@ -67,9 +68,10 @@ class HandlerClass:
         self.halcomp = halcomp
         self.builder = builder
         self.nhits = 0
+        {inits}
 
-def get_handlers(halcomp,builder,useropts):
-    return [HandlerClass(halcomp,builder,useropts)]
+def get_handlers(halcomp, builder, useropts):
+    return [HandlerClass(halcomp, builder, useropts)]
 
 """)
         open(gvcp_filename, "w").write("\n".join(handler_py))
@@ -454,16 +456,16 @@ def get_handlers(halcomp,builder,useropts):
         return f"{self.prefix}.{halpin}"
 
     def draw_checkbutton(self, name, halpin, setup={}):
-        # display_initval = setup.get("initval", 0)
+        display_initval = setup.get("initval", 0)
+        self.inits.append(f"self.builder.get_object('{halpin}').set_active({display_initval})")
         self.cfgxml_data.append("    <child>")
         self.cfgxml_data.append('      <object class="GtkHBox">')
         self.cfgxml_data.append('        <property name="visible">True</property>')
         self.cfgxml_data.append('        <property name="spacing">2</property>')
         self.draw_title(name)
-
         self.cfgxml_data.append("                    <child>")
-        # self.cfgxml_data.append(f'                      <object class="HAL_CheckButton" id="{halpin}">')
-        self.cfgxml_data.append(f'                      <object class="HAL_ToggleButton" id="{halpin}">')
+        self.cfgxml_data.append(f'                      <object class="HAL_CheckButton" id="{halpin}">')
+        # self.cfgxml_data.append(f'                      <object class="HAL_ToggleButton" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="label" translatable="yes"></property>')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
         self.cfgxml_data.append('                        <property name="can_focus">True</property>')
@@ -506,6 +508,7 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append("                    <child>")
         self.cfgxml_data.append(f'                      <object class="HAL_LED" id="{halpin}">')
         self.cfgxml_data.append('                        <property name="visible">True</property>')
+        self.cfgxml_data.append('                        <property name="led-size">7</property>')
         self.cfgxml_data.append(f'                        <property name="pick_color_on">{self.colormapping[on_color]}</property>')
         self.cfgxml_data.append(f'                        <property name="pick_color_off">{self.colormapping[off_color]}</property>')
         self.cfgxml_data.append("                      </object>")
@@ -515,7 +518,6 @@ def get_handlers(halcomp,builder,useropts):
         self.cfgxml_data.append('                    <property name="position">1</property>')
         self.cfgxml_data.append("                  </packing>")
         self.cfgxml_data.append("                    </child>")
-
         self.cfgxml_data.append("      </object>")
         self.cfgxml_data.append("    </child>")
         return f"{self.prefix}.{halpin}"

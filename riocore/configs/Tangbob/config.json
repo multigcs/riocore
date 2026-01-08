@@ -404,6 +404,7 @@
                 "SERVO_PERIOD": 500000
             }
         },
-        "scurve": true
+        "scurve": true,
+        "vcp_type": "gladevcp"
     }
 }
