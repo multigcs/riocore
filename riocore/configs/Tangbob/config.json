@@ -322,10 +322,6 @@
                             "net": "(!halui.mode.is-auto) or halui.program.is-paused",
                             "setp": ""
                         },
-                        "0_red": {
-                            "net": "",
-                            "setp": ""
-                        },
                         "0_blue": {
                             "net": "halui.mode.is-auto",
                             "setp": ""
@@ -358,10 +354,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 0.5640744797371303,
+            "scale": 0.8707557502738226,
             "pos": [
-                9.548740416210308,
-                -36.0
+                3.303395399780925,
+                -42.0
             ]
         },
         "hal": {

@@ -1030,10 +1030,10 @@ class TabOptions:
         self.layout_ini.addWidget(self.treeview)
 
         self.phal_table = QTableWidget()
-        self.phal_table.setColumnCount(4)
+        self.phal_table.setColumnCount(5)
         self.phal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Plugin"))
         self.phal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Signal"))
-        self.phal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Target"))
+        self.phal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Halpin/Value"))
         self.phal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Type"))
         self.layout_hal.addWidget(self.phal_table)
         self.phal_table.itemChanged.connect(self.table_updated)
@@ -1043,6 +1043,7 @@ class TabOptions:
         self.hal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Target"))
         self.hal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Source"))
         self.hal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Type"))
+        self.hal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Action"))
         self.layout_hal.addWidget(self.hal_table)
         self.hal_table.itemChanged.connect(self.table_updated)
 
@@ -1106,12 +1107,22 @@ class TabOptions:
 
         self.comboBoxes = {}
 
+        def signal_clear(sconf):
+            if "net" in sconf:
+                del sconf["net"]
+            if "setp" in sconf:
+                del sconf["setp"]
+            self.updated()
+
         row = 0
         for sitem in self.parent.scene.items():
             if hasattr(sitem, "plugin_instance"):
                 plugin_config = sitem.plugin_instance.plugin_setup
                 uid = sitem.plugin_instance.plugin_setup["uid"]
-                for signal, sconf in plugin_config.get("signals", {}).items():
+                # if plugin_config.get("is_joint") is True:
+                #    continue
+                for signal in sitem.plugin_instance.SIGNALS:
+                    sconf = plugin_config.get("signals", {}).get(signal, {})
                     self.phal_table.setRowCount(row + 1)
                     net = sconf.get("net")
                     setp = sconf.get("setp")
@@ -1128,6 +1139,7 @@ class TabOptions:
                         value = net
                         itype = "net"
                     elif setp:
+                        value = setp
                         itype = "setp"
 
                     self.phal_table.setItem(row, 2, QTableWidgetItem())
@@ -1145,10 +1157,18 @@ class TabOptions:
                     item = QTableWidgetItem(itype)
                     item.setFlags(Qt.ItemFlag.ItemIsEnabled)
                     self.phal_table.setItem(row, 3, item)
+
+                    self.phal_table.setItem(row, 4, QTableWidgetItem())
+                    if sconf and value:
+                        button = QPushButton("clear")
+                        button.clicked.connect(partial(partial(signal_clear, sconf)))
+                        self.phal_table.setCellWidget(row, 4, button)
+
                     row += 1
 
         self.phal_table.resizeColumnToContents(0)
         self.phal_table.resizeColumnToContents(1)
+        self.phal_table.resizeColumnToContents(3)
         self.phal_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         self.phal_table.resizeColumnToContents(3)
 
@@ -1428,16 +1448,18 @@ class TabOptions:
                     signals[uid][source] = target
         for item in self.parent.scene.items():
             if hasattr(item, "plugin_instance"):
-                plugin_config = item.plugin_instance.plugin_setup
+                plugin_setup = item.plugin_instance.plugin_setup
                 uid = item.plugin_instance.plugin_setup["uid"]
                 if uid in signals:
                     for target, source in signals[uid].items():
-                        if "signals" not in plugin_config:
-                            plugin_config["signals"] = {}
-                        plugin_config["signals"][target]["net"] = source
-                        if "setp" in plugin_config["signals"][target]:
+                        if "signals" not in plugin_setup:
+                            plugin_setup["signals"] = {}
+                        if target not in plugin_setup["signals"]:
+                            plugin_setup["signals"][target] = {}
+                        if "setp" in plugin_setup["signals"][target]:
                             # moved into net / splitted later in hal-generator
-                            plugin_config["signals"][target]["setp"]
+                            plugin_setup["signals"][target]["setp"]
+                        plugin_setup["signals"][target]["net"] = source
 
         self.updated()
 
