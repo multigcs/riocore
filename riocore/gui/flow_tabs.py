@@ -1035,6 +1035,7 @@ class TabOptions:
         self.phal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Signal"))
         self.phal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Halpin/Value"))
         self.phal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Type"))
+        self.phal_table.setHorizontalHeaderItem(4, QTableWidgetItem("Action"))
         self.layout_hal.addWidget(self.phal_table)
         self.phal_table.itemChanged.connect(self.table_updated)
 
@@ -1043,7 +1044,6 @@ class TabOptions:
         self.hal_table.setHorizontalHeaderItem(0, QTableWidgetItem("Target"))
         self.hal_table.setHorizontalHeaderItem(1, QTableWidgetItem("Source"))
         self.hal_table.setHorizontalHeaderItem(2, QTableWidgetItem("Type"))
-        self.hal_table.setHorizontalHeaderItem(3, QTableWidgetItem("Action"))
         self.layout_hal.addWidget(self.hal_table)
         self.hal_table.itemChanged.connect(self.table_updated)
 
@@ -1161,6 +1161,7 @@ class TabOptions:
                     self.phal_table.setItem(row, 4, QTableWidgetItem())
                     if sconf and value:
                         button = QPushButton("clear")
+                        button.setFixedWidth(60)
                         button.clicked.connect(partial(partial(signal_clear, sconf)))
                         self.phal_table.setCellWidget(row, 4, button)
 
@@ -1170,7 +1171,7 @@ class TabOptions:
         self.phal_table.resizeColumnToContents(1)
         self.phal_table.resizeColumnToContents(3)
         self.phal_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
-        self.phal_table.resizeColumnToContents(3)
+        self.phal_table.resizeColumnToContents(4)
 
         # Misc
         machinetype = self.config["linuxcnc"].get("machinetype", "mill")
