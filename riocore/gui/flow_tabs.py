@@ -1359,7 +1359,6 @@ class TabOptions:
         row.addWidget(item)
 
         for key, var_setup in {
-            "num_axis": {"type": int, "min": 0, "max": 9, "default": 3, "help_text": "number of axis"},
             "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the machine"},
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
             "gui": {
