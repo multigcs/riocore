@@ -10,6 +10,7 @@ import os
 import shutil
 import subprocess
 import sys
+import signal
 from functools import partial
 from math import ceil, floor
 
@@ -2523,11 +2524,11 @@ class Window(QMainWindow):
 
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
     parser.add_argument("-p", "--png", help="save view to png", type=str, default=None)
     args = parser.parse_args()
-
     Window(args)
     app.exec()
