@@ -49,6 +49,7 @@ class LinuxCNC:
         "MAX_LIMIT": 1500.0,
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
+        "MAX_JERK": 1000.0,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
         "HOME_SEARCH_VEL": -30.0,
@@ -795,6 +796,7 @@ class LinuxCNC:
                     "MAX_LIMIT",
                     "MAX_VELOCITY",
                     "MAX_ACCELERATION",
+                    "MAX_JERK",
                     "SCALE_OUT",
                     "SCALE_IN",
                     "HOME_SEARCH_VEL",
@@ -1560,6 +1562,14 @@ if __name__ == "__main__":
 
                 gui_gen.draw_vbox_end()
                 gui_gen.draw_frame_end()
+
+                if linuxcnc_config.get("scurve"):
+                    gui_gen.draw_frame_begin("S-Curve")
+                    gui_gen.draw_vbox_begin()
+                    pname = gui_gen.draw_scale_s32("Enable", "traj_planner_type", {"resolution": 1, "min": 0, "max": 1, "initval": 1})
+                    self.halg.net_add("ini.traj_planner_type", pname)
+                    gui_gen.draw_vbox_end()
+                    gui_gen.draw_frame_end()
 
                 if linuxcnc_config.get("debug_info"):
                     gui_gen.draw_frame_begin("Debug-Info")

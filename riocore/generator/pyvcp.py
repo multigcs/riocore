@@ -110,6 +110,8 @@ class pyvcp:
         return f"conv({guipin[0:-2]}-i, s32, u32)"
 
     def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        if "resolution" not in setup:
+            setup["resolution"] = 1
         guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
         return f"{guipin[0:-2]}-i"
 
