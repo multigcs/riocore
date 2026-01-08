@@ -189,7 +189,7 @@ class gateware(generator_base):
                     if pin_config["pin"] not in pinnames:
                         pinnames[pin_config["pin"]] = plugin_instance.instances_name
                     else:
-                        riocore.log(f"ERROR: pin allready exist {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
+                        riocore.log(f"ERROR: pin already exists {pin_config['pin']} ({plugin_instance.instances_name} / {pinnames[pin_config['pin']]})")
 
         self.jdata["toolchain_generator"].generate(self.jdata["output_path"])
 
@@ -833,9 +833,9 @@ class gateware(generator_base):
         hash_new = hash_md5.hexdigest()
 
         if hash_compiled != hash_new:
-            riocore.log("  !!! gateware changed: needs to be build and flash |||")
+            riocore.log("  !!! gateware changed: needs to be built and flashed |||")
         elif hash_flashed != hash_new:
-            riocore.log("  !!! gateware changed: needs to flash |||")
+            riocore.log("  !!! gateware changed: needs to flashed |||")
         hash_file_new = os.path.join(self.jdata["output_path"], "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
 

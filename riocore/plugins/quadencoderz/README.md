@@ -69,6 +69,12 @@ number of collected values before calculate the rps value
  * type: bit
  * direction: input
 
+### cntreset:
+set counter to zero on index in hardware
+
+ * type: bit
+ * direction: output
+
 ### position:
 position feedback in steps
 
@@ -104,6 +110,11 @@ calculates revolutions per minute
 
  * size: 32 bit
  * direction: input
+
+### cntreset:
+
+ * size: 1 bit
+ * direction: output
 
 
 ## Basic-Example:
@@ -181,6 +192,15 @@ calculates revolutions per minute
                 "title": "indexout",
                 "section": "inputs",
                 "type": "led"
+            }
+        },
+        "cntreset": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "cntreset",
+                "section": "outputs",
+                "type": "checkbox"
             }
         },
         "position": {

@@ -174,7 +174,7 @@ then
             git submodule update --init
         )
     else
-        echo "pico-sdk allready installed"
+        echo "pico-sdk already installed"
     fi
     TC_PICO="$PWD/riocore/toolchains/pico-sdk"
     export PICO_SDK_PATH=$PWD/riocore/toolchains/pico-sdk/

@@ -4,7 +4,7 @@
 
 **frequency input**
 
-to messurement digital frequencies
+to measurement digital frequencies
 
 Keywords: frequency
 

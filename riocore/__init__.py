@@ -280,7 +280,7 @@ class Project:
                 if varname not in varnames:
                     varnames[varname] = plugin_instance.instances_name
                 else:
-                    log(f"ERROR: varname allready exist: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
+                    log(f"ERROR: varname already exists: {varname} ({plugin_instance.instances_name} / {varnames[varname]})")
 
     def info(self):
         jdata = self.config["jdata"]
