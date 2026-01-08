@@ -1097,17 +1097,15 @@ class NodeViewer(QGraphicsView):
         super().mouseMoveEvent(event)
 
     def wheelEvent(self, event):
+        zoom = self.getZoom()
         angle = event.angleDelta().y()
-        zoomFactor = 1 + (angle / 1000)
+        zoomFactor = max(min(1 + (angle / 1000), 1.2), 0.8)
+        if zoom < 0.3 and zoomFactor < 1.0:
+            return
+        if self.getZoom() > 5.0 and zoomFactor > 1.0:
+            return
         self.scale(zoomFactor, zoomFactor)
-
-        if self.getZoom() < 0.2:
-            self.setZoom(0.2)
-        if self.getZoom() > 2.5:
-            self.setZoom(2.5)
-
         self.scene.parent.config["flow"]["view"]["scale"] = round(zoomFactor, 2)
-        self.scene.parent.cfg_save()
 
 
 class NodeScene(QGraphicsScene):
@@ -1291,10 +1289,17 @@ class NodeScene(QGraphicsScene):
 
 
 class Window(QMainWindow):
-    def __init__(self, args):
+    def __init__(self, args, app=None):
         super().__init__()
         self.args = args
         self.HAS_INVERTS = {"rio": "-not"}
+        if app:
+            screen = app.primaryScreen()
+            screen_size = screen.size()
+            if screen_size.width() > 1680 and screen_size.height() > 1000:
+                self.resize(1680, 1000)
+            elif screen_size.width() > 1440 and screen_size.height() > 900:
+                self.resize(1440, 900)
         self.bnode = None
         self.logic_ids = {}
         self.hal_logics = {}
@@ -2530,5 +2535,5 @@ if __name__ == "__main__":
     parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
     parser.add_argument("-p", "--png", help="save view to png", type=str, default=None)
     args = parser.parse_args()
-    Window(args)
+    Window(args, app=app)
     app.exec()
