@@ -145,15 +145,18 @@ class simulator(generator_base):
         output.append("")
         output.append("// Virtual size (in mm / scale = steps/mm)")
 
+        axis_limits = {}
         for axis, data in self.project.axis_dict.items():
             scale = "100.0"
             for joint in data["joints"]:
                 scale = f"joint_scales[{joint['num']}]"
+                axis_limits[axis] = joint["MAX_LIMIT"]
                 break
             output.append(f"#define VIRT_SCALE_{axis}  {scale}")
 
-        output.append("#define VIRT_WIDTH    400.0")
-        output.append("#define VIRT_HEIGHT   300.0")
+        output.append(f"#define VIRT_WIDTH    {axis_limits['X']}")
+        output.append(f"#define VIRT_HEIGHT   {axis_limits['Y']}")
+        output.append(f"#define VIRT_DEPTH    {axis_limits['Z']}")
         output.append("")
         output.append("extern uint8_t sim_running;")
         output.append("")
@@ -302,9 +305,9 @@ class simulator(generator_base):
                             break
                     if found and machinetype not in {"melfa", "melfa_nogl"}:
                         # Z-Axis
-                        output.append(f"    if (joint_position[{jn}] > 2000.0) {{")
+                        output.append(f"    if (joint_position[{jn}] * joint_scales[{jn}] > 100.0) {{")
                     else:
-                        output.append(f"    if (joint_position[{jn}] < 0.0) {{")
+                        output.append(f"    if (joint_position[{jn}] * joint_scales[{jn}] < 0.0) {{")
                     output.append(f"        {var} = 1;")
                     output.append("    } else {")
                     output.append(f"        {var} = 0;")
