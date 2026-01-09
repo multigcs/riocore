@@ -933,9 +933,29 @@ class TabJson:
         self.tab_json.addLayout(json_options)
         self.tab_json.addWidget(self.jsondiff)
 
+
+
+        edit_options = QHBoxLayout()
+        edit_options.addWidget(QLabel("test..."))
+        edit_options.addStretch()
+
+        self.jsonedit = QPlainTextEdit()
+        self.jsonedit.clear()
+        self.jsonedit.insertPlainText("...")
+        self.line_numbers = line_numbers
+        self.found_diffs = False
+
+        self.tab_edit = QVBoxLayout()
+        self.tab_edit_widget = QWidget()
+        self.tab_edit_widget.setLayout(self.tab_edit)
+        self.tab_edit.addLayout(edit_options)
+        self.tab_edit.addWidget(self.jsonedit)
+
+
+
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(self.tab_json_widget, "Diff")
-        # self.tab_widget.addTab(self.tab_ini, "Editor")
+        self.tab_widget.addTab(self.tab_edit_widget, "Editor")
 
     def widget(self):
         return self.tab_widget
