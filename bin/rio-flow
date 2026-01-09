@@ -1333,7 +1333,7 @@ class Window(QMainWindow):
         self.tabwidget.addTab(self.drawingtab.widget(), "Drawing")
         self.tabwidget.addTab(self.axistab.widget(), "Axis/Joints")
         self.tabwidget.addTab(self.optionstab.widget(), "LinuxCNC")
-        self.tabwidget.addTab(self.jsontab.widget(), "Json-Diff")
+        self.tabwidget.addTab(self.jsontab.widget(), "Json")
         self.tabwidget.addTab(self.buildertab.widget(), "Builder")
 
         vboxMain = QVBoxLayout()

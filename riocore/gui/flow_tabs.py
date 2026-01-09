@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
     QDoubleSpinBox,
     QHBoxLayout,
     QHeaderView,
+    QCheckBox,
     QLabel,
     QLineEdit,
     QPlainTextEdit,
@@ -911,20 +912,39 @@ class SearchComboBox(QComboBox):
 class TabJson:
     def __init__(self, parent=None, diff_only=True, line_numbers=True):
         self.parent = parent
+
+        json_options = QHBoxLayout()
+        json_options.addWidget(QLabel("Diff Only"))
+        self.diff_only = QCheckBox()
+        self.diff_only.setChecked(diff_only)
+        self.diff_only.stateChanged.connect(self.update)
+        json_options.addWidget(self.diff_only)
+        json_options.addStretch()
+
         self.jsondiff = QPlainTextEdit()
         self.jsondiff.clear()
         self.jsondiff.insertPlainText("...")
-        self.diff_only = diff_only
         self.line_numbers = line_numbers
         self.found_diffs = False
 
+        self.tab_json = QVBoxLayout()
+        self.tab_json_widget = QWidget()
+        self.tab_json_widget.setLayout(self.tab_json)
+        self.tab_json.addLayout(json_options)
+        self.tab_json.addWidget(self.jsondiff)
+
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(self.tab_json_widget, "Diff")
+        # self.tab_widget.addTab(self.tab_ini, "Editor")
+
     def widget(self):
-        return self.jsondiff
+        return self.tab_widget
+        # return self.jsondiff
 
     def timer(self):
         pass
 
-    def update(self, flow=False):
+    def update(self, unused=None, flow=False):
         config = json.dumps(self.parent.clean_config(self.parent.config, flow=flow), indent=4)
         config_original = json.dumps(self.parent.clean_config(self.parent.config_original, flow=flow), indent=4)
         self.jsondiff.clear()
@@ -953,7 +973,7 @@ class TabJson:
                 continue
             else:
                 color = default_color
-                if self.diff_only:
+                if self.diff_only.isChecked():
                     show = False
             if show:
                 if last_lines:
@@ -980,7 +1000,7 @@ class TabJson:
                     last_lines.append(f"{line_n} {line}\n")
                 else:
                     last_lines.append(f"{line}\n")
-        if self.diff_only and not self.found_diffs:
+        if self.diff_only.isChecked() and not self.found_diffs:
             self.jsondiff.insertPlainText("--- NO CHANGES ---\n")
 
 
