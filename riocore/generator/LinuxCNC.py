@@ -751,10 +751,8 @@ class LinuxCNC:
                 axis_max_acceleration = min(axis_max_acceleration, max_acceleration)
                 axis_min_limit = min(axis_min_limit, min_limit)
                 axis_max_limit = max(axis_max_limit, max_limit)
-
                 axis_backlash = max(axis_backlash, backlash)
                 axis_ferror = max(axis_ferror, ferror)
-
                 axis_setup["MAX_VELOCITY"] = axis_max_velocity
                 axis_setup["MAX_ACCELERATION"] = axis_max_acceleration
                 axis_setup["MIN_LIMIT"] = axis_min_limit
@@ -782,6 +780,7 @@ class LinuxCNC:
                 output.append(f"# {plugin_instance.instances_name}")
                 if position_mode == "velocity":
                     pid_setup = self.PID_DEFAULTS.copy()
+                    pid_setup["DEADBAND"] = round(1 / abs(joint_config["SCALE_OUT"]) * 2, 4)
                     for key, value in pid_setup.items():
                         setup_value = joint_config.get(f"PID_{key.upper()}")
                         if setup_value:
