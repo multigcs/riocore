@@ -360,12 +360,8 @@ class hy_vfd:
         output.append(f"        value_{self.signal_name}_base_freq = {self.instances_name}_{self.signal_name}_config_register[0].value * {self.HYVFD_CALC_KEYS['base_freq']['scale']};")
         output.append(f"        value_{self.signal_name}_max_freq = {self.instances_name}_{self.signal_name}_config_register[1].value * {self.HYVFD_CALC_KEYS['max_freq']['scale']};")
         output.append(f"        value_{self.signal_name}_freq_lower_limit = {self.instances_name}_{self.signal_name}_config_register[2].value * {self.HYVFD_CALC_KEYS['freq_lower_limit']['scale']};")
-        output.append(
-            f"        value_{self.signal_name}_rated_motor_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};"
-        )
-        output.append(
-            f"        value_{self.signal_name}_rated_motor_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};"
-        )
+        output.append(f"        value_{self.signal_name}_rated_motor_voltage = {self.instances_name}_{self.signal_name}_config_register[3].value * {self.HYVFD_CALC_KEYS['rated_motor_voltage']['scale']};")
+        output.append(f"        value_{self.signal_name}_rated_motor_current = {self.instances_name}_{self.signal_name}_config_register[4].value * {self.HYVFD_CALC_KEYS['rated_motor_current']['scale']};")
         output.append(f"        value_{self.signal_name}_rpm_at_50hz = {self.instances_name}_{self.signal_name}_config_register[5].value * {self.HYVFD_CALC_KEYS['rpm_at_50hz']['scale']};")
         output.append(f"        value_{self.signal_name}_rated_motor_rev = (value_{self.signal_name}_rpm_at_50hz / 50.0) * value_{self.signal_name}_max_freq;")
         output.append("    }")

@@ -11,7 +11,7 @@
 #define GL_HEIGHT 3.0
 
 // Virtual size (in mm / scale = steps/mm)
-#define VIRT_SCALE  100.0
+#define VIRT_SCALE  4200.0
 #define VIRT_WIDTH  400.0
 #define VIRT_HEIGHT 300.0
 
@@ -202,7 +202,7 @@ void display() {
 
     int tl = 0;
     for (int j = 0; j < NUM_JOINTS; j++) {
-        sprintf(text, "%i = %0.03f", j, (float)joint_position[j] / 100);
+        sprintf(text, "%i = %0.03f", j, (float)joint_position[j] / 4200.0);
         glPushMatrix();
         glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);

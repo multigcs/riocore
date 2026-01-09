@@ -72,25 +72,25 @@ if args.config:
                         if plugin.get("is_joint", False):
                             if "joint" not in plugin:
                                 jdata["modules"][pm]["setup"][name]["joint"] = {}
-                            jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
+                            # jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
                             jdata["modules"][pm]["setup"][name]["joint"]["home_search_vel"] = 0.0
                             jdata["modules"][pm]["setup"][name]["joint"]["home_latch_vel"] = 0.0
                             jdata["modules"][pm]["setup"][name]["joint"]["home_final_vel"] = 0.0
                             jdata["modules"][pm]["setup"][name]["joint"]["home_sequence"] = 0
                             jdata["modules"][pm]["setup"][name]["joint"]["home_offset"] = 0.0
-                            jdata["modules"][pm]["setup"][name]["joint"]["home"] = 0.001
+                            jdata["modules"][pm]["setup"][name]["joint"]["home"] = 0.0
 
                 for pn, plugin in enumerate(jdata["plugins"]):
                     if plugin.get("is_joint", False):
                         if "joint" not in plugin:
                             jdata["plugins"][pn]["joint"] = {}
-                        jdata["plugins"][pn]["joint"]["scale"] = 100.0
+                        # jdata["plugins"][pn]["joint"]["scale"] = 100.0
                         jdata["plugins"][pn]["joint"]["home_search_vel"] = 0.0
                         jdata["plugins"][pn]["joint"]["home_latch_vel"] = 0.0
                         jdata["plugins"][pn]["joint"]["home_final_vel"] = 0.0
                         jdata["plugins"][pn]["joint"]["home_sequence"] = 0
                         jdata["plugins"][pn]["joint"]["home_offset"] = 0.0
-                        jdata["plugins"][pn]["joint"]["home"] = 0.001
+                        jdata["plugins"][pn]["joint"]["home"] = 0.0
 
             if args.simulator:
                 if "linuxcnc" not in jdata:
@@ -110,13 +110,13 @@ if args.config:
                         if plugin.get("is_joint", False):
                             if "joint" not in plugin:
                                 jdata["modules"][pm]["setup"][name]["joint"] = {}
-                            jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
+                            # jdata["modules"][pm]["setup"][name]["joint"]["scale"] = 100.0
 
                 for pn, plugin in enumerate(jdata["plugins"]):
                     if plugin.get("is_joint", False):
                         if "joint" not in plugin:
                             jdata["plugins"][pn]["joint"] = {}
-                        jdata["plugins"][pn]["joint"]["scale"] = 100.0
+                        # jdata["plugins"][pn]["joint"]["scale"] = 100.0
 
             config_file = os.path.join(config_dir, f"tmp-{config_name}")
             open(config_file, "w").write(json.dumps(jdata, indent=4))

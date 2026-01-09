@@ -1569,6 +1569,15 @@ if __name__ == "__main__":
                     gui_gen.draw_vbox_begin()
                     pname = gui_gen.draw_checkbutton("Enable", "traj_planner_type", {"initval": 1})
                     self.halg.net_add(f"conv({pname},bit,s32)", "ini.traj_planner_type")
+
+                    for axis_name, axis_config in self.project.axis_dict.items():
+                        joints = axis_config["joints"]
+                        jerk = 0.0
+                        for joint in joints:
+                            jerk = max(jerk, joint.get("MAX_JERK", 0.0))
+                        pname = gui_gen.draw_scale(f"{axis_name.lower()}-Jerk", f"{axis_name.lower()}-jerk", {"initval": jerk, "min": 0.0, "max": max(ini_setup["TRAJ"]["MAX_LINEAR_JERK"], jerk)})
+                        self.halg.net_add(pname, f"ini.{axis_name.lower()}.jerk")
+
                     gui_gen.draw_vbox_end()
                     gui_gen.draw_frame_end()
 

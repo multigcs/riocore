@@ -252,6 +252,8 @@ def get_handlers(halcomp, builder, useropts):
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
+        display_initval = setup.get("initval", 0)
+        self.inits.append(f"self.builder.get_object('{halpin}').set_value({display_initval})")
         digits = len(str(float(str(setup.get("resolution", 0.1)))).split(".")[-1].rstrip("0"))
         title = setup.get("title", name)
         self.cfgxml_data.append("    <child>")
