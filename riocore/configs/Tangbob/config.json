@@ -152,17 +152,13 @@
             },
             "is_joint": true,
             "joint": {
-                "scale": 4200.0,
+                "scale": -800.0,
                 "max_velocity": 25.0,
                 "min_limit": -100.0,
                 "max_limit": 230.0,
                 "home_search_vel": -10.0,
                 "home_latch_vel": -1.0,
-                "home_final_vel": 20.0,
-                "_pid_p": 1000.0,
-                "pid_deadband": 0.0005,
-                "_pid_maxoutput": 0.0,
-                "_pid_ff1": 1.0
+                "home_final_vel": 20.0
             }
         },
         {
@@ -183,7 +179,7 @@
             },
             "is_joint": true,
             "joint": {
-                "scale": 800.0,
+                "scale": -800.0,
                 "max_velocity": 25.0,
                 "min_limit": -100.0,
                 "max_limit": 160.0,

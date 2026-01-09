@@ -143,6 +143,18 @@ class simulator(generator_base):
         output.append(f"#define NUM_HOMESWS {self.homes}")
         output.append(f"#define NUM_BITOUTS {self.bitouts}")
         output.append("")
+        output.append("// Virtual size (in mm / scale = steps/mm)")
+
+        for axis, data in self.project.axis_dict.items():
+            scale = "100.0"
+            for joint in data["joints"]:
+                scale = f"joint_scales[{joint['num']}]"
+                break
+            output.append(f"#define VIRT_SCALE_{axis}  {scale}")
+
+        output.append("#define VIRT_WIDTH    400.0")
+        output.append("#define VIRT_HEIGHT   300.0")
+        output.append("")
         output.append("extern uint8_t sim_running;")
         output.append("")
         output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
@@ -158,7 +170,8 @@ class simulator(generator_base):
             output.append(f"#define NUM_JOINTS_{axis} {len(data['joints'])}")
             output.append(f"extern int {axis.lower()}_joints[NUM_JOINTS_{axis}];")
         output.append("")
-
+        output.append("extern float joint_scales[NUM_JOINTS];")
+        output.append("")
         output.append("void* simThread(void* vargp);")
         open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
 
@@ -176,6 +189,12 @@ class simulator(generator_base):
         output.append("#include <riocore.h>")
         output.append("")
         output.append("uint8_t sim_running = 1;")
+        output.append("")
+        output.append("float joint_scales[NUM_JOINTS] = {")
+        for axis, data in self.project.axis_dict.items():
+            for joint in data["joints"]:
+                output.append(f"   {joint['SCALE_OUT']},")
+        output.append("};")
         output.append("")
 
         protocol = self.project.config["jdata"].get("protocol", "SPI")
