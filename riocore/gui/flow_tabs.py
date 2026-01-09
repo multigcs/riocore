@@ -912,6 +912,8 @@ class SearchComboBox(QComboBox):
 class TabJson:
     def __init__(self, parent=None, diff_only=True, line_numbers=True):
         self.parent = parent
+        self.jsonupdate = True
+        self.editorupdate = True
 
         json_options = QHBoxLayout()
         json_options.addWidget(QLabel("Diff Only"))
@@ -933,15 +935,17 @@ class TabJson:
         self.tab_json.addLayout(json_options)
         self.tab_json.addWidget(self.jsondiff)
 
-
-
+        self.jbutton = QPushButton("load")
+        self.jbutton.clicked.connect(self.editor_load)
+        self.jinfo = QLabel()
         edit_options = QHBoxLayout()
-        edit_options.addWidget(QLabel("test..."))
+        edit_options.addWidget(self.jbutton)
+        edit_options.addWidget(self.jinfo)
         edit_options.addStretch()
 
         self.jsonedit = QPlainTextEdit()
         self.jsonedit.clear()
-        self.jsonedit.insertPlainText("...")
+        self.jsonedit.textChanged.connect(self.editor_update)
         self.line_numbers = line_numbers
         self.found_diffs = False
 
@@ -951,20 +955,53 @@ class TabJson:
         self.tab_edit.addLayout(edit_options)
         self.tab_edit.addWidget(self.jsonedit)
 
-
-
         self.tab_widget = QTabWidget()
         self.tab_widget.addTab(self.tab_json_widget, "Diff")
         self.tab_widget.addTab(self.tab_edit_widget, "Editor")
+        self.jsonupdate = False
+
+    def editor_load(self, unused=None):
+        jdata = self.jsonedit.toPlainText()
+        self.editorupdate = False
+        try:
+            self.parent.config = json.loads(jdata)
+            self.parent.optionstab.update(self.parent.config)
+            self.parent.redraw()
+            self.parent.fit_view()
+            self.parent.cfg_check()
+        except Exception as err:
+            print("### json error: ", err)
+        self.editorupdate = True
+
+    def editor_update(self, unused=None):
+        if self.jsonupdate:
+            return
+        self.jinfo.setText("OK")
+        self.jbutton.setEnabled(True)
+        self.jinfo.setStyleSheet("color: green")
+        try:
+            jdata = self.jsonedit.toPlainText()
+            json.loads(jdata)
+        except Exception as err:
+            self.jinfo.setText(str(err))
+            self.jinfo.setStyleSheet("color: red")
+            self.jbutton.setEnabled(False)
+            # print("### json error: ", err)
 
     def widget(self):
         return self.tab_widget
-        # return self.jsondiff
 
     def timer(self):
         pass
 
     def update(self, unused=None, flow=False):
+        self.jsonupdate = True
+        if self.editorupdate:
+            config = json.dumps(self.parent.config, indent=4)
+            self.jsonedit.clear()
+            self.jsonedit.insertPlainText(config)
+            cursor = self.jsonedit.textCursor()
+            cursor.movePosition(QTextCursor.Start)
         config = json.dumps(self.parent.clean_config(self.parent.config, flow=flow), indent=4)
         config_original = json.dumps(self.parent.clean_config(self.parent.config_original, flow=flow), indent=4)
         self.jsondiff.clear()
@@ -1022,6 +1059,7 @@ class TabJson:
                     last_lines.append(f"{line}\n")
         if self.diff_only.isChecked() and not self.found_diffs:
             self.jsondiff.insertPlainText("--- NO CHANGES ---\n")
+        self.jsonupdate = False
 
 
 class TabOptions:
