@@ -31,6 +31,15 @@ static int lastMouseX, lastMouseY;
 static int isDragging = 0;
 static int isTranslate = 0;
 
+void draw_text(char *text) {
+    void* font = GLUT_BITMAP_9_BY_15;
+    glRasterPos2i(0, 0);
+    for (int i = 0; i < strlen(text); i++) {
+        char c = text[i];
+        glutBitmapCharacter(font, c);
+    }
+}
+
 // Function to initialize OpenGL settings
 void initGL() {
     glEnable(GL_DEPTH_TEST);    // Enable depth testing for 3D
@@ -55,6 +64,7 @@ void initGL() {
 
 // Function to draw a simple CNC mill
 void drawCNCMill() {
+    char text[1024];
     float pos_x = joint_position[x_joints[0]];
     float pos_y = joint_position[y_joints[0]];
     float pos_z = joint_position[z_joints[0]];
@@ -154,16 +164,19 @@ void drawCNCMill() {
         glutSolidCube(1.0);
         glPopMatrix();
     }
-    glPopMatrix();
-}
 
-void draw_text(char *text) {
-    void* font = GLUT_BITMAP_9_BY_15;
-    glRasterPos2i(0, 0);
-    for (int i = 0; i < strlen(text); i++) {
-        char c = text[i];
-        glutBitmapCharacter(font, c);
-    }
+    glColor3d(1.0, 1.0, 0.0);
+    glPushMatrix();
+    glTranslatef(GL_WIDTH + 0.05, GL_HEIGHT + 0.05, 0.05);
+    draw_text("0,0");
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(-0.05, -0.05, 0.05);
+    sprintf(text, "%0.01f,%0.01f", VIRT_WIDTH, VIRT_HEIGHT);
+    draw_text(text);
+    glPopMatrix();
+
+
     glPopMatrix();
 }
 
@@ -194,6 +207,7 @@ void display() {
         glPushMatrix();
         glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
+        glPopMatrix();
         tl++;
     }
     for (int j = 0; j < NUM_BITOUTS; j++) {
@@ -201,6 +215,7 @@ void display() {
         glPushMatrix();
         glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
+        glPopMatrix();
         tl++;
     }
     tl = 0;
@@ -209,6 +224,7 @@ void display() {
         glPushMatrix();
         glTranslatef(3.0, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
+        glPopMatrix();
         tl++;
     }
 
