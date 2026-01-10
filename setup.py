@@ -27,7 +27,7 @@ for script in glob.glob("bin/*"):
 for folder in ("riocore/plugins/*", "riocore/generator/*", "riocore/generator/pins/*", "riocore/generator/toolchains/*", "riocore/interfaces/*"):
     packages.append(folder.replace("/*", "").replace("/", "."))
     for module in glob.glob(folder):
-        if "__" not in module and not module.endswith(".py"):
+        if "__" not in module and not module.endswith(".py") and not module.endswith(".md"):
             module_name = module.replace("/", ".")
             packages.append(module_name)
             package_data[module_name] = ["*.c", "*.v", "*.png", "*.md"]
