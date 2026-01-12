@@ -46,7 +46,7 @@ class Plugin(PluginBase):
                 "type": int,
                 "min": 0,
                 "max": 1,
-                "description": "Chip-Select",
+                "description": "Chip-Select pin on the Host-Side CS0/CS1",
             },
         }
         spitype = self.plugin_setup.get("spitype", self.option_default("spitype", 0))
