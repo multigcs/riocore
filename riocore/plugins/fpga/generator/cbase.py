@@ -328,13 +328,12 @@ class cbase:
                                 if not boolean and direction == "input" and hal_type == "float":
                                     output.append(f"    float offset = *data->{varname}_OFFSET;")
                                     output.append(f"    float scale = *data->{varname}_SCALE;")
-                                    if convert_c:
-                                        if "last_value" in convert_c:
-                                            output.append(f"    float last_value = *data->{varname};")
-                                        if "last_raw_value" in convert_c:
-                                            output.append("    static float last_raw_value = 0.0;")
-                                        if "raw_value" in convert_c:
-                                            output.append("    float raw_value = value;")
+                                    if "last_value" in convert_c:
+                                        output.append(f"    float last_value = *data->{varname};")
+                                    if "last_raw_value" in convert_c or "last_raw_value" in str(signal_targets.values()):
+                                        output.append("    static float last_raw_value = 0.0;")
+                                    if "raw_value" in convert_c or "raw_value" in str(signal_targets.values()):
+                                        output.append("    float raw_value = value;")
 
                                 if convert_c:
                                     output.append("    // -- calc --")
