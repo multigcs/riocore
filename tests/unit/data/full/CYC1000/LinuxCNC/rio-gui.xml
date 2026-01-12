@@ -60,6 +60,7 @@
         <checkbutton>
           <halpin>"board0.bitout0.bit"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -76,6 +77,7 @@
         <checkbutton>
           <halpin>"board0.bitout1.bit"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -112,6 +114,7 @@
         <checkbutton>
           <halpin>"board0.pwmout0.enable"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

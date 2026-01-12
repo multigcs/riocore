@@ -22,19 +22,9 @@ module stepdir
 
     always @ (posedge clk) begin
         if (dirFlag) begin
-            // velocityAbs <= velocity;
-            if (velocityAbs < velocity) begin
-                velocityAbs <= velocityAbs + 1;
-            end else if (velocityAbs < velocity) begin
-                velocityAbs <= velocityAbs - 1;
-            end
+            velocityAbs <= velocity;
         end else begin
-            //velocityAbs <= -velocity;
-            if (velocityAbs < -velocity) begin
-                velocityAbs <= velocityAbs + 1;
-            end else if (velocityAbs < -velocity) begin
-                velocityAbs <= velocityAbs - 1;
-            end
+            velocityAbs <= -velocity;
         end
 
         if (PULSE_LEN == 0) begin

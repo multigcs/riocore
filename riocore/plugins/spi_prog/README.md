@@ -61,6 +61,20 @@ name of this plugin instance
  * type: str
  * default: 
 
+### spitype:
+SPI-Type
+
+ * type: select
+ * default: rpi4
+
+### cs:
+Chip-Select
+
+ * type: int
+ * min: 0
+ * max: 1
+ * default: 0
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -114,6 +128,8 @@ name of this plugin instance
 {
     "type": "spi_prog",
     "name": "",
+    "spitype": "rpi4",
+    "cs": 0,
     "pins": {
         "mosi": {
             "pin": "0",

@@ -32,19 +32,14 @@ class Plugin(PluginBase):
         board_list = []
         for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
             board_list.append(os.path.basename(jboard).replace(".json", ""))
+
         self.OPTIONS = {
             "node_type": {
                 "default": board_list[0],
                 "type": "select",
-                "options": board_list,
+                "options": sorted(board_list),
                 "description": "board type",
                 "reload": True,
-            },
-            "protocol": {
-                "default": "SPI",
-                "type": "select",
-                "options": ["SPI", "UDP", "UART", "FTDI", "CH341", "SHM"],
-                "description": "communication protocol",
             },
             "simulation": {
                 "default": False,

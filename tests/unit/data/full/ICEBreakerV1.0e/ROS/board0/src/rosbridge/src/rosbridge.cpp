@@ -32,6 +32,7 @@
 #define SPI_PIN_MISO 9
 #define SPI_PIN_CLK 11
 #define SPI_PIN_CS 8
+#define SPI_DEVICE "/dev/spidev0.0"
 #define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
 
@@ -537,40 +538,30 @@ void convert_sigin_board0_stepdir0_position(data_t *data) {
     float value = data->VARIN32_STEPDIR0_POSITION;
     float offset = *data->SIGIN_BOARD0_STEPDIR0_POSITION_OFFSET;
     float scale = *data->SIGIN_BOARD0_STEPDIR0_POSITION_SCALE;
-    float last_value = *data->SIGIN_BOARD0_STEPDIR0_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_BOARD0_STEPDIR0_POSITION + *data->SIGOUT_BOARD0_STEPDIR0_VELOCITY / 1000.0;
     }
-    *data->SIGIN_BOARD0_STEPDIR0_POSITION_ABS = abs(value);
+    *data->SIGIN_BOARD0_STEPDIR0_POSITION_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR0_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_STEPDIR0_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_BOARD0_STEPDIR0_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR0_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_board0_stepdir1_position(data_t *data) {
     float value = data->VARIN32_STEPDIR1_POSITION;
     float offset = *data->SIGIN_BOARD0_STEPDIR1_POSITION_OFFSET;
     float scale = *data->SIGIN_BOARD0_STEPDIR1_POSITION_SCALE;
-    float last_value = *data->SIGIN_BOARD0_STEPDIR1_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_BOARD0_STEPDIR1_POSITION + *data->SIGOUT_BOARD0_STEPDIR1_VELOCITY / 1000.0;
     }
-    *data->SIGIN_BOARD0_STEPDIR1_POSITION_ABS = abs(value);
+    *data->SIGIN_BOARD0_STEPDIR1_POSITION_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR1_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_STEPDIR1_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_BOARD0_STEPDIR1_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR1_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_board0_bitin0_bit(data_t *data) {
@@ -583,20 +574,15 @@ void convert_sigin_board0_stepdir2_position(data_t *data) {
     float value = data->VARIN32_STEPDIR2_POSITION;
     float offset = *data->SIGIN_BOARD0_STEPDIR2_POSITION_OFFSET;
     float scale = *data->SIGIN_BOARD0_STEPDIR2_POSITION_SCALE;
-    float last_value = *data->SIGIN_BOARD0_STEPDIR2_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_BOARD0_STEPDIR2_POSITION + *data->SIGOUT_BOARD0_STEPDIR2_VELOCITY / 1000.0;
     }
-    *data->SIGIN_BOARD0_STEPDIR2_POSITION_ABS = abs(value);
+    *data->SIGIN_BOARD0_STEPDIR2_POSITION_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR2_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_STEPDIR2_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_BOARD0_STEPDIR2_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR2_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_board0_bitin1_bit(data_t *data) {
@@ -705,7 +691,6 @@ void rio_readwrite(void *inst, long period) {
         *data->sys_status = 1;
     }
     long stamp_new = rtapi_get_time();
-    float duration2 = (stamp_new - stamp_last) / 1000.0;
     stamp_last = stamp_new;
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
@@ -733,9 +718,9 @@ void rio_readwrite(void *inst, long period) {
                 err_counter += 1;
                 err_total += 1;
                 if (ret != BUFFER_SIZE_RX) {
-                    printf("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    printf("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 } else {
-                    printf("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    printf("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 }
                 for (i = 0; i < ret; i++) {
                     printf("%d ", rxBuffer[i]);

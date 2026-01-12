@@ -195,6 +195,9 @@ def test_qtpyvcp():
                       </item>
                       <item>
                         <widget class="HalCheckBox" name="rio.hal-check1">
+                          <property name="checked">
+                            <number>0</number>
+                          </property>
                           <property name="pinBaseName" stdset="0">
                             <string>hal-check1</string>
                           </property>

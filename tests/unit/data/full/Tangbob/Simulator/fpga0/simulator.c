@@ -7,6 +7,12 @@
 
 uint8_t sim_running = 1;
 
+float joint_scales[NUM_JOINTS] = {
+   -800.0,
+   800.0,
+   -1600.0,
+};
+
 int udp_init(const char *dstAddress, int dstPort, int srcPort);
 void udp_tx(uint8_t *txBuffer, uint16_t size);
 int udp_rx(uint8_t *rxBuffer, uint16_t size);
@@ -63,19 +69,19 @@ void simulation(void) {
         VARIN32_STEPDIR2_POSITION += (int32_t)newpos;
     }
     joint_position[2] = VARIN32_STEPDIR2_POSITION;
-    if (joint_position[0] < 0.0) {
+    if (joint_position[0] * joint_scales[0] < 0.0) {
         VARIN1_BITIN0_BIT = 1;
     } else {
         VARIN1_BITIN0_BIT = 0;
     }
     home_switch[0] = VARIN1_BITIN0_BIT;
-    if (joint_position[1] < 0.0) {
+    if (joint_position[1] * joint_scales[1] < 0.0) {
         VARIN1_BITIN1_BIT = 1;
     } else {
         VARIN1_BITIN1_BIT = 0;
     }
     home_switch[1] = VARIN1_BITIN1_BIT;
-    if (joint_position[2] > 2000.0) {
+    if (joint_position[2] * joint_scales[2] > 100.0) {
         VARIN1_BITIN2_BIT = 1;
     } else {
         VARIN1_BITIN2_BIT = 0;

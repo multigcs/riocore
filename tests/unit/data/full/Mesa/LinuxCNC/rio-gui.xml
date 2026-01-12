@@ -132,6 +132,7 @@
         <checkbutton>
           <halpin>"hm2_7c81.0.pwmgen.00.enable"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -167,6 +168,7 @@
         <checkbutton>
           <halpin>"hm2_7c81.0.gpio.001.out"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

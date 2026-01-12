@@ -53,6 +53,7 @@
         <checkbutton>
           <halpin>"board0.board0_wled.0_green"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -69,6 +70,7 @@
         <checkbutton>
           <halpin>"board0.board0_wled.0_blue"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -85,6 +87,7 @@
         <checkbutton>
           <halpin>"board0.board0_wled.0_red"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -402,6 +405,7 @@
             <checkbutton>
               <halpin>"Reset.value"</halpin>
               <anchor>"e"</anchor>
+              <initval>0</initval>
               <width>13</width>
             </checkbutton>
           </hbox>
@@ -422,6 +426,7 @@
         <checkbutton>
           <halpin>"Bool1.value"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -438,6 +443,7 @@
         <checkbutton>
           <halpin>"Bool2.value"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

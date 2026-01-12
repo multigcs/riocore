@@ -30,6 +30,7 @@
 #define SPI_PIN_MISO 9
 #define SPI_PIN_CLK 11
 #define SPI_PIN_CS 8
+#define SPI_DEVICE "/dev/spidev0.0"
 #define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
 
@@ -435,7 +436,6 @@ void convert_frame_modbus0_output(data_t *data) {
     static uint8_t frame_io[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     static uint8_t frame_data[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     float frame_time = 0.0;
-    uint8_t frame_id_last = 0;
     uint8_t frame_id_ack = 0;
     uint8_t frame_timeout = 0;
     uint8_t frame_ack = 0;
@@ -453,7 +453,6 @@ void convert_frame_modbus0_output(data_t *data) {
     }
 
     if (timeout == 0 || frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - modbus0_last_rx) / 1000000.0 > delay)) {
-        frame_id_last = frame_id;
         frame_id += 1;
 
         /*** get plugin vars ***/
@@ -464,37 +463,7 @@ void convert_frame_modbus0_output(data_t *data) {
 
         /*** plugin code ***/
 
-        if (frame_timeout == 1) {
-            // rtapi_print("rx error: timeout: %d\n", modbus0_signal_active);
-        }
-
-        // check for changes on prio values
-        {
-            if (modbus0_signal_next < -1) {
-                modbus0_signal_next++;
-            } else {
-                modbus0_signal_next = 0;
-            }
-            modbus0_signal_active = modbus0_signal_next;
-        }
-
-        switch (modbus0_signal_active) {
-        }
-
-
-        if (frame_len == 0) {
-            delay = 0;
-            timeout = 0;
-        } else {
-            uint8_t i = 0;
-            uint16_t crc = 0xFFFF;
-            for (i = 0; i < frame_len; i++) {
-                crc = crc16_update(crc, frame_data[i]);
-            }
-            frame_data[frame_len] = crc & 0xFF;
-            frame_data[frame_len + 1] = crc>>8 & 0xFF;
-            frame_len += 2;
-        }
+        
 
         /*******************/
 
@@ -617,9 +586,7 @@ void convert_frame_modbus0_input(data_t *data) {
 
     if (frame_new == 1) {
         uint8_t n = 0;
-        uint8_t data_len = 0;
         uint8_t data_addr = frame_data[0];
-        uint8_t data_type = frame_data[1];
         uint16_t crc = 0xFFFF;
         for (n = 0; n < frame_len - 2; n++) {
            crc = crc16_update(crc, frame_data[n]);
@@ -651,20 +618,15 @@ void convert_sigin_fpga0_i2cbus0_lm75_0_temp(data_t *data) {
     float value = data->VARIN16_I2CBUS0_LM75_0_TEMP;
     float offset = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET;
     float scale = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE;
-    float last_value = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     // -- calc --
     value = value / 256.0;
     // ----------
     value = value + offset;
     value = value / scale;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = abs(value);
+    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = fabs(value);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32 = value;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_i2cbus0_lm75_0_valid(data_t *data) {
@@ -677,60 +639,45 @@ void convert_sigin_fpga0_stepdir0_position(data_t *data) {
     float value = data->VARIN32_STEPDIR0_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR0_POSITION_OFFSET;
     float scale = *data->SIGIN_FPGA0_STEPDIR0_POSITION_SCALE;
-    float last_value = *data->SIGIN_FPGA0_STEPDIR0_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR0_POSITION + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY / 1000.0;
     }
-    *data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_S32 = value;
-    *data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_stepdir1_position(data_t *data) {
     float value = data->VARIN32_STEPDIR1_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR1_POSITION_OFFSET;
     float scale = *data->SIGIN_FPGA0_STEPDIR1_POSITION_SCALE;
-    float last_value = *data->SIGIN_FPGA0_STEPDIR1_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR1_POSITION + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY / 1000.0;
     }
-    *data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_S32 = value;
-    *data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_stepdir2_position(data_t *data) {
     float value = data->VARIN32_STEPDIR2_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR2_POSITION_OFFSET;
     float scale = *data->SIGIN_FPGA0_STEPDIR2_POSITION_SCALE;
-    float last_value = *data->SIGIN_FPGA0_STEPDIR2_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR2_POSITION + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY / 1000.0;
     }
-    *data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_S32 = value;
-    *data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_bitin0_bit(data_t *data) {
@@ -839,7 +786,6 @@ void rio_readwrite(void *inst, long period) {
         *data->sys_status = 1;
     }
     long stamp_new = rtapi_get_time();
-    float duration2 = (stamp_new - stamp_last) / 1000.0;
     stamp_last = stamp_new;
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
@@ -867,9 +813,9 @@ void rio_readwrite(void *inst, long period) {
                 err_counter += 1;
                 err_total += 1;
                 if (ret != BUFFER_SIZE_RX) {
-                    printf("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    printf("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 } else {
-                    printf("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    printf("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 }
                 for (i = 0; i < ret; i++) {
                     printf("%d ", rxBuffer[i]);

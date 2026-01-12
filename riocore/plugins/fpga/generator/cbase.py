@@ -784,20 +784,25 @@ class cbase:
         if "serial":
             self.header_list += ["fcntl.h", "termios.h"]
 
-        protocol = self.instance.jdata.get("protocol", "SPI")
-
-        ip = "192.168.10.194"
-        port = 2390
+        protocol = None
+        ip = ""
+        port = 0
+        cspin = 0
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if plugin_instance.master != self.instance.instances_name:
                 continue
+
             if plugin_instance.TYPE == "interface":
+                protocol = plugin_instance.HOST_INTERFACE
                 ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
                 port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
+                cspin = plugin_instance.plugin_setup.get("cs", plugin_instance.option_default("cs", cspin))
 
+        # backward compatibility (SPI/UDP)
         ip = self.project.config["jdata"].get("ip", ip)
         port = self.project.config["jdata"].get("port", port)
         dst_port = self.project.config["jdata"].get("dst_port", port)
+
         # TODO: offset workaround
         offset = int(self.instance.instances_name[-1])
         src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1 + offset))
@@ -825,7 +830,11 @@ class cbase:
         defines["SPI_PIN_MOSI"] = "10"
         defines["SPI_PIN_MISO"] = "9"
         defines["SPI_PIN_CLK"] = "11"
-        defines["SPI_PIN_CS"] = "8"  # CE1 = 7
+        if cspin == 1:
+            defines["SPI_PIN_CS"] = "7"  # CE0 = 8 / CE1 = 7
+        else:
+            defines["SPI_PIN_CS"] = "8"  # CE0 = 8 / CE1 = 7
+        defines["SPI_DEVICE"] = f'"/dev/spidev0.{cspin}"'
         defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
 
         for header in self.header_list:
@@ -883,30 +892,14 @@ class cbase:
         output.append("")
         output += self.variables_register(libmode=libmode)
 
+        # backward compatibility (SPI)
         iface_data = None
-        generic_spi = self.project.config["jdata"].get("generic_spi", False)
-        rpi5 = self.project.config["jdata"].get("rpi5", False)
-        if protocol == "SPI" and generic_spi is True:
-            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c_generic")):
-                if protocol == ppath.split(os.sep)[-2]:
-                    output.append("/*")
-                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                    output.append("*/")
-                    iface_data = open(ppath).read()
-        elif protocol == "SPI" and rpi5 is True:
-            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c_rpi5")):
-                if protocol == ppath.split(os.sep)[-2]:
-                    output.append("/*")
-                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                    output.append("*/")
-                    iface_data = open(ppath).read()
-        else:
-            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
-                if protocol == ppath.split(os.sep)[-2]:
-                    output.append("/*")
-                    output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
-                    output.append("*/")
-                    iface_data = open(ppath).read()
+        for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
+            if protocol == ppath.split(os.sep)[-2]:
+                output.append("/*")
+                output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
+                output.append("*/")
+                iface_data = open(ppath).read()
         if not self.rtapi_mode:
             iface_data = iface_data.replace("rtapi_print", "printf")
             iface_data = iface_data.replace("strerror(errno)", '"error"')
@@ -917,7 +910,7 @@ class cbase:
         output.append("int interface_init(int argc, char **argv) {")
         if protocol == "UART":
             output.append("    uart_init();")
-        elif protocol == "SPI":
+        elif protocol.startswith("SPI"):
             output.append("    spi_init();")
         elif protocol == "UDP":
             output.append("    char dstAddress[1024];")
@@ -956,7 +949,7 @@ class cbase:
         output.append("void interface_exit(void) {")
         if protocol == "UART":
             output.append("    uart_exit();")
-        elif protocol == "SPI":
+        elif protocol.startswith("SPI"):
             output.append("    spi_exit();")
         elif protocol == "UDP":
             output.append("    udp_exit();")
@@ -1024,7 +1017,7 @@ class cbase:
 
         if protocol == "UART":
             output.append("            uart_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
-        elif protocol == "SPI":
+        elif protocol.startswith("SPI"):
             output.append("            spi_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
 
         elif protocol == "UDP":

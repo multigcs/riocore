@@ -64,6 +64,29 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
+        self.HOST_INTERFACE = "SPI"
+        self.OPTIONS = {
+            "spitype": {
+                "default": "rpi4",
+                "type": "select",
+                "options": ["rpi4", "rpi5", "generic"],
+                "description": "SPI-Type",
+            },
+            "cs": {
+                "default": 0,
+                "type": int,
+                "min": 0,
+                "max": 1,
+                "description": "Chip-Select",
+            },
+        }
+        spitype = self.plugin_setup.get("spitype", self.option_default("spitype", 0))
+        if spitype == "rpi5":
+            self.HOST_INTERFACE = "SPI_RPI5"
+        elif spitype == "generic":
+            self.HOST_INTERFACE = "SPI_GENERIC"
+        else:
+            self.HOST_INTERFACE = "SPI"
         if self.system_setup and "speed" in self.system_setup:
             self.TIMING_CONSTRAINTS = {
                 "PININ:sclk": (self.system_setup["speed"] / 4),

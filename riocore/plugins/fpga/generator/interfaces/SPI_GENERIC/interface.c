@@ -17,7 +17,7 @@
 #include <linux/spi/spidev.h>
 
 int spi_fd = -1;
-static const char *device = "/dev/spidev0.0";
+static const char *device = SPI_DEVICE;
 static uint32_t mode = 0;
 static uint8_t bits = 8;
 static uint32_t speed = 1000000;

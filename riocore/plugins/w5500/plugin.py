@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["w5500", "w5500mini"]
         self.ORIGIN = "https://github.com/harout/concurrent-data-capture"
         self.TYPE = "interface"
+        self.HOST_INTERFACE = "UDP"
         self.VERILOGS = ["w5500.v"]
 
         self.PINDEFAULTS = {

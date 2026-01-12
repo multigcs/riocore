@@ -4,8 +4,8 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "spi"
-        self.INFO = "spi interface for host comunication"
-        self.DESCRIPTION = "for direct connections via SPI"
+        self.INFO = "spi interface for host comunication over UDB2SPI-Bridges"
+        self.DESCRIPTION = "for UDP connections via UDB2SPI-Bridges"
         self.KEYWORDS = "interface spi raspberry rpi"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
         self.VERILOGS = ["spi.v"]
@@ -33,29 +33,29 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
-        self.HOST_INTERFACE = "SPI"
+        self.HOST_INTERFACE = "UDP"
         self.OPTIONS = {
-            "spitype": {
-                "default": "rpi4",
-                "type": "select",
-                "options": ["rpi4", "rpi5", "generic"],
-                "description": "SPI-Type",
+            "ip": {
+                "default": "192.168.10.194",
+                "type": str,
+                "description": "IP-Address",
             },
-            "cs": {
-                "default": 0,
+            "mask": {
+                "default": "255.255.255.0",
+                "type": str,
+                "description": "Network-Mask",
+            },
+            "gw": {
+                "default": "192.168.10.1",
+                "type": str,
+                "description": "Gateway IP-Address",
+            },
+            "port": {
+                "default": 2390,
                 "type": int,
-                "min": 0,
-                "max": 1,
-                "description": "Chip-Select",
+                "description": "UDP-Port",
             },
         }
-        spitype = self.plugin_setup.get("spitype", self.option_default("spitype", 0))
-        if spitype == "rpi5":
-            self.HOST_INTERFACE = "SPI_RPI5"
-        elif spitype == "generic":
-            self.HOST_INTERFACE = "SPI_GENERIC"
-        else:
-            self.HOST_INTERFACE = "SPI"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

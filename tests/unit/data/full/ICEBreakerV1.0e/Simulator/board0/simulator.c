@@ -7,6 +7,12 @@
 
 uint8_t sim_running = 1;
 
+float joint_scales[NUM_JOINTS] = {
+   320.0,
+   320.0,
+   320.0,
+};
+
 int udp_init(const char *dstAddress, int dstPort, int srcPort);
 void udp_tx(uint8_t *txBuffer, uint16_t size);
 int udp_rx(uint8_t *rxBuffer, uint16_t size);

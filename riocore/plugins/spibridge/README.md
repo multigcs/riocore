@@ -2,9 +2,9 @@
 
 <img align="right" width="320" src="image.png">
 
-**spi interface for host comunication**
+**spi interface for host comunication over UDB2SPI-Bridges**
 
-for direct connections via SPI
+for UDP connections via UDB2SPI-Bridges
 
 Keywords: interface spi raspberry rpi
 
@@ -35,19 +35,29 @@ name of this plugin instance
  * type: str
  * default: 
 
-### spitype:
-SPI-Type
+### ip:
+IP-Address
 
- * type: select
- * default: rpi4
+ * type: str
+ * default: 192.168.10.194
 
-### cs:
-Chip-Select
+### mask:
+Network-Mask
+
+ * type: str
+ * default: 255.255.255.0
+
+### gw:
+Gateway IP-Address
+
+ * type: str
+ * default: 192.168.10.1
+
+### port:
+UDP-Port
 
  * type: int
- * min: 0
- * max: 1
- * default: 0
+ * default: 2390
 
 
 ## Signals:
@@ -84,8 +94,10 @@ Chip-Select
 {
     "type": "spi",
     "name": "",
-    "spitype": "rpi4",
-    "cs": 0,
+    "ip": "192.168.10.194",
+    "mask": "255.255.255.0",
+    "gw": "192.168.10.1",
+    "port": 2390,
     "pins": {
         "mosi": {
             "pin": "0",

@@ -8,7 +8,7 @@ static uint32_t speed = 1500000;
 
 int spi_init(void) {
     rtapi_print("Info: Initialize SPI5 connection\n");
-    spifd = open("/dev/spidev0.0", O_RDWR);
+    spifd = open(SPI_DEVICE, O_RDWR);
     if (spifd < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR,"Failed to open SPI device\n");
         return -1;

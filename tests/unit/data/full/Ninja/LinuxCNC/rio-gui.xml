@@ -132,6 +132,7 @@
         <checkbutton>
           <halpin>"stepgen-ninja.0.pwm.0.enable"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -167,6 +168,7 @@
         <checkbutton>
           <halpin>"stepgen-ninja.0.output.gp25"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -183,6 +185,7 @@
         <checkbutton>
           <halpin>"stepgen-ninja.0.output.gp29"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

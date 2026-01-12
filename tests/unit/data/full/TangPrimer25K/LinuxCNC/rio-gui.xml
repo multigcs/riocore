@@ -93,6 +93,7 @@
         <checkbutton>
           <halpin>"board0.bitout0.bit"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

@@ -245,12 +245,6 @@ board type
  * type: select
  * default: TangNano20K
 
-### protocol:
-communication protocol
-
- * type: select
- * default: SPI
-
 ### simulation:
 simulation mode
 
@@ -431,7 +425,6 @@ FPGA clock speed
     "type": "fpga",
     "name": "",
     "node_type": "TangNano20K",
-    "protocol": "SPI",
     "simulation": false,
     "toolchain": "gowin",
     "speed": 27000000,

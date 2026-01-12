@@ -20,6 +20,12 @@ class simulator(generator_base):
         self.glsim = False
         project.config["riocore_path"] = riocore_path
 
+        self.joints = 0
+        for axis_name, axis_config in self.project.axis_dict.items():
+            self.joints += len(axis_config["joints"])
+        if self.joints < 3:
+            return
+
         if self.project.config["output_path"]:
             self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator", self.instance.instances_name)
             os.makedirs(self.simulator_path, exist_ok=True)
@@ -221,7 +227,7 @@ class simulator(generator_base):
         output.append("int interface_init() {")
         if protocol == "UART":
             output.append("    uart_init();")
-        elif protocol == "SPI":
+        elif protocol.startswith("SPI"):
             output.append("    spi_init();")
         elif protocol == "UDP":
             output.append('    udp_init("0.0.0.0", DST_PORT, SRC_PORT);')
@@ -234,7 +240,7 @@ class simulator(generator_base):
         output.append("void interface_exit(void) {")
         if protocol == "UART":
             output.append("    uart_exit();")
-        elif protocol == "SPI":
+        elif protocol.startswith("SPI"):
             output.append("    spi_exit();")
         elif protocol == "UDP":
             output.append("    udp_exit();")

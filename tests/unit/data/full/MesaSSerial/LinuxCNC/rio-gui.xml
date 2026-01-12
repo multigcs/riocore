@@ -74,6 +74,7 @@
         <checkbutton>
           <halpin>"hm2_7i92.0.9r01.0.1.output-00"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

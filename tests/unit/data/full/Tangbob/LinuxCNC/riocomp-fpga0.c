@@ -33,6 +33,7 @@ MODULE_LICENSE("GPL v2");
 #define SPI_PIN_MISO 9
 #define SPI_PIN_CLK 11
 #define SPI_PIN_CS 8
+#define SPI_DEVICE "/dev/spidev0.0"
 #define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
 static int 			      comp_id;
@@ -163,121 +164,121 @@ data_t *register_signals(void) {
     data->VAROUT1_FPGA0_WLED_0_RED = 0;
     data->VAROUT1_BITOUT0_BIT = 0;
 
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "fpga0.sys-status") != 0) error_handler(retval);
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable), comp_id, "fpga0.sys-enable") != 0) error_handler(retval);
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable_request), comp_id, "fpga0.sys-enable-request") != 0) error_handler(retval);
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->machine_on), comp_id, "fpga0.machine-on") != 0) error_handler(retval);
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->sys_simulation), comp_id, "fpga0.sys-simulation") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "fpga0.sys-status")) != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable), comp_id, "fpga0.sys-enable")) != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable_request), comp_id, "fpga0.sys-enable-request")) != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->machine_on), comp_id, "fpga0.machine-on")) != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_simulation), comp_id, "fpga0.sys-simulation")) != 0) error_handler(retval);
     *data->sys_simulation = 0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->duration), comp_id, "fpga0.duration") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->duration), comp_id, "fpga0.duration")) != 0) error_handler(retval);
     *data->duration = rtapi_get_time();
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_SCALE), comp_id, "fpga0.modbus0.temperature-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_SCALE), comp_id, "fpga0.modbus0.temperature-scale")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_OFFSET), comp_id, "fpga0.modbus0.temperature-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_OFFSET), comp_id, "fpga0.modbus0.temperature-offset")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE), comp_id, "fpga0.modbus0.temperature") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE), comp_id, "fpga0.modbus0.temperature")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MODBUS0_TEMPERATURE = 0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_ABS), comp_id, "fpga0.modbus0.temperature-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_ABS), comp_id, "fpga0.modbus0.temperature-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_ABS = 0;
-    if (retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_S32), comp_id, "fpga0.modbus0.temperature-s32") != 0) error_handler(retval);
+    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_S32), comp_id, "fpga0.modbus0.temperature-s32")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_S32 = 0;
-    if (retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_U32_ABS), comp_id, "fpga0.modbus0.temperature-u32-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_U32_ABS), comp_id, "fpga0.modbus0.temperature-u32-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MODBUS0_TEMPERATURE_U32_ABS = 0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE), comp_id, "fpga0.i2cbus0.lm75_0_temp-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE), comp_id, "fpga0.i2cbus0.lm75_0_temp-scale")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET), comp_id, "fpga0.i2cbus0.lm75_0_temp-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET), comp_id, "fpga0.i2cbus0.lm75_0_temp-offset")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP), comp_id, "fpga0.i2cbus0.lm75_0_temp") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP), comp_id, "fpga0.i2cbus0.lm75_0_temp")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = 0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS), comp_id, "fpga0.i2cbus0.lm75_0_temp-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS), comp_id, "fpga0.i2cbus0.lm75_0_temp-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = 0;
-    if (retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32), comp_id, "fpga0.i2cbus0.lm75_0_temp-s32") != 0) error_handler(retval);
+    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32), comp_id, "fpga0.i2cbus0.lm75_0_temp-s32")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32 = 0;
-    if (retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS), comp_id, "fpga0.i2cbus0.lm75_0_temp-u32-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS), comp_id, "fpga0.i2cbus0.lm75_0_temp-u32-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = 0;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID), comp_id, "fpga0.i2cbus0.lm75_0_valid") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID), comp_id, "fpga0.i2cbus0.lm75_0_valid")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID = 0;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not), comp_id, "fpga0.i2cbus0.lm75_0_valid-not") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not), comp_id, "fpga0.i2cbus0.lm75_0_valid-not")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE), comp_id, "fpga0.stepdir0.velocity-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE), comp_id, "fpga0.stepdir0.velocity-scale")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET), comp_id, "fpga0.stepdir0.velocity-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET), comp_id, "fpga0.stepdir0.velocity-offset")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_VELOCITY), comp_id, "fpga0.stepdir0.velocity") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_VELOCITY), comp_id, "fpga0.stepdir0.velocity")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY = 0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_SCALE), comp_id, "fpga0.stepdir0.position-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_SCALE), comp_id, "fpga0.stepdir0.position-scale")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_OFFSET), comp_id, "fpga0.stepdir0.position-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_OFFSET), comp_id, "fpga0.stepdir0.position-offset")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION), comp_id, "fpga0.stepdir0.position") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION), comp_id, "fpga0.stepdir0.position")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION = 0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS), comp_id, "fpga0.stepdir0.position-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS), comp_id, "fpga0.stepdir0.position-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS = 0;
-    if (retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_S32), comp_id, "fpga0.stepdir0.position-s32") != 0) error_handler(retval);
+    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_S32), comp_id, "fpga0.stepdir0.position-s32")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_S32 = 0;
-    if (retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS), comp_id, "fpga0.stepdir0.position-u32-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS), comp_id, "fpga0.stepdir0.position-u32-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_ENABLE), comp_id, "fpga0.stepdir0.enable") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR0_ENABLE), comp_id, "fpga0.stepdir0.enable")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR0_ENABLE = 0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE), comp_id, "fpga0.stepdir1.velocity-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE), comp_id, "fpga0.stepdir1.velocity-scale")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_OFFSET), comp_id, "fpga0.stepdir1.velocity-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_OFFSET), comp_id, "fpga0.stepdir1.velocity-offset")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_VELOCITY), comp_id, "fpga0.stepdir1.velocity") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_VELOCITY), comp_id, "fpga0.stepdir1.velocity")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY = 0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_SCALE), comp_id, "fpga0.stepdir1.position-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_SCALE), comp_id, "fpga0.stepdir1.position-scale")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_OFFSET), comp_id, "fpga0.stepdir1.position-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_OFFSET), comp_id, "fpga0.stepdir1.position-offset")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION), comp_id, "fpga0.stepdir1.position") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION), comp_id, "fpga0.stepdir1.position")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION = 0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS), comp_id, "fpga0.stepdir1.position-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS), comp_id, "fpga0.stepdir1.position-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS = 0;
-    if (retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_S32), comp_id, "fpga0.stepdir1.position-s32") != 0) error_handler(retval);
+    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_S32), comp_id, "fpga0.stepdir1.position-s32")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_S32 = 0;
-    if (retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS), comp_id, "fpga0.stepdir1.position-u32-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS), comp_id, "fpga0.stepdir1.position-u32-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_ENABLE), comp_id, "fpga0.stepdir1.enable") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR1_ENABLE), comp_id, "fpga0.stepdir1.enable")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR1_ENABLE = 0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE), comp_id, "fpga0.stepdir2.velocity-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE), comp_id, "fpga0.stepdir2.velocity-scale")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_OFFSET), comp_id, "fpga0.stepdir2.velocity-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_OFFSET), comp_id, "fpga0.stepdir2.velocity-offset")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_VELOCITY), comp_id, "fpga0.stepdir2.velocity") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_VELOCITY), comp_id, "fpga0.stepdir2.velocity")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY = 0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_SCALE), comp_id, "fpga0.stepdir2.position-scale") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_SCALE), comp_id, "fpga0.stepdir2.position-scale")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_SCALE = 1.0;
-    if (retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_OFFSET), comp_id, "fpga0.stepdir2.position-offset") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_OFFSET), comp_id, "fpga0.stepdir2.position-offset")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_OFFSET = 0.0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION), comp_id, "fpga0.stepdir2.position") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION), comp_id, "fpga0.stepdir2.position")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION = 0;
-    if (retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS), comp_id, "fpga0.stepdir2.position-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS), comp_id, "fpga0.stepdir2.position-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS = 0;
-    if (retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_S32), comp_id, "fpga0.stepdir2.position-s32") != 0) error_handler(retval);
+    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_S32), comp_id, "fpga0.stepdir2.position-s32")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_S32 = 0;
-    if (retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS), comp_id, "fpga0.stepdir2.position-u32-abs") != 0) error_handler(retval);
+    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS), comp_id, "fpga0.stepdir2.position-u32-abs")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_ENABLE), comp_id, "fpga0.stepdir2.enable") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_STEPDIR2_ENABLE), comp_id, "fpga0.stepdir2.enable")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_STEPDIR2_ENABLE = 0;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN0_BIT), comp_id, "fpga0.bitin0.bit") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN0_BIT), comp_id, "fpga0.bitin0.bit")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN0_BIT = 0;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN0_BIT_not), comp_id, "fpga0.bitin0.bit-not") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN0_BIT_not), comp_id, "fpga0.bitin0.bit-not")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN0_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN0_BIT;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN1_BIT), comp_id, "fpga0.bitin1.bit") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN1_BIT), comp_id, "fpga0.bitin1.bit")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN1_BIT = 0;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN1_BIT_not), comp_id, "fpga0.bitin1.bit-not") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN1_BIT_not), comp_id, "fpga0.bitin1.bit-not")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN1_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN1_BIT;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT), comp_id, "fpga0.bitin2.bit") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT), comp_id, "fpga0.bitin2.bit")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN2_BIT = 0;
-    if (retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT_not), comp_id, "fpga0.bitin2.bit-not") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT_not), comp_id, "fpga0.bitin2.bit-not")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN2_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN2_BIT;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN), comp_id, "fpga0.fpga0_wled.0_green") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN), comp_id, "fpga0.fpga0_wled.0_green")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE), comp_id, "fpga0.fpga0_wled.0_blue") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE), comp_id, "fpga0.fpga0_wled.0_blue")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_RED), comp_id, "fpga0.fpga0_wled.0_red") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_FPGA0_WLED_0_RED), comp_id, "fpga0.fpga0_wled.0_red")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = 0;
-    if (retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_BITOUT0_BIT), comp_id, "fpga0.bitout0.bit") != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_BITOUT0_BIT), comp_id, "fpga0.bitout0.bit")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_BITOUT0_BIT = 0;
     return data;
 }
@@ -476,12 +477,12 @@ int error_handler(int retval) {
         hal_exit(comp_id);
         return -1;
     }
+    return 0;
 }
 
 int rtapi_app_main(void) {
     char name[HAL_NAME_LEN + 1];
     int retval = 0;
-    int n = 0;
     data = hal_malloc(sizeof(data_t));
     comp_id = hal_init(modname);
     if (comp_id < 0) {
@@ -547,7 +548,6 @@ void convert_frame_modbus0_output(data_t *data) {
     static uint8_t frame_io[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     static uint8_t frame_data[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     float frame_time = 0.0;
-    uint8_t frame_id_last = 0;
     uint8_t frame_id_ack = 0;
     uint8_t frame_timeout = 0;
     uint8_t frame_ack = 0;
@@ -565,7 +565,6 @@ void convert_frame_modbus0_output(data_t *data) {
     }
 
     if (timeout == 0 || frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - modbus0_last_rx) / 1000000.0 > delay)) {
-        frame_id_last = frame_id;
         frame_id += 1;
 
         /*** get plugin vars ***/
@@ -576,37 +575,7 @@ void convert_frame_modbus0_output(data_t *data) {
 
         /*** plugin code ***/
 
-        if (frame_timeout == 1) {
-            // rtapi_print("rx error: timeout: %d\n", modbus0_signal_active);
-        }
-
-        // check for changes on prio values
-        {
-            if (modbus0_signal_next < -1) {
-                modbus0_signal_next++;
-            } else {
-                modbus0_signal_next = 0;
-            }
-            modbus0_signal_active = modbus0_signal_next;
-        }
-
-        switch (modbus0_signal_active) {
-        }
-
-
-        if (frame_len == 0) {
-            delay = 0;
-            timeout = 0;
-        } else {
-            uint8_t i = 0;
-            uint16_t crc = 0xFFFF;
-            for (i = 0; i < frame_len; i++) {
-                crc = crc16_update(crc, frame_data[i]);
-            }
-            frame_data[frame_len] = crc & 0xFF;
-            frame_data[frame_len + 1] = crc>>8 & 0xFF;
-            frame_len += 2;
-        }
+        
 
         /*******************/
 
@@ -729,9 +698,7 @@ void convert_frame_modbus0_input(data_t *data) {
 
     if (frame_new == 1) {
         uint8_t n = 0;
-        uint8_t data_len = 0;
         uint8_t data_addr = frame_data[0];
-        uint8_t data_type = frame_data[1];
         uint16_t crc = 0xFFFF;
         for (n = 0; n < frame_len - 2; n++) {
            crc = crc16_update(crc, frame_data[n]);
@@ -763,20 +730,15 @@ void convert_sigin_fpga0_i2cbus0_lm75_0_temp(data_t *data) {
     float value = data->VARIN16_I2CBUS0_LM75_0_TEMP;
     float offset = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET;
     float scale = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE;
-    float last_value = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     // -- calc --
     value = value / 256.0;
     // ----------
     value = value + offset;
     value = value / scale;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = abs(value);
+    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = fabs(value);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32 = value;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_i2cbus0_lm75_0_valid(data_t *data) {
@@ -789,60 +751,45 @@ void convert_sigin_fpga0_stepdir0_position(data_t *data) {
     float value = data->VARIN32_STEPDIR0_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR0_POSITION_OFFSET;
     float scale = *data->SIGIN_FPGA0_STEPDIR0_POSITION_SCALE;
-    float last_value = *data->SIGIN_FPGA0_STEPDIR0_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR0_POSITION + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY / 1000.0;
     }
-    *data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_S32 = value;
-    *data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR0_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_stepdir1_position(data_t *data) {
     float value = data->VARIN32_STEPDIR1_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR1_POSITION_OFFSET;
     float scale = *data->SIGIN_FPGA0_STEPDIR1_POSITION_SCALE;
-    float last_value = *data->SIGIN_FPGA0_STEPDIR1_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR1_POSITION + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY / 1000.0;
     }
-    *data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_S32 = value;
-    *data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR1_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_stepdir2_position(data_t *data) {
     float value = data->VARIN32_STEPDIR2_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR2_POSITION_OFFSET;
     float scale = *data->SIGIN_FPGA0_STEPDIR2_POSITION_SCALE;
-    float last_value = *data->SIGIN_FPGA0_STEPDIR2_POSITION;
-    static float last_raw_value = 0.0;
-    float raw_value = value;
     value = value + offset;
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR2_POSITION + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY / 1000.0;
     }
-    *data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_S32 = value;
-    *data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS = abs(value);
+    *data->SIGIN_FPGA0_STEPDIR2_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION = value;
-
-    last_raw_value = raw_value;
 }
 
 void convert_sigin_fpga0_bitin0_bit(data_t *data) {
@@ -951,7 +898,6 @@ void rio_readwrite(void *inst, long period) {
         *data->sys_status = 1;
     }
     long stamp_new = rtapi_get_time();
-    float duration2 = (stamp_new - stamp_last) / 1000.0;
     stamp_last = stamp_new;
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
@@ -979,9 +925,9 @@ void rio_readwrite(void *inst, long period) {
                 err_counter += 1;
                 err_total += 1;
                 if (ret != BUFFER_SIZE_RX) {
-                    rtapi_print("%i: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    rtapi_print("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 } else {
-                    rtapi_print("%i: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    rtapi_print("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
                 }
                 for (i = 0; i < ret; i++) {
                     rtapi_print("%d ", rxBuffer[i]);

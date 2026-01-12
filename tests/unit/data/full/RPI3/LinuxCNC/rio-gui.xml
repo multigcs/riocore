@@ -235,6 +235,7 @@
         <checkbutton>
           <halpin>"hal_pi_gpio.pin-18-out"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

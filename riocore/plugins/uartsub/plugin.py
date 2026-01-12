@@ -37,7 +37,7 @@ class Plugin(PluginBase):
                 "description": "sub board",
             },
         }
-        self.TYPE = "interface"
+        self.TYPE = "sub_interface"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

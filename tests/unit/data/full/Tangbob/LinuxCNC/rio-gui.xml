@@ -177,6 +177,7 @@
         <checkbutton>
           <halpin>"fpga0.fpga0_wled.0_green"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -193,6 +194,7 @@
         <checkbutton>
           <halpin>"fpga0.fpga0_wled.0_blue"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>
@@ -209,6 +211,7 @@
         <checkbutton>
           <halpin>"fpga0.fpga0_wled.0_red"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

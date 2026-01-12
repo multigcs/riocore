@@ -10,14 +10,10 @@
 #define GL_WIDTH  4.0
 #define GL_HEIGHT 3.0
 
-// Virtual size (in mm / scale = steps/mm)
-#define VIRT_SCALE  100.0
-#define VIRT_WIDTH  400.0
-#define VIRT_HEIGHT 300.0
-
 // Heightmap size
 #define HM_WIDTH  800
 #define HM_HEIGHT 600
+#define HM_DEPTH  255
 
 
 unsigned char heightmap[HM_WIDTH][HM_HEIGHT];
@@ -34,6 +30,15 @@ static uint8_t running = 1;
 static int lastMouseX, lastMouseY;
 static int isDragging = 0;
 static int isTranslate = 0;
+
+void draw_text(char *text) {
+    void* font = GLUT_BITMAP_9_BY_15;
+    glRasterPos2i(0, 0);
+    for (int i = 0; i < strlen(text); i++) {
+        char c = text[i];
+        glutBitmapCharacter(font, c);
+    }
+}
 
 // Function to initialize OpenGL settings
 void initGL() {
@@ -59,28 +64,24 @@ void initGL() {
 
 // Function to draw a simple CNC mill
 void drawCNCMill() {
-
+    char text[1024];
     float pos_x = joint_position[x_joints[0]];
     float pos_y = joint_position[y_joints[0]];
     float pos_z = joint_position[z_joints[0]];
 
-
     // update heightmap
-    float hpos_x = (pos_x / VIRT_SCALE / VIRT_WIDTH * HM_WIDTH);
-    float hpos_y = (pos_y / VIRT_SCALE / VIRT_HEIGHT * HM_HEIGHT);
+    float hpos_x = (pos_x / VIRT_SCALE_X / VIRT_WIDTH * HM_WIDTH);
+    float hpos_y = (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * HM_HEIGHT);
     int offset = 2;
     for (int y = hpos_y - offset; y < hpos_y + offset; y++) {
         for (int x = hpos_x - offset; x < hpos_x + offset; x++) {
             if (x >= 0 && y >= 0 && x < HM_WIDTH && y < HM_HEIGHT) {
-                if (pos_z < 0.0) {
-                    heightmap[x][y] = pos_z / VIRT_SCALE / 50 * 255;
+                if (pos_z * VIRT_SCALE_Z < 0.0) {
+                    heightmap[x][y] = pos_z / VIRT_SCALE_Z / VIRT_HEIGHT * HM_DEPTH;
                 }
             }
         }
     }
-
-
-
 
     glPushMatrix();
     glTranslatef(-(GL_WIDTH / 2.0), -(GL_HEIGHT / 2.0), 0.0f);
@@ -90,7 +91,7 @@ void drawCNCMill() {
     glBegin(GL_TRIANGLES);
     for (int y = 0; y < HM_HEIGHT; y++) {
         for (int x = 0; x < HM_WIDTH; x++) {
-            if (heightmap[x][y] == 0) {
+            if (heightmap[x][y] <= 0) {
                 glColor3f(0.1f, 0.1f, 1.0f);
             } else {
                 glColor3f(0.3f, 0.5f, 0.2f);
@@ -120,7 +121,7 @@ void drawCNCMill() {
     // spindle
     glPushMatrix();
     glColor3f(0.9f, 0.1f, 0.1f);
-    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), (pos_z / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT) + 0.3);
+    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE_X / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * GL_HEIGHT), (pos_z / VIRT_SCALE_Z / VIRT_HEIGHT * GL_HEIGHT) + 0.3);
     glScalef(0.03, 0.03, 0.2);
     glutSolidCube(1.0);
     glPopMatrix();
@@ -128,14 +129,14 @@ void drawCNCMill() {
     // draw Millbit 
     glPushMatrix();
     glColor3f(0.5f, 0.9f, 0.5f);
-    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), (pos_z / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT));
+    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE_X / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * GL_HEIGHT), (pos_z / VIRT_SCALE_Z / VIRT_HEIGHT * GL_HEIGHT));
     glutSolidCylinder((float)offset / HM_WIDTH * GL_WIDTH, 0.2, 10, 2);
     glPopMatrix();
 
     // draw gantry
     glPushMatrix();
     glColor3f(0.5f, 0.5f, 0.9f);
-    glTranslatef(GL_WIDTH / 2.0, GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT)-0.02, 0.3);
+    glTranslatef(GL_WIDTH / 2.0, GL_HEIGHT - (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * GL_HEIGHT)-0.02, 0.3);
     glScalef(GL_WIDTH, 0.02, 0.2);
     glutSolidCube(1.0);
     glPopMatrix();
@@ -143,14 +144,14 @@ void drawCNCMill() {
     // draw X KUS
     glColor3f(0.5f, 0.5f, 0.5f);
     glPushMatrix();
-    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.3);
+    glTranslatef(GL_WIDTH - (pos_x / VIRT_SCALE_X / VIRT_WIDTH * GL_WIDTH), GL_HEIGHT - (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * GL_HEIGHT), 0.3);
     glScalef(0.1, 0.02, 0.1);
     glutSolidCube(1.0);
     glPopMatrix();
 
     // draw Y KUS
     glPushMatrix();
-    glTranslatef(GL_WIDTH, GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.0);
+    glTranslatef(GL_WIDTH, GL_HEIGHT - (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * GL_HEIGHT), 0.0);
     glScalef(0.02, 0.2, 0.1);
     glutSolidCube(1.0);
     glPopMatrix();
@@ -158,23 +159,24 @@ void drawCNCMill() {
     // draw Y2 KUS
     if (NUM_JOINTS_Y > 1) {
         glPushMatrix();
-        glTranslatef(0.0, GL_HEIGHT - (pos_y / VIRT_SCALE / VIRT_HEIGHT * GL_HEIGHT), 0.0);
+        glTranslatef(0.0, GL_HEIGHT - (pos_y / VIRT_SCALE_Y / VIRT_HEIGHT * GL_HEIGHT), 0.0);
         glScalef(0.02, 0.2, 0.1);
         glutSolidCube(1.0);
         glPopMatrix();
     }
 
+    glColor3d(1.0, 1.0, 0.0);
+    glPushMatrix();
+    glTranslatef(GL_WIDTH + 0.05, GL_HEIGHT + 0.05, 0.05);
+    draw_text("0,0");
+    glPopMatrix();
+    glPushMatrix();
+    glTranslatef(-0.05, -0.05, 0.05);
+    sprintf(text, "%0.01f,%0.01f", VIRT_WIDTH, VIRT_HEIGHT);
+    draw_text(text);
     glPopMatrix();
 
-}
 
-void draw_text(char *text) {
-    void* font = GLUT_BITMAP_9_BY_15;
-    glRasterPos2i(0, 0);
-    for (int i = 0; i < strlen(text); i++) {
-        char c = text[i];
-        glutBitmapCharacter(font, c);
-    }
     glPopMatrix();
 }
 
@@ -196,16 +198,16 @@ void display() {
     drawCNCMill();
     glPopMatrix();
 
-
     char text[1024] = "";
     glColor3d(1.0, 0.0, 0.0);
 
     int tl = 0;
     for (int j = 0; j < NUM_JOINTS; j++) {
-        sprintf(text, "%i = %0.03f", j, (float)joint_position[j] / 100);
+        sprintf(text, "J%i = %0.03f", j, (float)joint_position[j] / joint_scales[j]);
         glPushMatrix();
         glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
+        glPopMatrix();
         tl++;
     }
     for (int j = 0; j < NUM_BITOUTS; j++) {
@@ -213,15 +215,16 @@ void display() {
         glPushMatrix();
         glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
+        glPopMatrix();
         tl++;
     }
-
     tl = 0;
     for (int j = 0; j < NUM_HOMESWS; j++) {
         sprintf(text, "%i", home_switch[j]);
         glPushMatrix();
         glTranslatef(3.0, -3, 3.0 - (float)tl * 0.2);
         draw_text(text);
+        glPopMatrix();
         tl++;
     }
 
@@ -319,7 +322,6 @@ void mouseMotion(int x, int y) {
             if (angleX > 90.0f) angleX = 90.0f;
             if (angleX < -90.0f) angleX = -90.0f;
         }
-
         lastMouseX = x;
         lastMouseY = y;
         glutPostRedisplay();
@@ -332,25 +334,20 @@ void timer(int value) {
     glutTimerFunc(100, timer, 0); // Register the timer again (16 ms ≈ 60 FPS)
 }
 
-
 int glsim_run(int argc, char** argv) {
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
     glutCreateWindow("CNC Mill Simulator");
 
     initGL();
-
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
     glutMouseFunc(mouseButton);
     glutMotionFunc(mouseMotion);
     glutTimerFunc(0, timer, 0);
-
     glutMainLoop();
-    
     return 0;
 }
 

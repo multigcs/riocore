@@ -54,6 +54,7 @@ def test_gladevcp():
                     <child>
                       <object class="HAL_LED" id="hal_led">
                         <property name="visible">True</property>
+                        <property name="led-size">7</property>
                         <property name="pick_color_on">#ffffffff0000</property>
                         <property name="pick_color_off">#ffff00000000</property>
                       </object>
@@ -103,7 +104,7 @@ def test_gladevcp():
                       </packing>
                     </child>
                     <child>
-                      <object class="HAL_ToggleButton" id="hal_check1">
+                      <object class="HAL_CheckButton" id="hal_check1">
                         <property name="label" translatable="yes"/>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>

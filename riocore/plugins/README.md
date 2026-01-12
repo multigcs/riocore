@@ -7,8 +7,8 @@
 |  | [rmii](rmii/README.md) | rmii udp interface | <img src="rmii/image.png" height="48"> | Experimental  |
 |  | [spi](spi/README.md) | spi interface for host comunication | <img src="spi/image.png" height="48"> |  |
 |  | [spi_prog](spi_prog/README.md) | spi interface for host comunication and flash programming | <img src="spi_prog/image.png" height="48"> |  |
+|  | [spi](spi/README.md) | spi interface for host comunication over UDB2SPI-Bridges | <img src="spi/image.png" height="48"> |  |
 |  | [uart](uart/README.md) | uart interface for host cominucation | <img src="uart/image.png" height="48"> |  |
-|  | [uartsub](uartsub/README.md) | uartsub interface for host cominucation | <img src="uartsub/image.png" height="48"> |  |
 |  | [w5500](w5500/README.md) | udp interface for host comunication | <img src="w5500/image.png" height="48"> |  |
 | Joints | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | Experimental  |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |

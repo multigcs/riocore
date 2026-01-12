@@ -38,6 +38,7 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
+        self.HOST_INTERFACE = "UART"
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
