@@ -48,12 +48,18 @@ class Plugin(PluginBase):
                 else:
                     source = data["pin"]
                     direction = data.get("direction", "all")
+                    source_pin = f"SLOT:{source}"
+                    pintype = "PASSTHROUGH"
+                    if ":" in source:
+                        source_pin = f"{self.instances_name}_{source}"
+                        pintype = "FPGA"
+
                     self.PINDEFAULTS[f"{slot_name}:{pin}"] = {
-                        "source": f"SLOT:{source}",
+                        "source": source_pin,
                         "direction": direction,
                         "edge": "source",
-                        "pintype": "PASSTHROUGH",
-                        "type": ["PASSTHROUGH"],
+                        "pintype": pintype,
+                        "type": [pintype],
                         "optional": True,
                         "pos": data.get("pos"),
                     }

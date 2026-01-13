@@ -237,12 +237,21 @@ class Project:
                 for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():
                     if "source" in gpio_data:
                         source = f"{plugin_instance.instances_name}:{gpio_pin}"
+
+                        if gpio_pin in plugin_instance.PINDEFAULTS and not gpio_data["source"].startswith("SLOT:"):
+                            # pins of sub plugins
+                            self.pin_mapping[source] = self.pin_mapping.get(gpio_data["source"], gpio_data["source"])
+                            continue
+
                         if gpio_data["source"] not in plugin_instance.PINDEFAULTS:
                             continue
                         target = plugin_instance.PINDEFAULTS[gpio_data["source"]]
                         if target:
                             target_pin = plugin_instance.plugin_setup.get("pins", {}).get(gpio_data["source"], {}).get("pin")
                             self.pin_mapping[source] = self.pin_mapping.get(target_pin, target_pin)
+
+                            if gpio_pin == "IN:I2":
+                                print("       ", target_pin)
 
         for plugin_instance in self.plugin_instances:
             for gpio_pin, gpio_data in plugin_instance.PINDEFAULTS.items():

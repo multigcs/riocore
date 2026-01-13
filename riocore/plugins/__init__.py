@@ -17,6 +17,7 @@ class PluginBase:
         self.BUILDER = []
         self.BUILDER_PATH = ""
         self.SIGNALS = {}
+        self.SUB_OF = None
         self.PREFIX = ""
         self.COMPONENT = ""
         self.BASETHREAD = False

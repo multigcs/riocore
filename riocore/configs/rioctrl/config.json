@@ -259,8 +259,8 @@
             "node_type": "rioctrl-shiftio",
             "uid": "breakout0",
             "pos": [
-                570.0,
-                -350.0
+                330.0,
+                -360.0
             ],
             "pins": {
                 "SLOT:S0": {
@@ -305,7 +305,8 @@
                     "pos": [
                         30.0,
                         30.0
-                    ]
+                    ],
+                    "bits": 16
                 }
             }
         },
@@ -355,15 +356,41 @@
                     "pin": "board0:SB:S11"
                 }
             }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:IN:I0"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                720.0,
+                -360.0
+            ]
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:IN:I4"
+                }
+            },
+            "uid": "bitin1",
+            "pos": [
+                720.0,
+                -280.0
+            ]
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 0.87,
+            "scale": 1.63,
             "pos": [
-                -61,
-                -420
+                305,
+                -600
             ]
         },
         "board": {
