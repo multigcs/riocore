@@ -997,7 +997,11 @@ class TabJson:
     def update(self, unused=None, flow=False):
         self.jsonupdate = True
         if self.editorupdate:
-            config = json.dumps(self.parent.config, indent=4)
+            try:
+                config = json.dumps(self.parent.clean_config(self.parent.config), indent=4)
+            except Exception as err:
+                print(f"ERROR: EDITOR: json dumping json: {err}")
+                config = ""
             self.jsonedit.clear()
             self.jsonedit.insertPlainText(config)
             cursor = self.jsonedit.textCursor()
