@@ -157,7 +157,7 @@
                     "direction": "input"
                 },
                 "I6": {
-                    "pin": "I6",
+                    "pin": "shiftreg0:INPUT:6",
                     "pos": [
                         75,
                         213
@@ -165,7 +165,7 @@
                     "direction": "input"
                 },
                 "I1": {
-                    "pin": "I1",
+                    "pin": "shiftreg0:INPUT:1",
                     "pos": [
                         125,
                         93
@@ -173,7 +173,7 @@
                     "direction": "input"
                 },
                 "I3": {
-                    "pin": "I3",
+                    "pin": "shiftreg0:INPUT:3",
                     "pos": [
                         125,
                         133
@@ -181,7 +181,7 @@
                     "direction": "input"
                 },
                 "I5": {
-                    "pin": "I5",
+                    "pin": "shiftreg0:INPUT:5",
                     "pos": [
                         125,
                         173
@@ -189,7 +189,7 @@
                     "direction": "input"
                 },
                 "I7": {
-                    "pin": "I7",
+                    "pin": "shiftreg0:INPUT:7",
                     "pos": [
                         125,
                         213
@@ -197,7 +197,7 @@
                     "direction": "input"
                 },
                 "I8": {
-                    "pin": "I8",
+                    "pin": "shiftreg0:INPUT:8",
                     "pos": [
                         75,
                         286
@@ -205,7 +205,7 @@
                     "direction": "input"
                 },
                 "I10": {
-                    "pin": "I10",
+                    "pin": "shiftreg0:INPUT:10",
                     "pos": [
                         75,
                         326
@@ -213,7 +213,7 @@
                     "direction": "input"
                 },
                 "I12": {
-                    "pin": "I12",
+                    "pin": "shiftreg0:INPUT:12",
                     "pos": [
                         75,
                         366
@@ -221,7 +221,7 @@
                     "direction": "input"
                 },
                 "I14": {
-                    "pin": "I14",
+                    "pin": "shiftreg0:INPUT:14",
                     "pos": [
                         75,
                         406
@@ -229,7 +229,7 @@
                     "direction": "input"
                 },
                 "I9": {
-                    "pin": "I9",
+                    "pin": "shiftreg0:INPUT:9",
                     "pos": [
                         125,
                         286
@@ -237,7 +237,7 @@
                     "direction": "input"
                 },
                 "I11": {
-                    "pin": "I11",
+                    "pin": "shiftreg0:INPUT:11",
                     "pos": [
                         125,
                         326
@@ -245,7 +245,7 @@
                     "direction": "input"
                 },
                 "I13": {
-                    "pin": "I13",
+                    "pin": "shiftreg0:INPUT:13",
                     "pos": [
                         125,
                         366
@@ -253,7 +253,7 @@
                     "direction": "input"
                 },
                 "I15": {
-                    "pin": "I15",
+                    "pin": "shiftreg0:INPUT:15",
                     "pos": [
                         125,
                         406
@@ -271,7 +271,7 @@
 
 
                 "O0": {
-                    "pin": "O0",
+                    "pin": "shiftreg0:OUTPUT:0",
                     "pos": [
                         75,
                         479
@@ -279,7 +279,7 @@
                     "direction": "all"
                 },
                 "O2": {
-                    "pin": "O2",
+                    "pin": "shiftreg0:OUTPUT:2",
                     "pos": [
                         75,
                         519
@@ -287,7 +287,7 @@
                     "direction": "all"
                 },
                 "O4": {
-                    "pin": "O4",
+                    "pin": "shiftreg0:OUTPUT:4",
                     "pos": [
                         75,
                         559
@@ -295,7 +295,7 @@
                     "direction": "all"
                 },
                 "O6": {
-                    "pin": "O5",
+                    "pin": "shiftreg0:OUTPUT:5",
                     "pos": [
                         75,
                         599
@@ -305,7 +305,7 @@
 
 
                 "O1": {
-                    "pin": "O1",
+                    "pin": "shiftreg0:OUTPUT:1",
                     "pos": [
                         125,
                         479
@@ -313,7 +313,7 @@
                     "direction": "all"
                 },
                 "O3": {
-                    "pin": "O3",
+                    "pin": "shiftreg0:OUTPUT:3",
                     "pos": [
                         125,
                         519
@@ -321,7 +321,7 @@
                     "direction": "all"
                 },
                 "O5": {
-                    "pin": "O5",
+                    "pin": "shiftreg0:OUTPUT:5",
                     "pos": [
                         125,
                         559
@@ -329,7 +329,7 @@
                     "direction": "all"
                 },
                 "O7": {
-                    "pin": "O7",
+                    "pin": "shiftreg0:OUTPUT:7",
                     "pos": [
                         125,
                         599
@@ -340,7 +340,7 @@
 
 
                 "O8": {
-                    "pin": "O8",
+                    "pin": "shiftreg0:OUTPUT:8",
                     "pos": [
                         75,
                         669
@@ -348,7 +348,7 @@
                     "direction": "all"
                 },
                 "O10": {
-                    "pin": "O10",
+                    "pin": "shiftreg0:OUTPUT:10",
                     "pos": [
                         75,
                         709
@@ -356,7 +356,7 @@
                     "direction": "all"
                 },
                 "O12": {
-                    "pin": "O12",
+                    "pin": "shiftreg0:OUTPUT:12",
                     "pos": [
                         75,
                         749
@@ -364,7 +364,7 @@
                     "direction": "all"
                 },
                 "O14": {
-                    "pin": "O14",
+                    "pin": "shiftreg0:OUTPUT:14",
                     "pos": [
                         75,
                         789
@@ -372,7 +372,7 @@
                     "direction": "all"
                 },
                 "O9": {
-                    "pin": "O9",
+                    "pin": "shiftreg0:OUTPUT:9",
                     "pos": [
                         125,
                         669
@@ -380,7 +380,7 @@
                     "direction": "all"
                 },
                 "O11": {
-                    "pin": "O11",
+                    "pin": "shiftreg0:OUTPUT:11",
                     "pos": [
                         125,
                         709
@@ -388,7 +388,7 @@
                     "direction": "all"
                 },
                 "O13": {
-                    "pin": "O13",
+                    "pin": "shiftreg0:OUTPUT:13",
                     "pos": [
                         125,
                         749
@@ -396,7 +396,7 @@
                     "direction": "all"
                 },
                 "O15": {
-                    "pin": "O15",
+                    "pin": "shiftreg0:OUTPUT:15",
                     "pos": [
                         125,
                         789

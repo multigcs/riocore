@@ -366,15 +366,15 @@
             },
             "uid": "bitin0",
             "pos": [
-                720.0,
-                -360.0
+                660.0,
+                -380.0
             ]
         },
         {
             "type": "bitin",
             "pins": {
                 "bit": {
-                    "pin": "breakout0:IN:I4"
+                    "pin": "breakout0:IN:I1"
                 }
             },
             "uid": "bitin1",
@@ -382,15 +382,29 @@
                 720.0,
                 -280.0
             ]
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "image": "relay",
+            "pos": [
+                0.0,
+                -130.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:OUT:O1"
+                }
+            }
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.63,
+            "scale": 0.88,
             "pos": [
-                305,
-                -600
+                -213,
+                -598
             ]
         },
         "board": {
