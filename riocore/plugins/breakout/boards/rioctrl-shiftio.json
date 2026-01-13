@@ -78,7 +78,7 @@
     "plugins": [
         {
             "type": "shiftreg",
-            "uid": "shiftreg0",
+            "uid": "shiftin",
             "bits": 16,
             "rpos": [
                 220.0,
@@ -93,12 +93,26 @@
                 },
                 "in": {
                     "pin": "INT:S2"
-                },
-                "out": {
+                }
+            }
+        },
+        {
+            "type": "shiftreg",
+            "uid": "shiftout",
+            "bits": 16,
+            "rpos": [
+                220.0,
+                0.0
+            ],
+            "pins": {
+                "sclk": {
                     "pin": "INT:S3"
                 },
+                "load": {
+                    "pin": "INT:S4"
+                },
                 "out": {
-                    "pin": "INT:S3"
+                    "pin": "INT:S5"
                 }
             }
         }
@@ -124,6 +138,14 @@
                 "S3": {
                     "pin": "S3",
                     "direction": "all"
+                },
+                "S4": {
+                    "pin": "S4",
+                    "direction": "all"
+                },
+                "S5": {
+                    "pin": "S5",
+                    "direction": "all"
                 }
             }
         },
@@ -133,7 +155,7 @@
             "default": "",
             "pins": {
                 "I0": {
-                    "pin": "shiftreg0:INPUT:0",
+                    "pin": "shiftin:INPUT:0",
                     "pos": [
                         75,
                         93
@@ -141,7 +163,7 @@
                     "direction": "input"
                 },
                 "I2": {
-                    "pin": "shiftreg0:INPUT:2",
+                    "pin": "shiftin:INPUT:2",
                     "pos": [
                         75,
                         133
@@ -149,7 +171,7 @@
                     "direction": "input"
                 },
                 "I4": {
-                    "pin": "shiftreg0:INPUT:4",
+                    "pin": "shiftin:INPUT:4",
                     "pos": [
                         75,
                         173
@@ -157,7 +179,7 @@
                     "direction": "input"
                 },
                 "I6": {
-                    "pin": "shiftreg0:INPUT:6",
+                    "pin": "shiftin:INPUT:6",
                     "pos": [
                         75,
                         213
@@ -165,7 +187,7 @@
                     "direction": "input"
                 },
                 "I1": {
-                    "pin": "shiftreg0:INPUT:1",
+                    "pin": "shiftin:INPUT:1",
                     "pos": [
                         125,
                         93
@@ -173,7 +195,7 @@
                     "direction": "input"
                 },
                 "I3": {
-                    "pin": "shiftreg0:INPUT:3",
+                    "pin": "shiftin:INPUT:3",
                     "pos": [
                         125,
                         133
@@ -181,7 +203,7 @@
                     "direction": "input"
                 },
                 "I5": {
-                    "pin": "shiftreg0:INPUT:5",
+                    "pin": "shiftin:INPUT:5",
                     "pos": [
                         125,
                         173
@@ -189,7 +211,7 @@
                     "direction": "input"
                 },
                 "I7": {
-                    "pin": "shiftreg0:INPUT:7",
+                    "pin": "shiftin:INPUT:7",
                     "pos": [
                         125,
                         213
@@ -197,7 +219,7 @@
                     "direction": "input"
                 },
                 "I8": {
-                    "pin": "shiftreg0:INPUT:8",
+                    "pin": "shiftin:INPUT:8",
                     "pos": [
                         75,
                         286
@@ -205,7 +227,7 @@
                     "direction": "input"
                 },
                 "I10": {
-                    "pin": "shiftreg0:INPUT:10",
+                    "pin": "shiftin:INPUT:10",
                     "pos": [
                         75,
                         326
@@ -213,7 +235,7 @@
                     "direction": "input"
                 },
                 "I12": {
-                    "pin": "shiftreg0:INPUT:12",
+                    "pin": "shiftin:INPUT:12",
                     "pos": [
                         75,
                         366
@@ -221,7 +243,7 @@
                     "direction": "input"
                 },
                 "I14": {
-                    "pin": "shiftreg0:INPUT:14",
+                    "pin": "shiftin:INPUT:14",
                     "pos": [
                         75,
                         406
@@ -229,7 +251,7 @@
                     "direction": "input"
                 },
                 "I9": {
-                    "pin": "shiftreg0:INPUT:9",
+                    "pin": "shiftin:INPUT:9",
                     "pos": [
                         125,
                         286
@@ -237,7 +259,7 @@
                     "direction": "input"
                 },
                 "I11": {
-                    "pin": "shiftreg0:INPUT:11",
+                    "pin": "shiftin:INPUT:11",
                     "pos": [
                         125,
                         326
@@ -245,7 +267,7 @@
                     "direction": "input"
                 },
                 "I13": {
-                    "pin": "shiftreg0:INPUT:13",
+                    "pin": "shiftin:INPUT:13",
                     "pos": [
                         125,
                         366
@@ -253,7 +275,7 @@
                     "direction": "input"
                 },
                 "I15": {
-                    "pin": "shiftreg0:INPUT:15",
+                    "pin": "shiftin:INPUT:15",
                     "pos": [
                         125,
                         406
@@ -271,137 +293,137 @@
 
 
                 "O0": {
-                    "pin": "shiftreg0:OUTPUT:0",
+                    "pin": "shiftout:OUTPUT:0",
                     "pos": [
                         75,
                         479
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O2": {
-                    "pin": "shiftreg0:OUTPUT:2",
+                    "pin": "shiftout:OUTPUT:2",
                     "pos": [
                         75,
                         519
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O4": {
-                    "pin": "shiftreg0:OUTPUT:4",
+                    "pin": "shiftout:OUTPUT:4",
                     "pos": [
                         75,
                         559
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O6": {
-                    "pin": "shiftreg0:OUTPUT:5",
+                    "pin": "shiftout:OUTPUT:5",
                     "pos": [
                         75,
                         599
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
 
 
                 "O1": {
-                    "pin": "shiftreg0:OUTPUT:1",
+                    "pin": "shiftout:OUTPUT:1",
                     "pos": [
                         125,
                         479
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O3": {
-                    "pin": "shiftreg0:OUTPUT:3",
+                    "pin": "shiftout:OUTPUT:3",
                     "pos": [
                         125,
                         519
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O5": {
-                    "pin": "shiftreg0:OUTPUT:5",
+                    "pin": "shiftout:OUTPUT:5",
                     "pos": [
                         125,
                         559
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O7": {
-                    "pin": "shiftreg0:OUTPUT:7",
+                    "pin": "shiftout:OUTPUT:7",
                     "pos": [
                         125,
                         599
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
 
 
 
                 "O8": {
-                    "pin": "shiftreg0:OUTPUT:8",
+                    "pin": "shiftout:OUTPUT:8",
                     "pos": [
                         75,
                         669
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O10": {
-                    "pin": "shiftreg0:OUTPUT:10",
+                    "pin": "shiftout:OUTPUT:10",
                     "pos": [
                         75,
                         709
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O12": {
-                    "pin": "shiftreg0:OUTPUT:12",
+                    "pin": "shiftout:OUTPUT:12",
                     "pos": [
                         75,
                         749
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O14": {
-                    "pin": "shiftreg0:OUTPUT:14",
+                    "pin": "shiftout:OUTPUT:14",
                     "pos": [
                         75,
                         789
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O9": {
-                    "pin": "shiftreg0:OUTPUT:9",
+                    "pin": "shiftout:OUTPUT:9",
                     "pos": [
                         125,
                         669
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O11": {
-                    "pin": "shiftreg0:OUTPUT:11",
+                    "pin": "shiftout:OUTPUT:11",
                     "pos": [
                         125,
                         709
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O13": {
-                    "pin": "shiftreg0:OUTPUT:13",
+                    "pin": "shiftout:OUTPUT:13",
                     "pos": [
                         125,
                         749
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 },
                 "O15": {
-                    "pin": "shiftreg0:OUTPUT:15",
+                    "pin": "shiftout:OUTPUT:15",
                     "pos": [
                         125,
                         789
                     ],
-                    "direction": "all"
+                    "direction": "output"
                 }
 
             }

@@ -619,6 +619,7 @@ class gateware(generator_base):
 
         # expansion assignments
         used_expansion_outputs = []
+        input_exp = []
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
@@ -626,17 +627,15 @@ class gateware(generator_base):
                 if "pin" in pin_config:
                     if pin_config["pin"] in self.parent.expansion_pins:
                         output.append(f"    wire {pin_config['varname']};")
-
-        for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
-                continue
-            for pin_config in plugin_instance.pins().values():
-                if "pin" in pin_config:
                     if pin_config["pin"] in self.parent.expansion_pins:
                         if pin_config["direction"] == "input":
-                            output.append(f"    assign {pin_config['varname']} = {pin_config['pin']};")
+                            input_exp.append(f"    assign {pin_config['varname']} = {pin_config['pin']};")
                         elif pin_config["direction"] == "output":
                             used_expansion_outputs.append(pin_config["pin"])
+
+        if input_exp:
+            output.append("    // assign expansion input pins")
+            output += input_exp
 
         if self.parent.expansion_pins:
             output_exp = []
