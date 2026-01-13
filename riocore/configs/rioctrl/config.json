@@ -92,8 +92,8 @@
                 }
             },
             "pos": [
-                1010.0,
-                -390.0
+                500.0,
+                -320.0
             ],
             "joint": {
                 "pid_p": 320.0,
@@ -114,7 +114,8 @@
                     "pin": "breakout2:JOINT0:EN"
                 }
             },
-            "image": "stepper"
+            "image": "stepper",
+            "rotate": -90
         },
         {
             "name": "joint-1",
@@ -139,8 +140,8 @@
                 }
             },
             "pos": [
-                1010.0,
-                150.0
+                -40.0,
+                -320.0
             ],
             "pulse_len": 1.0,
             "pins": {
@@ -154,7 +155,8 @@
                     "pin": "breakout2:JOINT2:EN"
                 }
             },
-            "image": "stepper"
+            "image": "stepper",
+            "rotate": -90
         },
         {
             "name": "joint-2",
@@ -179,8 +181,8 @@
                 }
             },
             "pos": [
-                1010.0,
-                -120.0
+                230.0,
+                -320.0
             ],
             "pulse_len": 1.0,
             "pins": {
@@ -194,7 +196,8 @@
                     "pin": "breakout2:JOINT1:EN"
                 }
             },
-            "image": "stepper"
+            "image": "stepper",
+            "rotate": -90
         },
         {
             "name": "joint-3",
@@ -219,8 +222,8 @@
                 }
             },
             "pos": [
-                1010.0,
-                420.0
+                -310.0,
+                -320.0
             ],
             "pulse_len": 1.0,
             "pins": {
@@ -234,7 +237,8 @@
                     "pin": "breakout2:JOINT3:EN"
                 }
             },
-            "image": "stepper"
+            "image": "stepper",
+            "rotate": -90
         },
         {
             "type": "bitout",
@@ -259,8 +263,8 @@
             "node_type": "rioctrl-shiftio",
             "uid": "breakout0",
             "pos": [
-                330.0,
-                -360.0
+                550.0,
+                220.0
             ],
             "pins": {
                 "SLOT:S0": {
@@ -372,9 +376,10 @@
             },
             "uid": "bitin0",
             "pos": [
-                660.0,
-                -380.0
-            ]
+                730.0,
+                40.0
+            ],
+            "image": "proximity"
         },
         {
             "type": "bitin",
@@ -385,32 +390,48 @@
             },
             "uid": "bitin1",
             "pos": [
-                720.0,
-                -280.0
-            ]
+                730.0,
+                110.0
+            ],
+            "image": "proximity"
         },
         {
             "type": "bitout",
             "uid": "bitout1",
             "image": "relay",
             "pos": [
-                0.0,
-                -130.0
+                710.0,
+                660.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:OUT:O0"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout2",
+            "image": "relay",
+            "pos": [
+                710.0,
+                810.0
             ],
             "pins": {
                 "bit": {
                     "pin": "breakout0:OUT:O1"
                 }
-            }
+            },
+            "name": ""
         }
     ],
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 0.88,
+            "scale": 1.12,
             "pos": [
-                -196.39793486894365,
-                -271.0
+                311,
+                317
             ]
         },
         "board": {

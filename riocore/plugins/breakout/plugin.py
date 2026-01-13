@@ -36,6 +36,17 @@ class Plugin(PluginBase):
         self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
         self.INFO = jdata.get("comment", "")
+
+        self.SUB_PLUGINS = []
+        sub_uids = []
+        for spn, sub_plugin in enumerate(jdata.get("plugins", [])):
+            sub_uids.append(sub_plugin["uid"])
+            if "uid" not in sub_plugin:
+                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['type']}{spn}"
+            else:
+                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
+            self.SUB_PLUGINS.append(sub_plugin)
+
         for pin, data in jdata.get("main", {}).items():
             self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "pintype": "BREAKOUT", "type": ["BREAKOUT"], "pos": data["pos"]}
 
@@ -50,7 +61,8 @@ class Plugin(PluginBase):
                     direction = data.get("direction", "all")
                     source_pin = f"SLOT:{source}"
                     pintype = "PASSTHROUGH"
-                    if ":" in source:
+
+                    if source.split(":")[0] in sub_uids:
                         source_pin = f"{self.instances_name}_{source}"
                         pintype = "FPGA"
 
@@ -63,11 +75,3 @@ class Plugin(PluginBase):
                         "optional": True,
                         "pos": data.get("pos"),
                     }
-
-        self.SUB_PLUGINS = []
-        for spn, sub_plugin in enumerate(jdata.get("plugins", [])):
-            if "uid" not in sub_plugin:
-                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['type']}{spn}"
-            else:
-                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
-            self.SUB_PLUGINS.append(sub_plugin)

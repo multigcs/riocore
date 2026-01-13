@@ -80,10 +80,7 @@
             "type": "shiftreg",
             "uid": "shiftin",
             "bits": 16,
-            "rpos": [
-                220.0,
-                0.0
-            ],
+            "rpos": false,
             "pins": {
                 "sclk": {
                     "pin": "INT:S0"
@@ -100,10 +97,7 @@
             "type": "shiftreg",
             "uid": "shiftout",
             "bits": 16,
-            "rpos": [
-                220.0,
-                0.0
-            ],
+            "rpos": false,
             "pins": {
                 "sclk": {
                     "pin": "INT:S3"

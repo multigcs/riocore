@@ -462,7 +462,9 @@ class MyNode(QGraphicsItem):
         pos_y = pos.y()
 
         if hasattr(self, "plugin_instance") and self.plugin_instance.SUB_OF:
-            pass
+            if self.flow_cfg.get("rpos") is False:
+                # disable drawing of sub-plugin
+                return
         else:
             self.flow_cfg["pos"] = (pos_x, pos_y)
         if self.pixmap:
