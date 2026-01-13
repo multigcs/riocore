@@ -27,33 +27,11 @@ class Plugin(PluginBase):
         }
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         breakout_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
-        jdata = json.loads(open(breakout_file).read())
-
-        if node_type == "rioctrl-shiftio":
-            self.VERILOGS = ["shiftreg.v"]
-            self.PINDEFAULTS = {
-                "out": {
-                    "direction": "output",
-                    "description": "output data (DS on 74HC595)",
-                    "optional": True,
-                },
-                "in": {
-                    "direction": "input",
-                    "description": "input data (SER_OUT on 74HC165)",
-                    "optional": True,
-                },
-                "sclk": {
-                    "direction": "output",
-                    "description": "input data (CLK on 74HC165/ CH_CP/SRCLK on 74HC595)",
-                },
-                "load": {
-                    "direction": "output",
-                    "description": "input data (SH/LD on 74HC165/ ST_CP/RCLK on 74HC595)",
-                },
-            }
-            self.TYPE = "expansion"
-            self.BITS_OUT = 8
-            self.BITS_IN = 8
+        try:
+            jdata = json.loads(open(breakout_file).read())
+        except Exception as err:
+            print(f"ERROR: loading json '{breakout_file}': {err}")
+            jdata = {}
 
         self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
@@ -61,7 +39,7 @@ class Plugin(PluginBase):
         for pin, data in jdata.get("main", {}).items():
             self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "pintype": "BREAKOUT", "type": ["BREAKOUT"], "pos": data["pos"]}
 
-        for slot in jdata["slots"]:
+        for slot in jdata.get("slots", []):
             slot_name = slot["name"]
             for pin, data in slot["pins"].items():
                 if "edge" in data:
@@ -77,5 +55,13 @@ class Plugin(PluginBase):
                         "pintype": "PASSTHROUGH",
                         "type": ["PASSTHROUGH"],
                         "optional": True,
-                        "pos": data["pos"],
+                        "pos": data.get("pos"),
                     }
+
+        self.SUB_PLUGINS = []
+        for spn, sub_plugin in enumerate(jdata.get("plugins", [])):
+            if "uid" not in sub_plugin:
+                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['type']}{spn}"
+            else:
+                sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
+            self.SUB_PLUGINS.append(sub_plugin)

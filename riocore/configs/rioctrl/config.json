@@ -96,7 +96,6 @@
                 -390.0
             ],
             "joint": {
-                "feedback": "encoder-0:position",
                 "pid_p": 320.0,
                 "pid_i": 100.0,
                 "pid_d": 1.0,
@@ -238,207 +237,6 @@
             "image": "stepper"
         },
         {
-            "name": "encoder-0",
-            "type": "quadencoderz",
-            "uid": "quadencoderz0",
-            "signals": {
-                "indexenable": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "indexout": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "position": {
-                    "net": "",
-                    "function": "",
-                    "setp": "",
-                    "scale": -2000.0
-                },
-                "rps": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rpm": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "pos": [
-                610.0,
-                -330.0
-            ],
-            "quad_type": 0,
-            "pins": {
-                "a": {
-                    "pin": "breakout1:ENC0:A"
-                },
-                "b": {
-                    "pin": "breakout1:ENC0:B"
-                },
-                "z": {
-                    "pin": "breakout1:ENC0:Z"
-                }
-            },
-            "image": "encoder_optical",
-            "rotate": 0
-        },
-        {
-            "name": "encoder-1",
-            "type": "quadencoderz",
-            "uid": "quadencoderz1",
-            "signals": {
-                "indexenable": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "indexout": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "position": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rps": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rpm": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "pos": [
-                610.0,
-                -70.0
-            ],
-            "quad_type": 0,
-            "pins": {
-                "a": {
-                    "pin": "breakout1:ENC2:A"
-                },
-                "b": {
-                    "pin": "breakout1:ENC2:B"
-                },
-                "z": {
-                    "pin": "breakout1:ENC2:Z"
-                }
-            },
-            "image": "encoder_optical",
-            "rotate": 0
-        },
-        {
-            "name": "encoder-2",
-            "type": "quadencoderz",
-            "uid": "quadencoderz2",
-            "signals": {
-                "indexenable": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "indexout": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "position": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rps": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rpm": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "pos": [
-                610.0,
-                -200.0
-            ],
-            "quad_type": 0,
-            "pins": {
-                "a": {
-                    "pin": "breakout1:ENC1:A"
-                },
-                "b": {
-                    "pin": "breakout1:ENC1:B"
-                },
-                "z": {
-                    "pin": "breakout1:ENC1:Z"
-                }
-            },
-            "image": "encoder_optical",
-            "rotate": 0
-        },
-        {
-            "name": "encoder-3",
-            "type": "quadencoderz",
-            "uid": "quadencoderz3",
-            "signals": {
-                "indexenable": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "indexout": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "position": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rps": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                },
-                "rpm": {
-                    "net": "",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "pos": [
-                610.0,
-                60.0
-            ],
-            "quad_type": 0,
-            "pins": {
-                "a": {
-                    "pin": "breakout1:ENC3:A"
-                },
-                "b": {
-                    "pin": "breakout1:ENC3:B"
-                },
-                "z": {
-                    "pin": "breakout1:ENC3:Z"
-                }
-            },
-            "image": "encoder_optical",
-            "rotate": 0
-        },
-        {
             "type": "bitout",
             "uid": "bitout0",
             "pos": [
@@ -458,11 +256,11 @@
         },
         {
             "type": "breakout",
-            "node_type": "rioctrl-quadenc4",
+            "node_type": "rioctrl-shiftio",
             "uid": "breakout0",
             "pos": [
-                520.0,
-                220.0
+                570.0,
+                -350.0
             ],
             "pins": {
                 "SLOT:S0": {
@@ -501,52 +299,13 @@
                 "SLOT:S11": {
                     "pin": "board0:SC:S11"
                 }
-            }
-        },
-        {
-            "type": "breakout",
-            "node_type": "rioctrl-quadenc4",
-            "uid": "breakout1",
-            "pos": [
-                310.0,
-                220.0
-            ],
-            "pins": {
-                "SLOT:S0": {
-                    "pin": "board0:SA:S0"
-                },
-                "SLOT:S1": {
-                    "pin": "board0:SA:S1"
-                },
-                "SLOT:S2": {
-                    "pin": "board0:SA:S2"
-                },
-                "SLOT:S3": {
-                    "pin": "board0:SA:S3"
-                },
-                "SLOT:S4": {
-                    "pin": "board0:SA:S4"
-                },
-                "SLOT:S5": {
-                    "pin": "board0:SA:S5"
-                },
-                "SLOT:S6": {
-                    "pin": "board0:SA:S6"
-                },
-                "SLOT:S7": {
-                    "pin": "board0:SA:S7"
-                },
-                "SLOT:S8": {
-                    "pin": "board0:SA:S8"
-                },
-                "SLOT:S9": {
-                    "pin": "board0:SA:S9"
-                },
-                "SLOT:S10": {
-                    "pin": "board0:SA:S10"
-                },
-                "SLOT:S11": {
-                    "pin": "board0:SA:S11"
+            },
+            "sub": {
+                "breakout0_shiftreg0": {
+                    "pos": [
+                        30.0,
+                        30.0
+                    ]
                 }
             }
         },
@@ -601,10 +360,10 @@
     "protocol": "UDP",
     "flow": {
         "view": {
-            "scale": 1.12,
+            "scale": 0.87,
             "pos": [
-                91,
-                -199
+                -61,
+                -420
             ]
         },
         "board": {

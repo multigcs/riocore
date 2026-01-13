@@ -2005,6 +2005,9 @@ class Window(QMainWindow):
                         sub_plugin_instance.SUB_OF = plugin_instance
                         sub_plugin_instance.SUB_ITEMS = []
                         for pin_name, pin_data in sub_plugin_instance.plugin_setup.get("pins", {}).items():
+                            if "pin" not in pin_data:
+                                print(f"ERROR: no 'pin' in pindata found: {pin_name}: {pin_data}")
+                                continue
                             pin_data["pin"] = f"{uid}:{pin_data['pin']}"
                             sub_plugin_instance.PINDEFAULTS[pin_name]["visible"] = False
                         pluginlist.append(sub_plugin_instance)

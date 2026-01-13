@@ -164,15 +164,13 @@ class Plugins:
                         plugin_instance.plugin_setup[option_name] = option_data.get("default")
 
                 self.plugin_instances.append(plugin_instance)
-
                 return plugin_instance
         except Exception:
             log(f"ERROR: loading plugin: {plugin_id} / {plugin_config}")
             log("##################################")
             traceback.print_exc(file=sys.stdout)
             log("##################################")
-            return False
-        return True
+        return None
 
     def load_plugins(self, config, system_setup=None):
         if config["plugins"]:

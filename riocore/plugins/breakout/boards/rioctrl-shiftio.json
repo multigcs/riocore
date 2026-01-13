@@ -2,84 +2,72 @@
     "comment": "rioctrl-shiftio",
     "main": {
         "S0": {
-          "pin": "T13",
           "pos": [
             20.0,
             510.0
           ]
         },
         "S1": {
-          "pin": "T14",
           "pos": [
             20.0,
             480.0
           ]
         },
         "S2": {
-          "pin": "T15",
           "pos": [
             20.0,
             450.0
           ]
         },
         "S3": {
-          "pin": "P13",
           "pos": [
             20.0,
             420.0
           ]
         },
         "S4": {
-          "pin": "R16",
           "pos": [
             20.0,
             390.0
           ]
         },
         "S5": {
-          "pin": "P15",
           "pos": [
             20.0,
             360.0
           ]
         },
         "S6": {
-          "pin": "R13",
           "pos": [
             41.0,
             510.0
           ]
         },
         "S7": {
-          "pin": "R14",
           "pos": [
             41.0,
             480.0
           ]
         },
         "S8": {
-          "pin": "R15",
           "pos": [
             41.0,
             450.0
           ]
         },
         "S9": {
-          "pin": "P14",
           "pos": [
             41.0,
             420.0
           ]
         },
         "S10": {
-          "pin": "P16",
           "pos": [
             41.0,
             390.0
           ]
         },
         "S11": {
-          "pin": "N16",
           "pos": [
             41.0,
             360.0
@@ -87,13 +75,60 @@
         }
 
     },
+    "plugins": [
+        {
+            "type": "shiftreg",
+            "uid": "shiftreg0",
+            "bits": 16,
+            "rpos": [
+                220.0,
+                0.0
+            ],
+            "pins": {
+                "sclk": {
+                    "pin": "INT:S0"
+                },
+                "load": {
+                    "pin": "INT:S1"
+                },
+                "in": {
+                    "pin": "INT:S2"
+                },
+                "out": {
+                    "pin": "INT:S3"
+                }
+            }
+        }
+    ],
     "slots": [
+        {
+            "name": "INT",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "S0": {
+                    "pin": "S0",
+                    "direction": "all"
+                },
+                "S1": {
+                    "pin": "S1",
+                    "direction": "all"
+                },
+                "S2": {
+                    "pin": "S2",
+                    "direction": "all"
+                },
+                "S3": {
+                    "pin": "S3",
+                    "direction": "all"
+                }
+            }
+        },
         {
             "name": "IN",
             "comment": "",
             "default": "",
             "pins": {
-
                 "I0": {
                     "pin": "I0",
                     "pos": [
