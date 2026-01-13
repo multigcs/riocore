@@ -181,7 +181,7 @@ class MyStandardItem(QStandardItem):
 
 
 class edit_float(QDoubleSpinBox):
-    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None, decimals=None):
+    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None, decimals=None, need_enter=False):
         super().__init__()
         self.win = win
         self.cb = cb
@@ -211,7 +211,8 @@ class edit_float(QDoubleSpinBox):
             self.setValue(float(obj[key]))
         elif default is not None:
             self.setValue(float(default))
-        self.valueChanged.connect(self.change)
+        if need_enter is not True:
+            self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
 

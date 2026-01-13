@@ -754,11 +754,11 @@ class TabAxis:
                         ekey = key
                         if ekey == "scale_in":
                             ekey = "scale"
-                            widget = self.parent.edit_item(plugin_setup_encoder, ekey, options)
+                            widget = self.parent.edit_item(plugin_setup_encoder, ekey, options, need_enter=True)
                         else:
                             if ekey == "scale_out":
                                 ekey = "scale"
-                            widget = self.parent.edit_item(joint_setup, ekey, options)
+                            widget = self.parent.edit_item(joint_setup, ekey, options, need_enter=True)
 
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
@@ -810,7 +810,7 @@ class TabAxis:
                             if default:
                                 options["default"] = default
 
-                        widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key])
+                        widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key], need_enter=True)
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
                         ulabel.setStyleSheet("QLabel{font-size:12px;}")
