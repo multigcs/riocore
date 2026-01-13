@@ -530,9 +530,15 @@ class LinuxCNC:
         ini_setup["EMCMOT"]["NUM_DIO"] = dios
         ini_setup["EMCMOT"]["NUM_AIO"] = aios
 
+        motion_probe_input = False
+        for entry in netlist:
+            if "motion.probe-input" in entry:
+                motion_probe_input = True
+                break
+
         for axis_name, axis_config in axis_dict.items():
             ini_setup["HALUI"][f"MDI_COMMAND||Zero|{axis_name}"] = f"G92 {axis_name}0"
-            if "motion.probe-input" in netlist:
+            if motion_probe_input:
                 if machinetype == "lathe":
                     if axis_name == "X":
                         ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-X"] = "o<x_touch> call"
@@ -637,7 +643,7 @@ class LinuxCNC:
                 },
             }
 
-            if "motion.probe-input" in netlist:
+            if motion_probe_input:
                 qtdragon_setup["PROBE"]["USE_PROBE"] = "versaprobe"
 
             if gui_type == "qtvcp":
