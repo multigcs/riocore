@@ -1359,18 +1359,14 @@ class Window(QMainWindow):
 
         self.show()
 
-        if self.config:
-            self.cfg_reload(config=self.config)
-        elif self.config_file and os.path.exists(self.config_file):
-            self.cfg_reload()
+        if self.config_file and os.path.exists(self.config_file):
+            self.cfg_reload()  # timing 0.39
         else:
             riocore.log(f"ERROR: file not found: {self.config_file}")
             exit(1)
 
-        self.optionstab.load()
-        self.optionstab.update(self.config)
-        self.axistab.reload(self.config)
-        self.axistab.update(self.config)
+        # self.optionstab.update(self.config) # timing 0.21
+        # self.axistab.update(self.config)
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
@@ -1387,7 +1383,8 @@ class Window(QMainWindow):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(1000)
+        # self.timer.start(1000)
+        # exit(0)
 
     def generate(self):
         # output_dir = "/tmp/rio-test-build"
@@ -1706,7 +1703,6 @@ class Window(QMainWindow):
                     plugin["board"] = "esp32dev"
 
         self.nesting_all()
-        self.optionstab.update(self.config)
         self.redraw()
         self.fit_view()
         self.cfg_check()

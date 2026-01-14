@@ -396,8 +396,8 @@ class TabAxis:
 
     def update(self, config):
         self.config = config
-        if not self.widgets:
-            return
+        # if not self.widgets:
+        #    return
 
         signature = []
         project = riocore.Project(copy.deepcopy(self.config), "")
@@ -1129,6 +1129,8 @@ class TabOptions:
         self.layout_hal.addWidget(self.hal_table)
         self.hal_table.itemChanged.connect(self.table_updated)
 
+        self.load()
+
     def filter(self, text):
         self.filter_text = text
         self.update(full=True)
@@ -1187,7 +1189,7 @@ class TabOptions:
         self.hal_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self.hal_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
 
-        self.comboBoxes = {}
+        # self.comboBoxes = {}
 
         def signal_clear(sconf):
             if "net" in sconf:
@@ -1224,17 +1226,17 @@ class TabOptions:
                         value = setp
                         itype = "setp"
 
-                    self.phal_table.setItem(row, 2, QTableWidgetItem())
-                    self.comboBoxes[row] = SearchComboBox(self.table_updated)
-                    self.comboBoxes[row].addItem(str(value))
+                    self.phal_table.setItem(row, 2, QTableWidgetItem(str(value)))
+                    # self.comboBoxes[row] = SearchComboBox(self.table_updated)
+                    # self.comboBoxes[row].addItem(str(value))
 
-                    for signal_direction in ("input", "output"):
-                        for halpin, halpin_info in riocore.halpins.LINUXCNC_SIGNALS[signal_direction].items():
-                            self.comboBoxes[row].addItem(halpin)
+                    # for signal_direction in ("input", "output"):
+                    #    for halpin, halpin_info in riocore.halpins.LINUXCNC_SIGNALS[signal_direction].items():
+                    #        self.comboBoxes[row].addItem(halpin)
 
-                    self.phal_table.setCellWidget(row, 2, self.comboBoxes[row])
-                    self.comboBoxes[row].currentIndexChanged.connect(self.table_updated)
-                    self.comboBoxes[row].textActivated.connect(self.table_updated)
+                    # self.phal_table.setCellWidget(row, 2, self.comboBoxes[row])
+                    # self.comboBoxes[row].currentIndexChanged.connect(self.table_updated)
+                    # self.comboBoxes[row].textActivated.connect(self.table_updated)
 
                     item = QTableWidgetItem(itype)
                     item.setFlags(Qt.ItemFlag.ItemIsEnabled)
@@ -1524,7 +1526,8 @@ class TabOptions:
             if self.phal_table.item(row, 1) and self.phal_table.item(row, 2):
                 uid = str(self.phal_table.item(row, 0).text())
                 source = str(self.phal_table.item(row, 1).text())
-                target = str(self.comboBoxes[row].currentText())
+                # target = str(self.comboBoxes[row].currentText())
+                target = str(self.phal_table.item(row, 2).text())
                 if target:
                     if uid not in signals:
                         signals[uid] = {}
