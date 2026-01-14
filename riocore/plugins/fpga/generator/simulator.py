@@ -113,7 +113,7 @@ class simulator(generator_base):
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
     def interface_c(self):
-        protocol = self.project.config["jdata"].get("protocol", "SPI")
+        protocol = self.instance.protocol
         if protocol == "UDP":
             for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
                 if protocol == ppath.split(os.sep)[-2]:
@@ -219,8 +219,85 @@ class simulator(generator_base):
         output.append("};")
         output.append("")
 
-        protocol = self.project.config["jdata"].get("protocol", "SPI")
+        output.append("""
 
+uint16_t crc16_update(uint16_t crc, uint8_t a) {
+	int i;
+	crc ^= (uint16_t)a;
+	for (i = 0; i < 8; ++i) {
+		if (crc & 1)
+			crc = (crc >> 1) ^ 0xA001;
+		else
+			crc = (crc >> 1);
+	}
+	return crc;
+}
+
+void sim_modbus_dio(uint8_t *frame) {
+    static uint8_t data = 0;
+    uint8_t addr = frame[0];
+    if (addr == 11) {
+        uint8_t fcode = frame[1];
+        if (fcode == 15) { // Force Multiple Coils (Function Code=15)
+            uint16_t daddr = (frame[2]<<8) | frame[3];
+            uint16_t ncoils = (frame[4]<<8) | frame[5];
+            uint8_t nbytes = frame[6];
+            //printf("####### %i %i %i %i: ", addr, fcode, daddr, ncoils);
+            for (uint8_t byte = 0; byte < nbytes; byte++) {
+                data = frame[7 + byte];
+                for (uint8_t bit = 0; bit < 8; bit++) {
+                    if ((frame[7 + byte] & (1<<bit)) != 0) {
+                        printf("1 ");
+                    } else {
+                        printf("0 ");
+                    }
+                }
+            }
+            printf("\\n");
+        } else if (fcode == 2) { // Read Input Status (Function Code=02)
+            uint16_t daddr = (frame[2]<<8) | frame[3];
+            printf("####### %i %i %i %i: ", addr, fcode, daddr, frame[4], frame[5]);
+
+            static uint8_t frame_data[16];
+
+            frame_data[0] = 11;
+            frame_data[1] = 2;
+            frame_data[2] = 1;
+            frame_data[3]++;
+
+            uint16_t frame_len = 4;
+            uint16_t crc = 0xFFFF;
+            for (uint8_t i = 0; i < frame_len; i++) {
+                crc = crc16_update(crc, frame_data[i]);
+            }
+            frame_data[frame_len] = crc & 0xFF;
+            frame_data[frame_len + 1] = crc>>8 & 0xFF;
+
+            for (int cn = 0; cn < frame_len + 2; cn++) {
+                VARIN128_MODBUS0_RXDATA[frame_len - cn + 4] = frame_data[cn];
+            }
+            VARIN128_MODBUS0_RXDATA[0] = 0;
+            VARIN128_MODBUS0_RXDATA[1]++;
+            VARIN128_MODBUS0_RXDATA[2] = frame_len + 2;
+
+            printf("> --modbus0.rxdata ");
+            for (int i = 0; i < 16; i++) {
+                printf("%i ", VARIN128_MODBUS0_RXDATA[i]);
+            }
+            printf("\\n");
+
+            printf("> --modbus0.rxdata F ");
+            for (int i = 0; i < frame_len+2; i++) {
+                printf("%i ", frame_data[i]);
+            }
+            printf("\\n");
+
+        }
+    }
+}
+""")
+
+        protocol = self.instance.protocol
         output.append("int udp_init(const char *dstAddress, int dstPort, int srcPort);")
         output.append("void udp_tx(uint8_t *txBuffer, uint16_t size);")
         output.append("int udp_rx(uint8_t *rxBuffer, uint16_t size);")
@@ -364,12 +441,16 @@ class simulator(generator_base):
                     output.append('    printf("\\n");')
                     output.append("")
                     if modbus_n == 0:
+                        output.append(f"    if (frame{modbus_n}_id_last != frame{modbus_n}_id) {{")
+                        output.append(f"        sim_modbus_dio({variable_name} + 2);")
+                        output.append("    }")
+
                         output.append("#ifdef SERIAL_PORT")
                         output.append(f"    if (frame{modbus_n}_id_last != frame{modbus_n}_id) {{")
                         output.append(f"        write(serial_port, {variable_name} + 2, frame{modbus_n}_len);")
-                        output.append(f"        frame{modbus_n}_id_last = frame{modbus_n}_id;")
                         output.append("    }")
                         output.append("#endif")
+                        output.append(f"    frame{modbus_n}_id_last = frame{modbus_n}_id;")
                         output.append("")
                     modbus_n += 1
 
