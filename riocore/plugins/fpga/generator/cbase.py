@@ -783,19 +783,11 @@ class cbase:
         if "serial":
             self.header_list += ["fcntl.h", "termios.h"]
 
-        protocol = None
-        ip = ""
-        port = 0
-        cspin = 0
-        for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name:
-                continue
-
-            if plugin_instance.TYPE == "interface":
-                protocol = plugin_instance.HOST_INTERFACE
-                ip = plugin_instance.plugin_setup.get("ip", plugin_instance.option_default("ip", ip))
-                port = plugin_instance.plugin_setup.get("port", plugin_instance.option_default("port", port))
-                cspin = plugin_instance.plugin_setup.get("cs", plugin_instance.option_default("cs", cspin))
+        protocol = self.instance.protocol
+        interface_instance = self.instance.interface_instance
+        ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.1ß.194"))
+        port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
+        cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
 
         # backward compatibility (SPI/UDP)
         ip = self.project.config["jdata"].get("ip", ip)

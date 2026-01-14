@@ -162,6 +162,16 @@ class jslib(generator_base):
     def client_js(self):
         http_support = True
 
+        interface_instance = self.instance.interface_instance
+        ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.1ß.194"))
+        port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
+
+        # backward compatibility (SPI/UDP)
+        ip = self.project.config["jdata"].get("ip", ip)
+        port = self.project.config["jdata"].get("port", port)
+        dst_port = self.project.config["jdata"].get("dst_port", port)
+        src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1))
+
         output = ["#!/usr/bin/env node"]
         output.append("")
         output.append("")
@@ -175,9 +185,9 @@ class jslib(generator_base):
         output.append("")
         if http_support:
             output.append("HTTP_PORT = 8080;")
-        output.append("SOURCE_PORT = 2391;")
-        output.append("TARGET_PORT = 2390;")
-        output.append("TARGET_IP = '127.0.0.1';")
+        output.append(f"SOURCE_PORT = {src_port};")
+        output.append(f"TARGET_PORT = {dst_port};")
+        output.append(f"TARGET_IP = '{ip}';")
         output.append("")
         if http_support:
             output.append("rio_rx = {};")

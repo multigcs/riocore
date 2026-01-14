@@ -11,7 +11,7 @@ const { Buffer } = require('node:buffer');
 HTTP_PORT = 8080;
 SOURCE_PORT = 2391;
 TARGET_PORT = 2390;
-TARGET_IP = '127.0.0.1';
+TARGET_IP = '192.168.11.194';
 
 rio_rx = {};
 

@@ -197,7 +197,6 @@ class LinuxCNC:
         self.halextras = []
         self.mqtt_publisher = []
         self.project = project
-        self.protocol = self.project.config["jdata"].get("protocol", "SPI")
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
         self.component_path = f"{self.base_path}"
         self.configuration_path = f"{self.base_path}"

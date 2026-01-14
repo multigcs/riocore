@@ -113,8 +113,6 @@ class Plugin(PluginBase):
 
         toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain")) or self.jdata.get("toolchain")
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
-        protocol = self.plugin_setup.get("protocol", self.option_default("protocol"))
-        self.jdata["protocol"] = protocol
         self.jdata["toolchain"] = toolchain
         self.jdata["speed"] = speed
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
@@ -133,6 +131,9 @@ class Plugin(PluginBase):
         subs = {}
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                if connected_pin["instance"].TYPE == "interface":
+                    instance.protocol = connected_pin["instance"].HOST_INTERFACE
+                    instance.interface_instance = connected_pin["instance"]
                 if connected_pin["instance"].NAME == "uartsub":
                     subboard = connected_pin["instance"].plugin_setup.get("subboard")
                     if subboard:
@@ -145,10 +146,12 @@ class Plugin(PluginBase):
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
                 plugin_instance.master = instance.instances_name
                 plugin_instance.gmaster = instance.instances_name
+                instance.fmaster = None
                 if subs.get(instance.instances_name):
                     master = subs[instance.instances_name]
                     plugin_instance.PREFIX = f"{master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
-                    plugin_instance.gmaster = master
+                    plugin_instance.gmaster = master  # gateware master
+                    instance.fmaster = master  # fpga master
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
@@ -170,9 +173,7 @@ class Plugin(PluginBase):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             simulation = instance.plugin_setup.get("simulation", instance.option_default("simulation"))
-            protocol = instance.plugin_setup.get("protocol", instance.option_default("protocol"))
-
-            if protocol == "UART":
+            if instance.fmaster:
                 # is sub fpga
                 continue
 
@@ -230,11 +231,11 @@ class Plugin(PluginBase):
             instance.gateware.generator()
 
             # linuxcnc-component
-            protocol = parent.project.config["protocol"] = instance.jdata["protocol"]
-            if protocol != "UART":
+            if not instance.fmaster:
                 component(parent.project, instance=instance)
                 rosbridge(parent.project, instance=instance)
                 mqttbridge(parent.project, instance=instance)
                 pylib(parent.project, instance=instance)
-                simulator(parent.project, instance=instance)
-                jslib(parent.project, instance=instance)
+                if instance.protocol == "UDP":
+                    jslib(parent.project, instance=instance)
+                    simulator(parent.project, instance=instance)

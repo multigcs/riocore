@@ -99,7 +99,6 @@ if args.config:
                 if "linuxcnc" not in jdata:
                     jdata["linuxcnc"] = {}
                 jdata["linuxcnc"]["simulation"] = False
-                jdata["protocol"] = "UDP"
                 jdata["ip"] = "127.0.0.1"
                 jdata["port"] = "2390"
 
@@ -113,7 +112,6 @@ if args.config:
         if args.output:
             output_path = args.output
         startsh_path = os.path.join(output_path, config_name, "LinuxCNC", "start.sh")
-        simulatorsh_path = os.path.join(output_path, config_name, "Simulator", "start.sh")
 
         if args.build:
             for plugin_instance in project.plugin_instances:
@@ -171,13 +169,19 @@ if args.config:
                             print(f"ERROR: code {ret}")
                             sys.exit(1)
         if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
+            proc_sims = {}
             if args.udpsim:
-                cmd = f"sh {simulatorsh_path}"
-                print()
-                print("running:")
-                print(f"  {cmd}")
-                print()
-                proc_sim = subprocess.Popen(cmd, shell=True)
+                for plugin_instance in project.plugin_instances:
+                    if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                        arguments = []
+                        if plugin_instance.BUILDER and hasattr(plugin_instance, "protocol") and plugin_instance.protocol == "UDP":
+                            simulatorsh_path = os.path.join(output_path, config_name, "Simulator", plugin_instance.instances_name, "start.sh")
+                            cmd = f"sh {simulatorsh_path}"
+                            print()
+                            print("running:")
+                            print(f"  {cmd}")
+                            print()
+                            proc_sims[plugin_instance.instances_name] = subprocess.Popen(cmd, shell=True)
 
             if args.ngc:
                 ngc_realpath = os.path.realpath(args.ngc)
@@ -190,9 +194,10 @@ if args.config:
             print()
             ret = os.system(cmd)
             if args.udpsim:
-                print(f"stopping {proc_sim.pid} and sub processes..")
-                kill(proc_sim.pid)
-                print("..done")
+                for proc_sim in proc_sims:
+                    print(f"stopping {proc_sims[proc_sim].pid} and sub processes..")
+                    kill(proc_sims[proc_sim].pid)
+                    print("..done")
 
             if ret != 0:
                 print(f"ERROR: code {ret}")
