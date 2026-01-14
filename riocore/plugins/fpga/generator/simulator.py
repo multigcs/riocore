@@ -12,6 +12,9 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(_
 
 class simulator(generator_base):
     def __init__(self, project, instance):
+        self.modbus_serial = None
+        # socat -d -d pty,raw,echo=0 pty,raw,echo=0
+        # self.modbus_serial = "/dev/pts/12"
         self.project = project
         self.instance = instance
         self.prefix = instance.hal_prefix
@@ -197,6 +200,16 @@ class simulator(generator_base):
         output.append("#include <simulator.h>")
         output.append("#include <riocore.h>")
         output.append("")
+        output.append("#include <fcntl.h>")
+        output.append("#include <errno.h>")
+        output.append("#include <termios.h>")
+        output.append("#include <unistd.h>")
+        output.append("")
+        if self.modbus_serial:
+            output.append(f'#define SERIAL_PORT "{self.modbus_serial}"')
+        output.append("int serial_port = -1;")
+        output.append("")
+
         output.append("uint8_t sim_running = 1;")
         output.append("")
         output.append("float joint_scales[NUM_JOINTS] = {")
@@ -331,6 +344,7 @@ class simulator(generator_base):
 
         output.append("")
         output.append('    printf("\\n\\n");')
+        modbus_n = 0
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             # multiplexed = data_config.get("multiplexed", False)
             # expansion = data_config.get("expansion", False)
@@ -338,6 +352,27 @@ class simulator(generator_base):
             if data_config["direction"] == "output":
                 if plugin_instance.TYPE != "frameio":
                     output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+                elif plugin_instance.NAME == "modbus":
+                    output.append(f"    static uint8_t frame{modbus_n}_id_last = 255;")
+                    output.append(f"    uint8_t frame{modbus_n}_id = {variable_name}[0];")
+                    output.append(f"    uint8_t frame{modbus_n}_len = {variable_name}[1];")
+                    output.append("")
+                    output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} ");')
+                    output.append(f"    for (int i = 0; i < frame{modbus_n}_len; i++) {{")
+                    output.append(f'        printf("%i ", {variable_name}[i + 2]);')
+                    output.append("    }")
+                    output.append('    printf("\\n");')
+                    output.append("")
+                    if modbus_n == 0:
+                        output.append("#ifdef SERIAL_PORT")
+                        output.append(f"    if (frame{modbus_n}_id_last != frame{modbus_n}_id) {{")
+                        output.append(f"        write(serial_port, {variable_name} + 2, frame{modbus_n}_len);")
+                        output.append(f"        frame{modbus_n}_id_last = frame{modbus_n}_id;")
+                        output.append("    }")
+                        output.append("#endif")
+                        output.append("")
+                    modbus_n += 1
+
         output.append('    printf("\\n");')
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             # multiplexed = data_config.get("multiplexed", False)
@@ -354,6 +389,41 @@ class simulator(generator_base):
         output.append("")
         output.append("    interface_init(0, NULL);")
         output.append("")
+
+        output.append("#ifdef SERIAL_PORT")
+        output.append("    struct termios tty;")
+        output.append("    serial_port = open(SERIAL_PORT, O_RDWR);")
+        output.append("    if (serial_port < 0) {")
+        output.append('        printf("Error %i from open: %s\\n", errno, strerror(errno));')
+        output.append("    }")
+        output.append("    if(tcgetattr(serial_port, &tty) != 0) {")
+        output.append('        printf("Error %i from tcgetattr: %s\\n", errno, strerror(errno));')
+        output.append("    }")
+        output.append("    tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)")
+        output.append("    tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)")
+        output.append("    tty.c_cflag &= ~CSIZE; // Clear all bits that set the data size")
+        output.append("    tty.c_cflag |= CS8; // 8 bits per byte (most common)")
+        output.append("    tty.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)")
+        output.append("    tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)")
+        output.append("    tty.c_lflag &= ~ICANON;")
+        output.append("    tty.c_lflag &= ~ECHO; // Disable echo")
+        output.append("    tty.c_lflag &= ~ECHOE; // Disable erasure")
+        output.append("    tty.c_lflag &= ~ECHONL; // Disable new-line echo")
+        output.append("    tty.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP")
+        output.append("    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl")
+        output.append("    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes")
+        output.append("    tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)")
+        output.append("    tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed")
+        output.append("    tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.")
+        output.append("    tty.c_cc[VMIN] = 0;")
+        output.append("    cfsetispeed(&tty, B9600);")
+        output.append("    cfsetospeed(&tty, B9600);")
+        output.append("    if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {")
+        output.append('        printf("Error %i from tcsetattr: %s\\n", errno, strerror(errno));')
+        output.append("    }")
+        output.append("#endif")
+        output.append("")
+
         output.append("    while (sim_running) {")
         output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE_RX);")
         output.append("        if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
