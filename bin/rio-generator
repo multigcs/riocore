@@ -91,9 +91,9 @@ if args.config:
                         jdata["plugins"][pn]["joint"]["home"] = 0.0
 
             if args.simulator:
-                if "linuxcnc" not in jdata:
-                    jdata["linuxcnc"] = {}
-                jdata["linuxcnc"]["simulation"] = True
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("type") == "fpga":
+                        jdata["plugins"][pn]["simulation"] = True
 
             elif args.udpsim:
                 if "linuxcnc" not in jdata:
