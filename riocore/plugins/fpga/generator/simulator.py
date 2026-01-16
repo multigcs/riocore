@@ -388,12 +388,16 @@ class simulator(generator_base):
 
         output.append('    printf("\\n");')
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
-            # multiplexed = data_config.get("multiplexed", False)
-            # expansion = data_config.get("expansion", False)
             variable_name = data_config["variable"]
             if data_config["direction"] == "input":
                 if plugin_instance.TYPE != "frameio":
                     output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+                elif plugin_instance.NAME == "modbus":
+                    output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} ");')
+                    output.append(f"    for (int i = 0; i < {size // 8}; i++) {{")
+                    output.append(f'        printf("%i ", {variable_name}[i]);')
+                    output.append("    }")
+                    output.append('    printf("\\n");')
         output.append("}")
         output.append("")
 

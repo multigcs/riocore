@@ -11,19 +11,20 @@
 #include <termios.h>
 #include <unistd.h>
 
+//#define MODBUS_SERIAL_PORT "/dev/pts/13"
 
 #ifdef MODBUS_SERIAL_PORT
-int MODBUS_SERIAL_PORT = -1;
+int modbus_serial = -1;
 #endif
 
 void modbus_init() {
 #ifdef MODBUS_SERIAL_PORT
     struct termios tty;
-    MODBUS_SERIAL_PORT = open(MODBUS_SERIAL_PORT, O_RDWR);
-    if (MODBUS_SERIAL_PORT < 0) {
+    modbus_serial = open(MODBUS_SERIAL_PORT, O_RDWR);
+    if (modbus_serial < 0) {
         printf("Error %i from open: %s\n", errno, strerror(errno));
     }
-    if(tcgetattr(MODBUS_SERIAL_PORT, &tty) != 0) {
+    if(tcgetattr(modbus_serial, &tty) != 0) {
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
     }
     tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
@@ -41,11 +42,13 @@ void modbus_init() {
     tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
     tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
     tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-    tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+
+    tty.c_cc[VTIME] = 0; // 1/10sec
     tty.c_cc[VMIN] = 0;
+    
     cfsetispeed(&tty, B9600);
     cfsetospeed(&tty, B9600);
-    if (tcsetattr(MODBUS_SERIAL_PORT, TCSANOW, &tty) != 0) {
+    if (tcsetattr(modbus_serial, TCSANOW, &tty) != 0) {
         printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
     }
 #endif
@@ -109,10 +112,10 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
 int modbus(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame) {
 #ifdef MODBUS_SERIAL_PORT
     if (channel == 0) {
-        write(MODBUS_SERIAL_PORT, frame, len);
+        write(modbus_serial, frame, len);
+        return read(modbus_serial, ret_frame, 14);
     }
 #endif
     return modbus_sim(channel, frame, len, ret_frame);
 }
-
 
