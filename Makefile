@@ -21,7 +21,7 @@ verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
 
 readmes:
-	PYTHONPATH=. bin/rio-plugininfo -g
+	PYTHONPATH=. riocore/files/plugininfo.py -g
 	PYTHONPATH=. riocore/files/update_boards_and_toolchains_readme.py
 
 dist:

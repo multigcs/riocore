@@ -42,7 +42,7 @@ SPI-Type
  * default: rpi4
 
 ### cs:
-Chip-Select
+Chip-Select pin on the Host-Side CS0/CS1
 
  * type: int
  * min: 0
