@@ -51,12 +51,13 @@ uint32_t fpga_timestamp = 0;
 void rio_readwrite(void *inst, long period);
 int error_handler(int retval);
 
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 typedef struct {
     // hal variables
     hal_bit_t   *sys_enable;
-    hal_bit_t   *sys_enable_request;
     hal_bit_t   *sys_status;
-    hal_bit_t   *machine_on;
+    hal_bit_t   *sys_error;
     hal_bit_t   *sys_simulation;
     hal_u32_t   *fpga_timestamp;
     hal_float_t *duration;
@@ -127,10 +128,9 @@ data_t *register_signals(void) {
     data->VAROUT1_STEPDIR1_ENABLE = 0;
     data->VAROUT1_STEPDIR2_ENABLE = 0;
 
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_error), comp_id, "board0.sys-error")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "board0.sys-status")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable), comp_id, "board0.sys-enable")) != 0) error_handler(retval);
-    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable_request), comp_id, "board0.sys-enable-request")) != 0) error_handler(retval);
-    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->machine_on), comp_id, "board0.machine-on")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_simulation), comp_id, "board0.sys-simulation")) != 0) error_handler(retval);
     *data->sys_simulation = 0;
     if ((retval = hal_pin_float_newf(HAL_OUT, &(data->duration), comp_id, "board0.duration")) != 0) error_handler(retval);
@@ -634,15 +634,12 @@ void rio_readwrite(void *inst, long period) {
     uint8_t i = 0;
     uint8_t rxBuffer[BUFFER_SIZE_RX * 2];
     uint8_t txBuffer[BUFFER_SIZE_TX * 2];
-    if (*data->sys_enable_request == 1) {
-        *data->sys_status = 1;
-    }
     long stamp_new = rtapi_get_time();
     stamp_last = stamp_new;
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
     fpga_stamp_last = timestamp;
-    if (*data->sys_enable == 1 && *data->sys_status == 1) {
+    if (*data->sys_enable == 1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {
@@ -661,21 +658,25 @@ void rio_readwrite(void *inst, long period) {
                 }
                 read_rxbuffer(rxBuffer);
                 convert_inputs();
+                *data->sys_status = 1;
             } else {
                 err_counter += 1;
                 err_total += 1;
-                if (ret != BUFFER_SIZE_RX) {
-                    rtapi_print("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
-                } else {
-                    rtapi_print("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
-                }
-                for (i = 0; i < ret; i++) {
-                    rtapi_print("%d ", rxBuffer[i]);
-                }
-                rtapi_print("\n");
-                if (err_counter > 3) {
-                    rtapi_print("too many errors..\n");
-                    *data->sys_status = 0;
+                if (err_counter < 5) {
+                    if (ret != BUFFER_SIZE_RX) {
+                        rtapi_print("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    } else {
+                        rtapi_print("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    }
+                    for (i = 0; i < ret; i++) {
+                        rtapi_print("%d ", rxBuffer[i]);
+                    }
+                    rtapi_print("\n");
+                    if (err_counter > 3) {
+                        rtapi_print("too many errors..\n");
+                        *data->sys_status = 0;
+                        *data->sys_error = 1;
+                    }
                 }
             }
         } else {
@@ -683,6 +684,7 @@ void rio_readwrite(void *inst, long period) {
         }
     } else {
         *data->sys_status = 0;
+        *data->sys_error = 0;
     }
 }
 

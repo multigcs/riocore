@@ -60,12 +60,13 @@ uint32_t fpga_timestamp = 0;
 void rio_readwrite(void *inst, long period);
 int error_handler(int retval);
 
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
 typedef struct {
     // hal variables
     bool   *sys_enable;
-    bool   *sys_enable_request;
     bool   *sys_status;
-    bool   *machine_on;
+    bool   *sys_error;
     bool   *sys_simulation;
     uint32_t   *fpga_timestamp;
     float *duration;
@@ -136,10 +137,9 @@ data_t *register_signals(void) {
     data->VAROUT1_STEPDIR1_ENABLE = 0;
     data->VAROUT1_STEPDIR2_ENABLE = 0;
 
+    data->sys_error = (bool*)malloc(sizeof(bool));
     data->sys_status = (bool*)malloc(sizeof(bool));
     data->sys_enable = (bool*)malloc(sizeof(bool));
-    data->sys_enable_request = (bool*)malloc(sizeof(bool));
-    data->machine_on = (bool*)malloc(sizeof(bool));
     data->sys_simulation = (bool*)malloc(sizeof(bool));
     *data->sys_simulation = 0;
     data->duration = (float*)malloc(sizeof(float));
@@ -602,15 +602,12 @@ void rio_readwrite(void *inst, long period) {
     uint8_t i = 0;
     uint8_t rxBuffer[BUFFER_SIZE_RX * 2];
     uint8_t txBuffer[BUFFER_SIZE_TX * 2];
-    if (*data->sys_enable_request == 1) {
-        *data->sys_status = 1;
-    }
     long stamp_new = rtapi_get_time();
     stamp_last = stamp_new;
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
     fpga_stamp_last = timestamp;
-    if (1) {
+    if (*data->sys_enable == 1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {
@@ -629,21 +626,25 @@ void rio_readwrite(void *inst, long period) {
                 }
                 read_rxbuffer(rxBuffer);
                 convert_inputs();
+                *data->sys_status = 1;
             } else {
                 err_counter += 1;
                 err_total += 1;
-                if (ret != BUFFER_SIZE_RX) {
-                    printf("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
-                } else {
-                    printf("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
-                }
-                for (i = 0; i < ret; i++) {
-                    printf("%d ", rxBuffer[i]);
-                }
-                printf("\n");
-                if (err_counter > 3) {
-                    printf("too many errors..\n");
-                    *data->sys_status = 0;
+                if (err_counter < 5) {
+                    if (ret != BUFFER_SIZE_RX) {
+                        printf("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    } else {
+                        printf("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);
+                    }
+                    for (i = 0; i < ret; i++) {
+                        printf("%d ", rxBuffer[i]);
+                    }
+                    printf("\n");
+                    if (err_counter > 3) {
+                        printf("too many errors..\n");
+                        *data->sys_status = 0;
+                        *data->sys_error = 1;
+                    }
                 }
             }
         } else {
@@ -651,6 +652,7 @@ void rio_readwrite(void *inst, long period) {
         }
     } else {
         *data->sys_status = 0;
+        *data->sys_error = 0;
     }
 }
 

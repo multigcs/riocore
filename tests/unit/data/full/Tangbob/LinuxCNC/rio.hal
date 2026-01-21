@@ -35,7 +35,6 @@ net tool-prep-number                     <= iocontrol.0.tool-prep-number
 net tool-prepared                        <= iocontrol.0.tool-prepare
 net tool-prepared                        => iocontrol.0.tool-prepared
 net user-enable-out                      <= iocontrol.0.user-enable-out
-net user-request-enable                  <= iocontrol.0.user-request-enable
 
 #################################################################################
 # fpga0
@@ -53,27 +52,25 @@ net sig_pyvcp_fpga0_fpga0_wled_0_red     => fpga0.fpga0_wled.0_red
 net sig_fpga0_i2cbus0_lm75_0_temp        <= fpga0.i2cbus0.lm75_0_temp
 net sig_fpga0_i2cbus0_lm75_0_valid       <= fpga0.i2cbus0.lm75_0_valid
 
-net sig_halui_machine_is-on              => fpga0.machine-on
-
 net sig_fpga0_modbus0_temperature        <= fpga0.modbus0.temperature
 
 net user-enable-out                      => fpga0.sys-enable
-net user-request-enable                  => fpga0.sys-enable-request
+net sig_fpga0_sys-error                  <= fpga0.sys-error
 net sig_fpga0_sys-status                 <= fpga0.sys-status
-
-#################################################################################
-# halui
-#################################################################################
-net sig_halui_machine_is-on              <= halui.machine.is-on
-
-net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
-net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
-net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
 
 #################################################################################
 # spindle
 #################################################################################
 net sig_spindle_0_on                     <= spindle.0.on
+
+#################################################################################
+# halui
+#################################################################################
+net sig_fpga0_sys-error                  => halui.estop.activate
+
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
 
 #################################################################################
 # joint

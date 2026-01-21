@@ -32,6 +32,15 @@ addf motion-controller servo-thread
 addf hm2_7i92.0.write servo-thread
 
 #################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.and_0.1 personality=0x102
+addf func.and_0.1 servo-thread
+
+loadrt not names=func.not_hm2_7i92_0_packet-error-exceeded
+addf func.not_hm2_7i92_0_packet-error-exceeded servo-thread
+
+#################################################################################
 # iocontrol
 #################################################################################
 net user-enable-out                      => iocontrol.0.emc-enable-in
@@ -40,7 +49,7 @@ net tool-changed                         => iocontrol.0.tool-changed
 net tool-prep-number                     <= iocontrol.0.tool-prep-number
 net tool-prepared                        <= iocontrol.0.tool-prepare
 net tool-prepared                        => iocontrol.0.tool-prepared
-net user-enable-out                      <= iocontrol.0.user-enable-out
+net sig_iocontrol_0_user-enable-out      <= iocontrol.0.user-enable-out
 
 #################################################################################
 # hm2_7i92
@@ -48,9 +57,23 @@ net user-enable-out                      <= iocontrol.0.user-enable-out
 net sig_hm2_7i92_0_9r01_0_1_input-00     <= hm2_7i92.0.9r01.0.1.input-00
 net sig_pyvcp_hm2_7i92_0_9r01_0_1_output-00 => hm2_7i92.0.9r01.0.1.output-00
 
+net sig_hm2_7i92_0_packet-error-exceeded <= hm2_7i92.0.packet-error-exceeded
+
+#################################################################################
+# func
+#################################################################################
+net user-enable-out                      <= func.and_0.1.and
+net func_not_hm2_7i92_0_packet-error-exceeded_out => func.and_0.1.in-00
+net sig_iocontrol_0_user-enable-out      => func.and_0.1.in-01
+
+net sig_hm2_7i92_0_packet-error-exceeded => func.not_hm2_7i92_0_packet-error-exceeded.in
+net func_not_hm2_7i92_0_packet-error-exceeded_out <= func.not_hm2_7i92_0_packet-error-exceeded.out
+
 #################################################################################
 # halui
 #################################################################################
+net sig_hm2_7i92_0_packet-error-exceeded => halui.estop.activate
+
 net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
 net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
 net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02

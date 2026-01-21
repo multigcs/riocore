@@ -3,9 +3,8 @@
 typedef struct {
     // hal variables
     bool   *sys_enable;
-    bool   *sys_enable_request;
     bool   *sys_status;
-    bool   *machine_on;
+    bool   *sys_error;
     bool   *sys_simulation;
     uint32_t   *fpga_timestamp;
     float *duration;
