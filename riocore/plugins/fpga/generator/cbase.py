@@ -876,6 +876,8 @@ class cbase:
         output.append("void rio_readwrite(void *inst, long period);")
         output.append("int error_handler(int retval);")
         output.append("")
+        output.append("#define MAX(a,b) (((a)>(b))?(a):(b))")
+        output.append("")
 
         if not libmode:
             output += self.variables()
