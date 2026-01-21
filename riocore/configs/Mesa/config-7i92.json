@@ -2,10 +2,10 @@
     "name": "Mesa",
     "flow": {
         "view": {
-            "scale": 1.25,
+            "scale": 0.73,
             "pos": [
-                2144,
-                -206
+                602,
+                -293
             ]
         },
         "board": {
@@ -112,7 +112,8 @@
             "rotate": -90,
             "uid": "mesa0",
             "boardname": "7i92",
-            "firmware": "5ABOBx2D"
+            "firmware": "G540x2D",
+            "num_pwms": 0
         },
         {
             "type": "mesa",
@@ -336,50 +337,6 @@
                     "net": "halui.machine.is-on"
                 }
             }
-        },
-        {
-            "type": "mesa",
-            "node_type": "pwm",
-            "uid": "mesa4",
-            "image": "spindle500w",
-            "pos": [
-                1400.0,
-                600.0
-            ],
-            "pins": {
-                "pwm": {
-                    "pin": "china-bob5x0:PWM:analog"
-                }
-            }
-        },
-        {
-            "type": "gpioin",
-            "uid": "gpioin3",
-            "image": "estop",
-            "pos": [
-                1690.0,
-                -530.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "china-bob5x0:OPTO:in4",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                1550.0,
-                                -460.0
-                            ]
-                        }
-                    ]
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "iocontrol.0.emc-enable-in"
-                }
-            },
-            "name": "estop-sw"
         },
         {
             "type": "gpioin",

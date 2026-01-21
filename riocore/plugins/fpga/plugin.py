@@ -161,9 +161,8 @@ class Plugin(PluginBase):
 
     def hal(self, parent):
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
-        parent.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
         parent.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
-        parent.halg.net_add("halui.machine.is-on", f"{self.hal_prefix}.machine-on")
+        parent.halg.net_add(f"{self.hal_prefix}.sys-error", "halui.estop.activate")
 
     def start_sh(self, parent):
         return f'sudo halcompile --install "$DIRNAME/riocomp-{self.instances_name}.c"\n'

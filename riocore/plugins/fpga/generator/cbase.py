@@ -598,9 +598,8 @@ class cbase:
         output.append("typedef struct {")
         output.append("    // hal variables")
         output.append(f"    {self.typemap.get('bool')}   *sys_enable;")
-        output.append(f"    {self.typemap.get('bool')}   *sys_enable_request;")
         output.append(f"    {self.typemap.get('bool')}   *sys_status;")
-        output.append(f"    {self.typemap.get('bool')}   *machine_on;")
+        output.append(f"    {self.typemap.get('bool')}   *sys_error;")
         output.append(f"    {self.typemap.get('bool')}   *sys_simulation;")
         output.append(f"    {self.typemap.get('u32')}   *fpga_timestamp;")
         output.append(f"    {self.typemap.get('float')} *duration;")
@@ -702,10 +701,9 @@ class cbase:
                 output.append(f"    data->{variable_name} = 0;")
         output.append("")
 
+        output.append(self.vinit("sys_error", "bool", f"{self.prefix}.sys-error", "input"))
         output.append(self.vinit("sys_status", "bool", f"{self.prefix}.sys-status", "input"))
         output.append(self.vinit("sys_enable", "bool", f"{self.prefix}.sys-enable", "output"))
-        output.append(self.vinit("sys_enable_request", "bool", f"{self.prefix}.sys-enable-request", "output"))
-        output.append(self.vinit("machine_on", "bool", f"{self.prefix}.machine-on", "output"))
         output.append(self.vinit("sys_simulation", "bool", f"{self.prefix}.sys-simulation", "output"))
         output.append("    *data->sys_simulation = 0;")
         output.append(self.vinit("duration", "float", f"{self.prefix}.duration", "input"))
@@ -980,9 +978,6 @@ class cbase:
         output.append("    uint8_t i = 0;")
         output.append("    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];")
         output.append("    uint8_t txBuffer[BUFFER_SIZE_TX * 2];")
-        output.append("    if (*data->sys_enable_request == 1) {")
-        output.append("        *data->sys_status = 1;")
-        output.append("    }")
         output.append("    long stamp_new = rtapi_get_time();")
         # output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
@@ -991,17 +986,7 @@ class cbase:
         output.append("    *data->duration = timestamp - fpga_stamp_last;")
         output.append("    fpga_stamp_last = timestamp;")
 
-        conn_mode = "estop"  # always
-        if conn_mode == "estop":
-            if self.rtapi_mode:
-                output.append("    if (*data->sys_enable == 1 && *data->sys_status == 1) {")
-            else:
-                output.append("    if (1) {")
-        elif self.rtapi_mode:
-            output.append("    if (*data->sys_enable == 0 || *data->sys_status == 0) {")
-            output.append("        *data->sys_status = 0;")
-            output.append("    }")
-            output.append("    if (1) {")
+        output.append("    if (*data->sys_enable == 1) {")
 
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
@@ -1035,6 +1020,7 @@ class cbase:
         output.append("                }")
         output.append("                read_rxbuffer(rxBuffer);")
         output.append("                convert_inputs();")
+        output.append("                *data->sys_status = 1;")
         output.append("            } else {")
         output.append("                err_counter += 1;")
         output.append("                err_total += 1;")
@@ -1059,6 +1045,7 @@ class cbase:
         output.append("                    if (err_counter > 3) {")
         output.append(f'                        {self.printf}("too many errors..\\n");')
         output.append("                        *data->sys_status = 0;")
+        output.append("                        *data->sys_error = 1;")
         output.append("                    }")
         output.append("                }")
         output.append("            }")
@@ -1067,6 +1054,7 @@ class cbase:
         output.append("        }")
         output.append("    } else {")
         output.append("        *data->sys_status = 0;")
+        output.append("        *data->sys_error = 0;")
         output.append("    }")
         output.append("}")
         output.append("")

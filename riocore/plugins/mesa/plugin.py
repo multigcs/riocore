@@ -237,7 +237,10 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         channel = line.split()[4].replace("None", "GPIO")
                         direction = line.split()[6].lstrip("(").rstrip(")").replace("In", "input").replace("Out", "output")
                         ptype = f"MESA{func}{pinfunc}-{channel}"
-                        halname = f"{self.instances_name}:{func_halname}.{int(channel):02d}.{pinfunc.lower()}"
+                        if pinfunc.lower() == "pwm":
+                            halname = f"{self.instances_name}:{func_halname}.{int(channel):02d}.value"
+                        else:
+                            halname = f"{self.instances_name}:{func_halname}.{int(channel):02d}.{pinfunc.lower()}"
 
                     # riocore.log(slot, f"IO{io}", func, channel, pinfunc, direction, pos)
                     if pos:
@@ -410,6 +413,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                     if suffix.startswith("SSERIAL."):
                         plugin_instance.PREFIX = instance.hm2_prefix
                         plugin_instance.SSERIAL_NUM = ".".join(rawpin.split(".")[-2:])
+                    elif connected_pin["name"] == "pwm":
+                        # TODO: 00
+                        plugin_instance.PREFIX = f"{instance.hm2_prefix}.pwmgen.00"
                     else:
                         plugin_instance.PREFIX = f"{instance.hm2_prefix}.{suffix}"
 
@@ -435,6 +441,8 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         self.outputs.append(f"{self.hm2_prefix}.{pin.lower()}")
                         if inverted:
                             self.output_inverts.append(f"{self.hm2_prefix}.{pin.lower()}")
+                elif pin.startswith("pwmgen."):
+                    psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}"
                 else:
                     del psetup["pin"]
 
@@ -477,10 +485,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 parent.halg.setp_add(f"{pin}.is_output", 1)
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}.invert_output", 1)
+            parent.halg.net_add(f"{self.hm2_prefix}.packet-error-exceeded", "!iocontrol.0.emc-enable-in")
+            parent.halg.net_add(f"{self.hm2_prefix}.packet-error-exceeded", "halui.estop.activate")
+
         elif node_type == "pwm":
-            if self.PREFIX and ".pwm" in self.PREFIX:
-                scale = self.plugin_setup.get("scale", self.option_default("scale"))
-                parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
+            scale = self.plugin_setup.get("scale", self.option_default("scale"))
+            parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
+
         elif node_type == "encoder":
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
