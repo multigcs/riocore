@@ -84,6 +84,7 @@ gui_dict = {
     "gaxis": {
         "comment": "GTK based GUI",
         "cmd": "gscreen -c gaxis -c",
+        "windowid": "gscreen",
     },
 }
 vcp_dict = {

@@ -1268,7 +1268,7 @@ class TabOptions:
             self.help_img1.setPixmap(pixmap)
 
         gui = self.config["linuxcnc"].get("gui", "axis")
-        image_path = os.path.join(riocore_path, "files", "images", f"{gui}.png")
+        image_path = os.path.join(riocore_path, "files", "images", "guis", f"{gui}.png")
         if self.help_img2 is not None:
             if os.path.isfile(image_path):
                 pixmap = QPixmap(image_path)
