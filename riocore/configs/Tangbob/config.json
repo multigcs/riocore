@@ -354,10 +354,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 0.87,
+            "scale": 0.8422782037239869,
             "pos": [
-                2,
-                -42
+                -4.2738225629792055,
+                -41.0
             ]
         },
         "hal": {
@@ -400,7 +400,6 @@
                 "SERVO_PERIOD": 500000
             }
         },
-        "scurve": true,
-        "vcp_type": "gladevcp"
+        "scurve": true
     }
 }
