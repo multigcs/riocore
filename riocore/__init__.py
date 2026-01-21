@@ -31,6 +31,70 @@ def log_clear():
     loginfo.clear()
 
 
+gui_dict = {
+    "axis": {
+        "comment": "Tk based GUI (default)",
+        "vcp": {"pyvcp": {"prefix": "pyvcp"}, "gladevcp": {"prefix": "gladevcp"}},
+    },
+    "qtdragon": {
+        "comment": "nice QT based GUI",
+        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui"}},
+    },
+    "qtdragon_hd": {
+        "comment": "nice QT based GUI (HD-Version)",
+        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui"}},
+    },
+    "qtdragon_hd_vert": {
+        "comment": "nice QT based GUI (HD-Version)",
+        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui"}},
+    },
+    "tklinuxcnc": {
+        "comment": "TK based GUI",
+    },
+    "touchy": {
+        "comment": "simple GUI for touchscreens",
+    },
+    "probe_basic": {
+        "comment": "QT based GUI",
+        "vcp": {"qtpyvcp": {"prefix": "qtpyvcp"}},
+    },
+    "probe_basic_lathe": {
+        "comment": "QT based GUI for Lathe",
+        "vcp": {"qtpyvcp": {"prefix": "qtpyvcp"}},
+    },
+    "gmoccapy": {
+        "comment": "GTK based GUI",
+        "vcp": {"gladevcp": {"prefix": "rio-gui", "tablocation": ["ntb_user_tabs"]}},
+    },
+    "gscreen": {
+        "comment": "GTK based GUI",
+        "vcp": {"gladevcp": {"prefix": "rio-gui", "tablocation": ["notebook_main"]}},
+    },
+    "tnc": {
+        "comment": "QT based GUI by TurBoss",
+        "vcp": {"qtpyvcp": {"prefix": "qtpyvcp"}},
+    },
+    "woodpecker": {
+        "comment": "qtvcp based GUI",
+    },
+    "qtaxis": {
+        "comment": "qtvcp based GUI",
+        "cmd": "qtvcp -v qtaxis",
+    },
+    "gaxis": {
+        "comment": "GTK based GUI",
+        "cmd": "gscreen -c gaxis -c",
+    },
+}
+vcp_dict = {
+    "auto": {"comment": "automatic selection by gui"},
+    "pyvcp": {"comment": "Python Virtual Control Panel / Tk based"},
+    "qtvcp": {"comment": "QT based"},
+    "qtpyvcp": {"comment": "QT based"},
+    "gladevcp": {"comment": "GTK-Based"},
+}
+
+
 class Plugins:
     def __init__(self, node_types=False):
         self.node_types = node_types

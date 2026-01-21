@@ -305,41 +305,21 @@ class LinuxCNC:
         gui = linuxcnc_config.get("gui", "axis")
         vcp_mode = linuxcnc_config.get("vcp_mode", "ALL")
         vcp_type = linuxcnc_config.get("vcp_type", "auto")
-
         self.gui_type = ""
         self.gui_prefix = ""
         self.gui_tablocation = ""
         if vcp_mode != "NONE":
-            if gui == "axis":
-                if vcp_type == "gladevcp":
-                    self.gui_type = "gladevcp"
-                    self.gui_prefix = "gladevcp"
-                else:
-                    self.gui_type = "pyvcp"
-                    self.gui_prefix = "pyvcp"
-            elif gui == "gmoccapy":
-                self.gui_type = "gladevcp"
-                self.gui_prefix = "rio-gui"
-                self.gui_tablocation = "ntb_user_tabs"
-            elif gui in {"qtdragon", "qtdragon_hd"}:
-                self.gui_type = "qtvcp"
-                self.gui_prefix = "qtdragon.rio-gui"
-            elif gui in {"probe_basic", "probe_basic_lathe"}:
-                self.gui_type = "qtpyvcp"
-                self.gui_prefix = "qtpyvcp"
-            elif gui in {"gscreen"}:
-                self.gui_type = "gladevcp"
-                self.gui_prefix = "rio-gui"
-                self.gui_tablocation = "notebook_main"
-            elif gui in {"flexgui"}:
-                self.gui_type = "flexvcp"
-                self.gui_prefix = "flexhal.rio"
-            elif gui in {"tnc"}:
-                self.gui_type = "qtpyvcp"
-                self.gui_prefix = "qtpyvcp"
-            # elif gui in {"woodpecker"}:
-            #    self.gui_type = "qtvcp"
-            #    self.gui_prefix = "qtvcp"
+            vcp_setup = riocore.gui_dict.get(gui, {}).get("vcp", {})
+            if vcp_setup:
+                if vcp_type == "auto":
+                    vcp_type = list(vcp_setup)[0]
+                if vcp_type not in vcp_setup:
+                    print(f"ERROR: vcp '{vcp_type}' not supported for gui '{gui}'")
+                    exit(1)
+
+                self.gui_type = vcp_type
+                self.gui_prefix = vcp_setup[vcp_type]["prefix"]
+                self.gui_tablocation = vcp_setup[vcp_type].get("tablocation", "")
 
         if not self.preview:
             self.cfglink()
@@ -622,7 +602,7 @@ class LinuxCNC:
                 "QSS": "flexgui.qss",
             }
 
-        elif gui in {"qtdragon", "qtdragon_hd"}:
+        elif gui.startswith("qtdragon"):
             qtdragon_setup = {
                 "DISPLAY": {
                     "DISPLAY": f"qtvcp {gui}",
@@ -661,7 +641,8 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["DISPLAY"] = "qtvcp qtplasmac"
             ini_setup["RS274NGC"]["RS274NGC_STARTUP_CODE"] = "G21 G40 G49 G80 G90 G92.1 G94 G97 M52P1"
         else:
-            ini_setup["DISPLAY"]["DISPLAY"] = gui
+            cmd = riocore.gui_dict.get(gui, {}).get("cmd", gui)
+            ini_setup["DISPLAY"]["DISPLAY"] = cmd
         return ini_setup
 
     def ini(self):
@@ -1414,7 +1395,20 @@ if __name__ == "__main__":
 
             elif (netname and not virtual) or setp:
                 if direction == "input":
-                    section = displayconfig.get("section", "inputs").lower()
+                    if netname.endswith(".home-sw-in"):
+                        title = netname
+                        for axis_name, axis_config in self.project.axis_dict.items():
+                            joints = axis_config["joints"]
+                            for joint in joints:
+                                if netname == f"joint.{joint['num']}.home-sw-in":
+                                    title = f"{axis_name.upper()} (j{joint['num']})"
+                        group = displayconfig.get("group", "#Home-Switches")
+                        section = displayconfig.get("section", "status").lower()
+                        displayconfig["color"] = displayconfig.get("color", "green").lower()
+                        displayconfig["off_color"] = displayconfig.get("off_color", "black").lower()
+                        displayconfig["title"] = title
+                    else:
+                        section = displayconfig.get("section", "inputs").lower()
                 elif direction == "output":
                     section = displayconfig.get("section", "outputs").lower()
                 if boolean:
@@ -1425,7 +1419,6 @@ if __name__ == "__main__":
                     dtype = displayconfig.get("type", "number_s32")
                 else:
                     dtype = displayconfig.get("type", "number")
-
             elif virtual:
                 section = displayconfig.get("section", "virtual").lower()
                 if direction == "output":
@@ -1603,8 +1596,12 @@ if __name__ == "__main__":
 
             for group in widgets.get(tab, {}):
                 if group:
-                    gui_gen.draw_frame_begin(group)
-                    gui_gen.draw_vbox_begin()
+                    if group[0] == "#":
+                        gui_gen.draw_frame_begin(group[1:])
+                        gui_gen.draw_hbox_begin()
+                    else:
+                        gui_gen.draw_frame_begin(group)
+                        gui_gen.draw_vbox_begin()
 
                 for widget in widgets[tab][group]:
                     section = widget["section"]
@@ -1647,7 +1644,17 @@ if __name__ == "__main__":
                     halname_full = f"{self.gui_prefix}.{halname_short}"
                     if len(halname_short) >= MAX_HAL_LEN - len(self.gui_prefix):
                         riocore.log(f"ERROR: halname too long (>{MAX_HAL_LEN}): {halname_short} ({halname_full})")
+
+                    if group and group[0] == "#":
+                        title = f"{displayconfig['title']}"
+                        gui_gen.draw_vbox_begin()
+                        gui_gen.draw_title(title, no_expand=True)
+                        displayconfig["title"] = ""
+
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname_short, setup=displayconfig)
+
+                    if group and group[0] == "#":
+                        gui_gen.draw_vbox_end()
 
                     # fselect handling
                     if dtype == "fselect":
@@ -1701,7 +1708,10 @@ if __name__ == "__main__":
                         self.halg.net_add(gui_pinname, halname)
 
                 if group:
-                    gui_gen.draw_vbox_end()
+                    if group[0] == "#":
+                        gui_gen.draw_hbox_end()
+                    else:
+                        gui_gen.draw_vbox_end()
                     gui_gen.draw_frame_end()
 
             gui_gen.draw_tab_end()
@@ -1832,30 +1842,12 @@ if __name__ == "__main__":
                 self.halg.setp_add(f"{name}.min", -1.0)
                 self.halg.setp_add(f"{name}.max", wcomp)
 
-        if gui not in {"qtdragon", "qtdragon_hd"}:
-            if toolchange == "manual":
-                if gui == "gmoccapy":
-                    self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
-                    self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
-                    self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                elif gui != "woodpecker":
-                    self.halg.fmt_add_top("# manual toolchanger")
-                    self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
-                    self.halg.fmt_add_top("")
-                    self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-                    self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-                    self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-            else:
-                self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
-        elif gui in {"qtdragon"}:
+        if gui in {"qtdragon"}:
             self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
             self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
             self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
             self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-        elif gui in {"qtdragon_hd"}:
+        elif gui in {"qtdragon_hd", "qtdragon_hd_vert"}:
             self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
             self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
             self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
@@ -1879,6 +1871,24 @@ if __name__ == "__main__":
                     self.halg.net_add(found_ampere, "qtdragon.spindle-amps")
                     self.halg.net_add(found_voltage, "qtdragon.spindle-volts")
                     break
+        else:
+            if toolchange == "manual":
+                if gui == "gmoccapy":
+                    self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
+                    self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
+                    self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
+                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                elif gui != "woodpecker":
+                    self.halg.fmt_add_top("# manual toolchanger")
+                    self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
+                    self.halg.fmt_add_top("")
+                    self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+                    self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+                    self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            else:
+                self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+                self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:

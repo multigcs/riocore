@@ -88,7 +88,7 @@ class pyvcp:
     def draw_frame_end(self):
         self.parent = self.parent.getparent()
 
-    def draw_title(self, title, size=15):
+    def draw_title(self, title, size=15, no_expand=False):
         e_label = etree.Element("label")
         e_text = etree.Element("text")
         e_text.text = f'"{title:10s}"'
@@ -99,7 +99,7 @@ class pyvcp:
         e_font = etree.Element("font")
         e_font.text = '("Helvetica",9)'
         e_label.append(e_font)
-        if size >= 0:
+        if size >= 0 and not no_expand:
             e_width = etree.Element("width")
             e_width.text = str(size)
             e_label.append(e_width)

@@ -31,7 +31,26 @@ if sys.platform == "linux":
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
     parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
     parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
+    parser.add_argument("--gui", "-G", help="start linuxcnc with other gui", type=str, default=None)
+    parser.add_argument("--vcp", "-V", help="start linuxcnc with other vcp", type=str, default=None)
+
+
 args = parser.parse_args()
+
+
+if args.gui == "list":
+    for name, info in riocore.gui_dict.items():
+        vcps = ""
+        vcplist = list(info.get("vcp", {}))
+        if vcplist:
+            vcps = f" (VCP: {', '.join(vcplist)})"
+        print(f"{name:20s}: {info.get('comment', '')}{vcps}")
+    sys.exit(0)
+
+if args.vcp == "list":
+    for name, info in riocore.vcp_dict.items():
+        print(f"{name:20s}: {info.get('comment', '')}")
+    sys.exit(0)
 
 
 def kill(proc_pid):
@@ -52,7 +71,7 @@ if args.config:
             exit(1)
         print(f"loading: {config_file}")
 
-        if args.udpsim or args.simulator:
+        if args.udpsim or args.simulator or args.gui or args.vcp:
             # rewrite config for simulator
             jdata = json.loads(open(config_file).read())
             config_dir = os.path.dirname(config_file)
@@ -101,6 +120,16 @@ if args.config:
                 jdata["linuxcnc"]["simulation"] = False
                 jdata["ip"] = "127.0.0.1"
                 jdata["port"] = "2390"
+
+            if args.gui:
+                if "linuxcnc" not in jdata:
+                    jdata["linuxcnc"] = {}
+                jdata["linuxcnc"]["gui"] = args.gui
+
+            if args.vcp:
+                if "linuxcnc" not in jdata:
+                    jdata["linuxcnc"] = {}
+                jdata["linuxcnc"]["vcp_type"] = args.vcp
 
             config_file = os.path.join(config_dir, f"tmp-{config_name}")
             open(config_file, "w").write(json.dumps(jdata, indent=4))

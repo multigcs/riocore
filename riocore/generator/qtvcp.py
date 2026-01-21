@@ -227,7 +227,7 @@ class qtvcp:
         self.cfgxml_data.append("      </layout>")
         self.cfgxml_data.append("     </item>")
 
-    def draw_title(self, title):
+    def draw_title(self, title, no_expand=False):
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.add_property("text", title, ptype="string")

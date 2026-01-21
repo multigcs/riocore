@@ -178,7 +178,7 @@ def get_handlers(halcomp, builder, useropts):
         self.cfgxml_data.append("              </object>")
         self.cfgxml_data.append("            </child>")
 
-    def draw_title(self, title):
+    def draw_title(self, title, no_expand=False):
         self.cfgxml_data.append("                <child>")
         self.cfgxml_data.append('                  <object class="GtkLabel">')
         self.cfgxml_data.append('                    <property name="visible">True</property>')
