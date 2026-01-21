@@ -28,7 +28,7 @@ class LinuxCNC:
         "MIN_FERROR": 0.01,
         "FERROR": 2.0,
         "BACKLASH": 0.0,
-        "MAX_JERK": 1000.0,
+        "MAX_JERK": 4000.0,
     }
     PID_DEFAULTS = {
         "P": 250.0,
@@ -49,7 +49,7 @@ class LinuxCNC:
         "MAX_LIMIT": 1500.0,
         "MAX_VELOCITY": 40.0,
         "MAX_ACCELERATION": 500.0,
-        "MAX_JERK": 1000.0,
+        "MAX_JERK": 4000.0,
         "SCALE_OUT": 320.0,
         "SCALE_IN": 320.0,
         "HOME_SEARCH_VEL": -30.0,
@@ -159,8 +159,8 @@ class LinuxCNC:
             "NO_FORCE_HOMING": 1,
             "SPINDLES": 1,
             "PLANNER_TYPE": 0,
-            "MAX_LINEAR_JERK": 1000.0,
-            "DEFAULT_LINEAR_JERK": 500.0,
+            "MAX_LINEAR_JERK": 4000.0,
+            "DEFAULT_LINEAR_JERK": 4000.0,
         },
         "EMCIO": {
             "EMCIO": "io",
