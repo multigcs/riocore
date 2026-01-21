@@ -1009,7 +1009,7 @@ class cbase:
         if protocol == "UART":
             output.append("            uart_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
         elif protocol.startswith("SPI"):
-            output.append("            spi_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
+            output.append("            spi_trx(txBuffer, rxBuffer, MAX(BUFFER_SIZE_RX, BUFFER_SIZE_TX));")
 
         elif protocol == "UDP":
             output.append("#ifdef UDP_ASYNC")
