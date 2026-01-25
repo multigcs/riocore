@@ -227,17 +227,41 @@ EOF
 #
 #
 
-xset -dpms
+#xrandr --output HDMI-1 --mode 1920x1080
+#xrandr --output HDMI-2 --mode 1920x1080
+
 xset s off
 xset s noblank
+xset s noexpose
+xset -dpms
+
+#xfce4-terminal -e sh Output/Tangoboard/LinuxCNC/start.sh &
+
+#while sleep 1
+#do
+#    # apt-get install x11vnc
+#    x11vnc
+#done
 
 EOF
 		sudo chmod 755 /usr/local/bin/startup.sh
-		xset -dpms
 		xset s off
 		xset s noblank
+		xset s noexpose
+		xset -dpms
 
 		mkdir -p ~/.config/autostart/
+
+		cat <<EOF > ~/.config/autostart/light-locker.desktop
+[Desktop Entry]
+Hidden=true
+EOF
+
+		cat <<EOF > ~/.config/autostart/xfce4-power-manager.desktop
+[Desktop Entry]
+Hidden=true
+EOF
+
 		cat <<EOF > ~/.config/autostart/startup.desktop
 [Desktop Entry]
 Name=startup.sh
