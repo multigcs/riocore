@@ -2,10 +2,10 @@
     "name": "Mesa",
     "flow": {
         "view": {
-            "scale": 0.73,
+            "scale": 0.8,
             "pos": [
-                602,
-                -293
+                703,
+                -271
             ]
         },
         "board": {
@@ -112,8 +112,7 @@
             "rotate": -90,
             "uid": "mesa0",
             "boardname": "7i92",
-            "firmware": "G540x2D",
-            "num_pwms": 0
+            "firmware": "5ABOBx2D"
         },
         {
             "type": "mesa",
@@ -366,6 +365,21 @@
                 }
             },
             "name": "probe"
+        },
+        {
+            "type": "mesa",
+            "node_type": "pwm",
+            "uid": "mesa4",
+            "image": "spindle500w",
+            "pos": [
+                1370.0,
+                610.0
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "china-bob5x0:PWM:analog"
+                }
+            }
         }
     ],
     "boardcfg": ""

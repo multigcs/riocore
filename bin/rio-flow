@@ -1501,7 +1501,7 @@ class Window(QMainWindow):
         fit_action = QAction(icon, "&fit (F9)", self)
         fit_action.setStatusTip("Fit to view")
         fit_action.setShortcut("F9")
-        fit_action.triggered.connect(self.fit_view)
+        fit_action.triggered.connect(self.fit_view_cb)
         toolbar.addAction(fit_action)
 
         toolbar.addSeparator()
@@ -2195,6 +2195,10 @@ class Window(QMainWindow):
             left += grid(20)
 
         self.fit_view()
+
+    def fit_view_cb(self):
+        self.fit_view()
+        QTabWidget.setCurrentIndex(self.tabwidget, 0)
 
     def fit_view(self):
         min_x = max_size
