@@ -1,6 +1,6 @@
 <pyvcp>
   <tabs>
-    <names>['Status', 'Inputs', 'Outputs']</names>
+    <names>['Status', 'Outputs']</names>
     <vbox>
       <labelframe text="MDI-Commands">
         <relief>GROOVE</relief>
@@ -38,65 +38,75 @@
           </labelframe>
         </vbox>
       </labelframe>
-    </vbox>
-    <vbox>
-      <hbox>
-        <boxexpand expand="yes"/>
-        <boxfill fill="both"/>
-        <boxanchor anchor="e"/>
-        <label>
-          <text>"home-x-bit"</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-          <width>30</width>
-        </label>
-        <led>
-          <halpin>"hm2_7c81.0.gpio.013.in_not"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
-          <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
-      </hbox>
-      <hbox>
-        <boxexpand expand="yes"/>
-        <boxfill fill="both"/>
-        <boxanchor anchor="e"/>
-        <label>
-          <text>"home-y-bit"</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-          <width>30</width>
-        </label>
-        <led>
-          <halpin>"hm2_7c81.0.gpio.014.in_not"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
-          <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
-      </hbox>
-      <hbox>
-        <boxexpand expand="yes"/>
-        <boxfill fill="both"/>
-        <boxanchor anchor="e"/>
-        <label>
-          <text>"home-z-bit"</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-          <width>30</width>
-        </label>
-        <led>
-          <halpin>"hm2_7c81.0.gpio.015.in_not"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
-          <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
-      </hbox>
+      <labelframe text="Home-Switches">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
+          <vbox>
+            <label>
+              <text>"X (j0)    "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+            </label>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <led>
+                <halpin>"hm2_7c81.0.gpio.013.in_not"</halpin>
+                <size>16</size>
+                <on_color>"green"</on_color>
+                <off_color>"black"</off_color>
+                <anchor>"e"</anchor>
+                <width>16</width>
+              </led>
+            </hbox>
+          </vbox>
+          <vbox>
+            <label>
+              <text>"Y (j1)    "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+            </label>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <led>
+                <halpin>"hm2_7c81.0.gpio.014.in_not"</halpin>
+                <size>16</size>
+                <on_color>"green"</on_color>
+                <off_color>"black"</off_color>
+                <anchor>"e"</anchor>
+                <width>16</width>
+              </led>
+            </hbox>
+          </vbox>
+          <vbox>
+            <label>
+              <text>"Z (j2)    "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+            </label>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <led>
+                <halpin>"hm2_7c81.0.gpio.015.in_not"</halpin>
+                <size>16</size>
+                <on_color>"green"</on_color>
+                <off_color>"black"</off_color>
+                <anchor>"e"</anchor>
+                <width>16</width>
+              </led>
+            </hbox>
+          </vbox>
+        </hbox>
+      </labelframe>
     </vbox>
     <vbox>
       <hbox>
