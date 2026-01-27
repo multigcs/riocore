@@ -187,6 +187,11 @@ class LinuxCNC:
         "gpio": "io",
         "speed": "spd",
         "tolerance": "tol",
+        "temperature": "temp",
+        "modbus": "mb",
+        "i2cbus": "i2c",
+        "green": "gr",
+        "blue": "bl",
     }
 
     def __init__(self, project):
@@ -1643,7 +1648,7 @@ if __name__ == "__main__":
                     halname_short = short_str(halname)
                     halname_full = f"{self.gui_prefix}.{halname_short}"
                     if len(halname_short) >= MAX_HAL_LEN - len(self.gui_prefix):
-                        riocore.log(f"ERROR: halname too long (>{MAX_HAL_LEN}): {halname_short} ({halname_full})")
+                        riocore.log(f"INFO: halname too long (>{MAX_HAL_LEN}): {halname_short} ({halname_full})")
 
                     if group and group[0] == "#":
                         title = f"{displayconfig['title']}"
@@ -1801,7 +1806,7 @@ if __name__ == "__main__":
                     components[plugin_instance.COMPONENT] = []
                 components[plugin_instance.COMPONENT].append(plugin_instance)
 
-        self.halg = hal_generator(halpin_info)
+        self.halg = hal_generator(halpin_info, gui=gui, vcp=self.gui_prefix)
 
         self.halg.fmt_add_top("# load the realtime components")
         self.halg.fmt_add_top("loadrt [KINS]KINEMATICS")
@@ -1852,26 +1857,17 @@ if __name__ == "__main__":
             self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
             self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
             self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-            found_error_count = False
-            found_ampere = False
-            found_voltage = False
-            found_at_speed = False
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.NAME != "modbus":
                     continue
                 for signal_name, signal_config in plugin_instance.signals().items():
-                    print(signal_name)
                     if signal_name.endswith("_error_count"):
-                        found_error_count = True
                         self.halg.net_add(f"{signal_config['halname']}-s32", "qtdragon.spindle-modbus-errors")
                     elif signal_name.endswith("_ampere"):
-                        found_ampere = True
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-amps")
                     elif signal_name.endswith("_dc_volt"):
-                        found_voltage = True
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
                     elif signal_name.endswith("_at_speed"):
-                        found_at_speed = True
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-is-at-speed")
         else:
             if toolchange == "manual":

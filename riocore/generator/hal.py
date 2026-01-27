@@ -29,8 +29,10 @@ class hal_generator:
     ]
     HAS_INVERTS = {"rio": "-not"}
 
-    def __init__(self, halpin_info=None):
+    def __init__(self, halpin_info=None, gui=None, vcp=None):
         self.halpin_info = halpin_info or {}
+        self.gui = gui
+        self.vcp = vcp
         self.logic_ids = {}
         self.signals_out = {}
         self.inputs2signals = {}
@@ -583,12 +585,20 @@ class hal_generator:
         postgui_data.append("# networks")
         postgui_data.append("#################################################################################")
 
+        gui_prefixes = ["pyvcp", "qtpyvcp", "gladevcp", "qtdragon", "flexhal", "rio-gui"]
         sections = {}
         for target in self.signals_out:
             for pin, data in self.inputs2signals.items():
                 if data["signal"].startswith("j"):
                     continue
                 if data["target"] == target:
+                    if pin.startswith("axisui.") and self.gui and self.gui != "axis":
+                        print(f"INFO: ignoring halpin {pin}")
+                        continue
+                    if pin.split(".")[0] in gui_prefixes and self.vcp and not self.vcp.startswith(pin.split(".")[0]):
+                        print(f"INFO: ignoring halpin {pin}", "###", self.vcp)
+                        continue
+
                     component = pin.split(".", 1)[0]
                     if component in self.POSTGUI_COMPONENTS:
                         postgui_data.append(f"net {data['signal']:36s} <= {pin}")
@@ -604,6 +614,13 @@ class hal_generator:
             for pin, data in self.outputs2signals.items():
                 component = pin.split(".", 1)[0]
                 if data["target"] == target:
+                    if pin.startswith("axisui.") and self.gui and self.gui != "axis":
+                        print(f"INFO: removing pin {pin}")
+                        continue
+                    if pin.split(".")[0] in gui_prefixes and self.vcp and not self.vcp.startswith(pin.split(".")[0]):
+                        print(f"INFO: ignoring halpin {pin}", "##", self.vcp)
+                        continue
+
                     for signal in data["signals"]:
                         if signal.startswith("j"):
                             continue
