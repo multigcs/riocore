@@ -1855,7 +1855,7 @@ if __name__ == "__main__":
             found_error_count = False
             found_ampere = False
             found_voltage = False
-            found_speed_fb = False
+            found_at_speed = False
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.NAME != "modbus":
                     continue
@@ -1863,29 +1863,16 @@ if __name__ == "__main__":
                     print(signal_name)
                     if signal_name.endswith("_error_count"):
                         found_error_count = True
-                        # self.halg.net_add(f"{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
+                        self.halg.net_add(f"{signal_config['halname']}-s32", "qtdragon.spindle-modbus-errors")
                     elif signal_name.endswith("_ampere"):
                         found_ampere = True
-                        #self.halg.net_add(signal_config["halname"], "qtdragon.spindle-amps")
+                        self.halg.net_add(signal_config["halname"], "qtdragon.spindle-amps")
                     elif signal_name.endswith("_dc_volt"):
                         found_voltage = True
-                        #self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
-                    elif signal_name.endswith("_speed_fb_rps"):
-                        found_speed_fb = True
-                        #self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
-
-                    """
-        "speed_command": {"direction": "output", "unit": "RPM", "net": "spindle.0.speed-out-abs", "display": {"section": "vfd", "title": "Speed-Set", "format": "d"}},
-        "speed_fb_rps": {"direction": "input", "unit": "RPM", "net": "spindle.0.speed-in", "display": {"type": "none"}},
-        "spindle_at_speed_tolerance": {"direction": "output", "unit": "", "net": "", "helper": True},
-        "spindle_forward": {"direction": "output", "bool": True, "net": "spindle.0.forward", "display": {"type": "none"}},
-        "spindle_reverse": {"direction": "output", "bool": True, "net": "spindle.0.reverse", "display": {"type": "none"}},
-        "spindle_on": {"direction": "output", "bool": True, "net": "spindle.0.on", "display": {"type": "none"}},
-        "at_speed": {"direction": "input", "bool": True, "net": "spindle.0.at-speed", "display": {"type": "none"}},
-                    """
-
-
-
+                        self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
+                    elif signal_name.endswith("_at_speed"):
+                        found_at_speed = True
+                        self.halg.net_add(signal_config["halname"], "qtdragon.spindle-is-at-speed")
         else:
             if toolchange == "manual":
                 if gui == "gmoccapy":
