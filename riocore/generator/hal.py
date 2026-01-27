@@ -596,7 +596,7 @@ class hal_generator:
                         print(f"INFO: ignoring halpin {pin}")
                         continue
                     if pin.split(".")[0] in gui_prefixes and self.vcp and not self.vcp.startswith(pin.split(".")[0]):
-                        print(f"INFO: ignoring halpin {pin}", "###", self.vcp)
+                        print(f"INFO: ignoring halpin {pin}")
                         continue
 
                     component = pin.split(".", 1)[0]
@@ -618,7 +618,7 @@ class hal_generator:
                         print(f"INFO: removing pin {pin}")
                         continue
                     if pin.split(".")[0] in gui_prefixes and self.vcp and not self.vcp.startswith(pin.split(".")[0]):
-                        print(f"INFO: ignoring halpin {pin}", "##", self.vcp)
+                        print(f"INFO: ignoring halpin {pin}")
                         continue
 
                     for signal in data["signals"]:
