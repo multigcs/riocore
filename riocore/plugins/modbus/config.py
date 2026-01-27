@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QDoubleSpinBox,
+    QHeaderView,
     QGridLayout,
     QHBoxLayout,
     QLabel,
@@ -462,10 +463,12 @@ class config:
             self.tableWidget.setItem(row_n, 2, QTableWidgetItem(str(values)))
             self.tableWidget.setItem(row_n, 3, QTableWidgetItem(type_text))
             row_n += 1
-        self.tableWidget.setColumnWidth(0, 100)
+        # self.tableWidget.setColumnWidth(0, 100)
         self.tableWidget.setColumnWidth(1, 50)
         self.tableWidget.setColumnWidth(2, 50)
         self.tableWidget.resizeColumnToContents(3)
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
 
     def table_select(self, item):
         table_item = self.tableWidget.item(item, 0)
@@ -558,6 +561,8 @@ class config:
             table.setItem(row, 0, pitem)
 
         table.setFixedWidth(200)
+        header = table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
         vlayout_left.addWidget(table)
 
         vlayout = QVBoxLayout()

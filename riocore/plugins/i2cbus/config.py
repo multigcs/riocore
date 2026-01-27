@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
+    QHeaderView,
     QDialogButtonBox,
     QDoubleSpinBox,
     QHBoxLayout,
@@ -184,17 +185,16 @@ class config:
                 dialog.device_infos.append((device_name, devlib.i2c_device))
                 row_n += 1
 
-        header = device_table.horizontalHeader()
-        header.setStretchLastSection(True)
-        # device_table.setFixedWidth(200)
+        # device_table.setFixedWidth(300)
         device_table.cellClicked.connect(show_device_info)
         device_table.currentCellChanged.connect(show_device_info)
+        header = device_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
 
         left_layout = QVBoxLayout()
         left_widget = QWidget()
         left_widget.setFixedWidth(300)
         left_widget.setLayout(left_layout)
-
         left_layout.addWidget(device_table)
 
         mid_layout = QVBoxLayout()
@@ -367,7 +367,8 @@ class config:
             self.tableWidget.setItem(row_n, 3, QTableWidgetItem(subbus))
             row_n += 1
         self.tableWidget.resizeColumnsToContents()
-        # self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        header = self.tableWidget.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
 
     def table_select(self, item):
         config_name = self.tableWidget.item(item, 0).text()
@@ -490,7 +491,7 @@ class config:
 
         hlayout = QHBoxLayout()
         left_layout = QVBoxLayout()
-        hlayout.addLayout(left_layout, stretch=0)
+        hlayout.addLayout(left_layout, stretch=1)
         right_layout = QVBoxLayout()
         hlayout.addLayout(right_layout, stretch=1)
         right_layout.addWidget(QLabel("Info:"), stretch=0)
