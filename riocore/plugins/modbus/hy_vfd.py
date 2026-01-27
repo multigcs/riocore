@@ -382,7 +382,7 @@ class hy_vfd:
         output.append(f"    value_{self.signal_name}_at_speed = 0;")
         output.append("}")
         output.append("")
-        output.append("if (*data->machine_on == 0 && init_timer++ > 10) {")
+        output.append("if (*data->sys_enable == 0 && init_timer++ > 10) {")
         output.append("    init_timer = 0;")
         output.append(f"	{self.instances_name}_{self.signal_name}_register_setup = 1;")
         output.append("    for (n = 0; n < 6; n++) {")

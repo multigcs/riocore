@@ -1852,25 +1852,40 @@ if __name__ == "__main__":
             self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
             self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
             self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            found_error_count = False
+            found_ampere = False
+            found_voltage = False
+            found_speed_fb = False
             for plugin_instance in self.project.plugin_instances:
                 if plugin_instance.NAME != "modbus":
                     continue
-                found_error_count = ""
-                found_ampere = ""
-                found_voltage = ""
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    print(signal_name)
                     if signal_name.endswith("_error_count"):
-                        found_error_count = signal_config["halname"]
+                        found_error_count = True
+                        # self.halg.net_add(f"{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
                     elif signal_name.endswith("_ampere"):
-                        found_ampere = signal_config["halname"]
+                        found_ampere = True
+                        #self.halg.net_add(signal_config["halname"], "qtdragon.spindle-amps")
                     elif signal_name.endswith("_dc_volt"):
-                        found_voltage = signal_config["halname"]
+                        found_voltage = True
+                        #self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
+                    elif signal_name.endswith("_speed_fb_rps"):
+                        found_speed_fb = True
+                        #self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
 
-                if found_error_count and found_ampere and found_voltage:
-                    # self.halg.net_add(f"{found_error_count}-s32", "qtdragon.spindle-modbus-errors")
-                    self.halg.net_add(found_ampere, "qtdragon.spindle-amps")
-                    self.halg.net_add(found_voltage, "qtdragon.spindle-volts")
-                    break
+                    """
+        "speed_command": {"direction": "output", "unit": "RPM", "net": "spindle.0.speed-out-abs", "display": {"section": "vfd", "title": "Speed-Set", "format": "d"}},
+        "speed_fb_rps": {"direction": "input", "unit": "RPM", "net": "spindle.0.speed-in", "display": {"type": "none"}},
+        "spindle_at_speed_tolerance": {"direction": "output", "unit": "", "net": "", "helper": True},
+        "spindle_forward": {"direction": "output", "bool": True, "net": "spindle.0.forward", "display": {"type": "none"}},
+        "spindle_reverse": {"direction": "output", "bool": True, "net": "spindle.0.reverse", "display": {"type": "none"}},
+        "spindle_on": {"direction": "output", "bool": True, "net": "spindle.0.on", "display": {"type": "none"}},
+        "at_speed": {"direction": "input", "bool": True, "net": "spindle.0.at-speed", "display": {"type": "none"}},
+                    """
+
+
+
         else:
             if toolchange == "manual":
                 if gui == "gmoccapy":
