@@ -1354,16 +1354,21 @@ class Window(QMainWindow):
         self.loader = ConfigLoader(self)
         if self.args.config:
             self.config_file = args.config
-        elif not self.loader.select():
-            exit(1)
+            if self.config_file and os.path.exists(self.config_file):
+                self.cfg_reload()  # timing 0.39
+            else:
+                riocore.log(f"ERROR: file not found: {self.config_file}")
+                exit(1)
+        else:
+            ret = self.loader.select()
+            if not ret:
+                exit(1)
+            if self.config_file and os.path.exists(self.config_file):
+                self.cfg_reload()  # timing 0.39
+            else:
+                self.cfg_reload({})
 
         self.show()
-
-        if self.config_file and os.path.exists(self.config_file):
-            self.cfg_reload()  # timing 0.39
-        else:
-            riocore.log(f"ERROR: file not found: {self.config_file}")
-            exit(1)
 
         # self.optionstab.update(self.config) # timing 0.21
         # self.axistab.update(self.config)
