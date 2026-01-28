@@ -127,7 +127,7 @@ class LinuxCNC:
         },
         "RS274NGC": {
             "PARAMETER_FILE": "linuxcnc.var",
-            "SUBROUTINE_PATH": "./subroutines/",
+            "SUBROUTINE_PATH": "./subroutines/:~/linuxcnc/nc_files/examples/ngcgui_lib:~/linuxcnc/nc_files/examples/ngcgui_lib/utilitysubs;~/linuxcnc/nc_files/examples/probe/basic_probe/macros:~/linuxcnc/nc_files/examples/remap-subroutines:~/linuxcnc/nc_files/examples/ngcgui_lib/remap_lib",
             "USER_M_PATH": "./mcodes/",
         },
         "EMCMOT": {
@@ -804,13 +804,21 @@ class LinuxCNC:
 
                 output.append("")
 
-        path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH")
-        if path_subroutines and path_subroutines.startswith("./"):
-            os.makedirs(os.path.join(self.configuration_path, path_subroutines), exist_ok=True)
-            for subroutine in glob.glob(os.path.join(json_path, "subroutines", "*")):
-                target_path = os.path.join(self.configuration_path, path_subroutines, os.path.basename(subroutine))
-                if not os.path.isfile(target_path):
-                    shutil.copy(subroutine, target_path)
+        qtdragon_pref = os.path.join(json_path, "qtdragon.pref")
+        if os.path.isfile(qtdragon_pref):
+            target_path = os.path.join(self.configuration_path, "qtdragon.pref")
+            if not os.path.isfile(target_path):
+                print(f"INFO: copy file: {qtdragon_pref} -> {target_path}")
+                shutil.copy(qtdragon_pref, target_path)
+
+        for path_subroutines in ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH", "").split(":"):
+            if path_subroutines and path_subroutines.startswith("./"):
+                os.makedirs(os.path.join(self.configuration_path, path_subroutines), exist_ok=True)
+                for subroutine in glob.glob(os.path.join(json_path, "subroutines", "*")):
+                    target_path = os.path.join(self.configuration_path, path_subroutines, os.path.basename(subroutine))
+                    if not os.path.isfile(target_path):
+                        print(f"INFO: copy file: {subroutine} -> {target_path}")
+                        shutil.copy(subroutine, target_path)
 
         path_mcodes = ini_setup.get("RS274NGC", {}).get("USER_M_PATH")
         if path_mcodes and path_mcodes.startswith("./"):
@@ -818,6 +826,7 @@ class LinuxCNC:
             for mcode in glob.glob(os.path.join(json_path, "mcodes", "*")):
                 target_path = os.path.join(self.configuration_path, path_mcodes, os.path.basename(mcode))
                 if not os.path.isfile(target_path):
+                    print(f"INFO: copy file: {mcode} -> {target_path}")
                     shutil.copy(mcode, target_path)
 
         os.makedirs(self.configuration_path, exist_ok=True)
