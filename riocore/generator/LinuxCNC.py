@@ -4,6 +4,7 @@ import importlib
 import os
 import shutil
 import stat
+import json
 
 import riocore
 from riocore import halpins
@@ -836,11 +837,29 @@ class LinuxCNC:
     def misc(self):
         if not os.path.isfile(os.path.join(self.configuration_path, "tool.tbl")):
             tooltbl = []
-            tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
-            tooltbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
-            tooltbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
+            # read tooltable from CAM if exist
+            try:
+                viaconstructor_json = os.path.join(os.path.expanduser("~"), "viaconstructor.json")
+                if os.path.isfile(viaconstructor_json):
+                    viaconstructor_data = json.loads(open(viaconstructor_json, "r").read())
+                    for pocket, tool in enumerate(viaconstructor_data.get("tool", {}).get("tooltable", [])):
+                        if tool["number"] == 99:
+                            continue
+                        tooltbl.append(f"T{tool['number']} P{pocket} D{tool['diameter']} ;{tool['name']}")
+
+            except Exception as err:
+                print(f"ERROR: reading tooltable from viaconstructor.json: {err}")
+
+            if not tooltbl:
+                tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")
+                tooltbl.append("T2 P2 D0.062500 Z+0.100000 ;1/16 end mill")
+                tooltbl.append("T3 P3 D0.201000 Z+1.273000 ;#7 tap drill")
+
+            tooltbl.append("")
             os.makedirs(self.configuration_path, exist_ok=True)
-            open(os.path.join(self.configuration_path, "tool.tbl"), "w").write("\n".join(tooltbl))
+            tooltbl_file = os.path.join(self.configuration_path, "tool.tbl")
+            print(f"INFO: generate file: {tooltbl_file}")
+            open(tooltbl_file, "w").write("\n".join(tooltbl))
 
     def riof(self):
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
