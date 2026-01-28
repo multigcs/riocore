@@ -1867,8 +1867,8 @@ if __name__ == "__main__":
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-amps")
                     elif signal_name.endswith("_dc_volt"):
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
-                    elif signal_name.endswith("_at_speed"):
-                        self.halg.net_add(signal_config["halname"], "qtdragon.spindle-is-at-speed")
+                    # elif signal_name.endswith("_at_speed"):
+                    #     self.halg.net_add(signal_config["halname"], "qtdragon.spindle-is-at-speed")
         else:
             if toolchange == "manual":
                 if gui == "gmoccapy":
