@@ -414,7 +414,7 @@ class LinuxCNC:
 
         syncto = self.project.config["jdata"].get("syncto")
         if syncto:
-            syc_cmd = f"rsync -avr {self.project.config['output_path']}/ {syncto}"
+            syc_cmd = f"rsync -ar {self.project.config['output_path']}/ {syncto}"
             riocore.log(f"INFO: {syc_cmd}")
             os.system(syc_cmd)
 
@@ -656,13 +656,14 @@ class LinuxCNC:
         dios = self.halg.get_dios()
         aios = self.halg.get_aios()
 
-        probe_feetrate_down = 50
-        probe_feetrate_up = 10
-        probe_max_down = 20
-        probe_max_up = 2
-        probe_height = 14
-        probe_move_up = 10
-        tool_touchplate = False
+        probe_config = linuxcnc_config.get("probe", {})
+        probe_feetrate_down = probe_config.get("probe_feetrate_down", 50)
+        probe_feetrate_up = probe_config.get("probe_feetrate_up", 10)
+        probe_max_down = probe_config.get("probe_max_down", 20)
+        probe_max_up = probe_config.get("probe_max_up", 2)
+        probe_height = probe_config.get("probe_height", 14)
+        probe_move_up = probe_config.get("probe_move_up", 10)
+        tool_touchplate = probe_config.get("tool_touchplate", True)
 
         if dios > 64:
             riocore.log("ERROR: you can only configure up to 64 motion.digital-in-NN/motion.digital-out-NN")
@@ -822,8 +823,8 @@ class LinuxCNC:
                 motion_probe_input = True
                 break
 
-        if motion_probe_input:
-            tool_touchplate = True
+        if not motion_probe_input:
+            tool_touchplate = False
 
         if gui in {"qtdragon_hd"}:
             qtdragon_pref = os.path.join(json_path, "qtdragon.pref")
@@ -834,8 +835,7 @@ class LinuxCNC:
                     shutil.copy(qtdragon_pref, target_path)
                 else:
                     print(f"INFO: generate file: {target_path}")
-                    # qss_style = "brushed_metal_color"
-                    qss_style = "qtdragon_hd"
+                    qtdragon_config = linuxcnc_config.get("qtdragon", {})
                     pref_data = f"""[DIALOG_GEOMETRY]
 AboutDialog-geometry = half
 LncMessage-geometry = 910 525 300 120
@@ -860,7 +860,7 @@ RunFromLineDialog_sound_type = READY
 [BOOK_KEEPING]
 last_loaded_directory = 
 last_loaded_file = None
-style_QSS_Path = /usr/share/qtvcp/screens/qtdragon_hd/{qss_style}.qss
+style_QSS_Path = {qtdragon_config.get("BOOK_KEEPING", {}).get("style_QSS_Path", "/usr/share/qtvcp/screens/qtdragon_hd/qtdragon_hd.qss")}
 
 [ORIGINOFFSET_SYSTEM_NAMES]
 __dialogOffsetViewWidget-G54 = User System 1
@@ -936,8 +936,8 @@ Laser X = 100.0
 Laser Y = -20.0
 Sensor X = 10.0
 Sensor Y = 10.0
-Camera X = 10.0
-Camera Y = 10.0
+Camera X = {qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Camera X", 10.0)}
+Camera Y = {qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Camera Y", 10.0)}
 Work Height = 20.0
 Touch Height = {probe_height}
 Sensor Height = {probe_height}
@@ -955,7 +955,7 @@ Use tool sensor = False
 Use tool touchplate = {str(tool_touchplate)}
 Run from line = False
 Use virtual keyboard = False
-Use camera = False
+Use camera = {str(qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Use camera", False))}
 Use alpha display mode = False
 Inhibit display mouse selection = True
 Camview xscale = 100

@@ -63,3 +63,26 @@ class Plugin(PluginBase):
         cmd_args.append(f"--height {height}")
         cmd_args.append(f"--scale {scale}")
         ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAMJOG{camjog_num}"] = f"{' '.join(cmd_args)}"
+
+    def hal(self, parent):
+        parent.halg.postgui_components_add("camjog")
+        for axis_name, axis_config in parent.project.axis_dict.items():
+            if axis_name not in {"X", "Y"}:
+                continue
+            joints = axis_config["joints"]
+            axis_lower = axis_name.lower()
+            parent.halg.net_add(f"camjog.axis.{axis_lower}.jog-counts", f"axis.{axis_lower}.jog-counts")
+            if axis_lower == "y":
+                parent.halg.setp_add(f"camjog.axis.{axis_lower}.cal", -0.1)
+            else:
+                parent.halg.setp_add(f"camjog.axis.{axis_lower}.cal", 0.1)
+            parent.halg.setp_add(f"camjog.axis.{axis_lower}.jog-scale", 0.15)
+            parent.halg.setp_add(f"axis.{axis_lower}.jog-vel-mode", 0)
+            parent.halg.setp_add(f"axis.{axis_lower}.jog-enable", 1)
+            parent.halg.setp_add(f"axis.{axis_lower}.jog-scale", 0.15)
+            for joint_setup in joints:
+                joint = joint_setup["num"]
+                parent.halg.net_add(f"camjog.axis.{axis_lower}.jog-counts", f"joint.{joint}.jog-counts")
+                parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
+                parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                parent.halg.setp_add(f"joint.{joint}.jog-scale", 0.15)

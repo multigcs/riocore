@@ -38,7 +38,7 @@ from functools import partial
 
 import cv2
 import numpy as np
-from PyQt5.QtCore import QThread, Qt, pyqtSignal
+from PyQt5.QtCore import QThread, Qt, pyqtSignal, QEvent
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
@@ -63,6 +63,14 @@ try:
     no_hal = False
 except Exception:
     no_hal = True
+    h = {}
+    h["axis.x.jog-counts"] = 1
+    h["axis.y.jog-counts"] = 1
+    h["axis.x.jog-scale"] = 1.0
+    h["axis.y.jog-scale"] = 1.0
+    h["axis.x.cal"] = 100.0
+    h["axis.y.cal"] = 100.0
+
 
 TWO_PI = math.pi * 2
 
@@ -112,6 +120,7 @@ class MyImage(QLabel):
         self.parent = parent
         self.list_x = [0] * 10
         self.list_y = [0] * 10
+        # self.installEventFilter(self)
 
     def resizeEvent(self, event):
         pass
@@ -130,39 +139,58 @@ class MyImage(QLabel):
 
         self.parent.zoom_label.setText(f"{self.parent.options['zoom']:0.1f}")
 
-    def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.new_x = event.pos().x()
-            self.new_y = event.pos().y()
-            self.old_x = self.new_x
-            self.old_y = self.new_y
-            self.old_counts_x = h["axis.x.jog-counts"]
-            self.old_counts_y = h["axis.y.jog-counts"]
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.TouchBegin:  # Catch the TouchBegin event.
+            print("We have a touch begin")
+            self.moveBegin(event)
+            return True
+        elif event.type() == QEvent.TouchEnd:  # Catch the TouchEnd event.
+            print("We have a touch end")
+            self.moveEnd(event)
+            return True
 
-            (offset_x, offset_y) = self.parent.convert_to_cam((self.new_x, self.new_y))
+        return super(MyImage, self).eventFilter(obj, event)
 
-            if self.parent.options["mode"] == "goto":
-                x_scale = h["axis.x.jog-scale"]
-                y_scale = h["axis.y.jog-scale"]
-                if x_scale and y_scale:
-                    h["axis.x.jog-counts"] += int(offset_x / x_scale * h["axis.x.cal"])
-                    h["axis.y.jog-counts"] += int(offset_y / y_scale * h["axis.y.cal"])
+    def moveBegin(self, event):
+        self.new_x = event.pos().x()
+        self.new_y = event.pos().y()
+        self.old_x = self.new_x
+        self.old_y = self.new_y
+        self.old_counts_x = h["axis.x.jog-counts"]
+        self.old_counts_y = h["axis.y.jog-counts"]
 
-            elif self.parent.options["mode"] == "touch":
+        (offset_x, offset_y) = self.parent.convert_to_cam((self.new_x, self.new_y))
+
+        if self.parent.options["mode"] == "goto":
+            x_scale = h["axis.x.jog-scale"]
+            y_scale = h["axis.y.jog-scale"]
+            if x_scale and y_scale:
+                h["axis.x.jog-counts"] += int(offset_x / x_scale * h["axis.x.cal"])
+                h["axis.y.jog-counts"] += int(offset_y / y_scale * h["axis.y.cal"])
+
+        elif self.parent.options["mode"] == "touch":
+            self.parent.options["points"] = []
+            self.parent.options["touch"] = (offset_x, offset_y)
+            self.parent.options["mode"] = "edges"
+            self.parent.info_label.setText("edges")
+
+        elif self.parent.options["mode"] == "edges":
+            if len(self.parent.options["points"]) > 3:
                 self.parent.options["points"] = []
-                self.parent.options["touch"] = (offset_x, offset_y)
-                self.parent.options["mode"] = "edges"
-                self.parent.info_label.setText("edges")
+            self.parent.options["points"].append((offset_x, offset_y))
 
-            elif self.parent.options["mode"] == "edges":
-                if len(self.parent.options["points"]) > 3:
-                    self.parent.options["points"] = []
-                self.parent.options["points"].append((offset_x, offset_y))
-
-    def mouseReleaseEvent(self, event):
+    def moveEnd(self, event):
         pass
 
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.moveBegin(event)
+
+    def mouseReleaseEvent(self, event):
+        self.moveEnd(event)
+
     def mouseMoveEvent(self, event):
+        print("move")
         if self.parent.options["mode"] == "move":
             diff_x = self.old_x - event.pos().x()
             diff_y = self.old_y - event.pos().y()
