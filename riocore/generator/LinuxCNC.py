@@ -804,12 +804,13 @@ class LinuxCNC:
 
                 output.append("")
 
-        qtdragon_pref = os.path.join(json_path, "qtdragon.pref")
-        if os.path.isfile(qtdragon_pref):
-            target_path = os.path.join(self.configuration_path, "qtdragon.pref")
-            if not os.path.isfile(target_path):
-                print(f"INFO: copy file: {qtdragon_pref} -> {target_path}")
-                shutil.copy(qtdragon_pref, target_path)
+        if gui.startswith("qtdragon"):
+            qtdragon_pref = os.path.join(json_path, "qtdragon.pref")
+            if os.path.isfile(qtdragon_pref):
+                target_path = os.path.join(self.configuration_path, "qtdragon.pref")
+                if not os.path.isfile(target_path):
+                    print(f"INFO: copy file: {qtdragon_pref} -> {target_path}")
+                    shutil.copy(qtdragon_pref, target_path)
 
         for path_subroutines in ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH", "").split(":"):
             if path_subroutines and path_subroutines.startswith("./"):
