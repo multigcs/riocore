@@ -451,10 +451,6 @@ class LinuxCNC:
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
-        scurve = linuxcnc_config.get("scurve")
-
-        if scurve:
-            ini_setup["TRAJ"]["PLANNER_TYPE"] = 1
 
         netlist = []
         for plugin in jdata.get("plugins", []):
@@ -656,8 +652,17 @@ class LinuxCNC:
         json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         gui = linuxcnc_config.get("gui", "axis")
+        machinetype = linuxcnc_config.get("machinetype")
         dios = self.halg.get_dios()
         aios = self.halg.get_aios()
+
+        probe_feetrate_down = 50
+        probe_feetrate_up = 10
+        probe_max_down = 20
+        probe_max_up = 2
+        probe_height = 14
+        probe_move_up = 10
+        tool_touchplate = False
 
         if dios > 64:
             riocore.log("ERROR: you can only configure up to 64 motion.digital-in-NN/motion.digital-out-NN")
@@ -665,6 +670,7 @@ class LinuxCNC:
             riocore.log("ERROR: you can only configure up to 64 motion.analog-in-NN/motion.analog-out-NN")
 
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, dios=dios, aios=aios, gui_type=self.gui_type, ini_setup=self.ini_setup)
+        units = ini_setup["TRAJ"]["LINEAR_UNITS"]
 
         if not self.mqtt_publisher:
             del ini_setup["MQTT"]
@@ -805,22 +811,230 @@ class LinuxCNC:
 
                 output.append("")
 
-        if gui.startswith("qtdragon"):
+        netlist = []
+        for plugin in jdata.get("plugins", []):
+            for signal in plugin.get("signals", {}).values():
+                if net := signal.get("net"):
+                    netlist.append(net)
+        motion_probe_input = False
+        for entry in netlist:
+            if "motion.probe-input" in entry:
+                motion_probe_input = True
+                break
+
+        if motion_probe_input:
+            tool_touchplate = True
+
+        if gui in {"qtdragon_hd"}:
             qtdragon_pref = os.path.join(json_path, "qtdragon.pref")
-            if os.path.isfile(qtdragon_pref):
-                target_path = os.path.join(self.configuration_path, "qtdragon.pref")
-                if not os.path.isfile(target_path):
+            target_path = os.path.join(self.configuration_path, "qtdragon.pref")
+            if not os.path.isfile(target_path):
+                if os.path.isfile(qtdragon_pref):
                     print(f"INFO: copy file: {qtdragon_pref} -> {target_path}")
                     shutil.copy(qtdragon_pref, target_path)
+                else:
+                    print(f"INFO: generate file: {target_path}")
+                    # qss_style = "brushed_metal_color"
+                    qss_style = "qtdragon_hd"
+                    pref_data = f"""[DIALOG_GEOMETRY]
+AboutDialog-geometry = half
+LncMessage-geometry = 910 525 300 120
+ToolChangeDialog-geometry = default
+VersaHelpDialog-geometry = default
 
+[DIALOG_OPTIONS]
+EntryDialog_play_sound = True
+EntryDialog_sound_type = READY
+toolDialog_play_sound = True
+toolDialog_speak = True
+toolDialog_sound_type = READY
+fileDialog_play_sound = True
+fileDialog_sound_type = READY
+CalculatorDialog_play_sound = True
+CalculatorDialog_sound_type = READY
+MachineLogDialog_play_sound = True
+MachineLogDialog_sound_type = READY
+RunFromLineDialog_play_sound = True
+RunFromLineDialog_sound_type = READY
+
+[BOOK_KEEPING]
+last_loaded_directory = 
+last_loaded_file = None
+style_QSS_Path = /usr/share/qtvcp/screens/qtdragon_hd/{qss_style}.qss
+
+[ORIGINOFFSET_SYSTEM_NAMES]
+__dialogOffsetViewWidget-G54 = User System 1
+__dialogOffsetViewWidget-G55 = User System 2
+__dialogOffsetViewWidget-G56 = User System 3
+__dialogOffsetViewWidget-G57 = User System 4
+__dialogOffsetViewWidget-G58 = User System 5
+__dialogOffsetViewWidget-G59 = User System 6
+__dialogOffsetViewWidget-G59.1 = User System 7
+__dialogOffsetViewWidget-G59.2 = User System 8
+__dialogOffsetViewWidget-G59.3 = User System 9
+offset_table-G54 = User System 1
+offset_table-G55 = User System 2
+offset_table-G56 = User System 3
+offset_table-G57 = User System 4
+offset_table-G58 = User System 5
+offset_table-G59 = User System 6
+offset_table-G59.1 = User System 7
+offset_table-G59.2 = User System 8
+offset_table-G59.3 = User System 9
+
+[CALCULATOR]
+constValuesList = None
+onShowBehavior = None
+
+[SCREEN_OPTIONS]
+catch_errors = True
+desktop_notify = True
+notify_max_msgs = 10
+shutdown_check = True
+sound_player_on = False
+MainWindow-geometry = 1920 0 1920 1080
+
+[MCH_MSG_OPTIONS]
+mchnMsg_play_sound = True
+mchnMsg_speak_errors = False
+mchnMsg_speak_text = True
+mchnMsg_sound_type = ATTENTION
+
+[USR_MSG_OPTIONS]
+usermsg_play_sound = True
+userMsg_sound_type = ATTENTION
+userMsg_use_focusOverlay = True
+
+[SHUTDOWN_OPTIONS]
+shutdown_play_sound = True
+shutdown_alert_sound_type = READY
+shutdown_exit_sound_type = LOGOUT
+shutdown_msg_title = Do you want to Shutdown now?
+shutdown_msg_focus_text = 
+shutdown_msg_detail = 
+
+[NOTIFY_OPTIONS]
+notify_start_greeting = False
+notify_start_title = Welcome
+notify_start_detail = This option can be changed in the preference file
+notify_start_timeout = 5
+
+[FILEMANAGER_JUMPLIST]
+
+[SCREEN_CONTROL_LAST_SETTING]
+gcodegraphics-user-view = p
+gcodegraphics-user-zoom = 10.0
+gcodegraphics-user-panx = 0.0
+gcodegraphics-user-pany = 0.0
+gcodegraphics-user-lat = 0.0
+gcodegraphics-user-lon = 0.0
+gcodegraphics-current-view = p
+
+[CUSTOM_FORM_ENTRIES]
+Tool to load = 0
+Laser X = 100.0
+Laser Y = -20.0
+Sensor X = 10.0
+Sensor Y = 10.0
+Camera X = 10.0
+Camera Y = 10.0
+Work Height = 20.0
+Touch Height = {probe_height}
+Sensor Height = {probe_height}
+Search Velocity = {probe_feetrate_down}
+Probe Velocity = {probe_feetrate_up}
+Max Probe = {probe_max_down}
+Retract Distance = {probe_max_up}
+Z Safe Travel = {probe_move_up}
+Eoffset count = 0
+External offsets = False
+Reload program = False
+Reload tool = False
+Use keyboard = False
+Use tool sensor = False
+Use tool touchplate = {str(tool_touchplate)}
+Run from line = False
+Use virtual keyboard = False
+Use camera = False
+Use alpha display mode = False
+Inhibit display mouse selection = True
+Camview xscale = 100
+Camview yscale = 100
+Camview cam number = 0
+Camview cam api = ANY
+Camview cam resolution = DEFAULT
+
+[VERSA_PROBE_OPTIONS]
+ps_probe_tool = -1
+ps_searchvel = 300.0
+ps_probevel = 10.0
+ps_z_clearance = 3.0
+ps_probe_max = 1.0
+ps_probe_max_z_travel = 1.0
+ps_probe_latch = 0.5
+ps_probe_diam = 2.0
+ps_xy_clearance = 5.0
+ps_side_edge_length = 5.0
+ps_probe_height = 20.0
+ps_block_height = 20.0
+ps_offs_x = 0.0
+ps_offs_y = 0.0
+ps_offs_z = 0.0
+ps_offs_angle = 0.0
+ps_probe_rapid_vel = 60.0
+use_tool_measurement = True
+use_auto_zero = True
+use_auto_skew = True
+"""
+                    open(target_path, "w").write(pref_data)
+
+        subroutine_files = []
+        missing_subroutine_files = []
         for path_subroutines in ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH", "").split(":"):
             if path_subroutines and path_subroutines.startswith("./"):
                 os.makedirs(os.path.join(self.configuration_path, path_subroutines), exist_ok=True)
                 for subroutine in glob.glob(os.path.join(json_path, "subroutines", "*")):
+                    subroutine_files.append(os.path.basename(subroutine))
                     target_path = os.path.join(self.configuration_path, path_subroutines, os.path.basename(subroutine))
                     if not os.path.isfile(target_path):
                         print(f"INFO: copy file: {subroutine} -> {target_path}")
                         shutil.copy(subroutine, target_path)
+
+        if motion_probe_input:
+            if machinetype == "lathe":
+                if axis_name == "X":
+                    if "x_touch.ngc" not in subroutine_files:
+                        missing_subroutine_files.append("x_touch.ngc")
+                elif axis_name == "Z":
+                    if "z_touch.ngc" not in subroutine_files:
+                        missing_subroutine_files.append("z_touch.ngc")
+            elif axis_name == "Z":
+                if "z_touch.ngc" not in subroutine_files:
+                    missing_subroutine_files.append("z_touch.ngc")
+
+        path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH", "").split(":")[0]
+        if path_subroutines and path_subroutines.startswith("./"):
+            os.makedirs(os.path.join(self.configuration_path, path_subroutines), exist_ok=True)
+            gunits = "G21"
+            if units == "inch":
+                gunits = "G20"
+            for axis in ("x", "z"):
+                oword = f"{axis}_touch"
+                if f"{oword}.ngc" in missing_subroutine_files:
+                    gcode = f"""o<{oword}> sub
+    {gunits} ({units})
+    G91 (relative)
+    G38.2 Z-{probe_max_down} F{probe_feetrate_down}	(probe down using a fast feedrate)
+    G38.4 Z{probe_max_up} F{probe_feetrate_up}	(probe up using a slow feedrate)
+    G10 L20 P0 Z{probe_height}	(set current WCS Z value = plate thickness)
+    G0 Z{probe_move_up}		(move up by 1{units})
+    G90 (absolute)
+o<{oword}> endsub
+"""
+                    target_path = os.path.join(self.configuration_path, path_subroutines, f"{oword}.ngc")
+                    if not os.path.isfile(target_path):
+                        print(f"INFO: generate file: {target_path}")
+                        open(target_path, "w").write(gcode)
 
         path_mcodes = ini_setup.get("RS274NGC", {}).get("USER_M_PATH")
         if path_mcodes and path_mcodes.startswith("./"):
