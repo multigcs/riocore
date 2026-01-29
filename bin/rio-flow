@@ -1374,7 +1374,7 @@ class Window(QMainWindow):
         # self.axistab.update(self.config)
 
         if self.config_file:
-            self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
+            self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(os.path.dirname(self.config_file))}/{os.path.basename(self.config_file)}")
         else:
             self.setWindowTitle("RIO - Flow-GUI")
 
@@ -1759,7 +1759,7 @@ class Window(QMainWindow):
             open(self.config_file, "w").write(jdata)
             self.config_original = self.clean_config(self.config)
             self.cfg_check()
-            self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(self.config_file)}")
+            self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(os.path.dirname(self.config_file))}/{os.path.basename(self.config_file)}")
         else:
             self.setWindowTitle("RIO - Flow-GUI")
 
