@@ -41,6 +41,7 @@ import numpy as np
 from PyQt5.QtCore import QThread, Qt, pyqtSignal, QEvent
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
+    QMainWindow,
     QApplication,
     QHBoxLayout,
     QLabel,
@@ -120,7 +121,6 @@ class MyImage(QLabel):
         self.parent = parent
         self.list_x = [0] * 10
         self.list_y = [0] * 10
-        # self.installEventFilter(self)
 
     def resizeEvent(self, event):
         pass
@@ -138,18 +138,6 @@ class MyImage(QLabel):
             self.parent.options["zoom"] += 0.1
 
         self.parent.zoom_label.setText(f"{self.parent.options['zoom']:0.1f}")
-
-    def eventFilter(self, obj, event):
-        if event.type() == QEvent.TouchBegin:  # Catch the TouchBegin event.
-            print("We have a touch begin")
-            self.moveBegin(event)
-            return True
-        elif event.type() == QEvent.TouchEnd:  # Catch the TouchEnd event.
-            print("We have a touch end")
-            self.moveEnd(event)
-            return True
-
-        return super(MyImage, self).eventFilter(obj, event)
 
     def moveBegin(self, event):
         self.new_x = event.pos().x()
@@ -190,7 +178,6 @@ class MyImage(QLabel):
         self.moveEnd(event)
 
     def mouseMoveEvent(self, event):
-        print("move")
         if self.parent.options["mode"] == "move":
             diff_x = self.old_x - event.pos().x()
             diff_y = self.old_y - event.pos().y()
@@ -205,9 +192,9 @@ class MyImage(QLabel):
                 h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * h["axis.y.cal"])
 
 
-class WinForm(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
+class Window(QMainWindow):
+    def __init__(self, app=None):
+        super().__init__()
         parser = argparse.ArgumentParser()
         parser.add_argument("--xid", help="parent x window id", type=int)
         parser.add_argument("--video", help="video device id", type=int, default=-1)
@@ -245,7 +232,7 @@ class WinForm(QWidget):
         s = self.options["scale"]
         self.setMinimumWidth(int(args.width * s) + 50)
         self.setMinimumHeight(int(args.height * s) + 100)
-
+        
         # self.setFixedWidth(int(args.width * s) + 50)
         # self.setFixedWidth(int(args.height * s) + 100)
 
@@ -258,8 +245,11 @@ class WinForm(QWidget):
             if forward:
                 xembed.XEmbedForwarding(window, forward)
 
+
         layout = QVBoxLayout()
-        self.setLayout(layout)
+        self.main = QWidget()
+        self.setCentralWidget(self.main)
+        self.main.setLayout(layout)
 
         setup_container = QWidget()
         setup_layout = QHBoxLayout(setup_container)
@@ -298,9 +288,24 @@ class WinForm(QWidget):
         layout.addWidget(self.video_img)
         layout.addStretch()
 
+        signal.signal(signal.SIGTERM, self.shutdown)
+        signal.signal(signal.SIGINT, self.shutdown)
+
+        self.showMaximized()
+        self.show()
+
         self.camera = CameraThread(self.video, self.options)
         self.camera.image.connect(self.update_image)
         self.camera.start()
+
+    def shutdown(self, signum=None, stack_frame=None):
+        print("INFO: camjog Interrupted")
+        self.camera.stop()
+        sys.exit(0)
+
+    def resizeEvent(self, event):
+        print("Window has been resized")
+        QMainWindow.resizeEvent(self, event)
 
     def clear_cb(self, w):
         self.options["points"] = []
@@ -502,19 +507,10 @@ class CameraThread(QThread):
 
     def stop(self):
         self.stop_capture()
-        super().stop()
-
-
-def sigint_handler(signal, frame):
-    print("INFO: camjog Interrupted")
-    sys.exit(0)
 
 
 if __name__ == "__main__":
-    signal.signal(signal.SIGINT, sigint_handler)
     app = QApplication(sys.argv)
-    form = WinForm()
-    form.show()
+    Window(app=app)
     ret = app.exec_()
-    form.exit()
     sys.exit(ret)

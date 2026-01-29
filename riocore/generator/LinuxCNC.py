@@ -325,7 +325,7 @@ class LinuxCNC:
 
                 self.gui_type = vcp_type
                 self.gui_prefix = vcp_setup[vcp_type]["prefix"]
-                self.gui_tablocation = vcp_setup[vcp_type].get("tablocation", "")
+                self.gui_tablocation = vcp_setup[vcp_type].get("tablocation", [""])[0]
 
         if not self.preview:
             self.cfglink()
@@ -544,11 +544,11 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["DISPLAY"] = gui
             ini_setup["DISPLAY"]["CYCLE_TIME"] = "150"
             if gui_type == "gladevcp":
+                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
                 if vcp_pos == "TAB":
                     ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "ntb_user_tabs"
                 else:
                     ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|PYVCP"] = "box_right"
-                ini_setup["DISPLAY"]["EMBED_TAB_NAME|PYVCP"] = "RIO"
                 ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|PYVCP"] = "gladevcp -x {XID} -H custom_postgui.hal rio-gui.ui"
 
         elif gui == "gscreen":
@@ -629,9 +629,9 @@ class LinuxCNC:
 
             if gui_type == "qtvcp":
                 qtdragon_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
-                qtdragon_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "qtvcp rio-gui"
                 # qtdragon_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "tabWidget_utilities"
                 qtdragon_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "stackedWidget_mainTab"
+                qtdragon_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "qtvcp rio-gui"
 
             for section, sdata in qtdragon_setup.items():
                 if section not in ini_setup:
@@ -718,12 +718,12 @@ class LinuxCNC:
         for section, setup in ini_setup.items():
             output.append(f"[{section}]")
             for key, value in setup.items():
+                if "|" in key:
+                    key = key.split("|")[0]
                 if isinstance(value, list):
                     for entry in value:
                         output.append(f"{key} = {entry}")
                 elif value is not None:
-                    if "|" in key:
-                        key = key.split("|")[0]
                     if key.endswith("_VELOCITY") and "ANGULAR" not in key:
                         output.append(f"# {value} * 60.0 = {float(value) * 60.0:0.1f} units/min")
                     output.append(f"{key} = {value}")

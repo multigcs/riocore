@@ -38,15 +38,15 @@ gui_dict = {
     },
     "qtdragon": {
         "comment": "nice QT based GUI",
-        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui"}},
+        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui", "tablocation": ["tabWidget_utilities", "stackedWidget_mainTab", "tabWidget_setup"]}},
     },
     "qtdragon_hd": {
         "comment": "nice QT based GUI (HD-Version)",
-        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui"}},
+        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui", "tablocation": ["tabWidget_utilities", "stackedWidget_mainTab", "tabWidget_setup"]}},
     },
     "qtdragon_hd_vert": {
         "comment": "nice QT based GUI (HD-Version)",
-        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui"}},
+        "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui", "tablocation": ["tabWidget_utilities", "stackedWidget_mainTab", "tabWidget_setup"]}},
     },
     "tklinuxcnc": {
         "comment": "TK based GUI",
