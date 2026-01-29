@@ -1049,6 +1049,7 @@ class cbase:
         output.append("            }")
         output.append("        } else {")
         output.append("            convert_inputs();")
+        output.append("            *data->sys_status = 1;")
         output.append("        }")
         output.append("    } else {")
         output.append("        *data->sys_status = 0;")
