@@ -394,97 +394,99 @@ class Plugin(PluginBase):
             if ctype != 101 and direction == "input":
                 output.append("        uint8_t data_len = 0;")
                 break
-        output.append("        uint8_t data_addr = frame_data[0];")
-        # output.append("        uint8_t data_type = frame_data[1];")
+
+        if self.plugin_setup.get("config", {}):
+            output.append("        uint8_t data_addr = frame_data[0];")
+
         output.append("        uint16_t crc = 0xFFFF;")
         output.append("        for (n = 0; n < frame_len - 2; n++) {")
         output.append("           crc = crc16_update(crc, frame_data[n]);")
         output.append("        }")
         output.append("        if ((crc & 0xFF) == frame_data[frame_len - 2] && (crc>>8 & 0xFF) == frame_data[frame_len - 1]) {")
-        output.append(f"            switch ({self.instances_name}_signal_active) {{")
-        sn = 0
-        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
-            direction = signal_config["direction"]
-            address = signal_config["address"]
-            ctype = signal_config["type"]
-            vscale = signal_config.get("scale", 1.0)
-            self.is_float = signal_config.get("is_float", False)
-            dt_default = "int"
-            if self.is_float:
-                dt_default = "float"
-            self.datatype = signal_config.get("datatype", dt_default)
-            self.signal_values = signal_config.get("values", 1)
-            self.signal_name = signal_name
-            self.signal_address = address
-            if ctype == 101:
-                output.append(f"                case {sn}: {{")
-                output += signal_config["instance"].frameio_rx_c()
-                output.append("                }")
-            elif direction == "input":
-                output.append(f"                case {sn}: {{")
-                if self.signal_values > 1:
-                    output.append("                    data_len = frame_data[2];")
 
-                    if ctype == 2:
-                        output.append(f"                    // get {self.signal_values} 1bit values ({signal_name})")
-                        output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
+        if self.plugin_setup.get("config", {}):
+            output.append(f"            switch ({self.instances_name}_signal_active) {{")
+
+            sn = 0
+            for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+                direction = signal_config["direction"]
+                address = signal_config["address"]
+                ctype = signal_config["type"]
+                vscale = signal_config.get("scale", 1.0)
+                self.is_float = signal_config.get("is_float", False)
+                dt_default = "int"
+                if self.is_float:
+                    dt_default = "float"
+                self.datatype = signal_config.get("datatype", dt_default)
+                self.signal_values = signal_config.get("values", 1)
+                self.signal_name = signal_name
+                self.signal_address = address
+                if ctype == 101:
+                    output.append(f"                case {sn}: {{")
+                    output += signal_config["instance"].frameio_rx_c()
+                    output.append("                }")
+                elif direction == "input":
+                    output.append(f"                case {sn}: {{")
+                    if self.signal_values > 1:
+                        output.append("                    data_len = frame_data[2];")
+                        if ctype == 2:
+                            output.append(f"                    // get {self.signal_values} 1bit values ({signal_name})")
+                            output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
+                            for vn in range(self.signal_values):
+                                value_name = f"value_{self.signal_name}_{vn}"
+                                output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
+                                output.append(f"                            {value_name} = 1;")
+                                output.append("                        } else {")
+                                output.append(f"                            {value_name} = 0;")
+                                output.append("                        }")
+                                output.append(f"                        {value_name}_valid = 1;")
+                        else:
+                            output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
+                            output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
+                            for vn in range(self.signal_values):
+                                value_name = f"value_{self.signal_name}_{vn}"
+                                output.append(f"                        {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
+                                if vscale:
+                                    output.append(f"                        {value_name} *= {vscale};")
+                                output.append(f"                        {value_name}_valid = 1;")
+                        output.append("                    } else {")
                         for vn in range(self.signal_values):
                             value_name = f"value_{self.signal_name}_{vn}"
-                            output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
-                            output.append(f"                            {value_name} = 1;")
-                            output.append("                        } else {")
-                            output.append(f"                            {value_name} = 0;")
-                            output.append("                        }")
-                            output.append(f"                        {value_name}_valid = 1;")
-
-                    else:
-                        output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
-                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
-                        for vn in range(self.signal_values):
-                            value_name = f"value_{self.signal_name}_{vn}"
-                            output.append(f"                        {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
-                            if vscale:
-                                output.append(f"                        {value_name} *= {vscale};")
-                            output.append(f"                        {value_name}_valid = 1;")
-
-                    output.append("                    } else {")
-                    for vn in range(self.signal_values):
-                        value_name = f"value_{self.signal_name}_{vn}"
+                            output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                            output.append(f"                        {value_name}_errors += 1;")
+                            output.append(f"                        {value_name}_valid = 0;")
+                        output.append("                    }")
+                    elif self.datatype == "float":
+                        output.append("                    // get single 32bit float value")
+                        output.append("                    data_len = frame_data[2];")
+                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 4}) {{")
+                        output.append("                        uint8_t farray[] = {frame_data[6], frame_data[5], frame_data[4], frame_data[3]};")
+                        output.append(f"                        memcpy((uint8_t *)&value_{self.signal_name}, (uint8_t *)&farray, 4);")
+                        if vscale:
+                            output.append(f"                        value_{self.signal_name} *= {vscale};")
+                        output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append("                    } else {")
                         output.append('                        // rtapi_print("rx error: addr or len\\n");')
-                        output.append(f"                        {value_name}_errors += 1;")
-                        output.append(f"                        {value_name}_valid = 0;")
-                    output.append("                    }")
-                elif self.datatype == "float":
-                    output.append("                    // get single 32bit float value")
-                    output.append("                    data_len = frame_data[2];")
-                    output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 4}) {{")
-                    output.append("                        uint8_t farray[] = {frame_data[6], frame_data[5], frame_data[4], frame_data[3]};")
-                    output.append(f"                        memcpy((uint8_t *)&value_{self.signal_name}, (uint8_t *)&farray, 4);")
-                    if vscale:
-                        output.append(f"                        value_{self.signal_name} *= {vscale};")
-                    output.append(f"                        value_{self.signal_name}_valid = 1;")
-                    output.append("                    } else {")
-                    output.append('                        // rtapi_print("rx error: addr or len\\n");')
-                    output.append(f"                        value_{self.signal_name}_errors += 1;")
-                    output.append(f"                        value_{self.signal_name}_valid = 0;")
-                    output.append("                    }")
-                else:
-                    output.append("                    // get single 16bit value")
-                    output.append("                    data_len = frame_data[2];")
-                    output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
-                    output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
-                    if vscale:
-                        output.append(f"                        value_{self.signal_name} *= {vscale};")
-                    output.append(f"                        value_{self.signal_name}_valid = 1;")
-                    output.append("                    } else {")
-                    output.append('                        // rtapi_print("rx error: addr or len\\n");')
-                    output.append(f"                        value_{self.signal_name}_errors += 1;")
-                    output.append(f"                        value_{self.signal_name}_valid = 0;")
-                    output.append("                    }")
-                output.append("                    break;")
-                output.append("                }")
-            sn += 1
-        output.append("            }")
+                        output.append(f"                        value_{self.signal_name}_errors += 1;")
+                        output.append(f"                        value_{self.signal_name}_valid = 0;")
+                        output.append("                    }")
+                    else:
+                        output.append("                    // get single 16bit value")
+                        output.append("                    data_len = frame_data[2];")
+                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
+                        output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
+                        if vscale:
+                            output.append(f"                        value_{self.signal_name} *= {vscale};")
+                        output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append("                    } else {")
+                        output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                        output.append(f"                        value_{self.signal_name}_errors += 1;")
+                        output.append(f"                        value_{self.signal_name}_valid = 0;")
+                        output.append("                    }")
+                    output.append("                    break;")
+                    output.append("                }")
+                sn += 1
+            output.append("            }")
         output.append("        } else {")
         output.append('            // rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
         output.append("        }")

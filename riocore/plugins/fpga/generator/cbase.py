@@ -973,7 +973,7 @@ class cbase:
         output += self.c_signal_converter()
         output += self.c_buffer_converter()
         output += self.c_buffer()
-        output.append("void rio_readwrite(void *inst, long period) {")
+        output.append("void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) long period) {")
         output.append("    int ret = 0;")
         output.append("    uint8_t i = 0;")
         output.append("    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];")
