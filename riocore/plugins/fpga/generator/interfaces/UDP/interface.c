@@ -1,6 +1,4 @@
 
-#include <string.h>
-#include <stdio.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -81,8 +79,8 @@ void udp_tx(uint8_t *txBuffer, uint16_t size) {
 int udp_rx(uint8_t *rxBuffer, uint16_t size, uint8_t udp_async) {
     int i;
     int ret;
-    long t1;
-    long t2;
+    int64_t t1;
+    int64_t t2;
     uint8_t rxBufferTmp[1024];
 
     for (i = 0; i < 1024; i++) {

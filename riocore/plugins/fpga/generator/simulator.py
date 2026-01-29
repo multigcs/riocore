@@ -125,6 +125,8 @@ class simulator(generator_base):
                     rdata = rdata.replace("errno", "1")
 
                     idata = "\n"
+                    idata += "#include <string.h>\n"
+                    idata += "#include <stdio.h>\n"
                     idata += "#include <unistd.h>\n"
                     idata += "#include <time.h>\n"
                     idata += "\n"

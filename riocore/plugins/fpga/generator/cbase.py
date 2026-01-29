@@ -34,7 +34,7 @@ class cbase:
                         output.append(f"void convert_frame_{plugin_instance.instances_name}_output(data_t *data) {{")
                         output.append(f"    static float timeout = {plugin_instance.TIMEOUT};")
                         output.append("    static float delay = 0;")
-                        output.append("    static long frame_stamp_last = 0;")
+                        output.append("    static int64_t frame_stamp_last = 0;")
                         output.append("    static uint8_t frame_id = 0;")
                         output.append(f"    static uint8_t frame_io[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append(f"    static uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
@@ -62,7 +62,6 @@ class cbase:
 
                         output.append("")
                         output.append("        /*** get plugin vars ***/")
-                        output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
@@ -71,16 +70,14 @@ class cbase:
                             if boolean:
                                 ctype = "bool"
                             output.append(f"        {ctype} value_{signal_name} = *data->{varname};")
-                        output.append("")
                         output.append("        /***********************/")
                         output.append("")
-
-                        output.append("        /*** plugin code ***/")
-                        output.append("")
-                        output.append("        " + plugin_instance.frameio_tx_c().strip())
-                        output.append("")
-                        output.append("        /*******************/")
-                        output.append("")
+                        plugin_code = plugin_instance.frameio_tx_c().strip()
+                        if plugin_code:
+                            output.append("        /*** plugin code ***/")
+                            output.append("        " + plugin_instance.frameio_tx_c().strip())
+                            output.append("        /*******************/")
+                            output.append("")
                         output.append("        /*** update plugin vars ***/")
                         output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
@@ -104,7 +101,7 @@ class cbase:
                         output.append("")
 
                     else:
-                        output.append(f"void convert_{variable_name.lower()}(data_t *data){{")
+                        output.append(f"void convert_{variable_name.lower()}(data_t *data) {{")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
                             var_prefix = signal_config["var_prefix"]
@@ -134,10 +131,15 @@ class cbase:
                                         output.append(f"    if (value > {max_limit}) {{")
                                         output.append(f"        value = {max_limit};")
                                         output.append("    }")
-                                    output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+
+                                    convert_c = plugin_instance.convert_c(data_name, data_config).strip()
+                                    if convert_c:
+                                        output.append("    " + convert_c)
                                 else:
                                     output.append(f"    bool value = *data->{source};")
-                                    output.append("    " + plugin_instance.convert_c(data_name, data_config).strip())
+                                    convert_c = plugin_instance.convert_c(data_name, data_config).strip()
+                                    if convert_c:
+                                        output.append("    " + convert_c)
                                     if signal_config.get("is_index_enable"):
                                         output.append("    // force resetting index pin")
                                         output.append(f"    if (data->{variable_name} != value && value == 1) {{")
@@ -188,7 +190,6 @@ class cbase:
 
                         output.append("")
                         output.append("    /*** get plugin vars ***/")
-                        output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
@@ -200,18 +201,16 @@ class cbase:
                             if boolean:
                                 ctype = "bool"
                             output.append(f"    {ctype} value_{signal_name} = *data->{varname};")
-                        output.append("")
                         output.append("    /***********************/")
                         output.append("")
-                        output.append("    /*** plugin code ***/")
-                        output.append("")
-                        output.append("    " + plugin_instance.frameio_rx_c().strip())
-                        output.append("")
-                        output.append("    /*******************/")
-                        output.append("")
+                        plugin_code = plugin_instance.frameio_rx_c().strip()
+                        if plugin_code:
+                            output.append("    /*** plugin code ***/")
+                            output.append("    " + plugin_code)
+                            output.append("    /*******************/")
+                            output.append("")
 
                         output.append("    /*** update plugin vars ***/")
-                        output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
@@ -220,7 +219,6 @@ class cbase:
                             output.append(f"    *data->{varname} = value_{signal_name};")
                             if not helper and not boolean and direction == "input":
                                 output.append(f"    *data->{varname}_S32 = (int)value_{signal_name};")
-                        output.append("")
                         output.append("    /**************************/")
                         output.append("}")
                         output.append("")
@@ -449,13 +447,13 @@ class cbase:
         output.append("    }")
         output.append("    // raw vars to txBuffer")
         output_pos = self.instance.gateware.buffer_size
-        output.append(f"    txBuffer[0] = 0x74; // {output_pos}")
+        output.append(f"    txBuffer[0] = 0x74;  // {output_pos}")
         output_pos -= 8
-        output.append(f"    txBuffer[1] = 0x69; // {output_pos}")
+        output.append(f"    txBuffer[1] = 0x69;  // {output_pos}")
         output_pos -= 8
-        output.append(f"    txBuffer[2] = 0x72; // {output_pos}")
+        output.append(f"    txBuffer[2] = 0x72;  // {output_pos}")
         output_pos -= 8
-        output.append(f"    txBuffer[3] = 0x77; // {output_pos}")
+        output.append(f"    txBuffer[3] = 0x77;  // {output_pos}")
         output_pos -= 8
 
         if self.instance.gateware.multiplexed_output:
@@ -464,7 +462,7 @@ class cbase:
             output.append("        data->MULTIPLEXER_OUTPUT_ID += 1;")
             output.append("    } else {")
             output.append("        data->MULTIPLEXER_OUTPUT_ID = 0;")
-            output.append("    };")
+            output.append("    }")
         mpid = 0
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
@@ -477,19 +475,19 @@ class cbase:
                 output.append(f"    if (data->MULTIPLEXER_OUTPUT_ID == {mpid}) {{;")
                 byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
                 output.append(f"        memcpy(&data->MULTIPLEXER_OUTPUT_VALUE, &data->{variable_name}, {byte_size});")
-                output.append("    };")
+                output.append("    }")
                 mpid += 1
 
         if self.instance.gateware.multiplexed_output:
             variable_size = self.instance.gateware.multiplexed_output_size
             byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
             byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_VALUE, {byte_size}); // {output_pos}")
+            output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_VALUE, {byte_size});  // {output_pos}")
             output_pos -= variable_size
             variable_size = 8
             byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
             byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
-            output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_ID, {byte_size}); // {output_pos}")
+            output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->MULTIPLEXER_OUTPUT_ID, {byte_size});  // {output_pos}")
             output_pos -= variable_size
 
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
@@ -503,14 +501,14 @@ class cbase:
                 byte_start, byte_size, bit_offset = self.get_bype_pos(output_pos, variable_size)
                 byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
                 if variable_size >= 8:
-                    output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->{variable_name}, {byte_size}); // {output_pos}")
+                    output.append(f"    memcpy(&txBuffer[{byte_start - (byte_size - 1)}], &data->{variable_name}, {byte_size});  // {output_pos}")
                 elif variable_size > 1:
                     for bit in range(variable_size - 1, -1, -1):
                         output.append(f"    if (data->{variable_name} & (1<<{bit})) {{")
-                        output.append(f"         txBuffer[{byte_start}] |= (1<<{bit_offset + bit}); // {output_pos}")
+                        output.append(f"         txBuffer[{byte_start}] |= (1<<{bit_offset + bit});  // {output_pos}")
                         output.append("    }")
                 else:
-                    output.append(f"    txBuffer[{byte_start}] |= (data->{variable_name}<<{bit_offset}); // {output_pos}")
+                    output.append(f"    txBuffer[{byte_start}] |= (data->{variable_name}<<{bit_offset});  // {output_pos}")
                 output_pos -= variable_size
 
         output.append(f"    // FILL: {diff}")
@@ -536,7 +534,7 @@ class cbase:
         variable_size = 32
         byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
         byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
-        output.append(f"    memcpy(&fpga_timestamp, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
+        output.append(f"    memcpy(&fpga_timestamp, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});  // {input_pos}")
         input_pos -= variable_size
 
         if self.instance.gateware.multiplexed_input:
@@ -562,11 +560,11 @@ class cbase:
                 byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
                 byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
                 if variable_size > 1:
-                    output.append(f"    memcpy(&data->{variable_name}, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}); // {input_pos}")
+                    output.append(f"    memcpy(&data->{variable_name}, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size});  // {input_pos}")
                     if variable_size < 8:
                         output.append(f"    data->{variable_name} = (data->{variable_name}>>{8 - variable_size});")
                 else:
-                    output.append(f"    data->{variable_name} = (rxBuffer[{byte_start}] & (1<<{bit_offset})); // {input_pos}")
+                    output.append(f"    data->{variable_name} = (rxBuffer[{byte_start}] & (1<<{bit_offset}));  // {input_pos}")
                 input_pos -= variable_size
 
         output.append(f"    // FILL: {diff}")
@@ -586,7 +584,7 @@ class cbase:
                 output.append(f"    if (data->MULTIPLEXER_INPUT_ID == {mpid}) {{;")
                 byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
                 output.append(f"        memcpy(&data->{variable_name}, &data->MULTIPLEXER_INPUT_VALUE, {byte_size});")
-                output.append("    };")
+                output.append("    }")
                 mpid += 1
 
         output.append("}")
@@ -675,7 +673,6 @@ class cbase:
                     output.append(f"    int{variable_size_align}_t {variable_name};")
             else:
                 output.append(f"    bool {variable_name};")
-        output.append("")
         output.append("} data_t;")
         return output
 
@@ -767,7 +764,7 @@ class cbase:
         output.append("")
         output += self.variables()
         output.append("")
-        output.append("void rio_readwrite(void *inst, long period);")
+        output.append("void rio_readwrite(void *inst, int64_t period);")
         output.append("int interface_init(int argc, char **argv);")
         output.append("data_t *register_signals(void);")
         output.append("data_t *init(int argc, char **argv);")
@@ -776,6 +773,7 @@ class cbase:
 
     def mainc(self, libmode=False):
         output = []
+        output.append("// Copyright [2025] <o.dippel@gmx.de>")
         output.append("// Generated by rio-generator")
         output.append("")
         if "serial":
@@ -848,7 +846,7 @@ class cbase:
             idata = "\n"
             idata += "struct timespec ns_timestamp;\n"
             idata += "\n"
-            idata += "long rtapi_get_time() {\n"
+            idata += "int64_t rtapi_get_time() {\n"
             idata += "    clock_gettime(CLOCK_MONOTONIC, &ns_timestamp);\n"
             idata += "    return (double)ns_timestamp.tv_sec * 1000000000 + ns_timestamp.tv_nsec;\n"
             idata += "}\n"
@@ -859,22 +857,22 @@ class cbase:
             idata += "\n"
             output.append(idata)
 
-        output.append("static int 			      comp_id;")
-        output.append("static const char 	      *modname = MODNAME;")
-        output.append("static const char 	      *prefix = PREFIX;")
+        output.append("static int comp_id;")
+        output.append("static const char *modname = MODNAME;")
+        output.append("static const char *prefix = PREFIX;")
         output.append("")
         output.append("uint32_t pkg_counter = 0;")
         output.append("uint32_t err_total = 0;")
         output.append("uint32_t err_counter = 0;")
         output.append("")
-        output.append("long stamp_last = 0;")
+        output.append("int64_t stamp_last = 0;")
         output.append("float fpga_stamp_last = 0;")
         output.append("uint32_t fpga_timestamp = 0;")
         output.append("")
-        output.append("void rio_readwrite(void *inst, long period);")
+        output.append("void rio_readwrite(void *inst, int64_t period);")
         output.append("int error_handler(int retval);")
         output.append("")
-        output.append("#define MAX(a,b) (((a)>(b))?(a):(b))")
+        output.append("#define MAX(a, b) (((a) > (b))?(a):(b))")
         output.append("")
 
         if not libmode:
@@ -904,7 +902,7 @@ class cbase:
         elif protocol.startswith("SPI"):
             output.append("    spi_init();")
         elif protocol == "UDP":
-            output.append("    char dstAddress[1024];")
+            output.append("    char dstAddress[20];")
             output.append("    int dstPort = DST_PORT;")
             output.append("    if (argc > 1) {")
             output.append("        int ip0 = 0;")
@@ -914,7 +912,7 @@ class cbase:
             output.append("        int port = 0;")
             output.append('        int ret = sscanf(argv[1], "%d.%d.%d.%d:%d", &ip0, &ip1, &ip2, &ip3, &port);')
             output.append("        if (ret >= 4) {")
-            output.append('            sprintf(dstAddress, "%d.%d.%d.%d", ip0, ip1, ip2, ip3);')
+            output.append('            snprintf(dstAddress, sizeof(dstAddress), "%d.%d.%d.%d", ip0, ip1, ip2, ip3);')
             output.append("            if (ret == 5) {")
             output.append("                dstPort = port;")
             output.append("            }")
@@ -963,7 +961,7 @@ class cbase:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             if plugin_instance.TYPE == "frameio":
-                output.append(f"long {plugin_instance.instances_name}_last_rx = 0;")
+                output.append(f"int64_t {plugin_instance.instances_name}_last_rx = 0;")
             for line in plugin_instance.globals_c().strip().split("\n"):
                 output.append(line)
         output.append("")
@@ -973,12 +971,12 @@ class cbase:
         output += self.c_signal_converter()
         output += self.c_buffer_converter()
         output += self.c_buffer()
-        output.append("void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) long period) {")
+        output.append("void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) int64_t period) {")
         output.append("    int ret = 0;")
         output.append("    uint8_t i = 0;")
         output.append("    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];")
         output.append("    uint8_t txBuffer[BUFFER_SIZE_TX * 2];")
-        output.append("    long stamp_new = rtapi_get_time();")
+        output.append("    int64_t stamp_new = rtapi_get_time();")
         # output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
 

@@ -70,10 +70,9 @@ typedef struct {
     bool VARIN1_BITIN3_BIT;
     bool VARIN1_BITIN4_BIT;
     bool VARIN1_BITIN5_BIT;
-
 } data_t;
 
-void rio_readwrite(void *inst, long period);
+void rio_readwrite(void *inst, int64_t period);
 int interface_init(int argc, char **argv);
 data_t *register_signals(void);
 data_t *init(int argc, char **argv);

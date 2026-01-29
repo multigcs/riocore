@@ -85,10 +85,9 @@ typedef struct {
     bool VAROUT1_FPGA0_WLED_0_BLUE;
     bool VAROUT1_FPGA0_WLED_0_RED;
     bool VAROUT1_BITOUT0_BIT;
-
 } data_t;
 
-void rio_readwrite(void *inst, long period);
+void rio_readwrite(void *inst, int64_t period);
 int interface_init(int argc, char **argv);
 data_t *register_signals(void);
 data_t *init(int argc, char **argv);

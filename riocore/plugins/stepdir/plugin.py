@@ -98,9 +98,9 @@ class Plugin(PluginBase):
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "velocity":
             return """
-            if (value != 0) {
-                value = OSC_CLOCK / value / 2;
-            }
+    if (value != 0) {
+        value = OSC_CLOCK / value / 2;
+    }
             """
         return ""
 

@@ -35,10 +35,9 @@ typedef struct {
     bool VAROUT1_BITOUT1_BIT;
     bool VAROUT1_PWMOUT0_ENABLE;
     bool VAROUT1_STEPDIR0_ENABLE;
-
 } data_t;
 
-void rio_readwrite(void *inst, long period);
+void rio_readwrite(void *inst, int64_t period);
 int interface_init(int argc, char **argv);
 data_t *register_signals(void);
 data_t *init(int argc, char **argv);
