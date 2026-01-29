@@ -89,8 +89,8 @@ void drawCNCMill() {
     // draw heightmap
     glPushMatrix();
     glBegin(GL_TRIANGLES);
-    for (int y = 0; y < HM_HEIGHT; y++) {
-        for (int x = 0; x < HM_WIDTH; x++) {
+    for (int y = 0; y < HM_HEIGHT - 1; y++) {
+        for (int x = 0; x < HM_WIDTH - 1; x++) {
             if (heightmap[x][y] <= 0) {
                 glColor3f(0.1f, 0.1f, 1.0f);
             } else {
