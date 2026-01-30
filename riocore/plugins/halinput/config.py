@@ -64,8 +64,9 @@ class ClickableLineEdit(QLineEdit):
 
 
 class config:
-    def __init__(self, instance, styleSheet=None):
+    def __init__(self, instance, styleSheet=None, parent=None):
         self.instance = instance
+        self.parent = parent
         self.plugin_setup = instance.plugin_setup
 
     def wiz2_joypad(self, selected_device):

@@ -49,7 +49,7 @@ class PluginBase:
         self.SUB_PLUGINS = []
         self.OPTIONS = {}
         self.PASSTHROUGH = {}
-        self.PLUGIN_CONFIG = False
+        self.PLUGIN_CONFIGS = {}
         self.LIMITATIONS = {}
         self.system_setup = system_setup
         self.plugin_id = plugin_id

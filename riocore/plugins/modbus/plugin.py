@@ -55,7 +55,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {}
         self.TYPE = "frameio"
         self.DYNAMIC_SIGNALS = True
-        self.PLUGIN_CONFIG = True
+        self.PLUGIN_CONFIGS = {"Devices": "config.py"}
         self.TIMEOUT = 200.0
         self.DELAY = 90.0
         rx_buffersize = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])

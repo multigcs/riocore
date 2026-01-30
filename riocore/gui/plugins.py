@@ -567,15 +567,13 @@ class GuiPlugins:
             option_row.addWidget(self.main_options[option_name], stretch=3)
             option_row.addWidget(QLabel(option_defaults.get("unit", "")), stretch=1)
 
-        if plugin_instance.PLUGIN_CONFIG:
-            title = "Config"
-            if isinstance(plugin_instance.PLUGIN_CONFIG, str):
-                title = plugin_instance.PLUGIN_CONFIG
-            button_config = QPushButton(title)
-            bcb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_config.clicked.connect(bcb)
-            button_config.setMaximumSize(button_config.sizeHint())
-            options.addWidget(button_config)
+        if plugin_instance.PLUGIN_CONFIGS:
+            for name in plugin_instance.PLUGIN_CONFIGS:
+                button_config = QPushButton(name)
+                bcb = partial(self.config_plugin, plugin_instance, name)
+                button_config.clicked.connect(bcb)
+                button_config.setMaximumSize(button_config.sizeHint())
+                options.addWidget(button_config)
 
         descriptiontext = plugin_instance.DESCRIPTION
         label = QLabel(f"{textwrap.fill(descriptiontext, 50)}\n")
@@ -744,19 +742,18 @@ class GuiPlugins:
         for key, value in self.main_options.items():
             value.update()
 
-    def config_plugin(self, plugin_instance, plugin_id, widget=None):
-        if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
+    def config_plugin(self, plugin_instance, name, widget=None):
+        command = plugin_instance.PLUGIN_CONFIGS[name]
+        if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, command)):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
             if hasattr(self.parent, "STYLESHEET"):
-                config_box = plugin_config.config(plugin_instance, styleSheet=self.parent.STYLESHEET)
+                config_box = plugin_config.config(plugin_instance, styleSheet=self.parent.STYLESHEET, parent=self.parent)
             else:
-                config_box = plugin_config.config(plugin_instance)
+                config_box = plugin_config.config(plugin_instance, parent=self.parent)
             config_box.run()
             self.options_update()
-
             self.plugin_instance.setup()
             self.reload()
-
         if hasattr(self.parent, "config_load"):
             self.parent.config_load()
             # self.parent.load_tree()

@@ -72,7 +72,7 @@ graph LR;
         self.config = self.plugin_setup.get("config", {})
         self.devices = deepcopy(self.config.get("devices", {}))
         self.multiplexer = self.plugin_setup.get("multiplexer", self.OPTIONS["multiplexer"]["default"])
-        self.PLUGIN_CONFIG = True
+        self.PLUGIN_CONFIGS = {"Devices": "config.py"}
         self.INTERFACE = {}
         self.SIGNALS = {}
 

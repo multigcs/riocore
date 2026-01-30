@@ -31,9 +31,10 @@ plugin_path = os.path.dirname(__file__)
 
 
 class config:
-    def __init__(self, instance, styleSheet=None):
+    def __init__(self, instance, styleSheet=None, parent=None):
         self.styleSheet = styleSheet
         self.instance = instance
+        self.parent = parent
         if "config" not in self.instance.plugin_setup:
             self.instance.plugin_setup["config"] = {}
         if "devices" not in self.instance.plugin_setup["config"]:

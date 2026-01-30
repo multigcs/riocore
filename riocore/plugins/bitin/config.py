@@ -1,8 +1,8 @@
 import os
 import sys
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
+    QLabel,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -13,8 +13,9 @@ plugin_path = os.path.dirname(__file__)
 
 
 class config:
-    def __init__(self, instance, styleSheet=None):
+    def __init__(self, instance, styleSheet=None, parent=None):
         self.instance = instance
+        self.parent = parent
         self.plugin_setup = instance.plugin_setup
 
     def run(self):
@@ -23,28 +24,29 @@ class config:
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
 
+        net = self.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
+        options = []
+        for jnum in range(9):
+            options.append((f"Joint{jnum}: Home-Switch", f"joint.{jnum}.home-sw-in"))
+        options.append(("Probe-Input", "motion.probe-input"))
+        options.append(("Enable-Input / Estop", "iocontrol.0.emc-enable-in"))
+
         dialog.layout = QVBoxLayout()
+        dialog.layout.addWidget(QLabel("Easy quick selection for the most frequently used functions\n"))
+        dialog.layout.addWidget(QLabel("Function:"))
         halpin = QComboBox()
         halpin.addItem("")
-        for jnum in range(9):
-            halpin.addItem(f"joint.{jnum}.home-sw-in")
-        halpin.addItem("motion.probe-input")
-        halpin.addItem("iocontrol.0.emc-enable-in")
-
-        net = self.plugin_setup.get("signals", {}).get("bit", {}).get("net", "")
-        if net:
-            index = halpin.findText(net, Qt.MatchFixedString)
-            if index == -1:
-                halpin.addItem(net)
-                index = halpin.findText(net, Qt.MatchFixedString)
-            halpin.setCurrentIndex(index)
+        for idx, option in enumerate(options):
+            halpin.addItem(f"{option[0]} ({option[1]}")
+            if net == option[1]:
+                halpin.setCurrentIndex(idx + 1)
 
         dialog.layout.addWidget(halpin)
         dialog.layout.addWidget(dialog.buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            halpin = halpin.currentText()
+            halpin = halpin.currentText().split("(")[1].split(")")[0]
             if halpin:
                 if "signals" not in self.plugin_setup:
                     self.self.plugin_setup["signals"] = {}

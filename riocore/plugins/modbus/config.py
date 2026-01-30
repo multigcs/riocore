@@ -283,9 +283,10 @@ class config:
         201: ("Custom Boolean", "output"),
     }
 
-    def __init__(self, instance, styleSheet=None):
+    def __init__(self, instance, styleSheet=None, parent=None):
         self.styleSheet = styleSheet
         self.instance = instance
+        self.parent = parent
         self.config = self.instance.plugin_setup.get("config", {})
         self.config_selected = None
         self.widgets = {
