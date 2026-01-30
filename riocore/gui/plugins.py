@@ -392,22 +392,23 @@ class GuiPlugins:
 
             signal_cols.addWidget(QLabel(f"Dir: {signal_direction}"), stretch=1)
 
-            if signal_multiplexed:
-                signal_cols.addWidget(QLabel("Multiplexed: YES"), stretch=1)
-            else:
-                signal_cols.addWidget(QLabel("Multiplexed: NO"), stretch=1)
-
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
             signal_cols.addWidget(QLabel("Net:"), stretch=1)
             signal_setup["net"] = {"type": "select", "options": options_net}
             signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "net", signal_setup["net"], cb=update), stretch=5)
 
+            # signal_cols = QHBoxLayout()
+            # signal_rows.addLayout(signal_cols)
+            # signal_cols.addWidget(QLabel("Function:"), stretch=1)
+            # signal_setup["function"] = {"type": "select", "options": options_func}
+            # signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
+
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
-            signal_cols.addWidget(QLabel("Function:"), stretch=1)
-            signal_setup["function"] = {"type": "select", "options": options_func}
-            signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
+            signal_cols.addWidget(QLabel("Multiplexed:"), stretch=1)
+            signal_setup["multiplexed"] = {"type": bool, "default": signal_multiplexed, "help_text": "multiplexed signal"}
+            signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "multiplexed", signal_setup["multiplexed"], cb=update), stretch=5)
 
             if signal_direction == "output":
                 signal_cols.addWidget(QLabel("setp:"), stretch=1)
