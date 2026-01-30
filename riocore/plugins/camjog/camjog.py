@@ -159,6 +159,8 @@ class MyImage(QLabel):
         self.parent.zoom_label.setText(f"{self.parent.options['zoom']:0.1f}")
 
     def moveBegin(self, event):
+        global cal_x
+        global cal_y
         self.new_x = event.pos().x()
         self.new_y = event.pos().y()
         self.old_x = self.new_x
@@ -200,6 +202,8 @@ class MyImage(QLabel):
         self.moveEnd(event)
 
     def mouseMoveEvent(self, event):
+        global cal_x
+        global cal_y
         if self.parent.options["mode"] == "move":
             diff_x = self.old_x - event.pos().x()
             diff_y = self.old_y - event.pos().y()
