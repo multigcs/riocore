@@ -50,37 +50,46 @@ from PyQt5.QtWidgets import (
 )
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--xid", help="parent x window id", type=int)
-parser.add_argument("--video", help="video device id", type=int, default=-1)
-parser.add_argument("--camera", help="video device name", type=str, default="")
-parser.add_argument("--width", help="video device width", type=int, default=640)
-parser.add_argument("--height", help="video device height", type=int, default=480)
-parser.add_argument("--scale", help="scale image", type=float, default=1.0)
-parser.add_argument("--name", help="component name", type=str, default="camjog")
+parser.add_argument("--xid", "-x", help="parent x window id", type=int)
+parser.add_argument("--video", "-v", help="video device id", type=int, default=-1)
+parser.add_argument("--camera", "-c", help="video device name", type=str, default="")
+parser.add_argument("--width", "-W", help="video device width", type=int, default=640)
+parser.add_argument("--height", "-H", help="video device height", type=int, default=480)
+parser.add_argument("--scale", "-S", help="scale image", type=float, default=1.0)
+parser.add_argument("--fullscreen", "-f", help="fullscreen mode", default=False, action="store_true")
+parser.add_argument("--name", "-n", help="component name", type=str, default="camjog")
+parser.add_argument("--server", "-s", help="remote server (rmpg)", type=str, default="")
 args = parser.parse_args()
 
+if args.server:
+    import rhal as hal
 
-try:
-    import hal
+    h = hal.component(args.server)
+    cal_x = 0.15
+    cal_y = -0.13
+else:
+    try:
+        import hal
 
-    h = hal.component(args.name)
-    h.newpin("axis.x.jog-counts", hal.HAL_S32, hal.HAL_OUT)
-    h.newpin("axis.y.jog-counts", hal.HAL_S32, hal.HAL_OUT)
-    h.newpin("axis.x.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
-    h.newpin("axis.y.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
-    h.newpin("axis.x.cal", hal.HAL_FLOAT, hal.HAL_IN)
-    h.newpin("axis.y.cal", hal.HAL_FLOAT, hal.HAL_IN)
-    h.ready()
-    no_hal = False
-except Exception:
-    no_hal = True
-    h = {}
-    h["axis.x.jog-counts"] = 1
-    h["axis.y.jog-counts"] = 1
-    h["axis.x.jog-scale"] = 1.0
-    h["axis.y.jog-scale"] = 1.0
-    h["axis.x.cal"] = 0.1
-    h["axis.y.cal"] = 0.1
+        h = hal.component(args.name)
+        h.newpin("axis.x.jog-counts", hal.HAL_S32, hal.HAL_OUT)
+        h.newpin("axis.y.jog-counts", hal.HAL_S32, hal.HAL_OUT)
+        h.newpin("axis.x.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+        h.newpin("axis.y.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+        h.newpin("axis.x.cal", hal.HAL_FLOAT, hal.HAL_IN)
+        h.newpin("axis.y.cal", hal.HAL_FLOAT, hal.HAL_IN)
+        h.ready()
+        no_hal = False
+    except Exception:
+        # for testing
+        no_hal = True
+        h = {}
+        h["axis.x.jog-counts"] = 1
+        h["axis.y.jog-counts"] = 1
+        h["axis.x.jog-scale"] = 1.0
+        h["axis.y.jog-scale"] = 1.0
+        h["axis.x.cal"] = 0.1
+        h["axis.y.cal"] = 0.1
 
 
 TWO_PI = math.pi * 2
@@ -163,8 +172,11 @@ class MyImage(QLabel):
             x_scale = h["axis.x.jog-scale"]
             y_scale = h["axis.y.jog-scale"]
             if x_scale and y_scale:
-                h["axis.x.jog-counts"] += int(offset_x / x_scale * h["axis.x.cal"])
-                h["axis.y.jog-counts"] += int(offset_y / y_scale * h["axis.y.cal"])
+                if not args.server:
+                    cal_x = h["axis.x.cal"]
+                    cal_y = h["axis.y.cal"]
+                h["axis.x.jog-counts"] += int(offset_x / x_scale * cal_x)
+                h["axis.y.jog-counts"] += int(offset_y / y_scale * cal_y)
 
         elif self.parent.options["mode"] == "touch":
             self.parent.options["points"] = []
@@ -198,8 +210,11 @@ class MyImage(QLabel):
             x_scale = h["axis.x.jog-scale"]
             y_scale = h["axis.y.jog-scale"]
             if x_scale and y_scale:
-                h["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / x_scale * h["axis.x.cal"])
-                h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * h["axis.y.cal"])
+                if not args.server:
+                    cal_x = h["axis.x.cal"]
+                    cal_y = h["axis.y.cal"]
+                h["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / x_scale * cal_x)
+                h["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * cal_y)
 
 
 class Window(QMainWindow):
@@ -229,10 +244,9 @@ class Window(QMainWindow):
             "action": "",
         }
 
-        s = self.options["scale"]
-        self.setMinimumWidth(int(args.width * s) + 50)
-        self.setMinimumHeight(int(args.height * s) + 100)
-
+        # s = self.options["scale"]
+        # self.setMinimumWidth(int(args.width * s) + 50)
+        # self.setMinimumHeight(int(args.height * s) + 100)
         # self.setFixedWidth(int(args.width * s) + 50)
         # self.setFixedWidth(int(args.height * s) + 100)
 
@@ -245,14 +259,14 @@ class Window(QMainWindow):
             if forward:
                 xembed.XEmbedForwarding(window, forward)
 
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
         self.main = QWidget()
         self.setCentralWidget(self.main)
         self.main.setLayout(layout)
+        layout.setContentsMargins(0, 0, 0, 0)
 
-        setup_container = QWidget()
-        setup_layout = QHBoxLayout(setup_container)
-        layout.addWidget(setup_container)
+        setup_layout = QVBoxLayout()
+        # setup_layout.setContentsMargins(left, top, right, bottom)
 
         for view in ("normal", "gray", "edge", "contours"):
             button_view = QPushButton(view.title())
@@ -266,31 +280,27 @@ class Window(QMainWindow):
         self.zoom_label = QLabel("1.0")
         setup_layout.addWidget(self.zoom_label)
 
-        ctrl_container = QWidget()
-        ctrl_layout = QHBoxLayout(ctrl_container)
-        layout.addWidget(ctrl_container)
-
         for mode in ("move", "goto", "touch", "edges"):
             button_mode = QPushButton(mode.title())
             button_mode.clicked.connect(partial(self.change_mode, mode))
-            ctrl_layout.addWidget(button_mode)
-        ctrl_layout.addStretch()
+            setup_layout.addWidget(button_mode)
 
         button_clear = QPushButton("Clear")
         button_clear.clicked.connect(self.clear_cb)
-        ctrl_layout.addWidget(button_clear)
+        setup_layout.addWidget(button_clear)
 
         self.video_img = MyImage(self)
-        self.video_img.setFixedWidth(int(args.width * s))
-        self.video_img.setFixedHeight(int(args.height * s))
+        # self.video_img.setFixedWidth(int(args.width * s))
+        # self.video_img.setFixedHeight(int(args.height * s))
 
         layout.addWidget(self.video_img)
-        layout.addStretch()
+        layout.addLayout(setup_layout)
 
         signal.signal(signal.SIGTERM, self.shutdown)
         signal.signal(signal.SIGINT, self.shutdown)
 
-        # self.showMaximized()
+        if args.fullscreen:
+            self.showFullScreen()
         self.show()
 
         self.camera = CameraThread(self.video, self.options)
