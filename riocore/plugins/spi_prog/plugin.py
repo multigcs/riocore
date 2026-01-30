@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "spi_prog"
         self.INFO = "spi interface for host comunication and flash programming"
-        self.DESCRIPTION = "for direct connections to Raspberry-PI - supporting flash programming"
+        self.DESCRIPTION = "for direct connections to Raspberry-PI - supporting flash programming - spartan6 only at the moment"
         self.KEYWORDS = "interface spi raspberry rpi flash mesa"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
         self.VERILOGS = ["spi_prog.v"]
