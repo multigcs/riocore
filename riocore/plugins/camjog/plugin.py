@@ -37,20 +37,21 @@ class Plugin(PluginBase):
                 "type": str,
                 "default": "camjog",
             },
+            "external": {
+                "type": bool,
+                "default": False,
+            },
         }
 
-    def ini(self, parent, ini_setup):
-        camjog_num = 0
+    def cmd_args(self):
+        external = self.plugin_setup.get("external", self.option_default("external"))
         camjog_device = self.plugin_setup.get("device", self.option_default("device"))
         width = self.plugin_setup.get("width", self.option_default("width"))
         height = self.plugin_setup.get("height", self.option_default("height"))
         scale = self.plugin_setup.get("scale", self.option_default("scale"))
-        tabname = self.plugin_setup.get("tabname", self.option_default("tabname"))
-        ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAMJOG{camjog_num}"] = tabname
-        if parent.gui_tablocation:
-            ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{camjog_num}"] = parent.gui_tablocation
-        cmd_args = ["halcmd loadusr -Wn camjog ./camjog.py"]
-        cmd_args.append("--xid {XID}")
+        cmd_args = ["loadusr -Wn camjog ./camjog.py"]
+        if not external:
+            cmd_args.append("--xid {XID}")
         if camjog_device.startswith("/dev/video"):
             cmd_args.append(f"--video {camjog_device[-1]}")
         elif camjog_device.startswith("rtsp://"):
@@ -62,10 +63,25 @@ class Plugin(PluginBase):
         cmd_args.append(f"--width {width}")
         cmd_args.append(f"--height {height}")
         cmd_args.append(f"--scale {scale}")
-        ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAMJOG{camjog_num}"] = f"{' '.join(cmd_args)}"
+        return " ".join(cmd_args)
+
+    def ini(self, parent, ini_setup):
+        external = self.plugin_setup.get("external", self.option_default("external"))
+        if not external:
+            camjog_num = 0
+            tabname = self.plugin_setup.get("tabname", self.option_default("tabname"))
+            ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAMJOG{camjog_num}"] = tabname
+            if parent.gui_tablocation:
+                ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{camjog_num}"] = parent.gui_tablocation
+            ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAMJOG{camjog_num}"] = f"halcmd {self.cmd_args()}"
 
     def hal(self, parent):
         parent.halg.postgui_components_add("camjog")
+
+        external = self.plugin_setup.get("external", self.option_default("external"))
+        if external:
+            parent.halg.fmt_add(f"{self.cmd_args()}")
+
         for axis_name, axis_config in parent.project.axis_dict.items():
             if axis_name not in {"X", "Y"}:
                 continue

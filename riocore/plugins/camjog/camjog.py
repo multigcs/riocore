@@ -290,7 +290,7 @@ class Window(QMainWindow):
         signal.signal(signal.SIGTERM, self.shutdown)
         signal.signal(signal.SIGINT, self.shutdown)
 
-        self.showMaximized()
+        # self.showMaximized()
         self.show()
 
         self.camera = CameraThread(self.video, self.options)
