@@ -45,7 +45,13 @@ class Plugin(PluginBase):
         self.camjog_num = 0
 
     def component_loader(cls, instances):
+        devices = []
         for cnum, instance in enumerate(instances):
+            camjog_device = instance.plugin_setup.get("device", instance.option_default("device"))
+            if camjog_device not in devices:
+                devices.append(camjog_device)
+            else:
+                print(f"ERROR: camjog: device allready in use: {camjog_device}")
             instance.camjog_num = cnum
 
     def cmd_args(self):
