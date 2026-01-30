@@ -7,6 +7,7 @@ EMBED_TAB_COMMAND=halcmd loadusr -Wn camjog /data2/src/ICE40-2023/serial-tx/rioc
 net camjog_x <= camjog.axis.x.jog-counts
 net camjog_x => joint.0.jog-counts
 net camjog_x => axis.x.jog-counts
+setp camjog.axis.x.cal 0.1
 setp joint.0.jog-vel-mode 0
 setp joint.0.jog-enable 1
 setp joint.0.jog-scale 0.01
@@ -14,18 +15,16 @@ setp axis.x.jog-vel-mode 0
 setp axis.x.jog-enable 1
 setp axis.x.jog-scale 0.15
 
-
 net camjog_y <= camjog.axis.y.jog-counts
 net camjog_y => joint.1.jog-counts
 net camjog_y => axis.y.jog-counts
+setp camjog.axis.y.cal 0.1
 setp joint.1.jog-vel-mode 0
 setp joint.1.jog-enable 1
 setp joint.1.jog-scale 0.01
 setp axis.y.jog-vel-mode 0
 setp axis.y.jog-enable 1
 setp axis.y.jog-scale -0.15
-
-
 
 """
 
@@ -50,10 +49,21 @@ from PyQt5.QtWidgets import (
     QWidget,
 )
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--xid", help="parent x window id", type=int)
+parser.add_argument("--video", help="video device id", type=int, default=-1)
+parser.add_argument("--camera", help="video device name", type=str, default="")
+parser.add_argument("--width", help="video device width", type=int, default=640)
+parser.add_argument("--height", help="video device height", type=int, default=480)
+parser.add_argument("--scale", help="scale image", type=float, default=1.0)
+parser.add_argument("--name", help="component name", type=str, default="camjog")
+args = parser.parse_args()
+
+
 try:
     import hal
 
-    h = hal.component("camjog")
+    h = hal.component(args.name)
     h.newpin("axis.x.jog-counts", hal.HAL_S32, hal.HAL_OUT)
     h.newpin("axis.y.jog-counts", hal.HAL_S32, hal.HAL_OUT)
     h.newpin("axis.x.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
@@ -69,8 +79,8 @@ except Exception:
     h["axis.y.jog-counts"] = 1
     h["axis.x.jog-scale"] = 1.0
     h["axis.y.jog-scale"] = 1.0
-    h["axis.x.cal"] = 100.0
-    h["axis.y.cal"] = 100.0
+    h["axis.x.cal"] = 0.1
+    h["axis.y.cal"] = 0.1
 
 
 TWO_PI = math.pi * 2
@@ -195,17 +205,7 @@ class MyImage(QLabel):
 class Window(QMainWindow):
     def __init__(self, app=None):
         super().__init__()
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--xid", help="parent x window id", type=int)
-        parser.add_argument("--video", help="video device id", type=int, default=-1)
-        parser.add_argument("--camera", help="video device name", type=str, default="")
-        parser.add_argument("--width", help="video device width", type=int, default=640)
-        parser.add_argument("--height", help="video device height", type=int, default=480)
-        parser.add_argument("--scale", help="scale image", type=float, default=1.0)
-        args = parser.parse_args()
-
         self.video = args.video
-
         if args.camera and args.camera.startswith("rtsp://"):
             self.video = args.camera
         elif args.video == -1:
