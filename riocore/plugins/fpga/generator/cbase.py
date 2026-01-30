@@ -155,6 +155,24 @@ class cbase:
                         output.append("")
         output.append("")
 
+        homes = {}
+        for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            interface_data = plugin_instance.interface_data()
+            signal_config = plugin_instance.signals().get(data_name, {})
+            userconfig = signal_config.get("userconfig", {})
+            net = userconfig.get("net")
+            if data_config["direction"] == "input":
+                if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                    jn = net.split(".")[1]
+                    if "bit" not in interface_data:
+                        continue
+                    var = interface_data["bit"]["variable"]
+                    homes[jn] = var
+
         output.append("// input: rxBuffer -> VAROUT -> calc -> SIGOUT")
         position_mapping = {}
         for plugin_instance in self.project.plugin_instances:
@@ -350,6 +368,23 @@ class cbase:
                                     if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
                                         output.append("    if (*data->sys_simulation == 1) {")
                                         output.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
+                                        axis = ""
+                                        home = ""
+                                        for axis_name, axis_config in self.project.axis_dict.items():
+                                            for joint in axis_config["joints"]:
+                                                if joint["instance"] == plugin_instance:
+                                                    jn = joint["num"]
+                                                    axis = joint["axis"]
+                                                    home = homes.get(str(jn))
+                                        if home:
+                                            if axis == "Z":
+                                                output.append("        if (value > 20.0) {")
+                                            else:
+                                                output.append("        if (value < 0.0) {")
+                                            output.append(f"            data->{home} = 1;")
+                                            output.append("        } else {")
+                                            output.append(f"            data->{home} = 0;")
+                                            output.append("        }")
                                         output.append("    }")
 
                                     output.append(f"    *data->{varname}_ABS = fabs(value);")

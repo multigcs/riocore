@@ -38,7 +38,7 @@ from functools import partial
 
 import cv2
 import numpy as np
-from PyQt5.QtCore import QThread, Qt, pyqtSignal, QEvent
+from PyQt5.QtCore import QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -232,7 +232,7 @@ class Window(QMainWindow):
         s = self.options["scale"]
         self.setMinimumWidth(int(args.width * s) + 50)
         self.setMinimumHeight(int(args.height * s) + 100)
-        
+
         # self.setFixedWidth(int(args.width * s) + 50)
         # self.setFixedWidth(int(args.height * s) + 100)
 
@@ -244,7 +244,6 @@ class Window(QMainWindow):
             forward = os.environ.get("AXIS_FORWARD_EVENTS_TO", None)
             if forward:
                 xembed.XEmbedForwarding(window, forward)
-
 
         layout = QVBoxLayout()
         self.main = QWidget()

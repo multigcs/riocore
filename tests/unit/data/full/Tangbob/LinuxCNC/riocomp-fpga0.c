@@ -729,6 +729,11 @@ void convert_sigin_fpga0_stepdir0_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR0_POSITION + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY / 1000.0;
+        if (value < 0.0) {
+            data->VARIN1_BITIN0_BIT = 1;
+        } else {
+            data->VARIN1_BITIN0_BIT = 0;
+        }
     }
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR0_POSITION_S32 = value;
@@ -744,6 +749,11 @@ void convert_sigin_fpga0_stepdir1_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR1_POSITION + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY / 1000.0;
+        if (value < 0.0) {
+            data->VARIN1_BITIN1_BIT = 1;
+        } else {
+            data->VARIN1_BITIN1_BIT = 0;
+        }
     }
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR1_POSITION_S32 = value;
@@ -759,6 +769,11 @@ void convert_sigin_fpga0_stepdir2_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR2_POSITION + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY / 1000.0;
+        if (value > 20.0) {
+            data->VARIN1_BITIN2_BIT = 1;
+        } else {
+            data->VARIN1_BITIN2_BIT = 0;
+        }
     }
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_ABS = fabs(value);
     *data->SIGIN_FPGA0_STEPDIR2_POSITION_S32 = value;
