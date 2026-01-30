@@ -756,6 +756,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
             }
         } else {
             convert_inputs();
+            *data->sys_status = 1;
         }
     } else {
         *data->sys_status = 0;
