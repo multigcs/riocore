@@ -15,7 +15,7 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
-        self.FILES = []
+        self.FILES = ["robojog.py"]
         self.OPTIONS = {}
 
     def ini(self, parent, ini_setup):
@@ -34,8 +34,9 @@ class Plugin(PluginBase):
                 axis_config = parent.project.axis_dict.get(axis.upper())
                 joints = axis_config["joints"]
                 for joint in joints:
-                    parent.halg.net_add(f"robojog.joint.{joint}.jog-counts", f"joint.{joint}.jog-counts")
-                    parent.halg.net_add(f"joint.{joint}.pos-fb", f"robojog.joint.{joint}.position")
-                    parent.halg.setp_add(f"robojog.joint.{joint}.max_limit", 1500.0)
-                    parent.halg.setp_add(f"robojog.joint.{joint}.min_limit", -500.0)
-                    parent.halg.setp_add(f"robojog.joint.{joint}.scale", 100.0)
+                    joint_num = joint["num"]
+                    parent.halg.net_add(f"robojog.joint.{joint_num}.jog-counts", f"joint.{joint_num}.jog-counts")
+                    parent.halg.net_add(f"joint.{joint_num}.pos-fb", f"robojog.joint.{joint_num}.position")
+                    parent.halg.setp_add(f"robojog.joint.{joint_num}.max_limit", 1500.0)
+                    parent.halg.setp_add(f"robojog.joint.{joint_num}.min_limit", -500.0)
+                    parent.halg.setp_add(f"robojog.joint.{joint_num}.scale", 100.0)
