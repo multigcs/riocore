@@ -29,9 +29,14 @@ class Plugin(PluginBase):
         ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|robojog"] = f"{' '.join(cmd_args)}"
 
     def hal(self, parent):
+        parent.halg.postgui_components_add("robojog")
         for axis in "xyzabc":
             if axis.upper() in parent.project.axis_dict:
                 axis_config = parent.project.axis_dict.get(axis.upper())
+                axis_lower = axis.lower()
+                parent.halg.setp_add(f"axis.{axis_lower}.jog-vel-mode", 0)
+                parent.halg.setp_add(f"axis.{axis_lower}.jog-enable", 1)
+                parent.halg.setp_add(f"axis.{axis_lower}.jog-scale", 0.01)
                 joints = axis_config["joints"]
                 for joint in joints:
                     joint_num = joint["num"]
@@ -40,3 +45,7 @@ class Plugin(PluginBase):
                     parent.halg.setp_add(f"robojog.joint.{joint_num}.max_limit", 1500.0)
                     parent.halg.setp_add(f"robojog.joint.{joint_num}.min_limit", -500.0)
                     parent.halg.setp_add(f"robojog.joint.{joint_num}.scale", 100.0)
+
+                    parent.halg.setp_add(f"joint.{joint_num}.jog-vel-mode", 0)
+                    parent.halg.setp_add(f"joint.{joint_num}.jog-enable", 1)
+                    parent.halg.setp_add(f"joint.{joint_num}.jog-scale", 0.01)
