@@ -58,7 +58,7 @@ lint.select = [
     "RUF022",  # unsorted-dunder-all (RUF022)
     "RUF015",  # unnecessary-iterable-allocation-for-first-element (RUF015)
     "B028",  # no-explicit-stacklevel (B028)
-    #"SIM103",  # needless-bool (SIM103)
+    "SIM103",  # needless-bool (SIM103)
     "SIM118",  # in-dict-keys (SIM118)
     "PLR2044",  # empty-comment (PLR2044)
     "UP006",  # non-pep585-annotation (UP006)

@@ -87,9 +87,7 @@ class ConfigLoader:
         button_exit.clicked.connect(select_exit)
         dialog.layout.addWidget(button_exit)
 
-        if dialog.exec():
-            return True
-        return False
+        return dialog.exec()
 
     def load_config_from(self):
         file_dialog = QFileDialog(self.parent)

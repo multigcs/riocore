@@ -1556,9 +1556,7 @@ class Window(QMainWindow):
             if confirmation == QMessageBox.Yes:
                 self.json_save()
                 return True
-            if confirmation == QMessageBox.No:
-                return True
-            return False
+            return confirmation == QMessageBox.No
         return True
 
     def struct_clean(self, data):
