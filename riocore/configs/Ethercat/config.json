@@ -91,14 +91,52 @@
                 }
             },
             "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin0",
+            "image": "proximity",
+            "pos": [
+                910.0,
+                410.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-0:IN:I0"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "image": "relay",
+            "pos": [
+                970.0,
+                510.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-2:OUT:O3"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.62,
+            "scale": 0.91,
             "pos": [
-                -22,
-                -140
+                -7,
+                -136
             ]
         }
     }

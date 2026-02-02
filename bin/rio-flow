@@ -117,9 +117,7 @@ class NodeEdge(QGraphicsPathItem):
         self.hover = False
 
     def paint(self, painter: QPainter, option, widget):
-        if hasattr(self._target_node, "plugin_instance") and self._target_node.plugin_instance.SUB_OF:
-            return
-        if hasattr(self._source_node, "plugin_instance") and self._source_node.plugin_instance.SUB_OF:
+        if hasattr(self._target_node, "plugin_instance") and self._target_node.plugin_instance.SUB_OF and self._source_node.plugin_instance.SUB_OF:
             return
         if self.isSelected():
             self._pen_default = QPen(Qt.GlobalColor.yellow)
@@ -450,8 +448,8 @@ class MyNode(QGraphicsItem):
             painter.drawText(QRectF(0, self.border_size / 2 + th, self.width, self.height - self.border_size - th), Qt.AlignmentFlag.AlignCenter, info)
 
     def paint_port(self, painter, px, py, color):
-        if hasattr(self, "plugin_instance") and self.plugin_instance.SUB_OF:
-            return
+        # if hasattr(self, "plugin_instance") and self.plugin_instance.SUB_OF:
+        #    return
         size = self.port_size
         painter.fillRect(QRectF(px - size / 2, py - size / 2, size, size), color)
         size = self.port_size - self.port_border - self.port_border
