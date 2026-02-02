@@ -458,7 +458,7 @@ class hal_generator:
             return None
 
         # set default operation by type
-        haltype = self.get_type([output_pin] + input_pin.split())
+        haltype = self.get_type([output_pin, *input_pin.split()])
         if haltype is bool:
             logic = "OR"
             if input_pin[0] == "|":

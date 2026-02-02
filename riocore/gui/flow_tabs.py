@@ -743,7 +743,7 @@ class TabAxis:
 
                     keys = ["scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"]
                     if plugin_instance_encoder:
-                        keys = ["scale_in"] + keys
+                        keys = ["scale_in", *keys]
 
                     for key in keys:
                         options = riocore.halpins.JOINT_OPTIONS[{"scale_in": "scale", "scale_out": "scale"}.get(key, key)]

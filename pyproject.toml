@@ -72,7 +72,7 @@ lint.select = [
     "RUF010",  # explicit-f-string-type-conversion (RUF010)
     "EM101",  # raw-string-in-exception (EM101)
     "TRY201",  # verbose-raise (TRY201)
-    #"RUF005",  # collection-literal-concatenation (RUF005)
+    "RUF005",  # collection-literal-concatenation (RUF005)
     "Q001",  # bad-quotes-multiline-string (Q001)
     "RUF051",  # if-key-in-dict-del (RUF051)
     "SIM905",  # split-static-string (SIM905)

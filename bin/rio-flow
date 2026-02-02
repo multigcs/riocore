@@ -2018,7 +2018,7 @@ class Window(QMainWindow):
 
         # load base and expansion plugins first
         first = ["base", "expansion"]
-        for ptype in first + [""]:
+        for ptype in [*first, ""]:
             for plugin_instance in pluginlist:
                 if ptype == plugin_instance.TYPE or (not ptype and plugin_instance.TYPE not in first):
                     py += self.insert_plugin(plugin_instance, py)

@@ -805,7 +805,8 @@ class LinuxCNC:
                     "HOME_OFFSET",
                     "HOME",
                     "HOME_SEQUENCE",
-                ] + plugin_instance.JOINT_OPTIONS
+                    *plugin_instance.JOINT_OPTIONS,
+                ]
                 for key, value in joint_config.items():
                     if key in options:
                         output.append(f"{key:18s} = {value}")
