@@ -94,22 +94,6 @@ lint.select = [
     "TC001",  # typing-only-first-party-import (TC001)
     "F401",  # unused-import (F401)
     "PYI061",  # redundant-none-literal (PYI061)
-    #"RUF055",  # unnecessary-regular-expression (RUF055)
-    #"PLR6104",  # non-augmented-assignment (PLR6104)
-    #"FURB171",  # single-item-membership-test (FURB171)
-    #"RUF047",  # needless-else (RUF047)
-    #"FURB113",  # repeated-append (FURB113)
-    #"FURB142",  # for-loop-set-mutations (FURB142)
-    #"RUF056",  # falsy-dict-get-fallback (RUF056)
-    #"FURB192",  # sorted-min-max (FURB192)
-    #"FURB110",  # if-exp-instead-of-or-operator (FURB110)
-    #"FURB148",  # unnecessary-enumerate (FURB148)
-    #"FURB118",  # reimplemented-operator (FURB118)
-    #"PLR6201",  # literal-membership (PLR6201)
-    #"FURB140",  # reimplemented-starmap (FURB140)
-    #"RUF037",  # unnecessary-empty-iterable-within-deque-call (RUF037)
-    #"RUF052",  # used-dummy-variable (RUF052)
-    #"FURB180",  # meta-class-abc-meta (FURB180)
 ]
 
 [tool.ruff.lint.isort]
