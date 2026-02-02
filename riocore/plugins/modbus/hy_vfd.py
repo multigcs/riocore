@@ -211,7 +211,7 @@ class hy_vfd:
                 self.HYVFD_DATA["rpm_at_50hz"] = self.HYVFD_CONFIG_REGISTER[144]["value"] * self.HYVFD_CALC_KEYS["rpm_at_50hz"]["scale"]
                 self.HYVFD_DATA["rated_motor_rev"] = (self.HYVFD_DATA["rpm_at_50hz"] / 50.0) * self.HYVFD_DATA["max_freq"]
                 # get status data
-                if self.HYVFD_STATUS_REGISTER_ACTIVE < len(self.HYVFD_STATUS_REGISTER) - 1:
+                if len(self.HYVFD_STATUS_REGISTER) - 1 > self.HYVFD_STATUS_REGISTER_ACTIVE:
                     self.HYVFD_STATUS_REGISTER_ACTIVE += 1
                 else:
                     self.HYVFD_STATUS_REGISTER_ACTIVE = 0

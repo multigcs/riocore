@@ -319,7 +319,7 @@ class LinuxCNC:
             vcp_setup = riocore.gui_dict.get(gui, {}).get("vcp", {})
             if vcp_setup:
                 if vcp_type == "auto":
-                    vcp_type = list(vcp_setup)[0]
+                    vcp_type = next(iter(vcp_setup))
                 if vcp_type not in vcp_setup:
                     print(f"ERROR: vcp '{vcp_type}' not supported for gui '{gui}'")
                     exit(1)

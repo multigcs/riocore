@@ -21,7 +21,7 @@ lint.select = [
     "RET506",  # superfluous-else-raise
     "RET507",  # superfluous-else-continue
     "RET508",  # superfluous-else-break
-    # "SIM",  # future
+    #"SIM",  # future
     #"B006",  # mutable-argument-default
     "B905",  # zip-without-explicit-strict
     "C4",  # flake8-comprehensions
@@ -44,7 +44,7 @@ lint.select = [
     "RUF019",  # unnecessary-key-check
     "FURB105",  # print-empty-string
     "FURB136",  # Replace if expression with {min_max} call
-    #"PLR1711",  # Useless return statement at end of function
+    "PLR1711",  # Useless return statement at end of function
     "N804",  # invalid-first-argument-name-for-class-method
     "SIM101",  # duplicate-isinstance-call
     "SIM210",  # if-expr-with-true-false 
@@ -54,9 +54,9 @@ lint.select = [
     "RSE102",  # unnecessary-paren-on-raise-exception (RSE102)
     "FLY002",  # static-join-to-f-string (FLY002)
     "FURB188",  # slice-to-remove-prefix-or-suffix (FURB188)
-    #"PLR1716",  # boolean-chained-comparison (PLR1716)
+    "PLR1716",  # boolean-chained-comparison (PLR1716)
     "RUF022",  # unsorted-dunder-all (RUF022)
-    #"RUF015",  # unnecessary-iterable-allocation-for-first-element (RUF015)
+    "RUF015",  # unnecessary-iterable-allocation-for-first-element (RUF015)
     "B028",  # no-explicit-stacklevel (B028)
     #"SIM103",  # needless-bool (SIM103)
     "SIM118",  # in-dict-keys (SIM118)
