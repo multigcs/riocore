@@ -70,7 +70,7 @@ lint.select = [
     "SIM114",  # if-with-same-arms (SIM114)
     "RUF021",  # parenthesize-chained-operators (RUF021)
     "RUF010",  # explicit-f-string-type-conversion (RUF010)
-    #"EM101",  # raw-string-in-exception (EM101)
+    "EM101",  # raw-string-in-exception (EM101)
     "TRY201",  # verbose-raise (TRY201)
     #"RUF005",  # collection-literal-concatenation (RUF005)
     "Q001",  # bad-quotes-multiline-string (Q001)
