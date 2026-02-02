@@ -2402,9 +2402,7 @@ class Window(QMainWindow):
         if preselect:
             del plugin_instance.plugin_setup["preselect"]
             pnode.setSelected(True)
-
-        ph = max(ph, pnode.height) + 5
-        return ph
+        return max(ph, pnode.height) + 5
 
     def dialog_select(self, title, options):
         dialog = QDialog()
@@ -2533,8 +2531,7 @@ class Window(QMainWindow):
             if item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, ModifierNode):
                     modifiers.append(item._source_node.modifier)
-                    source = self.get_source(item._source_node, "in", modifiers)
-                    return source
+                    return self.get_source(item._source_node, "in", modifiers)
                 return (item._source_node, item._source_port)
         return None
 
