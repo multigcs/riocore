@@ -113,7 +113,7 @@ class HalGraph:
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel)
                     elif target.startswith("pyvcp"):
                         self.gAll.edge(source_name, target_name, label=elabel)
-                    elif source.startswith("rio.") or source.startswith("lcec.0.rio."):
+                    elif source.startswith(("rio.", "lcec.0.rio.")):
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel)
                     else:
                         self.gAll.edge(source_name, target_name, label=elabel)

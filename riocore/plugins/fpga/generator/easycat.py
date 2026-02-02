@@ -491,10 +491,9 @@ uint32_t fpga_timestamp = 0;
 
     def vinit(self, vname, vtype, halstr=None, vdir="input", force_mem=False):
         vtype = self.typemap.get(vtype, vtype)
-        # if force_mem or vname.endswith("_SCALE") or vname.endswith("_OFFSET") or vname.endswith("_S32") or vname.endswith("_ABS"):
-        if force_mem or vname.endswith("_OFFSET") or vname.endswith("_S32") or vname.endswith("_ABS"):
+        if force_mem or vname.endswith("_OFFSET", "_S32", "_ABS"):
             return f"    data->{vname} = ({vtype}*)malloc(sizeof({vtype}));"
-        if vname.endswith("_SCALE") or vname.endswith("_OFFSET"):
+        if vname.endswith(("_SCALE", "_OFFSET")):
             bdir = "Out"
         else:
             bdir = vdir.title().replace("put", "")
