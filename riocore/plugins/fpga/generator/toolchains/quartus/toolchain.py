@@ -17,7 +17,7 @@ class Toolchain:
 
     @classmethod
     def info(cls):
-        info = {
+        return {
             "url": "https://www.intel.de/content/www/de/de/products/details/fpga/development-tools/quartus-prime.html",
             "info": "Intel Quartus",
             "description": """## add device support
@@ -35,7 +35,6 @@ https://www.intel.com/content/www/us/en/programmable/quartushelp/17.0/reference/
 
 """,
         }
-        return info
 
     def pll(self, clock_in, clock_out):
         if self.config["family"] in {"MAX 10", "Cyclone 10 LP", "Cyclone IV E"}:

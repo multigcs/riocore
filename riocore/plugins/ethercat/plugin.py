@@ -84,7 +84,7 @@ class Plugin(PluginBase):
             px = 263
             self.SUB_PLUGINS = []
             puid = self.plugin_setup.get("uid")
-            for key in self.plugin_setup.get("sub", {}).keys():
+            for key in self.plugin_setup.get("sub", {}):
                 self.plugin_setup["sub"][key]["keep"] = False
             for mn, module in enumerate(modules.split()):
                 mn = str(mn)

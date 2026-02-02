@@ -542,4 +542,4 @@ on TangNano9k:
         // calc angle (0-360°)
         value = value * 360 / {self._scale};
                 """
-            return ""
+        return ""

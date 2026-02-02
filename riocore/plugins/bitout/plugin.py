@@ -31,5 +31,4 @@ class Plugin(PluginBase):
         }
 
     def gateware_instances(self):
-        instances = self.gateware_instances_base(direct=True)
-        return instances
+        return self.gateware_instances_base(direct=True)

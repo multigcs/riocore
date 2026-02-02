@@ -17,7 +17,7 @@ class Toolchain:
 
     @classmethod
     def info(cls):
-        info = {
+        return {
             "url": "https://www.gowinsemi.com/en/support/home/",
             "info": "Gowin EDA",
             "description": "",
@@ -37,7 +37,6 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
 
 """,
         }
-        return info
 
     def pll(self, clock_in, clock_out):
         if self.config["family"] == "GW1N-9C":

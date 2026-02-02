@@ -19,8 +19,7 @@ class pyvcp:
         self.parent = self.parent.getparent()
 
     def xml(self):
-        formated = etree.tostring(self.root, pretty_print=True).decode()
-        return formated
+        return etree.tostring(self.root, pretty_print=True).decode()
 
     def save(self, configuration_path):
         xml_filename = os.path.join(configuration_path, "rio-gui.xml")

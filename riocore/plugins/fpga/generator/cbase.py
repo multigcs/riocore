@@ -1060,9 +1060,7 @@ class cbase:
         output.append("                if (err_counter < 5) {")
         if protocol == "UDP":
             output.append("                    if (ret != BUFFER_SIZE_RX) {")
-            output.append(
-                f'                        {self.printf}("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);'
-            )
+            output.append(f'                        {self.printf}("%li: wrong data size (len %i/%i err %i/3) - (%i %i - %0.4f %%)", stamp_new, ret, BUFFER_SIZE_RX, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
             output.append("                    } else {")
             output.append(f'                        {self.printf}("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
             output.append("                    }")

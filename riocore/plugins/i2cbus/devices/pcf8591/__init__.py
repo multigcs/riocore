@@ -99,12 +99,7 @@ class i2c_device:
             },
             {
                 "mode": "read",
-                "data_in": [
-                    f"                                {self.name}_adc1 <= data_in[31:24];"
-                    f"                                {self.name}_adc2 <= data_in[23:16];"
-                    f"                                {self.name}_adc3 <= data_in[15:8];"
-                    f"                                {self.name}_adc4 <= data_in[7:0];"
-                ],
+                "data_in": [f"                                {self.name}_adc1 <= data_in[31:24];                                {self.name}_adc2 <= data_in[23:16];                                {self.name}_adc3 <= data_in[15:8];                                {self.name}_adc4 <= data_in[7:0];"],
                 "bytes": 4,
             },
         ]

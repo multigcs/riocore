@@ -15,12 +15,11 @@ class Toolchain:
 
     @classmethod
     def info(cls):
-        info = {
+        return {
             "url": "https://www.veripool.org/verilator/",
             "info": "verilog simulation",
             "description": "",
         }
-        return info
 
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.qdf")

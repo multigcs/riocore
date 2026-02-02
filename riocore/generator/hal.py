@@ -725,7 +725,7 @@ class hal_generator:
             postgui_data.append("# setp")
             postgui_data.append("#################################################################################")
 
-            for pin in sorted(list(self.setps)):
+            for pin in sorted(self.setps):
                 value = self.setps[pin]
                 if "[JOINT_" in str(value):
                     continue

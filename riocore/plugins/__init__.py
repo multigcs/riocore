@@ -501,8 +501,7 @@ class PluginBase:
         return instances
 
     def gateware_instances(self):
-        instances = self.gateware_instances_base()
-        return instances
+        return self.gateware_instances_base()
 
     def option_default(self, name, default=None):
         return self.OPTIONS.get(name, {}).get("default", default)

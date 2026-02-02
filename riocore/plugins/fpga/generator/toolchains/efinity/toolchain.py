@@ -15,12 +15,11 @@ class Toolchain:
 
     @classmethod
     def info(cls):
-        info = {
+        return {
             "url": "https://www.efinixinc.com/",
             "info": "Efinix - Efinity",
             "description": "untested",
         }
-        return info
 
     def pll(self, clock_in, clock_out):
         if clock_in != 33330000 or clock_out != 100000000:
@@ -42,9 +41,21 @@ class Toolchain:
         timing_model = self.config["timing_model"]
 
         xml_data = []
-        xml_data.append(
-            '<efx:project xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="rio" description="" sw_version="2024.2.294" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="sync" design_ood="sync" place_ood="sync" route_ood="sync" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd" last_change="1740155391">'
-        )
+        attribs = [
+            'xmlns:efx="http://www.efinixinc.com/enf_proj"',
+            'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
+            'name="rio" description=""',
+            'sw_version="2024.2.294"',
+            'last_run_state="pass"',
+            'last_run_flow="bitstream"',
+            'config_result_in_sync="sync"',
+            'design_ood="sync"',
+            'place_ood="sync"',
+            'route_ood="sync"',
+            'xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd"',
+            'last_change="1740155391"',
+        ]
+        xml_data.append(f"<efx:project {' '.join(attribs)}>")
         xml_data.append("    <efx:device_info>")
         xml_data.append(f'        <efx:family name="{family}" />')
         xml_data.append(f'        <efx:device name="{ftype}" />')

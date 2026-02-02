@@ -859,7 +859,7 @@ RunFromLineDialog_play_sound = True
 RunFromLineDialog_sound_type = READY
 
 [BOOK_KEEPING]
-last_loaded_directory = 
+last_loaded_directory =
 last_loaded_file = None
 style_QSS_Path = {qtdragon_config.get("BOOK_KEEPING", {}).get("style_QSS_Path", "/usr/share/qtvcp/screens/qtdragon_hd/qtdragon_hd.qss")}
 
@@ -911,8 +911,8 @@ shutdown_play_sound = True
 shutdown_alert_sound_type = READY
 shutdown_exit_sound_type = LOGOUT
 shutdown_msg_title = Do you want to Shutdown now?
-shutdown_msg_focus_text = 
-shutdown_msg_detail = 
+shutdown_msg_focus_text =
+shutdown_msg_detail =
 
 [NOTIFY_OPTIONS]
 notify_start_greeting = False

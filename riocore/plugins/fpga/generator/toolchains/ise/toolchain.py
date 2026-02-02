@@ -17,7 +17,7 @@ class Toolchain:
 
     @classmethod
     def info(cls):
-        info = {
+        return {
             "url": "https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/archive-ise.html",
             "info": "Xilinx/AMD ISE WebPACK",
             "description": """
@@ -30,7 +30,6 @@ class Toolchain:
 ```
 """,
         }
-        return info
 
     def pll(self, clock_in, clock_out):
         result = subprocess.check_output(

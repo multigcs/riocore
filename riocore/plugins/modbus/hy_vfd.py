@@ -312,9 +312,7 @@ class hy_vfd:
         output.append("                }")
         output.append("            }")
         output.append(f"            if (value_{self.signal_name}_max_freq > 0.0) {{")
-        output.append(
-            f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
-        )
+        output.append(f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};")
         output.append("            }")
         output.append(f"            value_{self.signal_name}_speed_fb_rps = value_{self.signal_name}_speed_fb / 60.0;")
         output.append(f"            if (value_{self.signal_name}_spindle_at_speed_tolerance == 0.0) {{")
