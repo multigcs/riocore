@@ -420,7 +420,7 @@ class LinuxCNC:
             os.system(syc_cmd)
 
     def ini_mdi_command(self, command, title=None):
-        """Used by addons to add mdi-command's and prevent doubles"""
+        """Used by addons to add mdi-command's and prevent doubles!!!"""
         mdi_index = None
         mdi_n = 0
         for key, value in self.ini_setup["HALUI"].items():

@@ -80,7 +80,7 @@ lint.select = [
     "PLR0124",  # comparison-with-itself (PLR0124)
     "SIM401",  # if-else-block-instead-of-dict-get (SIM401)
     "RUF046",  # unnecessary-cast-to-int (RUF046)
-    #"D415",  # missing-terminal-punctuation (D415)
+    "D415",  # missing-terminal-punctuation (D415)
     "PLR1733",  # unnecessary-dict-index-lookup (PLR1733)
     "ISC003",  # explicit-string-concatenation (ISC003)
     "SIM910",  # dict-get-with-none-default (SIM910)
