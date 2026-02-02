@@ -5,7 +5,7 @@ sock = None
 
 
 def connect(host=None):
-    global sock
+    global sock  # noqa: PLW0603
     if not sock:
         ip = "localhost"
         port = 10000

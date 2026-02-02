@@ -97,7 +97,7 @@ class Plugin(PluginBase):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):
-                    pin_data = {"pin": pin_data}
+                    slot["pins"][pin_name] = {"pin": pin_data}
                 self.PINDEFAULTS[f"{slot_name}:{pin_name}"] = {
                     "edge": "source",
                     "optional": True,

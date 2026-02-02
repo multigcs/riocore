@@ -10,8 +10,8 @@ output_path = sys.argv[2]
 
 with open(input_path, "r") as input_file:
     with open(output_path, "wb") as output_file:
-        for line in iter(input_file.readline, ""):  # type: str
-            line = line.strip()
+        for line_raw in iter(input_file.readline, ""):  # type: str
+            line = line_raw.strip()
             if line.startswith("//"):
                 continue
             buffer = bytearray(1)

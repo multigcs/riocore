@@ -11,8 +11,8 @@ lint.select = [
     "W",  # pycodestyle warning
     "I",  # isort
     "PLE",  # pylint errors
-    #"PLW",  # pylint warnings
-    #"PLC",  # pylint convention
+    "PLW",  # pylint warnings
+    "PLC",  # pylint convention
     #"PIE",  # flake8-pie - misc. lints
     # "RSE",  # future
     #"RET501", "RET502", "RET503",  # return statements

@@ -171,11 +171,12 @@ class gateware(generator_base):
             slot_name = slot.get("name")
             slot_pins = slot.get("pins", {})
             for pin_name, pin in slot_pins.items():
+                pin_target = pin
                 if isinstance(pin, dict):
-                    pin = pin["pin"]
+                    pin_target = pin["pin"]
                 pin_id = f"{slot_name}:{pin_name}"
-                self.parent.pinmapping[pin_id] = pin
-                self.parent.pinmapping_rev[pin] = pin_id
+                self.parent.pinmapping[pin_id] = pin_target
+                self.parent.pinmapping_rev[pin_target] = pin_id
 
         pinnames = {}
         for plugin_instance in self.parent.project.plugin_instances:
@@ -773,7 +774,7 @@ class gateware(generator_base):
                         for argument_name, argument_value in instance_arguments.items():
                             if ":" in argument_value:
                                 if argument_value in varmapping:
-                                    argument_value = varmapping[argument_value]
+                                    argument_value[argument_name] = varmapping[argument_value]
                                 else:
                                     riocore.log(f"ERROR: no mapping found: {argument_value}")
                             arguments_list.append(f".{argument_name}({argument_value})")

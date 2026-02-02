@@ -1676,7 +1676,8 @@ class Window(QMainWindow):
             self.config["plugins"].insert(0, bdict)
             del self.config["boardcfg"]
             for plugin_data in self.config.get("plugins", []):
-                for pin_name, pin_data in plugin_data.get("pins", {}).items():
+                for pin_name, pin_data_raw in plugin_data.get("pins", {}).items():
+                    pin_data = pin_data_raw
                     if isinstance(pin_data, str):
                         pin_data = {"pin": pin_data}
                     pin = pin_data.get("pin")
@@ -2001,10 +2002,8 @@ class Window(QMainWindow):
                     for option_name, option_data in sub_plugin_config.items():
                         if option_name not in plugin_config["sub"][uid] or option_name in {"image", "rpos", "type", "pins", "rotate", "uid"}:
                             plugin_config["sub"][uid][option_name] = option_data
-                    sub_plugin_config = plugin_config["sub"][uid]
-
                     self.plugin_uids.append(uid)
-                    self.plugins.load_plugin(sub_plugin_id, sub_plugin_config, self.config)
+                    self.plugins.load_plugin(sub_plugin_id, plugin_config["sub"][uid], self.config)
                     if self.plugins.plugin_instances:
                         sub_plugin_instance = self.plugins.plugin_instances[-1]
                         sub_plugin_instance.SUB_OF = plugin_instance

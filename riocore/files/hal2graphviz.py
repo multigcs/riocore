@@ -374,12 +374,10 @@ def load_halfile(basepath, filepath):
         print(f"loading {basepath}/{filepath}")
 
     halfile_data = open(os.path.join(basepath, filepath)).read()
-    for line in halfile_data.split("\n"):
-        line = line.strip()
-
+    for line_raw in halfile_data.split("\n"):
+        line = line_raw.strip()
         if line.startswith("source "):
             load_halfile(basepath, line.split()[-1])
-
         elif line.startswith("loadrt "):
             comp_name = line.split()[1]
             for part in line.split()[2:]:
@@ -537,9 +535,9 @@ for group_name, pins in groups.items():
         title = f"{group_name}\\n--{comp}--"
         color = "lightgray"
 
-    for setp, value in setps.items():
-        if setp.startswith(group_name):
-            setp = setp.split(".")[-1]
+    for setp_raw, value in setps.items():
+        if setp_raw.startswith(group_name):
+            setp = setp_raw.split(".")[-1]
             if not cgroup:
                 pin_str = f"<{setp}>{setp}={value}"
             else:

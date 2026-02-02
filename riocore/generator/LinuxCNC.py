@@ -718,7 +718,8 @@ class LinuxCNC:
         output = []
         for section, setup in ini_setup.items():
             output.append(f"[{section}]")
-            for key, value in setup.items():
+            for key_raw, value in setup.items():
+                key = key_raw
                 if "|" in key:
                     key = key.split("|")[0]
                 if isinstance(value, list):
@@ -781,10 +782,8 @@ class LinuxCNC:
                 if position_mode == "velocity":
                     pid_setup = self.PID_DEFAULTS.copy()
                     pid_setup["DEADBAND"] = round(1 / abs(joint_config["SCALE_OUT"]) * 2, 4)
-                    for key, value in pid_setup.items():
-                        setup_value = joint_config.get(f"PID_{key.upper()}")
-                        if setup_value:
-                            value = setup_value
+                    for key, value_raw in pid_setup.items():
+                        value = joint_config.get(f"PID_{key.upper()}") or value_raw
                         output.append(f"{key:18s} = {value}")
                     output.append("")
 
@@ -1469,7 +1468,7 @@ o<{oword}> endsub
 
         elif gui in {"tnc"}:
             try:
-                import tnc
+                import tnc  # noqa: PLC0415
 
                 tnc_path = os.path.dirname(tnc.__file__)
                 os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
@@ -1857,7 +1856,7 @@ if __name__ == "__main__":
                     direction = widget["direction"]
                     boolean = widget["boolean"]
                     virtual = widget["virtual"]
-                    group = widget["group"]
+                    wgroup = widget["group"]
                     halname = widget["halname"]
                     netname = widget["netname"]
                     mapping = widget["mapping"]
@@ -1894,7 +1893,7 @@ if __name__ == "__main__":
                     if len(halname_short) >= MAX_HAL_LEN - len(self.gui_prefix):
                         riocore.log(f"INFO: halname too long (>{MAX_HAL_LEN}): {halname_short} ({halname_full})")
 
-                    if group and group[0] == "#":
+                    if wgroup and wgroup[0] == "#":
                         title = f"{displayconfig['title']}"
                         gui_gen.draw_vbox_begin()
                         gui_gen.draw_title(title, no_expand=True)
@@ -1902,7 +1901,7 @@ if __name__ == "__main__":
 
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname_short, setup=displayconfig)
 
-                    if group and group[0] == "#":
+                    if wgroup and wgroup[0] == "#":
                         gui_gen.draw_vbox_end()
 
                     # fselect handling
@@ -2292,8 +2291,8 @@ if __name__ == "__main__":
                         if direction == "inout":
                             self.halg.fmt_add(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
                         elif direction == "input":
-                            for net in netname.split(","):
-                                net = net.strip()
+                            for net_raw in netname.split(","):
+                                net = net_raw.strip()
                                 net_type = halpins.LINUXCNC_SIGNALS[direction].get(net, {}).get("type", float)
                                 if net_type is int:
                                     self.halg.net_add(f"{rprefix}{halname}-s32", net)
@@ -2475,8 +2474,8 @@ if __name__ == "__main__":
 
                     # overwrite with user configuration
                     joint_config = joint_data["instance"].plugin_setup.get("joint", {})
-                    for key, value in joint_config.items():
-                        key = key.upper()
+                    for key_raw, value in joint_config.items():
+                        key = key_raw.upper()
                         key = {"SCALE": "SCALE_OUT"}.get(key, key)
                         joint_data[key] = value
 
@@ -2488,7 +2487,6 @@ if __name__ == "__main__":
 
                 # overwrite axis configuration with user data
                 for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
-                    key = key.upper()
-                    axis_data[key] = value
+                    axis_data[key.upper()] = value
 
         return axis_config
