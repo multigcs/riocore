@@ -4,36 +4,34 @@
 
 import io
 import sys
+
 from functools import partial
 
-from rio import RioWrapper
-
 from PyQt5 import uic
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import (
-    QGroupBox,
-    QProxyStyle,
-    QStyle,
-    QScrollArea,
     QApplication,
     QCheckBox,
     QGridLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
     QListWidget,
+    QProxyStyle,
     QPushButton,
+    QScrollArea,
     QSlider,
+    QStyle,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
-    QTabWidget,
 )
+from rio import RioWrapper
 
 
 class SliderProxyStyle(QProxyStyle):
     def pixelMetric(self, metric, option, widget):
-        if metric == QStyle.PM_SliderThickness:
-            return 40
-        elif metric == QStyle.PM_SliderLength:
+        if metric == QStyle.PM_SliderThickness or metric == QStyle.PM_SliderLength:
             return 40
         return super().pixelMetric(metric, option, widget)
 
@@ -235,11 +233,10 @@ class WinForm(QWidget):
                     if direction == "input":
                         if self.data_info[variable].get("type") == "bool":
                             self.widgets[wid].setChecked(self.rio.data_get(variable))
+                        elif hasattr(self.widgets[wid], "setText"):
+                            self.widgets[wid].setText(str(self.rio.data_get(variable)))
                         else:
-                            if hasattr(self.widgets[wid], "setText"):
-                                self.widgets[wid].setText(str(self.rio.data_get(variable)))
-                            else:
-                                self.widgets[wid].display(self.rio.data_get(variable))
+                            self.widgets[wid].display(self.rio.data_get(variable))
 
 
 if __name__ == "__main__":
