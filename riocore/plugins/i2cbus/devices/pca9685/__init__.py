@@ -48,8 +48,8 @@ class i2c_device:
     PCA9685_PRE_SCALER = 0xFE
     PCA9685_CHANNEL_0 = 0x06
 
-    def __init__(self, setup, system_setup={}):
-        self.system_setup = system_setup
+    def __init__(self, setup, system_setup=None):
+        self.system_setup = system_setup or {}
         self.name = setup["name"]
         self.addr = setup["address"]
         self.frequency = setup.get("frequency", self.options["config"]["frequency"]["default"])

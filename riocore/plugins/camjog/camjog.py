@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 #
 #
-"""EMBED_TAB_NAME=CamJog
+"""hal config!!!
+
+EMBED_TAB_NAME=CamJog
 EMBED_TAB_COMMAND=halcmd loadusr -Wn camjog /data2/src/ICE40-2023/serial-tx/riocore/camjog.py --xid {XID} --camera USB2.0 --width 640 --height 480 --scale 1.5
 
 net camjog_x <= camjog.axis.x.jog-counts
@@ -33,21 +35,24 @@ import math
 import os
 import signal
 import sys
+
 from functools import partial
 
 import cv2
 import numpy as np
+
 from PyQt5.QtCore import QThread, Qt, pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
-    QMainWindow,
     QApplication,
     QHBoxLayout,
     QLabel,
+    QMainWindow,
     QPushButton,
     QVBoxLayout,
     QWidget,
 )
+from qtvcp.lib import xembed
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--xid", "-x", help="parent x window id", type=int)
@@ -61,12 +66,13 @@ parser.add_argument("--name", "-n", help="component name", type=str, default="ca
 parser.add_argument("--server", "-s", help="remote server (rmpg)", type=str, default="")
 args = parser.parse_args()
 
+cal_x = 0.15
+cal_y = -0.13
+
 if args.server:
     import rhal as hal
 
     h = hal.component(args.server)
-    cal_x = 0.15
-    cal_y = -0.13
 else:
     try:
         import hal
@@ -159,8 +165,6 @@ class MyImage(QLabel):
         self.parent.zoom_label.setText(f"{self.parent.options['zoom']:0.1f}")
 
     def moveBegin(self, event):
-        global cal_x
-        global cal_y
         self.new_x = event.pos().x()
         self.new_y = event.pos().y()
         self.old_x = self.new_x
@@ -202,8 +206,6 @@ class MyImage(QLabel):
         self.moveEnd(event)
 
     def mouseMoveEvent(self, event):
-        global cal_x
-        global cal_y
         if self.parent.options["mode"] == "move":
             diff_x = self.old_x - event.pos().x()
             diff_y = self.old_y - event.pos().y()
@@ -256,8 +258,6 @@ class Window(QMainWindow):
 
         self.setWindowTitle("CamJog")
         if args.xid:
-            from qtvcp.lib import xembed
-
             window = xembed.reparent_qt_to_x11(self, args.xid)
             forward = os.environ.get("AXIS_FORWARD_EVENTS_TO", None)
             if forward:
@@ -334,7 +334,7 @@ class Window(QMainWindow):
 
     def change_mode(self, mode):
         self.options["mode"] = mode
-        if mode == "edges" or mode == "touch":
+        if mode in {"edges", "touch"}:
             self.options["touch"] = None
             self.options["points"] = []
 
@@ -377,7 +377,7 @@ class Window(QMainWindow):
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 gray = cv2.bilateralFilter(gray, 9, 75, 75)
                 edges = cv2.Canny(gray, 70, 135)
-                contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+                contours, _hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
                 for cnt in contours:
                     approx = cv2.approxPolyDP(cnt, 0.009 * cv2.arcLength(cnt, True), True)
@@ -415,11 +415,11 @@ class Window(QMainWindow):
             # draw points
             last_point = None
             for pn, point in enumerate(self.options["points"]):
-                point = self.convert_to_screen(point)
-                cv2.circle(frame, point, 10, (0, 255, 0), 2)
+                spoint = self.convert_to_screen(point)
+                cv2.circle(frame, spoint, 10, (0, 255, 0), 2)
                 if last_point is not None:
-                    cv2.line(frame, last_point, point, (0, 255, 0), 2)
-                last_point = point
+                    cv2.line(frame, last_point, spoint, (0, 255, 0), 2)
+                last_point = spoint
 
             if len(self.options["points"]) == 3:
                 self.options["edges"] = self.options["points"]
@@ -432,8 +432,7 @@ class Window(QMainWindow):
                 # create polygon
                 polygon = []
                 for point in self.options["edges"]:
-                    point = self.convert_to_screen(point)
-                    polygon.append(point)
+                    polygon.append(self.convert_to_screen(point))
 
                 # check polygon direction
                 last_point = polygon[0]
@@ -472,8 +471,7 @@ class Window(QMainWindow):
                     last_point = point
 
             if self.options["touch"]:
-                point = self.convert_to_screen(self.options["touch"])
-                cv2.circle(frame, point, 10, (0, 255, 255), 2)
+                cv2.circle(frame, self.convert_to_screen(self.options["touch"]), 10, (0, 255, 255), 2)
 
             # center image
             offset_x = int(((cx * z) - cx) * s)

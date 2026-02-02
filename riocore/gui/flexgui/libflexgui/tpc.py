@@ -4,6 +4,7 @@ import os
 import sys
 
 import linuxcnc as emc
+
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget
 from PyQt5.uic import loadUi

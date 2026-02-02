@@ -4,12 +4,14 @@ import importlib
 import os
 import sys
 
+
 # disable cache usage must be before any local imports
 # sys.dont_write_bytecode = True
 from functools import partial
 
 import hal
 import linuxcnc as emc
+
 from PyQt5.QtCore import QEvent, QObject, QTimer, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.uic import loadUi

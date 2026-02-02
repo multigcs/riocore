@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 #
 #
-"""loadusr -Wn spacenav ./spnav.py
+"""manual hal configuration!!!
+
+loadusr -Wn spacenav ./spnav.py
 
 setp spacenav.axis.x.scale -0.2
 setp spacenav.axis.y.scale -0.2

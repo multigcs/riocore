@@ -3,6 +3,7 @@ import os
 import sys
 
 import riocore
+
 from riocore.plugins import PluginBase
 
 
@@ -228,6 +229,7 @@ class Plugin(PluginBase):
 
         self.PREFIX_CIA402 = ""
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         cia402_num = 0
         lcec_num = 0
@@ -245,6 +247,7 @@ class Plugin(PluginBase):
             if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin] and not pin.startswith("BUS:"):
                 psetup["pin"] = f"{self.PREFIX}.{self.PINDEFAULTS[pin]['pin']}"
 
+    @classmethod
     def extra_files(cls, parent, instances):
         output = []
         output.append("<masters>")
@@ -349,6 +352,7 @@ class Plugin(PluginBase):
         target = os.path.join(parent.component_path, "ethercat-conf.xml")
         open(target, "w").write("\n".join(output))
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         output.append("# ethercat component")

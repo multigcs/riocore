@@ -1,5 +1,5 @@
-import socket
 import json
+import socket
 
 sock = None
 
@@ -52,3 +52,4 @@ class component:
         if name in self._data:
             # self.update()
             return self._data[name]
+        return None

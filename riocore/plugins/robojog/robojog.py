@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 #
-"""
+"""manual hal configuration!!!
 
 EMBED_TAB_NAME=robojog
 EMBED_TAB_COMMAND=halcmd loadusr -Wn robojog /data2/src/ICE40-2023/serial-tx/riocore/robot-jog.py --xid {XID} --joints 6
@@ -51,9 +51,10 @@ setp robojog.joint.4.scale 100.0
 import argparse
 import os
 import sys
+
 from functools import partial
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QLabel,
@@ -61,6 +62,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from qtvcp.lib import xembed
 
 JOINTS = 6
 
@@ -101,8 +103,6 @@ class WinForm(QWidget):
 
         self.setWindowTitle("RoboJog")
         if args.xid:
-            from qtvcp.lib import xembed
-
             window = xembed.reparent_qt_to_x11(self, args.xid)
             forward = os.environ.get("AXIS_FORWARD_EVENTS_TO", None)
             if forward:

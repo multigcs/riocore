@@ -113,6 +113,7 @@ class Plugin(PluginBase):
                     joint = joint_setup["num"]
                     parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         for instance in instances:

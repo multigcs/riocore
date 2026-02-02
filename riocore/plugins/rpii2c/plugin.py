@@ -221,6 +221,7 @@ class Plugin(PluginBase):
             elif direction == "input":
                 psetup["pin"] = f"rpii2c.{self.instances_name}.p{int(pin):02d}-in"
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         args = []

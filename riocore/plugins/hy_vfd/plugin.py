@@ -46,6 +46,7 @@ class Plugin(PluginBase):
         parent.halg.net_add(f"spindle.{spindle}.reverse", f"hy_vfd{spindle}.spindle-reverse")
         parent.halg.net_add(f"spindle.{spindle}.on", f"hy_vfd{spindle}.spindle-on")
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         for instance in instances:

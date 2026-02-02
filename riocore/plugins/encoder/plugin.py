@@ -83,6 +83,7 @@ Some hardware-based systems can count at MHz rates."""
                 value = 1 if value else 0
             generator.halg.setp_add(f"{self.PREFIX}.{option}", f"{value}")
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         output.append(f"# encoder component for {len(instances)} inputs(s)")

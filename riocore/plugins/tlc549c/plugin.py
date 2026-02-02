@@ -48,10 +48,6 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        value = value * 3.3 / 255.0
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         return """
         value = value * 3.3 / 255.0;

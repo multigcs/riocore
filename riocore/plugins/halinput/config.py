@@ -1,7 +1,10 @@
 import glob
 import os
 import sys
+
 from functools import partial
+
+import linux_event
 
 from PyQt5.QtCore import QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
@@ -70,21 +73,19 @@ class config:
         self.plugin_setup = instance.plugin_setup
 
     def wiz2_joypad(self, selected_device):
-        import linux_event
-
         device_events = linux_event.InputDevice(selected_device)
 
         def wiz_select(action, clicked=None):
             selected_label.setText(action)
-            for item in actions:
-                actions[item].setStyleSheet("")
-            actions[action].setStyleSheet("QLineEdit {background-color: rgb(255, 200, 200);}")
+            for item, action_data in actions.items():
+                action_data.setStyleSheet("")
+            action_data.setStyleSheet("QLineEdit {background-color: rgb(255, 200, 200);}")
 
         def wiz_runTimer():
             action = selected_label.text()
             while device_events.readable():
                 ev = device_events.read_event()
-                if ev.type == "EV_SYN" or ev.type == "EV_SND" or ev.type == "EV_MSC" or ev.type == "EV_LED":
+                if ev.type in {"EV_SYN", "EV_SND", "EV_MSC", "EV_LED"}:
                     continue
 
                 halname = ev.code.lower().replace("_", "-")

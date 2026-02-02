@@ -6,7 +6,6 @@ import argparse
 import json
 import socket
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--port", help="listen port", type=int, default=1000)
 parser.add_argument("--name", help="component name", type=str, default="rmpg")

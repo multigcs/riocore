@@ -222,11 +222,6 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "number1":
-            value = value * 10.0
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "number1":
             return """

@@ -87,6 +87,7 @@ class Plugin(PluginBase):
             else:
                 parent.halg.net_add("spacenav.button.1", spacenav_button1)
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         output.append("loadusr -Wn spacenav ./spnav.py")

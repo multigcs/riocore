@@ -2,10 +2,10 @@ import os
 import sys
 
 from PyQt5.QtWidgets import (
-    QLabel,
     QComboBox,
     QDialog,
     QDialogButtonBox,
+    QLabel,
     QVBoxLayout,
 )
 

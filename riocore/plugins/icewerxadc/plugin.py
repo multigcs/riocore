@@ -85,10 +85,6 @@ should work also with the iceFUN board
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        value = value / 310.3030303030303
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         return """
         value = value / 310.3030303030303;

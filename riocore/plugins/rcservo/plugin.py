@@ -62,11 +62,6 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "position":
-            value = int((value + 300) * self.system_setup["speed"] / 200000)
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "position":
             return """

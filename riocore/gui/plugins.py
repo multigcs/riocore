@@ -2,6 +2,7 @@ import copy
 import importlib
 import os
 import textwrap
+
 from functools import partial
 
 from PyQt5 import QtSvg
@@ -25,6 +26,7 @@ from PyQt5.QtWidgets import (
 )
 
 import riocore
+
 from riocore import halpins
 
 riocore_path = os.path.dirname(riocore.__file__)

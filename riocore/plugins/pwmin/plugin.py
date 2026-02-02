@@ -58,12 +58,6 @@ class Plugin(PluginBase):
         instance_parameter["RESET_CNT"] = self.system_setup["speed"] // freq_min
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "width":
-            if value != 0:
-                value = 1000 / (self.system_setup["speed"] / value)
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "width":
             return """

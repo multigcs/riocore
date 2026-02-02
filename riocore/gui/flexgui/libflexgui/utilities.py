@@ -1,6 +1,7 @@
 import os
 
 import linuxcnc as emc
+
 from PyQt5.QtGui import QColor, QTextFormat
 from PyQt5.QtWidgets import QApplication, QFileDialog, QTextEdit
 from libflexgui import dialogs

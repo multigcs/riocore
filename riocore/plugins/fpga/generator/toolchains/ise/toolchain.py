@@ -15,6 +15,7 @@ class Toolchain:
         if self.toolchain_path and not self.toolchain_path.endswith("lin64"):
             self.toolchain_path = os.path.join(self.toolchain_path, "bin", "lin64")
 
+    @classmethod
     def info(cls):
         info = {
             "url": "https://www.xilinx.com/support/download/index.html/content/xilinx/en/downloadNav/vivado-design-tools/archive-ise.html",

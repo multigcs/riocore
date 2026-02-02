@@ -8,9 +8,10 @@ import json
 import math
 import os
 import shutil
+import signal
 import subprocess
 import sys
-import signal
+
 from functools import partial
 from math import ceil, floor
 
@@ -44,6 +45,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 
 import riocore
+
 from riocore.gui.flow_tabs import (
     TabAxis,
     TabBuilder,
@@ -1413,7 +1415,7 @@ class Window(QMainWindow):
         project = riocore.Project(copy.deepcopy(self.config), output_dir)
         project.generator(preview=False)
 
-        subprocess.run(f"open {index_html} &", shell=True, close_fds=True)
+        subprocess.run(f"open {index_html} &", check=False, shell=True, close_fds=True)
 
     def generator_run(self):
         if not self.save_check():
@@ -1998,7 +2000,7 @@ class Window(QMainWindow):
                     # force overwrite some fixed options / add missing options
                     for option_name, option_data in sub_plugin_config.items():
                         if option_name not in plugin_config["sub"][uid] or option_name in {"image", "rpos", "type", "pins", "rotate", "uid"}:
-                            plugin_config["sub"][uid][option_name] = sub_plugin_config[option_name]
+                            plugin_config["sub"][uid][option_name] = option_data
                     sub_plugin_config = plugin_config["sub"][uid]
 
                     self.plugin_uids.append(uid)

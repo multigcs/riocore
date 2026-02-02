@@ -9,9 +9,9 @@ from PyQt5.QtWidgets import (
     QDialog,
     QDialogButtonBox,
     QDoubleSpinBox,
-    QHeaderView,
     QGridLayout,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QLineEdit,
     QPlainTextEdit,
@@ -604,6 +604,7 @@ class config:
                     self.config[key] = value
                 self.table_load()
             return ""
+        return None
 
     def run(self):
         dialog = QDialog()
@@ -706,6 +707,7 @@ class config:
         if dialog.exec():
             self.instance.plugin_setup["config"] = self.config
             return ""
+        return None
 
 
 if __name__ == "__main__":

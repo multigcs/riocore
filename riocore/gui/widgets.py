@@ -2,12 +2,12 @@ import json
 import os
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, QSize, Qt, pyqtSignal, QSortFilterProxyModel
+from PyQt5.QtCore import QRect, QSize, QSortFilterProxyModel, Qt, pyqtSignal
 from PyQt5.QtGui import QFont, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
-    QCompleter,
     QCheckBox,
     QComboBox,
+    QCompleter,
     QDialog,
     QDialogButtonBox,
     QDoubleSpinBox,

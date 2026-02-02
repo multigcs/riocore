@@ -499,50 +499,6 @@ on TangNano9k:
             instance_parameter["DELAY_NEXT"] = int(self.plugin_setup.get("delay_next", self.OPTIONS["delay_next"]["default"]))
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
-        if node_type == "rioencoder":
-            if signal_name == "temperature":
-                value = value / 10.0
-            elif signal_name == "angle":
-                position = self.SIGNALS["revs"]["value"] * self._scale + value
-                self.SIGNALS["position"]["value"] = position
-
-                # calc rps/rpm
-                diff = position - self.position_last
-                self.position_last = position
-                timer_new = time.time()
-                timer_diff = timer_new - self.timer_last
-                rps = diff / timer_diff / 4096
-                self.timer_last = timer_new
-                self.SIGNALS["rps"]["value"] = rps
-                self.SIGNALS["rpm"]["value"] = rps * 60
-                value = value * 360.0 / self._scale
-        elif node_type == "panasonic":
-            if signal_name == "angle":
-                if self.angle_last is not None:
-                    if value - self.angle_last > 30000:
-                        self.SIGNALS["revs"]["value"] -= 1
-                    elif value - self.angle_last < -30000:
-                        self.SIGNALS["revs"]["value"] += 1
-                self.angle_last = value
-                value = value * 360.0 / 65536
-        elif node_type == "stepperonline":
-            if signal_name == "angle16":
-                value = value * 360.0 / 65536
-            elif signal_name == "angle":
-                self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] * 131072 + value
-        elif node_type == "t3d":
-            if signal_name == "angle16":
-                value = value * 360.0 / 65536
-            elif signal_name == "angle":
-                self.SIGNALS["position"]["value"] = self.SIGNALS["revs"]["value"] * 131072 + value
-            return value
-        elif node_type == "yaskawa":
-            if signal_name == "angle":
-                value = value * 360.0 / 65536
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "rioencoder":

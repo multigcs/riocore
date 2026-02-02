@@ -105,6 +105,7 @@ jitter measured with a EPM240 as 40bit Shiftreg:
                 self.PINDEFAULTS[f"OUTPUT:{bit}"] = {"direction": "output", "type": ["FPGA"], "edge": "source", "pos": (px, py)}
                 py -= 23
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         fnum = 0
         for instance in instances:

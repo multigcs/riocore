@@ -6,9 +6,9 @@ import shutil
 import stat
 import sys
 
-from .base import generator_base
-
 import riocore
+
+from .base import generator_base
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 

@@ -1,10 +1,12 @@
 import os
 import shutil
 import subprocess
+
 from functools import partial
 
 import hal
 import linuxcnc as emc
+
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMenu
 from libflexgui import dialogs, select, utilities
 

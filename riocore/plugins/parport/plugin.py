@@ -167,6 +167,7 @@ class Plugin(PluginBase):
             },
         }
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         for num, instance in enumerate(instances):
             instance.instance_num = num
@@ -187,24 +188,24 @@ class Plugin(PluginBase):
             direction = connected_pin["direction"]
             active = True
             if direction == "output":
-                for mode in mode_outputs:
-                    if pin not in mode_outputs[mode]:
+                for mode, outputs in mode_outputs.items():
+                    if pin not in outputs:
                         matching_errors[mode].append(f"{pin} must be input")
             else:
-                for mode in mode_outputs:
-                    if pin in mode_outputs[mode]:
+                for mode, outputs in mode_outputs.items():
+                    if pin in outputs:
                         matching_errors[mode].append(f"{pin} must be output")
 
         self.parport_mode = ""
-        for mode in matching_errors:
-            if not matching_errors[mode]:
+        for mode, errors in matching_errors.items():
+            if not errors:
                 self.parport_mode = mode
 
         if not self.parport_mode:
             print("ERROR: no usable parport mode found")
-            for mode in matching_errors:
-                if matching_errors[mode]:
-                    print(f"  mode({mode}): {', '.join(matching_errors[mode])}")
+            for mode, errors in matching_errors.items():
+                if errors:
+                    print(f"  mode({mode}): {', '.join(errors)}")
             sys.exit(1)
         if not active:
             self.parport_mode = ""
@@ -225,6 +226,7 @@ class Plugin(PluginBase):
                 else:
                     psetup["pin"] = f"parport.{self.instance_num}.pin-{int(pin):02d}-in"
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         modes = []

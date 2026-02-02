@@ -73,12 +73,6 @@ class Plugin(PluginBase):
         instance_parameter["STEPTYPE"] = self.plugin_setup.get("steptype", "1")
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "velocity":
-            if value != 0:
-                value = self.system_setup["speed"] / value / 2
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "velocity":
             return """

@@ -124,6 +124,7 @@ a hardware PWM generator is a better choice."""
                 value = 1 if value else 0
             generator.halg.setp_add(f"{self.PREFIX}.{option}", f"{value}")
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         modes = []

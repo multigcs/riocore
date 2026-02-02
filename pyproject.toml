@@ -2,8 +2,116 @@
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+
 [tool.ruff]
 line-length = 230
+lint.select = [
+    "F",  # pyflakes failures
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warning
+    "I",  # isort
+    "PLE",  # pylint errors
+    "PLW",  # pylint warnings
+    "PLC",  # pylint convention
+    "PIE",  # flake8-pie - misc. lints
+    # "RSE",  # future
+    "RET501", "RET502", "RET503",  # return statements
+    "RET504",  # unnecessary-assign
+    "RET505",  # superfluous-else-return
+    "RET506",  # superfluous-else-raise
+    "RET507",  # superfluous-else-continue
+    "RET508",  # superfluous-else-break
+    # "SIM",  # future
+    "B006",  # mutable-argument-default
+    "B905",  # zip-without-explicit-strict
+    "C4",  # flake8-comprehensions
+    "E731",  # Do not assign a `lambda` expression, use a `def`
+    "F601",  # Dictionary key literal repeated
+    "D202",  # no-blank-line-after-function
+    "D212",  # multi-line-summary-first-line
+    "D214",  # section-not-over-indented
+    "D209",  # new-line-after-last-paragraph
+    "D301",  # escape-sequence-in-docstring
+    "D300",  # triple-single-quotes
+    "D403",  # first-line-capitalized
+    "D405",  # capitalize-section-name
+    "D406",  # new-line-after-section-name
+    "D407",  # dashed-underline-after-section
+    "D411",  # no-blank-line-before-section
+    "D412",  # blank-lines-between-header-and-content
+    "D413",  # blank-line-after-last-section 
+    "RUF009",  # function-call-in-dataclass-default-argument
+    "RUF019",  # unnecessary-key-check
+    "FURB105",  # print-empty-string
+    "FURB136",  # Replace if expression with {min_max} call
+    "PLR1711",  # Useless return statement at end of function
+    "N804",  # invalid-first-argument-name-for-class-method
+    "SIM101",  # duplicate-isinstance-call
+    "SIM210",  # if-expr-with-true-false 
+    "EM103",  # dot-format-in-exception
+    "EM102",  # f-string-in-exception (EM102)
+    "RUF100",  # unused-noqa (RUF100)
+    "RSE102",  # unnecessary-paren-on-raise-exception (RSE102)
+    "FLY002",  # static-join-to-f-string (FLY002)
+    "FURB188",  # slice-to-remove-prefix-or-suffix (FURB188)
+    "PLR1716",  # boolean-chained-comparison (PLR1716)
+    "RUF022",  # unsorted-dunder-all (RUF022)
+    "RUF015",  # unnecessary-iterable-allocation-for-first-element (RUF015)
+    "B028",  # no-explicit-stacklevel (B028)
+    "SIM103",  # needless-bool (SIM103)
+    "SIM118",  # in-dict-keys (SIM118)
+    "PLR2044",  # empty-comment (PLR2044)
+    "UP006",  # non-pep585-annotation (UP006)
+    "PLR1714",  # repeated-equality-comparison (PLR1714)
+    "PLR1730",  # if-stmt-min-max (PLR1730)
+    "UP032",  # f-string (UP032)
+    "PLR5501",  # collapsible-else-if (PLR5501)
+    "Q003",  # avoidable-escaped-quote (Q003)
+    "SIM114",  # if-with-same-arms (SIM114)
+    "RUF021",  # parenthesize-chained-operators (RUF021)
+    "RUF010",  # explicit-f-string-type-conversion (RUF010)
+    "EM101",  # raw-string-in-exception (EM101)
+    "TRY201",  # verbose-raise (TRY201)
+    "RUF005",  # collection-literal-concatenation (RUF005)
+    "Q001",  # bad-quotes-multiline-string (Q001)
+    "RUF051",  # if-key-in-dict-del (RUF051)
+    "SIM905",  # split-static-string (SIM905)
+    "TC006",  # runtime-cast-value (TC006)
+    "PLR0124",  # comparison-with-itself (PLR0124)
+    "SIM401",  # if-else-block-instead-of-dict-get (SIM401)
+    "RUF046",  # unnecessary-cast-to-int (RUF046)
+    "D415",  # missing-terminal-punctuation (D415)
+    "PLR1733",  # unnecessary-dict-index-lookup (PLR1733)
+    "ISC003",  # explicit-string-concatenation (ISC003)
+    "SIM910",  # dict-get-with-none-default (SIM910)
+    "B010",  # set-attr-with-constant (B010)
+    "TC003",  # typing-only-standard-library-import (TC003)
+    "TC002",  # typing-only-third-party-import (TC002)
+    "N805",  # invalid-first-argument-name-for-method (N805)
+    "RUF055",  # unnecessary-regular-expression (RUF055)
+    "PLR6104",  # non-augmented-assignment (PLR6104)
+    "FURB171",  # single-item-membership-test (FURB171)
+    "RUF047",  # needless-else (RUF047)
+    "FURB113",  # repeated-append (FURB113)
+    "FURB142",  # for-loop-set-mutations (FURB142)
+    "RUF056",  # falsy-dict-get-fallback (RUF056)
+    "FURB192",  # sorted-min-max (FURB192)
+    "FURB110",  # if-exp-instead-of-or-operator (FURB110)
+    "RUF059",  # unused-unpacked-variable (RUF059)
+    "FURB148",  # unnecessary-enumerate (FURB148)
+    "FURB118",  # reimplemented-operator (FURB118)
+    "C419",  # unnecessary-comprehension-in-call (C419)
+    "C409",  # unnecessary-literal-within-tuple-call (C409)
+    "TC001",  # typing-only-first-party-import (TC001)
+    "PLR6201",  # literal-membership (PLR6201)
+    "FURB140",  # reimplemented-starmap (FURB140)
+    "RUF037",  # unnecessary-empty-iterable-within-deque-call (RUF037)
+    "RUF052",  # used-dummy-variable (RUF052)
+    "FURB180",  # meta-class-abc-meta (FURB180)
+    "F401",  # unused-import (F401)
+    "PYI061",  # redundant-none-literal (PYI061)
+]
 
 [tool.ruff.lint.isort]
+lines-between-types = 1
 case-sensitive = true

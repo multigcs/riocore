@@ -171,11 +171,7 @@ class hy_vfd:
                             else:
                                 self.HYVFD_DATA[status_name] = value * status_scale
                             self.HYVFD_DATA["hycomm_ok"] = 1
-                        elif frame_data[1] == 0x05 and frame_data[2] == 0x02:
-                            pass
-                            self.HYVFD_DATA["hycomm_ok"] = 1
-                        elif frame_data[1] == 0x03 and frame_data[2] == 0x01:
-                            pass
+                        elif (frame_data[1] == 0x05 and frame_data[2] == 0x02) or (frame_data[1] == 0x03 and frame_data[2] == 0x01):
                             self.HYVFD_DATA["hycomm_ok"] = 1
                         else:
                             self.HYVFD_DATA["error_count"] += 1
@@ -232,11 +228,9 @@ class hy_vfd:
                 if self.HYVFD_DATA["rated_motor_rev"] > 0:
                     hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
                 value = abs((set_speed + freq_comp) * hz_per_rpm)
-                if value > self.HYVFD_DATA["max_freq"]:
-                    value = self.HYVFD_DATA["max_freq"]
-                if value < self.HYVFD_DATA["freq_lower_limit"]:
-                    value = self.HYVFD_DATA["freq_lower_limit"]
-                cmd = [address, 0x05, 0x02] + self.int2list(int(value * 100))
+                value = min(value, self.HYVFD_DATA["max_freq"])
+                value = max(value, self.HYVFD_DATA["freq_lower_limit"])
+                cmd = [address, 0x05, 0x02, *self.int2list(int(value * 100))]
             elif self.HYVFD_COMMAND == 2:
                 set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 if set_speed > 0.0:
@@ -478,7 +472,7 @@ class hy_vfd:
         cmds = []
         address = self.config["address"]
         for cmd in self.HYVFD_ON_ERROR_CMDS:
-            frame = [address] + cmd
+            frame = [address, *cmd]
             csum = crc16()
             csum.update(frame)
             frame += csum.intdigest()

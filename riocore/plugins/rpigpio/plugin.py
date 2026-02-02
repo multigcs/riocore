@@ -154,6 +154,7 @@ gpio modes:
                 else:
                     psetup["pin"] = f"hal_gpio.{pin}-in"
 
+    @classmethod
     def component_loader(cls, instances):
         gpio_mode = instances[0].plugin_setup.get("mode", instances[0].option_default("mode"))
         if gpio_mode == "pi_gpio":

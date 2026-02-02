@@ -1,5 +1,6 @@
 import os
 import sys
+
 from functools import partial
 
 from PyQt5.QtWidgets import QDialog, QPushButton

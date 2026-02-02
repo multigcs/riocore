@@ -100,33 +100,6 @@ class Plugin(PluginBase):
 
         self.last_pos = 0
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "angle":
-            return value
-            return value * 360 / 90
-        if signal_name == "position":
-            scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", self.scale)
-
-            # calc rps/rpm
-            if self.duration > 0:
-                diff = value - self.last_pos
-                rps = diff / self.duration / scale
-                self.SIGNALS["rps"]["value"] = rps
-                self.SIGNALS["rpm"]["value"] = rps * 60
-            self.last_pos = value
-            """
-            vmin = self.plugin_setup.get("min")
-            vmax = self.plugin_setup.get("max")
-            if vmin is not None and value < vmin:
-                value = vmin
-            if vmax is not None and value > vmax:
-                value = vmax
-            if scale is not None:
-                value *= scale
-            """
-
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "position":
             vmin = self.plugin_setup.get("min")

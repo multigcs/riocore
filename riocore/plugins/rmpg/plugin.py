@@ -24,6 +24,7 @@ class Plugin(PluginBase):
         }
         self.rmpg_num = 0
 
+    @classmethod
     def component_loader(cls, instances):
         for cnum, instance in enumerate(instances):
             instance.rmpg_num = cnum

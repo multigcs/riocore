@@ -3,6 +3,7 @@
 #
 
 import sys
+
 from functools import partial
 
 from PyQt5.QtCore import QRect, QRectF, QTimer, Qt

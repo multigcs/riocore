@@ -56,18 +56,6 @@ class Plugin(PluginBase):
         instance_parameter["CLK_MHZ"] = self.system_setup["speed"] // 1000000
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "value":
-            num_leds = self.plugin_setup.get("leds", 12)
-            vmin = self.plugin_setup.get("min", 0)
-            vmax = self.plugin_setup.get("max", num_leds)
-            scale = self.plugin_setup.get("scale", 1.0)
-            if scale is not None:
-                value *= scale
-            value = max(value, vmin)
-            value = min(value, vmax)
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "value":
             num_leds = self.plugin_setup.get("leds", 12)

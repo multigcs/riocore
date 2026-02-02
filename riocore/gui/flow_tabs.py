@@ -3,22 +3,23 @@ import difflib
 import json
 import os
 import subprocess
+
 from functools import partial
 
-from PyQt5.QtCore import QMimeData, QTimer, Qt, QSortFilterProxyModel
+from PyQt5.QtCore import QMimeData, QSortFilterProxyModel, QTimer, Qt
 from PyQt5.QtGui import QColor, QDrag, QPixmap, QStandardItemModel, QTextCursor
 from PyQt5.QtWidgets import (
-    QCompleter,
+    QCheckBox,
     QComboBox,
-    QMessageBox,
+    QCompleter,
     QDialog,
     QDialogButtonBox,
     QDoubleSpinBox,
     QHBoxLayout,
     QHeaderView,
-    QCheckBox,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPlainTextEdit,
     QPushButton,
     QScrollArea,
@@ -34,6 +35,7 @@ from PyQt5.QtWidgets import (
 )
 
 import riocore
+
 from riocore.gui.home_helper import HomeAnimation
 from riocore.gui.widgets import MyStandardItem
 

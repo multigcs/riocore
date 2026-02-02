@@ -65,16 +65,6 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if value & (1 << 23):
-            value = value - 16777216
-        scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
-        zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])
-        value -= zero
-        value *= scale
-        print(value)
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
         zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])

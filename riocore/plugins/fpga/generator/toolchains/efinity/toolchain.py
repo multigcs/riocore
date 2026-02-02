@@ -13,6 +13,7 @@ class Toolchain:
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
             self.toolchain_path = os.path.join(self.toolchain_path, "bin")
 
+    @classmethod
     def info(cls):
         info = {
             "url": "https://www.efinixinc.com/",

@@ -1,12 +1,13 @@
 import copy
 import glob
 import importlib
+import json
 import os
 import shutil
 import stat
-import json
 
 import riocore
+
 from riocore import halpins
 from riocore.generator.flexvcp import flexvcp
 from riocore.generator.gladevcp import gladevcp
@@ -952,10 +953,10 @@ Reload program = False
 Reload tool = False
 Use keyboard = False
 Use tool sensor = False
-Use tool touchplate = {str(tool_touchplate)}
+Use tool touchplate = {tool_touchplate!s}
 Run from line = False
 Use virtual keyboard = False
-Use camera = {str(qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Use camera", False))}
+Use camera = {qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Use camera", False)!s}
 Use alpha display mode = False
 Inhibit display mouse selection = True
 Camview xscale = 100
@@ -2112,24 +2113,23 @@ if __name__ == "__main__":
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
                     # elif signal_name.endswith("_at_speed"):
                     #     self.halg.net_add(signal_config["halname"], "qtdragon.spindle-is-at-speed")
-        else:
-            if toolchange == "manual":
-                if gui == "gmoccapy":
-                    self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
-                    self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
-                    self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                elif gui != "woodpecker":
-                    self.halg.fmt_add_top("# manual toolchanger")
-                    self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
-                    self.halg.fmt_add_top("")
-                    self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-                    self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-                    self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-            else:
+        elif toolchange == "manual":
+            if gui == "gmoccapy":
+                self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
+                self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
+                self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
                 self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+            elif gui != "woodpecker":
+                self.halg.fmt_add_top("# manual toolchanger")
+                self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
+                self.halg.fmt_add_top("")
+                self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+                self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+                self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+                self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+        else:
+            self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:

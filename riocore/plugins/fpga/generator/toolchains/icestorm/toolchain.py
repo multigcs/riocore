@@ -16,6 +16,7 @@ class Toolchain:
         if self.toolchain_path:
             self.toolchain_path = [os.path.join(self.toolchain_path, "bin"), os.path.join(self.toolchain_path, "lib")]
 
+    @classmethod
     def info(cls):
         info = {
             "url": "https://github.com/YosysHQ/oss-cad-suite-build",

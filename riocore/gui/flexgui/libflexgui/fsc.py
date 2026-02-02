@@ -2,6 +2,7 @@
 
 import os
 import sys
+
 from math import pi
 
 from PyQt5.QtWidgets import QWidget

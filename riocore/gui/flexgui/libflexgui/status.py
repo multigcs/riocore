@@ -2,6 +2,7 @@ from math import sqrt
 
 import hal
 import linuxcnc as emc
+
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QAbstractSpinBox, QCheckBox, QLCDNumber, QSlider
 from libflexgui import dialogs, utilities

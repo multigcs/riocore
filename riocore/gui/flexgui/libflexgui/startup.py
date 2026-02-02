@@ -2,10 +2,12 @@ import importlib
 import os
 import sys
 import traceback
+
 from functools import partial
 
 import hal
 import linuxcnc as emc
+
 from PyQt5.QtCore import QPoint, QPointF, Qt
 from PyQt5.QtGui import QBrush, QFont, QPainter, QPen, QRadialGradient
 from PyQt5.QtWidgets import (

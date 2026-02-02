@@ -2,6 +2,7 @@ import os
 
 import hal
 import linuxcnc as emc
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QTextCursor
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QDoubleSpinBox, QLabel, QMessageBox, QPlainTextEdit, QSpinBox, QVBoxLayout

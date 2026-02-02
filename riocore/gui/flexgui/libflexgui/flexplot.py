@@ -12,6 +12,7 @@ import tempfile
 import gcode
 import glnav
 import linuxcnc
+
 from OpenGL import GL, GLU
 from PyQt5.QtCore import QSize, QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QColor

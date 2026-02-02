@@ -17,6 +17,7 @@ class Toolchain:
         self.armcore = self.config.get("armcore", False)
         self.clock = int(self.config["speed"])
 
+    @classmethod
     def info(cls):
         info = {
             "url": "https://www.xilinx.com/products/design-tools/vivado.html",
