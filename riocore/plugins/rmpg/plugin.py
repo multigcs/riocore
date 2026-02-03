@@ -39,7 +39,7 @@ class Plugin(PluginBase):
         parent.halg.postgui_components_add(f"rmpg{self.rmpg_num}")
         parent.halg.fmt_add(f"{self.cmd_args()}")
         for axis_name, axis_config in parent.project.axis_dict.items():
-            if axis_name not in {"X", "Y"}:
+            if axis_name not in {"X", "Y", "Z"}:
                 continue
             joints = axis_config["joints"]
             axis_lower = axis_name.lower()
@@ -54,3 +54,12 @@ class Plugin(PluginBase):
                 parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
                 parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                 parent.halg.setp_add(f"joint.{joint}.jog-scale", 0.15)
+
+        for overwrite in ("feed-override", "rapid-override", "spindle.0.override", "max-velocity"):
+            parent.halg.net_add(f"rmpg{self.rmpg_num}.{overwrite}.counts", f"halui.{overwrite}.counts")
+            parent.halg.net_add(f"halui.{overwrite}.value", f"rmpg{self.rmpg_num}.{overwrite}.value")
+            parent.halg.setp_add(f"halui.{overwrite}.count-enable", True)
+            if overwrite == "max-velocity":
+                parent.halg.setp_add(f"halui.{overwrite}.scale", 1.0)
+            else:
+                parent.halg.setp_add(f"halui.{overwrite}.scale", 0.1)

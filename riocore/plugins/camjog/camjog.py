@@ -31,17 +31,20 @@ setp axis.y.jog-scale -0.15
 import argparse
 import math
 import os
+import json
 import signal
+import serial
 import sys
 from functools import partial
 
 import cv2
 import numpy as np
-from PyQt5.QtCore import QThread, Qt, pyqtSignal
+from PyQt5.QtCore import QThread, Qt, pyqtSignal, QTimer
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QMainWindow,
     QApplication,
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QPushButton,
@@ -57,12 +60,22 @@ parser.add_argument("--width", "-W", help="video device width", type=int, defaul
 parser.add_argument("--height", "-H", help="video device height", type=int, default=480)
 parser.add_argument("--scale", "-S", help="scale image", type=float, default=1.0)
 parser.add_argument("--fullscreen", "-f", help="fullscreen mode", default=False, action="store_true")
+parser.add_argument("--rotate", "-r", help="rotate screen", default=False, action="store_true")
 parser.add_argument("--name", "-n", help="component name", type=str, default="camjog")
 parser.add_argument("--server", "-s", help="remote server (rmpg)", type=str, default="")
+parser.add_argument("--device", "-d", help="device", type=str, default="")
+parser.add_argument("--baud", "-b", help="baudrate", type=int, default=115200)
+
 args = parser.parse_args()
+
+offset_x = -22.9
+offset_y = 55.45
+
 
 if args.server:
     import rhal as hal
+
+    print("camjog: remote mode")
 
     h = hal.component(args.server)
     cal_x = 0.15
@@ -78,6 +91,11 @@ else:
         h.newpin("axis.y.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
         h.newpin("axis.x.cal", hal.HAL_FLOAT, hal.HAL_IN)
         h.newpin("axis.y.cal", hal.HAL_FLOAT, hal.HAL_IN)
+        for overwrite in ("feed-override", "rapid-override", "spindle.0.override", "max-velocity"):
+            h.newpin(f"{overwrite}.counts", hal.HAL_S32, hal.HAL_OUT)
+            h.newpin(f"{overwrite}.value", hal.HAL_FLOAT, hal.HAL_IN)
+        h.newpin("sw0", hal.HAL_BIT, hal.HAL_OUT)
+        h.newpin("sw0-not", hal.HAL_BIT, hal.HAL_OUT)
         h.ready()
         no_hal = False
     except Exception:
@@ -90,6 +108,11 @@ else:
         h["axis.y.jog-scale"] = 1.0
         h["axis.x.cal"] = 0.1
         h["axis.y.cal"] = 0.1
+        for overwrite in ("feed-override", "rapid-override", "spindle.0.override", "max-velocity"):
+            h[f"{overwrite}.counts"] = 0
+            h[f"{overwrite}.value"] = 50.0
+        h["sw0"] = 0
+        h["sw0-not"] = 1
 
 
 TWO_PI = math.pi * 2
@@ -184,7 +207,6 @@ class MyImage(QLabel):
             self.parent.options["points"] = []
             self.parent.options["touch"] = (offset_x, offset_y)
             self.parent.options["mode"] = "edges"
-            self.parent.info_label.setText("edges")
 
         elif self.parent.options["mode"] == "edges":
             if len(self.parent.options["points"]) > 3:
@@ -238,6 +260,8 @@ class Window(QMainWindow):
         self.options = {
             "width": args.width,
             "height": args.height,
+            "width_source": args.width,
+            "height_source": args.height,
             "scale": args.scale,
             "zoom": 1.0,
             "mode": "move",
@@ -248,12 +272,6 @@ class Window(QMainWindow):
             "action": "",
         }
 
-        # s = self.options["scale"]
-        # self.setMinimumWidth(int(args.width * s) + 50)
-        # self.setMinimumHeight(int(args.height * s) + 100)
-        # self.setFixedWidth(int(args.width * s) + 50)
-        # self.setFixedWidth(int(args.height * s) + 100)
-
         self.setWindowTitle("CamJog")
         if args.xid:
             from qtvcp.lib import xembed
@@ -263,42 +281,65 @@ class Window(QMainWindow):
             if forward:
                 xembed.XEmbedForwarding(window, forward)
 
-        layout = QHBoxLayout()
+        if args.rotate:
+            sub_layout = QHBoxLayout()
+            layout = QVBoxLayout()
+            self.options["width"] = args.height
+            self.options["height"] = args.width
+        else:
+            sub_layout = QVBoxLayout()
+            layout = QHBoxLayout()
+
         self.main = QWidget()
         self.setCentralWidget(self.main)
         self.main.setLayout(layout)
         layout.setContentsMargins(0, 0, 0, 0)
 
         setup_layout = QVBoxLayout()
-        # setup_layout.setContentsMargins(left, top, right, bottom)
+        info_layout = QVBoxLayout()
+
+        self.view_mode = QComboBox()
+        self.view_mode.activated.connect(self.set_view)
+        setup_layout.addWidget(self.view_mode)
 
         for view in ("normal", "gray", "edge", "contours"):
-            button_view = QPushButton(view.title())
-            button_view.clicked.connect(partial(self.change_view, view))
-            setup_layout.addWidget(button_view)
-        setup_layout.addStretch()
-
-        self.info_label = QLabel("---")
-        setup_layout.addWidget(self.info_label)
+            self.view_mode.addItem(view)
 
         self.zoom_label = QLabel("1.0")
         setup_layout.addWidget(self.zoom_label)
 
+        self.touch_mode = QComboBox()
+        self.touch_mode.activated.connect(self.set_mode)
+        setup_layout.addWidget(self.touch_mode)
+
         for mode in ("move", "goto", "touch", "edges"):
-            button_mode = QPushButton(mode.title())
-            button_mode.clicked.connect(partial(self.change_mode, mode))
-            setup_layout.addWidget(button_mode)
+            self.touch_mode.addItem(mode)
+
+        button_zero = QPushButton("set Zero")
+        button_zero.clicked.connect(self.set_zero)
+        setup_layout.addWidget(button_zero)
+
+        button_to_zero = QPushButton("go Zero")
+        button_to_zero.clicked.connect(self.go_to_zero)
+        setup_layout.addWidget(button_to_zero)
 
         button_clear = QPushButton("Clear")
         button_clear.clicked.connect(self.clear_cb)
         setup_layout.addWidget(button_clear)
 
+        self.overwrites = {}
+        for overwrite in ("feed-override", "rapid-override", "spindle.0.override", "max-velocity"):
+            self.overwrites[overwrite] = QLabel(overwrite)
+            # setup_layout.addWidget(self.overwrites[overwrite])
+            info_layout.addWidget(self.overwrites[overwrite])
+
         self.video_img = MyImage(self)
-        # self.video_img.setFixedWidth(int(args.width * s))
-        # self.video_img.setFixedHeight(int(args.height * s))
 
         layout.addWidget(self.video_img)
-        layout.addLayout(setup_layout)
+        layout.addLayout(sub_layout)
+
+        sub_layout.addLayout(setup_layout)
+        sub_layout.addLayout(info_layout)
 
         signal.signal(signal.SIGTERM, self.shutdown)
         signal.signal(signal.SIGINT, self.shutdown)
@@ -307,9 +348,19 @@ class Window(QMainWindow):
             self.showFullScreen()
         self.show()
 
+        print("camjog: starting camera thread")
         self.camera = CameraThread(self.video, self.options)
         self.camera.image.connect(self.update_image)
         self.camera.start()
+
+        if args.device:
+            print("camjog: starting serial thread")
+            self.serial = SerialThread()
+            self.serial.start()
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.runTimer)
+        self.timer.start(100)
 
     def shutdown(self, signum=None, stack_frame=None):
         print("INFO: camjog Interrupted")
@@ -332,14 +383,27 @@ class Window(QMainWindow):
     def exit(self):
         self.camera.stop_capture()
 
-    def change_mode(self, mode):
+    def set_zero(self, _idx):
+        gcode = {"name": "mdi", "gcode": f"G92 X{offset_x} Y{offset_y}"}
+        print("mdi zero", gcode)
+        ret = hal.rcall(json.dumps(gcode).encode())
+        print("mdi ret", ret)
+
+    def go_to_zero(self, _idx):
+        gcode = {"name": "mdi", "gcode": f"G90 G0 X{offset_x} Y{offset_y}"}
+        print("mdi zero", gcode)
+        ret = hal.rcall(json.dumps(gcode).encode())
+        print("mdi ret", ret)
+
+    def set_mode(self, _idx):
+        mode = self.touch_mode.currentText()
         self.options["mode"] = mode
         if mode == "edges" or mode == "touch":
             self.options["touch"] = None
             self.options["points"] = []
 
-    def change_view(self, view):
-        self.options["view"] = view
+    def set_view(self, _idx):
+        self.options["view"] = self.view_mode.currentText()
 
     def convert_to_cam(self, point):
         x = point[0]
@@ -369,6 +433,9 @@ class Window(QMainWindow):
 
     def update_image(self, frame):
         try:
+            if args.rotate:
+                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
             if self.options["view"] == "edge":
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 frame = cv2.Canny(gray, 70, 135)
@@ -485,6 +552,32 @@ class Window(QMainWindow):
         except Exception as err:
             print("ERROR: UPDATE IMAGE: ", err)
 
+    def runTimer(self):
+        for overwrite in ("feed-override", "rapid-override", "spindle.0.override", "max-velocity"):
+            self.overwrites[overwrite].setText(f"{overwrite}: {h[f'{overwrite}.value']}")
+
+
+class SerialThread(QThread):
+    def __init__(self):
+        super().__init__()
+        self.serial = serial.Serial(args.device, args.baud, timeout=0.1)
+
+    def run(self):
+        while True:
+            line = self.serial.readline()
+            if line and line.startswith(b"J:"):
+                parts = line.decode().split(":")
+                _prefix, enc0, enc1, enc2, enc3, enc4, sw = parts
+                if int(enc0):
+                    h["axis.x.jog-counts"] += int(enc0)
+
+                for idx, overwrite in enumerate(("feed-override", "rapid-override", "spindle.0.override", "max-velocity")):
+                    h[f"{overwrite}.counts"] += int(parts[idx + 2])
+
+                if int(sw) != h["sw1"]:
+                    h["sw1"] = int(sw)
+                    h["sw1-not"] = 1 - int(sw)
+
 
 class CameraThread(QThread):
     image = pyqtSignal(np.ndarray)
@@ -495,13 +588,15 @@ class CameraThread(QThread):
         self.options = options
         self.width = options["width"]
         self.height = options["height"]
+        self.width_source = options["width_source"]
+        self.height_source = options["height_source"]
         self.mode = options.get("view", "normal")
         self.capture = None
 
     def start_capture(self):
         self.capture = cv2.VideoCapture(self.device)
-        self.capture.set(3, self.width)
-        self.capture.set(4, self.height)
+        self.capture.set(3, self.width_source)
+        self.capture.set(4, self.height_source)
 
     def stop_capture(self):
         if self.capture:

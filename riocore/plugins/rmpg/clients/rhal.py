@@ -46,7 +46,9 @@ class component:
             self._data[name] = value
             # data = {"name": "write", "data": self._data}
             data = {"name": "write", "data": {name: value}}
-            rcall(json.dumps(data).encode())
+            ret = rcall(json.dumps(data).encode())
+            if ret:
+                self._data = ret
 
     def __getitem__(self, name):
         if name in self._data:
