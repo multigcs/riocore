@@ -216,8 +216,9 @@ class Plugin(PluginBase):
                 if pin_data["type"] == "SIGNAL":
                     self.SIGNALS[pin_name] = pin_data
                 else:
-                    pin_data["pin"] = f"{self.instances_name}.{pin_data['pin']}"
-                    self.PINDEFAULTS[pin_data["pin"]] = pin_data
+                    pin_data["suffix"] = pin_data["pin"]
+                    pin_data["pin"] = f"{self.instances_name}:{pin_name}"
+                    self.PINDEFAULTS[pin_name] = pin_data
 
             for option_name, option_data in self.json_data.get("options", {}).items():
                 option_data["type"] = {"float": float, "bool": bool}.get(option_data["type"], option_data["type"])
@@ -244,9 +245,8 @@ class Plugin(PluginBase):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
             psetup = connected_pin["setup"]
             pin = connected_pin["pin"]
-            rawpin = connected_pin["rawpin"]
-            if rawpin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[rawpin] and not pin.startswith("BUS:"):
-                psetup["pin"] = f"{self.PREFIX}.{pin}"
+            if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin] and not pin.startswith("BUS:"):
+                psetup["pin"] = f"{self.PREFIX}.{self.PINDEFAULTS[pin]['suffix']}"
 
     @classmethod
     def extra_files(cls, parent, instances):

@@ -102,7 +102,7 @@
             ],
             "pins": {
                 "bit": {
-                    "pin": "ethercat2-0:ethercat2-0.din-0"
+                    "pin": "ethercat2-0:IN:I0"
                 }
             },
             "signals": {
@@ -121,7 +121,7 @@
             ],
             "pins": {
                 "bit": {
-                    "pin": "ethercat2-2:ethercat2-2.dout-0"
+                    "pin": "ethercat2-2:OUT:O0"
                 }
             },
             "signals": {
@@ -133,10 +133,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 1.41,
+            "scale": 0.91,
             "pos": [
-                434,
-                90
+                -7,
+                -98
             ]
         }
     }
