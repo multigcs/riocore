@@ -365,7 +365,6 @@ class Window(QMainWindow):
         sys.exit(0)
 
     def resizeEvent(self, event):
-        print("Window has been resized")
         QMainWindow.resizeEvent(self, event)
 
     def clear_cb(self, w):
