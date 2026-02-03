@@ -312,13 +312,14 @@ class Window(QMainWindow):
         for mode in ("move", "goto", "touch", "edges"):
             self.touch_mode.addItem(mode)
 
-        button_zero = QPushButton("set Zero")
-        button_zero.clicked.connect(self.set_zero)
-        setup_layout.addWidget(button_zero)
+        if args.server:
+            button_zero = QPushButton("set Zero")
+            button_zero.clicked.connect(self.set_zero)
+            setup_layout.addWidget(button_zero)
 
-        button_to_zero = QPushButton("go Zero")
-        button_to_zero.clicked.connect(self.go_to_zero)
-        setup_layout.addWidget(button_to_zero)
+            button_to_zero = QPushButton("go Zero")
+            button_to_zero.clicked.connect(self.go_to_zero)
+            setup_layout.addWidget(button_to_zero)
 
         button_clear = QPushButton("Clear")
         button_clear.clicked.connect(self.clear_cb)
