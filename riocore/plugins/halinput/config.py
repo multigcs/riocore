@@ -77,9 +77,11 @@ class config:
 
         def wiz_select(action, clicked=None):
             selected_label.setText(action)
-            for item, action_data in actions.items():
-                action_data.setStyleSheet("")
-            action_data.setStyleSheet("QLineEdit {background-color: rgb(255, 200, 200);}")
+            for item, action_widget in actions.items():
+                if action == item:
+                    action_widget.setStyleSheet("QLineEdit {background-color: rgb(255, 200, 200);}")
+                else:
+                    action_widget.setStyleSheet("")
 
         def wiz_runTimer():
             action = selected_label.text()
@@ -87,21 +89,26 @@ class config:
                 ev = device_events.read_event()
                 if ev.type in {"EV_SYN", "EV_SND", "EV_MSC", "EV_LED"}:
                     continue
-
                 halname = ev.code.lower().replace("_", "-")
-                if (ALL_ACTIONS[action] == "axis" and halname.startswith("abs")) or (ALL_ACTIONS[action] == "button" and halname.startswith("btn")):
+
+                event_label.setText(halname)
+                if (ALL_ACTIONS[action] == "axis" and halname.startswith("abs")) or (ALL_ACTIONS[action] == "button" and halname.startswith("btn")) or (ALL_ACTIONS[action] == "button" and halname.startswith("key-")):
                     actions[action].setText(halname)
+                else:
+                    event_label.setText(f"{halname} (err)")
 
         dialog = QDialog()
-        dialog.setWindowTitle("select device")
-        # dialog.setStyleSheet(STYLESHEET)
-
+        dialog.setWindowTitle("configure device")
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QGridLayout()
+
+        event_label = QLabel("---")
+        dialog.layout.addWidget(event_label, 0, 0)
+
         selected_label = QLabel("x")
-        dialog.layout.addWidget(selected_label, 0, 0)
+        dialog.layout.addWidget(selected_label, 0, 1)
 
         for key, value in self.instance.OPTIONS.items():
             if key not in self.plugin_setup:
@@ -163,7 +170,8 @@ class config:
 
         if dialog.exec():
             selected_device = combo_devices.currentText()
-            self.wiz2_joypad(selected_device)
+            if selected_device:
+                self.wiz2_joypad(selected_device)
 
     def run(self):
         self.wiz_joypad()
