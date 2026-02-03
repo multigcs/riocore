@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
     QDialogButtonBox,
+    QDoubleSpinBox,
     QGridLayout,
     QLabel,
     QLineEdit,
@@ -116,7 +117,7 @@ class config:
 
         actions = {}
         row = 1
-        for action in ALL_ACTIONS:
+        for action, action_type in ALL_ACTIONS.items():
             actions[action] = ClickableLineEdit()
             actions[action].setText(self.plugin_setup.get(action, ""))
             button = QPushButton(action)
@@ -125,6 +126,13 @@ class config:
             button.clicked.connect(cb)
             dialog.layout.addWidget(actions[action], row, 0)
             dialog.layout.addWidget(button, row, 1)
+
+            if action_type == "axis":
+                actions[f"{action}_scale"] = QDoubleSpinBox()
+                actions[f"{action}_scale"].setMinimum(-99999999)
+                actions[f"{action}_scale"].setMaximum(99999999)
+                actions[f"{action}_scale"].setValue(self.plugin_setup.get(f"{action}_scale", ""))
+                dialog.layout.addWidget(actions[f"{action}_scale"], row, 2)
             row += 1
 
         wiz_select("x")
@@ -137,10 +145,13 @@ class config:
         timer.start(300)
 
         if dialog.exec():
-            for action in ALL_ACTIONS:
+            for action, action_type in ALL_ACTIONS.items():
                 halname = actions[action].text()
                 if halname:
                     self.plugin_setup[action] = halname
+                if action_type == "axis":
+                    self.plugin_setup[f"{action}_scale"] = actions[f"{action}_scale"].value()
+
             self.plugin_setup["joypad_name"] = selected_device
 
         timer.stop()
@@ -209,8 +220,8 @@ if __name__ == "__main__":
             }
             for axis, default in {
                 "x": "abs-x",
-                "y": "-abs-y",
-                "z": "-abs-rz",
+                "y": "abs-y",
+                "z": "abs-rz",
                 "a": "",
                 "b": "",
                 "c": "",
@@ -218,6 +229,12 @@ if __name__ == "__main__":
                 self.OPTIONS[axis] = {
                     "type": str,
                     "default": default,
+                }
+                self.OPTIONS[f"{axis}_scale"] = {
+                    "type": float,
+                    "default": 127.5,
+                    "min": -127.5,
+                    "max": 127.5,
                 }
 
     instance = mock_instance()
