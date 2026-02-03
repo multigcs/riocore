@@ -150,7 +150,7 @@ void setup() {
         Serial.print ("initialized");
     } else {
         Serial.print ("initialization failed");
-    } 
+    }
     PreviousMillis = millis();
 }
 
@@ -161,7 +161,7 @@ void loop() {
         PreviousMillis = Millis;
         convert_outputs();
         convert_inputs();
-    }   
+    }
 }
 
 """
@@ -247,7 +247,7 @@ void loop() {
   <Vendor>
     <Id>#x0000079A</Id>
     <Name>RIO</Name>
-  </Vendor> 
+  </Vendor>
   <Descriptions>
     <Groups>
       <Group SortOrder="0">
@@ -340,24 +340,24 @@ void loop() {
 
         output.append("""
         <Dc>
-            <OpMode>                                          
+            <OpMode>
                 <Name>SM_Sync or Async</Name>
-                <Desc>SM_Sync or Async</Desc>            
+                <Desc>SM_Sync or Async</Desc>
                 <AssignActivate>#x0000</AssignActivate>
             </OpMode>
             <OpMode>
                 <Name>DC_Sync</Name>
-                <Desc>DC_Sync</Desc>               
+                <Desc>DC_Sync</Desc>
                 <AssignActivate>#x300</AssignActivate>
                 <CycleTimeSync0 Factor="1">0</CycleTimeSync0>
                 <ShiftTimeSync0>2000200000</ShiftTimeSync0>
             </OpMode>
-        </Dc>       
+        </Dc>
         <Eeprom>
-          <ByteSize>4096</ByteSize>                  
-          <ConfigData>8003006EFF00FF000000</ConfigData> 
+          <ByteSize>4096</ByteSize>
+          <ConfigData>8003006EFF00FF000000</ConfigData>
         </Eeprom>
-     </Device>              
+     </Device>
     </Devices>
   </Descriptions>
 </EtherCATInfo>""")
@@ -491,10 +491,9 @@ uint32_t fpga_timestamp = 0;
 
     def vinit(self, vname, vtype, halstr=None, vdir="input", force_mem=False):
         vtype = self.typemap.get(vtype, vtype)
-        # if force_mem or vname.endswith("_SCALE") or vname.endswith("_OFFSET") or vname.endswith("_S32") or vname.endswith("_ABS"):
-        if force_mem or vname.endswith("_OFFSET") or vname.endswith("_S32") or vname.endswith("_ABS"):
+        if force_mem or vname.endswith("_OFFSET", "_S32", "_ABS"):
             return f"    data->{vname} = ({vtype}*)malloc(sizeof({vtype}));"
-        if vname.endswith("_SCALE") or vname.endswith("_OFFSET"):
+        if vname.endswith(("_SCALE", "_OFFSET")):
             bdir = "Out"
         else:
             bdir = vdir.title().replace("put", "")

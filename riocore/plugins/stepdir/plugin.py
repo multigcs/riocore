@@ -89,12 +89,6 @@ class Plugin(PluginBase):
         instance_parameter["DIR_DELAY"] = int(self.system_setup["speed"] * dir_delay / 1000000)
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "velocity":
-            if value != 0:
-                value = self.system_setup["speed"] / value / 2
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "velocity":
             return """

@@ -40,11 +40,6 @@ class Plugin(PluginBase):
         instance_arguments["disabled"] = "ERROR"
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if value != 0:
-            value = self.system_setup["speed"] / value
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         return """
         if (value != 0) {

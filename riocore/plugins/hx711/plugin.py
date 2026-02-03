@@ -79,16 +79,6 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
-        zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])
-        value -= zero
-        if self.SIGNALS["tare"]["value"] == 1:
-            self.SIGNALS["toffset"]["value"] = value
-        value -= self.SIGNALS["toffset"]["value"]
-        value *= scale
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
         zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])

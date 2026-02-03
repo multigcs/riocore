@@ -65,8 +65,7 @@ class Modifiers:
             },
             "predefines": [f"wire {pin_varname}_DEBOUNCED;"],
         }
-        pin_varname = f"{pin_varname}_DEBOUNCED"
-        return pin_varname
+        return f"{pin_varname}_DEBOUNCED"
 
     def pin_modifier_delay(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         delay = modifier.get("delay", 2.5)
@@ -83,8 +82,7 @@ class Modifiers:
             },
             "predefines": [f"wire {pin_varname}_DELAYED;"],
         }
-        pin_varname = f"{pin_varname}_DELAYED"
-        return pin_varname
+        return f"{pin_varname}_DELAYED"
 
     def pin_modifier_toggle(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
@@ -96,8 +94,7 @@ class Modifiers:
             },
             "predefines": [f"wire {pin_varname}_TOGGLED;"],
         }
-        pin_varname = f"{pin_varname}_TOGGLED"
-        return pin_varname
+        return f"{pin_varname}_TOGGLED"
 
     def pin_modifier_invert(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
@@ -106,8 +103,7 @@ class Modifiers:
                 f"assign {pin_varname}_INVERTED = ~{pin_varname};",
             ],
         }
-        pin_varname = f"{pin_varname}_INVERTED"
-        return pin_varname
+        return f"{pin_varname}_INVERTED"
 
     def pin_modifier_onerror(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         invert = modifier.get("invert", False)
@@ -120,8 +116,7 @@ class Modifiers:
                 f"assign {pin_varname}_ONERROR = {pin_varname} & {invert_char}ERROR;",
             ],
         }
-        pin_varname = f"{pin_varname}_ONERROR"
-        return pin_varname
+        return f"{pin_varname}_ONERROR"
 
     def pin_modifier_oneshot(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         edges = ["RISING", "FALLING", "BOTH"]
@@ -142,8 +137,7 @@ class Modifiers:
                 "dout": f"{pin_varname}_ONESHOT",
             },
         }
-        pin_varname = f"{pin_varname}_ONESHOT"
-        return pin_varname
+        return f"{pin_varname}_ONESHOT"
 
     def pin_modifier_pwm(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         frequency = modifier.get("frequency", 1)
@@ -162,8 +156,7 @@ class Modifiers:
                 "dout": f"{pin_varname}_PWM",
             },
         }
-        pin_varname = f"{pin_varname}_PWM"
-        return pin_varname
+        return f"{pin_varname}_PWM"
 
     def pin_modifier_list(self, direction=None):
         modifiers = []

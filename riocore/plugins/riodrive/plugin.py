@@ -188,13 +188,6 @@ class Plugin(PluginBase):
         instance_parameter["IDIVIDER"] = self.system_setup["speed"] // interval
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "power":
-            value = value / 10.0
-        elif signal_name == "temp":
-            value = value / 2.0
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "power":
             return "value = value / 10.0;"

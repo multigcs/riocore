@@ -56,16 +56,6 @@ both on the image are working
         instance_parameter["TIMEOUT"] = timeout
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        print(signal_name, f"{value} {value:b}")
-        if signal_name == "position":
-            if value >= 1048576:
-                value = 1048576 - value
-            if self.signals()["mode"]["value"] == 0:
-                return value / 100.0
-            return value / 2000.0 * 25.4
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "position":
             return f"""

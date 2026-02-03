@@ -171,11 +171,7 @@ class hy_vfd:
                             else:
                                 self.HYVFD_DATA[status_name] = value * status_scale
                             self.HYVFD_DATA["hycomm_ok"] = 1
-                        elif frame_data[1] == 0x05 and frame_data[2] == 0x02:
-                            pass
-                            self.HYVFD_DATA["hycomm_ok"] = 1
-                        elif frame_data[1] == 0x03 and frame_data[2] == 0x01:
-                            pass
+                        elif (frame_data[1] == 0x05 and frame_data[2] == 0x02) or (frame_data[1] == 0x03 and frame_data[2] == 0x01):
                             self.HYVFD_DATA["hycomm_ok"] = 1
                         else:
                             self.HYVFD_DATA["error_count"] += 1
@@ -215,7 +211,7 @@ class hy_vfd:
                 self.HYVFD_DATA["rpm_at_50hz"] = self.HYVFD_CONFIG_REGISTER[144]["value"] * self.HYVFD_CALC_KEYS["rpm_at_50hz"]["scale"]
                 self.HYVFD_DATA["rated_motor_rev"] = (self.HYVFD_DATA["rpm_at_50hz"] / 50.0) * self.HYVFD_DATA["max_freq"]
                 # get status data
-                if self.HYVFD_STATUS_REGISTER_ACTIVE < len(self.HYVFD_STATUS_REGISTER) - 1:
+                if len(self.HYVFD_STATUS_REGISTER) - 1 > self.HYVFD_STATUS_REGISTER_ACTIVE:
                     self.HYVFD_STATUS_REGISTER_ACTIVE += 1
                 else:
                     self.HYVFD_STATUS_REGISTER_ACTIVE = 0
@@ -232,11 +228,9 @@ class hy_vfd:
                 if self.HYVFD_DATA["rated_motor_rev"] > 0:
                     hz_per_rpm = self.HYVFD_DATA["max_freq"] / self.HYVFD_DATA["rated_motor_rev"]
                 value = abs((set_speed + freq_comp) * hz_per_rpm)
-                if value > self.HYVFD_DATA["max_freq"]:
-                    value = self.HYVFD_DATA["max_freq"]
-                if value < self.HYVFD_DATA["freq_lower_limit"]:
-                    value = self.HYVFD_DATA["freq_lower_limit"]
-                cmd = [address, 0x05, 0x02] + self.int2list(int(value * 100))
+                value = min(value, self.HYVFD_DATA["max_freq"])
+                value = max(value, self.HYVFD_DATA["freq_lower_limit"])
+                cmd = [address, 0x05, 0x02, *self.int2list(int(value * 100))]
             elif self.HYVFD_COMMAND == 2:
                 set_speed = self.signals[f"{self.signal_name}_speed_command"]["value"]
                 if set_speed > 0.0:
@@ -318,9 +312,7 @@ class hy_vfd:
         output.append("                }")
         output.append("            }")
         output.append(f"            if (value_{self.signal_name}_max_freq > 0.0) {{")
-        output.append(
-            f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};"
-        )
+        output.append(f"                value_{self.signal_name}_speed_fb = value_{self.signal_name}_frq_get / value_{self.signal_name}_max_freq * value_{self.signal_name}_rated_motor_rev * {self.HYVFD_CALC_KEYS['speed_fb']['scale']};")
         output.append("            }")
         output.append(f"            value_{self.signal_name}_speed_fb_rps = value_{self.signal_name}_speed_fb / 60.0;")
         output.append(f"            if (value_{self.signal_name}_spindle_at_speed_tolerance == 0.0) {{")
@@ -478,7 +470,7 @@ class hy_vfd:
         cmds = []
         address = self.config["address"]
         for cmd in self.HYVFD_ON_ERROR_CMDS:
-            frame = [address] + cmd
+            frame = [address, *cmd]
             csum = crc16()
             csum.update(frame)
             frame += csum.intdigest()

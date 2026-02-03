@@ -4,6 +4,7 @@ import json
 import os
 
 import riocore
+
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -212,6 +213,7 @@ class Plugin(PluginBase):
                 "pwm": {"direction": "output", "edge": "target", "type": "NINJAPwmPwm"},
             }
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
@@ -282,6 +284,7 @@ class Plugin(PluginBase):
                     else:
                         psetup["pin"] = f"stepgen-ninja.{self.ninja_num}.input.{gpin}"
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         for instance in instances:
@@ -336,9 +339,9 @@ class Plugin(PluginBase):
         else:
             project = riocore.Project(copy.deepcopy(config))
         firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
-        cmd = f"cd {firmware_path} && make {command}"
-        return cmd
+        return f"cd {firmware_path} && make {command}"
 
+    @classmethod
     def extra_files(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))

@@ -3,6 +3,7 @@ import os
 import shutil
 
 import riocore
+
 from riocore.gui import halgraph
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -102,7 +103,7 @@ class documentation:
                 plugin = plugin_instance.instances_name
                 home_seq = joint_setup["HOME_SEQUENCE"]
                 setup = []
-                for key in {"mode", "homeswitch", "TYPE", "MIN_LIMIT", "MAX_LIMIT", "MAX_VELOCITY", "MAX_ACCELERATION", "SCALE_OUT", "SCALE_IN"}:
+                for key in ("mode", "homeswitch", "TYPE", "MIN_LIMIT", "MAX_LIMIT", "MAX_VELOCITY", "MAX_ACCELERATION", "SCALE_OUT", "SCALE_IN"):
                     value = joint_setup.get(key)
                     if value is None:
                         continue

@@ -1,11 +1,11 @@
-import socket
 import json
+import socket
 
 sock = None
 
 
 def connect(host=None):
-    global sock
+    global sock  # noqa: PLW0603
     if not sock:
         ip = "localhost"
         port = 10000
@@ -54,3 +54,4 @@ class component:
         if name in self._data:
             # self.update()
             return self._data[name]
+        return None

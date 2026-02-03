@@ -107,19 +107,7 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    # optional calculation for the signals (self.SIGNALS) (the python part / for rio-test)
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "dty":
-            freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-            vmin = int(signal_setup.get("userconfig", {}).get("min", self.SIGNALS["dty"]["min"]))
-            vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
-            if "dir" in self.plugin_setup.get("pins", {}):
-                value = int((value) * (self.system_setup["speed"] / freq) / (vmax))
-            else:
-                value = int((value - vmin) * (self.system_setup["speed"] / freq) / (vmax - vmin))
-        return value
-
-    # optional calculation for the signals (self.SIGNALS) (the c part / for riocomp.c)
+    # optional calculation for the signals (self.SIGNALS)
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "dty":
             freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))

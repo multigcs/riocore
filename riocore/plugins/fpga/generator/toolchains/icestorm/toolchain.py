@@ -16,8 +16,9 @@ class Toolchain:
         if self.toolchain_path:
             self.toolchain_path = [os.path.join(self.toolchain_path, "bin"), os.path.join(self.toolchain_path, "lib")]
 
+    @classmethod
     def info(cls):
-        info = {
+        return {
             "url": "https://github.com/YosysHQ/oss-cad-suite-build",
             "info": "Icestorm (yosys/nextpnr)",
             "description": "",
@@ -40,7 +41,6 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
 ```
 """,
         }
-        return info
 
     def pll(self, clock_in, clock_out):
         prefix = ""
@@ -165,9 +165,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("")
         if family == "ecp5":
             makefile_data.append("$(PROJECT).config: $(PROJECT).json pins.lpf")
-            makefile_data.append(
-                f"	nextpnr-$(FAMILY) {nextpnr_logging} --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config"
-            )
+            makefile_data.append(f"	nextpnr-$(FAMILY) {nextpnr_logging} --timing-allow-fail --pre-pack prepack.py --$(TYPE) --package $(PACKAGE) --json $(PROJECT).json --freq $(CLK_SPEED) --lpf pins.lpf --textcfg $(PROJECT).config")
             makefile_data.append('	@echo ""')
             makefile_data.append(f"	@{cmd_loggrep}")
             makefile_data.append('	@echo ""')
@@ -194,9 +192,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         elif family in {"gowin", "himbaechel"}:
             makefile_data.append("$(PROJECT)_pnr.json: $(PROJECT).json pins.cst")
             if family == "himbaechel":
-                makefile_data.append(
-                    f"	nextpnr-himbaechel {nextpnr_logging} --timing-allow-fail --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${{DEVICE_FAMILY}}"
-                )
+                makefile_data.append(f"	nextpnr-himbaechel {nextpnr_logging} --timing-allow-fail --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --device $(TYPE) --vopt cst=pins.cst --vopt family=${{DEVICE_FAMILY}}")
             else:
                 makefile_data.append(f"	nextpnr-gowin {nextpnr_logging} --seed 0 --json $(PROJECT).json --write $(PROJECT)_pnr.json --freq $(CLK_SPEED) --enable-globals --enable-auto-longwires --device $(TYPE) --cst pins.cst")
             makefile_data.append('	@echo ""')

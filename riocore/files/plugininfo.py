@@ -71,7 +71,7 @@ elif args.generate:
     text.append("| Type | Name | Info | Image | Comment |")
     text.append("| --- | :---: | --- | :---: | :---: |")
 
-    for title, ptype in {
+    for title_raw, ptype in {
         "Interfaces": "interface",
         "Joints": "joint",
         "IO": "io",
@@ -81,7 +81,7 @@ elif args.generate:
     }.items():
         # text.append(f"## {title}:")
         # text.append("")
-
+        title = title_raw
         for plugin_instance in plugins.plugin_instances:
             if ptype == plugin_instance.TYPE:
                 image = ""
@@ -89,16 +89,13 @@ elif args.generate:
                 image_path = os.path.join(plugin_path, "image.png")
                 if os.path.isfile(image_path):
                     image = f'<img src="{plugin_instance.NAME}/image.png" height="48">'
-
                 comments = ""
                 if plugin_instance.EXPERIMENTAL:
                     comments += "Experimental "
 
                 if plugin_instance.PLUGIN_TYPE == "gpio":
                     comments += "GPIO "
-
                 text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} | {comments} |")
-
                 title = ""
 
     text.append("")

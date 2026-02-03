@@ -40,6 +40,3 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
 
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        return value

@@ -263,7 +263,7 @@ class Plugin(PluginBase):
             if frame_check:
                 for signal_name, signal_setup in self.signals().items():
                     if signal_setup["direction"] == "input":
-                        if signal_name != "rx_csum" and signal_name != "tx_csum":
+                        if signal_name not in {"rx_csum", "tx_csum"}:
                             value = 0
                             signal_size = signal_setup["signal_size"]
                             signal_bfmt = signal_setup["signal_bfmt"]
@@ -357,7 +357,7 @@ class Plugin(PluginBase):
         output.append("typedef struct rx_data_t {")
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "output":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f"    uint{signal_size}_t {signal_name};")
         output.append("    uint8_t csum;")
@@ -366,7 +366,7 @@ class Plugin(PluginBase):
         output.append("typedef struct tx_data_t {")
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "input":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f"    uint{signal_size}_t {signal_name};")
         output.append("    uint8_t csum;")
@@ -406,7 +406,7 @@ class Plugin(PluginBase):
         line_n = 0
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "output":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f'        sprintf(tmp_str, "{signal_name:10} %9d", rx_frame.data.{signal_name});')
                     output.append(f"        lcd.setCursor(0, {line_n});")
@@ -423,7 +423,7 @@ class Plugin(PluginBase):
         value_n = 0
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "input":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f"    tx_frame.data.{signal_name} = {value_n + 1};")
                     value_n += 1

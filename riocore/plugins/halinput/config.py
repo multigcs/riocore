@@ -1,13 +1,17 @@
 import glob
 import os
 import sys
+
 from functools import partial
+
+import linux_event
 
 from PyQt5.QtCore import QTimer, pyqtSignal
 from PyQt5.QtWidgets import (
     QComboBox,
     QDialog,
     QDialogButtonBox,
+    QDoubleSpinBox,
     QGridLayout,
     QLabel,
     QLineEdit,
@@ -70,37 +74,42 @@ class config:
         self.plugin_setup = instance.plugin_setup
 
     def wiz2_joypad(self, selected_device):
-        import linux_event
-
         device_events = linux_event.InputDevice(selected_device)
 
         def wiz_select(action, clicked=None):
             selected_label.setText(action)
-            for item in actions:
-                actions[item].setStyleSheet("")
-            actions[action].setStyleSheet("QLineEdit {background-color: rgb(255, 200, 200);}")
+            for item, action_widget in actions.items():
+                if action == item:
+                    action_widget.setStyleSheet("QLineEdit {background-color: rgb(255, 200, 200);}")
+                else:
+                    action_widget.setStyleSheet("")
 
         def wiz_runTimer():
             action = selected_label.text()
             while device_events.readable():
                 ev = device_events.read_event()
-                if ev.type == "EV_SYN" or ev.type == "EV_SND" or ev.type == "EV_MSC" or ev.type == "EV_LED":
+                if ev.type in {"EV_SYN", "EV_SND", "EV_MSC", "EV_LED"}:
                     continue
-
                 halname = ev.code.lower().replace("_", "-")
-                if (ALL_ACTIONS[action] == "axis" and halname.startswith("abs")) or (ALL_ACTIONS[action] == "button" and halname.startswith("btn")):
+
+                event_label.setText(halname)
+                if (ALL_ACTIONS[action] == "axis" and halname.startswith("abs")) or (ALL_ACTIONS[action] == "button" and halname.startswith("btn")) or (ALL_ACTIONS[action] == "button" and halname.startswith("key-")):
                     actions[action].setText(halname)
+                else:
+                    event_label.setText(f"{halname} (err)")
 
         dialog = QDialog()
-        dialog.setWindowTitle("select device")
-        # dialog.setStyleSheet(STYLESHEET)
-
+        dialog.setWindowTitle("configure device")
         dialog.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
         dialog.buttonBox.accepted.connect(dialog.accept)
 
         dialog.layout = QGridLayout()
+
+        event_label = QLabel("---")
+        dialog.layout.addWidget(event_label, 0, 0)
+
         selected_label = QLabel("x")
-        dialog.layout.addWidget(selected_label, 0, 0)
+        dialog.layout.addWidget(selected_label, 0, 1)
 
         for key, value in self.instance.OPTIONS.items():
             if key not in self.plugin_setup:
@@ -108,7 +117,7 @@ class config:
 
         actions = {}
         row = 1
-        for action in ALL_ACTIONS:
+        for action, action_type in ALL_ACTIONS.items():
             actions[action] = ClickableLineEdit()
             actions[action].setText(self.plugin_setup.get(action, ""))
             button = QPushButton(action)
@@ -117,6 +126,13 @@ class config:
             button.clicked.connect(cb)
             dialog.layout.addWidget(actions[action], row, 0)
             dialog.layout.addWidget(button, row, 1)
+
+            if action_type == "axis":
+                actions[f"{action}_scale"] = QDoubleSpinBox()
+                actions[f"{action}_scale"].setMinimum(-99999999)
+                actions[f"{action}_scale"].setMaximum(99999999)
+                actions[f"{action}_scale"].setValue(self.plugin_setup.get(f"{action}_scale", ""))
+                dialog.layout.addWidget(actions[f"{action}_scale"], row, 2)
             row += 1
 
         wiz_select("x")
@@ -129,10 +145,13 @@ class config:
         timer.start(300)
 
         if dialog.exec():
-            for action in ALL_ACTIONS:
+            for action, action_type in ALL_ACTIONS.items():
                 halname = actions[action].text()
                 if halname:
                     self.plugin_setup[action] = halname
+                if action_type == "axis":
+                    self.plugin_setup[f"{action}_scale"] = actions[f"{action}_scale"].value()
+
             self.plugin_setup["joypad_name"] = selected_device
 
         timer.stop()
@@ -162,7 +181,8 @@ class config:
 
         if dialog.exec():
             selected_device = combo_devices.currentText()
-            self.wiz2_joypad(selected_device)
+            if selected_device:
+                self.wiz2_joypad(selected_device)
 
     def run(self):
         self.wiz_joypad()
@@ -200,8 +220,8 @@ if __name__ == "__main__":
             }
             for axis, default in {
                 "x": "abs-x",
-                "y": "-abs-y",
-                "z": "-abs-rz",
+                "y": "abs-y",
+                "z": "abs-rz",
                 "a": "",
                 "b": "",
                 "c": "",
@@ -209,6 +229,12 @@ if __name__ == "__main__":
                 self.OPTIONS[axis] = {
                     "type": str,
                     "default": default,
+                }
+                self.OPTIONS[f"{axis}_scale"] = {
+                    "type": float,
+                    "default": 127.5,
+                    "min": -127.5,
+                    "max": 127.5,
                 }
 
     instance = mock_instance()

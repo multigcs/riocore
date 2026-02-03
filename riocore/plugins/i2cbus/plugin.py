@@ -2,6 +2,7 @@ import glob
 import importlib
 import os
 import sys
+
 from copy import deepcopy
 
 from riocore.plugins import PluginBase
@@ -11,9 +12,10 @@ plugin_path = os.path.dirname(__file__)
 
 class Plugin(PluginBase):
     def clog2(self, x):
-        """Ceiling of log2"""
+        """Ceiling of log2!!!"""
         if x <= 0:
-            raise ValueError("domain error")
+            err = "domain error"
+            raise ValueError(err)
         return (x - 1).bit_length()
 
     def setup(self):
@@ -743,15 +745,6 @@ graph LR;
         instance_parameter["MAX_BITS"] = self.MAX_BITS
         instance_parameter["MAX_DIN"] = self.MAX_DIN
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        for name, setup in self.devices.items():
-            setup["name"] = name
-            if signal_name.startswith(name):
-                i2c_dev = setup["i2cdev"]
-                if hasattr(i2c_dev, "convert"):
-                    return i2c_dev.convert(signal_name, signal_setup, value)
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         for name, setup in self.devices.items():

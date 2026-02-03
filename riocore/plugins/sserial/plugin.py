@@ -5,6 +5,7 @@ import os
 import shutil
 
 import riocore
+
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -106,7 +107,7 @@ class Plugin(PluginBase):
                 "rgb": {"direction": "output", "edge": "target", "type": ["GPIO"]},
             }
             leds = int(self.plugin_setup.get("leds", self.option_default("leds")))
-            for n in range(0, leds):
+            for n in range(leds):
                 self.SIGNALS[f"red-{n:02d}"] = {"direction": "output", "bool": True}
                 self.SIGNALS[f"green-{n:02d}"] = {"direction": "output", "bool": True}
                 self.SIGNALS[f"blue-{n:02d}"] = {"direction": "output", "bool": True}
@@ -138,10 +139,11 @@ class Plugin(PluginBase):
             firmware_path = os.path.join(project.config["output_path"], "Firmware", self.title)
             if not os.path.exists(firmware_path):
                 riocore.log(f"ERROR: path not exist, please run generator first: {firmware_path}")
-                return
-            cmd = f"cd {firmware_path} && make {command}"
-            return cmd
+                return None
+            return f"cd {firmware_path} && make {command}"
+        return None
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
@@ -230,6 +232,7 @@ class Plugin(PluginBase):
             for pin in self.output_inverts:
                 parent.halg.setp_add(f"{pin}-invert", 1)
 
+    @classmethod
     def pdd_entry(cls, name, direction, ptype, size, offset, param_min=0.0, param_max=0.0):
         output = []
         output.append("    {")
@@ -246,6 +249,7 @@ class Plugin(PluginBase):
         output.append("    },")
         return output
 
+    @classmethod
     def extra_files(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
@@ -466,7 +470,7 @@ class Plugin(PluginBase):
                             output.append(f"    analogWrite({pwm}, pdata_in.pwm{pwm_num});")
                         if instance.pins_rgb:
                             leds = instance.leds
-                            for led in range(0, leds):
+                            for led in range(leds):
                                 output.append(f"    pixels.setPixelColor({led}, pixels.Color(")
                                 output.append(f"        (pdata_in.red & (1<<{led})) ? 255 : 0,")
                                 output.append(f"        (pdata_in.green & (1<<{led})) ? 255 : 0,")

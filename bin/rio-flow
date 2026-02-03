@@ -8,9 +8,10 @@ import json
 import math
 import os
 import shutil
+import signal
 import subprocess
 import sys
-import signal
+
 from functools import partial
 from math import ceil, floor
 
@@ -44,6 +45,7 @@ elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "ri
 
 
 import riocore
+
 from riocore.gui.flow_tabs import (
     TabAxis,
     TabBuilder,
@@ -115,9 +117,7 @@ class NodeEdge(QGraphicsPathItem):
         self.hover = False
 
     def paint(self, painter: QPainter, option, widget):
-        if hasattr(self._target_node, "plugin_instance") and self._target_node.plugin_instance.SUB_OF:
-            return
-        if hasattr(self._source_node, "plugin_instance") and self._source_node.plugin_instance.SUB_OF:
+        if hasattr(self._target_node, "plugin_instance") and self._target_node.plugin_instance.SUB_OF and self._source_node.plugin_instance.SUB_OF:
             return
         if self.isSelected():
             self._pen_default = QPen(Qt.GlobalColor.yellow)
@@ -448,8 +448,8 @@ class MyNode(QGraphicsItem):
             painter.drawText(QRectF(0, self.border_size / 2 + th, self.width, self.height - self.border_size - th), Qt.AlignmentFlag.AlignCenter, info)
 
     def paint_port(self, painter, px, py, color):
-        if hasattr(self, "plugin_instance") and self.plugin_instance.SUB_OF:
-            return
+        # if hasattr(self, "plugin_instance") and self.plugin_instance.SUB_OF:
+        #    return
         size = self.port_size
         painter.fillRect(QRectF(px - size / 2, py - size / 2, size, size), color)
         size = self.port_size - self.port_border - self.port_border
@@ -1413,7 +1413,7 @@ class Window(QMainWindow):
         project = riocore.Project(copy.deepcopy(self.config), output_dir)
         project.generator(preview=False)
 
-        subprocess.run(f"open {index_html} &", shell=True, close_fds=True)
+        subprocess.run(f"open {index_html} &", check=False, shell=True, close_fds=True)
 
     def generator_run(self):
         if not self.save_check():
@@ -1554,9 +1554,7 @@ class Window(QMainWindow):
             if confirmation == QMessageBox.Yes:
                 self.json_save()
                 return True
-            if confirmation == QMessageBox.No:
-                return True
-            return False
+            return confirmation == QMessageBox.No
         return True
 
     def struct_clean(self, data):
@@ -1674,7 +1672,8 @@ class Window(QMainWindow):
             self.config["plugins"].insert(0, bdict)
             del self.config["boardcfg"]
             for plugin_data in self.config.get("plugins", []):
-                for pin_name, pin_data in plugin_data.get("pins", {}).items():
+                for pin_name, pin_data_raw in plugin_data.get("pins", {}).items():
+                    pin_data = pin_data_raw
                     if isinstance(pin_data, str):
                         pin_data = {"pin": pin_data}
                     pin = pin_data.get("pin")
@@ -1998,11 +1997,9 @@ class Window(QMainWindow):
                     # force overwrite some fixed options / add missing options
                     for option_name, option_data in sub_plugin_config.items():
                         if option_name not in plugin_config["sub"][uid] or option_name in {"image", "rpos", "type", "pins", "rotate", "uid"}:
-                            plugin_config["sub"][uid][option_name] = sub_plugin_config[option_name]
-                    sub_plugin_config = plugin_config["sub"][uid]
-
+                            plugin_config["sub"][uid][option_name] = option_data
                     self.plugin_uids.append(uid)
-                    self.plugins.load_plugin(sub_plugin_id, sub_plugin_config, self.config)
+                    self.plugins.load_plugin(sub_plugin_id, plugin_config["sub"][uid], self.config)
                     if self.plugins.plugin_instances:
                         sub_plugin_instance = self.plugins.plugin_instances[-1]
                         sub_plugin_instance.SUB_OF = plugin_instance
@@ -2019,7 +2016,7 @@ class Window(QMainWindow):
 
         # load base and expansion plugins first
         first = ["base", "expansion"]
-        for ptype in first + [""]:
+        for ptype in [*first, ""]:
             for plugin_instance in pluginlist:
                 if ptype == plugin_instance.TYPE or (not ptype and plugin_instance.TYPE not in first):
                     py += self.insert_plugin(plugin_instance, py)
@@ -2401,9 +2398,7 @@ class Window(QMainWindow):
         if preselect:
             del plugin_instance.plugin_setup["preselect"]
             pnode.setSelected(True)
-
-        ph = max(ph, pnode.height) + 5
-        return ph
+        return max(ph, pnode.height) + 5
 
     def dialog_select(self, title, options):
         dialog = QDialog()
@@ -2532,8 +2527,7 @@ class Window(QMainWindow):
             if item._target_node == node and item._target_port == port:
                 if isinstance(item._source_node, ModifierNode):
                     modifiers.append(item._source_node.modifier)
-                    source = self.get_source(item._source_node, "in", modifiers)
-                    return source
+                    return self.get_source(item._source_node, "in", modifiers)
                 return (item._source_node, item._source_port)
         return None
 

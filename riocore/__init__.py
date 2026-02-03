@@ -476,32 +476,25 @@ class PluginImages:
         pass
 
     def relay(self):
-        setup = {"image": "relay.png", "pins": [(15, 150)], "signals": [(355, 150)]}
-        return setup
+        return {"image": "relay.png", "pins": [(15, 150)], "signals": [(355, 150)]}
 
     def relay_min(self):
-        setup = {"image": "relay_min.png", "pins": [(15, 150)], "signals": [(355, 150)]}
-        return setup
+        return {"image": "relay_min.png", "pins": [(15, 150)], "signals": [(355, 150)]}
 
     def ssr(self):
-        setup = {"image": "ssr.png", "pins": [(36, 36)], "signals": [(278, 40)]}
-        return setup
+        return {"image": "ssr.png", "pins": [(36, 36)], "signals": [(278, 40)]}
 
     def ssr2a(self):
-        setup = {"image": "ssr2a.png", "pins": [(40, 58)], "signals": [(278, 58)]}
-        return setup
+        return {"image": "ssr2a.png", "pins": [(40, 58)], "signals": [(278, 58)]}
 
     def led(self):
-        setup = {"image": "led.png", "pins": [(10, 10), (10, 30)], "signals": [(60, 10), (60, 30)]}
-        return setup
+        return {"image": "led.png", "pins": [(10, 10), (10, 30)], "signals": [(60, 10), (60, 30)]}
 
     def smdbutton(self):
-        setup = {"image": "smdbutton.png", "pins": [(10, 10)], "signals": [(60, 10)]}
-        return setup
+        return {"image": "smdbutton.png", "pins": [(10, 10)], "signals": [(60, 10)]}
 
     def smdled(self):
-        setup = {"image": "smdled.png", "pins": [(9, 13)], "signals": [(42, 13)]}
-        return setup
+        return {"image": "smdled.png", "pins": [(9, 13)], "signals": [(42, 13)]}
 
     def wled(self):
         setup = {"image": "wled.png", "pins": [(10, 36)], "signals": []}
@@ -526,65 +519,49 @@ class PluginImages:
         return setup
 
     def proximity(self):
-        setup = {"image": "proximity.png", "pins": [(10, 60)], "signals": [(360, 60), (340, 60)]}
-        return setup
+        return {"image": "proximity.png", "pins": [(10, 60)], "signals": [(360, 60), (340, 60)]}
 
     def estop(self):
-        setup = {"image": "estop.png", "pins": [(10, 160)], "signals": [(360, 160)]}
-        return setup
+        return {"image": "estop.png", "pins": [(10, 160)], "signals": [(360, 160)]}
 
     def probe(self):
-        setup = {"image": "probe.png", "pins": [(10, 160)], "signals": [(280, 160)]}
-        return setup
+        return {"image": "probe.png", "pins": [(10, 160)], "signals": [(280, 160)]}
 
     def switch(self):
-        setup = {"image": "switch.png", "pins": [(90, 100)], "signals": [(270, 100)]}
-        return setup
+        return {"image": "switch.png", "pins": [(90, 100)], "signals": [(270, 100)]}
 
     def opto(self):
-        setup = {"image": "opto.png", "pins": [(50, 27)], "signals": [(345, 27)]}
-        return setup
+        return {"image": "opto.png", "pins": [(50, 27)], "signals": [(345, 27)]}
 
     def w5500mini(self):
-        setup = {"image": "w5500-mini.png", "pins": [(200, 126), (15, 60), (200, 104), (200, 82), (15, 82), (200, 60)]}
-        return setup
+        return {"image": "w5500-mini.png", "pins": [(200, 126), (15, 60), (200, 104), (200, 82), (15, 82), (200, 60)]}
 
     def w5500(self):
-        setup = {"image": "w5500.png", "pins": [(44, 184), (44, 206), (44, 140), (44, 162), (22, 184), (22, 160)]}
-        return setup
+        return {"image": "w5500.png", "pins": [(44, 184), (44, 206), (44, 140), (44, 162), (22, 184), (22, 160)]}
 
     def spindle500w(self):
-        setup = {"image": "spindle500w.png", "pins": [(120, 40), (120, 70), (120, 100)], "signals": [(425, 60), (425, 90)]}
-        return setup
+        return {"image": "spindle500w.png", "pins": [(120, 40), (120, 70), (120, 100)], "signals": [(425, 60), (425, 90)]}
 
     def laser(self):
-        setup = {"image": "laser.png", "pins": [(20, 60), (20, 90), (20, 120)], "signals": [(375, 75), (375, 105)]}
-        return setup
+        return {"image": "laser.png", "pins": [(20, 60), (20, 90), (20, 120)], "signals": [(375, 75), (375, 105)]}
 
     def stepper(self):
-        setup = {"image": "stepper.png", "pins": [(30, 380), (30, 320), (30, 260)], "signals": [(360, 240), (360, 270), (360, 300)]}
-        return setup
+        return {"image": "stepper.png", "pins": [(30, 380), (30, 320), (30, 260)], "signals": [(360, 240), (360, 270), (360, 300)]}
 
     def servo42(self):
-        setup = {"image": "servo42.png", "pins": [(373, 235), (373, 260), (373, 210)], "signals": [(160, 240), (160, 270), (160, 300)]}
-        return setup
+        return {"image": "servo42.png", "pins": [(373, 235), (373, 260), (373, 210)], "signals": [(160, 240), (160, 270), (160, 300)]}
 
     def stepstick(self):
-        setup = {"image": "stepstick.png", "pins": [(140, 35), (140, 10), (140, 186)], "signals": [(70, 10), (70, 35), (70, 55)]}
-        return setup
+        return {"image": "stepstick.png", "pins": [(140, 35), (140, 10), (140, 186)], "signals": [(70, 10), (70, 35), (70, 55)]}
 
     def ethercatservo(self):
-        setup = {"image": "ethercat-servo.png", "pins": [(90, 270), (170, 270)], "signals": [(160, 240), (160, 270), (160, 300)]}
-        return setup
+        return {"image": "ethercat-servo.png", "pins": [(90, 270), (170, 270)], "signals": [(160, 240), (160, 270), (160, 300)]}
 
     def flow(self):
-        setup = {"image": "flow.png", "pins": [(100, 100)], "signals": [(175, 20), (175, 50)]}
-        return setup
+        return {"image": "flow.png", "pins": [(100, 100)], "signals": [(175, 20), (175, 50)]}
 
     def encoder(self):
-        setup = {"image": "encoder.png", "pins": [(210, 27), (210, 51), (210, 78)], "signals": [(80, 75), (80, 100), (80, 50)]}
-        return setup
+        return {"image": "encoder.png", "pins": [(210, 27), (210, 51), (210, 78)], "signals": [(80, 75), (80, 100), (80, 50)]}
 
     def encoder_optical(self):
-        setup = {"image": "encoder_optical.png", "pins": [(12, 120), (12, 142), (12, 164)], "signals": [(112, 120), (112, 142), (112, 164)]}
-        return setup
+        return {"image": "encoder_optical.png", "pins": [(12, 120), (12, 142), (12, 164)], "signals": [(112, 120), (112, 142), (112, 164)]}

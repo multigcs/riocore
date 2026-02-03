@@ -37,8 +37,8 @@ class Plugin(PluginBase):
         }
         for axis, default in {
             "x": "abs-x",
-            "y": "-abs-y",
-            "z": "-abs-rz",
+            "y": "abs-y",
+            "z": "abs-rz",
             "a": "",
             "b": "",
             "c": "",
@@ -46,6 +46,15 @@ class Plugin(PluginBase):
             self.OPTIONS[axis] = {
                 "type": str,
                 "default": default,
+            }
+            scale = 127.5
+            if axis in {"y", "z"}:
+                scale = -127.5
+            self.OPTIONS[f"{axis}_scale"] = {
+                "type": float,
+                "default": scale,
+                "min": -10000,
+                "max": 10000,
             }
 
     def hal(self, parent):
@@ -96,23 +105,26 @@ class Plugin(PluginBase):
             joints = axis_config["joints"]
             axis_lower = axis_name.lower()
             jaxis = self.plugin_setup.get(axis_lower, self.option_default(axis_lower))
+            scale = self.plugin_setup.get(f"{axis_lower}_scale", self.option_default(f"{axis_lower}_scale"))
             reverse = False
             if jaxis:
                 if jaxis[0] == "-":
                     jaxis = jaxis[1:]
                     reverse = True
                 if reverse:
-                    parent.halg.setp_add(f"input.0.{jaxis}-scale", -127.5)
+                    parent.halg.setp_add(f"input.0.{jaxis}-scale", scale * -1.0)
                 else:
-                    parent.halg.setp_add(f"input.0.{jaxis}-scale", 127.5)
+                    parent.halg.setp_add(f"input.0.{jaxis}-scale", scale)
                 parent.halg.fmt_add(f"addf mux2_{axis_lower} servo-thread")
                 parent.halg.net_add("halui.machine.is-on", f"mux2_{axis_lower}.sel")
+                # TODO: abs/rel
                 parent.halg.net_add(f"input.0.{jaxis}-position", f"mux2_{axis_lower}.in1")
                 parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.axis.{axis_lower}.analog")
                 for joint_setup in joints:
                     joint = joint_setup["num"]
                     parent.halg.net_add(f"mux2_{axis_lower}.out", f"halui.joint.{joint}.analog")
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         for instance in instances:

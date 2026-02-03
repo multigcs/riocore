@@ -7,7 +7,6 @@ import json
 import socket
 import linuxcnc
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--port", help="listen port", type=int, default=1000)
 parser.add_argument("--name", help="component name", type=str, default="rmpg")

@@ -334,14 +334,16 @@ class crc8:
 
     def update(self, bytes_):
         if isinstance(bytes_, str):
-            raise TypeError("Unicode-objects must be encoded before hashing")
+            err = "Unicode-objects must be encoded before hashing"
+            raise TypeError(err)
         if not isinstance(bytes_, (bytes, bytearray)):
             if isinstance(bytes_, (list)):
                 bytes_ = bytearray(bytes_)
             elif isinstance(bytes_, (int)):
                 bytes_ = bytearray([bytes_])
             else:
-                raise TypeError("object supporting the buffer API required")
+                err = "object supporting the buffer API required"
+                raise TypeError(err)
         table = self._table
         _sum = self._sum
         for byte in bytes_:

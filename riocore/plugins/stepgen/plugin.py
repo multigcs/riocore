@@ -165,6 +165,7 @@ If higher rates are needed, a hardware step generator is a better choice."""
         mode = self.plugin_setup.get("mode", self.option_default("mode"))
         self.PINDEFAULTS = self.mode_pins[mode]
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         modes = []

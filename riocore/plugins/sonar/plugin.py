@@ -36,11 +36,6 @@ class Plugin(PluginBase):
             },
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if value != 0:
-            value = 1000 / self.system_setup["speed"] / 20 * value * 343.2
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         return """
         value = 1000 / OSC_CLOCK / 20 * value * 343.2;

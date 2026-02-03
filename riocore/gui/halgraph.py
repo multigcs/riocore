@@ -113,7 +113,7 @@ class HalGraph:
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel)
                     elif target.startswith("pyvcp"):
                         self.gAll.edge(source_name, target_name, label=elabel)
-                    elif source.startswith("rio.") or source.startswith("lcec.0.rio."):
+                    elif source.startswith(("rio.", "lcec.0.rio.")):
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel)
                     else:
                         self.gAll.edge(source_name, target_name, label=elabel)
@@ -136,9 +136,9 @@ class HalGraph:
                     title = f"{group_name}\\n--{comp}--"
                     color = "lightgray"
 
-                for setp, value in self.setps.items():
-                    if setp.startswith(group_name):
-                        setp = setp.split(".")[-1]
+                for setp_raw, value in self.setps.items():
+                    if setp_raw.startswith(group_name):
+                        setp = setp_raw.split(".")[-1]
                         if html:
                             pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
                         else:
@@ -221,8 +221,8 @@ class HalGraph:
         #    print(f"loading {basepath}/{filepath}")
 
         halfile_data = open(os.path.join(basepath, filepath)).read()
-        for line in halfile_data.split("\n"):
-            line = line.strip()
+        for line_raw in halfile_data.split("\n"):
+            line = line_raw.strip()
 
             if line.startswith("source "):
                 self.load_halfile(basepath, line.split()[-1])

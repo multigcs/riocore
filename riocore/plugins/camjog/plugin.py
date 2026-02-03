@@ -44,6 +44,7 @@ class Plugin(PluginBase):
         }
         self.camjog_num = 0
 
+    @classmethod
     def component_loader(cls, instances):
         devices = []
         for cnum, instance in enumerate(instances):

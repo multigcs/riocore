@@ -458,7 +458,7 @@ class hal_generator:
             return None
 
         # set default operation by type
-        haltype = self.get_type([output_pin] + input_pin.split())
+        haltype = self.get_type([output_pin, *input_pin.split()])
         if haltype is bool:
             logic = "OR"
             if input_pin[0] == "|":
@@ -725,7 +725,7 @@ class hal_generator:
             postgui_data.append("# setp")
             postgui_data.append("#################################################################################")
 
-            for pin in sorted(list(self.setps)):
+            for pin in sorted(self.setps):
                 value = self.setps[pin]
                 if "[JOINT_" in str(value):
                     continue

@@ -2,6 +2,7 @@ import copy
 import importlib
 import os
 import textwrap
+
 from functools import partial
 
 from PyQt5 import QtSvg
@@ -25,6 +26,7 @@ from PyQt5.QtWidgets import (
 )
 
 import riocore
+
 from riocore import halpins
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -208,8 +210,8 @@ class GuiPlugins:
 
         joint_options = copy.deepcopy(halpins.JOINT_OPTIONS)
 
-        for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
-            key = key.lower()
+        for key_raw, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
+            key = key_raw.lower()
             if key == "scale_out":
                 key = "scale"
             if key in joint_options:
@@ -250,8 +252,7 @@ class GuiPlugins:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         if signal_name == "position":
                             options.append(f"{plugin_instance.title}:{signal_name}")
-                option_setup = {"type": "select", "options": options, "default": ""}
-                option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
+                option_widget = self.parent.edit_item(joints_setup, option, {"type": "select", "options": options, "default": ""}, cb=update, help_text=tootltip)
             else:
                 option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
@@ -280,8 +281,9 @@ class GuiPlugins:
             option_label.setToolTip(tootltip)
             option_row.addWidget(option_label, stretch=3)
             if option == "home_sequence":
-                option_setup = {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}
-            option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
+                option_widget = self.parent.edit_item(joints_setup, option, {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}, cb=update, help_text=tootltip)
+            else:
+                option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
             option_row.addWidget(QLabel(option_setup.get("unit", "")), stretch=1)
             homing_layout.addLayout(option_row)
@@ -1162,11 +1164,11 @@ def md2label(text):
                 table_format = cols
                 continue
             formated.append(" <tr>")
-            for col_n, col in enumerate(cols):
+            for col_n, col_raw in enumerate(cols):
+                col = col_raw.strip()
                 if not table:
-                    formated.append(f"<th>{col.strip()}</th>")
+                    formated.append(f"<th>{col}</th>")
                 else:
-                    col = col.strip()
                     if col and col[0] == "[" and col[-1] == ")" and "](" in col:
                         col = col.split("]")[0][1:]
                     if table_format[col_n].strip() == ":---:":

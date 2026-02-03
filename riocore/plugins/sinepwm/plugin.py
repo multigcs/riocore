@@ -102,12 +102,6 @@ class Plugin(PluginBase):
 
         return new_instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "freq":
-            if value != 0:
-                value = int(self.system_setup["speed"] / value / 30)
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "freq":
             return """

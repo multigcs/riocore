@@ -5,8 +5,8 @@ class i2c_device:
         "addresses": ["0x60", "0x61", "0x62", "0x63", "0x64", "0x65", "0x66", "0x67"],
     }
 
-    def __init__(self, setup, system_setup={}):
-        self.system_setup = system_setup
+    def __init__(self, setup, system_setup=None):
+        self.system_setup = system_setup or {}
         self.name = setup["name"]
         self.addr = setup["address"]
         self.INTERFACE = {

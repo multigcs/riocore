@@ -1,12 +1,13 @@
 import copy
 import glob
 import importlib
+import json
 import os
 import shutil
 import stat
-import json
 
 import riocore
+
 from riocore import halpins
 from riocore.generator.flexvcp import flexvcp
 from riocore.generator.gladevcp import gladevcp
@@ -318,7 +319,7 @@ class LinuxCNC:
             vcp_setup = riocore.gui_dict.get(gui, {}).get("vcp", {})
             if vcp_setup:
                 if vcp_type == "auto":
-                    vcp_type = list(vcp_setup)[0]
+                    vcp_type = next(iter(vcp_setup))
                 if vcp_type not in vcp_setup:
                     print(f"ERROR: vcp '{vcp_type}' not supported for gui '{gui}'")
                     exit(1)
@@ -419,7 +420,7 @@ class LinuxCNC:
             os.system(syc_cmd)
 
     def ini_mdi_command(self, command, title=None):
-        """Used by addons to add mdi-command's and prevent doubles"""
+        """Used by addons to add mdi-command's and prevent doubles!!!"""
         mdi_index = None
         mdi_n = 0
         for key, value in self.ini_setup["HALUI"].items():
@@ -717,7 +718,8 @@ class LinuxCNC:
         output = []
         for section, setup in ini_setup.items():
             output.append(f"[{section}]")
-            for key, value in setup.items():
+            for key_raw, value in setup.items():
+                key = key_raw
                 if "|" in key:
                     key = key.split("|")[0]
                 if isinstance(value, list):
@@ -780,10 +782,8 @@ class LinuxCNC:
                 if position_mode == "velocity":
                     pid_setup = self.PID_DEFAULTS.copy()
                     pid_setup["DEADBAND"] = round(1 / abs(joint_config["SCALE_OUT"]) * 2, 4)
-                    for key, value in pid_setup.items():
-                        setup_value = joint_config.get(f"PID_{key.upper()}")
-                        if setup_value:
-                            value = setup_value
+                    for key, value_raw in pid_setup.items():
+                        value = joint_config.get(f"PID_{key.upper()}") or value_raw
                         output.append(f"{key:18s} = {value}")
                     output.append("")
 
@@ -805,7 +805,8 @@ class LinuxCNC:
                     "HOME_OFFSET",
                     "HOME",
                     "HOME_SEQUENCE",
-                ] + plugin_instance.JOINT_OPTIONS
+                    *plugin_instance.JOINT_OPTIONS,
+                ]
                 for key, value in joint_config.items():
                     if key in options:
                         output.append(f"{key:18s} = {value}")
@@ -858,7 +859,7 @@ RunFromLineDialog_play_sound = True
 RunFromLineDialog_sound_type = READY
 
 [BOOK_KEEPING]
-last_loaded_directory = 
+last_loaded_directory =
 last_loaded_file = None
 style_QSS_Path = {qtdragon_config.get("BOOK_KEEPING", {}).get("style_QSS_Path", "/usr/share/qtvcp/screens/qtdragon_hd/qtdragon_hd.qss")}
 
@@ -910,8 +911,8 @@ shutdown_play_sound = True
 shutdown_alert_sound_type = READY
 shutdown_exit_sound_type = LOGOUT
 shutdown_msg_title = Do you want to Shutdown now?
-shutdown_msg_focus_text = 
-shutdown_msg_detail = 
+shutdown_msg_focus_text =
+shutdown_msg_detail =
 
 [NOTIFY_OPTIONS]
 notify_start_greeting = False
@@ -952,10 +953,10 @@ Reload program = False
 Reload tool = False
 Use keyboard = False
 Use tool sensor = False
-Use tool touchplate = {str(tool_touchplate)}
+Use tool touchplate = {tool_touchplate!s}
 Run from line = False
 Use virtual keyboard = False
-Use camera = {str(qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Use camera", False))}
+Use camera = {qtdragon_config.get("CUSTOM_FORM_ENTRIES", {}).get("Use camera", False)!s}
 Use alpha display mode = False
 Inhibit display mouse selection = True
 Camview xscale = 100
@@ -1468,7 +1469,7 @@ o<{oword}> endsub
 
         elif gui in {"tnc"}:
             try:
-                import tnc
+                import tnc  # noqa: PLC0415
 
                 tnc_path = os.path.dirname(tnc.__file__)
                 os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
@@ -1856,7 +1857,7 @@ if __name__ == "__main__":
                     direction = widget["direction"]
                     boolean = widget["boolean"]
                     virtual = widget["virtual"]
-                    group = widget["group"]
+                    wgroup = widget["group"]
                     halname = widget["halname"]
                     netname = widget["netname"]
                     mapping = widget["mapping"]
@@ -1893,7 +1894,7 @@ if __name__ == "__main__":
                     if len(halname_short) >= MAX_HAL_LEN - len(self.gui_prefix):
                         riocore.log(f"INFO: halname too long (>{MAX_HAL_LEN}): {halname_short} ({halname_full})")
 
-                    if group and group[0] == "#":
+                    if wgroup and wgroup[0] == "#":
                         title = f"{displayconfig['title']}"
                         gui_gen.draw_vbox_begin()
                         gui_gen.draw_title(title, no_expand=True)
@@ -1901,7 +1902,7 @@ if __name__ == "__main__":
 
                     gui_pinname = getattr(gui_gen, f"draw_{dtype}")(title, halname_short, setup=displayconfig)
 
-                    if group and group[0] == "#":
+                    if wgroup and wgroup[0] == "#":
                         gui_gen.draw_vbox_end()
 
                     # fselect handling
@@ -2112,24 +2113,23 @@ if __name__ == "__main__":
                         self.halg.net_add(signal_config["halname"], "qtdragon.spindle-volts")
                     # elif signal_name.endswith("_at_speed"):
                     #     self.halg.net_add(signal_config["halname"], "qtdragon.spindle-is-at-speed")
-        else:
-            if toolchange == "manual":
-                if gui == "gmoccapy":
-                    self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
-                    self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
-                    self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                elif gui != "woodpecker":
-                    self.halg.fmt_add_top("# manual toolchanger")
-                    self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
-                    self.halg.fmt_add_top("")
-                    self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
-                    self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
-                    self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
-                    self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-            else:
+        elif toolchange == "manual":
+            if gui == "gmoccapy":
+                self.halg.net_add("iocontrol.0.tool-prep-number", "gmoccapy.toolchange-number", "tool-prep-number")
+                self.halg.net_add("iocontrol.0.tool-change", "gmoccapy.toolchange-change", "tool-change")
+                self.halg.net_add("gmoccapy.toolchange-changed", "iocontrol.0.tool-changed", "tool-changed")
                 self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
-                self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
+            elif gui != "woodpecker":
+                self.halg.fmt_add_top("# manual toolchanger")
+                self.halg.fmt_add_top("loadusr -W hal_manualtoolchange")
+                self.halg.fmt_add_top("")
+                self.halg.net_add("iocontrol.0.tool-prep-number", "hal_manualtoolchange.number", "tool-prep-number")
+                self.halg.net_add("iocontrol.0.tool-change", "hal_manualtoolchange.change", "tool-change")
+                self.halg.net_add("hal_manualtoolchange.changed", "iocontrol.0.tool-changed", "tool-changed")
+                self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+        else:
+            self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
+            self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:
@@ -2292,8 +2292,8 @@ if __name__ == "__main__":
                         if direction == "inout":
                             self.halg.fmt_add(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
                         elif direction == "input":
-                            for net in netname.split(","):
-                                net = net.strip()
+                            for net_raw in netname.split(","):
+                                net = net_raw.strip()
                                 net_type = halpins.LINUXCNC_SIGNALS[direction].get(net, {}).get("type", float)
                                 if net_type is int:
                                     self.halg.net_add(f"{rprefix}{halname}-s32", net)
@@ -2475,8 +2475,8 @@ if __name__ == "__main__":
 
                     # overwrite with user configuration
                     joint_config = joint_data["instance"].plugin_setup.get("joint", {})
-                    for key, value in joint_config.items():
-                        key = key.upper()
+                    for key_raw, value in joint_config.items():
+                        key = key_raw.upper()
                         key = {"SCALE": "SCALE_OUT"}.get(key, key)
                         joint_data[key] = value
 
@@ -2488,7 +2488,6 @@ if __name__ == "__main__":
 
                 # overwrite axis configuration with user data
                 for key, value in linuxcnc_config.get("axis", {}).get(axis_name, {}).items():
-                    key = key.upper()
-                    axis_data[key] = value
+                    axis_data[key.upper()] = value
 
         return axis_config

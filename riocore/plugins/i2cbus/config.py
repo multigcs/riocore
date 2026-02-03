@@ -4,6 +4,7 @@ import os
 import sys
 
 import graphviz
+
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
     QAbstractItemView,
@@ -11,10 +12,10 @@ from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
-    QHeaderView,
     QDialogButtonBox,
     QDoubleSpinBox,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QLineEdit,
     QPushButton,
@@ -289,7 +290,7 @@ class config:
             if dtype in self.device_types and "config" in self.device_types[dtype]:
                 self.device_layout.addWidget(QLabel("Device-Options:"), stretch=0)
                 for name, cdata in self.device_types[dtype]["config"].items():
-                    value = value = self.config["devices"].get(config_name, {}).get(name, cdata["default"])
+                    value = self.config["devices"].get(config_name, {}).get(name, cdata["default"])
                     self.device_layout.addWidget(QLabel(f"{name.replace('_', ' ').title()}:"))
                     widget = self.add_widget(cdata, value)
                     self.device_layout.addWidget(widget)
@@ -541,6 +542,7 @@ class config:
         if dialog.exec():
             self.instance.plugin_setup["config"] = self.config
             return ""
+        return None
 
 
 if __name__ == "__main__":

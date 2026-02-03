@@ -3,6 +3,7 @@ import os
 import sys
 
 import riocore
+
 from riocore.plugins import PluginBase
 
 
@@ -83,10 +84,9 @@ class Plugin(PluginBase):
             px = 263
             self.SUB_PLUGINS = []
             puid = self.plugin_setup.get("uid")
-            for key in self.plugin_setup.get("sub", {}).keys():
+            for key in self.plugin_setup.get("sub", {}):
                 self.plugin_setup["sub"][key]["keep"] = False
             for mn, module in enumerate(modules.split()):
-                mn = str(mn)
                 key = f"{self.instances_name}-{mn}"
                 if "sub" not in self.plugin_setup:
                     self.plugin_setup["sub"] = {}
@@ -216,6 +216,8 @@ class Plugin(PluginBase):
                 if pin_data["type"] == "SIGNAL":
                     self.SIGNALS[pin_name] = pin_data
                 else:
+                    pin_data["suffix"] = pin_data["pin"]
+                    pin_data["pin"] = f"{self.instances_name}:{pin_name}"
                     self.PINDEFAULTS[pin_name] = pin_data
 
             for option_name, option_data in self.json_data.get("options", {}).items():
@@ -228,6 +230,7 @@ class Plugin(PluginBase):
 
         self.PREFIX_CIA402 = ""
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         cia402_num = 0
         lcec_num = 0
@@ -243,8 +246,9 @@ class Plugin(PluginBase):
             psetup = connected_pin["setup"]
             pin = connected_pin["pin"]
             if pin in self.PINDEFAULTS and "pin" in self.PINDEFAULTS[pin] and not pin.startswith("BUS:"):
-                psetup["pin"] = f"{self.PREFIX}.{self.PINDEFAULTS[pin]['pin']}"
+                psetup["pin"] = f"{self.PREFIX}.{self.PINDEFAULTS[pin]['suffix']}"
 
+    @classmethod
     def extra_files(cls, parent, instances):
         output = []
         output.append("<masters>")
@@ -349,6 +353,7 @@ class Plugin(PluginBase):
         target = os.path.join(parent.component_path, "ethercat-conf.xml")
         open(target, "w").write("\n".join(output))
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         output.append("# ethercat component")

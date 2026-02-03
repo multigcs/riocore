@@ -4,15 +4,16 @@ import json
 import os
 
 import riocore
+
 from riocore.plugins import PluginBase
 
-from .generator.gateware import gateware
 from .generator.component import component
-from .generator.rosbridge import rosbridge
+from .generator.gateware import gateware
+from .generator.jslib import jslib
 from .generator.mqttbridge import mqttbridge
 from .generator.pylib import pylib
+from .generator.rosbridge import rosbridge
 from .generator.simulator import simulator
-from .generator.jslib import jslib
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -96,7 +97,7 @@ class Plugin(PluginBase):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):
-                    pin_data = {"pin": pin_data}
+                    slot["pins"][pin_name] = {"pin": pin_data}
                 self.PINDEFAULTS[f"{slot_name}:{pin_name}"] = {
                     "edge": "source",
                     "optional": True,
@@ -127,6 +128,7 @@ class Plugin(PluginBase):
                 sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
             self.SUB_PLUGINS.append(sub_plugin)
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         subs = {}
         for instance in instances:
@@ -167,6 +169,7 @@ class Plugin(PluginBase):
     def start_sh(self, parent):
         return f'sudo halcompile --install "$DIRNAME/riocomp-{self.instances_name}.c"\n'
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         for instance in instances:
@@ -196,10 +199,10 @@ class Plugin(PluginBase):
         gateware_path = os.path.join(project.config["output_path"], "Gateware", self.instances_name)
         if not os.path.exists(gateware_path):
             riocore.log(f"ERROR: path not exist, please run generator first: {gateware_path}")
-            return
-        cmd = f"cd {gateware_path} && make {command}"
-        return cmd
+            return None
+        return f"cd {gateware_path} && make {command}"
 
+    @classmethod
     def extra_files(cls, parent, instances):
         for instance in instances:
             gateware_path = os.path.join(parent.project.config["output_path"], "Gateware", instance.instances_name)

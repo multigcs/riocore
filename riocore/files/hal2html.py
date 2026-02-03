@@ -83,7 +83,7 @@ print("""<html>
  body {
   color: white;
   background-color: #333333;
-} 
+}
 </style>
 """)
 for line in hallines:

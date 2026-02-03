@@ -5,8 +5,8 @@ class i2c_device:
         "addresses": ["0x48", "0x49", "0x4A", "0x4B", "0x4C", "0x4D", "0x4E", "0x4F"],
     }
 
-    def __init__(self, setup, system_setup={}):
-        self.system_setup = system_setup
+    def __init__(self, setup, system_setup=None):
+        self.system_setup = system_setup or {}
         self.name = setup["name"]
         self.addr = setup["address"]
         self.INTERFACE = {
@@ -99,12 +99,7 @@ class i2c_device:
             },
             {
                 "mode": "read",
-                "data_in": [
-                    f"                                {self.name}_adc1 <= data_in[31:24];"
-                    f"                                {self.name}_adc2 <= data_in[23:16];"
-                    f"                                {self.name}_adc3 <= data_in[15:8];"
-                    f"                                {self.name}_adc4 <= data_in[7:0];"
-                ],
+                "data_in": [f"                                {self.name}_adc1 <= data_in[31:24];                                {self.name}_adc2 <= data_in[23:16];                                {self.name}_adc3 <= data_in[15:8];                                {self.name}_adc4 <= data_in[7:0];"],
                 "bytes": 4,
             },
         ]

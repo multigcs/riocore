@@ -1,9 +1,0 @@
-o<zero_vise_xy> sub
-G91 G1 X -.1 Y .1 F60
-G90
-(debug,move XY .1 for Vise wiggler)
-o<zero_vise_xy> endsub
-
-m2
-
-

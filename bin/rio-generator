@@ -223,9 +223,9 @@ if args.config:
             print()
             ret = os.system(cmd)
             if args.udpsim:
-                for proc_sim in proc_sims:
-                    print(f"stopping {proc_sims[proc_sim].pid} and sub processes..")
-                    kill(proc_sims[proc_sim].pid)
+                for proc_sim_data in proc_sims.values():
+                    print(f"stopping {proc_sim_data.pid} and sub processes..")
+                    kill(proc_sim_data.pid)
                     print("..done")
 
             if ret != 0:

@@ -60,7 +60,7 @@ class i2c_device:
         },
     }
 
-    def __init__(self, setup, system_setup={}):
+    def __init__(self, setup, system_setup=None):
         self.IODIR_A = 0x00
         self.IODIR_B = 0x01
         self.IPOL_A = 0x02
@@ -70,7 +70,7 @@ class i2c_device:
         self.GPIO_A = 0x12
         self.GPIO_B = 0x13
 
-        self.system_setup = system_setup
+        self.system_setup = system_setup or {}
         self.name = setup["name"]
         self.addr = setup["address"]
         self.INTERFACE = {}

@@ -2,6 +2,7 @@ import os
 import time
 
 import riocore
+
 from riocore.modifiers import Modifiers
 
 riocore_path = os.path.dirname(riocore.__file__)
@@ -164,7 +165,7 @@ class PluginBase:
             image_path = os.path.join(plugin_path, self.IMAGE)
         if os.path.isfile(image_path):
             return image_path
-        return
+        return None
 
     def signed(self, n, byte_count):
         return int.from_bytes(n.to_bytes(byte_count, "little", signed=False), "little", signed=True)
@@ -500,8 +501,7 @@ class PluginBase:
         return instances
 
     def gateware_instances(self):
-        instances = self.gateware_instances_base()
-        return instances
+        return self.gateware_instances_base()
 
     def option_default(self, name, default=None):
         return self.OPTIONS.get(name, {}).get("default", default)

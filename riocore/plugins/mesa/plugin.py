@@ -3,6 +3,7 @@ import json
 import os
 
 import riocore
+
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -401,7 +402,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             else:
                 cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
             return cmd
+        return None
 
+    @classmethod
     def update_prefixes(cls, parent, instances):
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
@@ -446,6 +449,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 else:
                     del psetup["pin"]
 
+    @classmethod
     def component_loader(cls, instances):
         output = []
         for instance in instances:
@@ -488,11 +492,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             parent.halg.net_add(f"{self.hm2_prefix}.packet-error-exceeded", "!iocontrol.0.emc-enable-in")
             parent.halg.net_add(f"{self.hm2_prefix}.packet-error-exceeded", "halui.estop.activate")
 
-        elif node_type == "pwm":
-            scale = self.plugin_setup.get("scale", self.option_default("scale"))
-            parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
-
-        elif node_type == "encoder":
+        elif node_type in {"pwm", "encoder"}:
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             parent.halg.setp_add(f"{self.PREFIX}.scale", scale)
         elif node_type == "stepper":
