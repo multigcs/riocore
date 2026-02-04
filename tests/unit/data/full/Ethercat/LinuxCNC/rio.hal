@@ -1,0 +1,141 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=2
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# ethercat component
+loadusr -W lcec_conf ethercat-conf.xml
+loadrt lcec
+loadrt cia402 count=2
+
+# read
+addf lcec.read-all servo-thread
+addf cia402.0.read-all servo-thread
+addf cia402.1.read-all servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+addf cia402.0.write-all servo-thread
+addf cia402.1.write-all servo-thread
+addf lcec.write-all servo-thread
+
+#################################################################################
+# iocontrol
+#################################################################################
+net user-enable-out                      => iocontrol.0.emc-enable-in
+net tool-change                          <= iocontrol.0.tool-change
+net tool-changed                         => iocontrol.0.tool-changed
+net tool-prep-number                     <= iocontrol.0.tool-prep-number
+net tool-prepared                        <= iocontrol.0.tool-prepare
+net tool-prepared                        => iocontrol.0.tool-prepared
+net user-enable-out                      <= iocontrol.0.user-enable-out
+
+#################################################################################
+# lcec
+#################################################################################
+net sig_lcec_0_ec1_din1                  <= lcec.0.ec1.din1
+net sig_lcec_0_ec1_din2                  <= lcec.0.ec1.din2
+net sig_lcec_0_ec1_din3                  <= lcec.0.ec1.din3
+net sig_lcec_0_ec1_din4                  <= lcec.0.ec1.din4
+net sig_lcec_0_ec1_home-switch           <= lcec.0.ec1.home-switch
+net sig_lcec_0_ec1_limit-neg             <= lcec.0.ec1.limit-neg
+net sig_lcec_0_ec1_limit-pos             <= lcec.0.ec1.limit-pos
+net sig_lcec_0_ec2_din1                  <= lcec.0.ec2.din1
+net sig_lcec_0_ec2_din2                  <= lcec.0.ec2.din2
+net sig_lcec_0_ec2_din3                  <= lcec.0.ec2.din3
+net sig_lcec_0_ec2_din4                  <= lcec.0.ec2.din4
+net sig_lcec_0_ec2_home-switch           <= lcec.0.ec2.home-switch
+net sig_lcec_0_ec2_limit-neg             <= lcec.0.ec2.limit-neg
+net sig_lcec_0_ec2_limit-pos             <= lcec.0.ec2.limit-pos
+
+net sig_lcec_0_ec3-0_din-0-not           <= lcec.0.ec3-0.din-0-not
+net sig_lcec_0_ec3-0_din-1               <= lcec.0.ec3-0.din-1
+net sig_lcec_0_ec3-0_din-2               <= lcec.0.ec3-0.din-2
+net sig_lcec_0_ec3-0_din-3               <= lcec.0.ec3-0.din-3
+net sig_pyvcp_lcec_0_ec3-2_dout-0        => lcec.0.ec3-2.dout-0
+net sig_pyvcp_lcec_0_ec3-2_dout-1        => lcec.0.ec3-2.dout-1
+net sig_pyvcp_lcec_0_ec3-2_dout-2        => lcec.0.ec3-2.dout-2
+net sig_pyvcp_lcec_0_ec3-2_dout-3        => lcec.0.ec3-2.dout-3
+net sig_pyvcp_lcec_0_ec3-4_aout-0-enable => lcec.0.ec3-4.aout-0-enable
+net sig_pyvcp_lcec_0_ec3-4_aout-0-value-f => lcec.0.ec3-4.aout-0-value
+net sig_pyvcp_lcec_0_ec3-4_aout-1-enable => lcec.0.ec3-4.aout-1-enable
+net sig_pyvcp_lcec_0_ec3-4_aout-1-value-f => lcec.0.ec3-4.aout-1-value
+net sig_lcec_0_ec3-5_slave-online        <= lcec.0.ec3-5.slave-online
+
+#################################################################################
+# halui
+#################################################################################
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
+
+#################################################################################
+# joint-0
+#################################################################################
+setp cia402.0.pos-scale                  [JOINT_0]SCALE_OUT
+net j0statusword                         <= lcec.0.ec1.status-word
+net j0drv-pos                            <= lcec.0.ec1.pos-actual
+net j0control                            <= cia402.0.controlword
+net j0target-pos                         <= cia402.0.drv-target-position
+net j0pos-cmd                            <= joint.0.motor-pos-cmd
+net j0pos-fb                             <= cia402.0.pos-fb
+net j0enable                             <= joint.0.amp-enable-out
+net j0fault                              <= cia402.0.drv-fault
+net j0statusword                         => cia402.0.statusword
+net j0drv-pos                            => cia402.0.drv-actual-position
+net j0control                            => lcec.0.ec1.control-word
+net j0target-pos                         => lcec.0.ec1.target-position
+net j0pos-cmd                            => cia402.0.pos-cmd
+net j0pos-fb                             => joint.0.motor-pos-fb
+net j0enable                             => cia402.0.enable
+net j0fault                              => joint.0.amp-fault-in
+
+#################################################################################
+# joint-1
+#################################################################################
+setp cia402.1.pos-scale                  [JOINT_1]SCALE_OUT
+net j1statusword                         <= lcec.0.ec2.status-word
+net j1drv-pos                            <= lcec.0.ec2.pos-actual
+net j1control                            <= cia402.1.controlword
+net j1target-pos                         <= cia402.1.drv-target-position
+net j1pos-cmd                            <= joint.1.motor-pos-cmd
+net j1pos-fb                             <= cia402.1.pos-fb
+net j1enable                             <= joint.1.amp-enable-out
+net j1fault                              <= cia402.1.drv-fault
+net j1statusword                         => cia402.1.statusword
+net j1drv-pos                            => cia402.1.drv-actual-position
+net j1control                            => lcec.0.ec2.control-word
+net j1target-pos                         => lcec.0.ec2.target-position
+net j1pos-cmd                            => cia402.1.pos-cmd
+net j1pos-fb                             => joint.1.motor-pos-fb
+net j1enable                             => cia402.1.enable
+net j1fault                              => joint.1.amp-fault-in
+
+#################################################################################
+# setp
+#################################################################################
+setp cia402.0.csp-mode                      1
+setp cia402.1.csp-mode                      1
+setp lcec.0.ec3-2.dout-0-invert             1
+setp lcec.0.ec3-4.aout-0-absmode            False
+setp lcec.0.ec3-4.aout-0-max-dc             1.0
+setp lcec.0.ec3-4.aout-0-min-dc             -1.0
+setp lcec.0.ec3-4.aout-0-offset             0.0
+setp lcec.0.ec3-4.aout-0-scale              1.0
+setp lcec.0.ec3-4.aout-1-absmode            False
+setp lcec.0.ec3-4.aout-1-max-dc             1.0
+setp lcec.0.ec3-4.aout-1-min-dc             -1.0
+setp lcec.0.ec3-4.aout-1-offset             0.0
+setp lcec.0.ec3-4.aout-1-scale              1.0
+
+#################################################################################
+# preformated
+#################################################################################

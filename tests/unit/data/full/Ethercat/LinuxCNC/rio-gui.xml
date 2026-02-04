@@ -1,0 +1,543 @@
+<pyvcp>
+  <tabs>
+    <names>['Status', 'Inputs', 'Outputs']</names>
+    <vbox>
+      <labelframe text="MDI-Commands">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <labelframe text="Zero">
+            <relief>GROOVE</relief>
+            <font>("Helvetica", 10)</font>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-00"</halpin>
+                <text>"X"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-01"</halpin>
+                <text>"Y"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+            </hbox>
+          </labelframe>
+        </vbox>
+      </labelframe>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-limit-neg"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.limit-neg"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-limit-pos"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.limit-pos"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-home-switch"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.home-switch"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-din1  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.din1"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-din2  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.din2"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-din3  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.din3"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec1-din4  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec1.din4"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-limit-neg"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.limit-neg"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-limit-pos"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.limit-pos"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-home-switch"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.home-switch"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-din1  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.din1"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-din2  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.din2"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-din3  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.din3"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec2-din4  "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec2.din4"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-5-slave-online"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-5.slave-online"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin0-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-0.din-0-not"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin1-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-0.din-1"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin2-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-0.din-2"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin3-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-0.din-3"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-4-aout-0-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"lcec.0.ec3-4.aout-0-value"</halpin>
+          <min_>0</min_>
+          <max_>10</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-4-aout-0-enable"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-4.aout-0-enable"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-4-aout-1-value"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"lcec.0.ec3-4.aout-1-value"</halpin>
+          <min_>0</min_>
+          <max_>10</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-4-aout-1-enable"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-4.aout-1-enable"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout0-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-2.dout-0"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout1-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-2.dout-1"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout2-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-2.dout-2"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout3-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-2.dout-3"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+    </vbox>
+  </tabs>
+</pyvcp>

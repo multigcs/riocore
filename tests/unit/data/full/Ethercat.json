@@ -1,0 +1,237 @@
+{
+    "name": "Ethercat",
+    "plugins": [
+        {
+            "type": "ethercat",
+            "node_type": "Master",
+            "uid": "ec0",
+            "pos": [
+                20.0,
+                50.0
+            ]
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ec1",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                180.0,
+                -30.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ec0:BUS:out"
+                }
+            }
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ec2",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                340.0,
+                -30.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ec1:BUS:out"
+                }
+            }
+        },
+        {
+            "type": "ethercat",
+            "node_type": "ek1100",
+            "uid": "ec3",
+            "pos": [
+                527.048828125,
+                20.9521484375
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ec2:BUS:out"
+                }
+            },
+            "modules": "el1008 el1008 el2008 el2008 el4002 el9110 el7411 ",
+            "sub": {
+                "ec3-0": {
+                    "node_type": "el1008"
+                },
+                "ec3-1": {
+                    "node_type": "el1008"
+                },
+                "ec3-2": {
+                    "node_type": "el2008"
+                },
+                "ec3-3": {
+                    "node_type": "el2008"
+                },
+                "ec3-4": {
+                    "node_type": "el4002"
+                },
+                "ec3-5": {
+                    "node_type": "el9110"
+                },
+                "ec3-6": {
+                    "node_type": "el7411"
+                }
+            }
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin0",
+            "image": "proximity",
+            "pos": [
+                570.0,
+                410.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-0:IN:I0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                410.0,
+                                560.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "rotate": 0
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "image": "relay",
+            "pos": [
+                920.0,
+                410.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-2:OUT:O0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                920.0,
+                                310.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "rotate": 0
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin1",
+            "image": "proximity",
+            "pos": [
+                570.0,
+                480.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-0:IN:I1"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin2",
+            "image": "proximity",
+            "pos": [
+                570.0,
+                550.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-0:IN:I2"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin3",
+            "image": "proximity",
+            "pos": [
+                570.0,
+                610.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-0:IN:I3"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout1",
+            "image": "relay",
+            "pos": [
+                920.0,
+                560.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-2:OUT:O1"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout2",
+            "image": "relay",
+            "pos": [
+                920.0,
+                700.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-2:OUT:O2"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout3",
+            "image": "relay",
+            "pos": [
+                920.0,
+                850.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ec3-2:OUT:O3"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.19,
+            "pos": [
+                268,
+                207
+            ]
+        }
+    }
+}
