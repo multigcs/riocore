@@ -35,6 +35,7 @@ net tool-prep-number                     <= iocontrol.0.tool-prep-number
 net tool-prepared                        <= iocontrol.0.tool-prepare
 net tool-prepared                        => iocontrol.0.tool-prepared
 net user-enable-out                      <= iocontrol.0.user-enable-out
+net user-request-enable                  <= iocontrol.0.user-request-enable
 
 #################################################################################
 # fpga0
@@ -55,6 +56,7 @@ net sig_fpga0_i2cbus0_lm75_0_valid       <= fpga0.i2cbus0.lm75_0_valid
 net sig_fpga0_modbus0_temperature        <= fpga0.modbus0.temperature
 
 net user-enable-out                      => fpga0.sys-enable
+net user-request-enable                  => fpga0.sys-enable-request
 net sig_fpga0_sys-error                  <= fpga0.sys-error
 net sig_fpga0_sys-status                 <= fpga0.sys-status
 

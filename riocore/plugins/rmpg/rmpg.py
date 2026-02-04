@@ -5,6 +5,7 @@
 import argparse
 import json
 import socket
+
 import linuxcnc
 
 parser = argparse.ArgumentParser()

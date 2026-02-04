@@ -33,6 +33,7 @@ net tool-prep-number                     <= iocontrol.0.tool-prep-number
 net tool-prepared                        <= iocontrol.0.tool-prepare
 net tool-prepared                        => iocontrol.0.tool-prepared
 net user-enable-out                      <= iocontrol.0.user-enable-out
+net user-request-enable                  <= iocontrol.0.user-request-enable
 
 #################################################################################
 # board0
@@ -46,6 +47,7 @@ net sig_pyvcp_board0_pwmout0_dty-f       => board0.pwmout0.dty
 net sig_pyvcp_board0_pwmout0_enable      => board0.pwmout0.enable
 
 net user-enable-out                      => board0.sys-enable
+net user-request-enable                  => board0.sys-enable-request
 net sig_board0_sys-error                 <= board0.sys-error
 net sig_board0_sys-status                <= board0.sys-status
 

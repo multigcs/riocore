@@ -90,6 +90,7 @@ data_t *register_signals(void) {
     data->sys_error = (bool*)malloc(sizeof(bool));
     data->sys_status = (bool*)malloc(sizeof(bool));
     data->sys_enable = (bool*)malloc(sizeof(bool));
+    data->sys_enable_request = (bool*)malloc(sizeof(bool));
     data->sys_simulation = (bool*)malloc(sizeof(bool));
     *data->sys_simulation = 0;
     data->duration = (float*)malloc(sizeof(float));
@@ -619,7 +620,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
     fpga_stamp_last = timestamp;
-    if (*data->sys_enable == 1) {
+    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {

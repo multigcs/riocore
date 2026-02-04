@@ -631,6 +631,7 @@ class cbase:
         output.append("typedef struct {")
         output.append("    // hal variables")
         output.append(f"    {self.typemap.get('bool')}   *sys_enable;")
+        output.append(f"    {self.typemap.get('bool')}   *sys_enable_request;")
         output.append(f"    {self.typemap.get('bool')}   *sys_status;")
         output.append(f"    {self.typemap.get('bool')}   *sys_error;")
         output.append(f"    {self.typemap.get('bool')}   *sys_simulation;")
@@ -736,6 +737,7 @@ class cbase:
         output.append(self.vinit("sys_error", "bool", f"{self.prefix}.sys-error", "input"))
         output.append(self.vinit("sys_status", "bool", f"{self.prefix}.sys-status", "input"))
         output.append(self.vinit("sys_enable", "bool", f"{self.prefix}.sys-enable", "output"))
+        output.append(self.vinit("sys_enable_request", "bool", f"{self.prefix}.sys-enable-request", "output"))
         output.append(self.vinit("sys_simulation", "bool", f"{self.prefix}.sys-simulation", "output"))
         output.append("    *data->sys_simulation = 0;")
         output.append(self.vinit("duration", "float", f"{self.prefix}.duration", "input"))
@@ -1012,15 +1014,13 @@ class cbase:
         output.append("    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];")
         output.append("    uint8_t txBuffer[BUFFER_SIZE_TX * 2];")
         output.append("    int64_t stamp_new = rtapi_get_time();")
-        # output.append("    float duration2 = (stamp_new - stamp_last) / 1000.0;")
         output.append("    stamp_last = stamp_new;")
 
         output.append("    float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;")
         output.append("    *data->duration = timestamp - fpga_stamp_last;")
         output.append("    fpga_stamp_last = timestamp;")
 
-        output.append("    if (*data->sys_enable == 1) {")
-
+        output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         output.append("        if (*data->sys_simulation != 1) {")

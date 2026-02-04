@@ -162,6 +162,7 @@ class Plugin(PluginBase):
             psetup["pin"] = pin
 
     def hal(self, parent):
+        parent.halg.net_add("iocontrol.0.user-request-enable", f"{self.hal_prefix}.sys-enable-request", "user-request-enable")
         parent.halg.net_add("iocontrol.0.user-enable-out", f"{self.hal_prefix}.sys-enable", "user-enable-out")
         parent.halg.net_add(f"&{self.hal_prefix}.sys-status", "iocontrol.0.emc-enable-in")
         parent.halg.net_add(f"{self.hal_prefix}.sys-error", "halui.estop.activate")

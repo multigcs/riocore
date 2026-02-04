@@ -31,18 +31,17 @@ setp axis.y.jog-scale -0.15
 """
 
 import argparse
+import json
 import math
 import os
-import json
 import signal
-import serial
 import sys
-
-from functools import partial
 
 import cv2
 import numpy as np
-from PyQt5.QtCore import QThread, Qt, pyqtSignal, QTimer
+import serial
+
+from PyQt5.QtCore import QThread, QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
@@ -562,7 +561,7 @@ class SerialThread(QThread):
             line = self.serial.readline()
             if line and line.startswith(b"J:"):
                 parts = line.decode().split(":")
-                _prefix, enc0, enc1, enc2, enc3, enc4, sw = parts
+                _prefix, enc0, _enc1, _enc2, _enc3, _enc4, sw = parts
                 if int(enc0):
                     h["axis.x.jog-counts"] += int(enc0)
 

@@ -57,6 +57,7 @@ int error_handler(int retval);
 typedef struct {
     // hal variables
     hal_bit_t   *sys_enable;
+    hal_bit_t   *sys_enable_request;
     hal_bit_t   *sys_status;
     hal_bit_t   *sys_error;
     hal_bit_t   *sys_simulation;
@@ -131,6 +132,7 @@ data_t *register_signals(void) {
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_error), comp_id, "board0.sys-error")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "board0.sys-status")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable), comp_id, "board0.sys-enable")) != 0) error_handler(retval);
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable_request), comp_id, "board0.sys-enable-request")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_simulation), comp_id, "board0.sys-simulation")) != 0) error_handler(retval);
     *data->sys_simulation = 0;
     if ((retval = hal_pin_float_newf(HAL_OUT, &(data->duration), comp_id, "board0.duration")) != 0) error_handler(retval);
@@ -633,7 +635,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
     fpga_stamp_last = timestamp;
-    if (*data->sys_enable == 1) {
+    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {

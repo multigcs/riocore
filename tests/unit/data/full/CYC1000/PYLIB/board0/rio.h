@@ -3,6 +3,7 @@
 typedef struct {
     // hal variables
     bool   *sys_enable;
+    bool   *sys_enable_request;
     bool   *sys_status;
     bool   *sys_error;
     bool   *sys_simulation;
