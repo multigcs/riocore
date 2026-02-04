@@ -1,3 +1,13 @@
 {
-    "pins": {}
+    "info": "EtherCAT potential supply",
+    "description": "potential supply, 24 V DC, 10 A, with diagnostics",
+    "pins": {
+        "slave-online": {
+            "direction": "input",
+            "edge": "target",
+            "type": "SIGNAL",
+            "bool": true,
+            "pos": [17, 217]
+        }
+    }
 }

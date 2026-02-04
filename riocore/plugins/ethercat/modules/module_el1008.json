@@ -1,4 +1,6 @@
 {
+    "info": "EtherCAT 8-channel digital input",
+    "description": "8-channel digital input, 24 V DC, 3 ms",
     "pins": {
         "IN:I0": {
             "direction": "input",

@@ -1,4 +1,6 @@
 {
+    "info": "EtherCAT 2-channel analog output",
+    "description": "2-channel analog output - voltage, 0…10 V, 12 bit",
     "options": {
         "aout-0-absmode": {
             "type": "bool",

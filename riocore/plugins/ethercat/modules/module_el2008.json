@@ -1,4 +1,6 @@
 {
+    "info": "EtherCAT 2-channel digital output",
+    "description": "2-channel digital output, 24 V DC, 0.5 A",
     "pins": {
         "OUT:O0": {
             "direction": "output",

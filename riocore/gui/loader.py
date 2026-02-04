@@ -49,6 +49,13 @@ class ConfigLoader:
             }
             dialog.accept()
 
+        def select_wizard():
+            self.parent.config = {
+                "name": "Wizard",
+                "plugins": [],
+            }
+            dialog.accept()
+
         def select_file():
             self.load_config_from()
             dialog.accept()
@@ -63,6 +70,14 @@ class ConfigLoader:
         button_empty.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
         button_empty.clicked.connect(select_empty)
         dialog.layout.addWidget(button_empty)
+
+        button_wizard = QPushButton(" Wizard")
+        button_wizard.setIcon(self.parent.style().standardIcon(QStyle.SP_FileIcon))
+        button_wizard.setIconSize(QSize(48, 48))
+        button_wizard.setFixedSize(300, 100)
+        button_wizard.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
+        button_wizard.clicked.connect(select_wizard)
+        dialog.layout.addWidget(button_wizard)
 
         button_config = QPushButton(" Select Config")
         button_config.setIcon(self.parent.style().standardIcon(QStyle.SP_ComputerIcon))
