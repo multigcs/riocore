@@ -2,7 +2,130 @@
     "info": "EtherCAT 1-channel BLDC motion interface",
     "description": "TODO - 1-channel motion interface, BLDC motor, 48 V DC, 4.5 A, with incremental encoder",
     "options": {
+        "at-speed-window": {
+            "type": "int",
+            "min": -999999.9,
+            "max": 999999.9,
+            "default": 100,
+            "comment": "",
+            "setp": true
+        },
+        "enc-raw-home": {
+            "type": "int",
+            "min": 0,
+            "max": 999999,
+            "default": 0,
+            "comment": "",
+            "setp": true
+        },
+        "max-accel": {
+            "type": "int",
+            "min": -999999.9,
+            "max": 999999.9,
+            "default": 500,
+            "comment": "",
+            "setp": true
+        },
+        "max-vel": {
+            "type": "int",
+            "min": -999999.9,
+            "max": 999999.9,
+            "default": 50,
+            "comment": "",
+            "setp": true
+        },
+        "min-vel": {
+            "type": "int",
+            "min": -999999.9,
+            "max": 999999.9,
+            "default": 1,
+            "comment": "",
+            "setp": true
+        },
+        "scale": {
+            "type": "int",
+            "min": -999999.9,
+            "max": 999999.9,
+            "default": 1.0,
+            "comment": "",
+            "setp": true
+        }
     },
     "pins": {
+        "at-speed": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "enable": {
+            "direction": "output",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "enabled": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "enc-on-home-neg": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "enc-on-home-pos": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "enc-pos": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "enc-pos-abs": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "enc-pos-enc": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "enc-pos-reset": {
+            "direction": "output",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "fault": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": true
+        },
+        "velo-cmd": {
+            "direction": "output",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "velo-cmd-out": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "velo-fb": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "velo-fb-rpm": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        },
+        "velo-fb-rpm-abs": {
+            "direction": "input",
+            "type": "SIGNAL",
+            "bool": false
+        }
     }
 }

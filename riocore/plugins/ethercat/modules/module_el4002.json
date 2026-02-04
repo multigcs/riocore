@@ -5,68 +5,78 @@
         "aout-0-absmode": {
             "type": "bool",
             "default": false,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-0-min-dc": {
             "type": "float",
             "default": -1.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-0-max-dc": {
             "type": "float",
             "default": 1.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-0-offset": {
             "type": "float",
             "default": 0.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-0-scale": {
             "type": "float",
             "default": 1.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-1-absmode": {
             "type": "bool",
             "default": false,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-1-min-dc": {
             "type": "float",
             "default": -1.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-1-max-dc": {
             "type": "float",
             "default": 1.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-1-offset": {
             "type": "float",
             "default": 0.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         },
         "aout-1-scale": {
             "type": "float",
             "default": 1.0,
             "min": -999999,
             "max": 999999,
-            "comment": ""
+            "comment": "",
+            "setp": true
         }
     },
 

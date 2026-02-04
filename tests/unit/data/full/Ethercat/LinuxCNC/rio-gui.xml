@@ -323,6 +323,227 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
+          <text>"ec3-6-at-speed"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-6.at-speed"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enabled"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-6.enabled"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enc-on-home-neg"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-6.enc-on-home-neg"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enc-on-home-pos"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-6.enc-on-home-pos"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enc-pos"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.enc-pos"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enc-pos-abs"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.enc-pos-abs"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enc-pos-enc"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.enc-pos-enc"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-fault"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"lcec.0.ec3-6.fault"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-velo-cmd-out"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.velo-cmd-out"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-velo-fb"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.velo-fb"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-velo-fb-rpm"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.velo-fb-rpm"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-velo-fb-rpm-abs"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"lcec.0.ec3-6.velo-fb-rpm-abs"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"07.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
           <text>"gpioin0-bit"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
@@ -469,6 +690,60 @@
           <initval>0</initval>
           <width>13</width>
         </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enable"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-6.enable"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-enc-pos-reset"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"lcec.0.ec3-6.enc-pos-reset"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"ec3-6-velo-cmd"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"lcec.0.ec3-6.velo-cmd"</halpin>
+          <min_>-1000</min_>
+          <max_>1000</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
       </hbox>
       <hbox>
         <boxexpand expand="yes"/>

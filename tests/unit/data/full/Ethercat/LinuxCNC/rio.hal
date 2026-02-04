@@ -70,6 +70,21 @@ net sig_pyvcp_lcec_0_ec3-4_aout-0-value-f => lcec.0.ec3-4.aout-0-value
 net sig_pyvcp_lcec_0_ec3-4_aout-1-enable => lcec.0.ec3-4.aout-1-enable
 net sig_pyvcp_lcec_0_ec3-4_aout-1-value-f => lcec.0.ec3-4.aout-1-value
 net sig_lcec_0_ec3-5_slave-online        <= lcec.0.ec3-5.slave-online
+net sig_lcec_0_ec3-6_at-speed            <= lcec.0.ec3-6.at-speed
+net sig_pyvcp_lcec_0_ec3-6_enable        => lcec.0.ec3-6.enable
+net sig_lcec_0_ec3-6_enabled             <= lcec.0.ec3-6.enabled
+net sig_lcec_0_ec3-6_enc-on-home-neg     <= lcec.0.ec3-6.enc-on-home-neg
+net sig_lcec_0_ec3-6_enc-on-home-pos     <= lcec.0.ec3-6.enc-on-home-pos
+net sig_lcec_0_ec3-6_enc-pos             <= lcec.0.ec3-6.enc-pos
+net sig_lcec_0_ec3-6_enc-pos-abs         <= lcec.0.ec3-6.enc-pos-abs
+net sig_lcec_0_ec3-6_enc-pos-enc         <= lcec.0.ec3-6.enc-pos-enc
+net sig_pyvcp_lcec_0_ec3-6_enc-pos-reset => lcec.0.ec3-6.enc-pos-reset
+net sig_lcec_0_ec3-6_fault               <= lcec.0.ec3-6.fault
+net sig_pyvcp_lcec_0_ec3-6_velo-cmd-f    => lcec.0.ec3-6.velo-cmd
+net sig_lcec_0_ec3-6_velo-cmd-out        <= lcec.0.ec3-6.velo-cmd-out
+net sig_lcec_0_ec3-6_velo-fb             <= lcec.0.ec3-6.velo-fb
+net sig_lcec_0_ec3-6_velo-fb-rpm         <= lcec.0.ec3-6.velo-fb-rpm
+net sig_lcec_0_ec3-6_velo-fb-rpm-abs     <= lcec.0.ec3-6.velo-fb-rpm-abs
 
 #################################################################################
 # halui
@@ -135,6 +150,12 @@ setp lcec.0.ec3-4.aout-1-max-dc             1.0
 setp lcec.0.ec3-4.aout-1-min-dc             -1.0
 setp lcec.0.ec3-4.aout-1-offset             0.0
 setp lcec.0.ec3-4.aout-1-scale              1.0
+setp lcec.0.ec3-6.at-speed-window           100
+setp lcec.0.ec3-6.enc-raw-home              0
+setp lcec.0.ec3-6.max-accel                 500
+setp lcec.0.ec3-6.max-vel                   50
+setp lcec.0.ec3-6.min-vel                   1
+setp lcec.0.ec3-6.scale                     1.0
 
 #################################################################################
 # preformated
