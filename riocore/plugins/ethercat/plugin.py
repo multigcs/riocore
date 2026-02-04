@@ -1,10 +1,13 @@
 import json
 import os
+import subprocess
 import sys
 
 import riocore
 
 from riocore.plugins import PluginBase
+
+from . import lcec_devices
 
 
 class Plugin(PluginBase):
@@ -319,131 +322,7 @@ class Plugin(PluginBase):
         output.append(f'  <master idx="0" appTimePeriod="{servo_period}" refClockSyncCycles="1">')
         for idx, instance in enumerate(bus_list):
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
-            # grep "{\"E[A-Z][0-9][0-9][0-9][0-9]\", LCEC_\|BECKHOFF_AOUT_DEVICE(\"" linuxcnc-ethercat-1.40.0/src/devices/lcec_*.c  | sed "s/.*{\"\|.*BECKHOFF_AOUT_DEVICE(\"//g" | cut -d"\"" -f1 | sort -u | awk '{print "\""$1"\","}
-            lcec_supported = {
-                "EJ4002",
-                "EJ4004",
-                "EJ4008",
-                "EJ4018",
-                "EJ4024",
-                "EJ4132",
-                "EJ4134",
-                "EJ5002",
-                "EK1100",
-                "EK1101",
-                "EK1110",
-                "EK1122",
-                "EL1002",
-                "EL1004",
-                "EL1008",
-                "EL1012",
-                "EL1014",
-                "EL1018",
-                "EL1024",
-                "EL1034",
-                "EL1084",
-                "EL1088",
-                "EL1094",
-                "EL1098",
-                "EL1104",
-                "EL1114",
-                "EL1124",
-                "EL1134",
-                "EL1144",
-                "EL1804",
-                "EL1808",
-                "EL1809",
-                "EL1819",
-                "EL1904",
-                "EL2002",
-                "EL2004",
-                "EL2008",
-                "EL2022",
-                "EL2024",
-                "EL2032",
-                "EL2034",
-                "EL2042",
-                "EL2084",
-                "EL2088",
-                "EL2124",
-                "EL2202",
-                "EL2521",
-                "EL2612",
-                "EL2622",
-                "EL2624",
-                "EL2634",
-                "EL2652",
-                "EL2798",
-                "EL2808",
-                "EL2809",
-                "EL2828",
-                "EL2904",
-                "EL3102",
-                "EL3112",
-                "EL3122",
-                "EL3142",
-                "EL3152",
-                "EL3162",
-                "EL3255",
-                "EL3403",
-                "EL4001",
-                "EL4002",
-                "EL4004",
-                "EL4008",
-                "EL4011",
-                "EL4012",
-                "EL4014",
-                "EL4018",
-                "EL4021",
-                "EL4022",
-                "EL4024",
-                "EL4028",
-                "EL4031",
-                "EL4032",
-                "EL4034",
-                "EL4038",
-                "EL4102",
-                "EL4104",
-                "EL4112",
-                "EL4114",
-                "EL4122",
-                "EL4124",
-                "EL4132",
-                "EL4134",
-                "EL5002",
-                "EL5032",
-                "EL5101",
-                "EL5102",
-                "EL5151",
-                "EL5152",
-                "EL6090",
-                "EL6900",
-                "EL7031",
-                "EL7041",
-                "EL7211",
-                "EL7221",
-                "EL7342",
-                "EL7411",
-                "EL9410",
-                "EL9505",
-                "EL9508",
-                "EL9510",
-                "EL9512",
-                "EL9515",
-                "EL9576",
-                "EM7004",
-                "EP1008",
-                "EP1018",
-                "EP1122",
-                "EP1819",
-                "EP2008",
-                "EP2028",
-                "EP2809",
-                "EP4174",
-                "EP7041",
-                "EP9214",
-            }
-            if node_type.upper() in lcec_supported:
+            if node_type.upper() in lcec_devices.supported:
                 output.append(f'    <slave idx="{idx}" type="{node_type.upper()}" name="{instance.plugin_setup["uid"]}"/>')
             elif node_type == "Servo/Stepper":
                 vid = instance.plugin_setup.get("vid", instance.option_default("vid"))
@@ -562,3 +441,91 @@ class Plugin(PluginBase):
             for option_name in self.json_data.get("options", {}):
                 option_value = self.plugin_setup.get(option_name, self.option_default(option_name))
                 parent.halg.setp_add(f"{lcec}.{option_name}", option_value)
+
+
+if __name__ == "__main__":
+    #
+    # ethercat to rio - json config
+    #
+    ethercat = {}
+    output = subprocess.check_output(["ethercat", "slaves", "-v"])
+    if not output:
+        exit(1)
+
+    master = None
+    slave = None
+    section = None
+    for line in output.decode().split("\n"):
+        # print("#", line)
+        if line.startswith("=== Master"):
+            master = int(line.split()[2].strip(","))
+            slave = int(line.split()[4])
+            if master not in ethercat:
+                ethercat[master] = {}
+            if slave not in ethercat[master]:
+                ethercat[master][slave] = {}
+
+        elif line and line[0] != " ":
+            if line.startswith("Port "):
+                section = "ports"
+            else:
+                section = line.strip(":").lower()
+            ethercat[master][slave][section] = {}
+
+        elif section == "ports":
+            name = line.split()[0].strip()
+            value = line.strip().split(" ", 1)[1].strip().split()
+            ethercat[master][slave][section][name] = value
+
+        elif section is not None and ":" in line:
+            name = line.split(":")[0].strip()
+            value = line.split(":", 1)[1].strip()
+            ethercat[master][slave][section][name] = value
+
+    # print(json.dumps(ethercat, indent=4))
+
+    config = {
+        "name": "Ethercat",
+        "plugins": [
+            {"type": "ethercat", "node_type": "Master", "uid": "ec0", "pos": [20.0, 50.0]},
+        ],
+    }
+
+    last = "ec0"
+    koppler = None
+    for slave_id, slave_data in ethercat[0].items():
+        vid = slave_data.get("identity", {}).get("Vendor Id")
+        pid = slave_data.get("identity", {}).get("Product code")
+        protocols = slave_data.get("mailboxes", {}).get("Supported protocols")
+        group = slave_data.get("general", {}).get("Group")
+        dev_name = slave_data.get("general", {}).get("Device name")
+        conn = slave_data.get("ports", {}).get("0", [""])[0]
+
+        # print(slave_id, vid, pid, dev_name, protocols, conn)
+
+        if vid == "0x00000002" and dev_name.split()[0] == "EK1100":
+            node_type = dev_name.split()[0].lower()
+            uid = f"ec{slave_id + 1}"
+            koppler = {"type": "ethercat", "node_type": node_type, "uid": uid, "pos": [390.0, 20.0], "pins": {"BUS:in": {"pin": f"{last}:BUS:out"}}, "modules": "", "sub": {}}
+            config["plugins"].append(koppler)
+            last = uid
+
+        elif koppler and conn == "EBUS":
+            node_type = dev_name.split()[0].lower()
+            uid = f"ec{slave_id + 1}"
+            sub_n = len(koppler["sub"])
+
+            koppler["modules"] += node_type + " "
+            # """
+            koppler["sub"][str(sub_n)] = {"type": "ethercat", "node_type": node_type, "uid": uid, "rpos": [263, 0.0]}
+            # """
+
+        else:
+            koppler = None
+
+            if protocols and "coe" in protocols.lower():
+                uid = f"ec{slave_id + 1}"
+                config["plugins"].append({"type": "ethercat", "node_type": "Servo/Stepper", "uid": uid, "is_joint": True, "image": "ethercatservo", "pos": [180.0, -30.0], "pins": {"BUS:in": {"pin": f"{last}:BUS:out"}}})
+                last = uid
+
+    print(json.dumps(config, indent=4))

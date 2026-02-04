@@ -1,0 +1,8 @@
+{
+    "info": "EtherCAT 1-channel BLDC motion interface",
+    "description": "TODO - 1-channel motion interface, BLDC motor, 48 V DC, 4.5 A, with incremental encoder",
+    "options": {
+    },
+    "pins": {
+    }
+}
