@@ -1,6 +1,9 @@
 import glob
+import importlib
 import json
 import os
+
+from functools import partial
 
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QFont
@@ -28,81 +31,107 @@ class ConfigLoader:
     def __init__(self, parent):
         self.parent = parent
 
-    def select(self):
-        dialog = QDialog()
-        dialog.setWindowTitle("rio-flow")
+    def config_wizard(self):
+        self.wizard = QDialog()
+        self.wizard.setWindowTitle("rio-flow")
         if hasattr(self.parent, "STYLESHEET"):
-            dialog.setStyleSheet(self.parent.STYLESHEET)
-        dialog.layout = QVBoxLayout()
-        dialog.setLayout(dialog.layout)
+            self.wizard.setStyleSheet(self.parent.STYLESHEET)
+        self.wizard.layout = QVBoxLayout()
+        self.wizard.setLayout(self.wizard.layout)
 
-        def select_config():
-            self.parent.config_file = self.select_config()
-            if self.parent.config_file is None:
-                exit(1)
-            dialog.accept()
+        def start_wizard(name):
+            try:
+                self.parent.config = importlib.import_module(".basewizard", f"riocore.plugins.{name}").wizard()
+                self.wizard.accept()
+            except Exception as err:
+                print(f"ERROR: wizard: {name}: {err}")
 
-        def select_empty():
-            self.parent.config = {
-                "name": "Empty",
-                "plugins": [],
-            }
-            dialog.accept()
+        for path in sorted(glob.glob(os.path.join(riocore_path, "plugins", "*", "basewizard.py"))):
+            name = os.path.basename(os.path.dirname(path))
+            button = QPushButton(name.title())
+            button.setFixedSize(300, 75)
+            button.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
+            button.clicked.connect(partial(start_wizard, name))
+            self.wizard.layout.addWidget(button)
 
-        def select_wizard():
-            self.parent.config = {
-                "name": "Wizard",
-                "plugins": [],
-            }
-            dialog.accept()
+        self.wizard.layout.addStretch()
 
-        def select_file():
-            self.load_config_from()
-            dialog.accept()
+        button_exit = QPushButton("Exit")
+        button_exit.setIcon(self.parent.style().standardIcon(QStyle.SP_DialogCancelButton))
+        button_exit.clicked.connect(self.config_exit)
+        self.wizard.layout.addWidget(button_exit)
 
-        def select_exit():
+        if self.wizard.exec():
+            self.dialog.accept()
+
+    def config_select(self):
+        self.parent.config_file = self.select_config()
+        if self.parent.config_file is None:
             exit(1)
+        self.dialog.accept()
+
+    def config_empty(self):
+        self.parent.config = {
+            "name": "Empty",
+            "plugins": [],
+        }
+        self.dialog.accept()
+
+    def config_file(self):
+        self.load_config_from()
+        self.dialog.accept()
+
+    def config_exit(self):
+        exit(1)
+
+    def select(self):
+        self.dialog = QDialog()
+        self.dialog.setWindowTitle("rio-flow")
+        if hasattr(self.parent, "STYLESHEET"):
+            self.dialog.setStyleSheet(self.parent.STYLESHEET)
+        self.dialog.layout = QVBoxLayout()
+        self.dialog.setLayout(self.dialog.layout)
+
+        button_wizard = QPushButton(" Wizard")
+        button_wizard.setIcon(self.parent.style().standardIcon(QStyle.SP_MediaPlay))
+        button_wizard.setIconSize(QSize(48, 48))
+        button_wizard.setFixedSize(300, 100)
+        button_wizard.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
+        button_wizard.clicked.connect(self.config_wizard)
+        self.dialog.layout.addWidget(button_wizard)
 
         button_empty = QPushButton(" Empty Config")
         button_empty.setIcon(self.parent.style().standardIcon(QStyle.SP_FileIcon))
         button_empty.setIconSize(QSize(48, 48))
         button_empty.setFixedSize(300, 100)
         button_empty.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_empty.clicked.connect(select_empty)
-        dialog.layout.addWidget(button_empty)
-
-        button_wizard = QPushButton(" Wizard")
-        button_wizard.setIcon(self.parent.style().standardIcon(QStyle.SP_FileIcon))
-        button_wizard.setIconSize(QSize(48, 48))
-        button_wizard.setFixedSize(300, 100)
-        button_wizard.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_wizard.clicked.connect(select_wizard)
-        dialog.layout.addWidget(button_wizard)
+        button_empty.clicked.connect(self.config_empty)
+        self.dialog.layout.addWidget(button_empty)
 
         button_config = QPushButton(" Select Config")
         button_config.setIcon(self.parent.style().standardIcon(QStyle.SP_ComputerIcon))
         button_config.setIconSize(QSize(48, 48))
         button_config.setFixedSize(300, 100)
         button_config.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_config.clicked.connect(select_config)
-        dialog.layout.addWidget(button_config)
+        button_config.clicked.connect(self.config_select)
+        self.dialog.layout.addWidget(button_config)
 
         button_file = QPushButton(" Open config file from...")
         button_file.setIcon(self.parent.style().standardIcon(QStyle.SP_DirIcon))
         button_file.setIconSize(QSize(48, 48))
         button_file.setFixedSize(300, 100)
         button_file.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_file.clicked.connect(select_file)
-        dialog.layout.addWidget(button_file)
+        button_file.clicked.connect(self.config_file)
+        self.dialog.layout.addWidget(button_file)
 
-        dialog.layout.addStretch()
+        self.dialog.layout.addStretch()
 
         button_exit = QPushButton("Exit")
         button_exit.setIcon(self.parent.style().standardIcon(QStyle.SP_DialogCancelButton))
-        button_exit.clicked.connect(select_exit)
-        dialog.layout.addWidget(button_exit)
+        button_exit.clicked.connect(self.config_exit)
+        self.dialog.layout.addWidget(button_exit)
 
-        return dialog.exec()
+        return self.dialog.exec()
 
     def load_config_from(self):
         file_dialog = QFileDialog(self.parent)
