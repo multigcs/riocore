@@ -1426,8 +1426,44 @@ class Window(QMainWindow):
         if not self.save_check():
             # cancel pressed
             return
-        QTabWidget.setCurrentIndex(self.tabwidget, 4)
-        self.buildertab.generator_run("-S")
+        found_fpga = False
+        for item in self.scene.items():
+            if not isinstance(item, PluginNode):
+                continue
+            if item.plugin_instance.NAME == "fpga":
+                found_fpga = True
+        if not found_fpga:
+            msg = "ERROR: you need an FPGA controller for the simulation"
+            riocore.log(msg)
+            self.scene.parent.info.setText(msg)
+        else:
+            QTabWidget.setCurrentIndex(self.tabwidget, 4)
+            self.buildertab.generator_run("-S")
+
+    def generator_run_udpsim(self):
+        if not self.save_check():
+            # cancel pressed
+            return
+        found_fpga = False
+        interface = ""
+        for item in self.scene.items():
+            if not isinstance(item, PluginNode):
+                continue
+            if item.plugin_instance.NAME == "fpga":
+                found_fpga = True
+            if hasattr(item.plugin_instance, "HOST_INTERFACE"):
+                interface = item.plugin_instance.HOST_INTERFACE
+        if not found_fpga:
+            msg = "ERROR: you need an FPGA controller for the simulation"
+            riocore.log(msg)
+            self.scene.parent.info.setText(msg)
+        elif interface != "UDP":
+            msg = f"ERROR: you need an UDP interface for the udp-simulation: {interface}"
+            riocore.log(msg)
+            self.scene.parent.info.setText(msg)
+        else:
+            QTabWidget.setCurrentIndex(self.tabwidget, 4)
+            self.buildertab.generator_run("-U")
 
     def runTimer(self):
         infotext = []
@@ -1519,17 +1555,24 @@ class Window(QMainWindow):
         toolbar.addSeparator()
 
         icon = self.style().standardIcon(QStyle.SP_MediaPlay)
-        run_action = QAction(icon, "&generate and run (F5)", self)
+        run_action = QAction(icon, "&generate and run (F4)", self)
         run_action.setStatusTip("generate and run")
-        run_action.setShortcut("F5")
+        run_action.setShortcut("F4")
         run_action.triggered.connect(self.generator_run)
         toolbar.addAction(run_action)
 
         icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
-        run_action = QAction(icon, "&generate and run sim (F6)", self)
+        run_action = QAction(icon, "&generate and run sim (F5)", self)
+        run_action.setStatusTip("generate and run")
+        run_action.setShortcut("F5")
+        run_action.triggered.connect(self.generator_run_sim)
+        toolbar.addAction(run_action)
+
+        icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
+        run_action = QAction(icon, "&generate and run udp-sim (F6)", self)
         run_action.setStatusTip("generate and run")
         run_action.setShortcut("F6")
-        run_action.triggered.connect(self.generator_run_sim)
+        run_action.triggered.connect(self.generator_run_udpsim)
         toolbar.addAction(run_action)
 
         toolbar.addSeparator()
