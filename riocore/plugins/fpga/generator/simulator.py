@@ -313,6 +313,7 @@ class simulator(generator_base):
                 if feedback_var:
                     output.append(f"    joint_position[{joint}] = {feedback_var};")
 
+        output.append("")
         home_n = 0
         bitout_n = 0
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
@@ -330,20 +331,34 @@ class simulator(generator_base):
                     if "bit" not in interface_data:
                         continue
                     var = interface_data["bit"]["variable"]
+
+                    output.append(f"    // simulate homing for joint {jn}")
+                    output.append(f"    static float last_position_{jn} = 0;")
+                    output.append(f"    float offset_{jn} = home_offset[{jn}];")
+                    output.append(f"    float diff_{jn} = joint_position[{jn}] - last_position_{jn};")
+
                     output.append(f"    if (home_search_vel[{jn}] > 0) {{")
-                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) > home_offset[{jn}]) {{")
+                    output.append(f"        if (diff_{jn} > 0) {{")
+                    output.append(f"            offset_{jn} += 4;")
+                    output.append("        }")
+                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) > offset_{jn}) {{")
                     output.append(f"            {var} = 1;")
                     output.append("        } else {")
                     output.append(f"            {var} = 0;")
                     output.append("        }")
                     output.append("    } else {")
-                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) < home_offset[{jn}]) {{")
+                    output.append(f"        if (diff_{jn} > 0) {{")
+                    output.append(f"            offset_{jn} -= 4;")
+                    output.append("        }")
+                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) < offset_{jn}) {{")
                     output.append(f"            {var} = 1;")
                     output.append("        } else {")
                     output.append(f"            {var} = 0;")
                     output.append("        }")
                     output.append("    }")
+                    output.append(f"    last_position_{jn} = joint_position[{jn}];")
                     output.append(f"    home_switch[{home_n}] = {var};")
+                    output.append("")
                     home_n += 1
             if data_config["direction"] == "output":
                 if data_name == "bit":
