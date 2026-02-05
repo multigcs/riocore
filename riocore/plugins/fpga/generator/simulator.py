@@ -175,6 +175,8 @@ class simulator(generator_base):
         output.append("")
         output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
         output.append("extern volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append("extern volatile float home_offset[NUM_JOINTS];")
+        output.append("extern volatile float home_search_vel[NUM_JOINTS];")
         output.append("extern volatile int32_t bitout_stat[NUM_BITOUTS];")
         output.append("")
 
@@ -192,10 +194,6 @@ class simulator(generator_base):
         open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
 
     def simulation_c(self):
-        jdata = self.config["jdata"]
-        linuxcnc_config = jdata.get("linuxcnc", {})
-        machinetype = linuxcnc_config.get("machinetype", "mill")
-
         output = []
         output.append("#include <stdio.h>")
         output.append("#include <stdint.h>")
@@ -229,8 +227,21 @@ class simulator(generator_base):
         output.append("void udp_exit();")
         output.append("")
 
+        home_offsets = []
+        home_search_vels = []
+        for axis, data in self.project.axis_dict.items():
+            for joint in data["joints"]:
+                jn = joint["num"]
+                home_offset = joint["HOME_OFFSET"]
+                home_search_vel = joint["HOME_SEARCH_VEL"]
+                home_offsets.append(str(home_offset))
+                home_search_vels.append(str(home_search_vel))
+                output.append("")
+
         output.append("volatile int32_t joint_position[NUM_JOINTS];")
         output.append("volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append(f"volatile float home_offset[NUM_JOINTS] = {{{', '.join(home_offsets)}}};")
+        output.append(f"volatile float home_search_vel[NUM_JOINTS] = {{{', '.join(home_search_vels)}}};")
         output.append("volatile int32_t bitout_stat[NUM_BITOUTS];")
         output.append("")
 
@@ -319,19 +330,18 @@ class simulator(generator_base):
                     if "bit" not in interface_data:
                         continue
                     var = interface_data["bit"]["variable"]
-                    found = False
-                    for join_data in self.project.axis_dict.get("Z", {}).get("joints", []):
-                        if int(jn) == join_data["num"]:
-                            found = True
-                            break
-                    if found and machinetype not in {"melfa", "melfa_nogl"}:
-                        # Z-Axis
-                        output.append(f"    if (joint_position[{jn}] * joint_scales[{jn}] > 100.0) {{")
-                    else:
-                        output.append(f"    if (joint_position[{jn}] * joint_scales[{jn}] < 0.0) {{")
-                    output.append(f"        {var} = 1;")
+                    output.append(f"    if (home_search_vel[{jn}] > 0) {{")
+                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) > home_offset[{jn}]) {{")
+                    output.append(f"            {var} = 1;")
+                    output.append("        } else {")
+                    output.append(f"            {var} = 0;")
+                    output.append("        }")
                     output.append("    } else {")
-                    output.append(f"        {var} = 0;")
+                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) < home_offset[{jn}]) {{")
+                    output.append(f"            {var} = 1;")
+                    output.append("        } else {")
+                    output.append(f"            {var} = 0;")
+                    output.append("        }")
                     output.append("    }")
                     output.append(f"    home_switch[{home_n}] = {var};")
                     home_n += 1
