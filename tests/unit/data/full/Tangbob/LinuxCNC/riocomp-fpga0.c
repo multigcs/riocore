@@ -731,7 +731,13 @@ void convert_sigin_fpga0_stepdir0_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR0_POSITION + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY / 1000.0;
-        if (value < 0.0) {
+        // simulating X homing
+        float diff = value - *data->SIGIN_FPGA0_STEPDIR0_POSITION;
+        float home_offset = 0.0;
+        if (diff > 0) {
+            home_offset -= 4.0;
+        }
+        if (value < home_offset) {
             data->VARIN1_BITIN0_BIT = 1;
         } else {
             data->VARIN1_BITIN0_BIT = 0;
@@ -751,7 +757,13 @@ void convert_sigin_fpga0_stepdir1_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR1_POSITION + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY / 1000.0;
-        if (value < 0.0) {
+        // simulating Y homing
+        float diff = value - *data->SIGIN_FPGA0_STEPDIR1_POSITION;
+        float home_offset = 0.0;
+        if (diff > 0) {
+            home_offset -= 4.0;
+        }
+        if (value < home_offset) {
             data->VARIN1_BITIN1_BIT = 1;
         } else {
             data->VARIN1_BITIN1_BIT = 0;
@@ -771,7 +783,13 @@ void convert_sigin_fpga0_stepdir2_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_FPGA0_STEPDIR2_POSITION + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY / 1000.0;
-        if (value > 20.0) {
+        // simulating Z homing
+        float diff = value - *data->SIGIN_FPGA0_STEPDIR2_POSITION;
+        float home_offset = 0.0;
+        if (diff > 0) {
+            home_offset += 4.0;
+        }
+        if (value > home_offset) {
             data->VARIN1_BITIN2_BIT = 1;
         } else {
             data->VARIN1_BITIN2_BIT = 0;

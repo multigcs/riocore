@@ -114,6 +114,74 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
+          <text>"mesa0-led.CR01"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"hm2_7c81.0.led.CR01"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mesa0-led.CR02"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"hm2_7c81.0.led.CR02"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mesa0-led.CR03"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"hm2_7c81.0.led.CR03"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mesa0-led.CR04"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"hm2_7c81.0.led.CR04"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
           <text>"mesapwmgen0-value"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>

@@ -2,10 +2,10 @@
     "name": "Mesa",
     "flow": {
         "view": {
-            "scale": 0.8,
+            "scale": 0.73,
             "pos": [
-                703,
-                -271
+                602,
+                -293
             ]
         },
         "board": {
@@ -112,7 +112,8 @@
             "rotate": -90,
             "uid": "mesa0",
             "boardname": "7i92",
-            "firmware": "5ABOBx2D"
+            "firmware": "5ABOBx2D",
+            "num_leds": 1
         },
         {
             "type": "mesa",

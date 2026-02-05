@@ -11,11 +11,7 @@ loadusr -W hal_manualtoolchange
 
 # mesa
 loadrt hostmot2
-loadrt hm2_eth board_ip="10.10.10.10" config="num_encoders=0 num_pwmgens=1 num_stepgens=3"
-setp hm2_7i92.0.led.CR01 1
-setp hm2_7i92.0.led.CR02 1
-setp hm2_7i92.0.led.CR03 1
-setp hm2_7i92.0.led.CR04 1
+loadrt hm2_eth board_ip="10.10.10.10" config="num_encoders=0 num_pwmgens=1 num_stepgens=3 num_leds=4"
 setp hm2_7i92.0.watchdog.timeout_ns 50000000
 setp hm2_7i92.0.dpll.01.timer-us -50
 setp hm2_7i92.0.stepgen.timer-number 1
@@ -56,6 +52,11 @@ net sig_iocontrol_0_user-enable-out      <= iocontrol.0.user-enable-out
 #################################################################################
 net sig_hm2_7i92_0_9r01_0_1_input-00     <= hm2_7i92.0.9r01.0.1.input-00
 net sig_pyvcp_hm2_7i92_0_9r01_0_1_output-00 => hm2_7i92.0.9r01.0.1.output-00
+
+net sig_pyvcp_hm2_7i92_0_led_CR01        => hm2_7i92.0.led.CR01
+net sig_pyvcp_hm2_7i92_0_led_CR02        => hm2_7i92.0.led.CR02
+net sig_pyvcp_hm2_7i92_0_led_CR03        => hm2_7i92.0.led.CR03
+net sig_pyvcp_hm2_7i92_0_led_CR04        => hm2_7i92.0.led.CR04
 
 net sig_hm2_7i92_0_packet-error-exceeded <= hm2_7i92.0.packet-error-exceeded
 

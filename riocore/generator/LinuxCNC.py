@@ -653,7 +653,7 @@ class LinuxCNC:
         json_path = self.project.config["json_path"]
         linuxcnc_config = jdata.get("linuxcnc", {})
         gui = linuxcnc_config.get("gui", "axis")
-        machinetype = linuxcnc_config.get("machinetype")
+        # machinetype = linuxcnc_config.get("machinetype")
         dios = self.halg.get_dios()
         aios = self.halg.get_aios()
 
@@ -1001,6 +1001,7 @@ use_auto_skew = True
                         print(f"INFO: copy file: {subroutine} -> {target_path}")
                         shutil.copy(subroutine, target_path)
 
+        """
         if motion_probe_input:
             if machinetype == "lathe":
                 if axis_name == "X":
@@ -1012,6 +1013,7 @@ use_auto_skew = True
             elif axis_name == "Z":
                 if "z_touch.ngc" not in subroutine_files:
                     missing_subroutine_files.append("z_touch.ngc")
+        """
 
         path_subroutines = ini_setup.get("RS274NGC", {}).get("SUBROUTINE_PATH", "").split(":")[0]
         if path_subroutines and path_subroutines.startswith("./"):

@@ -11,11 +11,7 @@ loadusr -W hal_manualtoolchange
 
 # mesa
 loadrt hostmot2
-loadrt hm2_spix spi_probe=1 spiclk_rate=21250 config="num_encoders=0 num_pwmgens=1 num_stepgens=3"
-setp hm2_7c81.0.led.CR01 1
-setp hm2_7c81.0.led.CR02 1
-setp hm2_7c81.0.led.CR03 1
-setp hm2_7c81.0.led.CR04 1
+loadrt hm2_spix spi_probe=1 spiclk_rate=21250 config="num_encoders=0 num_pwmgens=1 num_stepgens=3 num_leds=4"
 setp hm2_7c81.0.watchdog.timeout_ns 50000000
 setp hm2_7c81.0.dpll.01.timer-us -50
 setp hm2_7c81.0.stepgen.timer-number 1
@@ -59,6 +55,11 @@ net sig_spindle_0_on                     => hm2_7c81.0.gpio.007.out
 net sig_hm2_7c81_0_gpio_013_in_not       <= hm2_7c81.0.gpio.013.in_not
 net sig_hm2_7c81_0_gpio_014_in_not       <= hm2_7c81.0.gpio.014.in_not
 net sig_hm2_7c81_0_gpio_015_in_not       <= hm2_7c81.0.gpio.015.in_not
+
+net sig_pyvcp_hm2_7c81_0_led_CR01        => hm2_7c81.0.led.CR01
+net sig_pyvcp_hm2_7c81_0_led_CR02        => hm2_7c81.0.led.CR02
+net sig_pyvcp_hm2_7c81_0_led_CR03        => hm2_7c81.0.led.CR03
+net sig_pyvcp_hm2_7c81_0_led_CR04        => hm2_7c81.0.led.CR04
 
 net sig_hm2_7c81_0_packet-error-exceeded <= hm2_7c81.0.packet-error-exceeded
 

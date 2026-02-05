@@ -143,6 +143,13 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         "max": max_serials,
                         "description": "number of serial's",
                     },
+                    "num_leds": {
+                        "default": 4,
+                        "type": int,
+                        "min": 0,
+                        "max": 4,
+                        "description": "number of led's",
+                    },
                 }
             )
 
@@ -184,6 +191,14 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             num_encoders = self.plugin_setup.get("num_encoders", self.option_default("num_encoders"))
             num_stepgens = self.plugin_setup.get("num_stepgens", self.option_default("num_stepgens"))
             num_serials = self.plugin_setup.get("num_serials", self.option_default("num_serials"))
+            num_leds = self.plugin_setup.get("num_leds", self.option_default("num_leds"))
+
+            self.SIGNALS = {}
+            for led in range(num_leds):
+                self.SIGNALS[f"led.CR{led + 1:02d}"] = {
+                    "direction": "output",
+                    "bool": True,
+                }
 
             pin_n = 0
             slot = None
@@ -398,7 +413,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             else:
                 addr = self.plugin_setup.get("ip_address", self.option_default("ip_address"))
             if command.startswith("flash:"):
-                cmd = f"sudo mesaflash --device {boardname} --addr {addr} --write {bitfile}"
+                cmd = f"sudo mesaflash --device {boardname} --addr {addr} --write {bitfile} --reload "
             else:
                 cmd = f"sudo mesaflash --device {boardname} --addr {addr} --readhmid"
             return cmd
@@ -446,8 +461,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                             self.output_inverts.append(f"{self.hm2_prefix}.{pin.lower()}")
                 elif pin.startswith("pwmgen."):
                     psetup["pin"] = f"{self.hm2_prefix}.{pin.lower()}"
-                else:
-                    del psetup["pin"]
+
+            for signal_name, signal_data in self.SIGNALS.items():
+                self.PREFIX = self.hm2_prefix
 
     @classmethod
     def component_loader(cls, instances):
@@ -459,21 +475,22 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 num_pwms = instance.plugin_setup.get("num_pwms", instance.option_default("num_pwms"))
                 num_encoders = instance.plugin_setup.get("num_encoders", instance.option_default("num_encoders"))
                 num_stepgens = instance.plugin_setup.get("num_stepgens", instance.option_default("num_stepgens"))
+                num_leds = instance.plugin_setup.get("num_leds", instance.option_default("num_leds"))
                 # num_serials = instance.plugin_setup.get("num_serials", instance.option_default("num_serials"))
                 output.append("# mesa")
                 if boardname in {"7c80", "7c81"}:
                     spiclk_rate = instance.plugin_setup.get("spiclk_rate", instance.option_default("spiclk_rate"))
                     component = "hm2_spix"
                     output.append("loadrt hostmot2")
-                    output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
+                    output.append(f'loadrt {component} spi_probe=1 spiclk_rate={spiclk_rate} config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens} num_leds={num_leds}"')
                 else:
                     ip_address = instance.plugin_setup.get("ip_address", instance.option_default("ip_address"))
                     output.append("loadrt hostmot2")
-                    output.append(f'loadrt hm2_eth board_ip="{ip_address}" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens}"')
-                output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
-                output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
-                output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
-                output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
+                    output.append(f'loadrt hm2_eth board_ip="{ip_address}" config="num_encoders={num_encoders} num_pwmgens={num_pwms} num_stepgens={num_stepgens} num_leds={num_leds}"')
+                # output.append(f"setp {instance.hm2_prefix}.led.CR01 1")
+                # output.append(f"setp {instance.hm2_prefix}.led.CR02 1")
+                # output.append(f"setp {instance.hm2_prefix}.led.CR03 1")
+                # output.append(f"setp {instance.hm2_prefix}.led.CR04 1")
                 output.append(f"setp {instance.hm2_prefix}.watchdog.timeout_ns 50000000")
                 output.append(f"setp {instance.hm2_prefix}.dpll.01.timer-us -50")
                 output.append(f"setp {instance.hm2_prefix}.stepgen.timer-number 1")
