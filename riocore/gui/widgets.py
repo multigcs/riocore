@@ -242,6 +242,9 @@ class edit_float(QDoubleSpinBox):
         else:
             self.win.display()
 
+    def get(self):
+        return self.value()
+
 
 class edit_int(QSpinBox):
     def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None):
@@ -295,6 +298,9 @@ class edit_int(QSpinBox):
             self.cb(self.value())
         else:
             self.win.display()
+
+    def get(self):
+        return self.value()
 
 
 class edit_avgfilter(QSpinBox):
@@ -369,6 +375,9 @@ class edit_avgfilter(QSpinBox):
         else:
             self.win.display()
 
+    def get(self):
+        return self.value()
+
 
 class edit_text(QLineEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
@@ -409,6 +418,9 @@ class edit_text(QLineEdit):
             self.cb(self.text())
         else:
             self.win.display()
+
+    def get(self):
+        return self.text()
 
 
 class edit_multiline(QTextEdit):
@@ -451,6 +463,9 @@ class edit_multiline(QTextEdit):
             self.cb(self.toPlainText())
         else:
             self.win.display()
+
+    def get(self):
+        return self.toPlainText()
 
 
 class edit_file(QLineEdit):
@@ -503,6 +518,9 @@ class edit_file(QLineEdit):
         else:
             self.win.display()
 
+    def get(self):
+        return self.text()
+
 
 class edit_bool(QCheckBox):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
@@ -543,6 +561,9 @@ class edit_bool(QCheckBox):
             self.cb(self.text())
         else:
             self.win.display()
+
+    def get(self):
+        return self.isChecked()
 
 
 class edit_combobox(QComboBox):
@@ -650,6 +671,9 @@ class edit_combobox(QComboBox):
         else:
             self.win.display()
 
+    def get(self):
+        return self.currentText().split("|")[0]
+
 
 class modifier_selector(QComboBox):
     def __init__(self, win, pin_setup, modifier_id, modifier_view, help_text=None):
@@ -686,6 +710,9 @@ class modifier_selector(QComboBox):
         else:
             self.pin_setup["modifier"][self.modifier_id]["type"] = selected
         self.win.display()
+
+    def get(self):
+        return self.currentText()
 
 
 class ImageMap(QLabel):

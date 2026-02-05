@@ -398,9 +398,6 @@ class TabAxis:
 
     def update(self, config):
         self.config = config
-        # if not self.widgets:
-        #    return
-
         signature = []
         project = riocore.Project(copy.deepcopy(self.config), "")
         self.project = project
@@ -752,7 +749,6 @@ class TabAxis:
                         default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(dkey)
                         if default:
                             options["default"] = default
-
                         ekey = key
                         if ekey == "scale_in":
                             ekey = "scale"
@@ -804,14 +800,9 @@ class TabAxis:
                         options = riocore.halpins.JOINT_OPTIONS[key]
                         home_options[key.upper()] = options
                         unit = options.get("unit", "")
-
-                        if key.upper() in jdata:
-                            options["default"] = jdata.get(key.upper())
-                        else:
-                            default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
-                            if default:
-                                options["default"] = default
-
+                        default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
+                        if default:
+                            options["default"] = default
                         widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key], need_enter=True)
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
