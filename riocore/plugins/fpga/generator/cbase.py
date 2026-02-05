@@ -369,21 +369,34 @@ class cbase:
                                         output.append("    if (*data->sys_simulation == 1) {")
                                         output.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
                                         axis = ""
-                                        home = ""
+                                        home_sw = ""
+                                        home_offset = 0.0
+                                        home_search_vel = 0.0
                                         for axis_name, axis_config in self.project.axis_dict.items():
                                             for joint in axis_config["joints"]:
                                                 if joint["instance"] == plugin_instance:
                                                     jn = joint["num"]
                                                     axis = joint["axis"]
-                                                    home = homes.get(str(jn))
-                                        if home:
-                                            if axis == "Z":
-                                                output.append("        if (value > 20.0) {")
+                                                    home_offset = joint["HOME_OFFSET"]
+                                                    home_search_vel = joint["HOME_SEARCH_VEL"]
+                                                    home_sw = homes.get(str(jn))
+                                        if home_sw:
+                                            output.append(f"        // simulating {axis} homing")
+                                            output.append(f"        float diff = value - *data->{varname};")
+                                            output.append(f"        float home_offset = {home_offset};")
+                                            if home_search_vel > 0:
+                                                output.append("        if (diff > 0) {")
+                                                output.append("            home_offset += 4.0;")
+                                                output.append("        }")
+                                                output.append("        if (value > home_offset) {")
                                             else:
-                                                output.append("        if (value < 0.0) {")
-                                            output.append(f"            data->{home} = 1;")
+                                                output.append("        if (diff > 0) {")
+                                                output.append("            home_offset -= 4.0;")
+                                                output.append("        }")
+                                                output.append("        if (value < home_offset) {")
+                                            output.append(f"            data->{home_sw} = 1;")
                                             output.append("        } else {")
-                                            output.append(f"            data->{home} = 0;")
+                                            output.append(f"            data->{home_sw} = 0;")
                                             output.append("        }")
                                         output.append("    }")
 

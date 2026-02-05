@@ -1422,6 +1422,13 @@ class Window(QMainWindow):
         QTabWidget.setCurrentIndex(self.tabwidget, 4)
         self.buildertab.generator_run("-s")
 
+    def generator_run_sim(self):
+        if not self.save_check():
+            # cancel pressed
+            return
+        QTabWidget.setCurrentIndex(self.tabwidget, 4)
+        self.buildertab.generator_run("-S")
+
     def runTimer(self):
         infotext = []
         if self.scene.selection_source and self.scene.selection_source[0]:
@@ -1516,6 +1523,13 @@ class Window(QMainWindow):
         run_action.setStatusTip("generate and run")
         run_action.setShortcut("F5")
         run_action.triggered.connect(self.generator_run)
+        toolbar.addAction(run_action)
+
+        icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
+        run_action = QAction(icon, "&generate and run sim (F6)", self)
+        run_action.setStatusTip("generate and run")
+        run_action.setShortcut("F6")
+        run_action.triggered.connect(self.generator_run_sim)
         toolbar.addAction(run_action)
 
         toolbar.addSeparator()
