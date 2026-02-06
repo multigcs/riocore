@@ -380,12 +380,13 @@ class TabDrawing:
 
 
 class TabAxis:
+    NEED_ENTER = False
+
     def __init__(self, parent):
         self.parent = parent
         self.config = parent.config
         self.signature = []
         self.widgets = {}
-
         self.tab_widget = QWidget()
         self.tab_layout = QVBoxLayout()
         self.tab_widget.setLayout(self.tab_layout)
@@ -752,11 +753,11 @@ class TabAxis:
                         ekey = key
                         if ekey == "scale_in":
                             ekey = "scale"
-                            widget = self.parent.edit_item(plugin_setup_encoder, ekey, options, need_enter=True)
+                            widget = self.parent.edit_item(plugin_setup_encoder, ekey, options, need_enter=self.NEED_ENTER)
                         else:
                             if ekey == "scale_out":
                                 ekey = "scale"
-                            widget = self.parent.edit_item(joint_setup, ekey, options, need_enter=True)
+                            widget = self.parent.edit_item(joint_setup, ekey, options, need_enter=self.NEED_ENTER)
 
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
@@ -803,7 +804,7 @@ class TabAxis:
                         default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
                         if default:
                             options["default"] = default
-                        widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key], need_enter=True)
+                        widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key], need_enter=self.NEED_ENTER)
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
                         ulabel.setStyleSheet("QLabel{font-size:12px;}")
