@@ -2,8 +2,8 @@ import json
 import os
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, QSize, QSortFilterProxyModel, Qt, pyqtSignal
-from PyQt5.QtGui import QFont, QPixmap, QStandardItem
+from PyQt5.QtCore import QRect, QRectF, QSize, QSortFilterProxyModel, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QFont, QPainter, QPen, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QSpinBox,
     QTextEdit,
     QVBoxLayout,
+    QWidget,
 )
 
 import riocore
@@ -934,3 +935,84 @@ class PinButton(QPushButton):
     def unmark(self):
         if self.parent and self.bgcolor:
             self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
+
+
+class JointImage(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.jdata = {}
+        self.joint_setup = {}
+        self.width = 400
+        self.height = 80
+        self.setFixedWidth(self.width)
+        self.setFixedHeight(self.height)
+
+    def update_joint(self, jdata, joint_setup):
+        self.jdata = jdata
+        self.joint_setup = joint_setup
+        self.update()
+
+    def paintEvent(self, event):
+        jmin = self.joint_setup.get("MIN_LIMIT", self.jdata.get("MIN_LIMIT", 0.0))
+        jmax = self.joint_setup.get("MAX_LIMIT", self.jdata.get("MAX_LIMIT", 99999.0))
+        jhome_offset = self.joint_setup.get("HOME_OFFSET", self.jdata.get("HOME_OFFSET", 0.0))
+        jsearch = self.joint_setup.get("HOME_SEARCH_VEL", self.jdata.get("HOME_SEARCH_VEL", 10.0))
+        jhome = self.joint_setup.get("HOME", self.jdata.get("HOME", 0.0))
+
+        joint_size = jmax - jmin
+        border = 20
+        scale = (self.width - border * 2) / joint_size
+
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setFont(QFont("Arial", 10))
+        painter.setBrush(QBrush(Qt.white))
+        painter.setPen(QPen(Qt.gray, 1))
+        painter.drawRect(QRect(0, 0, self.width - 1, self.height - 1))
+
+        if jhome < jmin or jhome > jmax:
+            painter.setPen(QPen(Qt.red, 3))
+        else:
+            painter.setPen(QPen(Qt.black, 3))
+
+        joint_len = int(joint_size * scale)
+        pos_min = 0
+        pos_max = joint_len
+        pos_hsw = int((jhome_offset - jmin) * scale)
+        pos_home = int((jhome - jmin) * scale)
+
+        l1 = 10
+        l2 = 25
+        l3 = 40
+        l4 = 55
+        l5 = 70
+
+        painter.drawLine(border + pos_min, l4, border + pos_max, l4)
+        painter.drawLine(border + pos_min, l4, border + pos_min, l4 + 10)
+        painter.drawLine(border + pos_max, l4, border + pos_max, l4 + 10)
+        painter.drawLine(border + pos_hsw, l4 - 10, border + pos_hsw, l4)
+        painter.drawLine(border + pos_home, l4 - 10, border + pos_home, l4)
+
+        if jsearch < 0.0:
+            pos_sve = int(((jmax - jhome_offset) / 2 + jhome_offset) * scale)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve + 10, l3)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve, l3 - 5)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve, l3 + 5)
+        else:
+            pos_sve = int(((jhome_offset - jmin) / 2) * scale)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve + 10, l3)
+            painter.drawLine(border + pos_sve, l3 - 5, border + pos_sve + 10, l3)
+            painter.drawLine(border + pos_sve, l3 + 5, border + pos_sve + 10, l3)
+
+        painter.drawText(QRectF(border + pos_min - border, l5 - 7, border * 2, 14), Qt.AlignCenter, "MIN")
+        painter.drawText(QRectF(border + pos_max - border, l5 - 7, border * 2, 14), Qt.AlignCenter, "MAX")
+
+        painter.setPen(QPen(Qt.black, 3))
+        if jhome < jmin or jhome > jmax:
+            painter.setPen(QPen(Qt.red, 3))
+        painter.drawText(QRectF(border + pos_home - border, l1 - 7, border * 2, 14), Qt.AlignCenter, "H")
+
+        painter.setPen(QPen(Qt.black, 3))
+        if jhome_offset < jmin or jhome_offset > jmax:
+            painter.setPen(QPen(Qt.red, 3))
+        painter.drawText(QRectF(border + pos_hsw - border, l2 - 7, border * 2, 14), Qt.AlignCenter, "SW")

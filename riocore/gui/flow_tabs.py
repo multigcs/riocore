@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import (
 import riocore
 
 from riocore.gui.home_helper import HomeAnimation
-from riocore.gui.widgets import MyStandardItem
+from riocore.gui.widgets import JointImage, MyStandardItem
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -455,25 +455,11 @@ class TabAxis:
                     else:
                         text.append(f"Max-Frequency: {max_freq:0.2f} Hz")
 
-                    jmin = joint_setup.get("MIN_LIMIT", jdata.get("MIN_LIMIT", 0.0))
-                    jmax = joint_setup.get("MAX_LIMIT", jdata.get("MAX_LIMIT", 99999.0))
-                    jhome = joint_setup.get("HOME_OFFSET", jdata.get("HOME_OFFSET", 0.0))
-                    jsearch = joint_setup.get("HOME_SEARCH_VEL", jdata.get("HOME_SEARCH_VEL", 10.0))
-
-                    min_diff = abs(jhome - jmin)
-                    max_diff = abs(jmax - jhome)
-                    arrow = "<"
-                    if jsearch > 0:
-                        arrow = ">"
-                    if max_diff < min_diff:
-                        text.append(f"min ------{arrow}-------- home -- max")
-                        text.append(f"{jmin:04.1f} ------------ {jhome:04.1f} -- {jmax:04.1f}")
-                    else:
-                        text.append(f"min -- home -------{arrow}------- max")
-                        text.append(f"{jmin:04.1f} -- {jhome:04.1f} ------------ {jmax:04.1f}")
-
                     if f"{joint}_info" in self.widgets:
                         self.widgets[f"{joint}_info"].setText("\n".join(text))
+
+                    if f"{joint}_image" in self.widgets:
+                        self.widgets[f"{joint}_image"].update_joint(jdata, joint_setup)
 
                     if "joint" not in plugin_setup:
                         plugin_setup["joint"] = {}
@@ -751,12 +737,23 @@ class TabAxis:
                     label.setStyleSheet("QLabel{font-size:27px;}")
                     row.addWidget(label, stretch=0)
 
+                    info_col = QVBoxLayout()
+                    row.addLayout(info_col, stretch=1)
+
+                    info_col.addStretch()
+
                     info = QLabel("---")
+                    info.setStyleSheet("QLabel{font: Monospace; font-size: 13pt;}")
                     self.widgets[f"{joint}_info"] = info
-                    row.addWidget(info, stretch=1)
+                    info_col.addWidget(info)
+
+                    jimage = JointImage()
+                    self.widgets[f"{joint}_image"] = jimage
+                    info_col.addWidget(jimage)
+
+                    info_col.addStretch()
 
                     joint_edits = QVBoxLayout()
-
                     keys = ["scale_out", "max_velocity", "max_acceleration", "min_limit", "max_limit"]
                     if plugin_instance_encoder:
                         keys = ["scale_in", *keys]
@@ -815,19 +812,30 @@ class TabAxis:
 
                     home_options = {}
                     home_edits = QVBoxLayout()
-                    for key in ("home_sequence", "home", "home_offset", "home_search_vel", "home_latch_vel", "home_final_vel"):
+                    for key, tooltip in {
+                        "home_sequence": "homing order",
+                        "home": "The position that the joint will go to upon completion of the homing sequence",
+                        "home_offset": "This defines the location of the home switch",
+                        "home_search_vel": "Search speed and direction to find the home switch",
+                        "home_latch_vel": "Specifies the speed and direction that LinuxCNC uses when it makes its final accurate determination of the home switch",
+                        "home_final_vel": "It specifies the speed that LinuxCNC uses when it makes its move from HOME_OFFSET to the HOME position",
+                    }.items():
                         options = riocore.halpins.JOINT_OPTIONS[key]
                         home_options[key.upper()] = options
                         unit = options.get("unit", "")
                         default = riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.get(key.upper())
                         if default:
                             options["default"] = default
+                        options["help_text"] = tooltip
                         widget = self.parent.edit_item(joint_setup, key, riocore.halpins.JOINT_OPTIONS[key], need_enter=self.NEED_ENTER)
                         self.widgets[f"{joint}_{key}"] = widget
                         ulabel = QLabel(unit)
+                        ulabel.setToolTip(tooltip)
                         ulabel.setStyleSheet("QLabel{font-size:12px;}")
                         erow = QHBoxLayout()
-                        erow.addWidget(QLabel(key.title()), stretch=2)
+                        label = QLabel(key.title())
+                        label.setToolTip(tooltip)
+                        erow.addWidget(label, stretch=2)
                         erow.addWidget(widget, stretch=4)
                         erow.addWidget(ulabel, stretch=1)
                         home_edits.addLayout(erow)

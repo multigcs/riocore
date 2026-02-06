@@ -1371,7 +1371,7 @@ class Window(QMainWindow):
         self.show()
 
         # self.optionstab.update(self.config) # timing 0.21
-        # self.axistab.update(self.config)
+        self.axistab.update(self.config)
 
         if self.config_file:
             self.setWindowTitle(f"RIO - Flow-GUI - {os.path.basename(os.path.dirname(self.config_file))}/{os.path.basename(self.config_file)}")
