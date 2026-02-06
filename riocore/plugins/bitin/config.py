@@ -34,21 +34,21 @@ class config:
         dialog.layout = QVBoxLayout()
         dialog.layout.addWidget(QLabel("Easy quick selection for the most frequently used functions\n"))
         dialog.layout.addWidget(QLabel("Function:"))
-        halpin = QComboBox()
-        halpin.addItem("")
+        halpin_widget = QComboBox()
+        halpin_widget.addItem("")
         for idx, option in enumerate(options):
-            halpin.addItem(f"{option[0]} ({option[1]}")
+            halpin_widget.addItem(f"{option[0]} ({option[1]}")
             if net == option[1]:
-                halpin.setCurrentIndex(idx + 1)
+                halpin_widget.setCurrentIndex(idx + 1)
 
-        dialog.layout.addWidget(halpin)
+        dialog.layout.addWidget(halpin_widget)
         dialog.layout.addWidget(dialog.buttonBox)
         dialog.setLayout(dialog.layout)
 
         if dialog.exec():
-            halpin = halpin.currentText()
+            halpin = halpin_widget.currentText()
             if "(" in halpin:
-                halpin = halpin.currentText().split("(")[1].split(")")[0]
+                halpin = halpin.split("(")[1].split(")")[0]
             if halpin:
                 if "signals" not in self.plugin_setup:
                     self.self.plugin_setup["signals"] = {}

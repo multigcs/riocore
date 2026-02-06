@@ -155,6 +155,7 @@ class simulator(generator_base):
         output.append(f"#define NUM_JOINTS {self.joints}")
         output.append(f"#define NUM_HOMESWS {self.homes}")
         output.append(f"#define NUM_BITOUTS {self.bitouts}")
+        output.append(f"#define NUM_BITINS {self.bitins}")
         output.append("")
         output.append("// Virtual size (in mm / scale = steps/mm)")
 
@@ -178,6 +179,8 @@ class simulator(generator_base):
         output.append("extern volatile float home_offset[NUM_JOINTS];")
         output.append("extern volatile float home_search_vel[NUM_JOINTS];")
         output.append("extern volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("extern volatile int32_t bitin_stat[NUM_BITINS];")
+        output.append("extern char bitin_name[NUM_BITINS][1024];")
         output.append("")
 
         for axis, data in self.project.axis_dict.items():
@@ -238,11 +241,23 @@ class simulator(generator_base):
                 home_search_vels.append(str(home_search_vel))
                 output.append("")
 
+        bitin_names = []
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            if data_config["direction"] == "input":
+                if data_name == "bit":
+                    bitin_names.append(f'"{plugin_instance.title}-{data_name}"')
+
         output.append("volatile int32_t joint_position[NUM_JOINTS];")
         output.append("volatile int32_t home_switch[NUM_HOMESWS];")
         output.append(f"volatile float home_offset[NUM_JOINTS] = {{{', '.join(home_offsets)}}};")
         output.append(f"volatile float home_search_vel[NUM_JOINTS] = {{{', '.join(home_search_vels)}}};")
         output.append("volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("volatile int32_t bitin_stat[NUM_BITINS];")
+        output.append(f"char bitin_name[NUM_BITINS][1024] = {{{', '.join(bitin_names)}}};")
         output.append("")
 
         for axis, data in self.project.axis_dict.items():
@@ -316,6 +331,7 @@ class simulator(generator_base):
         output.append("")
         home_n = 0
         bitout_n = 0
+        bitin_n = 0
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
             expansion = data_config.get("expansion", False)
@@ -336,30 +352,34 @@ class simulator(generator_base):
                     output.append(f"    static float last_position_{jn} = 0;")
                     output.append(f"    float offset_{jn} = home_offset[{jn}];")
                     output.append(f"    float diff_{jn} = joint_position[{jn}] - last_position_{jn};")
-
                     output.append(f"    if (home_search_vel[{jn}] > 0) {{")
                     # output.append(f"        if (diff_{jn} > 0) {{")
                     # output.append(f"            offset_{jn} += 0.5;")
                     # output.append("        }")
                     output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) > offset_{jn}) {{")
-                    output.append(f"            {var} = 1;")
+                    output.append(f"            bitin_stat[{bitin_n}] = 1;")
                     output.append("        } else {")
-                    output.append(f"            {var} = 0;")
+                    output.append(f"            bitin_stat[{bitin_n}] = 0;")
                     output.append("        }")
                     output.append("    } else {")
                     # output.append(f"        if (diff_{jn} > 0) {{")
                     # output.append(f"            offset_{jn} -= 0.5;")
                     # output.append("        }")
                     output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) < offset_{jn}) {{")
-                    output.append(f"            {var} = 1;")
+                    output.append(f"            bitin_stat[{bitin_n}] = 1;")
                     output.append("        } else {")
-                    output.append(f"            {var} = 0;")
+                    output.append(f"            bitin_stat[{bitin_n}] = 0;")
                     output.append("        }")
                     output.append("    }")
                     output.append(f"    last_position_{jn} = joint_position[{jn}];")
                     output.append(f"    home_switch[{home_n}] = {var};")
                     output.append("")
                     home_n += 1
+                if data_name == "bit":
+                    var = interface_data["bit"]["variable"]
+                    output.append(f"    {var} = bitin_stat[{bitin_n}];")
+                    output.append(f'    strcpy(bitin_name[{bitin_n}], "{plugin_instance.title}-{data_name}");')
+                    bitin_n += 1
             if data_config["direction"] == "output":
                 if data_name == "bit":
                     var = interface_data["bit"]["variable"]
@@ -368,6 +388,7 @@ class simulator(generator_base):
 
         self.homes = home_n
         self.bitouts = bitout_n
+        self.bitins = bitin_n
 
         output.append("")
         output.append('    printf("\\n\\n");')

@@ -205,7 +205,7 @@ void display() {
     for (int j = 0; j < NUM_JOINTS; j++) {
         sprintf(text, "J%i = %0.03f", j, (float)joint_position[j] / joint_scales[j]);
         glPushMatrix();
-        glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
+        glTranslatef(4.2, -3, GL_HEIGHT - (float)tl * 0.2);
         draw_text(text);
         glPopMatrix();
         tl++;
@@ -213,7 +213,7 @@ void display() {
     for (int j = 0; j < NUM_BITOUTS; j++) {
         sprintf(text, "bit: %i", bitout_stat[j]);
         glPushMatrix();
-        glTranslatef(4.2, -3, 3.0 - (float)tl * 0.2);
+        glTranslatef(4.2, -3, GL_HEIGHT - (float)tl * 0.2);
         draw_text(text);
         glPopMatrix();
         tl++;
@@ -222,10 +222,19 @@ void display() {
     for (int j = 0; j < NUM_HOMESWS; j++) {
         sprintf(text, "%i", home_switch[j]);
         glPushMatrix();
-        glTranslatef(3.0, -3, 3.0 - (float)tl * 0.2);
+        glTranslatef(3.0, -3, GL_HEIGHT - (float)tl * 0.2);
         draw_text(text);
         glPopMatrix();
         tl++;
+    }
+
+    for (int j = 0; j < NUM_BITINS; j++) {
+        float ey = GL_HEIGHT - (float)j * 0.2;
+        sprintf(text, "%s = %i", bitin_name[j], bitin_stat[j]);
+        glPushMatrix();
+        glTranslatef(0.2, -3, ey);
+        draw_text(text);
+        glPopMatrix();
     }
 
     glutSwapBuffers();
@@ -276,6 +285,16 @@ void keyboard(unsigned char key, int x, int y) {
 
 // Mouse button callback
 void mouseButton(int button, int state, int x, int y) {
+    if (state == GLUT_DOWN) {
+        float py = GL_HEIGHT - ((float)y / HM_HEIGHT * 6.6);
+        for (int j = 0; j < NUM_BITINS; j++) {
+            float ey = GL_HEIGHT - (float)j * 0.2 - 0.3;
+            if (py > ey - 0.1 && py < ey + 0.1) {
+                bitin_stat[j] = 1 - bitin_stat[j];
+            }
+        }
+    }
+
     if (button == 3) {
         scale += 0.05;
     } else if (button == 4 && scale > 0.1) {
