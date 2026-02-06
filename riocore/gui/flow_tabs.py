@@ -45,6 +45,8 @@ riocore_path = os.path.dirname(riocore.__file__)
 def cleanLayout(layout):
     for i in reversed(range(layout.count())):
         item = layout.itemAt(i)
+        if not item:
+            continue
         if isinstance(item, QWidgetItem):
             item.widget().close()
         elif isinstance(item, QSpacerItem):
