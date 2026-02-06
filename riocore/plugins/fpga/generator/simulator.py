@@ -15,7 +15,7 @@ class simulator(generator_base):
         self.project = project
         self.instance = instance
         self.prefix = instance.hal_prefix
-        self.webots_home = os.path.join("usr", "local", "webots")
+        self.webots_home = os.path.join("/", "usr", "local", "webots")
         self.webots = False
         self.glsim = False
         project.config["riocore_path"] = riocore_path
@@ -516,7 +516,7 @@ class simulator(generator_base):
             output.append(f"	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c modbus.c interface.c {gcc_options} -lm -lGL -lGLU -lglut")
         else:
             output.append("simulator: main.c simulator.c riocore.c interface.c")
-            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c riocore.c interface.c {gcc_options} -lm")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c riocore.c modbus.c interface.c {gcc_options} -lm")
         output.append("")
         output.append("simulator_run: simulator")
         if self.webots:
