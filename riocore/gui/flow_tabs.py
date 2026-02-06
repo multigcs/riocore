@@ -454,6 +454,24 @@ class TabAxis:
                         text.append(f"Max-Frequency: {max_freq / 1000:0.2f} kHz")
                     else:
                         text.append(f"Max-Frequency: {max_freq:0.2f} Hz")
+
+                    jmin = joint_setup.get("MIN_LIMIT", jdata.get("MIN_LIMIT", 0.0))
+                    jmax = joint_setup.get("MAX_LIMIT", jdata.get("MAX_LIMIT", 99999.0))
+                    jhome = joint_setup.get("HOME_OFFSET", jdata.get("HOME_OFFSET", 0.0))
+                    jsearch = joint_setup.get("HOME_SEARCH_VEL", jdata.get("HOME_SEARCH_VEL", 10.0))
+
+                    min_diff = abs(jhome - jmin)
+                    max_diff = abs(jmax - jhome)
+                    arrow = "<"
+                    if jsearch > 0:
+                        arrow = ">"
+                    if max_diff < min_diff:
+                        text.append(f"min ------{arrow}-------- home -- max")
+                        text.append(f"{jmin:04.1f} ------------ {jhome:04.1f} -- {jmax:04.1f}")
+                    else:
+                        text.append(f"min -- home -------{arrow}------- max")
+                        text.append(f"{jmin:04.1f} -- {jhome:04.1f} ------------ {jmax:04.1f}")
+
                     if f"{joint}_info" in self.widgets:
                         self.widgets[f"{joint}_info"].setText("\n".join(text))
 
