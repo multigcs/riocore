@@ -45,13 +45,11 @@ riocore_path = os.path.dirname(riocore.__file__)
 def cleanLayout(layout):
     for i in reversed(range(layout.count())):
         item = layout.itemAt(i)
-        if not item:
-            continue
         if isinstance(item, QWidgetItem):
             item.widget().close()
         elif isinstance(item, QSpacerItem):
             pass
-        else:
+        elif item is not None:
             cleanLayout(item.layout())
         layout.removeItem(item)
 
@@ -499,7 +497,7 @@ class TabAxis:
                     if plugin_instance_home:
                         signature.append("h")
                     else:
-                        self.signature.append("sh")
+                        signature.append("sh")
 
                     if plugin_instance_encoder:
                         signature.append("e")

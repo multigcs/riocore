@@ -960,6 +960,9 @@ class JointImage(QWidget):
         jhome = self.joint_setup.get("HOME", self.jdata.get("HOME", 0.0))
 
         joint_size = jmax - jmin
+        if joint_size == 0:
+            return
+
         border = 20
         scale = (self.width - border * 2) / joint_size
 
