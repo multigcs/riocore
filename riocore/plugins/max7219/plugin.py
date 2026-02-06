@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "7segment display based on max7219"
         self.KEYWORDS = "info display"
         self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["max7219.v"]
         self.PINDEFAULTS = {

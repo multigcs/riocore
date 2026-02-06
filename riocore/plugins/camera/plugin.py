@@ -7,10 +7,11 @@ class Plugin(PluginBase):
         self.COMPONENT = "camera"
         self.INFO = "gui component to display an camera image"
         self.DESCRIPTION = ""
+        self.NEEDS = []
         self.KEYWORDS = "jog gui robot"
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_TYPE = "host"
         self.IMAGE = ""
         self.ORIGIN = ""
         self.SIGNALS = {}

@@ -1,5 +1,6 @@
 {
     "comment": "db25 opto-board",
+    "needs": ["db25"],
     "main": {
         "P1": {
             "pos": [

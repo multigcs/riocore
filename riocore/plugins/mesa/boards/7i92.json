@@ -1,4 +1,5 @@
 {
+  "provides": ["db25"],
   "pins": {
     "P2:IO0": {
       "pin": "P119",

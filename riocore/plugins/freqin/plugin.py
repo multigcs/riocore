@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "frequency input"
         self.DESCRIPTION = "to measurement digital frequencies"
         self.KEYWORDS = "frequency"
+        self.NEEDS = ["fpga"]
         self.IMAGES = ["flow", "proximity"]
         self.ORIGIN = ""
         self.VERILOGS = ["freqin.v"]

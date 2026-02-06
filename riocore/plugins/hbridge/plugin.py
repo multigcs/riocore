@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "hbridge output"
         self.DESCRIPTION = "to control DC-Motors"
         self.KEYWORDS = "joint dcservo"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["hbridge.v"]
         self.TYPE = "joint"

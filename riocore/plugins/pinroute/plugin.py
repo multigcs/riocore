@@ -14,6 +14,7 @@ graph LR;
     Routing-->Out;
         """
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.PINDEFAULTS = {}
         self.OPTIONS = {
             "inputs": {

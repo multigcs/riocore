@@ -18,6 +18,7 @@ class Plugin(PluginBase):
         self.INFO = "support for custom mesa-sserial devices"
         self.DESCRIPTION = ""
         self.KEYWORDS = "smart-serial rgb wled rs422"
+        self.NEEDS = ["mesa"]
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PLUGIN_TYPE = "sserial"

@@ -1,5 +1,6 @@
 {
     "comment": "rioctrl-shiftio",
+    "needs": ["rioctrl"],
     "main": {
         "S0": {
           "pos": [

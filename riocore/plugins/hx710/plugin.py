@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "24bit adc (HX710B)"
         self.KEYWORDS = "adc analog"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["hx710.v"]
         self.PINDEFAULTS = {
             "miso": {

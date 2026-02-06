@@ -8,6 +8,7 @@
     "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 -f rio.bit",
     "sflashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 rio.bit",
     "package": "csg324",
+    "provides": ["pmod"],
     "clock_40": {
         "speed": "40000000",
         "pin": "V10",

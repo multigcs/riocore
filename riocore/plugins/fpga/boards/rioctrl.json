@@ -3,6 +3,7 @@
     "description": "rioctrl- a modular hardware for riocore",
     "url": "https://github.com/festlv/rioctrl-hw",
     "toolchain": "icestorm",
+    "provides": ["rioctrl", "pmod"],
     "family": "ecp5",
     "type": "12k",
     "types": [

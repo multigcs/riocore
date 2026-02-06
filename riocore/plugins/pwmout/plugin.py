@@ -13,6 +13,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["spindle500w", "laser", "led"]
         # a link to the orign sources of the verilog code (empty for own code)
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         # list of verilog files in the plugin folder to copy to the GATEWARE folder while generate the Output
         self.VERILOGS = ["pwmout.v"]
         # the plugin type, there are io, joint and expansion

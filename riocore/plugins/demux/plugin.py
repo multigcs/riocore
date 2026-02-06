@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "binary demultiplexer"
         self.DESCRIPTION = """decodes binary values"""
         self.KEYWORDS = "binary demultiplexer"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {}
         self.INTERFACE = {}

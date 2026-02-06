@@ -11,6 +11,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
+        self.NEEDS = ["gpio"]
         self.ORIGIN = ""
         self.OPTIONS = {}
         self.SIGNALS = {

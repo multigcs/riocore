@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "only usable for the max10 fpga boards"
         self.KEYWORDS = "analog adc voltage ampere"
         self.ORIGIN = "ACDS version 16.0 211"
+        self.NEEDS = ["fpga"]
         self.LIMITATIONS = {
             "family": ["MAX 10"],
             "toolchains": ["quartus"],

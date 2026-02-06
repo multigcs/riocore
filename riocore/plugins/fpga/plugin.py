@@ -27,6 +27,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "fpga board"
         self.TYPE = "base"
         self.IMAGE_SHOW = False
+        self.PROVIDES = ["fpga", "base"]
         self.PLUGIN_TYPE = "fpga"
         self.BUILDER = ["clean", "build", "load", "all"]
         self.URL = ""
@@ -51,6 +52,8 @@ class Plugin(PluginBase):
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
         self.jdata = json.loads(open(board_file).read())
+        self.PROVIDES += self.jdata.get("provides", [])
+
         if self.jdata.get("toolchains"):
             self.OPTIONS.update(
                 {

@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "bldc hallsensor"
         self.DESCRIPTION = "3 phases hallsensor"
         self.KEYWORDS = "feedback encoder rotary bldc brushless"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["hallsensor.v"]
 

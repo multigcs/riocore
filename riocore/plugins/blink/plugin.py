@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["led", "smdled"]
         self.ORIGIN = ""
         self.VERILOGS = ["blink.v"]
+        self.NEEDS = ["fpga"]
         self.PINDEFAULTS = {
             "led": {
                 "direction": "output",

@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "riodrive is a fork of odrive (v3.6)"
         self.URL = "https://github.com/multigcs/riodrive"
         self.KEYWORDS = "canbus odrive bldc brushless servo"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
         self.TYPE = "joint"

@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.NAME = "abs_encoder"
         self.INFO = "serial abs-encoder"
         self.KEYWORDS = "absolute angle encoder"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
         self.OPTIONS = {

@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "frequency"
         self.IMAGES = ["led", "smdled"]
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["freqout.v"]
         self.PINDEFAULTS = {
             "freq": {

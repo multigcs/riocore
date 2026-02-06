@@ -221,6 +221,7 @@ class TabBuilder:
 class TabDrawing:
     def __init__(self, parent):
         self.plugins = None
+        self.provides = []
         self.parent = parent
         info_vbox = QWidget()
         info_vbox_layout = QVBoxLayout()
@@ -322,21 +323,32 @@ class TabDrawing:
         infotext += f"\n{plugin_instance.DESCRIPTION}"
         self.pininfo.setPlainText(infotext)
 
-    def plugin_search(self, filter_string=None, plugins=None):
+    def plugin_search(self, filter_string=None, plugins=None, provides=None):
         if plugins:
             self.plugins = plugins
         if not filter_string:
             filter_string = self.search_text.text()
-
+        if provides is not None:
+            self.provides = provides
+        filter_string = filter_string.lower()
         plugins = []
         for plugin_data in self.plugins.list(True):
             plugin_name = plugin_data["name"]
 
+            needs = plugin_data["needs"]
+            needs_match = True
+            if needs:
+                for need in needs:
+                    if need not in self.provides:
+                        needs_match = False
+                        break
+
+            if not needs_match:
+                continue
+
             if not filter_string:
                 plugins.append(plugin_data)
                 continue
-            filter_string = filter_string.lower()
-
             if filter_string in plugin_name.lower() or filter_string in plugin_data["description"].lower() or filter_string in plugin_data["info"].lower() or filter_string in plugin_data["keywords"].lower():
                 plugins.append(plugin_data)
 

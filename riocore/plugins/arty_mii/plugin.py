@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.KEYWORDS = "network ethernet interface udp"
         self.ORIGIN = "https://github.com/alexforencich/verilog-ethernet"
+        self.NEEDS = ["fpga"]
         self.EXPERIMENTAL = True
         self.LIMITATIONS = {
             "boards": ["Arty-a7-35t"],

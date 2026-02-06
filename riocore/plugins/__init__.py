@@ -20,6 +20,8 @@ class PluginBase:
         self.SIGNALS = {}
         self.SUB_OF = None
         self.PREFIX = ""
+        self.PROVIDES = []
+        self.NEEDS = []
         self.COMPONENT = ""
         self.BASETHREAD = False
         self.JOINT_DEFAULTS = {}

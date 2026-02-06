@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "set and reset an output pin"
         self.KEYWORDS = "sr-flipflop"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["flipflop_out.v"]
         self.PINDEFAULTS = {
             "outbit": {

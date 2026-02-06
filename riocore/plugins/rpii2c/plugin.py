@@ -17,7 +17,8 @@ class Plugin(PluginBase):
         self.KEYWORDS = "ii2c gpio"
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_TYPE = "rpi"
+        self.NEEDS = []
         self.IMAGE = ""
         self.ORIGIN = ""
         self.SIGNALS = {}

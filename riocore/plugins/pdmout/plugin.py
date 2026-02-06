@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to analog values via sigma-delta modulator"
         self.KEYWORDS = "joint dcservo acservo 10v 5v dac analog sigma-delta pdm"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["pdmout.v"]
         self.TYPE = "joint"
         self.PINDEFAULTS = {

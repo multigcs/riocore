@@ -12,6 +12,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = ""
         self.DESCRIPTION = ""
         self.PLUGIN_TYPE = "breakout"
+        self.NEEDS = ["base"]
         self.PINDEFAULTS = {}
         board_list = []
         for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
@@ -36,6 +37,8 @@ class Plugin(PluginBase):
         self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
         self.INFO = jdata.get("comment", "")
+        self.NEEDS += jdata.get("needs", [])
+        self.PROVIDES += jdata.get("provides", [])
 
         self.SUB_PLUGINS = []
         sub_uids = []

@@ -106,25 +106,57 @@ class Plugins:
         plugins = []
         for plugin_path in sorted(glob.glob(os.path.join(riocore_path, "plugins", "*", "plugin.py"))):
             plugin_name = os.path.basename(os.path.dirname(plugin_path))
+            self.load_plugins({"plugins": [{"type": plugin_name}]})
+            plugin_instance = self.plugin_instances[-1]
+            description = plugin_instance.DESCRIPTION
+            info = plugin_instance.INFO
+            keywords = plugin_instance.KEYWORDS
             if splitted is True:
-                self.load_plugins({"plugins": [{"type": plugin_name}]})
-                plugin_instance = self.plugin_instances[-1]
-                description = plugin_instance.DESCRIPTION
-                info = plugin_instance.INFO
-                keywords = plugin_instance.KEYWORDS
                 if "node_type" in plugin_instance.OPTIONS:
                     option_data = plugin_instance.OPTIONS["node_type"]
                     for option in option_data["options"]:
                         plugin_instance.plugin_setup["node_type"] = option
                         plugin_instance.setup()
-                        description = copy.deepcopy(plugin_instance.DESCRIPTION)
+                        description = copy.deepcopy(description)
                         info = copy.deepcopy(plugin_instance.INFO)
                         keywords = copy.deepcopy(plugin_instance.KEYWORDS) + option
-                        plugins.append({"name": f"{plugin_name} {option}", "path": plugin_path, "description": description, "info": info, "keywords": keywords, "ptype": plugin_instance.PLUGIN_TYPE})
+                        plugins.append(
+                            {
+                                "name": f"{plugin_name} {option}",
+                                "path": plugin_path,
+                                "description": description,
+                                "info": info,
+                                "keywords": keywords,
+                                "ptype": plugin_instance.PLUGIN_TYPE,
+                                "needs": plugin_instance.NEEDS,
+                                "provides": plugin_instance.PROVIDES,
+                            }
+                        )
                 else:
-                    plugins.append({"name": plugin_name, "path": plugin_path, "description": description, "info": info, "keywords": keywords, "ptype": plugin_instance.PLUGIN_TYPE})
+                    plugins.append(
+                        {
+                            "name": plugin_name,
+                            "path": plugin_path,
+                            "description": description,
+                            "info": info,
+                            "keywords": keywords,
+                            "ptype": plugin_instance.PLUGIN_TYPE,
+                            "needs": plugin_instance.NEEDS,
+                            "provides": plugin_instance.PROVIDES,
+                        }
+                    )
             else:
-                plugins.append({"name": plugin_name, "path": plugin_path})
+                plugins.append(
+                    {
+                        "name": plugin_name,
+                        "path": plugin_path,
+                        "description": description,
+                        "info": plugin_instance.INFO,
+                        "keywords": plugin_instance.KEYWORDS,
+                        "needs": plugin_instance.NEEDS,
+                        "provides": plugin_instance.PROVIDES,
+                    }
+                )
         return plugins
 
     def info(self, plugin_name):

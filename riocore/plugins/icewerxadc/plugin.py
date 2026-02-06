@@ -16,6 +16,7 @@ should work also with the iceFUN board
         """
         self.KEYWORDS = "analog adc voltage ampere"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
+        self.NEEDS = ["fpga"]
         self.LIMITATIONS = {
             "boards": ["iceWerx-iCE40-HX8K", "OctoBot"],
         }

@@ -12,6 +12,7 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = True
         self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
+        self.NEEDS = [""]
         self.ORIGIN = ""
         self.SIGNALS = {}
         self.PINDEFAULTS = {}

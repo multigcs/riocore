@@ -18,7 +18,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.KEYWORDS = "stepper servo master"
         self.IMAGES = []
-        self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_TYPE = "ethercat"
         self.ORIGIN = ""
         self.OPTIONS = {}
         self.SIGNALS = {}
@@ -42,6 +42,7 @@ class Plugin(PluginBase):
         self.json_data = None
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "Master":
+            self.PROVIDES = ["ethercat", "gpio", "base"]
             self.TYPE = "base"
             self.IMAGE_SHOW = True
             self.IMAGE = "image.png"
@@ -58,6 +59,7 @@ class Plugin(PluginBase):
             }
 
         elif node_type == "ek1100":
+            self.NEEDS = ["ethercat"]
             self.IMAGE_SHOW = True
             self.IMAGE = "modules/ek1100.png"
             self.INFO = "EtherCAT Coupler"
@@ -114,6 +116,7 @@ class Plugin(PluginBase):
                     del self.plugin_setup["sub"][key]
 
         elif node_type == "Servo/Stepper":
+            self.NEEDS = ["ethercat"]
             self.TYPE = "joint"
             self.IMAGE = "modules/ethercat-servo.png"
             self.IMAGE_SHOW = True
@@ -192,6 +195,7 @@ class Plugin(PluginBase):
                         "pos": [25, 370 + pn * 30],
                     }
         elif node_type == "GPIO":
+            self.NEEDS = ["ethercat"]
             self.PINDEFAULTS = {
                 "BUS:in": {
                     "direction": "input",
@@ -212,6 +216,7 @@ class Plugin(PluginBase):
                 }
 
         elif os.path.exists(os.path.join(os.path.dirname(__file__), "modules", f"module_{node_type}.json")):
+            self.NEEDS = ["ethercat"]
             self.json_data = json.loads(open(os.path.join(os.path.dirname(__file__), "modules", f"module_{node_type}.json")).read())
             self.IMAGE_SHOW = True
             self.IMAGE = f"modules/module_{node_type}.png"
@@ -232,6 +237,7 @@ class Plugin(PluginBase):
                 self.OPTIONS[option_name] = option_data
 
         else:
+            self.NEEDS = ["ethercat"]
             riocore.log(f"ethercat: node_type not found: {node_type}")
             self.INFO = "EtherCAT Placeholder / Unsupported Device"
             self.PINDEFAULTS = {

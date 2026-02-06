@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "axi driver for the interface communication to an embedded arm-core"
         self.KEYWORDS = "zynq xilinx interface"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.TYPE = "interface"
         self.VERILOGS = []
         self.PINDEFAULTS = {}

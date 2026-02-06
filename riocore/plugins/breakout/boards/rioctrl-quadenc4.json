@@ -1,5 +1,6 @@
 {
     "comment": "rioctrl-quadenc4",
+    "needs": ["rioctrl"],
     "main": {
         "S0": {
           "pin": "T13",

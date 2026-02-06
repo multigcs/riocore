@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to measure weight's"
         self.KEYWORDS = "adc analog weight"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["hx711.v"]
         self.PINDEFAULTS = {
             "miso": {

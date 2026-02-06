@@ -1,5 +1,6 @@
 {
     "comment": "icebreaker 3axis pmod",
+    "needs": ["pmod2"],
     "slots": [
         {
             "name": "PMODB",

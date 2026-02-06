@@ -3,11 +3,13 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
-        self.NAME = "spi"
+        self.NAME = "spibridge"
         self.INFO = "spi interface for host comunication over UDB2SPI-Bridges"
         self.DESCRIPTION = "for UDP connections via UDB2SPI-Bridges"
         self.KEYWORDS = "interface spi raspberry rpi"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
+        self.NEEDS = ["fpga"]
+        self.PROVIDES = ["spi", "interface"]
         self.VERILOGS = ["spi.v"]
         self.PINDEFAULTS = {
             "mosi": {

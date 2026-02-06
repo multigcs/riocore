@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "generates sine waves (multi phase support)"
         self.KEYWORDS = "sine wave pwm bldc stepper"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["sinepwm.v"]
         self.OPTIONS = {
             "pwmfreq": {

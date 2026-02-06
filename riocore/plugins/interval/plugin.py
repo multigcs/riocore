@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to control things like lubric pumps"
         self.KEYWORDS = ""
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.EXPERIMENTAL = True
         self.VERILOGS = ["interval.v"]
         self.PINDEFAULTS = {

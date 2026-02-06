@@ -2069,8 +2069,6 @@ class Window(QMainWindow):
                             sub_plugin_instance.PINDEFAULTS[pin_name]["visible"] = False
                         pluginlist.append(sub_plugin_instance)
 
-        self.drawingtab.plugin_search(plugins=self.plugins)
-
         # load base and expansion plugins first
         first = ["base", "expansion"]
         for ptype in [*first, ""]:
@@ -2079,6 +2077,12 @@ class Window(QMainWindow):
                     py += self.insert_plugin(plugin_instance, py)
                     if plugin_instance.SUB_OF:
                         plugin_instance.SUB_OF.SUB_ITEMS.append(plugin_instance)
+
+        provides = []
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                provides += item.plugin_instance.PROVIDES
+        self.drawingtab.plugin_search(plugins=self.plugins, provides=provides)
 
         # connect plugins
         for item in self.scene.items():

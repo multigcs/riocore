@@ -10,10 +10,11 @@ class Plugin(PluginBase):
         self.KEYWORDS = "jog joypad usb"
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_TYPE = "host"
         self.PLUGIN_CONFIGS = {"Wizard": "config.py"}
         self.IMAGE = ""
         self.ORIGIN = ""
+        self.NEEDS = []
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
         self.FILES = []

@@ -11,9 +11,11 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "PC parallel port used as gpio"
         self.KEYWORDS = "parport gpio"
         self.BASETHREAD = True
+        self.PROVIDES = ["gpio", "basethread", "base", "db25"]
+        self.NEEDS = []
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_TYPE = "parport"
         self.ORIGIN = ""
         self.OPTIONS = {
             "portaddr": {

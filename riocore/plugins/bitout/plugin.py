@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to control relay, leds, valves, ...."
         self.KEYWORDS = "led relais relay valve lamp motor magnet"
         self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w"]
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PLUGIN_CONFIGS = {"Wizard": "config.py"}
         self.PINDEFAULTS = {

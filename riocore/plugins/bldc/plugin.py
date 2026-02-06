@@ -27,6 +27,7 @@ Motor-Setup:
 
         """
         self.KEYWORDS = "joint brushless"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
         self.TYPE = "joint"

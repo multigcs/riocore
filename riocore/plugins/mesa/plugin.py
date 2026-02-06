@@ -41,6 +41,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         self.SIGNALS = {}
 
         if node_type == "board":
+            self.PROVIDES = ["mesa", "gpio", "base"]
             board_list = []
             for json_file in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
                 board = json_file.split("/")[-1][:-5]
@@ -97,6 +98,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                 riocore.log(f"ERROR: boardfile not found: {pinfile}")
                 return
             pindata = open(pinfile).read()
+
+            self.NEEDS += board_pins.get("needs", [])
+            self.PROVIDES += board_pins.get("provides", [])
 
             max_pwms = 0
             max_encoders = 0
@@ -272,6 +276,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
                         }
 
         elif node_type == "stepper":
+            self.NEEDS = ["mesa"]
             self.TYPE = "joint"
             self.JOINT_DEFAULTS = {
                 "MESA_DIRSETUP": 2000,
@@ -313,6 +318,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             }
 
         elif node_type == "encoder":
+            self.NEEDS = ["mesa"]
             self.OPTIONS.update(
                 {
                     "scale": {
@@ -356,6 +362,7 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             }
 
         elif node_type == "pwm":
+            self.NEEDS = ["mesa"]
             self.OPTIONS.update(
                 {
                     "frequency": {

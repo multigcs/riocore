@@ -1,5 +1,7 @@
 {
     "comment": "rpi-db25hat",
+    "needs": ["rpigpio"],
+    "provides": ["db25"],
     "main": {
         "P3": {
             "pos": [

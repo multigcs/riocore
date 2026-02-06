@@ -6,6 +6,7 @@
     "toolchain": "icestorm",
     "family": "ice40",
     "type": "up5k",
+    "provides": ["pmod"],
     "package": "sg48",
     "startup": "gpio mode 7 clock\ngpio clock 7 5000000",
     "flashcmd": "./spiflash.sh rio.bin",

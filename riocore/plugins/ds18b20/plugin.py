@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "adc analog temperature"
         self.ORIGIN = "https://github.com/Prajjalak/FPGA_Thermometer/blob/main/ds18b20_drive.v"
         self.VERILOGS = ["ds18b20.v"]
+        self.NEEDS = ["fpga"]
         self.PINDEFAULTS = {
             "one_wire": {
                 "direction": "inout",

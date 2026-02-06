@@ -7,6 +7,7 @@
     "family": "Cyclone 10 LP",
     "type": "10CL025YU256C8G",
     "package": "BG256",
+    "provides": ["pmod"],
     "clock": {
         "osc": "12000000",
         "speed": "48000000",

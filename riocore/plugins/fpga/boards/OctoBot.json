@@ -7,6 +7,7 @@
     "family": "ice40",
     "type": "hx8k",
     "package": "cb132",
+    "provides": ["pmod"],
     "flashcmd": "iceFUNprog rio.bin",
     "clock": {
         "osc": "12000000",

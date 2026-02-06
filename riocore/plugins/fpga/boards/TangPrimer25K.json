@@ -5,6 +5,7 @@
   "board": "TangPrimer25K",
   "type": "GW5A-LV25MG121NC1/I0",
   "family": "GW5A-25A",
+  "provides": ["pmod", "pmod2"],
   "toolchains": [
     "gowin",
     "icestorm"

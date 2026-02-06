@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)"
         self.KEYWORDS = "distance ultrasonic level oil water"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["sonar.v"]
         self.PINDEFAULTS = {
             "trigger": {

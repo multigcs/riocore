@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to read switches or other 1bit signals"
         self.KEYWORDS = "switch limit estop keyboard"
         self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton"]
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PLUGIN_CONFIGS = {"Wizard": "config.py"}
         self.PINDEFAULTS = {

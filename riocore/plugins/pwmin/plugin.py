@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "measuring pulse len"
         self.KEYWORDS = "pulse digital"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["pwmin.v"]
         self.PINDEFAULTS = {
             "pwm": {

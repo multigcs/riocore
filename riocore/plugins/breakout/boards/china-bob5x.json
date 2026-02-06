@@ -1,5 +1,6 @@
 {
     "comment": "5Axis China-BOB",
+    "needs": ["db25"],
     "main": {
         "P1": {
             "pos": [

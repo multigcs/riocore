@@ -38,6 +38,7 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
         """
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["shiftreg.v"]
         self.PINDEFAULTS = {
             "out": {

@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "serial uartsub interface"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.VERILOGS = ["uartsub.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
+        self.NEEDS = ["fpga"]
         self.PINDEFAULTS = {
             "rx": {
                 "direction": "input",

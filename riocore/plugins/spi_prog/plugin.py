@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "for direct connections to Raspberry-PI - supporting flash programming - spartan6 only at the moment"
         self.KEYWORDS = "interface spi raspberry rpi flash mesa"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
+        self.NEEDS = ["mesa"]
         self.VERILOGS = ["spi_prog.v"]
         self.PINDEFAULTS = {
             "mosi": {

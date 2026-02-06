@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "direct stepper driver with 4pin's directly controlled by the FPGA"
         self.KEYWORDS = "stepper joint hbridge"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["stepper.v"]
         self.TYPE = "joint"
         self.PINDEFAULTS = {

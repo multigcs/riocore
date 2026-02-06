@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = """input selector / demultiplexer with data pin"""
         self.KEYWORDS = ""
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["bitinsel.v"]
         self.TYPE = "expansion"
         self.PINDEFAULTS = {

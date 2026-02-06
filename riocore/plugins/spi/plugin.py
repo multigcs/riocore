@@ -8,6 +8,8 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "for direct connections via SPI"
         self.KEYWORDS = "interface spi raspberry rpi"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
+        self.NEEDS = ["fpga"]
+        self.PROVIDES = ["spi", "interface"]
         self.VERILOGS = ["spi.v"]
         self.PINDEFAULTS = {
             "mosi": {

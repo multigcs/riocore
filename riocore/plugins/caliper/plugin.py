@@ -15,6 +15,7 @@ and also some without output
 both on the image are working
 """
         self.KEYWORDS = ""
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["caliper.v"]
         self.PINDEFAULTS = {

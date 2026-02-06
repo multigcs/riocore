@@ -12,6 +12,7 @@ but in many cases software PWM can be very useful. If better performance is need
 a hardware PWM generator is a better choice."""
         self.KEYWORDS = "pwm"
         self.BASETHREAD = True
+        self.NEEDS = ["gpio", "basethread"]
         self.IMAGES = ["spindle500w", "laser", "led"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"

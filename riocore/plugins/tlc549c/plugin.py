@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "Analog input via tlc549 ADC"
         self.KEYWORDS = "analog adc"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["tlc549c.v"]
         self.PINDEFAULTS = {
             "miso": {

@@ -7,6 +7,7 @@
     "family": "xc6",
     "type": "xc6slx9-2tqg144",
     "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+    "provides": ["db25"],
     "package": "tqg144",
     "clock": {
         "osc": "50000000",

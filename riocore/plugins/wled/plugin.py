@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "led rgb status info"
         self.IMAGES = ["wled"]
         self.ORIGIN = "https://github.com/mattvenn/ws2812-core"
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["ws2812.v", "wled.v"]
         self.PINDEFAULTS = {
             "data": {

@@ -20,6 +20,7 @@ graph LR;
         """
 
         self.KEYWORDS = "pin bit copy"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {
             "bit": {

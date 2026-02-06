@@ -16,9 +16,11 @@ gpio modes:
 """
         self.KEYWORDS = "rpi gpio raspberry rpi4 rpi5"
         self.BASETHREAD = True
+        self.PROVIDES = ["gpio", "basethread", "base", "rpigpio"]
+        self.NEEDS = []
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "gpio"
+        self.PLUGIN_TYPE = "rpi"
         self.ORIGIN = ""
         self.OPTIONS = {
             "mode": {

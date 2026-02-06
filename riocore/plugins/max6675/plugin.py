@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to measurement very high temperatures of up to 1250 degrees Celsius"
         self.KEYWORDS = "analog adc"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["max6675.v"]
         self.PINDEFAULTS = {
             "miso": {

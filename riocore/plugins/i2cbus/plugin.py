@@ -38,6 +38,7 @@ graph LR;
     Multiplexer0-->Device5-->Device6..;
         """
         self.KEYWORDS = ""
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["i2c_master.v"]
         self.PINDEFAULTS = {

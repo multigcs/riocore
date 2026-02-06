@@ -1,5 +1,6 @@
 {
     "comment": "rioctrl-stepdir",
+    "needs": ["rioctrl"],
     "main": {
         "S0": {
           "pin": "T13",

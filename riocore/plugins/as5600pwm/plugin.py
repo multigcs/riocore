@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "scale: 4096"
         self.KEYWORDS = "absolute encoder with pwm output"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["as5600pwm.v"]
         self.PINDEFAULTS = {
             "pwm": {

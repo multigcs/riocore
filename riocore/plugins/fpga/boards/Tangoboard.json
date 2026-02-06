@@ -8,6 +8,7 @@
     "pinimage": "board.png",
     "toolchains": ["gowin", "icestorm"],
     "toolchain": "gowin",
+    "provides": ["pmod"],
     "package": "",
     "clock": {
         "speed": "27000000",

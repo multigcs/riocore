@@ -39,6 +39,7 @@ class Plugin(PluginBase):
 
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if node_type == "board":
+            self.PROVIDES = ["ninja", "gpio", "base", "db25"]
             board_list = []
             for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
                 board_list.append(os.path.basename(jboard).replace(".json", ""))
@@ -94,6 +95,7 @@ class Plugin(PluginBase):
 
             self.ninja_num = 0
         elif node_type == "stepper":
+            self.NEEDS = ["ninja"]
             self.TYPE = "joint"
             mode = self.plugin_setup.get("mode", self.option_default("mode"))
             if mode:
@@ -125,6 +127,7 @@ class Plugin(PluginBase):
                 "dir": {"direction": "output", "edge": "target", "type": "NINJAStepGenDir"},
             }
         elif node_type == "encoder":
+            self.NEEDS = ["ninja"]
             self.OPTIONS.update(
                 {
                     "scale": {
@@ -167,6 +170,7 @@ class Plugin(PluginBase):
             }
 
         elif node_type == "pwm":
+            self.NEEDS = ["ninja"]
             self.OPTIONS.update(
                 {
                     "frequency": {
