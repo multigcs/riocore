@@ -3,7 +3,7 @@ import os
 
 from PyQt5 import QtGui, QtSvg
 from PyQt5.QtCore import QRect, QRectF, QSize, QSortFilterProxyModel, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QFont, QPainter, QPen, QPixmap, QStandardItem
+from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -1017,5 +1017,5 @@ class JointImage(QWidget):
 
         painter.setPen(QPen(Qt.black, 3))
         if jhome_offset < jmin or jhome_offset > jmax:
-            painter.setPen(QPen(Qt.red, 3))
+            painter.setPen(QPen(QColor.fromRgb(200, 140, 0), 3))
         painter.drawText(QRectF(border + pos_hsw - border, l2 - 7, border * 2, 14), Qt.AlignCenter, "SW")

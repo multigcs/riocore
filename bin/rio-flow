@@ -1293,15 +1293,19 @@ class NodeScene(QGraphicsScene):
 class Window(QMainWindow):
     def __init__(self, args, app=None):
         super().__init__()
+        self.app = app
         self.args = args
         self.HAS_INVERTS = {"rio": "-not"}
-        if app:
-            screen = app.primaryScreen()
+        if self.app:
+            screen = self.app.primaryScreen()
             screen_size = screen.size()
-            if screen_size.width() > 1680 and screen_size.height() > 1000:
-                self.resize(1680, 1000)
-            elif screen_size.width() > 1440 and screen_size.height() > 900:
-                self.resize(1440, 900)
+            self.window_width = screen_size.width() * 2 // 3
+            self.window_height = screen_size.height() * 2 // 3
+            if self.window_width <= 800 and self.window_height <= 600:
+                self.window_width = min(screen_size.width(), 800)
+                self.window_height = min(screen_size.height(), 600)
+            self.resize(self.window_width, self.window_height)
+
         self.bnode = None
         self.logic_ids = {}
         self.hal_logics = {}

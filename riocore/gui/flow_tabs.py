@@ -230,13 +230,22 @@ class TabDrawing:
         info_vbox_layout.addWidget(self.pininfo)
         self.infobox = QPlainTextEdit()
         self.infobox.setLineWrapMode(QPlainTextEdit.NoWrap)
-        self.infobox.setMinimumWidth(300)
+        self.infobox.setMinimumWidth(150)
         info_vbox_layout.addWidget(self.infobox)
 
         self.drawing_tab = QSplitter(Qt.Horizontal)
         self.drawing_tab.addWidget(self.plugin_selector())
         self.drawing_tab.addWidget(parent.view)
         self.drawing_tab.addWidget(info_vbox)
+        if self.parent.app:
+            if self.parent.window_width <= 800:
+                self.drawing_tab.setSizes([0, self.parent.window_width, 0])
+            elif self.parent.window_width <= 1200:
+                self.drawing_tab.setSizes([200, self.parent.window_width, 0])
+            elif self.parent.window_width <= 1600:
+                self.drawing_tab.setSizes([200, self.parent.window_width, 200])
+            else:
+                self.drawing_tab.setSizes([400, self.parent.window_width, 400])
 
     def plugin_selector(self):
         self.plugin_table = QTableWidget()
