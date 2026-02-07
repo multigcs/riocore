@@ -10,6 +10,7 @@ def wizard():
     ethercat = {}
     output = subprocess.check_output(["ethercat", "slaves", "-v"])
     if not output:
+        print("ERROR: can not scan ethercat slaves (ethercat slaves -v)")
         exit(1)
 
     master = None
