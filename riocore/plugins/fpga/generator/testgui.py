@@ -149,7 +149,7 @@ class WinForm(QWidget):
     def draw_instance(self, plugin_name, plugin_config, variable, variable_info):
         signal_name = variable_info.get("signal_name")
         direction = variable_info.get("direction")
-        userconfig = variable_info.get("userconfig")
+        signal_config = variable_info.get("signal_config", {})
         unit = variable_info.get("unit") or ""
 
         wid = f"widget_{variable}"
@@ -158,20 +158,17 @@ class WinForm(QWidget):
         row_layout.addStretch()
 
         if variable_info.get("type") == "bool":
+            initval = signal_config.get("userconfig", {}).get("display", {}).get("initval", 0)
             self.widgets[wid] = QCheckBox()
-            self.widgets[wid].setChecked(False)
+            self.widgets[wid].setChecked(initval)
             row_layout.addWidget(self.widgets[wid], stretch=0)
         elif direction == "input":
             self.widgets[wid] = QLabel("---")
             row_layout.addWidget(self.widgets[wid], stretch=0)
         else:
-            vmin = 0
-            vmax = 1000
-            if plugin_config["is_joint"]:
-                vmin = -100000
-                vmax = 100000
-            vmin = int(userconfig.get("display", {}).get("min", vmin))
-            vmax = int(userconfig.get("display", {}).get("max", vmax))
+            vmin = signal_config.get("userconfig", {}).get("display", {}).get("min", signal_config.get("min", 0))
+            vmax = signal_config.get("userconfig", {}).get("display", {}).get("max", signal_config.get("max", 10000))
+            initval = signal_config.get("userconfig", {}).get("display", {}).get("initval", 0)
             steps = int(vmax / 20)
             self.widgets[wid] = QSlider(Qt.Horizontal)
             self.widgets[wid].setMinimum(int(vmin))
@@ -180,7 +177,7 @@ class WinForm(QWidget):
             self.widgets[wid].setPageStep(steps)
             self.widgets[wid].setTickPosition(QSlider.TicksBelow)
             self.widgets[wid].setMinimumWidth(200)
-            self.widgets[wid].setValue(0)
+            self.widgets[wid].setValue(initval)
             self.widgets[f"widget_out_{variable}"] = QLabel("0")
             self.widgets[f"widget_out_{variable}"].setMinimumWidth(50)
             row_layout.addWidget(self.widgets[f"widget_out_{variable}"])

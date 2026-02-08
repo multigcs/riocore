@@ -1,3 +1,4 @@
+import copy
 import os
 import shutil
 import stat
@@ -300,7 +301,7 @@ class pylib(cbase):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
-                userconfig = signal_config["userconfig"]
+                userconfig = signal_config.get("userconfig", {})
                 varname = signal_config["varname"]
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
@@ -308,7 +309,7 @@ class pylib(cbase):
                 netname = signal_config["netname"] or ""
                 boolean = signal_config.get("bool")
                 signal_source = signal_config.get("source")
-                hal_type = signal_config.get("userconfig", {}).get("hal_type", signal_config.get("hal_type", "float"))
+                hal_type = userconfig.get("hal_type", signal_config.get("hal_type", "float"))
                 vtype = self.typemap.get(hal_type, hal_type)
                 virtual = signal_config.get("virtual")
                 component = signal_config.get("component")
@@ -321,11 +322,17 @@ class pylib(cbase):
                 elif virtual:
                     continue
 
+                signal_config_cleaned = copy.deepcopy(signal_config)
+                if "plugin_instance" in signal_config_cleaned:
+                    del signal_config_cleaned["plugin_instance"]
+                if "setup" in signal_config_cleaned:
+                    del signal_config_cleaned["setup"]
+
                 output.append(f'            "{varname}": {{')
                 output.append(f'                "plugin": "{plugin_instance.instances_name}",')
                 output.append(f'                "direction": "{direction}",')
                 output.append(f'                "signal_name": "{signal_name}",')
-                output.append(f'                "userconfig": {userconfig},')
+                output.append(f'                "signal_config": {signal_config_cleaned},')
                 output.append(f'                "unit": "{unit}",')
                 output.append(f'                "halname": "{halname}",')
                 output.append(f'                "netname": "{netname}",')
