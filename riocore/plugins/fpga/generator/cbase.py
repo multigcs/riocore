@@ -933,6 +933,9 @@ class cbase:
 
         # backward compatibility (SPI)
         iface_data = None
+        if not self.rtapi_mode and protocol == "SPI":
+            protocol = "SPI_RPI5"
+
         for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
             if protocol == ppath.split(os.sep)[-2]:
                 output.append("/*")
@@ -940,6 +943,9 @@ class cbase:
                 output.append("*/")
                 iface_data = open(ppath).read()
         if not self.rtapi_mode:
+            iface_data = iface_data.replace("rtapi_print_msg(RTAPI_MSG_ERR,", "printf(")
+            iface_data = iface_data.replace("#include \"rtapi.h\"", "")
+            iface_data = iface_data.replace("#include \"rtapi_app.h\"", "")
             iface_data = iface_data.replace("rtapi_print", "printf")
             iface_data = iface_data.replace("strerror(errno)", '"error"')
             iface_data = iface_data.replace("errno", "1")
