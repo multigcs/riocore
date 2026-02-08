@@ -2,6 +2,7 @@
 #
 #
 
+import argparse
 import io
 import sys
 
@@ -29,6 +30,7 @@ from PyQt5.QtWidgets import (
 from rio import RioWrapper
 
 STYLESHEET_TOUCH = """
+
 QSlider::groove:horizontal {
     border-radius: 1px;
     height: 9px;
@@ -86,23 +88,32 @@ class PluginUI(QWidget):
 
 
 class WinForm(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
+        self.args = args
 
         self.rio = RioWrapper(sys.argv)
         self.data_info = self.rio.data_info()
         self.widgets = {}
 
-        self.setStyleSheet(STYLESHEET_TOUCH)
+        if args.touch:
+            self.setStyleSheet(STYLESHEET_TOUCH)
 
         self.setWindowTitle("RIO - TestGui")
-        self.setMinimumWidth(800)
-        self.setMinimumHeight(600)
+        # self.setMinimumWidth(800)
+        # self.setMinimumHeight(600)
         self.listFile = QListWidget()
         layout = QGridLayout()
         self.setLayout(layout)
         self.tabwidget = QTabWidget()
-        self.tabwidget.setTabPosition(QTabWidget.West)
+        if args.tab.lower() == "west":
+            self.tabwidget.setTabPosition(QTabWidget.West)
+        elif args.tab == "east":
+            self.tabwidget.setTabPosition(QTabWidget.East)
+        elif args.tab.lower() == "north":
+            self.tabwidget.setTabPosition(QTabWidget.North)
+        elif args.tab.lower() == "south":
+            self.tabwidget.setTabPosition(QTabWidget.South)
         self.tabwidget.setMovable(True)
         layout.addWidget(self.tabwidget, 0, 0)
         plugin_types = []
@@ -115,12 +126,19 @@ class WinForm(QWidget):
             for plugin_name, plugin_config in self.rio.plugin_info().items():
                 if plugin_config["variables"] and plugin_config["type"] == plugin_type:
                     # tab_layout.addWidget(QLabel(f"{plugin_config['title']}:"))
-                    plugin_frame = QGroupBox()
-                    plugin_frame.setTitle(f"{plugin_config['title']}:")
-                    plugin_frame.setToolTip(plugin_name)
-                    plugin_layout = QVBoxLayout()
-                    plugin_frame.setLayout(plugin_layout)
-                    tab_layout.addWidget(plugin_frame)
+                    if not self.args.nobox:
+                        plugin_frame = QGroupBox()
+                        plugin_frame.setTitle(f"{plugin_config['title']}:")
+                        plugin_frame.setToolTip(plugin_name)
+                        plugin_layout = QVBoxLayout()
+                        plugin_frame.setLayout(plugin_layout)
+                        tab_layout.addWidget(plugin_frame)
+                    else:
+                        plugin_row = QHBoxLayout()
+                        tab_layout.addLayout(plugin_row)
+                        plugin_row.addWidget(QLabel(f"{plugin_config['title']}:"))
+                        plugin_layout = QVBoxLayout()
+                        plugin_row.addLayout(plugin_layout)
 
                     ptype = plugin_config.get("type")
                     if ptype == "wled":
@@ -182,11 +200,16 @@ class WinForm(QWidget):
                             for variable in plugin_config["variables"]:
                                 row_layout = self.draw_instance(plugin_name, plugin_config, variable, self.data_info[variable])
                                 plugin_layout.addLayout(row_layout)
-            tab_layout.addStretch()
+            if not args.nobox:
+                tab_layout.addStretch()
+
+        if args.fullscreen:
+            self.showFullScreen()
+
         self.errors = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(100)
+        self.timer.start(2)
 
     def add_tab(self, title):
         tab_widget = QWidget()
@@ -213,7 +236,7 @@ class WinForm(QWidget):
         wid = f"widget_{variable}"
         row_layout = QHBoxLayout()
         row_layout.addWidget(QLabel(signal_name.title()), stretch=0)
-        row_layout.addStretch()
+        # row_layout.addStretch()
 
         if variable_info.get("type") == "bool":
             initval = signal_config.get("userconfig", {}).get("display", {}).get("initval", 0)
@@ -299,6 +322,12 @@ class WinForm(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    form = WinForm()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tab", "-t", help="tab position", type=str, default="north")
+    parser.add_argument("--touch", "-T", help="touchscreen mode", default=False, action="store_true")
+    parser.add_argument("--fullscreen", "-f", help="fullscreen mode", default=False, action="store_true")
+    parser.add_argument("--nobox", "-n", help="no plugin group-boxes", default=False, action="store_true")
+    args = parser.parse_args()
+    form = WinForm(args)
     form.show()
     sys.exit(app.exec_())

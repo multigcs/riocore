@@ -77,7 +77,7 @@ then
 fi
 
 echo "	ethercat \"install ethercat master\" OFF \\" >> ${TEMPFILE}2
-echo "	pico-dev \"install pico dev enviroment\" OFF \\" >> ${TEMPFILE}2
+# echo "	pico-dev \"install pico dev enviroment\" OFF \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
