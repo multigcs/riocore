@@ -108,6 +108,7 @@ class Plugin(PluginBase):
                     "type": ["FPGA"],
                     "pin": f"{self.instances_name}:{pin_data['pin']}",
                     "pos": pin_data.get("pos", (0, 0)),
+                    "rotate": pin_data.get("rotate", 0.0),
                     "visible": pin_data.get("visible", True),
                     "direction": pin_data.get("direction", "all"),
                 }

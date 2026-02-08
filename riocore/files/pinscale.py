@@ -20,14 +20,14 @@ else:
     min_y = 999999999999
     print(jdata.keys())
     for slot in jdata["slots"]:
-        if slot_selection == slot["name"]:
+        if slot_selection == slot["name"] or slot_selection == "*":
             found = True
             for pin, pdata in slot["pins"].items():
                 min_x = min(min_x, pdata["pos"][0])
                 min_y = min(min_x, pdata["pos"][1])
 
     for slot in jdata["slots"]:
-        if slot_selection == slot["name"]:
+        if slot_selection == slot["name"] or slot_selection == "*":
             for pin, pdata in slot["pins"].items():
                 pdata["pos"][0] = (pdata["pos"][0] - min_x) * xscale + min_x
                 pdata["pos"][1] = (pdata["pos"][1] - min_y) * yscale + min_y

@@ -16,7 +16,7 @@ if slot_selection == "main":
 else:
     found = False
     for slot in jdata["slots"]:
-        if slot_selection == slot["name"]:
+        if slot_selection == slot["name"] or slot_selection == "*":
             found = True
             for pin, pdata in slot["pins"].items():
                 pdata["pos"][0] += xoff
