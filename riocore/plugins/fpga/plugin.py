@@ -210,11 +210,12 @@ class Plugin(PluginBase):
     def extra_files(cls, parent, instances):
         for instance in instances:
             gateware_path = os.path.join(parent.project.config["output_path"], "Gateware", instance.instances_name)
+            instance.jdata["flashcmd"] = instance.plugin_setup.get("flashcmd", instance.jdata.get("flashcmd"))
             instance.jdata["name"] = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.jdata["json_path"] = parent.project.config["json_path"]
             instance.jdata["riocore_path"] = riocore_path
             instance.jdata["output_path"] = gateware_path
-            # overwrite flash commant if exsist
+            # overwrite flash command if exsist
             if "flashcmd" in parent.project.config["jdata"]:
                 instance.jdata["flashcmd"] = parent.project.config["jdata"]["flashcmd"]
             # overwrite chip type if exsist

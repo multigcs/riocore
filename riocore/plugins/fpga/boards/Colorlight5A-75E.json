@@ -7,7 +7,7 @@
   "family": "ecp5",
   "type": "25k",
   "package": "CABGA256",
-  "flashcmd": "openFPGALoader -c usb-blaster -m rio.bit",
+  "flashcmd": "openFPGALoader -c usb-blaster --unprotect-flash -f rio.bit",
   "protocol": "SPI",
   "clock": {
     "speed": "25000000",
