@@ -586,6 +586,9 @@ class PluginImages:
     def servo(self):
         return {"image": "servo.png", "pins": [(90, 270), (90, 290), (90, 310)], "signals": [(90, 340), (90, 360), (90, 390)]}
 
+    def rcservo(self):
+        return {"image": "rcservo.png", "pins": [(90, 475)], "signals": [(90, 340), (90, 360)]}
+
     def stepstick(self):
         return {"image": "stepstick.png", "pins": [(140, 35), (140, 10), (140, 186)], "signals": [(70, 10), (70, 35), (70, 55)]}
 

@@ -148,7 +148,6 @@ class TabBuilder:
         if not self.parent.save_check():
             # cancel pressed
             return
-
         cmd = plugin_instance.builder(self.parent.config, command)
         if cmd is None:
             msg = QMessageBox()

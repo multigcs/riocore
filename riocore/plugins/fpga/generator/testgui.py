@@ -28,6 +28,43 @@ from PyQt5.QtWidgets import (
 )
 from rio import RioWrapper
 
+STYLESHEET_TOUCH = """
+QSlider::groove:horizontal {
+    border-radius: 1px;
+    height: 9px;
+    margin: 0px;
+    background-color: rgb(52, 59, 72);
+}
+QSlider::groove:horizontal:hover {
+    background-color: rgb(55, 62, 76);
+}
+QSlider::handle:horizontal {
+    background-color: rgb(85, 170, 255);
+    border: none;
+    height: 40px;
+    width: 40px;
+    margin: -30px 0;
+    border-radius: 2px;
+    padding: -30px 0px;
+}
+QSlider::handle:horizontal:hover {
+    background-color: rgb(155, 180, 255);
+}
+QSlider::handle:horizontal:pressed {
+    background-color: rgb(65, 255, 195);
+}
+
+QCheckBox {
+    spacing: 5px;
+    font-size: 23px;
+}
+
+QCheckBox::indicator {
+    width: 27px;
+    height: 27px;
+}
+"""
+
 
 class SliderProxyStyle(QProxyStyle):
     def pixelMetric(self, metric, option, widget):
@@ -56,6 +93,8 @@ class WinForm(QWidget):
         self.data_info = self.rio.data_info()
         self.widgets = {}
 
+        self.setStyleSheet(STYLESHEET_TOUCH)
+
         self.setWindowTitle("RIO - TestGui")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
@@ -63,6 +102,7 @@ class WinForm(QWidget):
         layout = QGridLayout()
         self.setLayout(layout)
         self.tabwidget = QTabWidget()
+        self.tabwidget.setTabPosition(QTabWidget.West)
         self.tabwidget.setMovable(True)
         layout.addWidget(self.tabwidget, 0, 0)
         plugin_types = []
@@ -107,13 +147,31 @@ class WinForm(QWidget):
                         if plugin_ui:
                             plugin_layout.addWidget(plugin_ui)
                             for variable in plugin_config["variables"]:
-                                halname = self.data_info[variable]["halname"]
+                                variable_info = self.data_info[variable]
+                                halname = variable_info["halname"]
+                                signal_name = variable_info.get("signal_name")
+                                signal_config = variable_info.get("signal_config", {})
+
                                 wname = halname.split(".")[-1]
                                 wid = f"widget_{variable}"
                                 self.widgets[wid] = plugin_ui.widget(wname)
                                 if self.widgets[wid] is None:
                                     print(f"ERROR: widget not found in ui: {plugin_name} {wname}")
                                     sys.exit(1)
+
+                                initval = signal_config.get("userconfig", {}).get("display", {}).get("initval", 0)
+
+                                if isinstance(self.widgets[wid], QSlider):
+                                    vmin = signal_config.get("userconfig", {}).get("display", {}).get("min", signal_config.get("min", 0))
+                                    vmax = signal_config.get("userconfig", {}).get("display", {}).get("max", signal_config.get("max", 10000))
+                                    self.widgets[wid].valueChanged.connect(self.runTimer)
+                                    self.widgets[wid].setMinimum(int(vmin))
+                                    self.widgets[wid].setMaximum(int(vmax))
+                                    self.widgets[wid].setValue(initval)
+                                if isinstance(self.widgets[wid], QCheckBox):
+                                    self.widgets[wid].clicked.connect(self.runTimer)
+                                    self.widgets[wid].setChecked(initval)
+
                                 button = plugin_ui.widget(f"{wname}_zero")
                                 if button:
                                     button.clicked.connect(partial(self.slider_reset, self.widgets[wid]))
@@ -154,7 +212,7 @@ class WinForm(QWidget):
 
         wid = f"widget_{variable}"
         row_layout = QHBoxLayout()
-        row_layout.addWidget(QLabel(signal_name), stretch=0)
+        row_layout.addWidget(QLabel(signal_name.title()), stretch=0)
         row_layout.addStretch()
 
         if variable_info.get("type") == "bool":
@@ -170,6 +228,14 @@ class WinForm(QWidget):
             vmax = signal_config.get("userconfig", {}).get("display", {}).get("max", signal_config.get("max", 10000))
             initval = signal_config.get("userconfig", {}).get("display", {}).get("initval", 0)
             steps = int(vmax / 20)
+
+            self.widgets[f"widget_out_{variable}"] = QLabel("---")
+            self.widgets[f"widget_out_{variable}"].setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            self.widgets[f"widget_out_{variable}"].setMinimumWidth(100)
+            row_layout.addWidget(self.widgets[f"widget_out_{variable}"])
+            unit_label = QLabel(unit)
+            row_layout.addWidget(unit_label, stretch=0)
+
             self.widgets[wid] = QSlider(Qt.Horizontal)
             self.widgets[wid].setMinimum(int(vmin))
             self.widgets[wid].setMaximum(int(vmax))
@@ -178,16 +244,11 @@ class WinForm(QWidget):
             self.widgets[wid].setTickPosition(QSlider.TicksBelow)
             self.widgets[wid].setMinimumWidth(200)
             self.widgets[wid].setValue(initval)
-            self.widgets[f"widget_out_{variable}"] = QLabel("0")
-            self.widgets[f"widget_out_{variable}"].setMinimumWidth(50)
-            row_layout.addWidget(self.widgets[f"widget_out_{variable}"])
+            self.widgets[wid].valueChanged.connect(self.runTimer)
             row_layout.addWidget(self.widgets[wid], stretch=6)
             button = QPushButton("0")
             button.clicked.connect(partial(self.slider_reset, self.widgets[wid]))
             row_layout.addWidget(button, stretch=0)
-
-        unit_label = QLabel(unit)
-        row_layout.addWidget(unit_label, stretch=0)
 
         return row_layout
 

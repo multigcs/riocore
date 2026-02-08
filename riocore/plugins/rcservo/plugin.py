@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "joint rcservo"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
+        self.IMAGES = ["rcservo"]
         self.VERILOGS = ["rcservo.v"]
         self.TYPE = "joint"
         self.JOINT_TYPE = "position"
