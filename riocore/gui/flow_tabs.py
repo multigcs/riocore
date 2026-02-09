@@ -148,13 +148,27 @@ class TabBuilder:
         if not self.parent.save_check():
             # cancel pressed
             return
+
+        config_name = self.parent.config.get("name")
+        linuxcnc_gen_path = os.path.join("Output", config_name, "LinuxCNC", "start.sh")
+        mtime_gen = os.path.getmtime(linuxcnc_gen_path)
+        mtime_cfg = os.path.getmtime(self.parent.config_file)
+        if mtime_gen < mtime_cfg:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setWindowTitle("Error")
+            msg.setInformativeText("generated file are older then config,\nplease press\n\n'Generate files'\n\nfirst")
+            msg.exec_()
+            return
+
         cmd = plugin_instance.builder(self.parent.config, command)
         if cmd is None:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setText("Error")
             msg.setWindowTitle("Error")
-            msg.setInformativeText("can not run command, please press\n\n'Generate files'\n\nfirst")
+            msg.setInformativeText("can not run command,\nplease press\n\n'Generate files'\n\nfirst")
             msg.exec_()
             return
 

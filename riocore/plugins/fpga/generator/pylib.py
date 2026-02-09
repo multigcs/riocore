@@ -1,4 +1,3 @@
-import copy
 import os
 import shutil
 import stat
@@ -322,11 +321,11 @@ class pylib(cbase):
                 elif virtual:
                     continue
 
-                signal_config_cleaned = copy.deepcopy(signal_config)
-                if "plugin_instance" in signal_config_cleaned:
-                    del signal_config_cleaned["plugin_instance"]
-                if "setup" in signal_config_cleaned:
-                    del signal_config_cleaned["setup"]
+                signal_config_cleaned = {}
+                for key, value in signal_config.items():
+                    if key in {"plugin_instance", "setup"}:
+                        continue
+                    signal_config_cleaned[key] = signal_config[key]
 
                 output.append(f'            "{varname}": {{')
                 output.append(f'                "plugin": "{plugin_instance.instances_name}",')
