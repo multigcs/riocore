@@ -202,7 +202,7 @@ class RioWrapper():
     </layout>
    </item>
    <item row="3" column="0">
-    <widget class="QScrollBar" name="velocity">
+    <widget class="QSlider" name="velocity">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -313,7 +313,7 @@ class RioWrapper():
                 "plugin": "bitin0",
                 "direction": "input",
                 "signal_name": "bit",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'bool': True, 'pos': [540.0, 190.0], 'value': 0, 'signal_prefix': 'board0.bitin0', 'var_prefix': 'BOARD0_BITIN0', 'halname': 'board0.bitin0.bit', 'varname': 'SIGIN_BOARD0_BITIN0_BIT', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "board0.bitin0.bit",
                 "netname": "",
@@ -326,7 +326,7 @@ class RioWrapper():
                 "plugin": "bitout0",
                 "direction": "output",
                 "signal_name": "bit",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [540.0, 250.0], 'value': 0, 'signal_prefix': 'board0.bitout0', 'var_prefix': 'BOARD0_BITOUT0', 'halname': 'board0.bitout0.bit', 'varname': 'SIGOUT_BOARD0_BITOUT0_BIT', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "board0.bitout0.bit",
                 "netname": "",
@@ -338,7 +338,7 @@ class RioWrapper():
                 "plugin": "bitout1",
                 "direction": "output",
                 "signal_name": "bit",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [540.0, 270.0], 'value': 0, 'signal_prefix': 'board0.bitout1', 'var_prefix': 'BOARD0_BITOUT1', 'halname': 'board0.bitout1.bit', 'varname': 'SIGOUT_BOARD0_BITOUT1_BIT', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "board0.bitout1.bit",
                 "netname": "",
@@ -350,7 +350,7 @@ class RioWrapper():
                 "plugin": "pwmout0",
                 "direction": "output",
                 "signal_name": "dty",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'min': -100, 'max': 100, 'unit': '%', 'absolute': False, 'pos': [530.0, 290.0], 'value': 0, 'signal_prefix': 'board0.pwmout0', 'var_prefix': 'BOARD0_PWMOUT0', 'halname': 'board0.pwmout0.dty', 'varname': 'SIGOUT_BOARD0_PWMOUT0_DTY', 'userconfig': {}, 'netname': None},
                 "unit": "%",
                 "halname": "board0.pwmout0.dty",
                 "netname": "",
@@ -364,7 +364,7 @@ class RioWrapper():
                 "plugin": "pwmout0",
                 "direction": "output",
                 "signal_name": "enable",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [530.0, 290.0], 'value': 0, 'signal_prefix': 'board0.pwmout0', 'var_prefix': 'BOARD0_PWMOUT0', 'halname': 'board0.pwmout0.enable', 'varname': 'SIGOUT_BOARD0_PWMOUT0_ENABLE', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "board0.pwmout0.enable",
                 "netname": "",
@@ -376,7 +376,7 @@ class RioWrapper():
                 "plugin": "stepdir0",
                 "direction": "output",
                 "signal_name": "velocity",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'min': -100000, 'max': 100000, 'unit': 'Hz', 'absolute': False, 'description': 'speed in steps per second', 'pos': [610.0, 290.0], 'value': 0, 'signal_prefix': 'board0.stepdir0', 'var_prefix': 'BOARD0_STEPDIR0', 'halname': 'board0.stepdir0.velocity', 'varname': 'SIGOUT_BOARD0_STEPDIR0_VELOCITY', 'userconfig': {}, 'netname': None},
                 "unit": "Hz",
                 "halname": "board0.stepdir0.velocity",
                 "netname": "",
@@ -390,7 +390,7 @@ class RioWrapper():
                 "plugin": "stepdir0",
                 "direction": "input",
                 "signal_name": "position",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'unit': 'steps', 'absolute': False, 'description': 'position feedback', 'pos': [610.0, 290.0], 'value': 0, 'signal_prefix': 'board0.stepdir0', 'var_prefix': 'BOARD0_STEPDIR0', 'halname': 'board0.stepdir0.position', 'varname': 'SIGIN_BOARD0_STEPDIR0_POSITION', 'userconfig': {}, 'netname': None},
                 "unit": "steps",
                 "halname": "board0.stepdir0.position",
                 "netname": "",
@@ -407,7 +407,7 @@ class RioWrapper():
                 "plugin": "stepdir0",
                 "direction": "output",
                 "signal_name": "enable",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [610.0, 290.0], 'value': 0, 'signal_prefix': 'board0.stepdir0', 'var_prefix': 'BOARD0_STEPDIR0', 'halname': 'board0.stepdir0.enable', 'varname': 'SIGOUT_BOARD0_STEPDIR0_ENABLE', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "board0.stepdir0.enable",
                 "netname": "",

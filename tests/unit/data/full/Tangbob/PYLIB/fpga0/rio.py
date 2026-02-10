@@ -223,7 +223,7 @@ class RioWrapper():
     </layout>
    </item>
    <item row="3" column="0">
-    <widget class="QScrollBar" name="velocity">
+    <widget class="QSlider" name="velocity">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -407,7 +407,7 @@ class RioWrapper():
     </layout>
    </item>
    <item row="3" column="0">
-    <widget class="QScrollBar" name="velocity">
+    <widget class="QSlider" name="velocity">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -591,7 +591,7 @@ class RioWrapper():
     </layout>
    </item>
    <item row="3" column="0">
-    <widget class="QScrollBar" name="velocity">
+    <widget class="QSlider" name="velocity">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -758,7 +758,7 @@ class RioWrapper():
                 "plugin": "modbus0",
                 "direction": "input",
                 "signal_name": "temperature",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'unit': '°C', 'scale': 0.1, 'format': '0.1f', 'value': 0, 'signal_prefix': 'fpga0.modbus0', 'var_prefix': 'FPGA0_MODBUS0', 'halname': 'fpga0.modbus0.temperature', 'varname': 'SIGIN_FPGA0_MODBUS0_TEMPERATURE', 'userconfig': {}, 'netname': None},
                 "unit": "°C",
                 "halname": "fpga0.modbus0.temperature",
                 "netname": "",
@@ -775,7 +775,7 @@ class RioWrapper():
                 "plugin": "i2cbus0",
                 "direction": "input",
                 "signal_name": "lm75_0_temp",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'format': '0.1f', 'unit': '°C', 'device_id': 'lm75_0(0x48)', 'subbus': 'none', 'value': 0, 'signal_prefix': 'fpga0.i2cbus0', 'var_prefix': 'FPGA0_I2CBUS0', 'halname': 'fpga0.i2cbus0.lm75_0_temp', 'varname': 'SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP', 'userconfig': {}, 'netname': None},
                 "unit": "°C",
                 "halname": "fpga0.i2cbus0.lm75_0_temp",
                 "netname": "",
@@ -792,7 +792,7 @@ class RioWrapper():
                 "plugin": "i2cbus0",
                 "direction": "input",
                 "signal_name": "lm75_0_valid",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'bool': True, 'device_id': 'lm75_0(0x48)', 'subbus': 'none', 'value': 0, 'signal_prefix': 'fpga0.i2cbus0', 'var_prefix': 'FPGA0_I2CBUS0', 'halname': 'fpga0.i2cbus0.lm75_0_valid', 'varname': 'SIGIN_FPGA0_I2CBUS0_LM75_0_VALID', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.i2cbus0.lm75_0_valid",
                 "netname": "",
@@ -805,7 +805,7 @@ class RioWrapper():
                 "plugin": "stepdir0",
                 "direction": "output",
                 "signal_name": "velocity",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'min': -100000, 'max': 100000, 'unit': 'Hz', 'absolute': False, 'description': 'speed in steps per second', 'pos': [980.0, 540.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir0', 'var_prefix': 'FPGA0_STEPDIR0', 'halname': 'fpga0.stepdir0.velocity', 'varname': 'SIGOUT_FPGA0_STEPDIR0_VELOCITY', 'userconfig': {}, 'netname': None},
                 "unit": "Hz",
                 "halname": "fpga0.stepdir0.velocity",
                 "netname": "",
@@ -819,7 +819,7 @@ class RioWrapper():
                 "plugin": "stepdir0",
                 "direction": "input",
                 "signal_name": "position",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'unit': 'steps', 'absolute': False, 'description': 'position feedback', 'pos': [980.0, 540.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir0', 'var_prefix': 'FPGA0_STEPDIR0', 'halname': 'fpga0.stepdir0.position', 'varname': 'SIGIN_FPGA0_STEPDIR0_POSITION', 'userconfig': {}, 'netname': None},
                 "unit": "steps",
                 "halname": "fpga0.stepdir0.position",
                 "netname": "",
@@ -836,7 +836,7 @@ class RioWrapper():
                 "plugin": "stepdir0",
                 "direction": "output",
                 "signal_name": "enable",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [980.0, 540.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir0', 'var_prefix': 'FPGA0_STEPDIR0', 'halname': 'fpga0.stepdir0.enable', 'varname': 'SIGOUT_FPGA0_STEPDIR0_ENABLE', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.stepdir0.enable",
                 "netname": "",
@@ -848,7 +848,7 @@ class RioWrapper():
                 "plugin": "stepdir1",
                 "direction": "output",
                 "signal_name": "velocity",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'min': -100000, 'max': 100000, 'unit': 'Hz', 'absolute': False, 'description': 'speed in steps per second', 'pos': [980.0, 280.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir1', 'var_prefix': 'FPGA0_STEPDIR1', 'halname': 'fpga0.stepdir1.velocity', 'varname': 'SIGOUT_FPGA0_STEPDIR1_VELOCITY', 'userconfig': {}, 'netname': None},
                 "unit": "Hz",
                 "halname": "fpga0.stepdir1.velocity",
                 "netname": "",
@@ -862,7 +862,7 @@ class RioWrapper():
                 "plugin": "stepdir1",
                 "direction": "input",
                 "signal_name": "position",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'unit': 'steps', 'absolute': False, 'description': 'position feedback', 'pos': [980.0, 280.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir1', 'var_prefix': 'FPGA0_STEPDIR1', 'halname': 'fpga0.stepdir1.position', 'varname': 'SIGIN_FPGA0_STEPDIR1_POSITION', 'userconfig': {}, 'netname': None},
                 "unit": "steps",
                 "halname": "fpga0.stepdir1.position",
                 "netname": "",
@@ -879,7 +879,7 @@ class RioWrapper():
                 "plugin": "stepdir1",
                 "direction": "output",
                 "signal_name": "enable",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [980.0, 280.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir1', 'var_prefix': 'FPGA0_STEPDIR1', 'halname': 'fpga0.stepdir1.enable', 'varname': 'SIGOUT_FPGA0_STEPDIR1_ENABLE', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.stepdir1.enable",
                 "netname": "",
@@ -891,7 +891,7 @@ class RioWrapper():
                 "plugin": "stepdir2",
                 "direction": "output",
                 "signal_name": "velocity",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'min': -100000, 'max': 100000, 'unit': 'Hz', 'absolute': False, 'description': 'speed in steps per second', 'pos': [980.0, 20.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir2', 'var_prefix': 'FPGA0_STEPDIR2', 'halname': 'fpga0.stepdir2.velocity', 'varname': 'SIGOUT_FPGA0_STEPDIR2_VELOCITY', 'userconfig': {}, 'netname': None},
                 "unit": "Hz",
                 "halname": "fpga0.stepdir2.velocity",
                 "netname": "",
@@ -905,7 +905,7 @@ class RioWrapper():
                 "plugin": "stepdir2",
                 "direction": "input",
                 "signal_name": "position",
-                "userconfig": {},
+                "signal_config": {'direction': 'input', 'unit': 'steps', 'absolute': False, 'description': 'position feedback', 'pos': [980.0, 20.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir2', 'var_prefix': 'FPGA0_STEPDIR2', 'halname': 'fpga0.stepdir2.position', 'varname': 'SIGIN_FPGA0_STEPDIR2_POSITION', 'userconfig': {}, 'netname': None},
                 "unit": "steps",
                 "halname": "fpga0.stepdir2.position",
                 "netname": "",
@@ -922,7 +922,7 @@ class RioWrapper():
                 "plugin": "stepdir2",
                 "direction": "output",
                 "signal_name": "enable",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [980.0, 20.0], 'value': 0, 'signal_prefix': 'fpga0.stepdir2', 'var_prefix': 'FPGA0_STEPDIR2', 'halname': 'fpga0.stepdir2.enable', 'varname': 'SIGOUT_FPGA0_STEPDIR2_ENABLE', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.stepdir2.enable",
                 "netname": "",
@@ -934,7 +934,7 @@ class RioWrapper():
                 "plugin": "bitin0",
                 "direction": "input",
                 "signal_name": "bit",
-                "userconfig": {'net': 'joint.0.home-sw-in'},
+                "signal_config": {'direction': 'input', 'bool': True, 'pos': [730.0, 830.0], 'value': 0, 'signal_prefix': 'fpga0.bitin0', 'var_prefix': 'FPGA0_BITIN0', 'halname': 'fpga0.bitin0.bit', 'varname': 'SIGIN_FPGA0_BITIN0_BIT', 'userconfig': {'net': 'joint.0.home-sw-in'}, 'netname': 'joint.0.home-sw-in'},
                 "unit": "",
                 "halname": "fpga0.bitin0.bit",
                 "netname": "joint.0.home-sw-in",
@@ -947,7 +947,7 @@ class RioWrapper():
                 "plugin": "bitin1",
                 "direction": "input",
                 "signal_name": "bit",
-                "userconfig": {'net': 'joint.1.home-sw-in'},
+                "signal_config": {'direction': 'input', 'bool': True, 'pos': [730.0, 760.0], 'value': 0, 'signal_prefix': 'fpga0.bitin1', 'var_prefix': 'FPGA0_BITIN1', 'halname': 'fpga0.bitin1.bit', 'varname': 'SIGIN_FPGA0_BITIN1_BIT', 'userconfig': {'net': 'joint.1.home-sw-in'}, 'netname': 'joint.1.home-sw-in'},
                 "unit": "",
                 "halname": "fpga0.bitin1.bit",
                 "netname": "joint.1.home-sw-in",
@@ -960,7 +960,7 @@ class RioWrapper():
                 "plugin": "bitin2",
                 "direction": "input",
                 "signal_name": "bit",
-                "userconfig": {'net': 'joint.2.home-sw-in'},
+                "signal_config": {'direction': 'input', 'bool': True, 'pos': [730.0, 690.0], 'value': 0, 'signal_prefix': 'fpga0.bitin2', 'var_prefix': 'FPGA0_BITIN2', 'halname': 'fpga0.bitin2.bit', 'varname': 'SIGIN_FPGA0_BITIN2_BIT', 'userconfig': {'net': 'joint.2.home-sw-in'}, 'netname': 'joint.2.home-sw-in'},
                 "unit": "",
                 "halname": "fpga0.bitin2.bit",
                 "netname": "joint.2.home-sw-in",
@@ -973,7 +973,7 @@ class RioWrapper():
                 "plugin": "fpga0_wled",
                 "direction": "output",
                 "signal_name": "0_green",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': (50, 10), 'value': 0, 'signal_prefix': 'fpga0.fpga0_wled', 'var_prefix': 'FPGA0_FPGA0_WLED', 'halname': 'fpga0.fpga0_wled.0_green', 'varname': 'SIGOUT_FPGA0_FPGA0_WLED_0_GREEN', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.fpga0_wled.0_green",
                 "netname": "",
@@ -985,7 +985,7 @@ class RioWrapper():
                 "plugin": "fpga0_wled",
                 "direction": "output",
                 "signal_name": "0_blue",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': (50, 36), 'value': 0, 'signal_prefix': 'fpga0.fpga0_wled', 'var_prefix': 'FPGA0_FPGA0_WLED', 'halname': 'fpga0.fpga0_wled.0_blue', 'varname': 'SIGOUT_FPGA0_FPGA0_WLED_0_BLUE', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.fpga0_wled.0_blue",
                 "netname": "",
@@ -997,7 +997,7 @@ class RioWrapper():
                 "plugin": "fpga0_wled",
                 "direction": "output",
                 "signal_name": "0_red",
-                "userconfig": {},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': (50, 62), 'value': 0, 'signal_prefix': 'fpga0.fpga0_wled', 'var_prefix': 'FPGA0_FPGA0_WLED', 'halname': 'fpga0.fpga0_wled.0_red', 'varname': 'SIGOUT_FPGA0_FPGA0_WLED_0_RED', 'userconfig': {}, 'netname': None},
                 "unit": "",
                 "halname": "fpga0.fpga0_wled.0_red",
                 "netname": "",
@@ -1009,7 +1009,7 @@ class RioWrapper():
                 "plugin": "bitout0",
                 "direction": "output",
                 "signal_name": "bit",
-                "userconfig": {'net': 'spindle.0.on'},
+                "signal_config": {'direction': 'output', 'bool': True, 'pos': [700.0, 20.0], 'value': 0, 'signal_prefix': 'fpga0.bitout0', 'var_prefix': 'FPGA0_BITOUT0', 'halname': 'fpga0.bitout0.bit', 'varname': 'SIGOUT_FPGA0_BITOUT0_BIT', 'userconfig': {'net': 'spindle.0.on'}, 'netname': 'spindle.0.on'},
                 "unit": "",
                 "halname": "fpga0.bitout0.bit",
                 "netname": "spindle.0.on",
