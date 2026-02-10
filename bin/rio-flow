@@ -406,10 +406,10 @@ class MyNode(QGraphicsItem):
             else:
                 np_right += 1
                 if not self.pixmap:
-                    pin_data["pos"] = (self.width * 2 - self.border_size - self.port_size / 2, self.port_top + np_right * self.port_diff)
+                    pin_data["pos"] = (self.width - self.border_size - self.port_size / 2, self.port_top + np_right * self.port_diff)
 
         if not self.pixmap:
-            self.height = grid(self.port_top + (max(np_left, np_right) * self.port_diff) / 2 + self.port_bottom)
+            self.height = grid(self.port_top + (max(np_left, np_right) * self.port_diff) + self.port_bottom)
 
     def boundingRect(self):
         self.update_size()
