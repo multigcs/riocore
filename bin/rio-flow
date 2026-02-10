@@ -312,6 +312,10 @@ class MyNode(QGraphicsItem):
             if ptype == "source":
                 if self.scene.selection_source == (self, self.port_selected(event.pos())):
                     self.scene.selection_source = None
+                elif self.scene.parent.strg_presses and self.scene.parent.clone_target and self.scene.parent.clone_target[1]:
+                    self.scene.selection_source = (self, self.port_selected(event.pos()))
+                    if self.scene.parent.clone_target and isinstance(self.scene.parent.clone_target[0], PluginNode):
+                        self.scene.parent.clone_list.append((self, self.port_selected(event.pos())))
                 else:
                     self.scene.selection_source = (self, self.port_selected(event.pos()))
             elif self.scene.selection_target == (self, self.port_selected(event.pos())):
@@ -740,6 +744,7 @@ class PluginNode(MyNode):
         if redraw:
             self.scene.parent.redraw()
             self.scene.parent.snapshot()
+        return plugin_config
 
     def edit_sub(self, sub_item, port=None):
         self.edit(port=port)
@@ -1312,6 +1317,8 @@ class Window(QMainWindow):
             self.resize(self.window_width, self.window_height)
 
         self.bnode = None
+        self.strg_presses = False
+        self.clone_target = None
         self.logic_ids = {}
         self.hal_logics = {}
         self.hal_calcs = {}
@@ -1695,6 +1702,28 @@ class Window(QMainWindow):
         elif event.key() == Qt.Key_S:
             if event.modifiers() & Qt.ControlModifier:
                 self.json_save()
+
+        if event.modifiers() & Qt.ControlModifier:
+            self.strg_presses = True
+            self.clone_target = self.scene.selection_target
+            self.clone_list = []
+
+    def keyReleaseEvent(self, event):
+        if self.clone_target and self.clone_list:
+            ydiff = self.clone_target[0].height + 5
+            yoff = ydiff
+            for clone in self.clone_list[1:]:
+                new_pin = f"{clone[0].plugin_instance.plugin_setup['uid']}:{clone[1]}"
+                pin_name = self.clone_target[1]
+                new_plugin_config = self.clone_target[0].clone(yoff=yoff, redraw=False)
+                yoff += ydiff
+                new_plugin_config["pins"][pin_name] = {"pin": new_pin}
+            self.redraw()
+            self.snapshot()
+
+        self.clone_target = None
+        self.strg_presses = False
+        self.clone_list = []
 
     def cfg_reload(self, widget=None, config=None):
         if config is None:
