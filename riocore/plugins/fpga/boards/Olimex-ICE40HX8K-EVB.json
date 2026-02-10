@@ -19,8 +19,8 @@
           "pin": "E4",
           "comment": "PIO3_00",
           "pos": [
-            373,
-            513
+            186,
+            256
           ],
           "direction": "all"
         },
@@ -28,8 +28,8 @@
           "pin": "B2",
           "comment": "PIO3_01",
           "pos": [
-            349,
-            513
+            174,
+            256
           ],
           "direction": "all"
         },
@@ -37,8 +37,8 @@
           "pin": "F5",
           "comment": "PIO3_02",
           "pos": [
-            325,
-            513
+            162,
+            256
           ],
           "direction": "all"
         },
@@ -46,8 +46,8 @@
           "pin": "B1",
           "comment": "PIO3_03",
           "pos": [
-            301,
-            513
+            150,
+            256
           ],
           "direction": "all"
         },
@@ -55,8 +55,8 @@
           "pin": "C1",
           "comment": "PIO3_04",
           "pos": [
-            277,
-            513
+            138,
+            256
           ],
           "direction": "all"
         },
@@ -64,8 +64,8 @@
           "pin": "C2",
           "comment": "PIO3_05",
           "pos": [
-            253,
-            513
+            126,
+            256
           ],
           "direction": "all"
         },
@@ -73,8 +73,8 @@
           "pin": "F4",
           "comment": "PIO3_06",
           "pos": [
-            230,
-            513
+            115,
+            256
           ],
           "direction": "all"
         },
@@ -82,8 +82,8 @@
           "pin": "D2",
           "comment": "PIO3_07",
           "pos": [
-            206,
-            513
+            103,
+            256
           ],
           "direction": "all"
         },
@@ -91,8 +91,8 @@
           "pin": "G5",
           "comment": "PIO3_08",
           "pos": [
-            182,
-            513
+            91,
+            256
           ],
           "direction": "all"
         },
@@ -100,8 +100,8 @@
           "pin": "D1",
           "comment": "PIO3_09",
           "pos": [
-            158,
-            513
+            79,
+            256
           ],
           "direction": "all"
         },
@@ -109,8 +109,8 @@
           "pin": "G4",
           "comment": "PIO3_10",
           "pos": [
-            134,
-            513
+            67,
+            256
           ],
           "direction": "all"
         },
@@ -118,8 +118,8 @@
           "pin": "E3",
           "comment": "PIO3_11",
           "pos": [
-            110,
-            513
+            55,
+            256
           ],
           "direction": "all"
         },
@@ -127,8 +127,8 @@
           "pin": "H5",
           "comment": "PIO3_12",
           "pos": [
-            87,
-            513
+            43,
+            256
           ],
           "direction": "all"
         },
@@ -136,8 +136,8 @@
           "pin": "E2",
           "comment": "PIO3_13",
           "pos": [
-            63,
-            513
+            31,
+            256
           ],
           "direction": "all"
         },
@@ -145,8 +145,8 @@
           "pin": "G3",
           "comment": "PIO3_14",
           "pos": [
-            39,
-            513
+            19,
+            256
           ],
           "direction": "all"
         },
@@ -154,8 +154,8 @@
           "pin": "F3",
           "comment": "PIO3_15",
           "pos": [
-            39,
-            537
+            19,
+            268
           ],
           "direction": "all"
         },
@@ -163,8 +163,8 @@
           "pin": "H3",
           "comment": "PIO3_16",
           "pos": [
-            63,
-            537
+            31,
+            268
           ],
           "direction": "all"
         },
@@ -172,8 +172,8 @@
           "pin": "F2",
           "comment": "PIO3_17",
           "pos": [
-            86,
-            537
+            43,
+            268
           ],
           "direction": "all"
         },
@@ -181,8 +181,8 @@
           "pin": "H6",
           "comment": "PIO3_18",
           "pos": [
-            110,
-            537
+            55,
+            268
           ],
           "direction": "all"
         },
@@ -190,8 +190,8 @@
           "pin": "F1",
           "comment": "PIO3_19",
           "pos": [
-            134,
-            537
+            67,
+            268
           ],
           "direction": "all"
         },
@@ -199,8 +199,8 @@
           "pin": "H4",
           "comment": "PIO3_20",
           "pos": [
-            159,
-            537
+            79,
+            268
           ],
           "direction": "all"
         },
@@ -208,8 +208,8 @@
           "pin": "G2",
           "comment": "PIO3_21",
           "pos": [
-            182,
-            537
+            91,
+            268
           ],
           "direction": "all"
         },
@@ -217,8 +217,8 @@
           "pin": "J4",
           "comment": "PIO3_22",
           "pos": [
-            206,
-            537
+            103,
+            268
           ],
           "direction": "all"
         },
@@ -226,8 +226,8 @@
           "pin": "H2",
           "comment": "PIO3_23",
           "pos": [
-            230,
-            537
+            115,
+            268
           ],
           "direction": "all"
         },
@@ -235,8 +235,8 @@
           "pin": "J5",
           "comment": "PIO3_24",
           "pos": [
-            254,
-            537
+            127,
+            268
           ],
           "direction": "all"
         },
@@ -244,8 +244,8 @@
           "pin": "G1",
           "comment": "PIO3_25",
           "pos": [
-            278,
-            537
+            139,
+            268
           ],
           "direction": "all"
         },
@@ -253,8 +253,8 @@
           "pin": "H1",
           "comment": "PIO3_27",
           "pos": [
-            302,
-            537
+            151,
+            268
           ],
           "direction": "all"
         },
@@ -262,8 +262,8 @@
           "pin": "J2",
           "comment": "PIO3_28",
           "pos": [
-            325,
-            537
+            162,
+            268
           ],
           "direction": "all"
         }
@@ -277,8 +277,8 @@
           "pin": "L11",
           "comment": "RxD PIO2_40",
           "pos": [
-            215,
-            40
+            107,
+            20
           ],
           "direction": "all"
         },
@@ -286,8 +286,8 @@
           "pin": "T16",
           "comment": "TxD PIO2_41",
           "pos": [
-            215,
-            16
+            107,
+            8
           ],
           "direction": "all"
         },
@@ -295,8 +295,8 @@
           "pin": "M10",
           "comment": "CDONE",
           "pos": [
-            238,
-            40
+            119,
+            20
           ],
           "direction": "all"
         },
@@ -304,8 +304,8 @@
           "pin": "N11",
           "comment": "CRESET",
           "pos": [
-            238,
-            16
+            119,
+            8
           ],
           "direction": "all"
         },
@@ -313,8 +313,8 @@
           "pin": "P11",
           "comment": "SDI",
           "pos": [
-            261,
-            40
+            130,
+            20
           ],
           "direction": "all"
         },
@@ -322,8 +322,8 @@
           "pin": "P12",
           "comment": "SDO",
           "pos": [
-            261,
-            16
+            130,
+            8
           ],
           "direction": "all"
         },
@@ -331,8 +331,8 @@
           "pin": "R11",
           "comment": "SCK",
           "pos": [
-            284,
-            40
+            142,
+            20
           ],
           "direction": "all"
         },
@@ -340,8 +340,8 @@
           "pin": "R12",
           "comment": "SS_B",
           "pos": [
-            284,
-            16
+            142,
+            8
           ],
           "direction": "all"
         }
@@ -355,32 +355,32 @@
           "pin": "R16",
           "comment": "PIO2_43/LED2",
           "pos": [
-            396,
-            38
+            198,
+            19
           ],
           "direction": "output"
         },
         "LED1": {
           "pin": "M12",
           "pos": [
-            367,
-            38
+            183,
+            19
           ],
           "direction": "output"
         },
         "BUT1": {
           "pin": "K11",
           "pos": [
-            20,
-            191
+            10,
+            95
           ],
           "direction": "input"
         },
         "BUT2": {
           "pin": "P13",
           "pos": [
-            20,
-            303
+            10,
+            151
           ],
           "direction": "input"
         }

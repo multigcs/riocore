@@ -1,451 +1,453 @@
 {
-    "name": "CYC1000",
-    "description": "TEI0003",
-    "url": "https://wiki.trenz-electronic.de/display/PD/TEI0003+Getting+Started",
-    "flashcmd": "openFPGALoader -v -b cyc1000 -m rio.rbf -f",
-    "toolchain": "quartus",
-    "family": "Cyclone 10 LP",
-    "type": "10CL025YU256C8G",
-    "package": "BG256",
-    "provides": ["pmod"],
-    "clock": {
-        "osc": "12000000",
-        "speed": "48000000",
-        "pin": "PIN_M2"
-    },
-    "slots": [
-        {
-            "name": "LED",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "D1": {
-                    "pin": "PIN_M6",
-                    "rotate": true,
-                    "pos": [
-                        126,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D2": {
-                    "pin": "PIN_T4",
-                    "rotate": true,
-                    "pos": [
-                        144,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D3": {
-                    "pin": "PIN_T3",
-                    "rotate": true,
-                    "pos": [
-                        162,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D4": {
-                    "pin": "PIN_R3",
-                    "rotate": true,
-                    "pos": [
-                        180,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D5": {
-                    "pin": "PIN_T2",
-                    "rotate": true,
-                    "pos": [
-                        198,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D6": {
-                    "pin": "PIN_R4",
-                    "rotate": true,
-                    "pos": [
-                        216,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D7": {
-                    "pin": "PIN_N5",
-                    "rotate": true,
-                    "pos": [
-                        234,
-                        22
-                    ],
-                    "direction": "output"
-                },
-                "D8": {
-                    "pin": "PIN_N3",
-                    "rotate": true,
-                    "pos": [
-                        252,
-                        22
-                    ],
-                    "direction": "output"
-                }
-            }
+  "name": "CYC1000",
+  "description": "TEI0003",
+  "url": "https://wiki.trenz-electronic.de/display/PD/TEI0003+Getting+Started",
+  "flashcmd": "openFPGALoader -v -b cyc1000 -m rio.rbf -f",
+  "toolchain": "quartus",
+  "family": "Cyclone 10 LP",
+  "type": "10CL025YU256C8G",
+  "package": "BG256",
+  "provides": [
+    "pmod"
+  ],
+  "clock": {
+    "osc": "12000000",
+    "speed": "48000000",
+    "pin": "PIN_M2"
+  },
+  "slots": [
+    {
+      "name": "LED",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "D1": {
+          "pin": "PIN_M6",
+          "rotate": true,
+          "pos": [
+            63,
+            11
+          ],
+          "direction": "output"
         },
-        {
-            "name": "SW",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "S1": {
-                    "pin": "PIN_N6",
-                    "pos": [
-                        88,
-                        16
-                    ],
-                    "direction": "all"
-                }
-            }
+        "D2": {
+          "pin": "PIN_T4",
+          "rotate": true,
+          "pos": [
+            72,
+            11
+          ],
+          "direction": "output"
         },
-        {
-            "name": "FTDI",
-            "comment": "",
-            "default": "uart",
-            "pins": {
-                "BDBUS0": {
-                    "pin": "PIN_R7",
-                    "pos": [
-                        126,
-                        112
-                    ],
-                    "direction": "all"
-                },
-                "BDBUS1": {
-                    "pin": "PIN_T7",
-                    "pos": [
-                        126,
-                        127
-                    ],
-                    "direction": "all"
-                },
-                "BDBUS2": {
-                    "pin": "PIN_R6",
-                    "pos": [
-                        126,
-                        142
-                    ],
-                    "direction": "all"
-                },
-                "BDBUS3": {
-                    "pin": "PIN_T6",
-                    "pos": [
-                        126,
-                        157
-                    ],
-                    "direction": "all"
-                },
-                "BDBUS4": {
-                    "pin": "PIN_R5",
-                    "pos": [
-                        126,
-                        172
-                    ],
-                    "direction": "all"
-                },
-                "BDBUS5": {
-                    "pin": "PIN_T5",
-                    "pos": [
-                        126,
-                        187
-                    ],
-                    "direction": "all"
-                }
-            }
+        "D3": {
+          "pin": "PIN_T3",
+          "rotate": true,
+          "pos": [
+            81,
+            11
+          ],
+          "direction": "output"
         },
-        {
-            "name": "PMOD",
-            "comment": "",
-            "default": "",
-            "rect": [
-                1740,
-                60,
-                70,
-                200
-            ],
-            "pins": {
-                "P1": {
-                    "pin": "PIN_F13",
-                    "pos": [
-                        753,
-                        80
-                    ],
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "PIN_F15",
-                    "pos": [
-                        753,
-                        110
-                    ],
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "PIN_F16",
-                    "pos": [
-                        753,
-                        140
-                    ],
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "PIN_D16",
-                    "pos": [
-                        753,
-                        170
-                    ],
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "PIN_D15",
-                    "pos": [
-                        783,
-                        80
-                    ],
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "PIN_C15",
-                    "pos": [
-                        783,
-                        110
-                    ],
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "PIN_B16",
-                    "pos": [
-                        783,
-                        140
-                    ],
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "PIN_C16",
-                    "pos": [
-                        783,
-                        170
-                    ],
-                    "direction": "all"
-                }
-            }
+        "D4": {
+          "pin": "PIN_R3",
+          "rotate": true,
+          "pos": [
+            90,
+            11
+          ],
+          "direction": "output"
         },
-        {
-            "name": "HEADER",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "AI": {
-                    "pin": "PIN_T12",
-                    "pos": [
-                        290.93762499999997,
-                        254.0
-                    ],
-                    "direction": "all"
-                },
-                "A7": {
-                    "pin": "PIN_R11",
-                    "pos": [
-                        360.06437500000004,
-                        254.0
-                    ],
-                    "direction": "all"
-                },
-                "AREF": {
-                    "pin": "PIN_P11",
-                    "pos": [
-                        286.0,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A0": {
-                    "pin": "PIN_R12",
-                    "pos": [
-                        325.501,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A1": {
-                    "pin": "PIN_T13",
-                    "pos": [
-                        360.06437500000004,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A2": {
-                    "pin": "PIN_R13",
-                    "pos": [
-                        394.62775,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A3": {
-                    "pin": "PIN_T14",
-                    "pos": [
-                        429.191125,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A4": {
-                    "pin": "PIN_P14",
-                    "pos": [
-                        463.7545,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A5": {
-                    "pin": "PIN_R14",
-                    "pos": [
-                        495.35529999999994,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "A6": {
-                    "pin": "PIN_T15",
-                    "pos": [
-                        527.9436249999999,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D0": {
-                    "pin": "PIN_N16",
-                    "pos": [
-                        562.5070000000001,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D1": {
-                    "pin": "PIN_L15",
-                    "pos": [
-                        592.13275,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D2": {
-                    "pin": "PIN_L16",
-                    "pos": [
-                        621.7584999999999,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D3": {
-                    "pin": "PIN_K15",
-                    "pos": [
-                        656.3218750000001,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D4": {
-                    "pin": "PIN_K16",
-                    "pos": [
-                        690.88525,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D5": {
-                    "pin": "PIN_J14",
-                    "pos": [
-                        720.511,
-                        294.0
-                    ],
-                    "direction": "all"
-                },
-                "D14": {
-                    "pin": "PIN_R1",
-                    "pos": [
-                        463.7545,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D13": {
-                    "pin": "PIN_P1",
-                    "pos": [
-                        495.35529999999994,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D12": {
-                    "pin": "PIN_L2",
-                    "pos": [
-                        527.9436249999999,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D11": {
-                    "pin": "PIN_K2",
-                    "pos": [
-                        562.5070000000001,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D10": {
-                    "pin": "PIN_J2",
-                    "pos": [
-                        592.13275,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D9": {
-                    "pin": "PIN_J1",
-                    "pos": [
-                        621.7584999999999,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D8": {
-                    "pin": "PIN_P2",
-                    "pos": [
-                        656.3218750000001,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D7": {
-                    "pin": "PIN_N1",
-                    "pos": [
-                        690.88525,
-                        29.0
-                    ],
-                    "direction": "all"
-                },
-                "D6": {
-                    "pin": "PIN_N2",
-                    "pos": [
-                        720.511,
-                        29.0
-                    ],
-                    "direction": "all"
-                }
-            }
+        "D5": {
+          "pin": "PIN_T2",
+          "rotate": true,
+          "pos": [
+            99,
+            11
+          ],
+          "direction": "output"
+        },
+        "D6": {
+          "pin": "PIN_R4",
+          "rotate": true,
+          "pos": [
+            108,
+            11
+          ],
+          "direction": "output"
+        },
+        "D7": {
+          "pin": "PIN_N5",
+          "rotate": true,
+          "pos": [
+            117,
+            11
+          ],
+          "direction": "output"
+        },
+        "D8": {
+          "pin": "PIN_N3",
+          "rotate": true,
+          "pos": [
+            126,
+            11
+          ],
+          "direction": "output"
         }
-    ]
+      }
+    },
+    {
+      "name": "SW",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "S1": {
+          "pin": "PIN_N6",
+          "pos": [
+            44,
+            8
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "FTDI",
+      "comment": "",
+      "default": "uart",
+      "pins": {
+        "BDBUS0": {
+          "pin": "PIN_R7",
+          "pos": [
+            63,
+            56
+          ],
+          "direction": "all"
+        },
+        "BDBUS1": {
+          "pin": "PIN_T7",
+          "pos": [
+            63,
+            63
+          ],
+          "direction": "all"
+        },
+        "BDBUS2": {
+          "pin": "PIN_R6",
+          "pos": [
+            63,
+            71
+          ],
+          "direction": "all"
+        },
+        "BDBUS3": {
+          "pin": "PIN_T6",
+          "pos": [
+            63,
+            78
+          ],
+          "direction": "all"
+        },
+        "BDBUS4": {
+          "pin": "PIN_R5",
+          "pos": [
+            63,
+            86
+          ],
+          "direction": "all"
+        },
+        "BDBUS5": {
+          "pin": "PIN_T5",
+          "pos": [
+            63,
+            93
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD",
+      "comment": "",
+      "default": "",
+      "rect": [
+        1740,
+        60,
+        70,
+        200
+      ],
+      "pins": {
+        "P1": {
+          "pin": "PIN_F13",
+          "pos": [
+            376,
+            40
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "PIN_F15",
+          "pos": [
+            376,
+            55
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "PIN_F16",
+          "pos": [
+            376,
+            70
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "PIN_D16",
+          "pos": [
+            376,
+            85
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "PIN_D15",
+          "pos": [
+            391,
+            40
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "PIN_C15",
+          "pos": [
+            391,
+            55
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "PIN_B16",
+          "pos": [
+            391,
+            70
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "PIN_C16",
+          "pos": [
+            391,
+            85
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "HEADER",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "AI": {
+          "pin": "PIN_T12",
+          "pos": [
+            145,
+            127
+          ],
+          "direction": "all"
+        },
+        "A7": {
+          "pin": "PIN_R11",
+          "pos": [
+            180,
+            127
+          ],
+          "direction": "all"
+        },
+        "AREF": {
+          "pin": "PIN_P11",
+          "pos": [
+            143,
+            147
+          ],
+          "direction": "all"
+        },
+        "A0": {
+          "pin": "PIN_R12",
+          "pos": [
+            162,
+            147
+          ],
+          "direction": "all"
+        },
+        "A1": {
+          "pin": "PIN_T13",
+          "pos": [
+            180,
+            147
+          ],
+          "direction": "all"
+        },
+        "A2": {
+          "pin": "PIN_R13",
+          "pos": [
+            197,
+            147
+          ],
+          "direction": "all"
+        },
+        "A3": {
+          "pin": "PIN_T14",
+          "pos": [
+            214,
+            147
+          ],
+          "direction": "all"
+        },
+        "A4": {
+          "pin": "PIN_P14",
+          "pos": [
+            231,
+            147
+          ],
+          "direction": "all"
+        },
+        "A5": {
+          "pin": "PIN_R14",
+          "pos": [
+            247,
+            147
+          ],
+          "direction": "all"
+        },
+        "A6": {
+          "pin": "PIN_T15",
+          "pos": [
+            263,
+            147
+          ],
+          "direction": "all"
+        },
+        "D0": {
+          "pin": "PIN_N16",
+          "pos": [
+            281,
+            147
+          ],
+          "direction": "all"
+        },
+        "D1": {
+          "pin": "PIN_L15",
+          "pos": [
+            296,
+            147
+          ],
+          "direction": "all"
+        },
+        "D2": {
+          "pin": "PIN_L16",
+          "pos": [
+            310,
+            147
+          ],
+          "direction": "all"
+        },
+        "D3": {
+          "pin": "PIN_K15",
+          "pos": [
+            328,
+            147
+          ],
+          "direction": "all"
+        },
+        "D4": {
+          "pin": "PIN_K16",
+          "pos": [
+            345,
+            147
+          ],
+          "direction": "all"
+        },
+        "D5": {
+          "pin": "PIN_J14",
+          "pos": [
+            360,
+            147
+          ],
+          "direction": "all"
+        },
+        "D14": {
+          "pin": "PIN_R1",
+          "pos": [
+            231,
+            14
+          ],
+          "direction": "all"
+        },
+        "D13": {
+          "pin": "PIN_P1",
+          "pos": [
+            247,
+            14
+          ],
+          "direction": "all"
+        },
+        "D12": {
+          "pin": "PIN_L2",
+          "pos": [
+            263,
+            14
+          ],
+          "direction": "all"
+        },
+        "D11": {
+          "pin": "PIN_K2",
+          "pos": [
+            281,
+            14
+          ],
+          "direction": "all"
+        },
+        "D10": {
+          "pin": "PIN_J2",
+          "pos": [
+            296,
+            14
+          ],
+          "direction": "all"
+        },
+        "D9": {
+          "pin": "PIN_J1",
+          "pos": [
+            310,
+            14
+          ],
+          "direction": "all"
+        },
+        "D8": {
+          "pin": "PIN_P2",
+          "pos": [
+            328,
+            14
+          ],
+          "direction": "all"
+        },
+        "D7": {
+          "pin": "PIN_N1",
+          "pos": [
+            345,
+            14
+          ],
+          "direction": "all"
+        },
+        "D6": {
+          "pin": "PIN_N2",
+          "pos": [
+            360,
+            14
+          ],
+          "direction": "all"
+        }
+      }
+    }
+  ]
 }

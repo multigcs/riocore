@@ -141,8 +141,8 @@ class PluginBase:
             image = self.plugin_setup.get("image", self.option_default("image"))
             self.plugin_images = riocore.PluginImages()
             if image and not image.endswith(".png"):
-                if hasattr(self.plugin_images, image):
-                    image_setup = getattr(self.plugin_images, image)()
+                image_setup = self.plugin_images.get(image)
+                if image_setup:
                     self.IMAGE_SHOW = True
                     self.IMAGE = os.path.join(riocore_path, "files", "images", image_setup["image"])
                     pins_max = len(image_setup.get("pins", []))

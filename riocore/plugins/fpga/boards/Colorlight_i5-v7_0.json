@@ -1,733 +1,736 @@
 {
-    "name": "Colorlight_i5-v7_0",
-    "description": "Lattice ECP5 on SODIMM-200P board",
-    "comment": "> [!WARNING]\n> Networking Interfaces are not supported by RIO",
-    "url": "https://github.com/wuxx/Colorlight-FPGA-Projects",
-    "toolchain": "icestorm",
-    "family": "ecp5",
-    "type": "25k",
-    "package": "CABGA381",
-    "provides": ["pmod", "pmod2"],
-    "clock": {
-        "speed": "25000000",
-        "pin": "P3"
-    },
-    "slots": [
-        {
-            "name": "LED",
-            "comment": "LED",
-            "pins": {
-                "G": {
-                    "pin": "U16",
-                    "pos": [
-                        20,
-                        20
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "PMOD_2A",
-            "comment": "PMOD 2A on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "J20",
-                    "pos": [
-                        382,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "L18",
-                    "pos": [
-                        400,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "M18",
-                    "pos": [
-                        418,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "N17",
-                    "pos": [
-                        436,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "G20",
-                    "pos": [
-                        382,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "K20",
-                    "pos": [
-                        400,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "L20",
-                    "pos": [
-                        418,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "N18",
-                    "pos": [
-                        436,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_2B",
-            "comment": "PMOD 2B on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "P17",
-                    "pos": [
-                        529,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "R18",
-                    "pos": [
-                        547,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "C18",
-                    "pos": [
-                        565,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "U16",
-                    "pos": [
-                        583,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "M17",
-                    "pos": [
-                        529,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "R17",
-                    "pos": [
-                        547,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "T18",
-                    "pos": [
-                        565,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "K18",
-                    "pos": [
-                        583,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_3A",
-            "comment": "PMOD 3A on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "D1",
-                    "pos": [
-                        11,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "C1",
-                    "pos": [
-                        29,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "C2",
-                    "pos": [
-                        47,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "E3",
-                    "pos": [
-                        65,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "E2",
-                    "pos": [
-                        11,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "D2",
-                    "pos": [
-                        29,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "B1",
-                    "pos": [
-                        47,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "A3",
-                    "pos": [
-                        65,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_3B",
-            "comment": "PMOD 3B on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "C17",
-                    "pos": [
-                        158,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "B18",
-                    "pos": [
-                        176,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "B20",
-                    "pos": [
-                        194,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "F20",
-                    "pos": [
-                        212,
-                        20
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "A18",
-                    "pos": [
-                        158,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "A19",
-                    "pos": [
-                        176,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "B19",
-                    "pos": [
-                        194,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "D20",
-                    "pos": [
-                        212,
-                        0
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_4B",
-            "comment": "PMOD 4B on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "H4",
-                    "pos": [
-                        29,
-                        199
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "G3",
-                    "pos": [
-                        29,
-                        181
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "F1",
-                    "pos": [
-                        29,
-                        163
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "F2",
-                    "pos": [
-                        29,
-                        145
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "H3",
-                    "pos": [
-                        6,
-                        199
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "F3",
-                    "pos": [
-                        6,
-                        181
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "E4",
-                    "pos": [
-                        6,
-                        163
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "E1",
-                    "pos": [
-                        6,
-                        145
-                    ],
-                    "rotate": false,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_5A",
-            "comment": "PMOD 5A on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "J17",
-                    "pos": [
-                        244,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "H17",
-                    "pos": [
-                        226,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "H16",
-                    "pos": [
-                        208,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "G16",
-                    "pos": [
-                        190,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "H18",
-                    "pos": [
-                        244,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "G18",
-                    "pos": [
-                        226,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "F18",
-                    "pos": [
-                        208,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "E18",
-                    "pos": [
-                        190,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_5B",
-            "comment": "PMOD 5B on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "D18",
-                    "pos": [
-                        97,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "G5",
-                    "pos": [
-                        79,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "F5",
-                    "pos": [
-                        61,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "E5",
-                    "pos": [
-                        43,
-                        431
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "D17",
-                    "pos": [
-                        97,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "D16",
-                    "pos": [
-                        79,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "E6",
-                    "pos": [
-                        61,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "F4",
-                    "pos": [
-                        43,
-                        451
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_6A",
-            "comment": "PMOD 6A on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "R1",
-                    "pos": [
-                        615,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "U1",
-                    "pos": [
-                        597,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "W1",
-                    "pos": [
-                        579,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "M1",
-                    "pos": [
-                        561,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "T1",
-                    "pos": [
-                        615,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "Y2",
-                    "pos": [
-                        597,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "V1",
-                    "pos": [
-                        579,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "N2",
-                    "pos": [
-                        561,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD_6B",
-            "comment": "PMOD 6B on i5_extboard_v1.2",
-            "pins": {
-                "P1": {
-                    "pin": "R3",
-                    "pos": [
-                        468,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "M4",
-                    "pos": [
-                        450,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "L5",
-                    "pos": [
-                        432,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "J16",
-                    "pos": [
-                        414,
-                        425
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "N4",
-                    "pos": [
-                        468,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "L4",
-                    "pos": [
-                        450,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "P16",
-                    "pos": [
-                        432,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "J18",
-                    "pos": [
-                        414,
-                        445
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
+  "name": "Colorlight_i5-v7_0",
+  "description": "Lattice ECP5 on SODIMM-200P board",
+  "comment": "> [!WARNING]\n> Networking Interfaces are not supported by RIO",
+  "url": "https://github.com/wuxx/Colorlight-FPGA-Projects",
+  "toolchain": "icestorm",
+  "family": "ecp5",
+  "type": "25k",
+  "package": "CABGA381",
+  "provides": [
+    "pmod",
+    "pmod2"
+  ],
+  "clock": {
+    "speed": "25000000",
+    "pin": "P3"
+  },
+  "slots": [
+    {
+      "name": "LED",
+      "comment": "LED",
+      "pins": {
+        "G": {
+          "pin": "U16",
+          "pos": [
+            10,
+            10
+          ],
+          "direction": "output"
         }
-    ]
+      }
+    },
+    {
+      "name": "PMOD_2A",
+      "comment": "PMOD 2A on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "J20",
+          "pos": [
+            191,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "L18",
+          "pos": [
+            200,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "M18",
+          "pos": [
+            209,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "N17",
+          "pos": [
+            218,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "G20",
+          "pos": [
+            191,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "K20",
+          "pos": [
+            200,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "L20",
+          "pos": [
+            209,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "N18",
+          "pos": [
+            218,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_2B",
+      "comment": "PMOD 2B on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "P17",
+          "pos": [
+            264,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "R18",
+          "pos": [
+            273,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "C18",
+          "pos": [
+            282,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "U16",
+          "pos": [
+            291,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "M17",
+          "pos": [
+            264,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "R17",
+          "pos": [
+            273,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "T18",
+          "pos": [
+            282,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "K18",
+          "pos": [
+            291,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_3A",
+      "comment": "PMOD 3A on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "D1",
+          "pos": [
+            5,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "C1",
+          "pos": [
+            14,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "C2",
+          "pos": [
+            23,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "E3",
+          "pos": [
+            32,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "E2",
+          "pos": [
+            5,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "D2",
+          "pos": [
+            14,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "B1",
+          "pos": [
+            23,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "A3",
+          "pos": [
+            32,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_3B",
+      "comment": "PMOD 3B on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "C17",
+          "pos": [
+            79,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "B18",
+          "pos": [
+            88,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "B20",
+          "pos": [
+            97,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "F20",
+          "pos": [
+            106,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "A18",
+          "pos": [
+            79,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "A19",
+          "pos": [
+            88,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "B19",
+          "pos": [
+            97,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "D20",
+          "pos": [
+            106,
+            0
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_4B",
+      "comment": "PMOD 4B on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "H4",
+          "pos": [
+            14,
+            99
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "G3",
+          "pos": [
+            14,
+            90
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "F1",
+          "pos": [
+            14,
+            81
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "F2",
+          "pos": [
+            14,
+            72
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "H3",
+          "pos": [
+            3,
+            99
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "F3",
+          "pos": [
+            3,
+            90
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "E4",
+          "pos": [
+            3,
+            81
+          ],
+          "rotate": false,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "E1",
+          "pos": [
+            3,
+            72
+          ],
+          "rotate": false,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_5A",
+      "comment": "PMOD 5A on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "J17",
+          "pos": [
+            122,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "H17",
+          "pos": [
+            113,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "H16",
+          "pos": [
+            104,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "G16",
+          "pos": [
+            95,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "H18",
+          "pos": [
+            122,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "G18",
+          "pos": [
+            113,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "F18",
+          "pos": [
+            104,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "E18",
+          "pos": [
+            95,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_5B",
+      "comment": "PMOD 5B on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "D18",
+          "pos": [
+            48,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "G5",
+          "pos": [
+            39,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "F5",
+          "pos": [
+            30,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "E5",
+          "pos": [
+            21,
+            215
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "D17",
+          "pos": [
+            48,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "D16",
+          "pos": [
+            39,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "E6",
+          "pos": [
+            30,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "F4",
+          "pos": [
+            21,
+            225
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_6A",
+      "comment": "PMOD 6A on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "R1",
+          "pos": [
+            307,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "U1",
+          "pos": [
+            298,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "W1",
+          "pos": [
+            289,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "M1",
+          "pos": [
+            280,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "T1",
+          "pos": [
+            307,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "Y2",
+          "pos": [
+            298,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "V1",
+          "pos": [
+            289,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "N2",
+          "pos": [
+            280,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD_6B",
+      "comment": "PMOD 6B on i5_extboard_v1.2",
+      "pins": {
+        "P1": {
+          "pin": "R3",
+          "pos": [
+            234,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "M4",
+          "pos": [
+            225,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "L5",
+          "pos": [
+            216,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "J16",
+          "pos": [
+            207,
+            212
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "N4",
+          "pos": [
+            234,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "L4",
+          "pos": [
+            225,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "P16",
+          "pos": [
+            216,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "J18",
+          "pos": [
+            207,
+            222
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    }
+  ]
 }

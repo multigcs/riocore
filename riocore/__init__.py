@@ -505,28 +505,38 @@ class Project:
 
 class PluginImages:
     def __init__(self):
-        pass
+        self.images = {
+            "relay": {"image": "relay.png", "pins": [(7, 75)], "signals": [(177, 75)]},
+            "relay_min": {"image": "relay_min.png", "pins": [(7, 75)], "signals": [(177, 75)]},
+            "ssr": {"image": "ssr.png", "pins": [(18, 18)], "signals": [(139, 20)]},
+            "ssr2a": {"image": "ssr2a.png", "pins": [(20, 29)], "signals": [(139, 29)]},
+            "led": {"image": "led.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+            "smdbutton": {"image": "smdbutton.png", "pins": [(5, 5)], "signals": [(30, 5)]},
+            "smdled": {"image": "smdled.png", "pins": [(4, 6)], "signals": [(21, 6)]},
+            "proximity": {"image": "proximity.png", "pins": [(5, 30)], "signals": [(180, 30), (170, 30)]},
+            "estop": {"image": "estop.png", "pins": [(5, 80)], "signals": [(180, 80)]},
+            "probe": {"image": "probe.png", "pins": [(5, 80)], "signals": [(140, 80)]},
+            "switch": {"image": "switch.png", "pins": [(45, 50)], "signals": [(135, 50)]},
+            "opto": {"image": "opto.png", "pins": [(25, 13)], "signals": [(172, 13)]},
+            "w5500mini": {"image": "w5500-mini.png", "pins": [(100, 63), (7, 30), (100, 52), (100, 41), (7, 41), (100, 30)]},
+            "w5500": {"image": "w5500.png", "pins": [(22, 92), (22, 103), (22, 70), (22, 81), (11, 92), (11, 80)]},
+            "spindle500w": {"image": "spindle500w.png", "pins": [(60, 20), (60, 35), (60, 50)], "signals": [(212, 30), (212, 45)]},
+            "laser": {"image": "laser.png", "pins": [(10, 30), (10, 45), (10, 60)], "signals": [(187, 37), (187, 52)]},
+            "stepper": {"image": "stepper.png", "pins": [(15, 190), (15, 160), (15, 130)], "signals": [(180, 120), (180, 135), (180, 150)]},
+            "servo42": {"image": "servo42.png", "pins": [(186, 117), (186, 130), (186, 105)], "signals": [(80, 120), (80, 135), (80, 150)]},
+            "servo": {"image": "servo.png", "pins": [(45, 135), (45, 145), (45, 155)], "signals": [(45, 170), (45, 180), (45, 195)]},
+            "rcservo": {"image": "rcservo.png", "pins": [(45, 237)], "signals": [(45, 170), (45, 180)]},
+            "stepstick": {"image": "stepstick.png", "pins": [(70, 17), (70, 5), (70, 93)], "signals": [(35, 5), (35, 17), (35, 27)]},
+            "ethercatservo": {"image": "ethercat-servo.png", "pins": [(45, 135), (85, 135)], "signals": [(80, 120), (80, 135), (80, 150)]},
+            "flow": {"image": "flow.png", "pins": [(50, 50)], "signals": [(87, 10), (87, 25)]},
+            "encoder": {"image": "encoder.png", "pins": [(105, 13), (105, 25), (105, 39)], "signals": [(40, 37), (40, 50), (40, 25)]},
+            "encoder_optical": {"image": "encoder_optical.png", "pins": [(6, 60), (6, 71), (6, 82)], "signals": [(56, 60), (56, 71), (56, 82)]},
+        }
 
-    def relay(self):
-        return {"image": "relay.png", "pins": [(15, 150)], "signals": [(355, 150)]}
-
-    def relay_min(self):
-        return {"image": "relay_min.png", "pins": [(15, 150)], "signals": [(355, 150)]}
-
-    def ssr(self):
-        return {"image": "ssr.png", "pins": [(36, 36)], "signals": [(278, 40)]}
-
-    def ssr2a(self):
-        return {"image": "ssr2a.png", "pins": [(40, 58)], "signals": [(278, 58)]}
-
-    def led(self):
-        return {"image": "led.png", "pins": [(10, 10), (10, 30)], "signals": [(60, 10), (60, 30)]}
-
-    def smdbutton(self):
-        return {"image": "smdbutton.png", "pins": [(10, 10)], "signals": [(60, 10)]}
-
-    def smdled(self):
-        return {"image": "smdled.png", "pins": [(9, 13)], "signals": [(42, 13)]}
+    def get(self, image):
+        if hasattr(self, image):
+            return getattr(self, image)()
+        return self.images.get(image)
 
     def wled(self):
         setup = {"image": "wled.png", "pins": [(10, 36)], "signals": []}
@@ -549,57 +559,3 @@ class PluginImages:
                 py += 26
             px += 137
         return setup
-
-    def proximity(self):
-        return {"image": "proximity.png", "pins": [(10, 60)], "signals": [(360, 60), (340, 60)]}
-
-    def estop(self):
-        return {"image": "estop.png", "pins": [(10, 160)], "signals": [(360, 160)]}
-
-    def probe(self):
-        return {"image": "probe.png", "pins": [(10, 160)], "signals": [(280, 160)]}
-
-    def switch(self):
-        return {"image": "switch.png", "pins": [(90, 100)], "signals": [(270, 100)]}
-
-    def opto(self):
-        return {"image": "opto.png", "pins": [(50, 27)], "signals": [(345, 27)]}
-
-    def w5500mini(self):
-        return {"image": "w5500-mini.png", "pins": [(200, 126), (15, 60), (200, 104), (200, 82), (15, 82), (200, 60)]}
-
-    def w5500(self):
-        return {"image": "w5500.png", "pins": [(44, 184), (44, 206), (44, 140), (44, 162), (22, 184), (22, 160)]}
-
-    def spindle500w(self):
-        return {"image": "spindle500w.png", "pins": [(120, 40), (120, 70), (120, 100)], "signals": [(425, 60), (425, 90)]}
-
-    def laser(self):
-        return {"image": "laser.png", "pins": [(20, 60), (20, 90), (20, 120)], "signals": [(375, 75), (375, 105)]}
-
-    def stepper(self):
-        return {"image": "stepper.png", "pins": [(30, 380), (30, 320), (30, 260)], "signals": [(360, 240), (360, 270), (360, 300)]}
-
-    def servo42(self):
-        return {"image": "servo42.png", "pins": [(373, 235), (373, 260), (373, 210)], "signals": [(160, 240), (160, 270), (160, 300)]}
-
-    def servo(self):
-        return {"image": "servo.png", "pins": [(90, 270), (90, 290), (90, 310)], "signals": [(90, 340), (90, 360), (90, 390)]}
-
-    def rcservo(self):
-        return {"image": "rcservo.png", "pins": [(90, 475)], "signals": [(90, 340), (90, 360)]}
-
-    def stepstick(self):
-        return {"image": "stepstick.png", "pins": [(140, 35), (140, 10), (140, 186)], "signals": [(70, 10), (70, 35), (70, 55)]}
-
-    def ethercatservo(self):
-        return {"image": "ethercat-servo.png", "pins": [(90, 270), (170, 270)], "signals": [(160, 240), (160, 270), (160, 300)]}
-
-    def flow(self):
-        return {"image": "flow.png", "pins": [(100, 100)], "signals": [(175, 20), (175, 50)]}
-
-    def encoder(self):
-        return {"image": "encoder.png", "pins": [(210, 27), (210, 51), (210, 78)], "signals": [(80, 75), (80, 100), (80, 50)]}
-
-    def encoder_optical(self):
-        return {"image": "encoder_optical.png", "pins": [(12, 120), (12, 142), (12, 164)], "signals": [(112, 120), (112, 142), (112, 164)]}

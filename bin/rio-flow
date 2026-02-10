@@ -344,8 +344,8 @@ class MyNode(QGraphicsItem):
             pixmap = pixmap.transformed(QTransform().rotate(rotate))
             pixmap_width = pixmap.width()
             pixmap_height = pixmap.height()
-            self.width = pixmap_width // 2
-            self.height = pixmap_height // 2
+            self.width = pixmap_width
+            self.height = pixmap_height
             self.pixmap = pixmap.scaled(int(self.width), int(self.height), Qt.KeepAspectRatio, Qt.SmoothTransformation)
         else:
             self.pixmap = None
@@ -355,8 +355,8 @@ class MyNode(QGraphicsItem):
         pos_x = pos.x()
         pos_y = pos.y()
         if port in self.ports and self.ports[port].get("pos"):
-            ppos_x = self.ports[port]["pos"][0] // 2
-            ppos_y = self.ports[port]["pos"][1] // 2
+            ppos_x = self.ports[port]["pos"][0]
+            ppos_y = self.ports[port]["pos"][1]
             ppos_x, ppos_y = self.rotate_xy((ppos_x, ppos_y))
             pos_x += ppos_x
             pos_y += ppos_y
@@ -381,8 +381,8 @@ class MyNode(QGraphicsItem):
                 continue
             if self.ports[port].get("visible") is False:
                 continue
-            pos_x = self.ports[port]["pos"][0] // 2
-            pos_y = self.ports[port]["pos"][1] // 2
+            pos_x = self.ports[port]["pos"][0]
+            pos_y = self.ports[port]["pos"][1]
             pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
             if abs(mouse_x - pos_x) < 5 and abs(mouse_y - pos_y) < 5:
                 return port
@@ -498,8 +498,8 @@ class MyNode(QGraphicsItem):
                 continue
             if port_data.get("visible") is False:
                 continue
-            pos_x = port_data["pos"][0] // 2
-            pos_y = port_data["pos"][1] // 2
+            pos_x = port_data["pos"][0]
+            pos_y = port_data["pos"][1]
             rotate = port_data.get("rotate", 0)
             pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
             key = f"{pos_x}-{pos_y}"

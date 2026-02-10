@@ -1,327 +1,329 @@
 {
-    "comment": "5Axis China-BOB",
-    "needs": ["db25"],
-    "main": {
-        "P1": {
-            "pos": [
-                21,
-                375
-            ]
-        },
-        "P2": {
-            "pos": [
-                21,
-                394
-            ]
-        },
-        "P3": {
-            "pos": [
-                21,
-                413
-            ]
-        },
-        "P4": {
-            "pos": [
-                21,
-                432
-            ]
-        },
-        "P5": {
-            "pos": [
-                21,
-                451
-            ]
-        },
-        "P6": {
-            "pos": [
-                21,
-                470
-            ]
-        },
-        "P7": {
-            "pos": [
-                21,
-                489
-            ]
-        },
-        "P8": {
-            "pos": [
-                21,
-                508
-            ]
-        },
-        "P9": {
-            "pos": [
-                21,
-                527
-            ]
-        },
-        "P10": {
-            "pos": [
-                21,
-                546
-            ]
-        },
-        "P11": {
-            "pos": [
-                21,
-                565
-            ]
-        },
-        "P12": {
-            "pos": [
-                21,
-                584
-            ]
-        },
-        "P13": {
-            "pos": [
-                21,
-                603
-            ]
-        },
-        "P14": {
-            "pos": [
-                40,
-                375
-            ]
-        },
-        "P15": {
-            "pos": [
-                40,
-                394
-            ]
-        },
-        "P16": {
-            "pos": [
-                40,
-                413
-            ]
-        },
-        "P17": {
-            "pos": [
-                40,
-                432
-            ]
-        }
+  "comment": "5Axis China-BOB",
+  "needs": [
+    "db25"
+  ],
+  "main": {
+    "P1": {
+      "pos": [
+        10,
+        187
+      ]
     },
-    "slots": [
-        {
-            "name": "OPTO",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "in0": {
-                    "pin": "P10",
-                    "pos": [
-                        212,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "in1": {
-                    "pin": "P11",
-                    "pos": [
-                        257,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "in2": {
-                    "pin": "P12",
-                    "pos": [
-                        302,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "in3": {
-                    "pin": "P13",
-                    "pos": [
-                        347,
-                        771
-                    ],
-                    "direction": "input"
-                },
-                "in4": {
-                    "pin": "P15",
-                    "pos": [
-                        392,
-                        771
-                    ],
-                    "direction": "input"
-                }
-            }
+    "P2": {
+      "pos": [
+        10,
+        197
+      ]
+    },
+    "P3": {
+      "pos": [
+        10,
+        206
+      ]
+    },
+    "P4": {
+      "pos": [
+        10,
+        216
+      ]
+    },
+    "P5": {
+      "pos": [
+        10,
+        225
+      ]
+    },
+    "P6": {
+      "pos": [
+        10,
+        235
+      ]
+    },
+    "P7": {
+      "pos": [
+        10,
+        244
+      ]
+    },
+    "P8": {
+      "pos": [
+        10,
+        254
+      ]
+    },
+    "P9": {
+      "pos": [
+        10,
+        263
+      ]
+    },
+    "P10": {
+      "pos": [
+        10,
+        273
+      ]
+    },
+    "P11": {
+      "pos": [
+        10,
+        282
+      ]
+    },
+    "P12": {
+      "pos": [
+        10,
+        292
+      ]
+    },
+    "P13": {
+      "pos": [
+        10,
+        301
+      ]
+    },
+    "P14": {
+      "pos": [
+        20,
+        187
+      ]
+    },
+    "P15": {
+      "pos": [
+        20,
+        197
+      ]
+    },
+    "P16": {
+      "pos": [
+        20,
+        206
+      ]
+    },
+    "P17": {
+      "pos": [
+        20,
+        216
+      ]
+    }
+  },
+  "slots": [
+    {
+      "name": "OPTO",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "in0": {
+          "pin": "P10",
+          "pos": [
+            106,
+            385
+          ],
+          "direction": "input"
         },
-        {
-            "name": "RELAIS",
-            "comment": "",
-            "default": "bitout",
-            "pins": {
-                "out": {
-                    "pin": "P17",
-                    "comment": "shared with B dir",
-                    "pos": [
-                        190,
-                        28
-                    ],
-                    "direction": "output"
-                }
-            }
+        "in1": {
+          "pin": "P11",
+          "pos": [
+            128,
+            385
+          ],
+          "direction": "input"
         },
-        {
-            "name": "PWM",
-            "comment": "",
-            "default": "pwmout",
-            "pins": {
-                "analog": {
-                    "pin": "P1",
-                    "pos": [
-                        327,
-                        28
-                    ],
-                    "direction": "output"
-                },
-                "digital": {
-                    "pin": "P1",
-                    "pos": [
-                        592,
-                        223
-                    ],
-                    "direction": "output"
-                }
-            }
+        "in2": {
+          "pin": "P12",
+          "pos": [
+            151,
+            385
+          ],
+          "direction": "input"
         },
-        {
-            "name": "B",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P17",
-                    "pos": [
-                        592,
-                        268
-                    ],
-                    "comment": "shared with relais",
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P16",
-                    "pos": [
-                        592,
-                        313
-                    ],
-                    "direction": "output"
-                }
-            }
+        "in3": {
+          "pin": "P13",
+          "pos": [
+            173,
+            385
+          ],
+          "direction": "input"
         },
-        {
-            "name": "ALL",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "en": {
-                    "pin": "P14",
-                    "pos": [
-                        592,
-                        358
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "A",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P9",
-                    "pos": [
-                        592,
-                        403
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P8",
-                    "pos": [
-                        592,
-                        448
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "Z",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P7",
-                    "pos": [
-                        592,
-                        493
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P6",
-                    "pos": [
-                        592,
-                        538
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "Y",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P5",
-                    "pos": [
-                        592,
-                        583
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P4",
-                    "pos": [
-                        592,
-                        628
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "X",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "dir": {
-                    "pin": "P3",
-                    "pos": [
-                        592,
-                        673
-                    ],
-                    "direction": "output"
-                },
-                "step": {
-                    "pin": "P2",
-                    "pos": [
-                        592,
-                        718
-                    ],
-                    "direction": "output"
-                }
-            }
+        "in4": {
+          "pin": "P15",
+          "pos": [
+            196,
+            385
+          ],
+          "direction": "input"
         }
-    ]
+      }
+    },
+    {
+      "name": "RELAIS",
+      "comment": "",
+      "default": "bitout",
+      "pins": {
+        "out": {
+          "pin": "P17",
+          "comment": "shared with B dir",
+          "pos": [
+            95,
+            14
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "PWM",
+      "comment": "",
+      "default": "pwmout",
+      "pins": {
+        "analog": {
+          "pin": "P1",
+          "pos": [
+            163,
+            14
+          ],
+          "direction": "output"
+        },
+        "digital": {
+          "pin": "P1",
+          "pos": [
+            296,
+            111
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "B",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "dir": {
+          "pin": "P17",
+          "pos": [
+            296,
+            134
+          ],
+          "comment": "shared with relais",
+          "direction": "output"
+        },
+        "step": {
+          "pin": "P16",
+          "pos": [
+            296,
+            156
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "ALL",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "en": {
+          "pin": "P14",
+          "pos": [
+            296,
+            179
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "A",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "dir": {
+          "pin": "P9",
+          "pos": [
+            296,
+            201
+          ],
+          "direction": "output"
+        },
+        "step": {
+          "pin": "P8",
+          "pos": [
+            296,
+            224
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "Z",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "dir": {
+          "pin": "P7",
+          "pos": [
+            296,
+            246
+          ],
+          "direction": "output"
+        },
+        "step": {
+          "pin": "P6",
+          "pos": [
+            296,
+            269
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "Y",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "dir": {
+          "pin": "P5",
+          "pos": [
+            296,
+            291
+          ],
+          "direction": "output"
+        },
+        "step": {
+          "pin": "P4",
+          "pos": [
+            296,
+            314
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "X",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "dir": {
+          "pin": "P3",
+          "pos": [
+            296,
+            336
+          ],
+          "direction": "output"
+        },
+        "step": {
+          "pin": "P2",
+          "pos": [
+            296,
+            359
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
 }
