@@ -11,6 +11,8 @@
 #include <termios.h>
 #include <unistd.h>
 
+uint16_t crc16_update(uint16_t crc, uint8_t a);
+
 //#define MODBUS_SERIAL_PORT "/dev/pts/13"
 
 #ifdef MODBUS_SERIAL_PORT

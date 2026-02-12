@@ -518,7 +518,7 @@ class simulator(generator_base):
         output.append("")
         if self.glsim:
             output.append("simulator: main.c simulator.c glsim.c riocore.c interface.c")
-            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c modbus.c interface.c {gcc_options} -lm -lGL -lGLU -lglut")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c crc16.c modbus.c interface.c {gcc_options} -lm -lGL -lGLU -lglut")
         else:
             output.append("simulator: main.c simulator.c riocore.c interface.c")
             output.append(f"	gcc -o simulator -Os -I. main.c simulator.c riocore.c modbus.c interface.c {gcc_options} -lm")
