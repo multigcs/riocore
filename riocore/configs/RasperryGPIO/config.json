@@ -3,10 +3,10 @@
     "syncto": "cnc@192.168.10.246:/home/cnc/RPI/",
     "flow": {
         "view": {
-            "scale": 1.09,
+            "scale": 0.46,
             "pos": [
-                -102,
-                -111
+                -50,
+                -62
             ]
         },
         "board": {
@@ -457,8 +457,7 @@
                 60.0,
                 130.0
             ],
-            "rotate": 180,
-            "mode": "pi_gpio"
+            "rotate": 180
         }
     ]
 }
