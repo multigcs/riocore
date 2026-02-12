@@ -1,6 +1,5 @@
 {
     "name": "RasperryGPIO",
-    "syncto": "cnc@192.168.10.246:/home/cnc/RPI/",
     "flow": {
         "view": {
             "scale": 0.46,
