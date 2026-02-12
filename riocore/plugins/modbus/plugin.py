@@ -232,6 +232,8 @@ class Plugin(PluginBase):
         self.signal_active = 0
         self.signal_values = 0
         self.signal_name = None
+        self.tx_signal_name = None
+        self.tx_frame_map = {}  # Maps frame_id to signal_name for proper response matching
 
     def cfg_info(self):
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
@@ -375,12 +377,18 @@ class Plugin(PluginBase):
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
         if "config" not in self.plugin_setup:
             return
-        signal_name = list(self.plugin_setup["config"])[self.signal_active]
+        # Use txframe_id_ack (the acknowledged frame_id) to look up the signal
+        # txframe_id_ack is stored in self.txframe_id_ack by the base plugin
+        tx_ack_id = getattr(self, 'txframe_id_ack', frame_id)
+        signal_name = self.tx_frame_map.pop(tx_ack_id, None)
+        if signal_name is None:
+            # Fallback to current signal_name if mapping not found
+            signal_name = self.tx_signal_name
+        self.signal_name = signal_name
         config = self.plugin_setup["config"][signal_name]
         if config["type"] == 101:
             config["instance"].frameio_rx(frame_new, frame_id, frame_len, frame_data)
         elif frame_new:
-            # print(f"rx frame {self.signal_active} {frame_id} {frame_len}: {frame_data}")
 
             if frame_len > 4:
                 address = frame_data[0]
@@ -465,11 +473,16 @@ class Plugin(PluginBase):
             elif f"{self.signal_name}_valid" in self.SIGNALS:
                 self.SIGNALS[f"{self.signal_name}_valid"]["value"] = 0
                 self.SIGNALS[f"{self.signal_name}_errors"]["value"] += 1
+        signal_name = list(self.plugin_setup["config"])[self.signal_active]
+        self.tx_signal_name = signal_name
+        # Map the current frame_id to the signal_name so we can match responses correctly
+        self.tx_frame_map[self.txframe_id] = signal_name
+
         if self.signal_active < len(self.plugin_setup.get("config", {})) - 1:
             self.signal_active += 1
         else:
             self.signal_active = 0
-        signal_name = list(self.plugin_setup["config"])[self.signal_active]
+
         config = self.plugin_setup["config"][signal_name]
 
         if config["type"] == 101:
