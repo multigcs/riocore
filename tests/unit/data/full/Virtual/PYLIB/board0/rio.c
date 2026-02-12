@@ -90,6 +90,10 @@ data_t *register_signals(void) {
     *data->sys_simulation = 0;
     data->duration = (float*)malloc(sizeof(float));
     *data->duration = rtapi_get_time();
+    data->SIGOUT_BOARD0_MODBUS_SIM = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_MODBUS_SIM = 0;
+    data->SIGOUT_BOARD0_MODBUS_DEBUG = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_MODBUS_DEBUG = 0;
     data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = 0;
     data->SIGOUT_BOARD0_BOARD0_WLED_0_BLUE = (bool*)malloc(sizeof(bool));

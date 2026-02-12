@@ -63,6 +63,8 @@ typedef struct {
     hal_bit_t   *sys_simulation;
     hal_u32_t   *fpga_timestamp;
     hal_float_t *duration;
+    hal_bit_t   *SIGOUT_BOARD0_MODBUS_SIM;
+    hal_bit_t   *SIGOUT_BOARD0_MODBUS_DEBUG;
     hal_bit_t   *SIGOUT_BOARD0_BOARD0_WLED_0_GREEN;
     hal_bit_t   *SIGOUT_BOARD0_BOARD0_WLED_0_BLUE;
     hal_bit_t   *SIGOUT_BOARD0_BOARD0_WLED_0_RED;
@@ -135,6 +137,10 @@ data_t *register_signals(void) {
     *data->sys_simulation = 0;
     if ((retval = hal_pin_float_newf(HAL_OUT, &(data->duration), comp_id, "board0.duration")) != 0) error_handler(retval);
     *data->duration = rtapi_get_time();
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_BOARD0_MODBUS_SIM), comp_id, "board0.modbus_sim")) != 0) error_handler(retval);
+    *data->SIGOUT_BOARD0_MODBUS_SIM = 0;
+    if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_BOARD0_MODBUS_DEBUG), comp_id, "board0.modbus_debug")) != 0) error_handler(retval);
+    *data->SIGOUT_BOARD0_MODBUS_DEBUG = 0;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN), comp_id, "board0.board0_wled.0_green")) != 0) error_handler(retval);
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = 0;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_BOARD0_BOARD0_WLED_0_BLUE), comp_id, "board0.board0_wled.0_blue")) != 0) error_handler(retval);

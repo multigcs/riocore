@@ -36,6 +36,8 @@ def test_generator(config):
         f"{target}/LinuxCNC/subroutines",
         f"{target}/LinuxCNC/mcodes",
         f"{target}/LinuxCNC/tool.tbl",
+        f"{target}/PYLIB/*/testgui.py",
+        f"{target}/PYLIB/*/rio.py",
         f"{target}/Simulator",
     ):
         os.system(f'rm -rf tests/unit/data/full/{path}')

@@ -9,6 +9,8 @@ typedef struct {
     bool   *sys_simulation;
     uint32_t   *fpga_timestamp;
     float *duration;
+    bool   *SIGOUT_BOARD0_MODBUS_SIM;
+    bool   *SIGOUT_BOARD0_MODBUS_DEBUG;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_GREEN;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_BLUE;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_RED;

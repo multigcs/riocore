@@ -132,6 +132,31 @@ class Plugin(PluginBase):
                 sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
             self.SUB_PLUGINS.append(sub_plugin)
 
+        simulation = self.plugin_setup.get("simulation", self.option_default("simulation"))
+        if simulation:
+            self.SIGNALS["modbus_sim"] = {
+                "direction": "output",
+                "bool": True,
+                "description": "modbus simulation",
+                "display": {"section": "status", "title": "Modbus-Simulation"},
+            }
+            self.SIGNALS["modbus_debug"] = {
+                "direction": "output",
+                "bool": True,
+                "description": "modbus simulation debug output",
+                "display": {"section": "status", "title": "Modbus-Debug"},
+            }
+
+            self.OPTIONS.update(
+                {
+                    "modbus_port": {
+                        "default": "",
+                        "type": str,
+                        "description": "modbus simulator serial port",
+                    }
+                }
+            )
+
     @classmethod
     def update_prefixes(cls, parent, instances):
         subs = {}

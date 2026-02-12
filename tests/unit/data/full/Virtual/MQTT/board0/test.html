@@ -56,6 +56,19 @@ body {
   <body>
     <div class="container">
         <div class="item">
+    <B>board0</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">modbus_sim<span class="tooltiptext">modbus simulation</span></div>:</td>
+        <td><input type="checkbox" id="board0/board0/modbus_sim" /></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">modbus_debug<span class="tooltiptext">modbus simulation debug output</span></div>:</td>
+        <td><input type="checkbox" id="board0/board0/modbus_debug" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
     <B>board0_wled</B>
     <table>
       <tr>
@@ -141,6 +154,10 @@ body {
         var clientID = "ID-" + Math.round(Math.random() * 1000);
         var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
 
+        document.getElementById("board0/board0/modbus_sim").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/modbus_sim").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/modbus_debug").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/modbus_debug").addEventListener("input", publish, false);
         document.getElementById("board0/board0/board0_wled/0_green").addEventListener("change", publish, false);
         document.getElementById("board0/board0/board0_wled/0_green").addEventListener("input", publish, false);
         document.getElementById("board0/board0/board0_wled/0_blue").addEventListener("change", publish, false);

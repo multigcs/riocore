@@ -7,6 +7,8 @@ import time
 from rio import RioWrapper
 
 def set_values(rio):
+    rio.data_set("SIGOUT_BOARD0_MODBUS_SIM", 0)
+    rio.data_set("SIGOUT_BOARD0_MODBUS_DEBUG", 0)
     rio.data_set("SIGOUT_BOARD0_BOARD0_WLED_0_GREEN", 0)
     rio.data_set("SIGOUT_BOARD0_BOARD0_WLED_0_BLUE", 0)
     rio.data_set("SIGOUT_BOARD0_BOARD0_WLED_0_RED", 0)

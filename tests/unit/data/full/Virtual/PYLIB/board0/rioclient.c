@@ -11,6 +11,8 @@
 data_t *data;
 
 int set_values(void) {
+    *data->SIGOUT_BOARD0_MODBUS_SIM = 0;
+    *data->SIGOUT_BOARD0_MODBUS_DEBUG = 0;
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = 0;
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_BLUE = 0;
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_RED = 0;

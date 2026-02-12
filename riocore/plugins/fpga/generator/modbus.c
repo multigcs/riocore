@@ -22,48 +22,37 @@ void modbus_init() {
     struct termios tty;
     modbus_serial = open(MODBUS_SERIAL_PORT, O_RDWR);
     if (modbus_serial < 0) {
-        printf("Error %i from open: %s\n", errno, strerror(errno));
-    }
-    if(tcgetattr(modbus_serial, &tty) != 0) {
-        printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
-    }
-    tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
-    tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
-    tty.c_cflag &= ~CSIZE; // Clear all bits that set the data size
-    tty.c_cflag |= CS8; // 8 bits per byte (most common)
-    tty.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
-    tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
-    tty.c_lflag &= ~ICANON;
-    tty.c_lflag &= ~ECHO; // Disable echo
-    tty.c_lflag &= ~ECHOE; // Disable erasure
-    tty.c_lflag &= ~ECHONL; // Disable new-line echo
-    tty.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
-    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
-    tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-    tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
+        printf("ERROR: modbus_sim: %i from open: %s\n", errno, strerror(errno));
+    } else {
+        if(tcgetattr(modbus_serial, &tty) != 0) {
+            printf("ERROR: modbus_sim: %i from tcgetattr: %s\n", errno, strerror(errno));
+        }
+        tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
+        tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
+        tty.c_cflag &= ~CSIZE; // Clear all bits that set the data size
+        tty.c_cflag |= CS8; // 8 bits per byte (most common)
+        tty.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
+        tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+        tty.c_lflag &= ~ICANON;
+        tty.c_lflag &= ~ECHO; // Disable echo
+        tty.c_lflag &= ~ECHOE; // Disable erasure
+        tty.c_lflag &= ~ECHONL; // Disable new-line echo
+        tty.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
+        tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
+        tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+        tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
-    tty.c_cc[VTIME] = 0; // 1/10sec
-    tty.c_cc[VMIN] = 0;
-    
-    cfsetispeed(&tty, B9600);
-    cfsetospeed(&tty, B9600);
-    if (tcsetattr(modbus_serial, TCSANOW, &tty) != 0) {
-        printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
+        tty.c_cc[VTIME] = 0; // 1/10sec
+        tty.c_cc[VMIN] = 0;
+        
+        cfsetispeed(&tty, B9600);
+        cfsetospeed(&tty, B9600);
+        if (tcsetattr(modbus_serial, TCSANOW, &tty) != 0) {
+            printf("ERROR: modbus_sim: %i from tcsetattr: %s\n", errno, strerror(errno));
+        }
     }
 #endif
-}
-
-uint16_t crc16_update(uint16_t crc, uint8_t a) {
-    int i;
-    crc ^= (uint16_t)a;
-    for (i = 0; i < 8; ++i) {
-        if (crc & 1)
-            crc = (crc >> 1) ^ 0xA001;
-        else
-            crc = (crc >> 1);
-    }
-    return crc;
 }
 
 int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame) {
@@ -74,7 +63,7 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             uint16_t daddr = (frame[2]<<8) | frame[3];
             uint16_t ncoils = (frame[4]<<8) | frame[5];
             uint8_t nbytes = frame[6];
-            printf("modbus set coils: %i %i %i %i: ", addr, fcode, daddr, ncoils);
+            printf("modbus (%i/%i) set coils: %i %i %i %i: ", channel, len, addr, fcode, daddr, ncoils);
             for (uint8_t byte = 0; byte < nbytes; byte++) {
                 for (uint8_t bit = 0; bit < 8; bit++) {
                     if ((frame[7 + byte] & (1<<bit)) != 0) {
@@ -90,6 +79,7 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             uint16_t crc = 0xFFFF;
             uint16_t frame_len = 4;
             uint16_t daddr = (frame[2]<<8) | frame[3];
+            printf("modbus (%i/%i) get reg: %i %i %i %i: ", channel, len, addr, fcode, daddr, frame_len);
             ret_frame[0] = 11;
             ret_frame[1] = 2;
             ret_frame[2] = 1;
@@ -107,11 +97,12 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             return frame_len;
         }
     }
+    return -1;
 }
 
 int modbus(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame) {
 #ifdef MODBUS_SERIAL_PORT
-    if (channel == 0) {
+    if (modbus_serial >= 0 && channel == 0) {
         write(modbus_serial, frame, len);
         return read(modbus_serial, ret_frame, 14);
     }

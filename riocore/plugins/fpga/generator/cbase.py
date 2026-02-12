@@ -931,6 +931,39 @@ class cbase:
         output.append("")
         output += self.variables_register(libmode=libmode)
 
+        modbus_n = 0
+        simulation = self.instance.plugin_setup.get("simulation", self.instance.option_default("simulation"))
+        if simulation:
+            # modbus simulation
+            modbus_rx = {}
+            for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
+                variable_name = data_config["variable"]
+                if data_config["direction"] == "input":
+                    if plugin_instance.NAME == "modbus":
+                        modbus_rx[modbus_n] = variable_name
+                        modbus_n += 1
+            simulation = self.instance.plugin_setup.get("simulation", self.instance.option_default("simulation"))
+            if modbus_n:
+                modbus_port = self.instance.plugin_setup.get("modbus_port", self.instance.option_default("modbus_port", ""))
+                output.append("#define MODBUS_SIM")
+
+                if modbus_port:
+                    output.append(f'#define MODBUS_SERIAL_PORT "{modbus_port}"')
+
+                output.append("#ifdef MODBUS_SIM")
+                output.append("// modbus functions...")
+                output.append("void modbus_init();")
+                output.append("uint16_t crc16_update(uint16_t crc, uint8_t a);")
+                output.append("int modbus(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame);")
+                output.append("")
+                modbus_sim = open(os.path.join(riocore_path, "plugins", "fpga", "generator", "modbus.c"), "r").read()
+                for line in modbus_sim.strip().split("\n"):
+                    if line.startswith("#include "):
+                        continue
+                    output.append(line)
+                output.append("#endif")
+                output.append("")
+
         # backward compatibility (SPI)
         iface_data = None
         if not self.rtapi_mode and protocol == "SPI":
@@ -953,6 +986,9 @@ class cbase:
             output.append(iface_data)
 
         output.append("int interface_init(int argc, char **argv) {")
+        if modbus_n:
+            output.append("    modbus_init();")
+
         if protocol == "UART":
             output.append("    uart_init();")
         elif protocol.startswith("SPI"):
@@ -1100,6 +1136,43 @@ class cbase:
         output.append("                }")
         output.append("            }")
         output.append("        } else {")
+
+        if simulation:
+            modbus_n = 0
+            for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
+                variable_name = data_config["variable"]
+                if data_config["direction"] == "output":
+                    if plugin_instance.NAME == "modbus":
+                        output.append("#ifdef MODBUS_SIM")
+                        output.append(f"             if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM) {{")
+                        output.append(f"                static uint8_t frame{modbus_n}_id_last = 255;")
+                        output.append(f"                static uint8_t frame{modbus_n}_rx[{size // 8}];")
+                        output.append(f"                uint8_t frame{modbus_n}_id = data->{variable_name}[0];")
+                        output.append(f"                uint8_t frame{modbus_n}_len = data->{variable_name}[1];")
+                        output.append(f"                if (frame{modbus_n}_id_last != frame{modbus_n}_id && frame{modbus_n}_len > 0) {{")
+                        output.append(f"                    if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
+                        output.append(f'                        printf("> {plugin_instance.instances_name}.{data_name} (seq%i) ", frame{modbus_n}_id);')
+                        output.append(f"                        for (int i = 0; i < frame{modbus_n}_len; i++) {{")
+                        output.append(f'                            printf("%i ", data->{variable_name}[i + 2]);')
+                        output.append("                        }")
+                        output.append('                        printf("\\n");')
+                        output.append("                    }")
+                        output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(&(data->{variable_name}) + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
+                        output.append("                    if (len_rx > 0) {")
+                        output.append("                        for (int cn = 0; cn < len_rx; cn++) {")
+                        output.append(f"                            data->{modbus_rx[modbus_n]}[len_rx - cn + 2] = frame0_rx[cn];")
+                        output.append("                        }")
+                        output.append(f"                        data->{modbus_rx[modbus_n]}[0]++;")
+                        output.append(f"                        data->{modbus_rx[modbus_n]}[1]++;")
+                        output.append(f"                        data->{modbus_rx[modbus_n]}[2] = len_rx;")
+                        output.append("                    }")
+                        output.append("                }")
+                        output.append(f"                frame{modbus_n}_id_last = frame{modbus_n}_id;")
+                        output.append("             }")
+                        output.append("#endif")
+                        output.append("")
+                        modbus_n += 1
+
         output.append("            convert_inputs();")
         output.append("            *data->sys_status = 1;")
         output.append("        }")
