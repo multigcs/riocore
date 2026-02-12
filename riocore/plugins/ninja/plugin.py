@@ -99,9 +99,9 @@ class Plugin(PluginBase):
             self.TYPE = "joint"
             mode = self.plugin_setup.get("mode", self.option_default("mode"))
             if mode:
-                self.JOINT_TYPE = "velocity"
+                self.JOINT_MODE = "velocity"
             else:
-                self.JOINT_TYPE = "position"
+                self.JOINT_MODE = "position"
             self.IMAGE_SHOW = True
             self.IMAGES = ["stepper", "servo42"]
             self.SIGNALS = {
@@ -324,7 +324,7 @@ class Plugin(PluginBase):
                 axis_name = joint_data["axis"]
                 joint_n = joint_data["num"]
                 pid_num = joint_n
-                if self.JOINT_TYPE == "velocity":
+                if self.JOINT_MODE == "velocity":
                     cmd_halname = f"{self.PREFIX}.command"
                     feedback_halname = f"{self.PREFIX}.feedback"
                     enable_halname = f"{self.PREFIX}.enable"

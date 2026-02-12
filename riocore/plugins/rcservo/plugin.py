@@ -12,7 +12,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["rcservo"]
         self.VERILOGS = ["rcservo.v"]
         self.TYPE = "joint"
-        self.JOINT_TYPE = "position"
+        self.JOINT_MODE = "position"
         self.PINDEFAULTS = {
             "pwm": {
                 "direction": "output",

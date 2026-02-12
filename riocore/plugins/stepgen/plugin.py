@@ -15,7 +15,7 @@ If higher rates are needed, a hardware step generator is a better choice."""
         self.TYPE = "joint"
         self.NEEDS = ["gpio", "basethread"]
         self.PLUGIN_TYPE = "gpio"
-        self.JOINT_TYPE = "position"
+        self.JOINT_MODE = "position"
         self.JOINT_OPTIONS = ["STEPGEN_MAXACCEL", "STEPGEN_STEPLEN", "STEPGEN_STEPSPACE", "STEPGEN_DIRHOLD", "STEPGEN_DIRSETUP"]
         self.JOINT_DEFAULTS = {
             "STEPGEN_MAXACCEL": 2000.0,

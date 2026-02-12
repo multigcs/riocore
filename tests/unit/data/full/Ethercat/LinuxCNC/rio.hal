@@ -3,9 +3,6 @@
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
-# pid controller
-loadrt pid num_chan=2
-
 # manual toolchanger
 loadusr -W hal_manualtoolchange
 
@@ -19,8 +16,6 @@ addf lcec.read-all servo-thread
 addf cia402.0.read-all servo-thread
 addf cia402.1.read-all servo-thread
 # process
-addf pid.0.do-pid-calcs servo-thread
-addf pid.1.do-pid-calcs servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 # write

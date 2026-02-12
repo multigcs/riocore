@@ -3,9 +3,6 @@
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
-# pid controller
-loadrt pid num_chan=3
-
 # manual toolchanger
 loadusr -W hal_manualtoolchange
 
@@ -21,9 +18,6 @@ loadrt hal_gpio inputs=GPIO25,SPI_CE0_N,SPI_CE1_N,GPIO12,GPIO13 outputs=SPI_MISO
 # read
 addf hal_gpio.read base-thread
 # process
-addf pid.0.do-pid-calcs servo-thread
-addf pid.1.do-pid-calcs servo-thread
-addf pid.2.do-pid-calcs servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 addf stepgen.make-pulses base-thread

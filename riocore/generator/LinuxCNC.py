@@ -242,9 +242,16 @@ class LinuxCNC:
 
         self.project.axis_dict = self.create_axis_config(self.project)
         num_joints = 0
+        num_pids = 0
         for _axis, values in self.project.axis_dict.items():
+            for joint in values["joints"]:
+                if joint["mode"] == "velocity":
+                    num_pids += 1
             num_joints += len(values["joints"])
         self.num_joints = num_joints
+        if num_pids:
+            num_pids = num_joints  # TODO
+        self.num_pids = num_pids
 
         self.addons = {}
         self.gpionames = []
@@ -2064,12 +2071,12 @@ if __name__ == "__main__":
             if hasattr(plugin_instance, "update_pins"):
                 plugin_instance.update_pins(self)
 
-        num_pids = self.num_joints
-        self.halg.fmt_add_top("# pid controller")
-        self.halg.fmt_add_top(f"loadrt pid num_chan={num_pids}")
-        self.halg.fmt_add_top("")
-        for pidn in range(num_pids):
-            self.halg.fmt_add_top(f"addf pid.{pidn}.do-pid-calcs servo-thread")
+        if self.num_pids:
+            self.halg.fmt_add_top("# pid controller")
+            self.halg.fmt_add_top(f"loadrt pid num_chan={self.num_pids}")
+            self.halg.fmt_add_top("")
+            for pidn in range(self.num_pids):
+                self.halg.fmt_add_top(f"addf pid.{pidn}.do-pid-calcs servo-thread")
 
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")

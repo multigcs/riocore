@@ -289,9 +289,9 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
             self.JOINT_OPTIONS = list(self.JOINT_DEFAULTS)
             mode = self.plugin_setup.get("mode", self.option_default("mode"))
             if mode:
-                self.JOINT_TYPE = "velocity"
+                self.JOINT_MODE = "velocity"
             else:
-                self.JOINT_TYPE = "position"
+                self.JOINT_MODE = "position"
             self.IMAGE_SHOW = True
             self.IMAGES = ["stepper", "servo42", "stepstick"]
             self.SIGNALS = {
