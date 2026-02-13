@@ -96,7 +96,7 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             //     printf("%i ", ret_frame[i]);
             // }
             // printf("\n");
-            return frame_len;
+            return frame_len + 2;
         }
     }
     return -1;
