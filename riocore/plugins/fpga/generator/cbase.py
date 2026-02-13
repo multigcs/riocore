@@ -1157,7 +1157,7 @@ class cbase:
                         output.append("                        }")
                         output.append('                        printf("\\n");')
                         output.append("                    }")
-                        output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(&(data->{variable_name}) + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
+                        output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(data->{variable_name} + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
                         output.append("                    if (len_rx > 0) {")
                         output.append("                        for (int cn = 0; cn < len_rx; cn++) {")
                         output.append(f"                            data->{modbus_rx[modbus_n]}[len_rx - cn + 2] = frame0_rx[cn];")
