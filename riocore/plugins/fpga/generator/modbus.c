@@ -45,7 +45,7 @@ void modbus_init() {
         tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
         tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
-        tty.c_cc[VTIME] = 0; // 1/10sec
+        tty.c_cc[VTIME] = 1; // 1/10sec
         tty.c_cc[VMIN] = 0;
         
         cfsetispeed(&tty, B9600);

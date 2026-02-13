@@ -111,6 +111,9 @@ class Plugin(PluginBase):
                 if n_values > 1:
                     for vn in range(n_values):
                         value_name = f"{signal_name}_{vn}"
+                        section = "modbus"
+                        if n_values > 8:
+                            section = signal_name
                         self.SIGNALS[value_name] = {
                             "direction": config["direction"],
                             "unit": config.get("unit", ""),
@@ -120,7 +123,7 @@ class Plugin(PluginBase):
                             "min": vmin,
                             "max": vmax,
                             "bool": is_bool,
-                            "display": {"section": "modbus", "title": value_name.title()},
+                            "display": {"section": section, "title": value_name.title()},
                         }
                         if config["direction"] == "input":
                             self.SIGNALS[f"{value_name}_valid"] = {
@@ -137,6 +140,23 @@ class Plugin(PluginBase):
                                 "helper": True,
                                 "plugin_setup": config,
                             }
+                        elif not is_bool:
+                            self.SIGNALS[f"{value_name}_errors"] = {
+                                "direction": "input",
+                                "validation_counter": True,
+                                "format": "03d",
+                                "helper": True,
+                                "plugin_setup": config,
+                            }
+                    if config["direction"] == "output" and is_bool:
+                        self.SIGNALS[f"{signal_name}_errors"] = {
+                            "direction": "input",
+                            "validation_counter": True,
+                            "format": "03d",
+                            "helper": True,
+                            "plugin_setup": config,
+                        }
+
                 else:
                     if config.get("cmdmapping"):
                         cmdmapping = config["cmdmapping"]
@@ -171,13 +191,13 @@ class Plugin(PluginBase):
                             "helper": True,
                             "plugin_setup": config,
                         }
-                        self.SIGNALS[f"{signal_name}_errors"] = {
-                            "direction": "input",
-                            "validation_counter": True,
-                            "format": "03d",
-                            "helper": True,
-                            "plugin_setup": config,
-                        }
+                    self.SIGNALS[f"{signal_name}_errors"] = {
+                        "direction": "input",
+                        "validation_counter": True,
+                        "format": "03d",
+                        "helper": True,
+                        "plugin_setup": config,
+                    }
 
         self.INTERFACE = {
             "rxdata": {
@@ -379,9 +399,13 @@ class Plugin(PluginBase):
         return (data[0] << 8) + data[1]
 
     def globals_c(self):
+        tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
         output = []
         output.append(f"uint8_t {self.instances_name}_signal_active = 0;")
         output.append(f"uint8_t {self.instances_name}_signal_next = 0;")
+        output.append(f"uint8_t {self.instances_name}_frame_last_tx[{tx_buffersize // 8}];")
+        output.append(f"uint8_t {self.instances_name}_frame_last_tx_len = 0;")
+
         for signal_config in self.plugin_setup.get("config", {}).values():
             ctype = signal_config["type"]
             if ctype == 101:
@@ -432,6 +456,30 @@ class Plugin(PluginBase):
                     output.append(f"                case {sn}: {{")
                     output += signal_config["instance"].frameio_rx_c()
                     output.append("                }")
+
+                elif direction == "output":
+                    output.append(f"                case {sn}: {{")
+                    output.append("                    // check ack frame")
+                    if ctype == 15:
+                        output.append(f"                    if (memcmp({self.instances_name}_frame_last_tx, frame_data, 6) == 0) {{")
+                    else:
+                        output.append(f"                    if (memcmp({self.instances_name}_frame_last_tx, frame_data, {self.instances_name}_frame_last_tx_len) == 0) {{")
+                    output.append(f"                        if (value_{self.signal_name}_errors > 0) {{")
+                    output.append(f"                            value_{self.signal_name}_errors -= 1;")
+                    output.append("                        }")
+                    output.append("                    } else {")
+                    output.append('                        rtapi_print("rx error: addr, type or len\\n");')
+                    output.append(f"                        value_{self.signal_name}_errors += 1;")
+                    output.append(f'                        rtapi_print("                              err frame %i: ", {self.instances_name}_frame_last_tx_len);')
+                    output.append(f"                        for (n = 0; n < {self.instances_name}_frame_last_tx_len; n++) {{")
+                    output.append(f'                            rtapi_print("%i|%i, ", {self.instances_name}_frame_last_tx[n], frame_data[n]);')
+                    output.append("                        }")
+                    output.append('                        rtapi_print("\\n");')
+
+                    output.append("                    }")
+                    output.append("                    break;")
+                    output.append("                }")
+
                 elif direction == "input":
                     output.append(f"                case {sn}: {{")
                     if self.signal_values > 1:
@@ -447,6 +495,9 @@ class Plugin(PluginBase):
                                 output.append(f"                            {value_name} = 0;")
                                 output.append("                        }")
                                 output.append(f"                        {value_name}_valid = 1;")
+                                output.append(f"                        if ({value_name}_errors > 0) {{")
+                                output.append(f"                            {value_name}_errors -= 1;")
+                                output.append("                        }")
                         else:
                             output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
                             output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 2}) {{")
@@ -456,10 +507,13 @@ class Plugin(PluginBase):
                                 if vscale:
                                     output.append(f"                        {value_name} *= {vscale};")
                                 output.append(f"                        {value_name}_valid = 1;")
+                                output.append(f"                        if ({value_name}_errors > 0) {{")
+                                output.append(f"                            {value_name}_errors -= 1;")
+                                output.append("                        }")
                         output.append("                    } else {")
                         for vn in range(self.signal_values):
                             value_name = f"value_{self.signal_name}_{vn}"
-                            output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                            output.append('                        // rtapi_print("rx error: addr, type or len\\n");')
                             output.append(f"                        {value_name}_errors += 1;")
                             output.append(f"                        {value_name}_valid = 0;")
                         output.append("                    }")
@@ -472,8 +526,11 @@ class Plugin(PluginBase):
                         if vscale:
                             output.append(f"                        value_{self.signal_name} *= {vscale};")
                         output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append(f"                        if (value_{self.signal_name}_errors > 0) {{")
+                        output.append(f"                            value_{self.signal_name}_errors -= 1;")
+                        output.append("                        }")
                         output.append("                    } else {")
-                        output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                        output.append('                        // rtapi_print("rx error: addr, type or len\\n");')
                         output.append(f"                        value_{self.signal_name}_errors += 1;")
                         output.append(f"                        value_{self.signal_name}_valid = 0;")
                         output.append("                    }")
@@ -486,7 +543,7 @@ class Plugin(PluginBase):
                             output.append(f"                        value_{self.signal_name} *= {vscale};")
                         output.append(f"                        value_{self.signal_name}_valid = 1;")
                         output.append("                    } else {")
-                        output.append('                        // rtapi_print("rx error: addr or len\\n");')
+                        output.append('                        // rtapi_print("rx error: addr, type or len\\n");')
                         output.append(f"                        value_{self.signal_name}_errors += 1;")
                         output.append(f"                        value_{self.signal_name}_valid = 0;")
                         output.append("                    }")
@@ -543,11 +600,17 @@ class Plugin(PluginBase):
                         output.append(f"                {value_name}_errors += 1;")
                     output.append("            }")
                 else:
-                    output.append("            // get single 16bit value")
                     output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
                     output.append(f"                value_{signal_name}_valid = 0;")
                     output.append(f"                value_{signal_name}_errors += 1;")
                     output.append("            }")
+
+            elif direction == "output":
+                register = self.int2list(signal_config["register"])
+                output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
+                output.append(f"                value_{signal_name}_errors += 1;")
+                output.append("            }")
+
             sn += 1
         output.append("        }")
         output.append("")
@@ -795,5 +858,12 @@ class Plugin(PluginBase):
         output.append("            frame_data[frame_len] = crc & 0xFF;")
         output.append("            frame_data[frame_len + 1] = crc>>8 & 0xFF;")
         output.append("            frame_len += 2;")
+
+        tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+        output.append("")
+        output.append("            // save last send frame to check ack")
+        output.append(f"            memcpy({self.instances_name}_frame_last_tx, frame_data, {tx_buffersize // 8});")
+        output.append(f"            {self.instances_name}_frame_last_tx_len = frame_len;")
+
         output.append("        }")
         return "\n".join(output)
