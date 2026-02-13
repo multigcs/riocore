@@ -396,8 +396,11 @@ class Plugin(PluginBase):
                 output.append("        uint8_t data_len = 0;")
                 break
 
-        if self.plugin_setup.get("config", {}):
+        if self.plugin_setup.get("config"):
             output.append("        uint8_t data_addr = frame_data[0];")
+            output.append("        uint8_t data_type = frame_data[1];")
+
+        # TODO: check register for some types
 
         output.append("        uint16_t crc = 0xFFFF;")
         output.append("        for (n = 0; n < frame_len - 2; n++) {")
@@ -432,7 +435,7 @@ class Plugin(PluginBase):
                         output.append("                    data_len = frame_data[2];")
                         if ctype == 2:
                             output.append(f"                    // get {self.signal_values} 1bit values ({signal_name})")
-                            output.append(f"                    if (data_addr == {address} && data_len == 1) {{")
+                            output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == 1) {{")
                             for vn in range(self.signal_values):
                                 value_name = f"value_{self.signal_name}_{vn}"
                                 output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
@@ -443,7 +446,7 @@ class Plugin(PluginBase):
                                 output.append(f"                        {value_name}_valid = 1;")
                         else:
                             output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
-                            output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
+                            output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 2}) {{")
                             for vn in range(self.signal_values):
                                 value_name = f"value_{self.signal_name}_{vn}"
                                 output.append(f"                        {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
@@ -460,7 +463,7 @@ class Plugin(PluginBase):
                     elif self.datatype == "float":
                         output.append("                    // get single 32bit float value")
                         output.append("                    data_len = frame_data[2];")
-                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 4}) {{")
+                        output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 4}) {{")
                         output.append("                        uint8_t farray[] = {frame_data[6], frame_data[5], frame_data[4], frame_data[3]};")
                         output.append(f"                        memcpy((uint8_t *)&value_{self.signal_name}, (uint8_t *)&farray, 4);")
                         if vscale:
@@ -474,7 +477,7 @@ class Plugin(PluginBase):
                     else:
                         output.append("                    // get single 16bit value")
                         output.append("                    data_len = frame_data[2];")
-                        output.append(f"                    if (data_addr == {address} && data_len == {self.signal_values * 2}) {{")
+                        output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 2}) {{")
                         output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
                         if vscale:
                             output.append(f"                        value_{self.signal_name} *= {vscale};")
