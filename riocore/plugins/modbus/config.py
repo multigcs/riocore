@@ -46,6 +46,48 @@ DEVICE_TEMPLATES = {
             },
         },
     },
+    "N4DAC02": {
+        "image": "N4DAC02.png",
+        "info": "2channel Analog-Out",
+        "comment": "2channel Analog-Out",
+        "url": "https://it-prosto.obit.ru/documentations/Modbus_0-10V_out_N4DAC02/index.htm",
+        "setup": {
+            "aout_01": {
+                "address": 22,
+                "type": 6,
+                "register": 0,
+                "datatype": "int",
+                "values": 1,
+                "scale": 100.0,
+                "unit": "V",
+                "error_values": "",
+                "format": "0.1f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "output",
+                "priority": 0,
+                "min": 0.0,
+                "max": 5.0,
+            },
+            "aout_02": {
+                "address": 22,
+                "type": 6,
+                "register": 1,
+                "datatype": "int",
+                "values": 1,
+                "scale": 100.0,
+                "unit": "V",
+                "error_values": "",
+                "format": "0.1f",
+                "timeout": 100,
+                "delay": 60,
+                "direction": "output",
+                "priority": 0,
+                "min": 0.0,
+                "max": 10.0,
+            },
+        },
+    },
     "N4D3E16": {
         "image": "N4D3E16.png",
         "info": "16channel IO",
@@ -342,6 +384,8 @@ class config:
                 "type": float,
                 "decimals": 6,
                 "default": 1.0,
+                "min": -10000.0,
+                "max": 10000.0,
                 "on_special": False,
                 "tab": "misc",
             },
@@ -670,6 +714,8 @@ class config:
                 data["widget"] = QDoubleSpinBox()
                 data["widget"].setValue(data["default"])
                 data["widget"].setDecimals(data["decimals"])
+                data["widget"].setMinimum(data.get("min", -999999.9))
+                data["widget"].setMaximum(data.get("max", 999999.9))
             else:
                 data["widget"] = QLineEdit(data["default"])
             data["widget"].setToolTip(data["description"])

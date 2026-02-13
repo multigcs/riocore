@@ -80,6 +80,9 @@ class Plugin(PluginBase):
         for signal_name, config in self.plugin_setup.get("config", {}).items():
             n_values = config.get("values", 0)
             ctype = config["type"]
+            vmin = config.get("min", vmin)
+            vmax = config.get("max", vmax)
+            vunit = config.get("unit", "")
             datatype = config.get("datatype", "int")
             if ctype == 101:
                 config["instance"] = hy_vfd.hy_vfd(self.SIGNALS, signal_name, config)
@@ -150,14 +153,14 @@ class Plugin(PluginBase):
                     else:
                         self.SIGNALS[signal_name] = {
                             "direction": config["direction"],
-                            "unit": config.get("unit", ""),
                             "scale": config.get("scale", 1.0),
                             "format": config.get("format", "07d"),
                             "plugin_setup": config,
+                            "unit": vunit,
                             "min": vmin,
                             "max": vmax,
                             "bool": is_bool,
-                            "display": {"section": "modbus", "title": signal_name.title()},
+                            "display": {"section": "modbus", "title": signal_name.title(), "min": vmin, "max": vmax, "unit": vunit},
                         }
 
                     if config["direction"] == "input":
@@ -507,7 +510,15 @@ class Plugin(PluginBase):
             return ""
 
         output = []
-        output.append("    if (frame_timeout == 1) {")
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            direction = signal_config["direction"]
+            ctype = signal_config["type"]
+            vscale = signal_config.get("scale", 1.0)
+            if direction == "output" and ctype == 6 and vscale != 1.0:
+                output.append(f"                value_{signal_name} *= {vscale};")
+        output.append(" ")
+
+        output.append("        if (frame_timeout == 1) {")
         output.append(f'            // rtapi_print("rx error: timeout: %d\\n", {self.instances_name}_signal_active);')
         sn = 0
         for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
@@ -614,6 +625,7 @@ class Plugin(PluginBase):
             timeout = signal_config.get("timeout", self.TIMEOUT) + delay
             address = signal_config["address"]
             ctype = signal_config["type"]
+            vscale = signal_config.get("scale", 1.0)
             self.signal_values = signal_config.get("values", 1)
             self.priority = signal_config.get("priority", 0)
             self.is_float = signal_config.get("is_float", False)
