@@ -60,6 +60,7 @@ class PluginBase:
         self.timestamp = 0
         self.master = None
         self.gmaster = None
+        self.title = ""
         self.plugin_setup = plugin_setup
 
         if "uid" not in self.plugin_setup:

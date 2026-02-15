@@ -1,0 +1,38 @@
+{
+  "comment": "2channel Analog-Out",
+  "url": "https://it-prosto.obit.ru/documentations/Modbus_0-10V_out_N4DAC02/index.htm",
+  "address": 22,
+  "timeout": 200,
+  "delay": 560,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [172, 90], "type": ["MODBUS"]}
+  },
+  "commands": {
+    "aout1": {
+        "type": 6,
+        "register": 0,
+        "datatype": "int",
+        "values": 1,
+        "scale": 100.0,
+        "unit": "V",
+        "error_values": "",
+        "format": "0.1f",
+        "priority": 0,
+        "min": 0.0,
+        "max": 5.0
+    },
+    "aout2": {
+        "type": 6,
+        "register": 1,
+        "datatype": "int",
+        "values": 1,
+        "scale": 100.0,
+        "unit": "V",
+        "error_values": "",
+        "format": "0.1f",
+        "priority": 0,
+        "min": 0.0,
+        "max": 10.0
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "comment": "8channel Digital-Out + 8channel Digital-In",
+  "url": "",
+  "address": 11,
+  "timeout": 120,
+  "delay": 60,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [630, 550], "type": ["MODBUS"]}
+  },
+  "commands": {
+    "out8": {
+        "type": 15,
+        "register": 0,
+        "datatype": "bool",
+        "values": 8,
+        "scale": 1.0,
+        "unit": "",
+        "error_values": "",
+        "format": "0.1f",
+        "priority": 0
+    },
+    "in8": {
+        "type": 2,
+        "register": 0,
+        "datatype": "bool",
+        "values": 8,
+        "scale": 1.0,
+        "unit": "",
+        "error_values": "",
+        "format": "0.1f",
+        "priority": 0
+    }
+  }
+}

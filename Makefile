@@ -42,8 +42,8 @@ exifclean:
 	rm -rf riocore/modules/*/*.png_original
 	exiftool -all= riocore/plugins/i2cbus/devices/*/*.png
 	rm -rf riocore/plugins/i2cbus/devices/*/*.png_original
-	exiftool -all= riocore/plugins/modbus/images/*.png
-	rm -rf riocore/plugins/modbus/images/*.png_original
+	exiftool -all= riocore/plugins/modbusdevice/boards/*.png
+	rm -rf riocore/plugins/modbusdevice/boards/*.png_original
 	exiftool -all= riocore/files/images/*.png
 	rm -rf riocore/files/images/*.png_original
 	exiftool -all= riocore/files/*.png

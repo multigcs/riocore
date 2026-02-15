@@ -29,7 +29,6 @@ class cbase:
                     continue
                 if data_config["direction"] == "output":
                     convert_parameter = []
-
                     if plugin_instance.TYPE == "frameio":
                         output.append(f"void convert_frame_{plugin_instance.instances_name}_output(data_t *data) {{")
                         output.append(f"    static float timeout = {plugin_instance.TIMEOUT};")
@@ -308,120 +307,121 @@ class cbase:
                                     output.append("}")
                                     output.append("")
 
-                        output.append(f"void convert_{varname.lower()}(data_t *data) {{")
-                        for data_name, data_config in plugin_instance.interface_data().items():
-                            variable_name = data_config["variable"]
-                            variable_size = data_config["size"]
-                            var_prefix = signal_config["var_prefix"]
-                            varname = signal_config["varname"]
+                        if signal_config.get("no_convert") is not True:
+                            output.append(f"void convert_{varname.lower()}(data_t *data) {{")
+                            for data_name, data_config in plugin_instance.interface_data().items():
+                                variable_name = data_config["variable"]
+                                variable_size = data_config["size"]
+                                var_prefix = signal_config["var_prefix"]
+                                varname = signal_config["varname"]
 
-                            check1 = "_".join(variable_name.split("_")[1:]).replace(plugin_instance.instances_name.upper(), var_prefix)
-                            check2 = "_".join(varname.split("_")[1:])
+                                check1 = "_".join(variable_name.split("_")[1:]).replace(plugin_instance.instances_name.upper(), var_prefix)
+                                check2 = "_".join(varname.split("_")[1:])
 
-                            if check1 == check2:
-                                source = variable_name.split()[-1].strip("*")
+                                if check1 == check2:
+                                    source = variable_name.split()[-1].strip("*")
 
-                                if not boolean:
-                                    output.append(f"    float value = data->{source};")
-                                else:
-                                    output.append(f"    bool value = data->{source};")
+                                    if not boolean:
+                                        output.append(f"    float value = data->{source};")
+                                    else:
+                                        output.append(f"    bool value = data->{source};")
 
-                                if signal_config.get("is_index_out"):
-                                    output.append(f"    if (*data->{var_prefix}_INDEX_WAIT == 1) {{")
-                                    output.append(f"        *data->{var_prefix}_INDEX_WAIT = 0;")
-                                    output.append("        value = 1;")
-                                    output.append("    }")
-                                    output.append(f"    if (*data->{varname} != value) {{")
-                                    output.append(f"        *data->{varname} = value;")
-                                    output.append("        if (value == 0) {")
-                                    output.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
-                                    output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
-                                    output.append("        }")
-                                    output.append("    }")
-
-                                convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
-
-                                if not boolean and direction == "input" and hal_type == "float":
-                                    output.append(f"    float offset = *data->{varname}_OFFSET;")
-                                    output.append(f"    float scale = *data->{varname}_SCALE;")
-                                    if "last_value" in convert_c:
-                                        output.append(f"    float last_value = *data->{varname};")
-                                    if "last_raw_value" in convert_c or "last_raw_value" in str(signal_targets.values()):
-                                        output.append("    static float last_raw_value = 0.0;")
-                                    if "raw_value" in convert_c or "raw_value" in str(signal_targets.values()):
-                                        output.append("    float raw_value = value;")
-
-                                if convert_c:
-                                    output.append("    // -- calc --")
-                                    output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
-                                    output.append("    // ----------")
-
-                                if not boolean and direction == "input" and hal_type == "float":
-                                    output.append("    value = value + offset;")
-                                    output.append("    value = value / scale;")
-                                    compensations = plugin_instance.plugin_setup.get("joint", {}).get("compensation", {})
-                                    if compensations:
-                                        for name, cscale in compensations.items():
-                                            csource = position_mapping.get(name)
-                                            output.append(f"    value += *data->{csource} / {cscale};")
-
-                                    if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
-                                        output.append("    if (*data->sys_simulation == 1) {")
-                                        output.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
-                                        axis = ""
-                                        home_sw = ""
-                                        home_offset = 0.0
-                                        home_search_vel = 0.0
-                                        for axis_name, axis_config in self.project.axis_dict.items():
-                                            for joint in axis_config["joints"]:
-                                                if joint["instance"] == plugin_instance:
-                                                    jn = joint["num"]
-                                                    axis = joint["axis"]
-                                                    home_offset = joint["HOME_OFFSET"]
-                                                    home_search_vel = joint["HOME_SEARCH_VEL"]
-                                                    home_sw = homes.get(str(jn))
-                                        if home_sw:
-                                            output.append(f"        // simulating {axis} homing")
-                                            # output.append(f"        float diff = value - *data->{varname};")
-                                            output.append(f"        float home_offset = {home_offset};")
-                                            if home_search_vel > 0:
-                                                # output.append("        if (diff > 0) {")
-                                                # output.append("            home_offset += 0.5;")
-                                                # output.append("        }")
-                                                output.append("        if (value > home_offset) {")
-                                            else:
-                                                # output.append("        if (diff > 0) {")
-                                                # output.append("            home_offset -= 0.5;")
-                                                # output.append("        }")
-                                                output.append("        if (value < home_offset) {")
-                                            output.append(f"            data->{home_sw} = 1;")
-                                            output.append("        } else {")
-                                            output.append(f"            data->{home_sw} = 0;")
-                                            output.append("        }")
+                                    if signal_config.get("is_index_out"):
+                                        output.append(f"    if (*data->{var_prefix}_INDEX_WAIT == 1) {{")
+                                        output.append(f"        *data->{var_prefix}_INDEX_WAIT = 0;")
+                                        output.append("        value = 1;")
+                                        output.append("    }")
+                                        output.append(f"    if (*data->{varname} != value) {{")
+                                        output.append(f"        *data->{varname} = value;")
+                                        output.append("        if (value == 0) {")
+                                        output.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
+                                        output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
+                                        output.append("        }")
                                         output.append("    }")
 
-                                    output.append(f"    *data->{varname}_ABS = fabs(value);")
-                                    output.append(f"    *data->{varname}_S32 = value;")
-                                    output.append(f"    *data->{varname}_U32_ABS = fabs(value);")
-                                output.append(f"    *data->{varname} = value;")
-                                if boolean:
-                                    if direction == "input":
-                                        output.append(f"    *data->{varname}_not = 1 - value;")
+                                    convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
 
-                                for target, calc in signal_targets.items():
-                                    tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
-                                    output.append("")
-                                    output.append(f"    // calc {target}")
-                                    output.append(f"    float value_{target} = *data->{tvarname};")
-                                    output.append(f"    {calc.strip()}")
-                                    output.append(f"    *data->{tvarname} = value_{target};")
+                                    if not boolean and direction == "input" and hal_type == "float":
+                                        output.append(f"    float offset = *data->{varname}_OFFSET;")
+                                        output.append(f"    float scale = *data->{varname}_SCALE;")
+                                        if "last_value" in convert_c:
+                                            output.append(f"    float last_value = *data->{varname};")
+                                        if "last_raw_value" in convert_c or "last_raw_value" in str(signal_targets.values()):
+                                            output.append("    static float last_raw_value = 0.0;")
+                                        if "raw_value" in convert_c or "raw_value" in str(signal_targets.values()):
+                                            output.append("    float raw_value = value;")
 
-                                if not boolean and direction == "input" and hal_type == "float":
-                                    if convert_c and "last_raw_value" in convert_c:
+                                    if convert_c:
+                                        output.append("    // -- calc --")
+                                        output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                                        output.append("    // ----------")
+
+                                    if not boolean and direction == "input" and hal_type == "float":
+                                        output.append("    value = value + offset;")
+                                        output.append("    value = value / scale;")
+                                        compensations = plugin_instance.plugin_setup.get("joint", {}).get("compensation", {})
+                                        if compensations:
+                                            for name, cscale in compensations.items():
+                                                csource = position_mapping.get(name)
+                                                output.append(f"    value += *data->{csource} / {cscale};")
+
+                                        if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
+                                            output.append("    if (*data->sys_simulation == 1) {")
+                                            output.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
+                                            axis = ""
+                                            home_sw = ""
+                                            home_offset = 0.0
+                                            home_search_vel = 0.0
+                                            for axis_name, axis_config in self.project.axis_dict.items():
+                                                for joint in axis_config["joints"]:
+                                                    if joint["instance"] == plugin_instance:
+                                                        jn = joint["num"]
+                                                        axis = joint["axis"]
+                                                        home_offset = joint["HOME_OFFSET"]
+                                                        home_search_vel = joint["HOME_SEARCH_VEL"]
+                                                        home_sw = homes.get(str(jn))
+                                            if home_sw:
+                                                output.append(f"        // simulating {axis} homing")
+                                                # output.append(f"        float diff = value - *data->{varname};")
+                                                output.append(f"        float home_offset = {home_offset};")
+                                                if home_search_vel > 0:
+                                                    # output.append("        if (diff > 0) {")
+                                                    # output.append("            home_offset += 0.5;")
+                                                    # output.append("        }")
+                                                    output.append("        if (value > home_offset) {")
+                                                else:
+                                                    # output.append("        if (diff > 0) {")
+                                                    # output.append("            home_offset -= 0.5;")
+                                                    # output.append("        }")
+                                                    output.append("        if (value < home_offset) {")
+                                                output.append(f"            data->{home_sw} = 1;")
+                                                output.append("        } else {")
+                                                output.append(f"            data->{home_sw} = 0;")
+                                                output.append("        }")
+                                            output.append("    }")
+
+                                        output.append(f"    *data->{varname}_ABS = fabs(value);")
+                                        output.append(f"    *data->{varname}_S32 = value;")
+                                        output.append(f"    *data->{varname}_U32_ABS = fabs(value);")
+                                    output.append(f"    *data->{varname} = value;")
+                                    if boolean:
+                                        if direction == "input":
+                                            output.append(f"    *data->{varname}_not = 1 - value;")
+
+                                    for target, calc in signal_targets.items():
+                                        tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
                                         output.append("")
-                                        output.append("    last_raw_value = raw_value;")
-                        output.append("}")
-                        output.append("")
+                                        output.append(f"    // calc {target}")
+                                        output.append(f"    float value_{target} = *data->{tvarname};")
+                                        output.append(f"    {calc.strip()}")
+                                        output.append(f"    *data->{tvarname} = value_{target};")
+
+                                    if not boolean and direction == "input" and hal_type == "float":
+                                        if convert_c and "last_raw_value" in convert_c:
+                                            output.append("")
+                                            output.append("    last_raw_value = raw_value;")
+                            output.append("}")
+                            output.append("")
         output.append("")
         output.append("")
         return output
@@ -455,6 +455,8 @@ class cbase:
                 output.append(f"    convert_frame_{plugin_instance.instances_name}_input(data);")
             else:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("no_convert") is True:
+                        continue
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
@@ -1160,11 +1162,20 @@ class cbase:
                         output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(data->{variable_name} + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
                         output.append("                    if (len_rx > 0) {")
                         output.append("                        for (int cn = 0; cn < len_rx; cn++) {")
-                        output.append(f"                            data->{modbus_rx[modbus_n]}[len_rx - cn + 2] = frame0_rx[cn];")
+                        output.append(f"                            data->{modbus_rx[modbus_n]}[len_rx - cn + 2] = frame{modbus_n}_rx[cn];")
                         output.append("                        }")
                         output.append(f"                        data->{modbus_rx[modbus_n]}[0] = frame{modbus_n}_id;")
                         output.append(f"                        data->{modbus_rx[modbus_n]}[1] = frame{modbus_n}_id;")
                         output.append(f"                        data->{modbus_rx[modbus_n]}[2] = len_rx;")
+
+                        output.append(f"                        if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
+                        output.append('                            printf("                                                        < rxdata ");')
+                        output.append("                            for (int i = 0; i < len_rx; i++) {")
+                        output.append(f'                                printf("%i ", frame{modbus_n}_rx[i ]);')
+                        output.append("                            }")
+                        output.append('                            printf("\\n");')
+                        output.append("                        }")
+
                         output.append("                    }")
                         output.append("                }")
                         output.append(f"                frame{modbus_n}_id_last = frame{modbus_n}_id;")

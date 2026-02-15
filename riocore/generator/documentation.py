@@ -145,7 +145,7 @@ class documentation:
             link = f"[{instances_type}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
             image = "-"
             image_path = plugin_instance.image_path()
-            if os.path.exists(image_path):
+            if image_path and os.path.exists(image_path):
                 target = os.path.join(self.doc_path, f"{instances_type}.png")
                 shutil.copy(image_path, target)
             if plugin_instance.BUILDER:

@@ -1,0 +1,34 @@
+{
+  "comment": "4x Digital In / 2x Digital Out (Relais)",
+  "url": "",
+  "address": 27,
+  "timeout": 120,
+  "delay": 60,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [145, 340], "type": ["MODBUS"]}
+  },
+  "commands": {
+    "out2": {
+        "type": 15,
+        "register": 0,
+        "datatype": "bool",
+        "values": 2,
+        "scale": 1.0,
+        "unit": "",
+        "error_values": "",
+        "format": "0.1f",
+        "priority": 0
+    },
+    "in4": {
+        "type": 2,
+        "register": 0,
+        "datatype": "bool",
+        "values": 4,
+        "scale": 1.0,
+        "unit": "",
+        "error_values": "",
+        "format": "0.1f",
+        "priority": 0
+    }
+  }
+}
