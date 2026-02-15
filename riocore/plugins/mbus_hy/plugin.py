@@ -125,7 +125,7 @@ class Plugin(PluginBase):
         self.command_ids = 1
         self.IMAGE = "image.png"
         self.IMAGE_SHOW = True
-        self.PINDEFAULTS = {"MODBUS": {"direction": "output", "edge": "target", "pos": [145, 340], "type": ["MODBUS"]}}
+        self.PINDEFAULTS = {"MODBUS": {"direction": "output", "edge": "target", "pos": [145, 340], "type": ["MODBUS"], "bus": True}}
         self.commands = {
             "vfd": {
                 "values": 0,
@@ -428,3 +428,6 @@ class Plugin(PluginBase):
         output += self.func_tx()
         output += self.func_rx()
         return "\n".join(output)
+
+    def gateware_instances(self):
+        return None

@@ -1,5 +1,5 @@
 
-module modbus
+module mbus
     #(parameter RX_BUFFERSIZE=64, parameter TX_BUFFERSIZE=64, parameter ClkFrequency=12000000, parameter Baud=9600)
     (
         input clk,

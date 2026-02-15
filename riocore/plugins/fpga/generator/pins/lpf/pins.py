@@ -22,6 +22,8 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
+                if pin_config.get("bus"):
+                    continue
                 if pin_config["varname"] == "USRMCLK":
                     data.append(f"# this pin ({pin_config['pin']}) is not available in the lpf file, have to use the USRMCLK primitive in the verilog")
                     continue

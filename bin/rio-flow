@@ -371,7 +371,7 @@ class MyNode(QGraphicsItem):
         pin_data = self.ports.get(port)
         if pin_data:
             info = {}
-            for key in ("pin", "direction", "type", "comment", "comment2"):
+            for key in ("pin", "direction", "type", "comment", "comment2", "bus"):
                 if key in pin_data:
                     info[key] = pin_data[key]
             return info
@@ -1010,7 +1010,9 @@ class NodeViewer(QGraphicsView):
                             riocore.log("ERROR: output -> input")
                         else:
                             # remove old edges
-                            self.scene.disconnect_port(source_node, source_port)
+                            port_info = source_node.port_info(source_port)
+                            if not port_info or not port_info.get("bus"):
+                                self.scene.disconnect_port(source_node, source_port)
                             self.scene.disconnect_port(target_node, target_port)
                             # add new edge / connect
                             color_idx = target_node.port_index(target_port)

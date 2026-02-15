@@ -4,7 +4,7 @@
   "timeout": 160,
   "delay": 100,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [20, 250], "type": ["MODBUS"]}
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [20, 250], "type": ["MODBUS"], "bus": true}
   },
   "commands": {
     "do1_16": {

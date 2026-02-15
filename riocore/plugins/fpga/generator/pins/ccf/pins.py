@@ -10,8 +10,9 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
+                if pin_config.get("bus"):
+                    continue
                 options = []
-
                 if pin_config["direction"] == "input":
                     if pin_config.get("pullup", False) or pin_config.get("pull") == "up":
                         options.append("PULLUP=true")

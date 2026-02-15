@@ -12,6 +12,8 @@ class Pins:
             for pin, pin_config in pins.items():
                 if not pin_config["pin"]:
                     continue
+                if pin_config.get("bus"):
+                    continue
                 iostandard = pin_config.get("iostandard", "LVTTL").upper()
                 drive = str(pin_config.get("drive", "4"))
                 slew = pin_config.get("slew", "SLOW").upper()

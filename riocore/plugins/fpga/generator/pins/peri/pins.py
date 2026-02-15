@@ -43,6 +43,8 @@ class Pins:
         interface.append("#print(device.get_gpio_resource_name())")
         for pname, pins in self.config["pinlists"].items():
             for pin, pin_config in pins.items():
+                if pin_config.get("bus"):
+                    continue
                 if pin_config["varname"] == "sysclk_in":
                     interface.append('design.create_pll_input_clock_gpio("PLLIN")')
                     interface.append('design.set_property("PLLIN", "PULL_OPTION", "WEAK_PULLUP")')

@@ -70,6 +70,8 @@ class gateware(generator_base):
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
+                    if pin_config.get("bus"):
+                        continue
                     if pinname not in self.parent.virtual_pins:
                         self.parent.virtual_pins.append(pinname)
 
@@ -187,6 +189,8 @@ class gateware(generator_base):
                 if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins and pin_config["pin"] not in self.parent.virtual_pins and pin_config["varname"] not in self.parent.linked_pins:
                     pin_config["pin"] = self.parent.pinmapping.get(pin_config["pin"], pin_config["pin"])
                     self.jdata["pinlists"][plugin_instance.instances_name][pin_name] = pin_config
+                    if pin_config.get("bus"):
+                        continue
                     if pin_config["pin"] not in pinnames:
                         pinnames[pin_config["pin"]] = plugin_instance.instances_name
                     else:
@@ -271,6 +275,8 @@ class gateware(generator_base):
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
                     pinname = pin_config["pin"].replace(":", "_")
+                    if pin_config.get("bus"):
+                        continue
                     if pin_config["direction"] == "output":
                         output.append(f"    wire {pin_config['varname']};")
                         output.append(f"    assign {pinname} = {pin_config['varname']}; // {pin_config['direction']}")
@@ -401,8 +407,13 @@ class gateware(generator_base):
                 continue
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins and pin_config["pin"] not in self.parent.virtual_pins:
+                    if pin_config.get("bus"):
+                        continue
                     if pin_config["pin"] in existing_pins:
-                        double_pins[pin_config["pin"]] = pin_config["varname"]
+                        if pin_config["pin"] not in double_pins:
+                            double_pins[pin_config["pin"]] = []
+                        double_pins[pin_config["pin"]].append(pin_config["varname"])
+
                     else:
                         arguments_list.append(f"{pin_config['direction'].lower()} {pin_config['varname']}")
                         existing_pins[pin_config["pin"]] = pin_config["varname"]
@@ -422,6 +433,8 @@ class gateware(generator_base):
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
                     pull = f"PULL{pin_config.get('pull').upper()}" if pin_config.get("pull") else ""
+                    if pin_config.get("bus"):
+                        continue
                     if pin_config["direction"] == "input":
                         output.append(f"    {pin_config['varname']} <- {pin_config['pin']} {pull}")
                     elif pin_config["direction"] == "output":
@@ -541,17 +554,18 @@ class gateware(generator_base):
 
         if double_pins:
             output.append("    // linking double used input pins")
-            for pin, varname in double_pins.items():
-                if varname.startswith("PININ_"):
-                    output.append(f"    wire {varname};")
-                    output.append(f"    assign {varname} = {existing_pins[pin]};")
-                    if not existing_pins[pin].startswith("PININ_"):
-                        riocore.log(f"ERROR: can not share input pin with output pin: {existing_pins[pin]} -> {pin} -> {varname}")
+            for pin, varnames in double_pins.items():
+                for varname in varnames:
+                    if varname.startswith("PININ_"):
+                        output.append(f"    wire {varname};")
+                        output.append(f"    assign {varname} = {existing_pins[pin]};")
+                        if not existing_pins[pin].startswith("PININ_"):
+                            riocore.log(f"ERROR: can not share input pin with output pin: {existing_pins[pin]} -> {pin} -> {varname}")
+                        else:
+                            riocore.log(f"WARNING: input pin ({pin}) assigned to multiple plugins: {varname} / {existing_pins[pin]}")
+                        self.parent.linked_pins.append(varname)
                     else:
-                        riocore.log(f"WARNING: input pin ({pin}) assigned to multiple plugins: {varname} / {existing_pins[pin]}")
-                    self.parent.linked_pins.append(varname)
-                else:
-                    riocore.log(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
+                        riocore.log(f"ERROR: can not assign output pin to multiple plugins: {varname} / {existing_pins[pin]} -> {pin}")
 
         # virtual pins
         for pin in self.parent.virtual_pins:
@@ -564,6 +578,8 @@ class gateware(generator_base):
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
                     pinname = pin_config["pin"].replace(":", "_")
+                    if pin_config.get("bus"):
+                        continue
                     if pin_config["direction"] == "output":
                         output.append(f"    wire {pin_config['varname']};")
                         output.append(f"    assign {pinname} = {pin_config['varname']}; // {pin_config['direction']}")
@@ -645,6 +661,8 @@ class gateware(generator_base):
                 if plugin_instance.PLUGIN_TYPE != "gateware":
                     continue
                 for pin_config in plugin_instance.pins().values():
+                    if pin_config.get("bus"):
+                        continue
                     if "pin" in pin_config:
                         if pin_config["pin"] in self.parent.expansion_pins:
                             if pin_config["direction"] == "output":
@@ -864,6 +882,8 @@ int main(int argc, char** argv) {
                 if plugin_instance.master != self.instance.instances_name:
                     continue
                 for pin_config in plugin_instance.pins().values():
+                    if pin_config.get("bus"):
+                        continue
                     if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
                         main_cpp.append(f"    rio->{pin_config['varname']} = 0;")
             main_cpp.append("    rio->sysclk_in = 0;")
@@ -875,6 +895,8 @@ int main(int argc, char** argv) {
                 if plugin_instance.NAME == "spi":
                     continue
                 for pin_config in plugin_instance.pins().values():
+                    if pin_config.get("bus"):
+                        continue
                     if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
                         main_cpp.append(f"    int {pin_config['varname']}_last = 0;")
 
@@ -892,6 +914,8 @@ int main(int argc, char** argv) {
                 if plugin_instance.NAME == "spi":
                     continue
                 for pin_config in plugin_instance.pins().values():
+                    if pin_config.get("bus"):
+                        continue
                     if "pin" in pin_config and pin_config["pin"] not in self.parent.expansion_pins:
                         main_cpp.append(f"""        if (rio->{pin_config["varname"]} != {pin_config["varname"]}_last) {{
             fprintf(stdout, "{pin_config["varname"]}=%i\\n", rio->{pin_config["varname"]});

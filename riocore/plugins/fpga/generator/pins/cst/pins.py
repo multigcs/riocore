@@ -10,6 +10,8 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"// ### {pname} ###")
             for pin, pin_config in pins.items():
+                if pin_config.get("bus"):
+                    continue
                 data.append(f'IO_LOC "{pin_config["varname"]}" {pin_config["pin"]};')
                 drive = pin_config.get("drive", "4")
                 iostandard = pin_config.get("iostandard", "").upper()

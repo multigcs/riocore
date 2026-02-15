@@ -17,7 +17,8 @@ class Plugin(PluginBase):
         self.KEYWORDS = "modbus rtu"
         self.TYPE = "base"
         self.PLUGIN_TYPE = "modbus"
-        self.URL = ""
+        self.URL = "https://www.modbustools.com/modbus.html#function16"
+        self.VERILOGS = ["mbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.IMAGE = ""
         self.IMAGE_SHOW = False
         self.SIGNALS = {}
@@ -88,16 +89,7 @@ class Plugin(PluginBase):
             "rx": {"direction": "input", "edge": "target", "type": ["FPGA"]},
             "tx": {"direction": "output", "edge": "target", "type": ["FPGA"]},
             "tx_enable": {"direction": "output", "edge": "target", "type": ["FPGA"]},
-            "BUS:D0": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D1": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D2": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D3": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D4": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D5": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D6": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D7": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D8": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
-            "BUS:D9": {"direction": "output", "edge": "source", "type": ["MODBUS"]},
+            "BUS:IO": {"direction": "output", "edge": "source", "bus": True, "type": ["MODBUS"]},
         }
         self.TIMEOUT = 200.0
         self.DELAY = 90.0

@@ -16,6 +16,8 @@ class Pins:
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
             for pin, pin_config in pins.items():
+                if pin_config.get("bus"):
+                    continue
                 data.append(f"set_location_assignment {pin_config['pin']} -to {pin_config['varname']}")
                 if pin_config.get("pull") == "up":
                     data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin_config['varname']}")

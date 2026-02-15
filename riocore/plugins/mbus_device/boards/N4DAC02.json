@@ -5,7 +5,7 @@
   "timeout": 200,
   "delay": 160,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [172, 90], "type": ["MODBUS"]}
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [172, 90], "type": ["MODBUS"], "bus": true}
   },
   "commands": {
     "aout1": {
