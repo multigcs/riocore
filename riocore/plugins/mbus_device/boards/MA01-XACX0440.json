@@ -1,7 +1,7 @@
 {
   "comment": "4xDigital-Out + 4xAnalog-In",
   "address": 32,
-  "timeout": 120,
+  "timeout": 200,
   "delay": 60,
   "pins": {
     "MODBUS": {"direction": "output", "edge": "target", "pos": [240, 15], "type": ["MODBUS"]}
@@ -15,8 +15,7 @@
         "unit": "",
         "error_values": "",
         "format": "d",
-        "datatype": "bool",
-        "priority": 5
+        "datatype": "bool"
     },
     "ai": {
         "type": 4,
@@ -25,7 +24,7 @@
         "scale": 0.0061,
         "unit": "mA",
         "format": "04.1f",
-        "datatype": "bool",
+        "datatype": "int"
     }
   }
 }

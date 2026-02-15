@@ -3,7 +3,7 @@
   "url": "https://it-prosto.obit.ru/documentations/Modbus_0-10V_out_N4DAC02/index.htm",
   "address": 22,
   "timeout": 200,
-  "delay": 560,
+  "delay": 160,
   "pins": {
     "MODBUS": {"direction": "output", "edge": "target", "pos": [172, 90], "type": ["MODBUS"]}
   },
@@ -17,7 +17,6 @@
         "unit": "V",
         "error_values": "",
         "format": "0.1f",
-        "priority": 0,
         "min": 0.0,
         "max": 5.0
     },
@@ -30,7 +29,6 @@
         "unit": "V",
         "error_values": "",
         "format": "0.1f",
-        "priority": 0,
         "min": 0.0,
         "max": 10.0
     }

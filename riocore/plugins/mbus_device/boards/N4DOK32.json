@@ -1,7 +1,7 @@
 {
   "comment": "32xDigital-Out",
   "address": 2,
-  "timeout": 120,
+  "timeout": 160,
   "delay": 100,
   "pins": {
     "MODBUS": {"direction": "output", "edge": "target", "pos": [20, 250], "type": ["MODBUS"]}
@@ -15,8 +15,7 @@
         "unit": "",
         "error_values": "",
         "format": "d",
-        "datatype": "bool",
-        "priority": 5
+        "datatype": "bool"
     },
     "do17_32": {
         "type": 6,
@@ -26,8 +25,7 @@
         "unit": "",
         "error_values": "",
         "format": "d",
-        "datatype": "bool",
-        "priority": 5
+        "datatype": "bool"
     }
   }
 }

@@ -22,8 +22,8 @@ class Plugin(PluginBase):
     }
 
     def setup(self):
-        self.NAME = "modbusdevice"
-        self.COMPONENT = "modbusdevice"
+        self.NAME = "mbus_device"
+        self.COMPONENT = "mbus_device"
         self.INFO = "modbus device"
         self.DESCRIPTION = "modbus device"
         self.KEYWORDS = "modbus"
@@ -43,7 +43,7 @@ class Plugin(PluginBase):
 
         self.OPTIONS.update(
             {
-                "board": {
+                "node_type": {
                     "default": "generic",
                     "type": "select",
                     "options": ["generic", *board_list],
@@ -58,7 +58,7 @@ class Plugin(PluginBase):
                     "description": "device address",
                 },
                 "priority": {
-                    "default": 0,
+                    "default": 1,
                     "type": int,
                     "min": 1,
                     "max": 9,
@@ -84,7 +84,7 @@ class Plugin(PluginBase):
         )
         self.commands = {}
         self.command_ids = 0
-        board = self.plugin_setup.get("board", self.option_default("board"))
+        board = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if board == "generic":
             self.OPTIONS.update(
                 {
@@ -169,6 +169,7 @@ class Plugin(PluginBase):
             vmin = command.get("min", -99999)
             vmax = command.get("max", 99999)
             self.command_ids += 1
+
             direction = self.CTYPES[int(command["type"])][1]
             for vn in range(command["values"]):
                 if cmdmapping := command.get("cmdmapping"):
@@ -228,12 +229,11 @@ class Plugin(PluginBase):
                     command["var_prefix"] = f"*data->SIGOUT_{instance.title.upper()}_{name.upper()}"
                 command["stat_prefix"] = f"*data->SIGIN_{instance.title.upper()}_{name.upper()}"
 
-    def device_functions(self, bus_master):
+    def device_functions_check(self, bus_master):
         output = []
         cid = 0
         for name, command in self.commands.items():
             ctype = command["type"]
-            datatype = command["datatype"]
 
             # CHECK
             output.append(f"uint8_t {self.title}_{name}_changed() {{")
@@ -241,8 +241,6 @@ class Plugin(PluginBase):
             output.append("    uint8_t changed = 0;")
 
             if cmdmapping := command.get("cmdmapping"):
-                default_value = command.get("error_values") or 0
-                datatype = "int"
                 output.append("    // cmdmapping")
                 for cmd_n, cmdsig in enumerate(cmdmapping.split(",")):
                     cmdname = cmdsig.split(":")[0].strip()
@@ -259,7 +257,6 @@ class Plugin(PluginBase):
                     output.append("    }")
 
             elif ctype in {6, 15}:
-                n_values = self.int2list(command["values"])
                 for vn in range(command["values"]):
                     output.append(f"    static float {name}{vn}_last = 0;")
                 for vn in range(command["values"]):
@@ -270,7 +267,16 @@ class Plugin(PluginBase):
             output.append("    return changed;")
             output.append("}")
             output.append("")
+            cid += 1
+        return output
 
+    def device_functions_tx(self, bus_master):
+        output = []
+        cid = 0
+        address = self.plugin_setup.get("address", self.option_default("address"))
+        for name, command in self.commands.items():
+            ctype = command["type"]
+            datatype = command["datatype"]
             # TX
             output.append(f"uint8_t {self.title}_{name}_tx(uint8_t *frame) {{")
             output.append(f"    // ctype ({command['type']}): {self.CTYPES[command['type']]}")
@@ -296,7 +302,6 @@ class Plugin(PluginBase):
 
             if ctype in {2, 3, 4}:
                 output.append("    // send request frame")
-                address = self.plugin_setup.get("address", self.option_default("address"))
                 register = self.int2list(command["register"])
                 n_values = self.int2list(command["values"])
                 output.append(f"    frame[0] = {address};")
@@ -309,7 +314,6 @@ class Plugin(PluginBase):
 
             elif ctype == 15:
                 output.append("    // send data frame")
-                address = self.plugin_setup.get("address", self.option_default("address"))
                 register = self.int2list(command["register"])
                 n_values = self.int2list(command["values"])
                 output.append("    uint8_t bitvalues = 0;")
@@ -328,7 +332,6 @@ class Plugin(PluginBase):
                 output.append("    return 8;")
             elif ctype == 6:
                 output.append("    // send data frame")
-                address = self.plugin_setup.get("address", self.option_default("address"))
                 register = self.int2list(command["register"])
                 n_values = self.int2list(command["values"])
                 if datatype == "bool":
@@ -338,7 +341,8 @@ class Plugin(PluginBase):
                         output.append(f"        bitvalues |= (1<<{vn});")
                         output.append("    }")
                 elif not command.get("cmdmapping"):
-                    output.append(f"    uint16_t value = {command['var_prefix']}{vn} * {command.get('scale', 1.0)};")
+                    for vn in range(command["values"]):
+                        output.append(f"    uint16_t value = {command['var_prefix']}{vn} * {command.get('scale', 1.0)};")
 
                 output.append(f"    frame[0] = {address};")
                 output.append(f"    frame[1] = {ctype};")
@@ -353,6 +357,16 @@ class Plugin(PluginBase):
                 output.append("    return 6;")
             output.append("}")
             output.append("")
+            cid += 1
+        return output
+
+    def device_functions_rx(self, bus_master):
+        output = []
+        cid = 0
+        address = self.plugin_setup.get("address", self.option_default("address"))
+        for name, command in self.commands.items():
+            ctype = command["type"]
+            datatype = command["datatype"]
 
             # RX
             output.append(f"void {self.title}_{name}_rx(uint8_t *frame_data, uint8_t frame_len) {{")
@@ -363,8 +377,15 @@ class Plugin(PluginBase):
                 output.append("    uint8_t data_type = frame_data[1];")
                 output.append("    uint8_t data_len = frame_data[2];")
                 output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype} && data_len == {command['values'] * 2}) {{")
-                for vn in range(command["values"]):
-                    output.append(f"        {command['var_prefix']}{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")
+                if datatype == "float":
+                    output.append("        float value = 0;")
+                    output.append("        uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};")
+                    output.append("        memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);")
+                    output.append(f"        {command['var_prefix']}0 = value * {command.get('scale', 1.0)};")
+                else:
+                    for vn in range(command["values"]):
+                        output.append(f"        {command['var_prefix']}{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")
+
                 output.append(f"        {command['stat_prefix']}_VALID = 1;")
                 output.append(f"        if ({command['stat_prefix']}_ERRORS > 0) {{")
                 output.append(f"            {command['stat_prefix']}_ERRORS -= 1;")
@@ -409,5 +430,13 @@ class Plugin(PluginBase):
             output.append("}")
             output.append("")
             cid += 1
+        return output
 
+    def device_functions(self, bus_master):
+        output = []
+        output.append(f"// generated by plugin: {self.NAME}")
+        output.append("")
+        output += self.device_functions_check(bus_master)
+        output += self.device_functions_tx(bus_master)
+        output += self.device_functions_rx(bus_master)
         return "\n".join(output)

@@ -941,7 +941,7 @@ class cbase:
             for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
                 variable_name = data_config["variable"]
                 if data_config["direction"] == "input":
-                    if plugin_instance.NAME == "modbus":
+                    if plugin_instance.NAME in {"mbus", "modbus"}:
                         modbus_rx[modbus_n] = variable_name
                         modbus_n += 1
             simulation = self.instance.plugin_setup.get("simulation", self.instance.option_default("simulation"))
@@ -1144,7 +1144,7 @@ class cbase:
             for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
                 variable_name = data_config["variable"]
                 if data_config["direction"] == "output":
-                    if plugin_instance.NAME == "modbus":
+                    if plugin_instance.NAME in {"mbus", "modbus"}:
                         output.append("#ifdef MODBUS_SIM")
                         output.append(f"             if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM) {{")
                         output.append(f"                static uint8_t frame{modbus_n}_id_last = 255;")

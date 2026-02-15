@@ -74,8 +74,8 @@ class Plugin(PluginBase):
     }
 
     def setup(self):
-        self.NAME = "modbushy"
-        self.COMPONENT = "modbushy"
+        self.NAME = "mbus_hy"
+        self.COMPONENT = "mbus_hy"
         self.INFO = "modbus hy vfd"
         self.DESCRIPTION = "modbus hy vfd"
         self.KEYWORDS = "modbus"
@@ -192,6 +192,8 @@ class Plugin(PluginBase):
                 command["stat_prefix"] = f"*data->SIGIN_{instance.title.upper()}_{name.upper()}"
 
     def predefines(self):
+        num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
+        num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output = []
         output.append(f"uint8_t {self.instances_name}_register_setup = 1;")
         output.append(f"uint8_t {self.instances_name}_status_read = 0;")
@@ -199,7 +201,6 @@ class Plugin(PluginBase):
         output.append(f"uint8_t {self.instances_name}_command = 0;")
         output.append(f"uint8_t {self.instances_name}_status_register_active = 0;")
         output.append("")
-        num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
         output.append("typedef struct {;")
         output.append("    float value;")
         output.append("    uint8_t num;")
@@ -207,12 +208,6 @@ class Plugin(PluginBase):
         output.append("    uint8_t try;")
         output.append(f"}} {self.instances_name}_config_register_t;")
         output.append("")
-        output.append(f"{self.instances_name}_config_register_t {self.instances_name}_config_register[{num_config_registers}] = {{")
-        for register, data in self.HYVFD_CONFIG_REGISTER.items():
-            output.append(f"    {{0.0, {register}, 0, 0}},")
-        output.append("};")
-        output.append("")
-        num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output.append("typedef struct {;")
         output.append("    float value;")
         output.append("    uint8_t num;")
@@ -220,6 +215,10 @@ class Plugin(PluginBase):
         output.append("    uint8_t try;")
         output.append(f"}} {self.instances_name}_status_register_t;")
         output.append("")
+        output.append(f"{self.instances_name}_config_register_t {self.instances_name}_config_register[{num_config_registers}] = {{")
+        for register, data in self.HYVFD_CONFIG_REGISTER.items():
+            output.append(f"    {{0.0, {register}, 0, 0}},")
+        output.append("};")
         output.append(f"{self.instances_name}_status_register_t {self.instances_name}_status_register[{num_status_registers}] = {{")
         for register, data in self.HYVFD_STATUS_REGISTER.items():
             output.append(f"    {{0.0, {register}, 0, 0}},")
@@ -232,7 +231,10 @@ class Plugin(PluginBase):
     def func_tx(self):
         address = self.plugin_setup.get("address", self.option_default("address"))
         utitle = self.title.upper()
+        num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
+        num_config_registers = len(self.HYVFD_STATUS_REGISTER)
         output = []
+        output.append(f"uint8_t {self.title}_vfd_tx(uint8_t *frame_data) {{")
         output.append("    uint8_t n = 0;")
         output.append("    uint8_t frame_len = 0;")
         output.append("    static uint8_t init_timer = 0;")
@@ -246,7 +248,6 @@ class Plugin(PluginBase):
         output.append("    }")
         output.append(f"    if ({self.instances_name}_register_setup == 1) {{")
         output.append(f"        {self.instances_name}_register_setup = 0;")
-        num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
         output.append(f"        for (n = 0; n < {num_config_registers}; n++) {{")
         output.append(f"            if ({self.instances_name}_config_register[n].done == 0 && {self.instances_name}_config_register[n].try < 50) {{")
         output.append(f"                {self.instances_name}_config_register[n].try += 1;")
@@ -269,7 +270,6 @@ class Plugin(PluginBase):
         output.append("        }")
         output.append(f"        if ({self.instances_name}_command == 0) {{")
         output.append("            // do status")
-        num_config_registers = len(self.HYVFD_STATUS_REGISTER)
         output.append(f"            if ({self.instances_name}_status_register_active < {num_config_registers - 2}) {{")
         output.append(f"                {self.instances_name}_status_register_active += 1;")
         output.append("            } else {")
@@ -327,16 +327,20 @@ class Plugin(PluginBase):
         output.append("        }")
         output.append("    }")
         output.append("    return frame_len;")
+        output.append("}")
+        output.append("")
         return output
 
     def func_rx(self):
         address = self.plugin_setup.get("address", self.option_default("address"))
         utitle = self.title.upper()
+        num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
+        num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output = []
+        output.append(f"void {self.title}_vfd_rx(uint8_t *frame_data, uint8_t frame_len) {{")
         output.append("    uint8_t n = 0;")
         output.append(f"    if (frame_len > 0 && frame_data[0] == {address}) {{")
         output.append("        if (frame_data[1] == 0x01 && frame_data[2] == 0x03) {")
-        num_config_registers = len(self.HYVFD_CONFIG_REGISTER)
         output.append(f"            for (n = 0; n < {num_config_registers}; n++) {{")
         output.append(f"                if (frame_data[3] == {self.instances_name}_config_register[n].num) {{")
         output.append(f"                    {self.instances_name}_config_register[n].done = 1;")
@@ -346,7 +350,6 @@ class Plugin(PluginBase):
         output.append("            }")
         output.append(f"            *data->SIGIN_{utitle}_HYCOMM_OK = 1;")
         output.append("        } else if (frame_data[1] == 0x04 && frame_data[2] == 0x03) {")
-        num_status_registers = len(self.HYVFD_STATUS_REGISTER)
         output.append(f"            for (n = 0; n < {num_status_registers}; n++) {{")
         output.append(f"                if (frame_data[3] == {self.instances_name}_status_register[n].num) {{")
         output.append(f"                    {self.instances_name}_status_register[n].value = (frame_data[4]<<8) + (frame_data[5] & 0xFF);")
@@ -406,32 +409,22 @@ class Plugin(PluginBase):
         output.append(f"        *data->SIGIN_{utitle}_RATED_MOTOR_REV = (*data->SIGIN_{utitle}_RPM_AT_50HZ / 50.0) * *data->SIGIN_{utitle}_MAX_FREQ;")
         output.append(f"        *data->SIGIN_{self.title.upper()}_VFD_ERRORS = *data->SIGIN_{utitle}_ERROR_COUNT;")
         output.append("    }")
+        output.append("}")
         output.append("")
         return output
 
     def device_functions(self, bus_master):
         output = []
-
+        output.append(f"// generated by plugin: {self.NAME}")
+        output.append("")
         output.append(self.predefines())
-
-        cid = 0
-        for name, command in self.commands.items():
-            output.append(f"uint8_t {self.title}_{name}_changed() {{")
-            output.append(f"    if ({self.instances_name}_register_setup == 1) {{")
-            output.append('        printf("vfd init \\n");')
-            output.append("        return 1;")
-            output.append("    }")
-            output.append("    return 0;")
-            output.append("}")
-            output.append("")
-            output.append(f"uint8_t {self.title}_{name}_tx(uint8_t *frame_data) {{")
-            output += self.func_tx()
-            output.append("}")
-            output.append("")
-            output.append(f"void {self.title}_{name}_rx(uint8_t *frame_data, uint8_t frame_len) {{")
-            output += self.func_rx()
-            output.append("}")
-            output.append("")
-            cid += 1
-
+        output.append(f"uint8_t {self.title}_vfd_changed() {{")
+        output.append(f"    if ({self.instances_name}_register_setup == 1) {{")
+        output.append("        return 1;")
+        output.append("    }")
+        output.append("    return 0;")
+        output.append("}")
+        output.append("")
+        output += self.func_tx()
+        output += self.func_rx()
         return "\n".join(output)

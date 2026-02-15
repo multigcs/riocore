@@ -1,34 +1,32 @@
 {
-  "comment": "8channel Digital-Out + 8channel Digital-In",
+  "comment": "4x Digital In / 2x Digital Out (Relais)",
   "url": "",
-  "address": 11,
-  "timeout": 120,
+  "address": 27,
+  "timeout": 200,
   "delay": 60,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [630, 550], "type": ["MODBUS"]}
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [145, 340], "type": ["MODBUS"]}
   },
   "commands": {
-    "out8": {
+    "out2": {
         "type": 15,
         "register": 0,
         "datatype": "bool",
-        "values": 8,
+        "values": 2,
         "scale": 1.0,
         "unit": "",
         "error_values": "",
-        "format": "0.1f",
-        "priority": 0
+        "format": "0.1f"
     },
-    "in8": {
+    "in4": {
         "type": 2,
         "register": 0,
         "datatype": "bool",
-        "values": 8,
+        "values": 4,
         "scale": 1.0,
         "unit": "",
         "error_values": "",
-        "format": "0.1f",
-        "priority": 0
+        "format": "0.1f"
     }
   }
 }
