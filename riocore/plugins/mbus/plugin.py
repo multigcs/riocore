@@ -154,7 +154,7 @@ class Plugin(PluginBase):
 
         output.append("            }")
         output.append("        } else {")
-        output.append('            rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
+        output.append('            // rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
         output.append("        }")
         output.append('        // rtapi_print("rx frame %i %i: ", frame_id, frame_len);')
         output.append("        // for (n = 0; n < frame_len; n++) {")
