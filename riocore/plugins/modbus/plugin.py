@@ -1,0 +1,868 @@
+import sys
+
+from riocore.checksums import crc16
+from riocore.plugins import PluginBase
+from riocore.plugins.modbus import hy_vfd
+
+
+class Plugin(PluginBase):
+    def setup(self):
+        self.ON_ERROR_CMDS = []
+        self.NAME = "modbus"
+        self.INFO = "generic modbus plugin - deprecated, please use the mbus plugin"
+        self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
+        self.KEYWORDS = "modbus vfd spindle expansion analog digital"
+        self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
+        self.VERILOGS = ["modbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
+        self.NEEDS = ["fpga"]
+        self.PROVIDES = ["modbus"]
+        self.PINDEFAULTS = {
+            "tx": {
+                "direction": "output",
+            },
+            "rx": {
+                "direction": "input",
+            },
+            "tx_enable": {
+                "direction": "output",
+                "optional": True,
+            },
+        }
+        self.OPTIONS = {
+            "baud": {
+                "default": 9600,
+                "type": int,
+                "min": 300,
+                "max": 10000000,
+                "unit": "bit/s",
+                "description": "serial baud rate",
+            },
+            "rx_buffersize": {
+                "default": 128,
+                "type": int,
+                "min": 32,
+                "max": 255,
+                "unit": "bits",
+                "description": "max rx buffer size",
+            },
+            "tx_buffersize": {
+                "default": 128,
+                "type": int,
+                "min": 32,
+                "max": 255,
+                "unit": "bits",
+                "description": "max tx buffer size",
+            },
+        }
+        self.SIGNALS = {}
+        self.TYPE = "frameio"
+        self.DYNAMIC_SIGNALS = True
+        self.PLUGIN_CONFIGS = {"Devices": "config.py"}
+        self.TIMEOUT = 200.0
+        self.DELAY = 90.0
+        rx_buffersize = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
+        tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+        if rx_buffersize < 40:
+            print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {40}")
+            sys.exit(1)
+        if tx_buffersize < 40:
+            print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {40}")
+            sys.exit(1)
+
+        if (rx_buffersize % 8) != 0:
+            print(f"ERROR: {self.NAME}: rx_buffersize must be a multiple of 8: {rx_buffersize}")
+            sys.exit(1)
+
+        if (tx_buffersize % 8) != 0:
+            print(f"ERROR: {self.NAME}: tx_buffersize must be a multiple of 8: {tx_buffersize}")
+            sys.exit(1)
+        vmin = 0
+        vmax = 65535
+        for signal_name, config in self.plugin_setup.get("config", {}).items():
+            n_values = config.get("values", 0)
+            ctype = config["type"]
+            vmin = config.get("min", vmin)
+            vmax = config.get("max", vmax)
+            vunit = config.get("unit", "")
+            datatype = config.get("datatype", "int")
+            if ctype == 101:
+                config["instance"] = hy_vfd.hy_vfd(self.SIGNALS, signal_name, config)
+                if hasattr(config["instance"], "on_error"):
+                    self.ON_ERROR_CMDS += config["instance"].on_error()
+            elif ctype == 201:
+                self.SIGNALS[signal_name] = {
+                    "direction": config["direction"],
+                    "unit": config.get("unit", ""),
+                    "scale": config.get("scale", 1.0),
+                    "format": config.get("format", "07d"),
+                    "plugin_setup": config,
+                    "min": 0,
+                    "max": 1,
+                    "bool": True,
+                    "display": {"section": "modbus", "title": signal_name.title()},
+                }
+            else:
+                is_bool = False
+                if ctype in {2, 5, 15}:
+                    is_bool = True
+                elif ctype == 6 and datatype == "bool":
+                    is_bool = True
+                    if n_values > 16:
+                        print("ERROR: modbus: you can use max 16 booleans with func:6")
+                if n_values > 1:
+                    for vn in range(n_values):
+                        value_name = f"{signal_name}_{vn}"
+                        section = "modbus"
+                        if n_values > 8:
+                            section = signal_name
+                        self.SIGNALS[value_name] = {
+                            "direction": config["direction"],
+                            "unit": config.get("unit", ""),
+                            "scale": config.get("scale", 1.0),
+                            "format": config.get("format", "07d"),
+                            "plugin_setup": config,
+                            "min": vmin,
+                            "max": vmax,
+                            "bool": is_bool,
+                            "display": {"section": section, "title": value_name.title()},
+                        }
+                        if config["direction"] == "input":
+                            self.SIGNALS[f"{value_name}_valid"] = {
+                                "direction": "input",
+                                "bool": True,
+                                "validation": True,
+                                "helper": True,
+                                "plugin_setup": config,
+                            }
+                            self.SIGNALS[f"{value_name}_errors"] = {
+                                "direction": "input",
+                                "validation_counter": True,
+                                "format": "03d",
+                                "helper": True,
+                                "plugin_setup": config,
+                            }
+                        elif not is_bool:
+                            self.SIGNALS[f"{value_name}_errors"] = {
+                                "direction": "input",
+                                "validation_counter": True,
+                                "format": "03d",
+                                "helper": True,
+                                "plugin_setup": config,
+                            }
+                    if config["direction"] == "output" and is_bool:
+                        self.SIGNALS[f"{signal_name}_errors"] = {
+                            "direction": "input",
+                            "validation_counter": True,
+                            "format": "03d",
+                            "helper": True,
+                            "plugin_setup": config,
+                        }
+
+                else:
+                    if config.get("cmdmapping"):
+                        cmdmapping = config["cmdmapping"]
+                        for cmdsig in cmdmapping.split(","):
+                            cmdname = cmdsig.split(":")[0].strip()
+                            if cmdname[0] == "!":
+                                cmdname = cmdname[1:]
+                            self.SIGNALS[f"{signal_name}_{cmdname}"] = {
+                                "direction": config["direction"],
+                                "plugin_setup": config,
+                                "bool": True,
+                                "display": {"section": "modbus", "title": cmdname},
+                            }
+                    else:
+                        self.SIGNALS[signal_name] = {
+                            "direction": config["direction"],
+                            "scale": config.get("scale", 1.0),
+                            "format": config.get("format", "07d"),
+                            "plugin_setup": config,
+                            "unit": vunit,
+                            "min": vmin,
+                            "max": vmax,
+                            "bool": is_bool,
+                            "display": {"section": "modbus", "title": signal_name.title(), "min": vmin, "max": vmax, "unit": vunit},
+                        }
+
+                    if config["direction"] == "input":
+                        self.SIGNALS[f"{signal_name}_valid"] = {
+                            "direction": "input",
+                            "bool": True,
+                            "validation": True,
+                            "helper": True,
+                            "plugin_setup": config,
+                        }
+                    self.SIGNALS[f"{signal_name}_errors"] = {
+                        "direction": "input",
+                        "validation_counter": True,
+                        "format": "03d",
+                        "helper": True,
+                        "plugin_setup": config,
+                    }
+
+        self.INTERFACE = {
+            "rxdata": {
+                "size": rx_buffersize,
+                "direction": "input",
+            },
+            "txdata": {
+                "size": tx_buffersize,
+                "direction": "output",
+            },
+        }
+
+        for signal_name, config in self.plugin_setup.get("config", {}).items():
+            n_values = config.get("values", 0)
+            ctype = config["type"]
+            error_values = config.get("error_values", "").strip().replace(",", " ").split()
+            direction = config["direction"]
+            cmd = []
+            if ctype in {101, 201}:
+                pass
+            elif direction == "output" and error_values:
+                address = config["address"]
+                register = self.int2list(config["register"])
+                n_values = self.int2list(len(error_values))
+                if config["values"] > 1:
+                    if ctype == 15:
+                        cmd = [address, ctype, *register, *n_values, 1]
+                        bitvalues = 0
+                        for value in error_values:
+                            if int(value) == 1:
+                                bitvalues = bitvalues | (1 << vn)
+                        cmd.append(bitvalues)
+                    else:
+                        cmd = [address, ctype, *register, *n_values]
+                        for value in error_values:
+                            cmd += self.int2list(int(value))
+                else:
+                    value = int(error_values[0])
+                    if ctype == 5:
+                        value *= 65280
+                    cmd = [address, ctype, *register, *self.int2list(value)]
+
+                csum = crc16()
+                csum.update(cmd)
+                cmd += csum.intdigest()
+                self.ON_ERROR_CMDS.append(cmd)
+
+        # add signals for the documentation if nothing is configured
+        if not self.SIGNALS:
+            self.SIGNALS = {
+                "temperature": {"direction": "input", "unit": "°C", "scale": 0.1, "format": "0.1f"},
+            }
+
+        self.signal_active = 0
+        self.signal_values = 0
+        self.signal_name = None
+
+    def cfg_info(self):
+        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        return f"{baud} baud"
+
+    def cfggraph(self, title, gAll):
+        lcports = []
+        signalports = []
+
+        addresses = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            address = signal_defaults.get("plugin_setup", {}).get("address")
+            if address and address not in addresses:
+                addresses.append(address)
+
+        for address in addresses:
+            signalports.append(f"<device_{address}>DEVICE{address}")
+            gAll.edge(f"{title}:device_{address}", f"{title}_device_{address}:conn", dir="both", color="white", fontcolor="white")
+            dev_title = f"{title}_device_{address}"
+            devports = []
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_address = signal_defaults.get("plugin_setup", {}).get("address")
+                if dev_address != address:
+                    continue
+                devports.append(f"<signal_{signal_name}>{signal_name}")
+                # signalports.append(f"<signal_{signal_name}>{signal_name}")
+                signal_config = self.plugin_setup.get("signals", {}).get(signal_name)
+                if signal_config:
+                    net = signal_config.get("net")
+                    function = signal_config.get("function")
+                    signal_direction = self.SIGNALS.get(signal_name, {}).get("direction")
+                    direction_mapping = {"input": "normal", "output": "back", "inout": "both"}
+                    if function:
+                        gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{function}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                        lcports.append(f"<{function}>{function}")
+                    if net:
+                        gAll.edge(f"{dev_title}:signal_{signal_name}", f"hal:{net}", dir=direction_mapping.get(signal_direction, "none"), color="white", fontcolor="white")
+                        lcports.append(f"<{net}>{net}")
+
+            name = self.plugin_setup.get("name", self.title)
+            gAll.node(
+                dev_title,
+                shape="record",
+                label=f"{{ {{ {'|'.join(devports)} }} | <conn>DEVICE{address} }}",
+                fontsize="11pt",
+                style="rounded, filled",
+                fillcolor="lightblue",
+                URL=f"instance:{name.replace(' ', '#')}",
+            )
+
+        return (lcports, signalports)
+
+    def delete_sub(self, device):
+        ret = False
+        if "config" in self.plugin_setup:
+            deletes = []
+            for sub_name, sub_setup in self.plugin_setup["config"].items():
+                sub_address = sub_setup.get("address")
+                if f"dev-{sub_address}" == device:
+                    deletes.append(sub_name)
+            for sub_name in deletes:
+                del self.plugin_setup["config"][sub_name]
+                ret = True
+        return ret
+
+    def flow(self):
+        devices = {}
+        # uniq device addresses
+        addresses = []
+        for signal_name, signal_defaults in self.SIGNALS.items():
+            address = signal_defaults.get("plugin_setup", {}).get("address")
+            if address and address not in addresses:
+                addresses.append(address)
+        for address in addresses:
+            ports = {}
+            image = None
+            for signal_name, signal_defaults in self.SIGNALS.items():
+                dev_address = signal_defaults.get("plugin_setup", {}).get("address")
+                if dev_address != address:
+                    continue
+                ports[f"sig_{signal_name}"] = {"title": signal_name, "edge": "source", "type": "SIGNAL"}
+            if signal_defaults.get("plugin_setup", {}).get("type") == 101:
+                image = "hy_vfd.png"
+            devices[f"dev-{address}"] = {
+                "ports": ports,
+                "image": image,
+            }
+        return devices
+
+    def gateware_instances(self):
+        instances = self.gateware_instances_base()
+        instance = instances[self.instances_name]
+        instance["predefines"]
+        instance_parameter = instance["parameter"]
+        instance["arguments"]
+        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        instance_parameter["RX_BUFFERSIZE"] = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
+        instance_parameter["TX_BUFFERSIZE"] = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+        instance_parameter["ClkFrequency"] = self.system_setup["speed"]
+        instance_parameter["Baud"] = baud
+
+        num_on_error_cmds = len(self.ON_ERROR_CMDS)
+        original_name = instance["arguments"]["txdata"]
+        instance["arguments"]["txdata"] = f"{original_name}_TMP"
+        instance["predefines"].append(f"reg [{instance_parameter['TX_BUFFERSIZE'] - 1}:0] {original_name}_TMP;")
+        instance["predefines"].append(f"reg [7:0] {self.instances_name}_cmd_num = 0;")
+        instance["predefines"].append(f"reg [7:0] {self.instances_name}_frame_counter = 0;")
+        instance["predefines"].append(f"reg [31:0] {self.instances_name}_cmd_counter = 0;")
+
+        instance["predefines"].append("always @(posedge sysclk) begin")
+        instance["predefines"].append("    if (INTERFACE_TIMEOUT) begin")
+        instance["predefines"].append(f"        if ({self.instances_name}_cmd_counter < {self.system_setup['speed'] // 5}) begin")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 32'd1;")
+        instance["predefines"].append("        end else begin")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
+        instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 8'd1;")
+        if self.ON_ERROR_CMDS:
+            instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
+            for cn, cmd in enumerate(self.ON_ERROR_CMDS):
+                frame = []
+                for cbyte in reversed(cmd):
+                    frame.append(f"8'd{cbyte}")
+                instance["predefines"].append(f"                {cn}: begin")
+                if cn == num_on_error_cmds - 1:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
+                else:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
+                offset = ((2 + len(cmd)) * 8) - 1
+                instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}}; // send cmd on error")
+                instance["predefines"].append("                end")
+            instance["predefines"].append("            endcase")
+        instance["predefines"].append("        end")
+        instance["predefines"].append("    end else begin")
+        instance["predefines"].append(f"        {original_name}_TMP <= {original_name};")
+        instance["predefines"].append("    end")
+        instance["predefines"].append("end")
+        return instances
+
+    def int2list(self, value):
+        return [(value >> 8) & 0xFF, value & 0xFF]
+
+    def list2int(self, data):
+        return (data[0] << 8) + data[1]
+
+    def globals_c(self):
+        tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+        output = []
+        output.append(f"uint8_t {self.instances_name}_signal_active = 0;")
+        output.append(f"uint8_t {self.instances_name}_signal_next = 0;")
+        output.append(f"uint8_t {self.instances_name}_frame_last_tx[{tx_buffersize // 8}];")
+        output.append(f"uint8_t {self.instances_name}_frame_last_tx_len = 0;")
+
+        for signal_config in self.plugin_setup.get("config", {}).values():
+            ctype = signal_config["type"]
+            if ctype == 101:
+                output += signal_config["instance"].globals_c(self.instances_name)
+        return "\n".join(output)
+
+    def frameio_rx_c(self):
+        output = []
+        output.append("    if (frame_new == 1) {")
+        output.append("        uint8_t n = 0;")
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            direction = signal_config["direction"]
+            ctype = signal_config["type"]
+            if ctype != 101 and direction == "input":
+                output.append("        uint8_t data_len = 0;")
+                break
+
+        if self.plugin_setup.get("config"):
+            output.append("        uint8_t data_addr = frame_data[0];")
+            output.append("        uint8_t data_type = frame_data[1];")
+
+        output.append("        uint16_t crc = 0xFFFF;")
+        output.append("        for (n = 0; n < frame_len - 2; n++) {")
+        output.append("           crc = crc16_update(crc, frame_data[n]);")
+        output.append("        }")
+        output.append("        if ((crc & 0xFF) == frame_data[frame_len - 2] && (crc>>8 & 0xFF) == frame_data[frame_len - 1]) {")
+
+        if self.plugin_setup.get("config", {}):
+            output.append(f"            switch ({self.instances_name}_signal_active) {{")
+
+            sn = 0
+            for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+                direction = signal_config["direction"]
+                address = signal_config["address"]
+                ctype = signal_config["type"]
+                vscale = signal_config.get("scale", 1.0)
+                self.is_float = signal_config.get("is_float", False)
+                dt_default = "int"
+                if self.is_float:
+                    dt_default = "float"
+                self.datatype = signal_config.get("datatype", dt_default)
+                self.signal_values = signal_config.get("values", 1)
+                self.signal_name = signal_name
+                self.signal_address = address
+                if ctype == 101:
+                    output.append(f"                case {sn}: {{")
+                    output += signal_config["instance"].frameio_rx_c()
+                    output.append("                }")
+
+                elif direction == "output":
+                    output.append(f"                case {sn}: {{")
+                    output.append("                    // check ack frame")
+                    if ctype == 15:
+                        output.append(f"                    if (memcmp({self.instances_name}_frame_last_tx, frame_data, 6) == 0) {{")
+                    else:
+                        output.append(f"                    if (memcmp({self.instances_name}_frame_last_tx, frame_data, {self.instances_name}_frame_last_tx_len) == 0) {{")
+                    output.append(f"                        if (value_{self.signal_name}_errors > 0) {{")
+                    output.append(f"                            value_{self.signal_name}_errors -= 1;")
+                    output.append("                        }")
+                    output.append("                    } else {")
+                    output.append('                        rtapi_print("rx error: addr, type or len\\n");')
+                    output.append(f"                        value_{self.signal_name}_errors += 1;")
+                    output.append(f'                        rtapi_print("                              err frame %i: ", {self.instances_name}_frame_last_tx_len);')
+                    output.append(f"                        for (n = 0; n < {self.instances_name}_frame_last_tx_len; n++) {{")
+                    output.append(f'                            rtapi_print("%i|%i, ", {self.instances_name}_frame_last_tx[n], frame_data[n]);')
+                    output.append("                        }")
+                    output.append('                        rtapi_print("\\n");')
+
+                    output.append("                    }")
+                    output.append("                    break;")
+                    output.append("                }")
+
+                elif direction == "input":
+                    output.append(f"                case {sn}: {{")
+                    if self.signal_values > 1:
+                        output.append("                    data_len = frame_data[2];")
+                        if ctype == 2:
+                            output.append(f"                    // get {self.signal_values} 1bit values ({signal_name})")
+                            output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == 1) {{")
+                            for vn in range(self.signal_values):
+                                value_name = f"value_{self.signal_name}_{vn}"
+                                output.append(f"                        if ((frame_data[3] & (1<<{vn})) != 0) {{")
+                                output.append(f"                            {value_name} = 1;")
+                                output.append("                        } else {")
+                                output.append(f"                            {value_name} = 0;")
+                                output.append("                        }")
+                                output.append(f"                        {value_name}_valid = 1;")
+                                output.append(f"                        if ({value_name}_errors > 0) {{")
+                                output.append(f"                            {value_name}_errors -= 1;")
+                                output.append("                        }")
+                        else:
+                            output.append(f"                    // get {self.signal_values} 16bit values ({signal_name})")
+                            output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 2}) {{")
+                            for vn in range(self.signal_values):
+                                value_name = f"value_{self.signal_name}_{vn}"
+                                output.append(f"                        {value_name} = (frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF);")
+                                if vscale:
+                                    output.append(f"                        {value_name} *= {vscale};")
+                                output.append(f"                        {value_name}_valid = 1;")
+                                output.append(f"                        if ({value_name}_errors > 0) {{")
+                                output.append(f"                            {value_name}_errors -= 1;")
+                                output.append("                        }")
+                        output.append("                    } else {")
+                        for vn in range(self.signal_values):
+                            value_name = f"value_{self.signal_name}_{vn}"
+                            output.append('                        // rtapi_print("rx error: addr, type or len\\n");')
+                            output.append(f"                        {value_name}_errors += 1;")
+                            output.append(f"                        {value_name}_valid = 0;")
+                        output.append("                    }")
+                    elif self.datatype == "float":
+                        output.append("                    // get single 32bit float value")
+                        output.append("                    data_len = frame_data[2];")
+                        output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 4}) {{")
+                        output.append("                        uint8_t farray[] = {frame_data[6], frame_data[5], frame_data[4], frame_data[3]};")
+                        output.append(f"                        memcpy((uint8_t *)&value_{self.signal_name}, (uint8_t *)&farray, 4);")
+                        if vscale:
+                            output.append(f"                        value_{self.signal_name} *= {vscale};")
+                        output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append(f"                        if (value_{self.signal_name}_errors > 0) {{")
+                        output.append(f"                            value_{self.signal_name}_errors -= 1;")
+                        output.append("                        }")
+                        output.append("                    } else {")
+                        output.append('                        // rtapi_print("rx error: addr, type or len\\n");')
+                        output.append(f"                        value_{self.signal_name}_errors += 1;")
+                        output.append(f"                        value_{self.signal_name}_valid = 0;")
+                        output.append("                    }")
+                    else:
+                        output.append("                    // get single 16bit value")
+                        output.append("                    data_len = frame_data[2];")
+                        output.append(f"                    if (data_addr == {address} && data_type == {ctype} && data_len == {self.signal_values * 2}) {{")
+                        output.append(f"                        value_{self.signal_name} = (frame_data[{3}]<<8) + (frame_data[{4}] & 0xFF);")
+                        if vscale:
+                            output.append(f"                        value_{self.signal_name} *= {vscale};")
+                        output.append(f"                        value_{self.signal_name}_valid = 1;")
+                        output.append("                    } else {")
+                        output.append('                        // rtapi_print("rx error: addr, type or len\\n");')
+                        output.append(f"                        value_{self.signal_name}_errors += 1;")
+                        output.append(f"                        value_{self.signal_name}_valid = 0;")
+                        output.append("                    }")
+                    output.append("                    break;")
+                    output.append("                }")
+                sn += 1
+            output.append("            }")
+        output.append("        } else {")
+        output.append('            // rtapi_print("ERROR: CSUM: %d|%d != %d|%d\\n", crc & 0xFF, crc>>8 & 0xFF, frame_data[frame_len - 2], frame_data[frame_len - 1]);')
+        output.append("        }")
+        output.append('        // rtapi_print("rx frame %i %i: ", frame_id, frame_len);')
+        output.append("        // for (n = 0; n < frame_len; n++) {")
+        output.append('        //     rtapi_print("%i, ", frame_data[n]);')
+        output.append("        // }")
+        output.append('        // rtapi_print("\\n");')
+        output.append("    }")
+        return "\n".join(output)
+
+    def frameio_tx_c(self):
+        if not self.plugin_setup.get("config"):
+            return ""
+
+        output = []
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            direction = signal_config["direction"]
+            ctype = signal_config["type"]
+            vscale = signal_config.get("scale", 1.0)
+            if direction == "output" and ctype == 6 and vscale != 1.0:
+                output.append(f"                value_{signal_name} *= {vscale};")
+        output.append(" ")
+
+        output.append("        if (frame_timeout == 1) {")
+        output.append(f'            // rtapi_print("rx error: timeout: %d\\n", {self.instances_name}_signal_active);')
+        sn = 0
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            direction = signal_config["direction"]
+            delay = signal_config.get("delay", self.DELAY)
+            timeout = signal_config.get("timeout", self.TIMEOUT) + delay
+            address = signal_config["address"]
+            ctype = signal_config["type"]
+            self.signal_values = signal_config.get("values", 1)
+            self.signal_name = signal_name
+            self.signal_address = address
+            if ctype in {101, 201}:
+                pass
+            elif direction == "input":
+                register = self.int2list(signal_config["register"])
+                n_values = self.int2list(self.signal_values)
+                if self.signal_values > 1:
+                    output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
+                    for vn in range(self.signal_values):
+                        value_name = f"value_{self.signal_name}_{vn}"
+                        output.append(f"                {value_name}_valid = 0;")
+                        output.append(f"                {value_name}_errors += 1;")
+                    output.append("            }")
+                else:
+                    output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
+                    output.append(f"                value_{signal_name}_valid = 0;")
+                    output.append(f"                value_{signal_name}_errors += 1;")
+                    output.append("            }")
+
+            elif direction == "output":
+                register = self.int2list(signal_config["register"])
+                output.append(f"            if ({self.instances_name}_signal_active == {sn}) {{")
+                output.append(f"                value_{signal_name}_errors += 1;")
+                output.append("            }")
+
+            sn += 1
+        output.append("        }")
+        output.append("")
+
+        output.append("        // check for changes on prio values")
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            priority = signal_config.get("priority", 0)
+            if priority > 0:
+                direction = signal_config["direction"]
+                signal_values = signal_config.get("values", 1)
+                self.is_float = signal_config.get("is_float", False)
+                dt_default = "int"
+                if self.is_float:
+                    dt_default = "float"
+                self.datatype = signal_config.get("datatype", dt_default)
+                ctype = "float"
+                if self.datatype == "bool":
+                    ctype = "bool"
+                if direction == "output":
+                    if signal_values > 1:
+                        for vn in range(signal_values):
+                            value_name = f"{signal_name}_{vn}"
+                            output.append(f"        static {ctype} last_value_{value_name} = 0;")
+                    else:
+                        output.append(f"        static {ctype} last_value_{signal_name} = 0;")
+
+        for prio in range(9, 0, -1):
+            sn = 0
+            for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+                priority = signal_config.get("priority", 0)
+                if prio == priority:
+                    direction = signal_config["direction"]
+                    ctype = signal_config["type"]
+                    signal_values = signal_config.get("values", 1)
+                    if direction == "output" and priority > 0:
+                        if signal_values > 1:
+                            priochecks = []
+                            for vn in range(signal_values):
+                                value_name = f"{signal_name}_{vn}"
+                                priochecks.append(f"last_value_{value_name} != value_{value_name}")
+                            output.append(f"        if ({' || '.join(priochecks)}) {{")
+                            for vn in range(signal_values):
+                                value_name = f"{signal_name}_{vn}"
+                                output.append(f"            last_value_{value_name} = value_{value_name};")
+                            output.append(f"            {self.instances_name}_signal_active = {sn};")
+                            output.append("        } else ")
+                        else:
+                            output.append(f"        if (last_value_{signal_name} != value_{signal_name}) {{")
+                            for vn in range(signal_values):
+                                value_name = f"{signal_name}_{vn}"
+                                output.append(f"            last_value_{signal_name} = value_{signal_name};")
+                            output.append(f"            {self.instances_name}_signal_active = {sn};")
+                            output.append("        } else ")
+
+                sn += 1
+
+        max_next = len(self.plugin_setup.get("config", {})) - 1
+        if max_next:
+            output.append("        {")
+            output.append(f"            if ({self.instances_name}_signal_next < {max_next}) {{")
+            output.append(f"                {self.instances_name}_signal_next++;")
+            output.append("            } else {")
+            output.append(f"                {self.instances_name}_signal_next = 0;")
+            output.append("            }")
+            output.append(f"            {self.instances_name}_signal_active = {self.instances_name}_signal_next;")
+            output.append("        }")
+        else:
+            output.append(f"        {self.instances_name}_signal_active = {max_next};")
+        output.append("")
+        output.append(f"        switch ({self.instances_name}_signal_active) {{")
+        sn = 0
+        for signal_name, signal_config in self.plugin_setup.get("config", {}).items():
+            direction = signal_config["direction"]
+            delay = signal_config.get("delay", self.DELAY)
+            timeout = signal_config.get("timeout", self.TIMEOUT) + delay
+            address = signal_config["address"]
+            ctype = signal_config["type"]
+            vscale = signal_config.get("scale", 1.0)
+            self.signal_values = signal_config.get("values", 1)
+            self.priority = signal_config.get("priority", 0)
+            self.is_float = signal_config.get("is_float", False)
+            dt_default = "int"
+            if self.is_float:
+                dt_default = "float"
+            self.datatype = signal_config.get("datatype", dt_default)
+            self.signal_name = signal_name
+            self.signal_address = address
+            output.append(f"            case {sn}: {{")
+            output.append(f"                // {signal_name}")
+            output.append(f"                delay = {delay};")
+            output.append(f"                timeout = {timeout};")
+
+            if ctype == 101:
+                output.append("                // handle hy_vfd")
+                output += [f"                {line}" for line in signal_config["instance"].frameio_tx_c()]
+
+            elif ctype == 201:
+                # custom boolean command
+                custom_on = signal_config["on"]
+                custom_off = signal_config["off"]
+                output.append("                // custom boolean command")
+                output.append(f"                frame_data[0] = {address};")
+                output.append(f"                if (value_{self.signal_name} == 1) {{")
+                for bn, cbyte in enumerate(custom_on):
+                    output.append(f"                    frame_data[{1 + bn}] = {cbyte};")
+                output.append(f"                    frame_len = {len(custom_on) + 1};")
+                output.append("                } else {")
+                for bn, cbyte in enumerate(custom_off):
+                    output.append(f"                    frame_data[{1 + bn}] = {cbyte};")
+                output.append(f"                    frame_len = {len(custom_on) + 1};")
+                output.append("                }")
+
+            elif direction == "output":
+                register = self.int2list(signal_config["register"])
+                n_values = self.int2list(self.signal_values)
+                if self.signal_values > 1:
+                    if ctype == 15:
+                        output.append("                // set 1bit values")
+                        output.append(f"                frame_data[0] = {address};")
+                        output.append(f"                frame_data[1] = {ctype};")
+                        output.append(f"                frame_data[2] = {register[0]};")
+                        output.append(f"                frame_data[3] = {register[1]};")
+                        output.append(f"                frame_data[4] = {n_values[0]};")
+                        output.append(f"                frame_data[5] = {n_values[1]};")
+                        output.append("                frame_data[6] = 1;")
+                        output.append("                uint8_t bitvalues = 0;")
+                        for vn in range(self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                if (value_{value_name} == 1) {{")
+                            output.append(f"                    bitvalues |= (1<<{vn});")
+                            output.append("                }")
+                        output.append("                frame_data[7] = bitvalues;")
+                        output.append("                frame_len = 8;")
+
+                    elif ctype == 6 and self.datatype == "bool":
+                        output.append("                // set 1bit values")
+                        output.append(f"                frame_data[0] = {address};")
+                        output.append(f"                frame_data[1] = {ctype};")
+                        output.append(f"                frame_data[2] = {register[0]};")
+                        output.append(f"                frame_data[3] = {register[1]};")
+                        output.append("                uint8_t bitvalues[2] = {0, 0};")
+                        for vn in range(self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                if (value_{value_name} == 1) {{")
+                            if vn < 8:
+                                output.append(f"                    bitvalues[1] |= (1<<{vn});")
+                            else:
+                                output.append(f"                    bitvalues[0] |= (1<<{vn - 8});")
+
+                            output.append("                }")
+                        output.append("                frame_data[4] = bitvalues[0];")
+                        output.append("                frame_data[5] = bitvalues[1];")
+                        output.append("                frame_len = 6;")
+
+                    else:
+                        output.append("                // set 16bit values")
+                        output.append(f"                frame_data[0] = {address};")
+                        output.append(f"                frame_data[1] = {ctype};")
+                        output.append(f"                frame_data[2] = {register[0]};")
+                        output.append(f"                frame_data[3] = {register[1]};")
+                        output.append(f"                frame_data[4] = {n_values[0]};")
+                        output.append(f"                frame_data[5] = {n_values[1]};")
+                        output.append("                frame_data[6] = 1;")
+                        for vn in range(self.signal_values):
+                            value_name = f"{self.signal_name}_{vn}"
+                            output.append(f"                frame_data[{6 + vn * 2}] = (uint16_t)value_{value_name}>>8 & 0xFF;")
+                            output.append(f"                frame_data[{7 + vn * 2}] = (uint16_t)value_{value_name} & 0xFF;")
+                        output.append(f"                frame_len = {8 + vn * 2};")
+                else:
+                    if signal_config.get("cmdmapping"):
+                        cmdmapping = signal_config["cmdmapping"]
+                        output.append("                // cmdmapping")
+                        default_value = signal_config.get("error_values") or 0
+                        output.append(f"                static uint16_t value_{signal_name} = {default_value};")
+                        for cmd_n, cmdsig in enumerate(cmdmapping.split(",")):
+                            cmdname = cmdsig.split(":")[0].strip()
+                            checkvalue = 1
+                            if cmdname[0] == "!":
+                                cmdname = cmdname[1:]
+                                checkvalue = 0
+                            cmdvalue = cmdsig.split(":")[1].strip()
+                            if cmd_n == 0:
+                                output.append(f"                if (value_{signal_name}_{cmdname} == {checkvalue}) {{")
+                            else:
+                                output.append(f"                }} else if (value_{signal_name}_{cmdname} == {checkvalue}) {{")
+                            output.append(f"                    value_{signal_name} = {cmdvalue};")
+                        output.append("                }")
+
+                    if ctype == 5:
+                        output.append("                // set coil value")
+                    else:
+                        output.append("                // set 16bit value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    if ctype == 5:
+                        output.append(f"                if (value_{signal_name} == 1) {{")
+                        output.append("                    frame_data[4] = 255;")
+                        output.append("                    frame_data[5] = 0;")
+                        output.append("                } else {")
+                        output.append("                    frame_data[4] = 0;")
+                        output.append("                    frame_data[5] = 0;")
+                        output.append("                }")
+                    else:
+                        output.append(f"                frame_data[4] = (uint16_t)value_{signal_name}>>8 & 0xFF;")
+                        output.append(f"                frame_data[5] = (uint16_t)value_{signal_name} & 0xFF;")
+                    output.append("                frame_len = 6;")
+            else:
+                register = self.int2list(signal_config["register"])
+                n_values = self.int2list(self.signal_values)
+                if self.datatype == "float":
+                    n_values = self.int2list(self.signal_values * 2)
+                    output.append("                // request 32bit float value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = {n_values[0]};")
+                    output.append(f"                frame_data[5] = {n_values[1]};")
+                    output.append("                frame_len = 6;")
+                else:
+                    output.append("                // request 16bit value")
+                    output.append(f"                frame_data[0] = {address};")
+                    output.append(f"                frame_data[1] = {ctype};")
+                    output.append(f"                frame_data[2] = {register[0]};")
+                    output.append(f"                frame_data[3] = {register[1]};")
+                    output.append(f"                frame_data[4] = {n_values[0]};")
+                    output.append(f"                frame_data[5] = {n_values[1]};")
+                    output.append("                frame_len = 6;")
+            output.append("                break;")
+            output.append("            }")
+            sn += 1
+        output.append("        }")
+        output.append("")
+        output.append("        if (frame_len == 0) {")
+        output.append("            delay = 0;")
+        output.append("            timeout = 0;")
+        output.append("        } else {")
+        output.append("            uint8_t i = 0;")
+        output.append("            uint16_t crc = 0xFFFF;")
+        output.append("            for (i = 0; i < frame_len; i++) {")
+        output.append("                crc = crc16_update(crc, frame_data[i]);")
+        output.append("            }")
+        output.append("            frame_data[frame_len] = crc & 0xFF;")
+        output.append("            frame_data[frame_len + 1] = crc>>8 & 0xFF;")
+        output.append("            frame_len += 2;")
+
+        tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+        output.append("")
+        output.append("            // save last send frame to check ack")
+        output.append(f"            memcpy({self.instances_name}_frame_last_tx, frame_data, {tx_buffersize // 8});")
+        output.append(f"            {self.instances_name}_frame_last_tx_len = frame_len;")
+
+        output.append("        }")
+        return "\n".join(output)

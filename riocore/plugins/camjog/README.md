@@ -43,6 +43,11 @@ name of this plugin instance
  * type: str
  * default: camjog
 
+### external:
+
+ * type: bool
+ * default: False
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -70,6 +75,7 @@ name of this plugin instance
     "height": 480,
     "scale": 1.0,
     "tabname": "camjog",
+    "external": false,
     "pins": {},
     "signals": {}
 }

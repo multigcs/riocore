@@ -4,7 +4,7 @@
 
 **spi interface for host comunication and flash programming**
 
-for direct connections to Raspberry-PI - supporting flash programming
+for direct connections to Raspberry-PI - supporting flash programming - spartan6 only at the moment
 
 Keywords: interface spi raspberry rpi flash mesa
 

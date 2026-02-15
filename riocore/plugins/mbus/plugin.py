@@ -12,12 +12,13 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "mbus"
         self.COMPONENT = "mbus"
-        self.INFO = "modbus master"
-        self.DESCRIPTION = "modbus master"
-        self.KEYWORDS = "modbus rtu"
+        self.INFO = "modbus plugin"
+        self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
+        self.KEYWORDS = "modbus rtu vfd spindle expansion analog digital"
+        self.URL = "https://www.modbustools.com/modbus.html#function16"
+        self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.TYPE = "base"
         self.PLUGIN_TYPE = "modbus"
-        self.URL = "https://www.modbustools.com/modbus.html#function16"
         self.VERILOGS = ["mbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.IMAGE = ""
         self.IMAGE_SHOW = False
@@ -28,7 +29,7 @@ class Plugin(PluginBase):
         self.TYPE = "frameio"
         self.PROVIDES = ["modbus"]
         self.NEEDS = ["fpga"]
-
+        self.ON_ERROR_CMDS = []
         self.OPTIONS.update(
             {
                 "baud": {
@@ -281,3 +282,52 @@ class Plugin(PluginBase):
 
         output.append("        }")
         return "\n".join(output)
+
+    def gateware_instances(self):
+        instances = self.gateware_instances_base()
+        instance = instances[self.instances_name]
+        instance["predefines"]
+        instance_parameter = instance["parameter"]
+        instance["arguments"]
+        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        instance_parameter["RX_BUFFERSIZE"] = self.plugin_setup.get("rx_buffersize", self.OPTIONS["rx_buffersize"]["default"])
+        instance_parameter["TX_BUFFERSIZE"] = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])
+        instance_parameter["ClkFrequency"] = self.system_setup["speed"]
+        instance_parameter["Baud"] = baud
+
+        num_on_error_cmds = len(self.ON_ERROR_CMDS)
+        original_name = instance["arguments"]["txdata"]
+        instance["arguments"]["txdata"] = f"{original_name}_TMP"
+        instance["predefines"].append(f"reg [{instance_parameter['TX_BUFFERSIZE'] - 1}:0] {original_name}_TMP;")
+        instance["predefines"].append(f"reg [7:0] {self.instances_name}_cmd_num = 0;")
+        instance["predefines"].append(f"reg [7:0] {self.instances_name}_frame_counter = 0;")
+        instance["predefines"].append(f"reg [31:0] {self.instances_name}_cmd_counter = 0;")
+
+        instance["predefines"].append("always @(posedge sysclk) begin")
+        instance["predefines"].append("    if (INTERFACE_TIMEOUT) begin")
+        instance["predefines"].append(f"        if ({self.instances_name}_cmd_counter < {self.system_setup['speed'] // 5}) begin")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= {self.instances_name}_cmd_counter + 32'd1;")
+        instance["predefines"].append("        end else begin")
+        instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
+        instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 8'd1;")
+        if num_on_error_cmds:
+            instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
+            for cn, cmd in enumerate(self.ON_ERROR_CMDS):
+                frame = []
+                for cbyte in reversed(cmd):
+                    frame.append(f"8'd{cbyte}")
+                instance["predefines"].append(f"                {cn}: begin")
+                if cn == num_on_error_cmds - 1:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= 0;")
+                else:
+                    instance["predefines"].append(f"                    {self.instances_name}_cmd_num <= {cn + 1};")
+                offset = ((2 + len(cmd)) * 8) - 1
+                instance["predefines"].append(f"                    {original_name}_TMP[{offset}:0] <= {{{', '.join(frame)}, 8'd{len(cmd)}, {self.instances_name}_frame_counter}}; // send cmd on error")
+                instance["predefines"].append("                end")
+            instance["predefines"].append("            endcase")
+        instance["predefines"].append("        end")
+        instance["predefines"].append("    end else begin")
+        instance["predefines"].append(f"        {original_name}_TMP <= {original_name};")
+        instance["predefines"].append("    end")
+        instance["predefines"].append("end")
+        return instances

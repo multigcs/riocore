@@ -35,6 +35,12 @@ axis name (X,Y,Z,...)
  * type: select
  * default: None
 
+### image:
+hardware type
+
+ * type: select
+ * default: generic
+
 ### frequency:
 update frequency
 
@@ -92,6 +98,7 @@ absolute position (-100 = 1ms / 100 = 2ms)
     "name": "",
     "is_joint": true,
     "axis": "",
+    "image": "generic",
     "frequency": 100,
     "pins": {
         "pwm": {

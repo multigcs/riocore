@@ -24,7 +24,7 @@ for ppath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "genera
     toolchain_name = os.path.basename(os.path.dirname(ppath))
     print(toolchain_name)
     toolchain = importlib.import_module(".toolchain", f"riocore.plugins.fpga.generator.toolchains.{toolchain_name}")
-    info = toolchain.Toolchain.info(None)
+    info = toolchain.Toolchain.info()
     if info:
         url = info.get("url", "")
         infotext = info.get("info", "")

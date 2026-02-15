@@ -1,4 +1,4 @@
-# spi
+# spibridge
 
 <img align="right" width="320" src="image.png">
 
@@ -71,7 +71,7 @@ UDP-Port
 ## Basic-Example:
 ```
 {
-    "type": "spi",
+    "type": "spibridge",
     "pins": {
         "mosi": {
             "pin": "0"
@@ -92,7 +92,7 @@ UDP-Port
 ## Full-Example:
 ```
 {
-    "type": "spi",
+    "type": "spibridge",
     "name": "",
     "ip": "192.168.10.194",
     "mask": "255.255.255.0",

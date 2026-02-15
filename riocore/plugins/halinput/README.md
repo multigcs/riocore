@@ -45,30 +45,72 @@ name of this plugin instance
  * type: str
  * default: abs-x
 
+### x_scale:
+
+ * type: float
+ * min: -10000
+ * max: 10000
+ * default: 127.5
+
 ### y:
 
  * type: str
- * default: -abs-y
+ * default: abs-y
+
+### y_scale:
+
+ * type: float
+ * min: -10000
+ * max: 10000
+ * default: -127.5
 
 ### z:
 
  * type: str
- * default: -abs-rz
+ * default: abs-rz
+
+### z_scale:
+
+ * type: float
+ * min: -10000
+ * max: 10000
+ * default: -127.5
 
 ### a:
 
  * type: str
  * default: 
 
+### a_scale:
+
+ * type: float
+ * min: -10000
+ * max: 10000
+ * default: 127.5
+
 ### b:
 
  * type: str
  * default: 
 
+### b_scale:
+
+ * type: float
+ * min: -10000
+ * max: 10000
+ * default: 127.5
+
 ### c:
 
  * type: str
  * default: 
+
+### c_scale:
+
+ * type: float
+ * min: -10000
+ * max: 10000
+ * default: 127.5
 
 
 ## Signals:
@@ -97,11 +139,17 @@ name of this plugin instance
     "medium": "btn-base",
     "fast": "btn-pinkie",
     "x": "abs-x",
-    "y": "-abs-y",
-    "z": "-abs-rz",
+    "x_scale": 127.5,
+    "y": "abs-y",
+    "y_scale": -127.5,
+    "z": "abs-rz",
+    "z_scale": -127.5,
     "a": "",
+    "a_scale": 127.5,
     "b": "",
+    "b_scale": 127.5,
     "c": "",
+    "c_scale": 127.5,
     "pins": {},
     "signals": {}
 }

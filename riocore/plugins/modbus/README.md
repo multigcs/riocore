@@ -1,32 +1,27 @@
-# mbus
+# modbus
 
 <img align="right" width="320" src="image.png">
 
-**modbus plugin**
+**generic modbus plugin - deprecated, please use the mbus plugin**
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
-Keywords: modbus rtu vfd spindle expansion analog digital
-
-URL: https://www.modbustools.com/modbus.html#function16
+Keywords: modbus vfd spindle expansion analog digital
 
 ## Pins:
 *FPGA-pins*
-### rx:
-
- * direction: input
-
 ### tx:
 
  * direction: output
 
+### rx:
+
+ * direction: input
+
 ### tx_enable:
 
  * direction: output
-
-### BUS:IO:
-
- * direction: output
+ * optional: True
 
 
 ## Options:
@@ -67,6 +62,7 @@ max tx buffer size
 
 ## Signals:
 *signals/pins in LinuxCNC*
+the signals of this plugin are user configurable
 
 
 ## Interfaces:
@@ -85,19 +81,16 @@ max tx buffer size
 ## Basic-Example:
 ```
 {
-    "type": "mbus",
+    "type": "modbus",
     "pins": {
-        "rx": {
+        "tx": {
             "pin": "0"
         },
-        "tx": {
+        "rx": {
             "pin": "1"
         },
         "tx_enable": {
             "pin": "2"
-        },
-        "BUS:IO": {
-            "pin": "3"
         }
     }
 }
@@ -106,23 +99,26 @@ max tx buffer size
 ## Full-Example:
 ```
 {
-    "type": "mbus",
+    "type": "modbus",
     "name": "",
     "baud": 9600,
     "rx_buffersize": 128,
     "tx_buffersize": 128,
     "pins": {
-        "rx": {
+        "tx": {
             "pin": "0",
             "modifiers": [
                 {
-                    "type": "debounce"
+                    "type": "invert"
                 }
             ]
         },
-        "tx": {
+        "rx": {
             "pin": "1",
             "modifiers": [
+                {
+                    "type": "debounce"
+                },
                 {
                     "type": "invert"
                 }
@@ -135,22 +131,26 @@ max tx buffer size
                     "type": "invert"
                 }
             ]
-        },
-        "BUS:IO": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
         }
     },
-    "signals": {}
+    "signals": {
+        "temperature": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "scale": 100.0,
+            "offset": 0.0,
+            "display": {
+                "title": "temperature",
+                "section": "inputs",
+                "type": "meter"
+            }
+        }
+    }
 }
 ```
 
 ## Verilogs:
- * [mbus.v](mbus.v)
+ * [modbus.v](modbus.v)
  * [uart_baud.v](uart_baud.v)
  * [uart_rx.v](uart_rx.v)
  * [uart_tx.v](uart_tx.v)

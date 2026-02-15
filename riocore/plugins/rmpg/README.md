@@ -1,10 +1,12 @@
-# camjog
+# rmpg
 
 <img align="right" width="320" src="image.png">
 
-**gui component to jog via camera image**
+**remote mpg server**
 
-Keywords: jog gui robot
+see riocore/plugins/rmpg/clients/ for clients
+
+Keywords: jog cam remote
 
 ## Pins:
 *FPGA-pins*
@@ -18,30 +20,10 @@ name of this plugin instance
  * type: str
  * default: 
 
-### device:
-
- * type: str
- * default: /dev/video0
-
-### width:
+### port:
 
  * type: int
- * default: 640
-
-### height:
-
- * type: int
- * default: 480
-
-### scale:
-
- * type: float
- * default: 1.0
-
-### tabname:
-
- * type: str
- * default: camjog
+ * default: 10000
 
 
 ## Signals:
@@ -55,7 +37,7 @@ name of this plugin instance
 ## Basic-Example:
 ```
 {
-    "type": "camjog",
+    "type": "rmpg",
     "pins": {}
 }
 ```
@@ -63,13 +45,9 @@ name of this plugin instance
 ## Full-Example:
 ```
 {
-    "type": "camjog",
+    "type": "rmpg",
     "name": "",
-    "device": "/dev/video0",
-    "width": 640,
-    "height": 480,
-    "scale": 1.0,
-    "tabname": "camjog",
+    "port": 10000,
     "pins": {},
     "signals": {}
 }
