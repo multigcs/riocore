@@ -8,7 +8,8 @@ you can activate this simulation by editing the json config file by hand:
     }
 ```
 this option will disable the UDP/SPI interface function
-and simulate joint movements (the position feedback)
+and simulate the position feedback of joint movements,
+all inside the linuxcnc component
 
 
 ## udp client simulation in c

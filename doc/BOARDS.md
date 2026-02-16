@@ -1,14 +1,9 @@
 # add new boards
 * these examples refer to a ULX3S
 
-to create a new board config, you need to create a directory like this:
-```
-mkdir -p riocore/boards/ULX3S
-```
+to create a new board config, you need to create a new json file like this:
 
-then create a new board.json file in this directory like this:
-
-cat riocore/boards/ULX3S/board.json
+cat riocore/plugins/fpga/boards/ULX3S.json
 ```
 {
     "name": "ULX3S",
@@ -26,7 +21,7 @@ cat riocore/boards/ULX3S/board.json
 }
 ```
 
-* the name must be the same as the directory name,
+* the name must be the same as the file basename,
 * description, comment and url are optional
 * for the toolchain, you can look at: riocore/generator/toolchains/ to see the available options
 * clock/speed is the used Crystal/Oscillator speed in Hz and
@@ -36,12 +31,12 @@ that's all you need for a basic configuration
 
 ## Advanced
 
-for more advanced configurations, you can add an image of the board and some pinout informations
+for more advanced configurations, you can add an image and some pinout informations
 
 ### Board-Image
 filename:
 ```
-riocore/boards/ULX3S/board.png
+riocore/plugins/fpga/boards/ULX3S.png
 ```
 
 * the size should be approximately ~800x600
@@ -82,9 +77,9 @@ LED example:
 * slots: connector / button-group / led-group
 * pins/pin: the FPGA pinname
 * pins/direction: optional, is used by the plugin filter (output / input / all)
-* pins/pos: optional, with this info, you can see the pin in rio-setup on the right location and click it to setup ([X, Y] position on the boardimage)
+* pins/pos: optional, with this info, you can see the pin in rio-flow and connect it to other plugins
 
-this allows you to use eg "LED:L0" in you later plugin setup without searching for the read FPGA-Pin name in the schematics
+this allows you to use eg "LED:L0" in you later plugin setup without searching for the real FPGA-Pin name in the schematics
 
 
 
