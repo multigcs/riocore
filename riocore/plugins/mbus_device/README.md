@@ -118,7 +118,7 @@ example: reset:7, !on:6, ffw:1, rev:2
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### generic0:
+### generic_0:
 generic
 
  * type: float
@@ -177,13 +177,13 @@ generic
         }
     },
     "signals": {
-        "generic0": {
+        "generic_0": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "generic0",
+                "title": "generic_0",
                 "section": "outputs",
                 "type": "scale"
             }

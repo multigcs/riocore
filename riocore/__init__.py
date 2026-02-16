@@ -505,34 +505,38 @@ class Project:
 
 
 class PluginImages:
+    images = {
+        "relay": {"image": "relay.png", "pins": [(7, 75)], "signals": [(177, 75)]},
+        "relay_min": {"image": "relay_min.png", "pins": [(7, 75)], "signals": [(177, 75)]},
+        "ssr": {"image": "ssr.png", "pins": [(18, 18)], "signals": [(139, 20)]},
+        "ssr2a": {"image": "ssr2a.png", "pins": [(20, 29)], "signals": [(139, 29)]},
+        "led": {"image": "led.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "smdbutton": {"image": "smdbutton.png", "pins": [(5, 5)], "signals": [(30, 5)]},
+        "smdled": {"image": "smdled.png", "pins": [(4, 6)], "signals": [(21, 6)]},
+        "proximity": {"image": "proximity.png", "pins": [(5, 30)], "signals": [(180, 30), (170, 30)]},
+        "estop": {"image": "estop.png", "pins": [(5, 80)], "signals": [(180, 80)]},
+        "probe": {"image": "probe.png", "pins": [(5, 80)], "signals": [(140, 80)]},
+        "switch": {"image": "switch.png", "pins": [(45, 50)], "signals": [(135, 50)]},
+        "opto": {"image": "opto.png", "pins": [(25, 13)], "signals": [(172, 13)]},
+        "w5500mini": {"image": "w5500-mini.png", "pins": [(100, 63), (7, 30), (100, 52), (100, 41), (7, 41), (100, 30)]},
+        "w5500": {"image": "w5500.png", "pins": [(22, 92), (22, 103), (22, 70), (22, 81), (11, 92), (11, 80)]},
+        "spindle500w": {"image": "spindle500w.png", "pins": [(60, 20), (60, 35), (60, 50)], "signals": [(212, 30), (212, 45)]},
+        "laser": {"image": "laser.png", "pins": [(10, 30), (10, 45), (10, 60)], "signals": [(187, 37), (187, 52)]},
+        "stepper": {"image": "stepper.png", "pins": [(15, 190), (15, 160), (15, 130)], "signals": [(180, 120), (180, 135), (180, 150)]},
+        "servo42": {"image": "servo42.png", "pins": [(186, 117), (186, 130), (186, 105)], "signals": [(80, 120), (80, 135), (80, 150)]},
+        "servo": {"image": "servo.png", "pins": [(45, 135), (45, 145), (45, 155)], "signals": [(45, 170), (45, 180), (45, 195)]},
+        "rcservo": {"image": "rcservo.png", "pins": [(45, 237)], "signals": [(45, 170), (45, 180)]},
+        "stepstick": {"image": "stepstick.png", "pins": [(70, 17), (70, 5), (70, 93)], "signals": [(35, 5), (35, 17), (35, 27)]},
+        "ethercatservo": {"image": "ethercat-servo.png", "pins": [(45, 135), (85, 135)], "signals": [(80, 120), (80, 135), (80, 150)]},
+        "flow": {"image": "flow.png", "pins": [(50, 50)], "signals": [(87, 10), (87, 25)]},
+        "encoder": {"image": "encoder.png", "pins": [(105, 13), (105, 25), (105, 39)], "signals": [(40, 37), (40, 50), (40, 25)]},
+        "encoder_optical": {"image": "encoder_optical.png", "pins": [(6, 60), (6, 71), (6, 82)], "signals": [(56, 60), (56, 71), (56, 82)]},
+        "dinrail": {"image": "dinrail.png", "pins": [], "signals": []},
+        "mill": {"image": "mill.png", "pins": [], "signals": []},
+    }
+
     def __init__(self):
-        self.images = {
-            "relay": {"image": "relay.png", "pins": [(7, 75)], "signals": [(177, 75)]},
-            "relay_min": {"image": "relay_min.png", "pins": [(7, 75)], "signals": [(177, 75)]},
-            "ssr": {"image": "ssr.png", "pins": [(18, 18)], "signals": [(139, 20)]},
-            "ssr2a": {"image": "ssr2a.png", "pins": [(20, 29)], "signals": [(139, 29)]},
-            "led": {"image": "led.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
-            "smdbutton": {"image": "smdbutton.png", "pins": [(5, 5)], "signals": [(30, 5)]},
-            "smdled": {"image": "smdled.png", "pins": [(4, 6)], "signals": [(21, 6)]},
-            "proximity": {"image": "proximity.png", "pins": [(5, 30)], "signals": [(180, 30), (170, 30)]},
-            "estop": {"image": "estop.png", "pins": [(5, 80)], "signals": [(180, 80)]},
-            "probe": {"image": "probe.png", "pins": [(5, 80)], "signals": [(140, 80)]},
-            "switch": {"image": "switch.png", "pins": [(45, 50)], "signals": [(135, 50)]},
-            "opto": {"image": "opto.png", "pins": [(25, 13)], "signals": [(172, 13)]},
-            "w5500mini": {"image": "w5500-mini.png", "pins": [(100, 63), (7, 30), (100, 52), (100, 41), (7, 41), (100, 30)]},
-            "w5500": {"image": "w5500.png", "pins": [(22, 92), (22, 103), (22, 70), (22, 81), (11, 92), (11, 80)]},
-            "spindle500w": {"image": "spindle500w.png", "pins": [(60, 20), (60, 35), (60, 50)], "signals": [(212, 30), (212, 45)]},
-            "laser": {"image": "laser.png", "pins": [(10, 30), (10, 45), (10, 60)], "signals": [(187, 37), (187, 52)]},
-            "stepper": {"image": "stepper.png", "pins": [(15, 190), (15, 160), (15, 130)], "signals": [(180, 120), (180, 135), (180, 150)]},
-            "servo42": {"image": "servo42.png", "pins": [(186, 117), (186, 130), (186, 105)], "signals": [(80, 120), (80, 135), (80, 150)]},
-            "servo": {"image": "servo.png", "pins": [(45, 135), (45, 145), (45, 155)], "signals": [(45, 170), (45, 180), (45, 195)]},
-            "rcservo": {"image": "rcservo.png", "pins": [(45, 237)], "signals": [(45, 170), (45, 180)]},
-            "stepstick": {"image": "stepstick.png", "pins": [(70, 17), (70, 5), (70, 93)], "signals": [(35, 5), (35, 17), (35, 27)]},
-            "ethercatservo": {"image": "ethercat-servo.png", "pins": [(45, 135), (85, 135)], "signals": [(80, 120), (80, 135), (80, 150)]},
-            "flow": {"image": "flow.png", "pins": [(50, 50)], "signals": [(87, 10), (87, 25)]},
-            "encoder": {"image": "encoder.png", "pins": [(105, 13), (105, 25), (105, 39)], "signals": [(40, 37), (40, 50), (40, 25)]},
-            "encoder_optical": {"image": "encoder_optical.png", "pins": [(6, 60), (6, 71), (6, 82)], "signals": [(56, 60), (56, 71), (56, 82)]},
-        }
+        pass
 
     def get(self, image):
         if hasattr(self, image):

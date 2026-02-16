@@ -62,6 +62,7 @@
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |  |
 |  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |  |
 |  | [icewerxadc](icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="icewerxadc/image.png" height="48"> |  |
+|  | [image](image/README.md) | only an image for the flow plan | <img src="image/image.png" height="48"> |  |
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
@@ -116,6 +117,7 @@
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |  |
 |  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |  |
 |  | [icewerxadc](icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="icewerxadc/image.png" height="48"> |  |
+|  | [image](image/README.md) | only an image for the flow plan | <img src="image/image.png" height="48"> |  |
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |

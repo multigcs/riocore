@@ -664,7 +664,10 @@ class PluginNode(MyNode):
                 self.ports[f"sig_{pin_name}"] = pin_data
 
         if self.plugin_instance.IMAGE_SHOW:
-            self.setZValue(1)
+            if self.plugin_instance.PLUGIN_TYPE == "background":
+                self.setZValue(-99)
+            else:
+                self.setZValue(1)
             image = None
             if self.plugin_instance.IMAGE:
                 image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
