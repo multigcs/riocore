@@ -5,7 +5,8 @@
   "timeout": 200,
   "delay": 160,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [172, 90], "type": ["MODBUS"], "bus": true}
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [172, 100], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [172, 80], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
   },
   "commands": {
     "aout1": {

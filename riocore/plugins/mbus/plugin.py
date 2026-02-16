@@ -109,6 +109,7 @@ class Plugin(PluginBase):
                 plugin_instance = connected_pin["instance"]
                 instance.device_instances.append(plugin_instance)
                 plugin_instance.master = instance.master
+                plugin_instance.PREFIX = f"{instance.master}.{plugin_instance.instances_name}"
 
     def globals_c(self):
         tx_buffersize = self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"])

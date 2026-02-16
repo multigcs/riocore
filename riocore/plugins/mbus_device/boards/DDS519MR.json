@@ -4,7 +4,8 @@
   "timeout": 200,
   "delay": 160,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [30, 400], "type": ["MODBUS"], "bus": true}
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [30, 340], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [50, 340], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
   },
   "commands": {
     "voltage": {

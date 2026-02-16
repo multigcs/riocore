@@ -68,7 +68,6 @@ class Plugin(PluginBase):
                     if source.split(":")[0] in sub_uids:
                         source_pin = f"{self.instances_name}_{source}"
                         pintype = "FPGA"
-
                     self.PINDEFAULTS[f"{slot_name}:{pin}"] = {
                         "source": source_pin,
                         "direction": direction,

@@ -5,10 +5,27 @@
   "timeout": 200,
   "delay": 60,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [630, 550], "type": ["MODBUS"], "bus": true}
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [628, 550], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [642, 550], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"},
+    "do:0": {"direction": "output", "edge": "source", "pos": [63, 22], "type": ["GPIO"]},
+    "do:1": {"direction": "output", "edge": "source", "pos": [158, 22], "type": ["GPIO"]},
+    "do:2": {"direction": "output", "edge": "source", "pos": [253, 22], "type": ["GPIO"]},
+    "do:3": {"direction": "output", "edge": "source", "pos": [348, 22], "type": ["GPIO"]},
+    "do:4": {"direction": "output", "edge": "source", "pos": [443, 22], "type": ["GPIO"]},
+    "do:5": {"direction": "output", "edge": "source", "pos": [538, 22], "type": ["GPIO"]},
+    "do:6": {"direction": "output", "edge": "source", "pos": [633, 22], "type": ["GPIO"]},
+    "do:7": {"direction": "output", "edge": "source", "pos": [728, 22], "type": ["GPIO"]},
+    "di:0": {"direction": "input", "edge": "source", "pos": [238, 604], "type": ["GPIO"]},
+    "di:1": {"direction": "input", "edge": "source", "pos": [280, 604], "type": ["GPIO"]},
+    "di:2": {"direction": "input", "edge": "source", "pos": [323, 604], "type": ["GPIO"]},
+    "di:3": {"direction": "input", "edge": "source", "pos": [365, 604], "type": ["GPIO"]},
+    "di:4": {"direction": "input", "edge": "source", "pos": [416, 604], "type": ["GPIO"]},
+    "di:5": {"direction": "input", "edge": "source", "pos": [458, 604], "type": ["GPIO"]},
+    "di:6": {"direction": "input", "edge": "source", "pos": [501, 604], "type": ["GPIO"]},
+    "di:7": {"direction": "input", "edge": "source", "pos": [544, 604], "type": ["GPIO"]}
   },
   "commands": {
-    "out8": {
+    "do": {
         "type": 15,
         "register": 0,
         "datatype": "bool",
@@ -18,7 +35,7 @@
         "error_values": "",
         "format": "0.1f"
     },
-    "in8": {
+    "di": {
         "type": 2,
         "register": 0,
         "datatype": "bool",

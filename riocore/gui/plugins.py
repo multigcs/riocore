@@ -350,6 +350,8 @@ class GuiPlugins:
         for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
             if signal_selected is not None and signal_name != signal_selected:
                 continue
+            if signal_defaults.get("gpio") is True:
+                continue
 
             # signal_table.setRowCount(row_n + 1)
             if signal_name not in signals_setup:

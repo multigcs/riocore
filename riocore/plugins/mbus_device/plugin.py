@@ -86,6 +86,7 @@ class Plugin(PluginBase):
         self.command_ids = 0
         board = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if board == "generic":
+            self.PROVIDES = ["gpio"]
             self.OPTIONS.update(
                 {
                     "ctype": {
@@ -160,7 +161,13 @@ class Plugin(PluginBase):
                     if key in board_data:
                         self.OPTIONS[key]["default"] = board_data[key]
                 self.commands = board_data["commands"]
-                self.PINDEFAULTS = board_data["pins"]
+                self.PINDEFAULTS = board_data.get("pins", {})
+                for pin_data in self.PINDEFAULTS.values():
+                    # print(pin_data)
+                    if "GPIO" in pin_data.get("type", []):
+                        self.PROVIDES = ["gpio"]
+                        break
+
             else:
                 riocore.log(f"ERROR: modbus: boardfile not found: {board_file}")
 
@@ -187,7 +194,7 @@ class Plugin(PluginBase):
                             "no_convert": True,
                         }
                 else:
-                    self.SIGNALS[f"{name}{vn}"] = {
+                    self.SIGNALS[f"{name}_{vn}"] = {
                         "direction": direction,
                         "description": name,
                         "unit": command.get("unit", ""),
@@ -196,6 +203,11 @@ class Plugin(PluginBase):
                         "display": {"section": f"mb-{board}", "min": vmin, "max": vmax},
                         "no_convert": True,
                     }
+                    if f"{name}:{vn}" in self.PINDEFAULTS:
+                        del self.SIGNALS[f"{name}_{vn}"]["display"]
+                        self.SIGNALS[f"{name}_{vn}"]["helper"] = True
+                        self.SIGNALS[f"{name}_{vn}"]["gpio"] = True
+
             if direction == "input":
                 self.SIGNALS[f"{name}_valid"] = {
                     "direction": "input",
@@ -221,13 +233,22 @@ class Plugin(PluginBase):
     @classmethod
     def update_prefixes(cls, parent, instances):
         for instance in instances:
+            uprefix = instance.PREFIX.replace(".", "_").upper()
             for name, command in instance.commands.items():
                 if command["type"] in {2, 3, 4}:
-                    command["var_prefix"] = f"*data->SIGIN_{instance.title.upper()}_{name.upper()}"
-                    command["var_prefix"] = f"*data->SIGIN_{instance.title.upper()}_{name.upper()}"
+                    command["var_prefix"] = f"*data->SIGIN_{uprefix}_{name.upper()}"
+                    command["var_prefix"] = f"*data->SIGIN_{uprefix}_{name.upper()}"
                 elif command["type"] in {6, 15}:
-                    command["var_prefix"] = f"*data->SIGOUT_{instance.title.upper()}_{name.upper()}"
-                command["stat_prefix"] = f"*data->SIGIN_{instance.title.upper()}_{name.upper()}"
+                    command["var_prefix"] = f"*data->SIGOUT_{uprefix}_{name.upper()}"
+                command["stat_prefix"] = f"*data->SIGIN_{uprefix}_{name.upper()}"
+
+    def update_pins(self, parent):
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            psetup = connected_pin["setup"]
+            pin = connected_pin["pin"]
+            # direction = connected_pin["direction"]
+            # inverted = connected_pin["inverted"]
+            psetup["pin"] = f"{self.PREFIX}.{pin.replace(':', '_')}"
 
     def device_functions_check(self, bus_master):
         output = []
@@ -258,10 +279,10 @@ class Plugin(PluginBase):
 
             elif ctype in {6, 15}:
                 for vn in range(command["values"]):
-                    output.append(f"    static float {name}{vn}_last = 0;")
+                    output.append(f"    static float {name}_{vn}_last = 0;")
                 for vn in range(command["values"]):
-                    output.append(f"    if ((float){name}{vn}_last != (float){command['var_prefix']}{vn}) {{")
-                    output.append(f"        {name}{vn}_last = (float){command['var_prefix']}{vn};")
+                    output.append(f"    if ((float){name}_{vn}_last != (float){command['var_prefix']}_{vn}) {{")
+                    output.append(f"        {name}_{vn}_last = (float){command['var_prefix']}_{vn};")
                     output.append("        changed = 1;")
                     output.append("    }")
             output.append("    return changed;")
@@ -318,7 +339,7 @@ class Plugin(PluginBase):
                 n_values = self.int2list(command["values"])
                 output.append("    uint8_t bitvalues = 0;")
                 for vn in range(command["values"]):
-                    output.append(f"    if ({command['var_prefix']}{vn} == 1) {{")
+                    output.append(f"    if ({command['var_prefix']}_{vn} == 1) {{")
                     output.append(f"        bitvalues |= (1<<{vn});")
                     output.append("    }")
                 output.append(f"    frame[0] = {address};")
@@ -337,12 +358,12 @@ class Plugin(PluginBase):
                 if datatype == "bool":
                     output.append("    uint16_t bitvalues = 0;")
                     for vn in range(command["values"]):
-                        output.append(f"    if ({command['var_prefix']}{vn} == 1) {{")
+                        output.append(f"    if ({command['var_prefix']}_{vn} == 1) {{")
                         output.append(f"        bitvalues |= (1<<{vn});")
                         output.append("    }")
                 elif not command.get("cmdmapping"):
                     for vn in range(command["values"]):
-                        output.append(f"    uint16_t value = {command['var_prefix']}{vn} * {command.get('scale', 1.0)};")
+                        output.append(f"    uint16_t value = {command['var_prefix']}_{vn} * {command.get('scale', 1.0)};")
 
                 output.append(f"    frame[0] = {address};")
                 output.append(f"    frame[1] = {ctype};")
@@ -381,10 +402,10 @@ class Plugin(PluginBase):
                     output.append("        float value = 0;")
                     output.append("        uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};")
                     output.append("        memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);")
-                    output.append(f"        {command['var_prefix']}0 = value * {command.get('scale', 1.0)};")
+                    output.append(f"        {command['var_prefix']}_0 = value * {command.get('scale', 1.0)};")
                 else:
                     for vn in range(command["values"]):
-                        output.append(f"        {command['var_prefix']}{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")
+                        output.append(f"        {command['var_prefix']}_{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")
 
                 output.append(f"        {command['stat_prefix']}_VALID = 1;")
                 output.append(f"        if ({command['stat_prefix']}_ERRORS > 0) {{")
@@ -401,11 +422,11 @@ class Plugin(PluginBase):
                 if datatype == "bool":
                     output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype} && data_len == 1) {{")
                     for vn in range(command["values"]):
-                        output.append(f"        {command['var_prefix']}{vn} = ((frame_data[3] & (1<<{vn})) != 0);")
+                        output.append(f"        {command['var_prefix']}_{vn} = ((frame_data[3] & (1<<{vn})) != 0);")
                 else:
                     output.append(f"    if (frame_len && {address} && data_type == {ctype} && data_len == {command['values'] * 2}) {{")
                     for vn in range(command["values"]):
-                        output.append(f"        {command['var_prefix']}{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")
+                        output.append(f"        {command['var_prefix']}_{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")
                 output.append(f"        {command['stat_prefix']}_VALID = 1;")
                 output.append(f"        if ({command['stat_prefix']}_ERRORS > 0) {{")
                 output.append(f"            {command['stat_prefix']}_ERRORS -= 1;")
