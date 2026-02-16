@@ -523,6 +523,8 @@ void rtapi_app_exit(void) {
 int64_t modbus0_last_rx = 0;
 uint8_t modbus0_signal_active = 0;
 uint8_t modbus0_signal_next = 0;
+uint8_t modbus0_frame_last_tx[16];
+uint8_t modbus0_frame_last_tx_len = 0;
 
 
 
