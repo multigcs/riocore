@@ -275,7 +275,8 @@ class Plugins:
             for plugin_config in list(config["plugins"]):
                 plugin_instance = self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
                 if not plugin_instance:
-                    exit(1)
+                    log(f"plugin not found: {plugin_config.get('type') or plugin_config}")
+                    return []
                 plugin_id += 1
 
                 # adding sub-plugins
@@ -284,12 +285,12 @@ class Plugins:
                         # update options
                         for key, value in plugin_config.get("sub", {}).get(sub_plugin_config["uid"], {}).items():
                             sub_plugin_config[key] = value
-
                         config["plugins"].append(sub_plugin_config)
                         sub_plugin_config["parent"] = plugin_instance
                         sub_plugin_instance = self.load_plugin(plugin_id, sub_plugin_config, system_setup=system_setup)
                         if not sub_plugin_instance:
-                            exit(1)
+                            log(f"sub_plugin not found: {sub_plugin_config.get('type') or sub_plugin_config}")
+                            continue
                         for pin_name, pin_data in sub_plugin_instance.plugin_setup.get("pins", {}).items():
                             pin_data["pin"] = f"{plugin_config['uid']}:{pin_data['pin']}"
                         plugin_id += 1
@@ -431,7 +432,7 @@ class Project:
         if os.path.exists(os.path.join(riocore_path, path)):
             return os.path.join(riocore_path, path)
         log(f"path not found: {path} or {os.path.join(riocore_path, path)}")
-        exit(1)
+        sys.exit(1)
 
     def load_config(self, configuration, output_path=None):
         project = {}
@@ -454,7 +455,7 @@ class Project:
                 log("")
                 log(f"this is not a file: {configuration}")
                 log("")
-                exit(1)
+                sys.exit(1)
             try:
                 with open(configuration) as f:
                     data = f.read()
@@ -462,7 +463,7 @@ class Project:
                 log("")
                 log(err)
                 log("")
-                exit(1)
+                sys.exit(1)
 
             try:
                 project["jdata_str"] = data
@@ -472,7 +473,7 @@ class Project:
                 log(f"JSON error: {err}")
                 log("please check your json syntax")
                 log("")
-                exit(1)
+                sys.exit(1)
             project["json_file"] = configuration
             project["json_path"] = os.path.dirname(configuration)
 

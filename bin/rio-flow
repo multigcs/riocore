@@ -1376,11 +1376,11 @@ class Window(QMainWindow):
                 self.cfg_reload()  # timing 0.39
             else:
                 riocore.log(f"ERROR: file not found: {self.config_file}")
-                exit(1)
+                sys.exit(1)
         else:
             ret = self.loader.select()
             if not ret:
-                exit(1)
+                sys.exit(1)
             if self.config_file and os.path.exists(self.config_file):
                 self.cfg_reload()  # timing 0.39
             else:
@@ -1402,12 +1402,12 @@ class Window(QMainWindow):
         if self.args.png:
             riocore.log(f"saving view to png file: {self.args.png}")
             self.view.save_png(self.args.png)
-            exit(0)
+            sys.exit(0)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         # self.timer.start(1000)
-        # exit(0)
+        # sys.exit(0)
 
     def generate(self):
         # output_dir = "/tmp/rio-test-build"
@@ -1621,7 +1621,7 @@ class Window(QMainWindow):
 
     def exit(self):
         if self.save_check():
-            exit(0)
+            sys.exit(0)
 
     def save_check(self):
         if not self.cfg_check():
