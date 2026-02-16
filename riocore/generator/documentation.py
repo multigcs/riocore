@@ -206,10 +206,10 @@ class documentation:
                 output.append("")
 
         output.append("## Plugins")
-        output.append("| Type | Info | Instance | Signals | Image |")
-        output.append("| --- | --- | --- | --- | --- |")
+        output.append("| Type | Number | Info | Instance | Signals | Image |")
+        output.append("| --- | --- | --- | --- | --- | --- |")
         for name, plugin in self.plugin_infos.items():
-            output.append(f"| {plugin['link']} | {plugin['info']} | {', '.join(plugin['instances'])} | {'<br/>'.join(plugin['signals'])} | {plugin['image']} |")
+            output.append(f"| {plugin['link']} | {len(plugin['instances'])}x | {plugin['info']} | {', '.join(plugin['instances'])} | {'<br/>'.join(plugin['signals'])} | {plugin['image']} |")
         output.append("")
         open(os.path.join(self.doc_path, "CONFIG.md"), "w").write("\n".join(output))
 
