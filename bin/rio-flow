@@ -1332,7 +1332,7 @@ class Window(QMainWindow):
         self.function_cache = {}
         self.setStyleSheet('QToolTip {background-color: black; color: white; border: black solid 1px; font-family: "Monospace";}')
 
-        self.scene = NodeScene(-5000, -5000, 7500, 7500, self)
+        self.scene = NodeScene(-5000, -5000, 12000, 12000, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
         self.snapshots = []
         self.halpins = {}
