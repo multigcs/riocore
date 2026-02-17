@@ -118,7 +118,7 @@ class PluginBase:
         if self.IMAGES:
             NEW_OPTIONS["image"] = {
                 "default": "generic",
-                "type": "select",
+                "type": "imgselect",
                 "options": ["generic", *self.IMAGES],
                 "description": "hardware type",
             }

@@ -3,7 +3,7 @@ import os
 
 from PyQt5 import QtGui, QtSvg
 from PyQt5.QtCore import QRect, QRectF, QSize, QSortFilterProxyModel, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QFont, QPainter, QPen, QPixmap, QStandardItem
+from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -624,6 +624,129 @@ class edit_combobox(QComboBox):
         else:
             self.editTextChanged.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.change()
+        else:
+            QComboBox.keyPressEvent(self, event)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            if str(self.obj[self.key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.obj[self.key])))
+            else:
+                print(f"ERROR: {self.obj[self.key]} is not a option")
+        elif self.default is not None:
+            if str(self.default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.default)))
+            else:
+                print(f"ERROR: {self.default} is not a option")
+        else:
+            self.setCurrentIndex(self.options_clean.index(""))
+        self.no_update = False
+
+    def wheelEvent(self, *args, **kwargs):
+        if self.hasFocus():
+            return QComboBox.wheelEvent(self, *args, **kwargs)
+
+    def change(self):
+        if self.no_update:
+            return
+        new_value = self.currentText().split("|")[0]
+        if new_value != self.default:
+            self.obj[str(self.key)] = new_value
+        elif str(self.key) in self.obj:
+            del self.obj[str(self.key)]
+        if self.cb:
+            self.cb(new_value)
+        else:
+            self.win.display()
+
+    def get(self):
+        return self.currentText().split("|")[0]
+
+
+class edit_imgselect(QComboBox):
+    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
+        super().__init__()
+        self.setStyleSheet("QComboBox { min-height: 60px; padding: 10px;}")
+        self.setIconSize(QSize(60, 60))
+
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.no_update = False
+        self.options = options.copy()
+        self.options_clean = []
+        for opt in self.options:
+            if opt:
+                self.options_clean.append(opt.split("|")[0])
+            else:
+                self.options_clean.append(opt)
+        if help_text:
+            self.setToolTip(help_text)
+        if key in obj:
+            if str(obj[key]) not in self.options_clean:
+                self.options.append(str(obj[key]))
+                self.options_clean.append(str(obj[key]))
+        else:
+            self.options.append("")
+            self.options_clean.append("")
+
+        for option in self.options:
+            if image := self.get_image(option):
+                icon = QIcon(image)
+                self.addItem(icon, option)
+            else:
+                self.addItem(option)
+
+        self.setEditable(True)
+        self.setInsertPolicy(QComboBox.NoInsert)
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+        self.completer = QCompleter(self.pFilterModel, self)
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
+        if key in obj:
+            if str(obj[key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(obj[key])))
+            else:
+                print(f"ERROR: {obj[key]} is not a option")
+        elif default is not None:
+            if str(default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(default)))
+            else:
+                print(f"ERROR: {default} is not a option")
+        else:
+            self.setCurrentIndex(self.options_clean.index(""))
+        if need_enter:
+            self.currentIndexChanged.connect(self.change)
+            self.textActivated.connect(self.change)
+        else:
+            self.editTextChanged.connect(self.change)
+        self.setFocusPolicy(Qt.StrongFocus)
+
+    def get_image(self, name):
+        if image := riocore.PluginImages.images.get(name, {}).get("image"):
+            print(image)
+            return os.path.join(riocore_path, "files", "images", image)
+        return None
 
     def on_completer_activated(self, text):
         if text:
