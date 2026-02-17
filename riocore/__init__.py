@@ -539,6 +539,7 @@ class PluginImages:
         "touchprobe": {"image": "touchprobe.png", "pins": [(56, 80)], "signals": []},
         "motor": {"image": "motor.png", "pins": [(220, 57)], "signals": []},
         "toggleswitch": {"image": "toggleswitch.png", "pins": [(60, 12)], "signals": []},
+        "fuse": {"image": "fuse.png", "pins": [], "signals": []},
     }
 
     def __init__(self):
