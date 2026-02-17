@@ -532,7 +532,9 @@ class PluginImages:
         "encoder": {"image": "encoder.png", "pins": [(105, 13), (105, 25), (105, 39)], "signals": [(40, 37), (40, 50), (40, 25)]},
         "encoder_optical": {"image": "encoder_optical.png", "pins": [(6, 60), (6, 71), (6, 82)], "signals": [(56, 60), (56, 71), (56, 82)]},
         "dinrail": {"image": "dinrail.png", "pins": [], "signals": []},
-        "mill": {"image": "mill.png", "pins": [], "signals": []},
+        "compressor": {"image": "compressor.png", "pins": [], "signals": []},
+        "vacuum": {"image": "vacuum.png", "pins": [], "signals": []},
+        "valve": {"image": "valve.png", "pins": [], "signals": []},
     }
 
     def __init__(self):
