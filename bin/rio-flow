@@ -1117,7 +1117,7 @@ class NodeViewer(QGraphicsView):
         zoom = self.getZoom()
         angle = event.angleDelta().y()
         zoomFactor = max(min(1 + (angle / 1000), 1.2), 0.8)
-        if zoom < 0.3 and zoomFactor < 1.0:
+        if zoom < 0.1 and zoomFactor < 1.0:
             return
         if self.getZoom() > 5.0 and zoomFactor > 1.0:
             return
@@ -1292,6 +1292,9 @@ class NodeScene(QGraphicsScene):
 
     def drawBackground(self, painter, rect):
         super().drawBackground(painter, rect)
+        zoom = self.parent.view.getZoom()
+        if zoom < 0.5:
+            return
         left, right = floor(rect.left()), ceil(rect.right())
         top, bottom = floor(rect.top()), ceil(rect.bottom())
         grid_points = []
