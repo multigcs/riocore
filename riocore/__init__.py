@@ -537,7 +537,8 @@ class PluginImages:
         "valve": {"image": "valve.png", "pins": [(170, 86)], "signals": []},
         "dinrailplug": {"image": "dinrailplug.png", "pins": [(92, 270)], "signals": []},
         "touchprobe": {"image": "touchprobe.png", "pins": [(56, 80)], "signals": []},
-        # 3d touch probe, MPG, power-plug, switches, motors
+        "motor": {"image": "motor.png", "pins": [(220, 57)], "signals": []},
+        # MPG, switches
     }
 
     def __init__(self):
