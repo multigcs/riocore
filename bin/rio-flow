@@ -340,6 +340,9 @@ class MyNode(QGraphicsItem):
         self.update()
         QGraphicsItem.mouseReleaseEvent(self, event)
 
+    def master_node(self):
+        return None
+
     def load_image(self, image):
         if os.path.exists(image):
             rotate = self.flow_cfg.get("rotate", 0)
@@ -420,7 +423,7 @@ class MyNode(QGraphicsItem):
         self.update_size()
         return QRectF(0, 0, self.width, self.height)
 
-    def paintBg(self, painter, title, info=""):
+    def paintBg(self, painter, title="", info=""):
         painter.setRenderHint(QPainter.Antialiasing)
         path = QPainterPath()
         if self.isSelected():
@@ -816,21 +819,80 @@ class ModifierNode(MyNode):
         self.modifier = modifier
         self.flow_cfg = self.modifier
         self.name = modifier["type"]
-        self.width = grid(100)
-        self.height = grid(20)
+        self.width = grid(150)
+        self.height = grid(40)
         self.setZValue(9)
         self.ports = {
             "in": {
                 "title": " ",
                 "direction": "all",
                 "edge": "target",
+                "pos": (10, self.height // 2),
             },
             "out": {
                 "title": " ",
                 "direction": "all",
                 "edge": "source",
+                "pos": (self.width - 10, self.height // 2),
             },
         }
+        self.reload()
+
+    def update_size(self):
+        if self.flow_cfg.get("rotate", 0) in {0, 180}:
+            self.width = grid(150)
+            self.height = grid(40)
+        else:
+            self.width = grid(40)
+            self.height = grid(150)
+
+    def reload(self):
+        image = os.path.join(riocore_path, "files", "images", f"{self.modifier['type']}.png")
+        self.load_image(image)
+        self.update_size()
+        self.setZValue(0)
+
+    def paint(self, painter, option, widget):
+        self.paintBg(painter)
+        pos = self.pos()
+        self.flow_cfg["pos"] = (pos.x(), pos.y())
+
+        painter.setPen(QPen(self.title_color, 1))
+        painter.setFont(QFont(self.text_font, self.title_size))
+
+        if self.flow_cfg.get("rotate", 0) in {0, 180}:
+            painter.drawText(
+                QRectF(0, 0, self.width, self.height),
+                Qt.AlignmentFlag.AlignCenter,
+                self.name,
+            )
+        else:
+            lh = self.title_size * 1.5
+            py = int((self.height - (len(self.name) * lh)) / 2 + (lh / 2))
+            for char in self.name:
+                painter.drawText(
+                    QRectF(0, py - 10, self.width, 20),
+                    Qt.AlignmentFlag.AlignCenter,
+                    char,
+                )
+                py += lh
+
+        for port_name, port_data in self.ports.items():
+            if not port_data.get("pos"):
+                continue
+            if port_data.get("visible") is False:
+                continue
+            pos_x = port_data["pos"][0]
+            pos_y = port_data["pos"][1]
+            rotate = port_data.get("rotate", 0)
+            pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
+            selected = (self, port_name) == self.scene.selection_source or (self, port_name) == self.scene.selection_target
+            if selected:
+                self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red, rotate)
+            elif port_data.get("type") == "SIGNAL":
+                self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.green, rotate)
+            else:
+                self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow, rotate)
 
     def edit(self, port=None):
         target = self.scene.parent.get_next(self, "out")

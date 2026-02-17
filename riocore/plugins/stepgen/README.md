@@ -45,7 +45,7 @@ axis name (X,Y,Z,...)
 ### image:
 hardware type
 
- * type: select
+ * type: imgselect
  * default: generic
 
 ### mode:

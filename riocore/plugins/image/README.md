@@ -19,7 +19,7 @@ name of this plugin instance
 ### image:
 hardware type
 
- * type: select
+ * type: imgselect
  * default: generic
 
 
