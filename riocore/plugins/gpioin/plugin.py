@@ -9,7 +9,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.KEYWORDS = "input"
         self.NEEDS = ["gpio"]
-        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto"]
+        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
         self.SIGNALS = {

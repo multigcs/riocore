@@ -535,6 +535,9 @@ class PluginImages:
         "compressor": {"image": "compressor.png", "pins": [(466, 215)], "signals": []},
         "vacuum": {"image": "vacuum.png", "pins": [(191, 93)], "signals": []},
         "valve": {"image": "valve.png", "pins": [(170, 86)], "signals": []},
+        "dinrailplug": {"image": "dinrailplug.png", "pins": [(92, 270)], "signals": []},
+        "touchprobe": {"image": "touchprobe.png", "pins": [(56, 80)], "signals": []},
+        # 3d touch probe, MPG, power-plug, switches, motors
     }
 
     def __init__(self):
