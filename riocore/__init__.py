@@ -525,6 +525,7 @@ class PluginImages:
         "stepper": {"image": "stepper.png", "pins": [(15, 190), (15, 160), (15, 130)], "signals": [(180, 120), (180, 135), (180, 150)]},
         "servo42": {"image": "servo42.png", "pins": [(186, 117), (186, 130), (186, 105)], "signals": [(80, 120), (80, 135), (80, 150)]},
         "servo": {"image": "servo.png", "pins": [(45, 135), (45, 145), (45, 155)], "signals": [(45, 170), (45, 180), (45, 195)]},
+        "clstepper": {"image": "clstepper.png", "pins": [(160, 35), (180, 40), (200, 45)], "signals": [(45, 170), (45, 180), (45, 195)]},
         "rcservo": {"image": "rcservo.png", "pins": [(45, 237)], "signals": [(45, 170), (45, 180)]},
         "stepstick": {"image": "stepstick.png", "pins": [(70, 17), (70, 5), (70, 93)], "signals": [(35, 5), (35, 17), (35, 27)]},
         "ethercatservo": {"image": "ethercat-servo.png", "pins": [(45, 135), (85, 135)], "signals": [(80, 120), (80, 135), (80, 150)]},

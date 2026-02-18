@@ -9,7 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "stepper servo joint"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.IMAGES = ["stepper", "servo42", "stepstick", "servo"]
+        self.IMAGES = ["stepper", "servo42", "stepstick", "servo", "clstepper"]
         self.VERILOGS = ["stepdir.v"]
         self.TYPE = "joint"
         self.PINDEFAULTS = {
