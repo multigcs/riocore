@@ -106,7 +106,7 @@ class gateware(generator_base):
 
     def makefile(self):
         flashcmd = self.jdata.get("flashcmd")
-        if flashcmd:
+        if flashcmd and False:
             if flashcmd.startswith("./") and self.parent.jdata["json_path"]:
                 flashcmd_script = flashcmd.split()[0].replace("./", "")
                 json_path = self.parent.jdata["json_path"]
@@ -151,7 +151,9 @@ class gateware(generator_base):
         self.jdata["verilog_files"] = self.parent.verilogs
         self.jdata["pinlists"] = {}
         self.jdata["pinlists"]["base"] = {}
-        self.jdata["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pull": None, "pin": self.jdata["sysclk_pin"], "varname": "sysclk_in"}
+
+        if self.jdata["sysclk_pin"] != "internal":
+            self.jdata["pinlists"]["base"]["sysclk_in"] = {"direction": "input", "pull": None, "pin": self.jdata["sysclk_pin"], "varname": "sysclk_in"}
 
         self.jdata["timing_constraints"] = {}
         self.jdata["timing_constraints_instance"] = {}
@@ -399,7 +401,9 @@ class gateware(generator_base):
             riocore.log(f"ERROR: wrong output buffer sizes: {output_pos} {diff}")
             sys.exit(1)
 
-        arguments_list = ["input sysclk_in"]
+        arguments_list = []
+        if self.jdata["sysclk_pin"] != "internal":
+            arguments_list.append("input sysclk_in")
         existing_pins = {}
         double_pins = {}
         for plugin_instance in self.parent.project.plugin_instances:
@@ -490,7 +494,22 @@ class gateware(generator_base):
         osc_clock = self.jdata["clock"].get("osc")
         speed = self.jdata["clock"].get("speed")
 
-        if osc_clock and float(osc_clock) != float(speed):
+        if self.jdata["sysclk_pin"] == "internal":
+            if self.jdata["family"] == "ice40" and self.jdata["type"] == "up5k":
+                output.append("    // Instantiate the internal high-frequency oscillator")
+                output.append("    wire sysclk;")
+                output.append("    SB_HFOSC #(")
+                output.append('        .CLKHF_DIV("0b00") // "0b00" = 48MHz, "0b01" = 24MHz, "0b10" = 12MHz, "0b11" = 6MHz')
+                output.append("    ) u_hfosc (")
+                output.append("        .CLKHFPU(1'b1), // Power up")
+                output.append("        .CLKHFEN(1'b1), // Enable")
+                output.append("        .CLKHF(sysclk)  // Clock output")
+                output.append("    );")
+            else:
+                print("ERROR: internal clock only for ice40up5k chips")
+                sys.exit(1)
+
+        elif osc_clock and float(osc_clock) != float(speed):
             if self.parent.generate_pll:
                 if hasattr(self.jdata["toolchain_generator"], "pll"):
                     self.jdata["toolchain_generator"].pll(float(osc_clock), float(speed))
