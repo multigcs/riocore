@@ -548,7 +548,7 @@ class MyNode(QGraphicsItem):
 
     def rotate_xy(self, pos):
         rotate = self.flow_cfg.get("rotate", 0)
-        if self.pixmap:
+        if self.pixmap or isinstance(self, ModifierNode):
             if rotate == 90:
                 pos = [self.width - pos[1], pos[0]]
             elif rotate == -90:
@@ -558,7 +558,7 @@ class MyNode(QGraphicsItem):
         return pos
 
     def rotate_cw(self):
-        if not self.pixmap:
+        if not self.pixmap and not isinstance(self, ModifierNode):
             return
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
@@ -575,7 +575,7 @@ class MyNode(QGraphicsItem):
             self.reload()
 
     def rotate_ccw(self):
-        if not self.pixmap:
+        if not self.pixmap and not isinstance(self, ModifierNode):
             return
         if "rotate" not in self.flow_cfg:
             self.flow_cfg["rotate"] = 0
@@ -819,8 +819,10 @@ class ModifierNode(MyNode):
         self.modifier = modifier
         self.flow_cfg = self.modifier
         self.name = modifier["type"]
-        self.width = grid(150)
-        self.height = grid(40)
+        self._width = grid(150)
+        self._height = grid(30)
+        self.width = self._width
+        self.height = self._height
         self.setZValue(9)
         self.ports = {
             "in": {
@@ -840,15 +842,13 @@ class ModifierNode(MyNode):
 
     def update_size(self):
         if self.flow_cfg.get("rotate", 0) in {0, 180}:
-            self.width = grid(150)
-            self.height = grid(40)
+            self.width = self._width
+            self.height = self._height
         else:
-            self.width = grid(40)
-            self.height = grid(150)
+            self.width = self._height
+            self.height = self._width
 
     def reload(self):
-        image = os.path.join(riocore_path, "files", "images", f"{self.modifier['type']}.png")
-        self.load_image(image)
         self.update_size()
         self.setZValue(0)
 
@@ -859,7 +859,6 @@ class ModifierNode(MyNode):
 
         painter.setPen(QPen(self.title_color, 1))
         painter.setFont(QFont(self.text_font, self.title_size))
-
         if self.flow_cfg.get("rotate", 0) in {0, 180}:
             painter.drawText(
                 QRectF(0, 0, self.width, self.height),
@@ -1228,7 +1227,7 @@ class NodeScene(QGraphicsScene):
                 clone = QAction("clone", None)
                 clone.triggered.connect(self.menu_selection.clone)
                 menu.addAction(clone)
-            if isinstance(self.menu_selection, PluginNode):
+            if isinstance(self.menu_selection, (PluginNode, ModifierNode)):
                 rotate_cw = QAction("rotate_cw", None)
                 if self.selectedItems():
                     items = self.selectedItems()
