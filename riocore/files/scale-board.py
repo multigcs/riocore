@@ -4,10 +4,9 @@ import subprocess
 import sys
 
 btype = "fpga"
-btype = "n"
 # btype = "mesa"
-# btype = "breakout"
 # btype = "ninja"
+btype = "breakout"
 
 board_name = sys.argv[1]
 json_file = f"riocore/plugins/{btype}/boards/{board_name}.json"
@@ -32,7 +31,7 @@ elif btype == "breakout":
             if pos:
                 print(pin, pos)
                 data["pos"] = [int(pos[0] * xscale), int(pos[1] * yscale)]
-    for pin, data in jdata["main"].items():
+    for pin, data in jdata.get("main", {}).items():
         pos = data.get("pos")
         if pos:
             print(pin, pos)

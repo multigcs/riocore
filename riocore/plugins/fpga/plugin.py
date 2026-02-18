@@ -77,18 +77,35 @@ class Plugin(PluginBase):
                 }
             )
 
-        self.OPTIONS.update(
-            {
-                "speed": {
-                    "default": int(self.jdata["clock"].get("speed")),
-                    "type": int,
-                    "min": 1000000,
-                    "max": 500000000,
-                    "unit": "Hz",
-                    "description": "FPGA clock speed",
+        use_internal = "OFF"
+        if internal := self.jdata["clock"].get("internal"):
+            self.OPTIONS.update(
+                {
+                    "use_internal": {
+                        "default": "OFF",
+                        "type": "select",
+                        "options": ["OFF", *internal],
+                        "description": f"use internal clock {internal}",
+                        "reload": True,
+                    }
                 }
-            }
-        )
+            )
+            use_internal = self.plugin_setup.get("use_internal", self.option_default("use_internal"))
+
+        clock_pin = (self.jdata["clock"].get("pin"),)
+        if use_internal == "OFF" and clock_pin != "internal":
+            self.OPTIONS.update(
+                {
+                    "speed": {
+                        "default": int(self.jdata["clock"].get("speed")),
+                        "type": int,
+                        "min": 1000000,
+                        "max": 500000000,
+                        "unit": "Hz",
+                        "description": "FPGA clock speed",
+                    }
+                }
+            )
 
         self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
@@ -117,10 +134,17 @@ class Plugin(PluginBase):
         self.hal_prefix = ""
 
         toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain")) or self.jdata.get("toolchain")
-        speed = self.plugin_setup.get("speed", self.option_default("speed"))
+        speed = self.plugin_setup.get("speed", self.option_default("speed") or int(self.jdata["clock"].get("speed")))
+        if use_internal != "OFF":
+            speed = int(use_internal)
+            self.jdata["clock"]["pin"] = "internal"
+            self.jdata["clock"]["speed"] = speed
+            if "osc" in self.jdata["clock"]:
+                del self.jdata["clock"]["osc"]
+
         self.jdata["toolchain"] = toolchain
         self.jdata["speed"] = speed
-        self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock", self.jdata["speed"]))
+        self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock") or self.jdata["speed"])
         self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
         self.master = self.instances_name
 

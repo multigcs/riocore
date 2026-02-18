@@ -1,414 +1,468 @@
 {
-    "comment": "icebreaker 3axis pmod",
-    "needs": ["pmod2"],
-    "slots": [
-        {
-            "name": "PMODB",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "P4": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        134.5
-                    ]
-                },
-                "P3": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        157.0
-                    ]
-                },
-                "P2": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        179.5
-                    ]
-                },
-                "P1": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        202.0
-                    ]
-                },
-                "P10": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        134.5
-                    ]
-                },
-                "P9": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        157.0
-                    ]
-                },
-                "P8": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        179.5
-                    ]
-                },
-                "P7": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        202.0
-                    ]
-                }
-            }
+  "comment": "icebreaker 3axis pmod",
+  "needs": [
+    "pmod2"
+  ],
+  "slots": [
+    {
+      "name": "PMODB",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P4": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            67
+          ]
         },
-
-        {
-            "name": "PMODA",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "P4": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        360.5
-                    ]
-                },
-                "P3": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        383.0
-                    ]
-                },
-                "P2": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        405.5
-                    ]
-                },
-                "P1": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        710.5,
-                        428.0
-                    ]
-                },
-                "P10": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        360.5
-                    ]
-                },
-                "P9": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        383.0
-                    ]
-                },
-                "P8": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        405.5
-                    ]
-                },
-                "P7": {
-                    "direction": "all",
-                    "edge": "target",
-                    "optional": true,
-                    "pintype": "BREAKOUT",
-                    "type": ["BREAKOUT"],
-                    "pos": [
-                        734.0,
-                        428.0
-                    ]
-                }
-            }
+        "P3": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            78
+          ]
         },
-        {
-            "name": "INPUT",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "IN0": {
-                    "source": "PMODB:P4",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        95,
-                        75
-                    ],
-                    "direction": "input"
-                },
-                "IN1": {
-                    "source": "PMODB:P2",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        160,
-                        75
-                    ],
-                    "direction": "input"
-                },
-                "IN2": {
-                    "source": "PMODB:P3",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        230,
-                        75
-                    ],
-                    "direction": "input"
-                },
-                "IN3": {
-                    "source": "PMODB:P10",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        300,
-                        75
-                    ],
-                    "direction": "input"
-                },
-                "IN4": {
-                    "source": "PMODB:P9",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        370,
-                        75
-                    ],
-                    "direction": "input"
-                }
-            }
+        "P2": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            89
+          ]
         },
-
-
-        {
-            "name": "OUTPUT",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "OUT0": {
-                    "source": "PMODB:P7",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        300,
-                        190
-                    ],
-                    "direction": "output"
-                },
-                "OUT1": {
-                    "source": "PMODB:P1",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        370,
-                        190
-                    ],
-                    "direction": "output"
-                }
-            }
+        "P1": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            101
+          ]
         },
-
-        {
-            "name": "J0",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "step": {
-                    "source": "PMODA:P4",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        207,
-                        338
-                    ],
-                    "direction": "output"
-                },
-                "dir": {
-                    "source": "PMODA:P10",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        207,
-                        310
-                    ],
-                    "direction": "output"
-                }
-            }
+        "P10": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            67
+          ]
         },
-
-        {
-            "name": "J1",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "step": {
-                    "source": "PMODA:P3",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        390,
-                        338
-                    ],
-                    "direction": "output"
-                },
-                "dir": {
-                    "source": "PMODA:P9",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        390,
-                        310
-                    ],
-                    "direction": "output"
-                }
-            }
+        "P9": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            78
+          ]
         },
-
-        {
-            "name": "J2",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "step": {
-                    "source": "PMODA:P2",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        570,
-                        338
-                    ],
-                    "direction": "output"
-                },
-                "dir": {
-                    "source": "PMODA:P8",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        570,
-                        310
-                    ],
-                    "direction": "output"
-                }
-            }
+        "P8": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            89
+          ]
         },
-
-        {
-            "name": "ALL",
-            "comment": "",
-            "default": "stepdir",
-            "pins": {
-                "enable": {
-                    "source": "PMODA:P1",
-                    "edge": "source",
-                    "pintype": "PASSTHROUGH",
-                    "type": ["PASSTHROUGH"],
-                    "optional": true,
-                    "pos": [
-                        207,
-                        487
-                    ],
-                    "direction": "output"
-                }
-            }
+        "P7": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            101
+          ]
         }
-
-    ]
+      }
+    },
+    {
+      "name": "PMODA",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P4": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            180
+          ]
+        },
+        "P3": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            191
+          ]
+        },
+        "P2": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            202
+          ]
+        },
+        "P1": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            355,
+            214
+          ]
+        },
+        "P10": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            180
+          ]
+        },
+        "P9": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            191
+          ]
+        },
+        "P8": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            202
+          ]
+        },
+        "P7": {
+          "direction": "all",
+          "edge": "target",
+          "optional": true,
+          "pintype": "BREAKOUT",
+          "type": [
+            "BREAKOUT"
+          ],
+          "pos": [
+            367,
+            214
+          ]
+        }
+      }
+    },
+    {
+      "name": "INPUT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "IN0": {
+          "source": "PMODB:P4",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            47,
+            37
+          ],
+          "direction": "input"
+        },
+        "IN1": {
+          "source": "PMODB:P2",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            80,
+            37
+          ],
+          "direction": "input"
+        },
+        "IN2": {
+          "source": "PMODB:P3",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            115,
+            37
+          ],
+          "direction": "input"
+        },
+        "IN3": {
+          "source": "PMODB:P10",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            150,
+            37
+          ],
+          "direction": "input"
+        },
+        "IN4": {
+          "source": "PMODB:P9",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            185,
+            37
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "OUTPUT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "OUT0": {
+          "source": "PMODB:P7",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            150,
+            95
+          ],
+          "direction": "output"
+        },
+        "OUT1": {
+          "source": "PMODB:P1",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            185,
+            95
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "J0",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "step": {
+          "source": "PMODA:P4",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            103,
+            169
+          ],
+          "direction": "output"
+        },
+        "dir": {
+          "source": "PMODA:P10",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            103,
+            155
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "J1",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "step": {
+          "source": "PMODA:P3",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            195,
+            169
+          ],
+          "direction": "output"
+        },
+        "dir": {
+          "source": "PMODA:P9",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            195,
+            155
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "J2",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "step": {
+          "source": "PMODA:P2",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            285,
+            169
+          ],
+          "direction": "output"
+        },
+        "dir": {
+          "source": "PMODA:P8",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            285,
+            155
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "ALL",
+      "comment": "",
+      "default": "stepdir",
+      "pins": {
+        "enable": {
+          "source": "PMODA:P1",
+          "edge": "source",
+          "pintype": "PASSTHROUGH",
+          "type": [
+            "PASSTHROUGH"
+          ],
+          "optional": true,
+          "pos": [
+            103,
+            243
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
 }

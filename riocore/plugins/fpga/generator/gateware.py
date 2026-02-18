@@ -496,10 +496,11 @@ class gateware(generator_base):
 
         if self.jdata["sysclk_pin"] == "internal":
             if self.jdata["family"] == "ice40" and self.jdata["type"] == "up5k":
+                mapping = {48000000: "0b00", 24000000: "0b01", 12000000: "0b10", 6000000: "0b11"}
                 output.append("    // Instantiate the internal high-frequency oscillator")
                 output.append("    wire sysclk;")
                 output.append("    SB_HFOSC #(")
-                output.append('        .CLKHF_DIV("0b00") // "0b00" = 48MHz, "0b01" = 24MHz, "0b10" = 12MHz, "0b11" = 6MHz')
+                output.append(f'        .CLKHF_DIV("{mapping.get(speed)}") // "0b00" = 48MHz, "0b01" = 24MHz, "0b10" = 12MHz, "0b11" = 6MHz')
                 output.append("    ) u_hfosc (")
                 output.append("        .CLKHFPU(1'b1), // Power up")
                 output.append("        .CLKHFEN(1'b1), // Enable")
