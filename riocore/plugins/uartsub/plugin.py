@@ -25,7 +25,7 @@ class Plugin(PluginBase):
         }
         self.OPTIONS = {
             "baud": {
-                "default": 1000000,
+                "default": 2500000,
                 "type": int,
                 "min": 9600,
                 "max": 10000000,
@@ -38,16 +38,26 @@ class Plugin(PluginBase):
                 "description": "sub board",
             },
         }
-        self.TYPE = "sub_interface"
+        self.SUBBOARD = self.plugin_setup.get("subboard")
+        self.COMPONENT = "sub_interface"
+
+    @classmethod
+    def component_loader(cls, instances):
+        for sub_num, instance in enumerate(instances):
+            instance.SUBNUM = sub_num
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
-        instance_parameter["MSGID"] = "32'h74697277"
+        instance_parameter["BUFFER_SIZE_RX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_TX"
+        instance_parameter["MSGID"] = "32'h64617461"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
         instance_parameter["CSUM"] = 1
+        instance["arguments"]["rx_data"] = f"sub{self.SUBNUM}_rx_data"
+        instance["arguments"]["tx_data"] = f"sub{self.SUBNUM}_tx_data"
+        instance["arguments"]["sync"] = "INTERFACE_SYNC_RISINGEDGE"
         return instances

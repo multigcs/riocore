@@ -200,24 +200,138 @@ class gateware(generator_base):
 
         self.jdata["toolchain_generator"].generate(self.jdata["output_path"])
 
-    def subcon(self, subname):
+    def subcon_mcu(self, subname, subnumber):
         self.calc_buffersize_sub(self.parent.project, subname)
-
         output = []
-        input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
-        output_variables_list = []
+        output.append(f"#define MCU_BUFFER_SIZE_TX {self.sub_buffer_size_in // 8}")
+        output.append(f"#define MCU_BUFFER_SIZE_RX {self.sub_buffer_size_out // 8}")
+        output.append("")
+        in_bytes = self.sub_buffer_size_in // 8
+        out_bytes = self.sub_buffer_size_out // 8
+        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {{0x64, 0x61, 0x74, 0x61,  {', '.join(['0'] * (in_bytes - 4))},  0, 0}};")
+        output.append(f"uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {{0, 0, 0, 0,  {', '.join(['0'] * (out_bytes - 4))},  0, 0}};")
+        output.append("")
+
+        # Variables
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.parent.project):
+            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+                continue
+            if plugin_instance.master != subname:
+                continue
+            multiplexed = data_config.get("multiplexed", False)
+            if multiplexed:
+                continue
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "output" or data_config["direction"] == "input":
+                if not data_config.get("expansion"):
+                    if size in {8, 16, 32}:
+                        output.append(f"int{size}_t {variable_name} = 0;")
+                    elif size == 1:
+                        output.append(f"bool {variable_name} = 0;")
+                    else:
+                        output.append(f"//int{size}_t {variable_name} = 0;")
+        output.append("")
+
+        # write tx_buffer
+        output.append("void rio_rtx(void) {")
+        output.append("    // write tx_buffer")
+        input_pos = 32
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.parent.project):
+            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+                continue
+            if plugin_instance.master != subname:
+                continue
+            multiplexed = data_config.get("multiplexed", False)
+            if multiplexed:
+                continue
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "input":
+                if data_config.get("expansion"):
+                    continue
+                if size in {16, 32}:
+                    output.append(f"    memcpy(tx_buffer + {input_pos // 8}, &{variable_name}, {size // 8});")
+                elif size == 8:
+                    output.append(f"    tx_buffer[{input_pos // 8}] = variable_name;")
+                elif size == 1:
+                    bit = 7 - (input_pos - (input_pos // 8 * 8))
+                    output.append(f"    if ({variable_name} == 1) {{")
+                    output.append(f"        tx_buffer[{input_pos // 8}] |= (1<<{bit});")
+                    output.append("    } else {")
+                    output.append(f"        tx_buffer[{input_pos // 8}] &= ~(1<<{bit});")
+                    output.append("    }")
+                input_pos += size
+        output.append("")
+        output.append("    // send tx_buffer")
+        output.append("    uint16_t csum = 0;")
+        output.append("    for (int i = 0; i < MCU_BUFFER_SIZE_TX; i++) {")
+        output.append("        csum += tx_buffer[i] + 1;")
+        output.append("    }")
+        output.append("    tx_buffer[MCU_BUFFER_SIZE_TX] = (csum >> 8 & 0xFF);")
+        output.append("    tx_buffer[MCU_BUFFER_SIZE_TX + 1] = (csum & 0xFF);")
+        output.append("    Serial2.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);")
+        output.append("")
+
+        # read rx_buffer
+        output.append("    // receive rx_buffer")
+        output.append("    int flen = Serial2.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 2);")
+        output.append("    if (flen == MCU_BUFFER_SIZE_RX + 2) {")
+        output.append("        // read rx_buffer")
+        output_pos = 32
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.parent.project):
+            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+                continue
+            if plugin_instance.master != subname:
+                continue
+            multiplexed = data_config.get("multiplexed", False)
+            if multiplexed:
+                continue
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "output":
+                if data_config.get("expansion"):
+                    continue
+                if size in {16, 32}:
+                    output.append(f"        memcpy(&{variable_name}, rx_buffer + {output_pos // 8}, {size // 8});")
+                elif size == 8:
+                    output.append(f"        rx_buffer[{output_pos // 8}] = variable_name;")
+                elif size == 1:
+                    bit = 7 - (output_pos - (output_pos // 8 * 8))
+                    output.append(f"        if ((rx_buffer[{output_pos // 8}] & (1<<{bit})) != 0) {{")
+                    output.append(f"            {variable_name} = 1;")
+                    output.append("        } else {")
+                    output.append(f"            {variable_name} = 0;")
+                    output.append("        }")
+                output_pos += size
+        output.append("    }")
+        output.append("}")
+        output.append("")
+
+        open(os.path.join(self.jdata["output_path"], f"sub_{subname}_mcu.c"), "w").write("\n".join(output))
+
+    def subcon(self, subname, subnumber):
+        self.calc_buffersize_sub(self.parent.project, subname)
+        output = []
+        output.append(f"    localparam SUB{subnumber}_BUFFER_SIZE_RX = 16'd{self.sub_buffer_size_in}; // {self.sub_buffer_size_in // 8} bytes")
+        output.append(f"    localparam SUB{subnumber}_BUFFER_SIZE_TX = 16'd{self.sub_buffer_size_out}; // {self.sub_buffer_size_out // 8} bytes")
+        output.append("")
+        output.append(f"    wire [SUB{subnumber}_BUFFER_SIZE_RX-1:0] sub{subnumber}_rx_data;")
+        output.append(f"    wire [SUB{subnumber}_BUFFER_SIZE_TX-1:0] sub{subnumber}_tx_data;")
+        output.append("")
+
+        sub_output_variables_list = ["32'h74697277"]
+        sub_input_variables_list = []
         self.parent.iface_in = []
         self.parent.iface_out = []
-        output_pos = self.sub_buffer_size_out
+        sub_input_pos = self.sub_buffer_size_in
+        sub_output_pos = self.sub_buffer_size_out
 
         variable_name = "header_rx"
         size = 32
         pack_list = []
         for bit_num in range(0, size, 8):
-            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
-            output_pos -= 8
-        output_variables_list.append(f"// SUB -> FPGA ({self.sub_output_size} + FILL)")
-        output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+            pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - 8}]")
+            sub_input_pos -= 8
+        sub_input_variables_list.append(f"// SUB{subnumber} -> FPGA / INPUTS ({self.sub_input_size} + FILL)")
+        sub_input_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
         self.parent.iface_out.append(["RX_HEADER", size])
         self.parent.iface_in.append(["TX_HEADER", size])
         self.parent.iface_in.append(["TITMESTAMP", size])
@@ -231,42 +345,44 @@ class gateware(generator_base):
             if multiplexed:
                 continue
             variable_name = data_config["variable"]
-            if data_config["direction"] == "input":
+            if data_config["direction"] == "output":
                 if not data_config.get("expansion"):
                     pack_list = []
                     if size >= 8:
                         for bit_num in range(0, size, 8):
                             pack_list.append(f"{variable_name}[{bit_num + 7}:{bit_num}]")
+                            sub_output_pos -= 8
                     else:
                         pack_list.append(f"{variable_name}")
-                    input_variables_list.append(f"{', '.join(pack_list)}")
+                        sub_output_pos -= size
+                    sub_output_variables_list.append(f"{', '.join(pack_list)}")
                     self.parent.iface_in.append([variable_name, size])
-            elif data_config["direction"] == "output":
+            elif data_config["direction"] == "input":
                 if not data_config.get("expansion"):
                     pack_list = []
                     if size >= 8:
                         for bit_num in range(0, size, 8):
-                            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
-                            output_pos -= 8
+                            pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - 8}]")
+                            sub_input_pos -= 8
                     elif size > 1:
-                        pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - size}]")
-                        output_pos -= size
+                        pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - size}]")
+                        sub_input_pos -= size
                     else:
-                        pack_list.append(f"rx_data[{output_pos - 1}]")
-                        output_pos -= 1
-                    output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+                        pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}]")
+                        sub_input_pos -= 1
+                    sub_input_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
                     self.parent.iface_out.append([variable_name, size])
 
-        if self.sub_buffer_size > self.sub_input_size:
-            diff = self.sub_buffer_size - self.sub_input_size
-            input_variables_list.append(f"{diff}'d0")
-
-        diff = self.sub_buffer_size_out - self.sub_output_size
         if self.sub_buffer_size_out > self.sub_output_size:
-            output_variables_list.append(f"// assign FILL = rx_data[{diff - 1}:0];")
+            diff = self.sub_buffer_size_out - self.sub_output_size
+            sub_output_variables_list.append(f"{diff}'d0")
 
-        if output_pos != diff:
-            riocore.log(f"ERROR: wrong output buffer sizes: {output_pos} {diff}")
+        diff = self.sub_buffer_size_in - self.sub_input_size
+        if self.sub_buffer_size_in > self.sub_input_size:
+            sub_input_variables_list.append(f"// assign FILL = sub{subnumber}_rx_data[{diff - 1}:0];")
+
+        if sub_input_pos != diff:
+            riocore.log(f"ERROR: wrong sub input buffer sizes: {sub_input_pos} {diff}")
             # sys.exit(1)
 
         for plugin_instance in self.parent.project.plugin_instances:
@@ -286,13 +402,13 @@ class gateware(generator_base):
                         output.append(f"    wire {pin_config['varname']};")
                         output.append(f"    assign {pin_config['varname']} = {pinname}; // {pin_config['direction']}")
 
-        output_variables_string = "\n    ".join(output_variables_list)
-        output.append(f"    {output_variables_string}")
+        sub_input_variables_string = "\n    ".join(sub_input_variables_list)
+        output.append(f"    {sub_input_variables_string}")
         output.append("")
-        output.append(f"    // FPGA -> SUB ({self.sub_input_size} + FILL)")
-        output.append("    assign tx_data = {")
-        input_variables_string = ",\n        ".join(input_variables_list)
-        output.append(f"        {input_variables_string}")
+        output.append(f"    // FPGA -> SUB{subnumber} / OUTPUTS ({self.sub_output_size} + FILL)")
+        output.append(f"    assign sub{subnumber}_tx_data = {{")
+        sub_output_variables_string = ",\n        ".join(sub_output_variables_list)
+        output.append(f"        {sub_output_variables_string}")
         output.append("    };")
         output.append("")
 
@@ -771,6 +887,26 @@ class gateware(generator_base):
                     iface = plugin_instance.INTERFACE[signal]
                     varmapping[f"{signal_config['signal_prefix']}:{signal}"] = iface["variable"]
 
+        sub_configs = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
+                continue
+            if not plugin_instance.gateware_instances():
+                continue
+            if plugin_instance.instances_name == self.instance.instances_name:
+                continue
+            if plugin_instance.COMPONENT != "sub_interface":
+                continue
+            sub_configs.append((plugin_instance.SUBBOARD, plugin_instance.SUBNUM))
+
+        for sub_number, sub_config in enumerate(sub_configs):
+            output.append("")
+            output.append("")
+            output.append(f"    // #################### {sub_config} (sub{sub_number}) ####################")
+            self.subcon_mcu(*sub_config)
+            output += self.subcon(*sub_config)
+            output.append("    // ###############################################")
+
         # gateware instances
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name:
@@ -822,18 +958,6 @@ class gateware(generator_base):
                         output_last.append("    );")
             output += output_first
             output += output_last
-
-        sub_configs = set()
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name == plugin_instance.gmaster and plugin_instance.gmaster != plugin_instance.master:
-                sub_configs.add(plugin_instance.master)
-
-        for sub_config in sub_configs:
-            output.append("")
-            output.append("")
-            output.append(f"    // #################### {sub_config} ####################")
-            output += self.subcon(sub_config)
-            output.append("    // ###############################################")
 
         output.append("")
         output.append("endmodule")

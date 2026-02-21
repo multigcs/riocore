@@ -1,7 +1,7 @@
 class generator_base:
     def calc_buffersize(self, project):
-        self.sym_io = True
-        # self.sym_io = False
+        # self.sym_io = True
+        self.sym_io = False
         self.timestamp_size = 32
         self.header_size = 32
         self.input_size = 0
@@ -104,7 +104,6 @@ class generator_base:
             self.sub_input_size += self.sub_multiplexed_input_size + 8
         if self.sub_multiplexed_output:
             self.sub_output_size += self.sub_multiplexed_output_size + 8
-
         self.sub_input_size = self.sub_input_size + self.header_size
         self.sub_output_size = self.sub_output_size + self.header_size
         self.sub_buffer_size = (max(self.sub_input_size, self.sub_output_size) + 7) // 8 * 8

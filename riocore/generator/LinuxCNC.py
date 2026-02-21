@@ -291,6 +291,8 @@ class LinuxCNC:
 
         for plugin_instance in self.project.plugin_instances:
             if hasattr(plugin_instance, "start_sh"):
+                if plugin_instance.fmaster:
+                    continue
                 output.append(f"### {plugin_instance.NAME} ({plugin_instance.instances_name}) ###")
                 output.append(plugin_instance.start_sh(self))
 
