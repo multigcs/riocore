@@ -6,7 +6,9 @@ import sys
 btype = "fpga"
 # btype = "mesa"
 # btype = "ninja"
-btype = "breakout"
+# btype = "breakout"
+# btype = "satmcu"
+btype = "sserial"
 
 board_name = sys.argv[1]
 json_file = f"riocore/plugins/{btype}/boards/{board_name}.json"

@@ -60,6 +60,9 @@ class PluginBase:
         self.timestamp = 0
         self.master = None
         self.gmaster = None
+        self.fmaster = None
+        self.protocol = None
+        self.interface_instance = None
         self.title = ""
         self.plugin_setup = plugin_setup
 
