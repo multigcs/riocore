@@ -191,7 +191,7 @@
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> |  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> |  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> |  |
-|  | [satmcu](satmcu/README.md) | mcu sat | <img src="satmcu/image.png" height="48"> |  |
+|  | [satmcu](satmcu/README.md) | mcu based satellite | <img src="satmcu/image.png" height="48"> |  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> |  |
 |  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |
 |  | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> |  |
@@ -209,6 +209,6 @@
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> |  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> |  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> |  |
-|  | [satmcu](satmcu/README.md) | mcu sat | <img src="satmcu/image.png" height="48"> |  |
+|  | [satmcu](satmcu/README.md) | mcu based satellite | <img src="satmcu/image.png" height="48"> |  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> |  |
 |  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |
