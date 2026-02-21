@@ -1,7 +1,7 @@
 class generator_base:
     def calc_buffersize(self, project):
-        # self.sym_io = True
-        self.sym_io = False
+        self.sym_io = True
+        # self.sym_io = False
         self.timestamp_size = 32
         self.header_size = 32
         self.input_size = 0
