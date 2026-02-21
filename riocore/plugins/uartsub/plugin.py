@@ -22,6 +22,12 @@ class Plugin(PluginBase):
                 "optional": True,
                 "descruption": "for RS485 mode",
             },
+            "SAT:OUT": {
+                "direction": "output",
+                "edge": "source",
+                "bus": True,
+                "type": ["SATCON"],
+            },
         }
         self.OPTIONS = {
             "baud": {
@@ -32,14 +38,13 @@ class Plugin(PluginBase):
                 "unit": "bit/s",
                 "description": "serial baud rate",
             },
-            "subboard": {
-                "default": "",
-                "type": str,
-                "description": "sub board",
-            },
         }
-        self.SUBBOARD = self.plugin_setup.get("subboard")
         self.COMPONENT = "sub_interface"
+
+    def update_pins(self, parent):
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            plugin_instance = connected_pin["instance"]
+            self.SUBBOARD = plugin_instance.master
 
     @classmethod
     def component_loader(cls, instances):

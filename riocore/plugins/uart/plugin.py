@@ -22,6 +22,13 @@ class Plugin(PluginBase):
                 "optional": True,
                 "descruption": "for RS485 mode",
             },
+            "SAT": {
+                "direction": "output",
+                "edge": "target",
+                "type": ["SATCON"],
+                "optional": True,
+                "bus": True,
+            },
         }
         self.OPTIONS = {
             "baud": {

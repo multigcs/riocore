@@ -454,6 +454,8 @@ class PluginBase:
             instance_arguments["clk"] = "sysclk"
         for pin_name, pin_config in self.pins().items():
             pin_varname = pin_config["varname"]
+            if pin_config.get("bus"):
+                continue
             if "pin" in pin_config:
                 pin_varname = self.gateware_pin_modifiers(instances, instance, pin_name, pin_config, pin_varname)
                 instance_arguments[pin_name] = pin_varname
