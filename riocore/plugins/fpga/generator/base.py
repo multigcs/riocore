@@ -1,8 +1,5 @@
 class generator_base:
-    def calc_buffersize(self, project):
-        self.sym_io = True
-        # self.sym_io = False
-        self.timestamp_size = 32
+    def calc_buffersize(self, project, timestamp_size=32, sym_io=True):
         self.header_size = 32
         self.input_size = 0
         self.output_size = 0
@@ -44,7 +41,7 @@ class generator_base:
         if self.multiplexed_output:
             self.output_size += self.multiplexed_output_size + 8
 
-        self.input_size = self.input_size + self.header_size + self.timestamp_size
+        self.input_size = self.input_size + self.header_size + timestamp_size
         self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
         self.buffer_size_in = (self.input_size + 7) // 8 * 8
@@ -53,7 +50,7 @@ class generator_base:
         self.buffer_bytes_in = self.buffer_size_in // 8
         self.buffer_bytes_out = self.buffer_size_out // 8
 
-        if self.sym_io:
+        if sym_io:
             self.buffer_size_in = self.buffer_size
             self.buffer_size_out = self.buffer_size
 
@@ -61,7 +58,7 @@ class generator_base:
         # log("# FPGA->PC", self.input_size)
         # log("# MAX", self.buffer_size)
 
-    def calc_buffersize_sub(self, project, subname):
+    def calc_buffersize_sub(self, project, subname, sym_io=True):
         self.header_size = 32
         self.sub_input_size = 0
         self.sub_output_size = 0
@@ -110,7 +107,7 @@ class generator_base:
         self.sub_buffer_bytes = self.sub_buffer_size // 8
         self.sub_buffer_size_in = (self.sub_input_size + 7) // 8 * 8
         self.sub_buffer_size_out = (self.sub_output_size + 7) // 8 * 8
-        if self.sym_io:
+        if sym_io:
             self.sub_buffer_size_in = self.sub_buffer_size
             self.sub_buffer_size_out = self.sub_buffer_size
 

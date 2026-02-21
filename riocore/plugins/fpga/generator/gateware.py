@@ -201,7 +201,12 @@ class gateware(generator_base):
         self.jdata["toolchain_generator"].generate(self.jdata["output_path"])
 
     def subcon_mcu(self, subname, subnumber):
-        self.calc_buffersize_sub(self.parent.project, subname)
+        sym_io = False
+        if self.instance.protocol == "SPI":
+            # input and output frames with has same size
+            sym_io = True
+
+        self.calc_buffersize_sub(self.parent.project, subname, sym_io=sym_io)
         output = []
         output.append(f"#define MCU_BUFFER_SIZE_TX {self.sub_buffer_size_in // 8}")
         output.append(f"#define MCU_BUFFER_SIZE_RX {self.sub_buffer_size_out // 8}")
@@ -308,7 +313,12 @@ class gateware(generator_base):
         open(os.path.join(self.jdata["output_path"], f"sub_{subname}_mcu.c"), "w").write("\n".join(output))
 
     def subcon(self, subname, subnumber):
-        self.calc_buffersize_sub(self.parent.project, subname)
+        sym_io = False
+        if self.instance.protocol == "SPI":
+            # input and output frames with has same size
+            sym_io = True
+
+        self.calc_buffersize_sub(self.parent.project, subname, sym_io=sym_io)
         output = []
         output.append(f"    localparam SUB{subnumber}_BUFFER_SIZE_RX = 16'd{self.sub_buffer_size_in}; // {self.sub_buffer_size_in // 8} bytes")
         output.append(f"    localparam SUB{subnumber}_BUFFER_SIZE_TX = 16'd{self.sub_buffer_size_out}; // {self.sub_buffer_size_out // 8} bytes")
@@ -330,7 +340,7 @@ class gateware(generator_base):
         for bit_num in range(0, size, 8):
             pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - 8}]")
             sub_input_pos -= 8
-        sub_input_variables_list.append(f"// SUB{subnumber} -> FPGA / INPUTS ({self.sub_input_size} + FILL)")
+        sub_input_variables_list.append(f"// SUB{subnumber}_FPGA -> MASTER_FPGA / INPUTS ({self.sub_input_size} + FILL)")
         sub_input_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
         self.parent.iface_out.append(["RX_HEADER", size])
         self.parent.iface_in.append(["TX_HEADER", size])
@@ -405,7 +415,7 @@ class gateware(generator_base):
         sub_input_variables_string = "\n    ".join(sub_input_variables_list)
         output.append(f"    {sub_input_variables_string}")
         output.append("")
-        output.append(f"    // FPGA -> SUB{subnumber} / OUTPUTS ({self.sub_output_size} + FILL)")
+        output.append(f"    // MASTER_FPGA -> SUB{subnumber}_FPGA / OUTPUTS ({self.sub_output_size} + FILL)")
         output.append(f"    assign sub{subnumber}_tx_data = {{")
         sub_output_variables_string = ",\n        ".join(sub_output_variables_list)
         output.append(f"        {sub_output_variables_string}")
@@ -415,11 +425,22 @@ class gateware(generator_base):
         return output
 
     def top(self):
-        self.calc_buffersize(self.parent.project)
+        timestamp_size = 0
+        if self.instance.fmaster is None:
+            # this is the FPGA Master (connected to the PC)
+            timestamp_size = 32
+
+        sym_io = False
+        if self.instance.protocol == "SPI":
+            # input and output frames with has same size
+            sym_io = True
+
+        self.calc_buffersize(self.parent.project, timestamp_size=timestamp_size, sym_io=sym_io)
 
         output = []
         input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
-        input_variables_list += ["timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]"]
+        if self.instance.fmaster is None:
+            input_variables_list += ["timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]"]
         output_variables_list = []
         self.parent.iface_in = []
         self.parent.iface_out = []
@@ -431,7 +452,11 @@ class gateware(generator_base):
         for bit_num in range(0, size, 8):
             pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
             output_pos -= 8
-        output_variables_list.append(f"// PC -> FPGA / OUT ({self.output_size} + FILL = {self.buffer_size_out})")
+
+        if self.instance.fmaster is None:
+            output_variables_list.append(f"// PC -> MASTER_FPGA / OUT ({self.output_size} + FILL = {self.buffer_size_out})")
+        else:
+            output_variables_list.append(f"// MASTER_FPGA -> SUB_FPGA / OUT ({self.output_size} + FILL = {self.buffer_size_out})")
         output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
         self.parent.iface_out.append(["RX_HEADER", size])
         self.parent.iface_in.append(["TX_HEADER", size])
@@ -754,7 +779,10 @@ class gateware(generator_base):
         output_variables_string = "\n    ".join(output_variables_list)
         output.append(f"    {output_variables_string}")
         output.append("")
-        output.append(f"    // FPGA -> PC IN ({self.input_size} + FILL = {self.buffer_size_in})")
+        if self.instance.fmaster is None:
+            output.append(f"    // MASTER_FPGA -> PC IN ({self.input_size} + FILL = {self.buffer_size_in})")
+        else:
+            output.append(f"    // MASTER_SUB -> MASTER_FPGA IN ({self.input_size} + FILL = {self.buffer_size_in})")
         output.append("    assign tx_data = {")
         input_variables_string = ",\n        ".join(input_variables_list)
         output.append(f"        {input_variables_string}")
