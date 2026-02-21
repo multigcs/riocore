@@ -67,17 +67,28 @@ Some hardware-based systems can count at MHz rates."""
         self.PINDEFAULTS = {
             "phase-A": {
                 "direction": "input",
+                "type": ["GPIO"],
             },
             "phase-B": {
                 "direction": "input",
+                "type": ["GPIO"],
             },
             "phase-Z": {
                 "direction": "input",
                 "optional": True,
+                "type": ["GPIO"],
+            },
+        }
+        self.INTERFACE = {
+            "position": {
+                "size": 32,
+                "direction": "input",
             },
         }
 
     def hal(self, generator):
+        if "mcu" in self.MASTER_PROVIDES:
+            return
         for option in ("counter-mode", "x4-mode", "missing-teeth", "position-scale"):
             value = self.plugin_setup.get(option, self.option_default(option))
             if self.OPTIONS[option]["type"] is bool:
@@ -86,10 +97,73 @@ Some hardware-based systems can count at MHz rates."""
 
     @classmethod
     def component_loader(cls, instances):
+        inum = 0
+        for instance in instances:
+            if "mcu" not in instance.MASTER_PROVIDES:
+                inum += 1
+        if not inum:
+            return ""
         output = []
-        output.append(f"# encoder component for {len(instances)} inputs(s)")
-        output.append(f"loadrt encoder num_chan={len(instances)}")
+        output.append(f"# encoder component for {inum} inputs(s)")
+        output.append(f"loadrt encoder num_chan={inum}")
         output.append("addf encoder.update-counters base-thread")
         output.append("addf encoder.capture-position servo-thread")
         output.append("")
+        return "\n".join(output)
+
+    def gateware_instances(self):
+        return self.gateware_instances_base(direct=True)
+
+    @classmethod
+    def firmware_type_defines(cls, instances):
+        inum = 0
+        for instance in instances:
+            if "mcu" in instance.MASTER_PROVIDES:
+                inum += 1
+        if not inum:
+            return ""
+        return f"""
+#include <ESPRotary.h>
+#define NUM_ENCODERS {inum}
+
+ESPRotary encoder[NUM_ENCODERS];
+hw_timer_t *timer = NULL;
+
+void IRAM_ATTR handleLoop() {{
+    for (int i = 0; i < NUM_ENCODERS; i++) {{
+        encoder[i].loop();
+    }}
+}}
+
+"""
+
+    def firmware_defines(self, variable_name):
+        if "mcu" not in self.MASTER_PROVIDES:
+            return ""
+        pin_a = self.plugin_setup["pins"]["phase-A"]["pin"]
+        pin_b = self.plugin_setup["pins"]["phase-B"]["pin"]
+        return f"#define {variable_name}_PIN_A {pin_a}\n#define {variable_name}_PIN_B {pin_b}"
+
+    @classmethod
+    def firmware_type_setup(cls, instances):
+        output = []
+        flag = False
+        for inum, instance in enumerate(instances):
+            if "mcu" in instance.MASTER_PROVIDES:
+                flag = True
+                output.append(f"    encoder[{inum}].begin(VARIN32_{instance.instances_name.upper()}_POSITION_PIN_A, VARIN32_{instance.instances_name.upper()}_POSITION_PIN_B, 4);")
+        if flag:
+            output.append("")
+            output.append("    timer = timerBegin(0, 80, true);")
+            output.append("    timerAttachInterrupt(timer, &handleLoop, true);")
+            output.append("    timerAlarmWrite(timer, 100, true);")
+            output.append("    timerAlarmEnable(timer);")
+        return "\n".join(output)
+
+    @classmethod
+    def firmware_type_loop(cls, instances):
+        output = []
+        for inum, instance in enumerate(instances):
+            if "mcu" in instance.MASTER_PROVIDES:
+                output.append(f"    VARIN32_{instance.instances_name.upper()}_POSITION = encoder[{inum}].getPosition();")
         return "\n".join(output)

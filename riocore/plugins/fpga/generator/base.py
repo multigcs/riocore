@@ -40,7 +40,6 @@ class generator_base:
             self.input_size += self.multiplexed_input_size + 8
         if self.multiplexed_output:
             self.output_size += self.multiplexed_output_size + 8
-
         self.input_size = self.input_size + self.header_size + timestamp_size
         self.output_size = self.output_size + self.header_size
         self.buffer_size = (max(self.input_size, self.output_size) + 7) // 8 * 8
@@ -58,7 +57,7 @@ class generator_base:
         # log("# FPGA->PC", self.input_size)
         # log("# MAX", self.buffer_size)
 
-    def calc_buffersize_sub(self, project, subname, sym_io=True):
+    def calc_buffersize_sub(self, project, subname, sym_io=True, firmware=False):
         self.header_size = 32
         self.sub_input_size = 0
         self.sub_output_size = 0
@@ -69,7 +68,7 @@ class generator_base:
         self.sub_multiplexed_output_size = 0
         self.sub_multiplexed_output_id = 0
         for plugin_instance in project.plugin_instances:
-            if plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster:
+            if not firmware and (plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster):
                 continue
             if plugin_instance.master != subname:
                 continue

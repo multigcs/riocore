@@ -93,6 +93,10 @@ calculates revolutions per minute
 
 ## Interfaces:
 *transport layer*
+### position:
+
+ * size: 32 bit
+ * direction: input
 
 
 ## Basic-Example:

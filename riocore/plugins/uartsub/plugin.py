@@ -41,11 +41,6 @@ class Plugin(PluginBase):
         }
         self.COMPONENT = "sub_interface"
 
-    def update_pins(self, parent):
-        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
-            plugin_instance = connected_pin["instance"]
-            self.SUBBOARD = plugin_instance.master
-
     @classmethod
     def component_loader(cls, instances):
         for sub_num, instance in enumerate(instances):

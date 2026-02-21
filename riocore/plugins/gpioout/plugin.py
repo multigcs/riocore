@@ -11,7 +11,7 @@ class Plugin(PluginBase):
         self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
-        self.NEEDS = ["gpio"]
+        self.NEEDS = ["gpio", "fpga"]
         self.ORIGIN = ""
         self.OPTIONS = {}
         self.SIGNALS = {
@@ -24,6 +24,25 @@ class Plugin(PluginBase):
             "bit": {
                 "direction": "output",
                 "edge": "target",
-                "type": "GPIO",
+                "type": ["GPIO", "FPGA"],
             },
         }
+        self.INTERFACE = {
+            "bit": {
+                "size": 1,
+                "direction": "output",
+            },
+        }
+
+    def gateware_instances(self):
+        return self.gateware_instances_base(direct=True)
+
+    def firmware_defines(self, variable_name):
+        pin = self.plugin_setup["pins"]["bit"]["pin"]
+        return f"#define {variable_name}_PIN_BIT {pin}"
+
+    def firmware_setup(self, variable_name):
+        return f"    pinMode({variable_name}_PIN_BIT, OUTPUT);"
+
+    def firmware_loop(self, variable_name):
+        return f"    digitalWrite({variable_name}_PIN_BIT, {variable_name});"

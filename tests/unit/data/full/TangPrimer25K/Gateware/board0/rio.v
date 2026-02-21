@@ -49,7 +49,7 @@ module rio (
     );
 
     localparam BUFFER_SIZE_TX = 16'd168; // 21 bytes
-    localparam BUFFER_SIZE_RX = 16'd168; // 21 bytes
+    localparam BUFFER_SIZE_RX = 16'd136; // 17 bytes
 
     reg INTERFACE_TIMEOUT = 0;
     wire INTERFACE_SYNC;
@@ -101,18 +101,18 @@ module rio (
     wire VAROUT1_STEPDIR2_ENABLE;
     wire [31:0] VARIN32_STEPDIR2_POSITION;
 
-    // PC -> FPGA / OUT (132 + FILL = 168)
-    // assign header_rx = {rx_data[143:136], rx_data[151:144], rx_data[159:152], rx_data[167:160]};
-    assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[111:104], rx_data[119:112], rx_data[127:120], rx_data[135:128]};
-    assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[79:72], rx_data[87:80], rx_data[95:88], rx_data[103:96]};
-    assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[47:40], rx_data[55:48], rx_data[63:56], rx_data[71:64]};
-    assign VAROUT1_BITOUT0_BIT = {rx_data[39]};
-    assign VAROUT1_STEPDIR0_ENABLE = {rx_data[38]};
-    assign VAROUT1_STEPDIR1_ENABLE = {rx_data[37]};
-    assign VAROUT1_STEPDIR2_ENABLE = {rx_data[36]};
-    // assign FILL = rx_data[35:0];
+    // PC -> MASTER_FPGA / OUT (132 + FILL = 136)
+    // assign header_rx = {rx_data[111:104], rx_data[119:112], rx_data[127:120], rx_data[135:128]};
+    assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[79:72], rx_data[87:80], rx_data[95:88], rx_data[103:96]};
+    assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[47:40], rx_data[55:48], rx_data[63:56], rx_data[71:64]};
+    assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[15:8], rx_data[23:16], rx_data[31:24], rx_data[39:32]};
+    assign VAROUT1_BITOUT0_BIT = {rx_data[7]};
+    assign VAROUT1_STEPDIR0_ENABLE = {rx_data[6]};
+    assign VAROUT1_STEPDIR1_ENABLE = {rx_data[5]};
+    assign VAROUT1_STEPDIR2_ENABLE = {rx_data[4]};
+    // assign FILL = rx_data[3:0];
 
-    // FPGA -> PC IN (162 + FILL = 168)
+    // MASTER_FPGA -> PC IN (162 + FILL = 168)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],

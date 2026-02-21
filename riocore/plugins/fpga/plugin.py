@@ -183,30 +183,40 @@ class Plugin(PluginBase):
 
     @classmethod
     def update_prefixes(cls, parent, instances):
-        subs = {}
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                instance.hal_prefix = instance.instances_name
                 if connected_pin["instance"].TYPE == "interface":
                     instance.protocol = connected_pin["instance"].HOST_INTERFACE
                     instance.interface_instance = connected_pin["instance"]
-                if connected_pin["instance"].NAME == "uartsub":
-                    subboard = connected_pin["instance"].plugin_setup.get("subboard")
-                    if subboard:
-                        subs[subboard] = instance.instances_name
+                plugin_instance = connected_pin["instance"]
+                plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
+                plugin_instance.MASTER_PROVIDES = instance.PROVIDES
+                plugin_instance.master = instance.instances_name
+                plugin_instance.gmaster = instance.instances_name
+                instance.fmaster = None
+
+        subs = {}
+        for instance in instances:
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                plugin_instance = connected_pin["instance"]
+                if plugin_instance.COMPONENT != "sub_interface":
+                    continue
+                for sub_pin in parent.get_all_plugin_pins(configured=True, prefix=plugin_instance.instances_name):
+                    if sub_pin["instance"].gmaster is None:
+                        sub_pin["instance"].gmaster = instance.instances_name
+                    plugin_instance.SUBBOARD = sub_pin["instance"].master
+                    subs[plugin_instance.SUBBOARD] = instance.instances_name
 
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 instance.hal_prefix = instance.instances_name
                 plugin_instance = connected_pin["instance"]
-                plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
-                plugin_instance.master = instance.instances_name
-                plugin_instance.gmaster = instance.instances_name
-                instance.fmaster = None
                 if subs.get(instance.instances_name):
                     master = subs[instance.instances_name]
                     plugin_instance.PREFIX = f"{master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
                     plugin_instance.gmaster = master  # gateware master
-                    instance.fmaster = master  # fpga master
+                    instance.fmaster = master  # fpga master (connected to the PC)
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
@@ -262,6 +272,7 @@ class Plugin(PluginBase):
     def extra_files(cls, parent, instances):
         for instance in instances:
             gateware_path = os.path.join(parent.project.config["output_path"], "Gateware", instance.instances_name)
+            firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
             instance.jdata["flashcmd"] = instance.plugin_setup.get("flashcmd", instance.jdata.get("flashcmd"))
             instance.jdata["name"] = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.jdata["json_path"] = parent.project.config["json_path"]
@@ -298,3 +309,6 @@ class Plugin(PluginBase):
                 if instance.protocol == "UDP":
                     jslib(parent.project, instance=instance)
                     simulator(parent.project, instance=instance)
+            elif not instance.jdata["toolchain_generator"]:
+                instance.jdata["output_path"] = firmware_path
+                instance.firmware(parent, instances)

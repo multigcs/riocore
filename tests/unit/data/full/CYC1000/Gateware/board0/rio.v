@@ -94,7 +94,7 @@ module rio (
     wire VAROUT1_STEPDIR0_ENABLE;
     wire [31:0] VARIN32_STEPDIR0_POSITION;
 
-    // PC -> FPGA / OUT (100 + FILL = 104)
+    // PC -> MASTER_FPGA / OUT (100 + FILL = 104)
     // assign header_rx = {rx_data[79:72], rx_data[87:80], rx_data[95:88], rx_data[103:96]};
     assign VAROUT32_PWMOUT0_DTY = {rx_data[47:40], rx_data[55:48], rx_data[63:56], rx_data[71:64]};
     assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[15:8], rx_data[23:16], rx_data[31:24], rx_data[39:32]};
@@ -104,7 +104,7 @@ module rio (
     assign VAROUT1_STEPDIR0_ENABLE = {rx_data[4]};
     // assign FILL = rx_data[3:0];
 
-    // FPGA -> PC IN (97 + FILL = 104)
+    // MASTER_FPGA -> PC IN (97 + FILL = 104)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],

@@ -22,6 +22,25 @@ class Plugin(PluginBase):
             "bit": {
                 "direction": "input",
                 "edge": "target",
-                "type": "GPIO",
+                "type": ["GPIO"],
             },
         }
+        self.INTERFACE = {
+            "bit": {
+                "size": 1,
+                "direction": "input",
+            },
+        }
+
+    def gateware_instances(self):
+        return self.gateware_instances_base(direct=True)
+
+    def firmware_defines(self, variable_name):
+        pin = self.plugin_setup["pins"]["bit"]["pin"]
+        return f"#define {variable_name}_PIN_BIT {pin}"
+
+    def firmware_setup(self, variable_name):
+        return f"    pinMode({variable_name}_PIN_BIT, INPUT_PULLUP);"
+
+    def firmware_loop(self, variable_name):
+        return f"    {variable_name} = digitalRead({variable_name}_PIN_BIT);"

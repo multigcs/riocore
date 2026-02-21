@@ -74,6 +74,14 @@
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
@@ -88,6 +96,7 @@
 |  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
+|  | [uartsub](uartsub/README.md) | uartsub interface for host cominucation | <img src="uartsub/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
@@ -129,6 +138,14 @@
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
+|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
@@ -143,6 +160,7 @@
 |  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> | GPIO  |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
+|  | [uartsub](uartsub/README.md) | uartsub interface for host cominucation | <img src="uartsub/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
@@ -173,6 +191,7 @@
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> |  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> |  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> |  |
+|  | [satmcu](satmcu/README.md) | mcu sat | <img src="satmcu/image.png" height="48"> |  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> |  |
 |  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |
 |  | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> |  |
@@ -190,5 +209,6 @@
 |  | [robojog](robojog/README.md) | gui component to jog robot axis | <img src="robojog/image.png" height="48"> |  |
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> |  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> |  |
+|  | [satmcu](satmcu/README.md) | mcu sat | <img src="satmcu/image.png" height="48"> |  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> |  |
 |  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |

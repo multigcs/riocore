@@ -23,6 +23,10 @@ Keywords: serial uartsub interface
  * direction: output
  * optional: True
 
+### SAT:OUT:
+
+ * direction: output
+
 
 ## Options:
 *user-options*
@@ -38,14 +42,8 @@ serial baud rate
  * type: int
  * min: 9600
  * max: 10000000
- * default: 1000000
+ * default: 2500000
  * unit: bit/s
-
-### subboard:
-sub board
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -69,6 +67,9 @@ sub board
         },
         "tx_enable": {
             "pin": "2"
+        },
+        "SAT:OUT": {
+            "pin": "3"
         }
     }
 }
@@ -79,8 +80,7 @@ sub board
 {
     "type": "uartsub",
     "name": "",
-    "baud": 1000000,
-    "subboard": "",
+    "baud": 2500000,
     "pins": {
         "rx": {
             "pin": "0",
@@ -100,6 +100,14 @@ sub board
         },
         "tx_enable": {
             "pin": "2",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "SAT:OUT": {
+            "pin": "3",
             "modifiers": [
                 {
                     "type": "invert"

@@ -63,7 +63,7 @@ module rio (
     );
 
     localparam BUFFER_SIZE_TX = 16'd320; // 40 bytes
-    localparam BUFFER_SIZE_RX = 16'd320; // 40 bytes
+    localparam BUFFER_SIZE_RX = 16'd264; // 33 bytes
 
     reg INTERFACE_TIMEOUT = 0;
     wire INTERFACE_SYNC;
@@ -125,22 +125,22 @@ module rio (
     wire VAROUT1_FPGA0_WLED_0_RED;
     wire VAROUT1_BITOUT0_BIT;
 
-    // PC -> FPGA / OUT (263 + FILL = 320)
-    // assign header_rx = {rx_data[295:288], rx_data[303:296], rx_data[311:304], rx_data[319:312]};
-    assign VAROUT128_MODBUS0_TXDATA = {rx_data[167:160], rx_data[175:168], rx_data[183:176], rx_data[191:184], rx_data[199:192], rx_data[207:200], rx_data[215:208], rx_data[223:216], rx_data[231:224], rx_data[239:232], rx_data[247:240], rx_data[255:248], rx_data[263:256], rx_data[271:264], rx_data[279:272], rx_data[287:280]};
-    assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[135:128], rx_data[143:136], rx_data[151:144], rx_data[159:152]};
-    assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[103:96], rx_data[111:104], rx_data[119:112], rx_data[127:120]};
-    assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[71:64], rx_data[79:72], rx_data[87:80], rx_data[95:88]};
-    assign VAROUT1_STEPDIR0_ENABLE = {rx_data[63]};
-    assign VAROUT1_STEPDIR1_ENABLE = {rx_data[62]};
-    assign VAROUT1_STEPDIR2_ENABLE = {rx_data[61]};
-    assign VAROUT1_FPGA0_WLED_0_GREEN = {rx_data[60]};
-    assign VAROUT1_FPGA0_WLED_0_BLUE = {rx_data[59]};
-    assign VAROUT1_FPGA0_WLED_0_RED = {rx_data[58]};
-    assign VAROUT1_BITOUT0_BIT = {rx_data[57]};
-    // assign FILL = rx_data[56:0];
+    // PC -> MASTER_FPGA / OUT (263 + FILL = 264)
+    // assign header_rx = {rx_data[239:232], rx_data[247:240], rx_data[255:248], rx_data[263:256]};
+    assign VAROUT128_MODBUS0_TXDATA = {rx_data[111:104], rx_data[119:112], rx_data[127:120], rx_data[135:128], rx_data[143:136], rx_data[151:144], rx_data[159:152], rx_data[167:160], rx_data[175:168], rx_data[183:176], rx_data[191:184], rx_data[199:192], rx_data[207:200], rx_data[215:208], rx_data[223:216], rx_data[231:224]};
+    assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[79:72], rx_data[87:80], rx_data[95:88], rx_data[103:96]};
+    assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[47:40], rx_data[55:48], rx_data[63:56], rx_data[71:64]};
+    assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[15:8], rx_data[23:16], rx_data[31:24], rx_data[39:32]};
+    assign VAROUT1_STEPDIR0_ENABLE = {rx_data[7]};
+    assign VAROUT1_STEPDIR1_ENABLE = {rx_data[6]};
+    assign VAROUT1_STEPDIR2_ENABLE = {rx_data[5]};
+    assign VAROUT1_FPGA0_WLED_0_GREEN = {rx_data[4]};
+    assign VAROUT1_FPGA0_WLED_0_BLUE = {rx_data[3]};
+    assign VAROUT1_FPGA0_WLED_0_RED = {rx_data[2]};
+    assign VAROUT1_BITOUT0_BIT = {rx_data[1]};
+    // assign FILL = rx_data[0:0];
 
-    // FPGA -> PC IN (315 + FILL = 320)
+    // MASTER_FPGA -> PC IN (315 + FILL = 320)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],

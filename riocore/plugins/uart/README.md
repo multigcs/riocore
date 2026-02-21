@@ -23,6 +23,11 @@ Keywords: serial uart interface
  * direction: output
  * optional: True
 
+### SAT:
+
+ * direction: output
+ * optional: True
+
 
 ## Options:
 *user-options*
@@ -69,6 +74,9 @@ activate checksums
         },
         "tx_enable": {
             "pin": "2"
+        },
+        "SAT": {
+            "pin": "3"
         }
     }
 }
@@ -100,6 +108,14 @@ activate checksums
         },
         "tx_enable": {
             "pin": "2",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "SAT": {
+            "pin": "3",
             "modifiers": [
                 {
                     "type": "invert"

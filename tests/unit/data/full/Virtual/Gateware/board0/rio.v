@@ -41,7 +41,7 @@ module rio (
     );
 
     localparam BUFFER_SIZE_TX = 16'd160; // 20 bytes
-    localparam BUFFER_SIZE_RX = 16'd160; // 20 bytes
+    localparam BUFFER_SIZE_RX = 16'd136; // 17 bytes
 
     reg INTERFACE_TIMEOUT = 0;
     wire INTERFACE_SYNC;
@@ -93,20 +93,20 @@ module rio (
     wire VAROUT1_STEPDIR2_ENABLE;
     wire [31:0] VARIN32_STEPDIR2_POSITION;
 
-    // PC -> FPGA / OUT (134 + FILL = 160)
-    // assign header_rx = {rx_data[135:128], rx_data[143:136], rx_data[151:144], rx_data[159:152]};
-    assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[103:96], rx_data[111:104], rx_data[119:112], rx_data[127:120]};
-    assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[71:64], rx_data[79:72], rx_data[87:80], rx_data[95:88]};
-    assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[39:32], rx_data[47:40], rx_data[55:48], rx_data[63:56]};
-    assign VAROUT1_BOARD0_WLED_0_GREEN = {rx_data[31]};
-    assign VAROUT1_BOARD0_WLED_0_BLUE = {rx_data[30]};
-    assign VAROUT1_BOARD0_WLED_0_RED = {rx_data[29]};
-    assign VAROUT1_STEPDIR0_ENABLE = {rx_data[28]};
-    assign VAROUT1_STEPDIR1_ENABLE = {rx_data[27]};
-    assign VAROUT1_STEPDIR2_ENABLE = {rx_data[26]};
-    // assign FILL = rx_data[25:0];
+    // PC -> MASTER_FPGA / OUT (134 + FILL = 136)
+    // assign header_rx = {rx_data[111:104], rx_data[119:112], rx_data[127:120], rx_data[135:128]};
+    assign VAROUT32_STEPDIR0_VELOCITY = {rx_data[79:72], rx_data[87:80], rx_data[95:88], rx_data[103:96]};
+    assign VAROUT32_STEPDIR1_VELOCITY = {rx_data[47:40], rx_data[55:48], rx_data[63:56], rx_data[71:64]};
+    assign VAROUT32_STEPDIR2_VELOCITY = {rx_data[15:8], rx_data[23:16], rx_data[31:24], rx_data[39:32]};
+    assign VAROUT1_BOARD0_WLED_0_GREEN = {rx_data[7]};
+    assign VAROUT1_BOARD0_WLED_0_BLUE = {rx_data[6]};
+    assign VAROUT1_BOARD0_WLED_0_RED = {rx_data[5]};
+    assign VAROUT1_STEPDIR0_ENABLE = {rx_data[4]};
+    assign VAROUT1_STEPDIR1_ENABLE = {rx_data[3]};
+    assign VAROUT1_STEPDIR2_ENABLE = {rx_data[2]};
+    // assign FILL = rx_data[1:0];
 
-    // FPGA -> PC IN (160 + FILL = 160)
+    // MASTER_FPGA -> PC IN (160 + FILL = 160)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],

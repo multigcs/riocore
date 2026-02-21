@@ -19,7 +19,7 @@
 #define PREFIX "board0"
 #define JOINTS 3
 #define BUFFER_SIZE_RX 21
-#define BUFFER_SIZE_TX 21
+#define BUFFER_SIZE_TX 17
 #define OSC_CLOCK 30000000
 #define UDP_IP "192.168.11.194"
 #define SRC_PORT 2391

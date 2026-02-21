@@ -38,6 +38,10 @@ hardware type
 
 ## Interfaces:
 *transport layer*
+### bit:
+
+ * size: 1 bit
+ * direction: output
 
 
 ## Basic-Example:

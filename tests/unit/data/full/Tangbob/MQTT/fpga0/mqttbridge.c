@@ -19,7 +19,7 @@
 #define PREFIX "fpga0"
 #define JOINTS 3
 #define BUFFER_SIZE_RX 40
-#define BUFFER_SIZE_TX 40
+#define BUFFER_SIZE_TX 33
 #define OSC_CLOCK 27000000
 #define UDP_IP "192.168.11.194"
 #define SRC_PORT 2391

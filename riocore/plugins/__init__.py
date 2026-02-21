@@ -64,6 +64,7 @@ class PluginBase:
         self.protocol = None
         self.interface_instance = None
         self.title = ""
+        self.MASTER_PROVIDES = []
         self.plugin_setup = plugin_setup
 
         if "uid" not in self.plugin_setup:

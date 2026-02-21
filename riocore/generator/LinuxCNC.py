@@ -215,6 +215,10 @@ class LinuxCNC:
             if plugin_instance.JOINT_DEFAULTS:
                 self.JOINT_DEFAULTS.update(plugin_instance.JOINT_DEFAULTS)
 
+        for plugin_instance in self.project.plugin_instances:
+            if hasattr(plugin_instance, "update_first"):
+                plugin_instance.update_first(self)
+
         # update_prefixes for multiple used components
         components = {}
         for plugin_instance in self.project.plugin_instances:
