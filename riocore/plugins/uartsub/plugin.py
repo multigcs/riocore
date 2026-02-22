@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.VERILOGS = ["uartsub.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.NEEDS = ["fpga"]
+        self.TYPE = "sub_interface"
         self.PINDEFAULTS = {
             "rx": {
                 "direction": "input",
@@ -39,7 +40,6 @@ class Plugin(PluginBase):
                 "description": "serial baud rate",
             },
         }
-        self.COMPONENT = "sub_interface"
 
     @classmethod
     def component_loader(cls, instances):

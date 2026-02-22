@@ -31,7 +31,7 @@ class PluginBase:
         self.VERILOGS_DATA = {}
         self.FILES = []
         self.NAME = ""
-        self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio (internal use) / MISC: io, base, host (only for the docs)
+        self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio, sub_interface (internal use) / MISC: io, base, host (only for the docs)
         self.INFO = ""
         self.EXPERIMENTAL = False
         self.DESCRIPTION = ""

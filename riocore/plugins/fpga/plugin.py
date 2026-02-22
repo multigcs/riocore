@@ -199,7 +199,7 @@ class Plugin(PluginBase):
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 plugin_instance = connected_pin["instance"]
-                if plugin_instance.COMPONENT != "sub_interface":
+                if plugin_instance.TYPE != "sub_interface":
                     continue
                 for sub_pin in parent.get_all_plugin_pins(configured=True, prefix=plugin_instance.instances_name):
                     if sub_pin["instance"].gmaster is None:

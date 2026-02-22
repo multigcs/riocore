@@ -810,7 +810,7 @@ class gateware(generator_base):
                 continue
             if plugin_instance.instances_name == self.instance.instances_name:
                 continue
-            if plugin_instance.COMPONENT != "sub_interface":
+            if plugin_instance.TYPE != "sub_interface":
                 continue
             sub_configs.append((plugin_instance.SUBBOARD, plugin_instance.SUBNUM))
 

@@ -19,7 +19,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = ""
         self.NEEDS = ["fpga"]
         self.PROVIDES = ["gpio", "mcu"]
-        self.TYPE = "base"
+        self.TYPE = "sub_interface"
         self.IMAGE_SHOW = False
         self.VERILOGS = ["satmcu.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.URL = ""
