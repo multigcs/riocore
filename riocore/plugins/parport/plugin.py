@@ -15,7 +15,6 @@ class Plugin(PluginBase):
         self.NEEDS = []
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "parport"
         self.ORIGIN = ""
         self.OPTIONS = {
             "portaddr": {

@@ -93,8 +93,6 @@ elif args.generate:
                 if plugin_instance.EXPERIMENTAL:
                     comments += "Experimental "
 
-                if plugin_instance.PLUGIN_TYPE == "gpio":
-                    comments += "GPIO "
                 text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} | {comments} |")
                 title = ""
 

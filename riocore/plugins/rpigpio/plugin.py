@@ -20,7 +20,6 @@ gpio modes:
         self.NEEDS = []
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "rpi"
         self.ORIGIN = ""
         self.OPTIONS = {
             "mode": {

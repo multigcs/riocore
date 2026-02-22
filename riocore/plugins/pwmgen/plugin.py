@@ -15,7 +15,6 @@ a hardware PWM generator is a better choice."""
         self.NEEDS = ["gpio", "basethread"]
         self.IMAGES = ["spindle500w", "laser", "led"]
         self.TYPE = "io"
-        self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
         self.OPTIONS = {
             "mode": {

@@ -8,7 +8,6 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "virtual signal"
         self.KEYWORDS = "virtual"
         self.ORIGIN = ""
-        self.PLUGIN_TYPE = "host"
         self.NEEDS = []
         self.VERILOGS = []
         self.OPTIONS = {

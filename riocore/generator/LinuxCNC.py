@@ -230,10 +230,6 @@ class LinuxCNC:
             # run update_prefixes on the first instance of the plugin if exist
             if hasattr(instances[0], "update_prefixes"):
                 instances[0].update_prefixes(self, instances)
-            elif instances[0].TYPE == "base":
-                # base plugins by instance name
-                for instance in instances:
-                    instance.PREFIX = f"{component_type}.{instance.instances_name}"
             else:
                 # io plugins by instance idx
                 for num, instance in enumerate(instances):

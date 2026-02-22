@@ -11,7 +11,6 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = True
         self.NEEDS = []
-        self.PLUGIN_TYPE = "host"
         self.IMAGE = ""
         self.ORIGIN = ""
         self.SIGNALS = {}

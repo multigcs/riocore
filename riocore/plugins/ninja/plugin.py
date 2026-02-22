@@ -19,7 +19,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "stepgen pwm ninja board pico w5500"
         self.TYPE = "base"
         self.IMAGE_SHOW = False
-        self.PLUGIN_TYPE = "ninja"
         self.URL = "https://github.com/atrex66/stepper-ninja"
         self.OPTIONS = {
             "node_type": {

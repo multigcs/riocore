@@ -127,7 +127,7 @@ class Plugins:
                                 "description": description,
                                 "info": info,
                                 "keywords": keywords,
-                                "ptype": plugin_instance.PLUGIN_TYPE,
+                                "type": plugin_instance.TYPE,
                                 "needs": plugin_instance.NEEDS,
                                 "provides": plugin_instance.PROVIDES,
                             }
@@ -140,7 +140,7 @@ class Plugins:
                             "description": description,
                             "info": info,
                             "keywords": keywords,
-                            "ptype": plugin_instance.PLUGIN_TYPE,
+                            "type": plugin_instance.TYPE,
                             "needs": plugin_instance.NEEDS,
                             "provides": plugin_instance.PROVIDES,
                         }
@@ -153,6 +153,7 @@ class Plugins:
                         "description": description,
                         "info": plugin_instance.INFO,
                         "keywords": plugin_instance.KEYWORDS,
+                        "type": plugin_instance.TYPE,
                         "needs": plugin_instance.NEEDS,
                         "provides": plugin_instance.PROVIDES,
                     }

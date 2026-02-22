@@ -10,7 +10,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "input"
         self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
         self.TYPE = "io"
-        self.PLUGIN_TYPE = "gpio"
         self.NEEDS = ["gpio", "fpga"]
         self.SIGNALS = {
             "bit": {

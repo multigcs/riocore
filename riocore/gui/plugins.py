@@ -110,7 +110,7 @@ class GuiPlugins:
             else:
                 pin_cols.addWidget(QLabel(""), stretch=4)
 
-            if plugin_instance.PLUGIN_TYPE == "gateware":
+            if "fpga" in plugin_instance.NEEDS:
                 # Modifiers
                 if "modifier" not in pin_config:
                     pin_config["modifier"] = []
@@ -428,7 +428,7 @@ class GuiPlugins:
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
 
-            if plugin_instance.PLUGIN_TYPE == "gateware":
+            if "fpga" in plugin_instance.NEEDS:
                 if "source" not in signal_defaults and not signal_defaults.get("bool"):
                     signal_cols.addWidget(QLabel("Scale"), stretch=1)
                     signal_setup["scale"] = {"type": float, "default": 1.0}

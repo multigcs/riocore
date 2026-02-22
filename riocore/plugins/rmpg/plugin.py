@@ -10,7 +10,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "jog cam remote"
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "host"
         self.NEEDS = []
         self.IMAGE = ""
         self.ORIGIN = ""

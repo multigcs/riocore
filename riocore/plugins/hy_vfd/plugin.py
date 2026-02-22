@@ -10,7 +10,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "jog usb"
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "gpio"
         self.IMAGE = ""
         self.NEEDS = [""]
         self.ORIGIN = ""

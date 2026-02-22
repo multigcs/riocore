@@ -21,7 +21,6 @@ class Plugin(PluginBase):
         self.PROVIDES = ["gpio", "mcu"]
         self.TYPE = "base"
         self.IMAGE_SHOW = False
-        self.PLUGIN_TYPE = "mcu"
         self.VERILOGS = ["satmcu.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.URL = ""
         self.SIGNALS = {}

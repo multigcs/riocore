@@ -668,7 +668,7 @@ class PluginNode(MyNode):
                 self.ports[f"sig_{pin_name}"] = pin_data
 
         if self.plugin_instance.IMAGE_SHOW:
-            if self.plugin_instance.PLUGIN_TYPE == "background":
+            if self.plugin_instance.TYPE == "background":
                 self.setZValue(-99)
             else:
                 self.setZValue(1)
@@ -2592,7 +2592,7 @@ class Window(QMainWindow):
         modifier_type = ""
         for item in self.scene.selectedItems():
             if isinstance(item, NodeEdge):
-                if isinstance(item._target_node, PluginNode) and item._target_node.plugin_instance.PLUGIN_TYPE:
+                if isinstance(item._target_node, PluginNode):
                     modifier_type = "invert"
         if not modifier_type:
             modifier_type = self.gui_modifiers.modifier_list_add()

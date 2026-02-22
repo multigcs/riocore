@@ -713,8 +713,6 @@ class gateware(generator_base):
             output_exp = []
             # update expansion output pins
             for plugin_instance in self.parent.project.plugin_instances:
-                if plugin_instance.PLUGIN_TYPE != "gateware":
-                    continue
                 for pin_config in plugin_instance.pins().values():
                     if pin_config.get("bus"):
                         continue
@@ -724,8 +722,6 @@ class gateware(generator_base):
                                 output_exp.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
             # set expansion output pins without driver
             for plugin_instance in self.parent.project.plugin_instances:
-                if plugin_instance.PLUGIN_TYPE != "gateware":
-                    continue
                 for data_config in plugin_instance.interface_data().values():
                     if data_config.get("expansion"):
                         direction = data_config["direction"]

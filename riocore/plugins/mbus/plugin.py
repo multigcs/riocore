@@ -18,14 +18,11 @@ class Plugin(PluginBase):
         self.URL = "https://www.modbustools.com/modbus.html#function16"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.TYPE = "base"
-        self.PLUGIN_TYPE = "modbus"
         self.VERILOGS = ["mbus.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.IMAGE = ""
         self.IMAGE_SHOW = False
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
-        self.NEEDS = ["fpga"]
-
         self.TYPE = "frameio"
         self.PROVIDES = ["modbus"]
         self.NEEDS = ["fpga"]

@@ -376,7 +376,7 @@ class TabDrawing:
 
         ptypes = set()
         for plugin_data in plugins:
-            ptypes.add(plugin_data["ptype"])
+            ptypes.add(plugin_data["type"])
 
         row = 0
         for ptype in sorted(ptypes):
@@ -391,7 +391,7 @@ class TabDrawing:
             self.plugin_table.setCellWidget(row, 0, label)
             row += 1
             for plugin_data in plugins:
-                if plugin_data["ptype"] != ptype:
+                if ptype != plugin_data["type"]:
                     continue
                 self.plugin_table.setRowCount(row + 1)
                 plugin_name = plugin_data["name"]

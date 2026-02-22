@@ -14,8 +14,8 @@ If better performance is needed, a hardware encoder counter is a better choice.
 Some hardware-based systems can count at MHz rates."""
         self.KEYWORDS = "encoder quadencoder scale jog"
         self.TYPE = "io"
+        self.IMAGES = ["encoder", "encoder_optical"]
         self.NEEDS = ["gpio", "basethread"]
-        self.PLUGIN_TYPE = "gpio"
         self.ORIGIN = ""
         self.OPTIONS = {
             "counter-mode": {

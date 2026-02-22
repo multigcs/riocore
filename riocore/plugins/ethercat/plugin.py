@@ -18,7 +18,6 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.KEYWORDS = "stepper servo master"
         self.IMAGES = []
-        self.PLUGIN_TYPE = "ethercat"
         self.ORIGIN = ""
         self.OPTIONS = {}
         self.SIGNALS = {}

@@ -31,8 +31,7 @@ class PluginBase:
         self.VERILOGS_DATA = {}
         self.FILES = []
         self.NAME = ""
-        self.PLUGIN_TYPE = "gateware"
-        self.TYPE = "io"
+        self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio (internal use) / MISC: io, base, host (only for the docs)
         self.INFO = ""
         self.EXPERIMENTAL = False
         self.DESCRIPTION = ""

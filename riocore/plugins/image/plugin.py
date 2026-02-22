@@ -10,4 +10,4 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.KEYWORDS = ""
         self.IMAGES = list(PluginImages.images)
-        self.PLUGIN_TYPE = "background"
+        self.TYPE = "background"

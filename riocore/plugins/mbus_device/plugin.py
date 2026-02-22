@@ -28,7 +28,6 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "modbus device"
         self.KEYWORDS = "modbus"
         self.TYPE = "base"
-        self.PLUGIN_TYPE = "modbus"
         self.URL = ""
         self.IMAGE = ""
         self.IMAGE_SHOW = False

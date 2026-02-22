@@ -21,7 +21,6 @@ mesaflash --device 7i92 --addr 10.10.10.10  --write /mnt/data2/src/riocore/MI^C/
         self.KEYWORDS = "stepgen pwm mesa board hm2"
         self.TYPE = "base"
         self.IMAGE_SHOW = False
-        self.PLUGIN_TYPE = "mesa"
         self.URL = ""
         self.OPTIONS = {
             "node_type": {

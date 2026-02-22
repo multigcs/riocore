@@ -28,7 +28,6 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PROVIDES = ["fpga", "base"]
-        self.PLUGIN_TYPE = "fpga"
         self.BUILDER = ["clean", "build", "load", "all"]
         self.URL = ""
         board_list = []
@@ -288,8 +287,6 @@ class Plugin(PluginBase):
 
             # clean None pins
             for plugin_instance in parent.project.plugin_instances:
-                if plugin_instance.PLUGIN_TYPE != "gateware":
-                    continue
                 for pin_config in plugin_instance.plugin_setup.get("pins", {}).values():
                     if "pin" in pin_config and not pin_config["pin"]:
                         del pin_config["pin"]

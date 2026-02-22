@@ -11,7 +11,6 @@ class Plugin(PluginBase):
         self.INFO = "breakout boards"
         self.KEYWORDS = ""
         self.DESCRIPTION = ""
-        self.PLUGIN_TYPE = "breakout"
         self.NEEDS = ["base"]
         self.PINDEFAULTS = {}
         board_list = []

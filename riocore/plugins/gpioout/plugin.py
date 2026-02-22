@@ -10,7 +10,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "output"
         self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
         self.TYPE = "io"
-        self.PLUGIN_TYPE = "gpio"
         self.NEEDS = ["gpio", "fpga"]
         self.SIGNALS = {
             "bit": {

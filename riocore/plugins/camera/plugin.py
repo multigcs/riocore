@@ -11,7 +11,6 @@ class Plugin(PluginBase):
         self.KEYWORDS = "jog gui robot"
         self.TYPE = "base"
         self.IMAGE_SHOW = True
-        self.PLUGIN_TYPE = "host"
         self.IMAGE = ""
         self.ORIGIN = ""
         self.SIGNALS = {}

@@ -21,7 +21,6 @@ class Plugin(PluginBase):
         self.NEEDS = ["mesa"]
         self.TYPE = "base"
         self.IMAGE_SHOW = False
-        self.PLUGIN_TYPE = "sserial"
         self.URL = ""
         self.OPTIONS = {
             "node_type": {
