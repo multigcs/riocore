@@ -9,62 +9,54 @@ riocore_path = os.path.dirname(riocore.__file__)
 
 
 class PluginBase:
-    def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
-        self.PINDEFAULTS = {}
-        self.INTERFACE = {}
-        self.IMAGE = ""
-        self.IMAGES = []
-        self.IMAGE_SHOW = False
-        self.BUILDER = []
-        self.BUILDER_PATH = ""
-        self.SIGNALS = {}
-        self.SUB_OF = None
-        self.PREFIX = ""
-        self.PROVIDES = []
-        self.NEEDS = []
-        self.GENERATOR_GROUP = ""
-        self.BASETHREAD = False
-        self.JOINT_DEFAULTS = {}
-        self.TIMING_CONSTRAINTS = {}
-        self.DYNAMIC_SIGNALS = False
-        self.VERILOGS = []
-        self.VERILOGS_DATA = {}
-        self.FILES = []
-        self.NAME = ""
-        self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio, sub_interface (internal use) / MISC: io, base, host (only for the docs)
-        self.INFO = ""
-        self.EXPERIMENTAL = False
-        self.DESCRIPTION = ""
-        self.URL = ""
-        if subfix:
-            self.SUBFIX = subfix
-        else:
-            self.SUBFIX = ""
-        self.GRAPH = ""
-        self.KEYWORDS = ""
-        self.ORIGIN = ""
-        self.GATEWARE_SUPPORT = True
-        self.JOINT_MODE = "velocity"
-        self.JOINT_OPTIONS = []
-        self.SYNC = None
-        self.ERROR = None
-        self.SUB_PLUGINS = []
-        self.OPTIONS = {}
-        self.PASSTHROUGH = {}
-        self.PLUGIN_CONFIGS = {}
-        self.LIMITATIONS = {}
+    def __init__(self, plugin_id, plugin_setup, system_setup=None):
+        self.plugin_setup = plugin_setup
         self.system_setup = system_setup
         self.plugin_id = plugin_id
+        self.title = ""
         self.duration = 0
         self.timestamp = 0
-        self.master = None
-        self.gmaster = None
-        self.fmaster = None
-        self.protocol = None
-        self.interface_instance = None
-        self.title = ""
-        self.MASTER_PROVIDES = []
-        self.plugin_setup = plugin_setup
+        self.master = None  # the direct connected board or this plugin (plugin -> master-board)
+        self.gmaster = None  # the gateware master (verilog code for this plugin runs on gmaster / master -> gmaster)
+        self.fmaster = None  # this fpga is the connection to the PC (sub-board -> fmaster-fpga -> PC)
+        self.protocol = None  # the protocol of the connected interface (UDB/UART/SPI/..)
+        self.interface_instance = None  # the instance of the connected interface
+        self.PINDEFAULTS = {}  # the hardware pins
+        self.INTERFACE = {}  # interface variables
+        self.SIGNALS = {}  # hal signals of this plugin
+        self.SUB_OF = None  # master of this sub plugin
+        self.PREFIX = ""  # used for hal and interface names
+        self.NEEDS = []  # needs by the plugin (to filter plugin list)
+        self.PROVIDES = []  # provides by the plugin (to filter plugin list)
+        self.MASTER_PROVIDES = []  # to check if we need firmware or gateware for this plugin (.PROVIDES of the master)
+        self.GENERATOR_GROUP = ""  # using same class function / combining prefixes and hal components ofer multiple instances
+        self.BASETHREAD = False  # this plugin needs EMCMOT/BASE_PERIOD
+        self.TIMING_CONSTRAINTS = {}  # used by some plugin to set FPGA CONSTRAINTS for some pins
+        self.VERILOGS = []  # list of verilog files used by this plugin
+        self.VERILOGS_DATA = {}  # generated verilog files used by this plugin
+        self.FILES = []  # other files used by this plugin (like hal-components)
+        self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio, sub_interface (internal use) / MISC: io, base, host (only for the docs)
+        self.JOINT_MODE = "velocity"  # psition/velocity
+        self.JOINT_OPTIONS = []  # extra joint options (ini/hal)
+        self.JOINT_DEFAULTS = {}  # default joint values
+        self.SUB_PLUGINS = []  # sub plugins (a plugin/breakout/board can have sub-plugins)
+        self.OPTIONS = {}  # sonfig options for this plugin
+        self.PASSTHROUGH = {}
+        self.PLUGIN_CONFIGS = {}  # external config guis (plugin wizard)
+        self.LIMITATIONS = {}  # limitations for this plugin (fpga board / family)
+        self.NAME = ""  # optional name of the plugin
+        self.INFO = ""  # plugin info (short one liner)
+        self.DESCRIPTION = ""  # plugin description
+        self.URL = ""  # external url of the plugin/board/chip/...
+        self.GRAPH = ""  # mermaid graph (for documentation / readme)
+        self.EXPERIMENTAL = False  # mark this plugin as experimental / untested
+        self.KEYWORDS = ""  # plugin keywords for better search
+        self.ORIGIN = ""  # code based on this source
+        self.IMAGE = ""  # image to show in flow gui
+        self.IMAGES = []  # list of selectable images
+        self.IMAGE_SHOW = False  # show plugin as image in flow gui
+        self.BUILDER = []  # make commands for this plugin (if needed)
+        self.BUILDER_PATH = ""  # path to the generated plugin sources (if needed)
 
         if "uid" not in self.plugin_setup:
             self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"
@@ -348,7 +340,7 @@ class PluginBase:
             if multiplexed is not None:
                 data[name]["multiplexed"] = multiplexed
 
-            data[name]["variable"] = f"VAR{direction}{size}_{self.SUBFIX}{self.instances_name}_{name}".upper()
+            data[name]["variable"] = f"VAR{direction}{size}_{self.instances_name}_{name}".upper()
         return data
 
     def expansion_outputs(self):
@@ -482,11 +474,6 @@ class PluginBase:
                     instance_arguments[interface_name] = f"{interface_setup['variable']} | ERROR"
                 else:
                     instance_arguments[interface_name] = interface_setup["variable"]
-
-        if self.SYNC is True:
-            instance_arguments["sync"] = "INTERFACE_SYNC"
-        elif self.SYNC is False:
-            instance_arguments["sync"] = "0"
 
         if self.PASSTHROUGH:
             for name in self.PASSTHROUGH:
@@ -649,36 +636,32 @@ class PluginBase:
 
     def show_signals(self):
         output = []
-        if self.DYNAMIC_SIGNALS:
-            output.append("the signals of this plugin are user configurable")
+        for signal_name, signal_setup in self.SIGNALS.items():
+            isbool = signal_setup.get("bool", False)
+            direction = signal_setup.get("direction")
+            description = signal_setup.get("description")
+            vmin = signal_setup.get("min")
+            vmax = signal_setup.get("max")
+            unit = signal_setup.get("unit")
+            output.append(f"### {signal_name}:")
+            if description:
+                output.append(description)
             output.append("")
-        else:
-            for signal_name, signal_setup in self.SIGNALS.items():
-                isbool = signal_setup.get("bool", False)
-                direction = signal_setup.get("direction")
-                description = signal_setup.get("description")
-                vmin = signal_setup.get("min")
-                vmax = signal_setup.get("max")
-                unit = signal_setup.get("unit")
-                output.append(f"### {signal_name}:")
-                if description:
-                    output.append(description)
-                output.append("")
 
-                if isbool:
-                    output.append(" * type: bit")
-                else:
-                    output.append(" * type: float")
-                output.append(f" * direction: {direction}")
-                if vmin is not None:
-                    output.append(f" * min: {vmin}")
-                if vmax is not None:
-                    output.append(f" * max: {vmax}")
+            if isbool:
+                output.append(" * type: bit")
+            else:
+                output.append(" * type: float")
+            output.append(f" * direction: {direction}")
+            if vmin is not None:
+                output.append(f" * min: {vmin}")
+            if vmax is not None:
+                output.append(f" * max: {vmax}")
 
-                if unit is not None:
-                    output.append(f" * unit: {unit}")
+            if unit is not None:
+                output.append(f" * unit: {unit}")
 
-                output.append("")
+            output.append("")
 
         return "\n".join(output)
 

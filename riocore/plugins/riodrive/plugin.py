@@ -28,12 +28,7 @@ class Plugin(PluginBase):
                 "min": 100,
                 "max": 10000,
                 "unit": "Hz",
-                "description": "update interval / normaly it should be 1khz, but with sync=true, this is a good default",
-            },
-            "sync": {
-                "default": True,
-                "type": bool,
-                "description": "in sync with interface (eg UDP)",
+                "description": "update interval",
             },
             "error": {
                 "default": True,
@@ -176,8 +171,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.SYNC = self.plugin_setup.get("sync", self.OPTIONS["sync"]["default"])
-        self.ERROR = self.plugin_setup.get("error", self.OPTIONS["error"]["default"])
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

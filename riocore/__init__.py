@@ -199,12 +199,6 @@ class Plugins:
                 output.append(f"* {key}: {', '.join(values)}")
             output.append("")
 
-        if plugin.GRAPH:
-            output.append("```mermaid")
-            output.append(plugin.GRAPH.strip())
-            output.append("```")
-            output.append("")
-
         output.append("## Pins:")
         output.append("*FPGA-pins*")
         output.append(plugin.show_pins())
@@ -238,7 +232,7 @@ class Plugins:
             output.append("")
         return "\n".join(output)
 
-    def load_plugin(self, plugin_id, plugin_config, system_setup=None, subfix=None):
+    def load_plugin(self, plugin_id, plugin_config, system_setup=None):
         try:
             plugin_type = plugin_config["type"]
             if plugin_type not in self.plugin_modules:
@@ -249,7 +243,7 @@ class Plugins:
                     log(f"WARNING: plugin not found: {plugin_type}: {ppath}")
 
             if plugin_type in self.plugin_modules:
-                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup, subfix=subfix)
+                plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
                 plugin_instance.setup_object = plugin_config
                 for pin_name, pin_config in plugin_instance.pins().items():
                     if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):

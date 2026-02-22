@@ -56,7 +56,6 @@ class Plugin(PluginBase):
         }
         self.SIGNALS = {}
         self.TYPE = "frameio"
-        self.DYNAMIC_SIGNALS = True
         self.PLUGIN_CONFIGS = {"Devices": "config.py"}
         self.TIMEOUT = 200.0
         self.DELAY = 90.0
