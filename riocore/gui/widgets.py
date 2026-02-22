@@ -744,7 +744,6 @@ class edit_imgselect(QComboBox):
 
     def get_image(self, name):
         if image := riocore.PluginImages.images.get(name, {}).get("image"):
-            print(image)
             return os.path.join(riocore_path, "files", "images", image)
         return None
 

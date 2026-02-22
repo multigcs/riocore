@@ -135,7 +135,7 @@ class Plugin(PluginBase):
                 project = config
             else:
                 project = riocore.Project(copy.deepcopy(config))
-            firmware_path = os.path.join(project.config["output_path"], "Firmware", self.title)
+            firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
             if not os.path.exists(firmware_path):
                 riocore.log(f"ERROR: path not exist, please run generator first: {firmware_path}")
                 return None
@@ -300,12 +300,12 @@ class Plugin(PluginBase):
                         output_pin_n += 1
 
                 # create firmware stuff
-                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.title)
+                firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
                 os.makedirs(firmware_path, exist_ok=True)
                 instance.BUILDER_PATH = firmware_path
                 os.makedirs(os.path.join(firmware_path, "src"), exist_ok=True)
                 os.makedirs(os.path.join(firmware_path, "lib"), exist_ok=True)
-                riocore.log(f"  {instance.instances_name} ({instance.title}): create firmware structure: {firmware_path}")
+                riocore.log(f"  {instance.instances_name} ({instance.instances_name}): create firmware structure: {firmware_path}")
                 output = []
                 source = os.path.join(os.path.dirname(__file__), "sserial", "TEMPLATE.ino")
                 for line in open(source).read().split("\n"):

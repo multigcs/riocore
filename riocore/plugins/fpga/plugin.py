@@ -319,5 +319,5 @@ class Plugin(PluginBase):
             if instance.fmaster:
                 chain.append(instance.fmaster)
             if not instance.fmaster:
-                chain.append("Component")
+                chain.append("Host")
             riocore.log(f"  chain: {' -> '.join(chain)}")

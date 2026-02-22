@@ -113,7 +113,7 @@ class Plugin(PluginBase):
         output.append(f"enum {self.instances_name}_command_ids {{")
         for device_instance in self.device_instances:
             for cid in range(device_instance.command_ids):
-                output.append(f"    {self.instances_name.upper()}_{device_instance.title.upper()}_{cid},")
+                output.append(f"    {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid},")
         output.append(f"    {self.instances_name.upper()}_MAX,")
         output.append("};")
         output.append("")
@@ -144,8 +144,8 @@ class Plugin(PluginBase):
         for device_instance in self.device_instances:
             cid = 0
             for name, command in device_instance.commands.items():
-                output.append(f"                case {self.instances_name.upper()}_{device_instance.title.upper()}_{cid}: {{")
-                output.append(f"                    {device_instance.title}_{name}_rx(frame_data, frame_len);")
+                output.append(f"                case {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid}: {{")
+                output.append(f"                    {device_instance.instances_name}_{name}_rx(frame_data, frame_len);")
                 output.append("                    break;")
                 output.append("                }")
                 cid += 1
@@ -175,7 +175,7 @@ class Plugin(PluginBase):
             for name, command in device_instance.commands.items():
                 timeout = device_instance.plugin_setup.get("timeout", device_instance.option_default("timeout"))
                 delay = device_instance.plugin_setup.get("delay", device_instance.option_default("delay"))
-                output.append(f"                case {self.instances_name.upper()}_{device_instance.title.upper()}_{cid}: {{")
+                output.append(f"                case {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid}: {{")
                 output.append("                    if (frame_timeout == 1) {")
                 output.append(f"                        {command['stat_prefix']}_ERRORS += 1;")
                 output.append("                    }")
@@ -209,11 +209,11 @@ class Plugin(PluginBase):
                     device_priority = device_instance.plugin_setup.get("priority", device_instance.option_default("priority"))
                     if priority == device_priority and (ctype in self.WRITE_TYPES or priority == 9):
                         if priority == 9:
-                            output.append(f"                if (last_selection != {self.instances_name.upper()}_{device_instance.title.upper()}_{cid} && prio_next == {self.instances_name.upper()}_{device_instance.title.upper()}_{cid}) {{")
+                            output.append(f"                if (last_selection != {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid} && prio_next == {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid}) {{")
                         else:
-                            output.append(f"                if (last_selection != {self.instances_name.upper()}_{device_instance.title.upper()}_{cid} && prio_next == {self.instances_name.upper()}_{device_instance.title.upper()}_{cid} && {device_instance.title}_{name}_changed() == 1) {{")
+                            output.append(f"                if (last_selection != {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid} && prio_next == {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid} && {device_instance.instances_name}_{name}_changed() == 1) {{")
                         output.append(f"                    // priority: {priority}")
-                        output.append(f"                    {self.instances_name}_signal_active = {self.instances_name.upper()}_{device_instance.title.upper()}_{cid};")
+                        output.append(f"                    {self.instances_name}_signal_active = {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid};")
                         output.append("                    prio_selected = 1;")
                         output.append("                    break;")
                         output.append("                }")
@@ -248,10 +248,10 @@ class Plugin(PluginBase):
             for name, command in device_instance.commands.items():
                 timeout = device_instance.plugin_setup.get("timeout", device_instance.option_default("timeout"))
                 delay = device_instance.plugin_setup.get("delay", device_instance.option_default("delay"))
-                output.append(f"            case {self.instances_name.upper()}_{device_instance.title.upper()}_{cid}: {{")
+                output.append(f"            case {self.instances_name.upper()}_{device_instance.instances_name.upper()}_{cid}: {{")
                 output.append(f"                delay = {delay};")
                 output.append(f"                timeout = {timeout};")
-                output.append(f"                frame_len = {device_instance.title}_{name}_tx(frame_data);")
+                output.append(f"                frame_len = {device_instance.instances_name}_{name}_tx(frame_data);")
                 output.append("                break;")
                 output.append("            }")
                 cid += 1
