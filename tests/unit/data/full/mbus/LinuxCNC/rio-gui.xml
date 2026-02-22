@@ -1,0 +1,1152 @@
+<pyvcp>
+  <tabs>
+    <names>['Status', 'Inputs', 'Outputs', 'Mb-Nt18B07', 'Mb-Ma01-Xacx0440', 'Mb-N4Dac02', 'Vfd', 'Mb-Dds519Mr']</names>
+    <vbox>
+      <labelframe text="MDI-Commands">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <labelframe text="Zero">
+            <relief>GROOVE</relief>
+            <font>("Helvetica", 10)</font>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-00"</halpin>
+                <text>"X"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-01"</halpin>
+                <text>"Y"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+              <button>
+                <relief>GROOVE</relief>
+                <bd>3</bd>
+                <halpin>"halui.mdi-command-02"</halpin>
+                <text>"Z"</text>
+                <font>("Helvetica", 12)</font>
+              </button>
+            </hbox>
+          </labelframe>
+        </vbox>
+      </labelframe>
+      <labelframe text="Home-Switches">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <hbox>
+          <boxexpand expand="yes"/>
+          <boxfill fill="both"/>
+          <boxanchor anchor="e"/>
+          <vbox>
+            <label>
+              <text>"X (j0)    "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+            </label>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <led>
+                <halpin>"fpga0.bitin0.bit"</halpin>
+                <size>16</size>
+                <on_color>"green"</on_color>
+                <off_color>"black"</off_color>
+                <anchor>"e"</anchor>
+                <width>16</width>
+              </led>
+            </hbox>
+          </vbox>
+          <vbox>
+            <label>
+              <text>"Y (j1)    "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+            </label>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <led>
+                <halpin>"fpga0.bitin1.bit"</halpin>
+                <size>16</size>
+                <on_color>"green"</on_color>
+                <off_color>"black"</off_color>
+                <anchor>"e"</anchor>
+                <width>16</width>
+              </led>
+            </hbox>
+          </vbox>
+          <vbox>
+            <label>
+              <text>"Z (j2)    "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+            </label>
+            <hbox>
+              <boxexpand expand="yes"/>
+              <boxfill fill="both"/>
+              <boxanchor anchor="e"/>
+              <led>
+                <halpin>"fpga0.bitin2.bit"</halpin>
+                <size>16</size>
+                <on_color>"green"</on_color>
+                <off_color>"black"</off_color>
+                <anchor>"e"</anchor>
+                <width>16</width>
+              </led>
+            </hbox>
+          </vbox>
+        </hbox>
+      </labelframe>
+      <labelframe text="Spindle">
+        <relief>GROOVE</relief>
+        <font>("Helvetica", 10)</font>
+        <vbox>
+          <hbox>
+            <boxexpand expand="yes"/>
+            <boxfill fill="both"/>
+            <boxanchor anchor="e"/>
+            <label>
+              <text>"AT-Speed  "</text>
+              <anchor>"w"</anchor>
+              <font>("Helvetica",9)</font>
+              <width>30</width>
+            </label>
+            <led>
+              <halpin>"fpga0.mbus_hy0.at_speed"</halpin>
+              <size>16</size>
+              <on_color>"yellow"</on_color>
+              <off_color>"red"</off_color>
+              <anchor>"e"</anchor>
+              <width>16</width>
+            </led>
+          </hbox>
+          <hbox>
+            <boxexpand expand="yes"/>
+            <boxfill fill="both"/>
+            <boxanchor anchor="e"/>
+            <meter>
+              <halpin>"fpga0.mbus_hy0.speed_fb"</halpin>
+              <text>"RPM"</text>
+              <subtext>"RPM"</subtext>
+              <size>250</size>
+              <min_>0</min_>
+              <max_>24000</max_>
+              <initval>0</initval>
+              <size>250</size>
+              <param_pin>1</param_pin>
+              <region1>(0,6000,"gray")</region1>
+              <region2>(6000,20000,"green")</region2>
+              <region3>(20000,24000,"red")</region3>
+            </meter>
+          </hbox>
+        </vbox>
+      </labelframe>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"i2cbus0-lm75_0_temp"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.i2cbus0.lm75_0_temp"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"i2cbus0-lm75_0_valid"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.i2cbus0.lm75_0_valid"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin0-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev5.di_3"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin1-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev5.di_2"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin2-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev5.di_1"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin3-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev5.di_0"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin4-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev4.di_7"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin5-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev4.di_6"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioin6-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev4.di_5"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-0_green"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.fpga0_wled.0_green"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-0_blue"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.fpga0_wled.0_blue"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-0_red"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.0_red"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-1_green"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.1_green"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-1_blue"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.1_blue"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-1_red"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.1_red"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-2_green"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.2_green"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-2_blue"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.2_blue"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"fpga0_wled-2_red"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.fpga0_wled.2_red"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout0-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev2.do1_16_13"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout1-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.mbus_dev2.do1_16_14"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout2-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev2.do1_16_15"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout3-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev5.do_0"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout4-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev5.do_1"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout5-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev4.do_7"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout6-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev4.do_6"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout7-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev4.do_5"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"gpioout8-bit"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <checkbutton>
+          <halpin>"fpga0.mbus_dev4.do_4"</halpin>
+          <anchor>"e"</anchor>
+          <initval>0</initval>
+          <width>13</width>
+        </checkbutton>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev0-temp_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev0.temp_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev0-temp_1"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev0.temp_1"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev0-temp_2"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev0.temp_2"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev0-temp_3"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev0.temp_3"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev1-ai_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev1.ai_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"04.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"mA        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev1-ai_1"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev1.ai_1"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"04.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"mA        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev1-ai_2"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev1.ai_2"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"04.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"mA        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev1-ai_3"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_dev1.ai_3"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"04.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"mA        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev3-aout1_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"fpga0.mbus_dev3.aout1_0"</halpin>
+          <min_>0</min_>
+          <max_>5</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_dev3-aout2_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <scale>
+          <halpin>"fpga0.mbus_dev3.aout2_0"</halpin>
+          <min_>0</min_>
+          <max_>10</max_>
+          <resolution>0.1</resolution>
+          <orient>HORIZONTAL</orient>
+          <initval>0</initval>
+          <param_pin>1</param_pin>
+        </scale>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Speed-Set "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_hy0.speed_command"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"d"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"RPM       "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Errors    "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_hy0.error_count"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"d"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"Ampere    "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_hy0.ampere"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"A         "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"RPM       "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_hy0.rpm"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"d"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"RPM       "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"DC        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_hy0.dc_volt"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"V         "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"AC        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_hy0.ac_volt"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"V         "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+    </vbox>
+    <vbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_device0-voltage_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_device0.voltage_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"V         "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_device0-current_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_device0.current_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"A         "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_device0-power_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_device0.power_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"W         "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_device0-power_factor_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_device0.power_factor_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.2f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"Cos       "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_device0-freq_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_device0.freq_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"Hz        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"mbus_device0-power_total_0"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.mbus_device0.power_total_0"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"kWh       "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+    </vbox>
+  </tabs>
+</pyvcp>

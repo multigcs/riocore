@@ -1,0 +1,68 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_fpga0_fpga0_wled_0_red     <= pyvcp.fpga0.fpga0_wled.0_red
+net sig_pyvcp_fpga0_fpga0_wled_1_green   <= pyvcp.fpga0.fpga0_wled.1_green
+net sig_pyvcp_fpga0_fpga0_wled_1_blue    <= pyvcp.fpga0.fpga0_wled.1_blue
+net sig_pyvcp_fpga0_fpga0_wled_1_red     <= pyvcp.fpga0.fpga0_wled.1_red
+net sig_pyvcp_fpga0_fpga0_wled_2_green   <= pyvcp.fpga0.fpga0_wled.2_green
+net sig_pyvcp_fpga0_fpga0_wled_2_blue    <= pyvcp.fpga0.fpga0_wled.2_blue
+net sig_pyvcp_fpga0_fpga0_wled_2_red     <= pyvcp.fpga0.fpga0_wled.2_red
+net sig_pyvcp_fpga0_mbus_dev2_do1_16_13  <= pyvcp.fpga0.mbus_dev2.do1_16_13
+net sig_pyvcp_fpga0_mbus_dev2_do1_16_15  <= pyvcp.fpga0.mbus_dev2.do1_16_15
+net sig_pyvcp_fpga0_mbus_dev5_do_0       <= pyvcp.fpga0.mbus_dev5.do_0
+net sig_pyvcp_fpga0_mbus_dev5_do_1       <= pyvcp.fpga0.mbus_dev5.do_1
+net sig_pyvcp_fpga0_mbus_dev4_do_7       <= pyvcp.fpga0.mbus_dev4.do_7
+net sig_pyvcp_fpga0_mbus_dev4_do_6       <= pyvcp.fpga0.mbus_dev4.do_6
+net sig_pyvcp_fpga0_mbus_dev4_do_5       <= pyvcp.fpga0.mbus_dev4.do_5
+net sig_pyvcp_fpga0_mbus_dev4_do_4       <= pyvcp.fpga0.mbus_dev4.do_4
+net sig_pyvcp_fpga0_mbus_dev3_aout1_0-f  <= pyvcp.fpga0.mbus_dev3.aout1_0-f
+net sig_pyvcp_fpga0_mbus_dev3_aout2_0-f  <= pyvcp.fpga0.mbus_dev3.aout2_0-f
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_fpga0_bitin0_bit                 => pyvcp.fpga0.bitin0.bit
+net sig_fpga0_bitin1_bit                 => pyvcp.fpga0.bitin1.bit
+net sig_fpga0_bitin2_bit                 => pyvcp.fpga0.bitin2.bit
+net sig_fpga0_mbus_hy0_at_speed          => pyvcp.fpga0.mbus_hy0.at_speed
+net sig_fpga0_mbus_hy0_speed_fb          => pyvcp.fpga0.mbus_hy0.speed_fb
+net sig_fpga0_i2cbus0_lm75_0_temp        => pyvcp.fpga0.i2cbus0.lm75_0_temp
+net sig_fpga0_i2cbus0_lm75_0_valid       => pyvcp.fpga0.i2cbus0.lm75_0_valid
+net sig_fpga0_mbus_dev5_di_3             => pyvcp.fpga0.mbus_dev5.di_3
+net sig_fpga0_mbus_dev5_di_2             => pyvcp.fpga0.mbus_dev5.di_2
+net sig_fpga0_mbus_dev5_di_1             => pyvcp.fpga0.mbus_dev5.di_1
+net sig_fpga0_mbus_dev5_di_0             => pyvcp.fpga0.mbus_dev5.di_0
+net sig_fpga0_mbus_dev4_di_7             => pyvcp.fpga0.mbus_dev4.di_7
+net sig_fpga0_mbus_dev4_di_6             => pyvcp.fpga0.mbus_dev4.di_6
+net sig_fpga0_mbus_dev4_di_5             => pyvcp.fpga0.mbus_dev4.di_5
+net func_or_0_2_or                       => pyvcp.fpga0.fpga0_wled.0_green
+net sig_halui_mode_is-auto               => pyvcp.fpga0.fpga0_wled.0_blue
+net sig_iocontrol_0_coolant-flood        => pyvcp.fpga0.mbus_dev2.do1_16_14
+net sig_fpga0_mbus_dev0_temp_0           => pyvcp.fpga0.mbus_dev0.temp_0
+net sig_fpga0_mbus_dev0_temp_1           => pyvcp.fpga0.mbus_dev0.temp_1
+net sig_fpga0_mbus_dev0_temp_2           => pyvcp.fpga0.mbus_dev0.temp_2
+net sig_fpga0_mbus_dev0_temp_3           => pyvcp.fpga0.mbus_dev0.temp_3
+net sig_fpga0_mbus_dev1_ai_0             => pyvcp.fpga0.mbus_dev1.ai_0
+net sig_fpga0_mbus_dev1_ai_1             => pyvcp.fpga0.mbus_dev1.ai_1
+net sig_fpga0_mbus_dev1_ai_2             => pyvcp.fpga0.mbus_dev1.ai_2
+net sig_fpga0_mbus_dev1_ai_3             => pyvcp.fpga0.mbus_dev1.ai_3
+net sig_spindle_0_speed-out-abs          => pyvcp.fpga0.mbus_hy0.speed_command
+net sig_fpga0_mbus_hy0_error_count       => pyvcp.fpga0.mbus_hy0.error_count
+net sig_fpga0_mbus_hy0_ampere            => pyvcp.fpga0.mbus_hy0.ampere
+net sig_fpga0_mbus_hy0_rpm               => pyvcp.fpga0.mbus_hy0.rpm
+net sig_fpga0_mbus_hy0_dc_volt           => pyvcp.fpga0.mbus_hy0.dc_volt
+net sig_fpga0_mbus_hy0_ac_volt           => pyvcp.fpga0.mbus_hy0.ac_volt
+net sig_fpga0_mbus_device0_voltage_0     => pyvcp.fpga0.mbus_device0.voltage_0
+net sig_fpga0_mbus_device0_current_0     => pyvcp.fpga0.mbus_device0.current_0
+net sig_fpga0_mbus_device0_power_0       => pyvcp.fpga0.mbus_device0.power_0
+net sig_fpga0_mbus_device0_power_factor_0 => pyvcp.fpga0.mbus_device0.power_factor_0
+net sig_fpga0_mbus_device0_freq_0        => pyvcp.fpga0.mbus_device0.freq_0
+net sig_fpga0_mbus_device0_power_total_0 => pyvcp.fpga0.mbus_device0.power_total_0
+
+#################################################################################
+# setp
+#################################################################################
+

@@ -1,0 +1,727 @@
+{
+    "name": "satmcu",
+    "flow": {
+        "view": {
+            "scale": 0.94,
+            "pos": [
+                458,
+                153
+            ]
+        },
+        "board": {
+            "pos": [
+                1160.0,
+                350.0
+            ],
+            "rotate": 0
+        },
+        "hal": {
+            "misc": [
+                1640.0,
+                310.0
+            ],
+            "joint.0": [
+                1640.0,
+                400.0
+            ],
+            "joint.1": [
+                1640.0,
+                180.0
+            ],
+            "joint.2": [
+                1640.0,
+                50.0
+            ],
+            "spindle.0": [
+                1640.0,
+                -40.0
+            ]
+        }
+    },
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "ICEBreakerV1.0e",
+            "toolchain": "icestorm",
+            "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                1170.0,
+                300.0
+            ],
+            "rotate": 0
+        },
+        {
+            "type": "w5500",
+            "pins": {
+                "miso": {
+                    "pin": "board0:SPI:MISO"
+                },
+                "sel": {
+                    "pin": "board0:SPI:SEL"
+                },
+                "sclk": {
+                    "pin": "board0:SPI:SCLK"
+                },
+                "mosi": {
+                    "pin": "board0:SPI:MOSI"
+                }
+            },
+            "uid": "w55000",
+            "pos": [
+                990.0,
+                430.0
+            ],
+            "image": "w5500mini",
+            "gw": "192.168.11.1",
+            "ip": "192.168.11.194",
+            "rotate": 90
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "pos": [
+                1660.0,
+                190.0
+            ],
+            "image": "stepstick",
+            "is_joint": true,
+            "joint": {
+                "min_ferror": 10.0,
+                "ferror": 22.0,
+                "max_acceleration": 100.0
+            },
+            "rotate": 180,
+            "pins": {
+                "en": {
+                    "pin": "breakout0:ALL:enable"
+                },
+                "dir": {
+                    "pin": "breakout0:J0:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J0:step"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "pos": [
+                1570.0,
+                190.0
+            ],
+            "name": "",
+            "image": "stepstick",
+            "is_joint": true,
+            "joint": {
+                "ferror": 20.0,
+                "min_ferror": 10.0,
+                "max_acceleration": 110.0
+            },
+            "rotate": 180,
+            "pins": {
+                "dir": {
+                    "pin": "breakout0:J1:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J1:step"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "board0:LED:R"
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                1080.0,
+                350.0
+            ],
+            "image": "led",
+            "rotate": 180
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "board0:BUTTON:1"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                1020.0,
+                190.0
+            ],
+            "image": "switch",
+            "rotate": 180
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "pos": [
+                1480.0,
+                190.0
+            ],
+            "name": "",
+            "image": "stepstick",
+            "is_joint": true,
+            "joint": {
+                "ferror": 20.0,
+                "min_ferror": 10.0,
+                "max_acceleration": 110.0
+            },
+            "rotate": 180,
+            "pins": {
+                "dir": {
+                    "pin": "breakout0:J2:dir"
+                },
+                "step": {
+                    "pin": "breakout0:J2:step"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "image": "relay",
+            "pos": [
+                1810.0,
+                300.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:OUTPUT:OUT1"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "image": "relay",
+            "pos": [
+                1820.0,
+                460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:OUTPUT:OUT0"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                1420.0,
+                600.0
+            ],
+            "rotate": 90,
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:INPUT:IN4"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                1560.0,
+                600.0
+            ],
+            "rotate": 90,
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:INPUT:IN2"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "proximity",
+            "pos": [
+                1490.0,
+                600.0
+            ],
+            "rotate": 90,
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:INPUT:IN3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin4",
+            "image": "proximity",
+            "pos": [
+                1630.0,
+                600.0
+            ],
+            "name": "",
+            "rotate": 90,
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:INPUT:IN1"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin5",
+            "image": "proximity",
+            "pos": [
+                1700.0,
+                600.0
+            ],
+            "name": "",
+            "rotate": 90,
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:INPUT:IN0"
+                }
+            }
+        },
+        {
+            "type": "breakout",
+            "node_type": "rio-icebreaker3x",
+            "uid": "breakout0",
+            "pos": [
+                1350.0,
+                310.0
+            ],
+            "rotate": 180,
+            "pins": {
+                "SLOT:P4": {
+                    "pin": "board0:PMOD1A:P4"
+                },
+                "SLOT:P3": {
+                    "pin": "board0:PMOD1A:P3"
+                },
+                "SLOT:P2": {
+                    "pin": "board0:PMOD1A:P2"
+                },
+                "SLOT:P1": {
+                    "pin": "board0:PMOD1A:P1"
+                },
+                "SLOT:P10": {
+                    "pin": "board0:PMOD1A:P10"
+                },
+                "SLOT:P9": {
+                    "pin": "board0:PMOD1A:P9"
+                },
+                "SLOT:P8": {
+                    "pin": "board0:PMOD1A:P8"
+                },
+                "SLOT:P7": {
+                    "pin": "board0:PMOD1A:P7"
+                },
+                "PMODA:P4": {
+                    "pin": "board0:PMOD1A:P4"
+                },
+                "PMODA:P3": {
+                    "pin": "board0:PMOD1A:P3"
+                },
+                "PMODA:P2": {
+                    "pin": "board0:PMOD1A:P2"
+                },
+                "PMODA:P1": {
+                    "pin": "board0:PMOD1A:P1"
+                },
+                "PMODA:P10": {
+                    "pin": "board0:PMOD1A:P10"
+                },
+                "PMODA:P9": {
+                    "pin": "board0:PMOD1A:P9"
+                },
+                "PMODA:P8": {
+                    "pin": "board0:PMOD1A:P8"
+                },
+                "PMODA:P7": {
+                    "pin": "board0:PMOD1A:P7"
+                },
+                "PMODB:P4": {
+                    "pin": "board0:PMOD1B:P4"
+                },
+                "PMODB:P3": {
+                    "pin": "board0:PMOD1B:P3"
+                },
+                "PMODB:P2": {
+                    "pin": "board0:PMOD1B:P2"
+                },
+                "PMODB:P1": {
+                    "pin": "board0:PMOD1B:P1"
+                },
+                "PMODB:P10": {
+                    "pin": "board0:PMOD1B:P10"
+                },
+                "PMODB:P9": {
+                    "pin": "board0:PMOD1B:P9"
+                },
+                "PMODB:P8": {
+                    "pin": "board0:PMOD1B:P8"
+                },
+                "PMODB:P7": {
+                    "pin": "board0:PMOD1B:P7"
+                }
+            }
+        },
+        {
+            "type": "uartsub",
+            "uid": "uartsub1",
+            "pos": [
+                1270.0,
+                1310.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PMOD2:P10"
+                },
+                "tx": {
+                    "pin": "board0:PMOD2:P9"
+                }
+            },
+            "subboard": "fpga1",
+            "baud": 1000000,
+            "name": ""
+        },
+        {
+            "type": "satmcu",
+            "uid": "satmcu0",
+            "pos": [
+                1540.0,
+                930.0
+            ],
+            "board": "esp32dev",
+            "rotate": -90,
+            "pins": {
+                "SAT": {
+                    "pin": "uartsub0:SAT:OUT"
+                }
+            },
+            "baud": 1000000,
+            "name": "sat1"
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:23"
+                }
+            },
+            "uid": "gpioout0",
+            "pos": [
+                1540.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90
+        },
+        {
+            "type": "uartsub",
+            "uid": "uartsub0",
+            "pos": [
+                1290.0,
+                940.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PMOD2:P4"
+                },
+                "tx": {
+                    "pin": "board0:PMOD2:P3"
+                }
+            },
+            "subboard": "fpga1",
+            "baud": 1000000,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:22"
+                }
+            },
+            "uid": "gpioout1",
+            "pos": [
+                1570.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:21"
+                }
+            },
+            "uid": "gpioout2",
+            "pos": [
+                1600.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:5"
+                }
+            },
+            "uid": "gpioout3",
+            "pos": [
+                1630.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:0"
+                }
+            },
+            "uid": "gpioin0",
+            "pos": [
+                1820.0,
+                950.0
+            ],
+            "image": "smdbutton",
+            "rotate": 0
+        },
+        {
+            "type": "encoder",
+            "uid": "encoder0",
+            "pos": [
+                1470.0,
+                1110.0
+            ],
+            "pins": {
+                "phase-A": {
+                    "pin": "satmcu0:IO:36"
+                },
+                "phase-B": {
+                    "pin": "satmcu0:IO:39"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90,
+            "name": "enc1"
+        },
+        {
+            "type": "encoder",
+            "uid": "encoder1",
+            "pos": [
+                1560.0,
+                1110.0
+            ],
+            "name": "enc2",
+            "pins": {
+                "phase-A": {
+                    "pin": "satmcu0:IO:34"
+                },
+                "phase-B": {
+                    "pin": "satmcu0:IO:35"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90
+        },
+        {
+            "type": "encoder",
+            "uid": "encoder2",
+            "pos": [
+                1650.0,
+                1110.0
+            ],
+            "name": "enc3",
+            "pins": {
+                "phase-A": {
+                    "pin": "satmcu0:IO:32"
+                },
+                "phase-B": {
+                    "pin": "satmcu0:IO:33"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90
+        },
+        {
+            "type": "encoder",
+            "uid": "encoder3",
+            "pos": [
+                1740.0,
+                1110.0
+            ],
+            "name": "enc4",
+            "pins": {
+                "phase-A": {
+                    "pin": "satmcu0:IO:25"
+                },
+                "phase-B": {
+                    "pin": "satmcu0:IO:26"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:17"
+                }
+            },
+            "uid": "gpioout4",
+            "pos": [
+                1660.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:16"
+                }
+            },
+            "uid": "gpioout5",
+            "pos": [
+                1690.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:4"
+                }
+            },
+            "uid": "gpioout6",
+            "pos": [
+                1720.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:2"
+                }
+            },
+            "uid": "gpioout7",
+            "pos": [
+                1750.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:15"
+                }
+            },
+            "uid": "gpioout8",
+            "pos": [
+                1780.0,
+                850.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "satmcu",
+            "uid": "satmcu1",
+            "pos": [
+                1600.0,
+                1310.0
+            ],
+            "pins": {
+                "SAT": {
+                    "pin": "uartsub1:SAT:OUT"
+                }
+            },
+            "rotate": -90,
+            "board": "pico",
+            "baud": 1000000
+        },
+        {
+            "type": "gpioout",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu1:IO:14"
+                }
+            },
+            "uid": "gpioout9",
+            "pos": [
+                1780.0,
+                1430.0
+            ],
+            "image": "led",
+            "rotate": 90,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu1:IO:15"
+                }
+            },
+            "uid": "gpioin1",
+            "pos": [
+                1840.0,
+                1440.0
+            ],
+            "image": "smdbutton",
+            "rotate": 90,
+            "name": ""
+        }
+    ],
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "DEFAULT_LINEAR_VELOCITY": 20.0
+            },
+            "EMCMOT": {
+                "SERVO_PERIOD": 1500000
+            }
+        }
+    },
+    "protocol": "UDP",
+    "toolchain": "icestorm"
+}

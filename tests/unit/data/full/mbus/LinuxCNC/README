@@ -1,0 +1,26 @@
+RIO - mbus
+
+Description: Tangbob with one 5x china BOB
+Protocol: UDP
+Configuration: tests/unit/data/full/mbus.json
+
+UDP-Configuration:
+  Target-IP: 192.168.10.191
+  Target-Port: 2390
+
+Plugins:
+  breakout (1x)
+  blink (1x)
+  i2cbus (1x)
+  stepdir (3x)
+  bitin (3x)
+  fpga (1x)
+  mbus (1x)
+  mbus_device (7x)
+  mbus_hy (1x)
+  gpioout (9x)
+  gpioin (7x)
+  image (7x)
+  w5500 (1x)
+  wled (1x)
+

@@ -1,0 +1,23 @@
+RIO - satmcu
+
+Protocol: UDP
+Configuration: tests/unit/data/full/satmcu.json
+
+UDP-Configuration:
+  Target-IP: 192.168.11.194
+  Target-Port: 2390
+
+Plugins:
+  fpga (1x)
+  w5500 (1x)
+  stepdir (3x)
+  blink (1x)
+  bitin (6x)
+  bitout (2x)
+  breakout (1x)
+  uartsub (2x)
+  satmcu (2x)
+  gpioout (10x)
+  gpioin (2x)
+  encoder (4x)
+

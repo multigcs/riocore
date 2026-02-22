@@ -1,0 +1,861 @@
+{
+    "name": "mbus",
+    "description": "Tangbob with one 5x china BOB",
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                -2560.0,
+                -490.0
+            ],
+            "rotate": 90,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "fpga0:LEFT:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "fpga0:LEFT:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "fpga0:LEFT:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "fpga0:LEFT:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "fpga0:LEFT:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "fpga0:LEFT:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "fpga0:LEFT:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "fpga0:LEFT:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "fpga0:LEFT:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "fpga0:LEFT:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "fpga0:LEFT:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "fpga0:LEFT:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "fpga0:LEFT:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "fpga0:LEFT:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "fpga0:LEFT:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "fpga0:LEFT:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "fpga0:LEFT:P17"
+                }
+            }
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "fpga0:LED:L6"
+                }
+            },
+            "uid": "blink0",
+            "pos": [
+                -1920.0,
+                -530.0
+            ],
+            "image": "led",
+            "rotate": 0
+        },
+        {
+            "type": "i2cbus",
+            "pins": {
+                "sda": {
+                    "pin": "fpga0:I2C:sda"
+                },
+                "scl": {
+                    "pin": "fpga0:I2C:scl"
+                }
+            },
+            "uid": "i2cbus0",
+            "config": {
+                "devices": {
+                    "lm75_0": {
+                        "type": "lm75",
+                        "address": "0x48",
+                        "subbus": "none"
+                    }
+                }
+            },
+            "pos": [
+                -2010.0,
+                30.0
+            ],
+            "sub_pos": {
+                "dev-lm75_0(0x48)": [
+                    -1760.0,
+                    30.0
+                ]
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "image": "stepper",
+            "pos": [
+                -2880.0,
+                -40.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": -100.0,
+                "max_limit": 230.0,
+                "home_search_vel": -10.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 20.0
+            },
+            "rotate": 90
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "image": "stepper",
+            "pos": [
+                -2610.0,
+                -40.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -800.0,
+                "max_velocity": 25.0,
+                "min_limit": -100.0,
+                "max_limit": 160.0,
+                "home_search_vel": -10.0,
+                "home_latch_vel": -1.0,
+                "home_final_vel": 20.0
+            },
+            "rotate": 90
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "image": "stepper",
+            "pos": [
+                -2340.0,
+                -40.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                },
+                "en": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            },
+            "is_joint": true,
+            "joint": {
+                "scale": -1600.0,
+                "max_velocity": 15.0,
+                "min_limit": -32.0,
+                "max_limit": 100.0,
+                "home_search_vel": 10.0,
+                "home_latch_vel": 1.0,
+                "home_final_vel": 10.0
+            },
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "proximity",
+            "pos": [
+                -3140.0,
+                20.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -3120.0,
+                                -170.0
+                            ],
+                            "rotate": 90
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "home-x",
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                -3070.0,
+                20.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -3060.0,
+                                -170.0
+                            ],
+                            "rotate": 90
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            },
+            "name": "home-y",
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                -3000.0,
+                20.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -3000.0,
+                                -170.0
+                            ],
+                            "rotate": 90
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            },
+            "name": "home-z",
+            "rotate": 90
+        },
+        {
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "uid": "fpga0",
+            "pos": [
+                -2120.0,
+                -480.0
+            ],
+            "protocol": "UDP",
+            "sub": {
+                "fpga0_w5500": {
+                    "ip": "192.168.10.191"
+                },
+                "fpga0_wled": {
+                    "signals": {
+                        "0_green": {
+                            "net": "(!halui.mode.is-auto) or halui.program.is-paused",
+                            "setp": ""
+                        },
+                        "0_blue": {
+                            "net": "halui.mode.is-auto",
+                            "setp": ""
+                        }
+                    },
+                    "leds": 3
+                }
+            },
+            "rotate": 0,
+            "modbus_port": "/dev/ttyUSB0",
+            "toolchain": "icestorm"
+        },
+        {
+            "type": "mbus",
+            "uid": "mbmaster0",
+            "pos": [
+                -1760.0,
+                -100.0
+            ],
+            "pins": {
+                "tx": {
+                    "pin": "fpga0:MODBUS:TX"
+                },
+                "rx": {
+                    "pin": "fpga0:MODBUS:RX"
+                },
+                "tx_enable": {
+                    "pin": "fpga0:MODBUS:TX_ENABLE"
+                }
+            }
+        },
+        {
+            "type": "mbus_device",
+            "uid": "mbus_dev0",
+            "pos": [
+                -1430.0,
+                -430.0
+            ],
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbus_device0:MODBUS:OUT"
+                },
+                "MODBUS:IN": {
+                    "pin": "mbmaster0:BUS:IO"
+                }
+            },
+            "node_type": "NT18B07",
+            "priority": 1,
+            "rotate": -90
+        },
+        {
+            "type": "mbus_device",
+            "uid": "mbus_dev1",
+            "pos": [
+                -1510.0,
+                -1280.0
+            ],
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbus_dev5:MODBUS:OUT"
+                }
+            },
+            "node_type": "MA01-XACX0440",
+            "priority": 2,
+            "rotate": 180
+        },
+        {
+            "type": "mbus_device",
+            "uid": "mbus_dev2",
+            "pos": [
+                -3110.0,
+                -1360.0
+            ],
+            "node_type": "N4DOK32",
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbmaster0:BUS:IO"
+                }
+            },
+            "address": 2,
+            "rotate": 180
+        },
+        {
+            "type": "mbus_device",
+            "uid": "mbus_dev3",
+            "pos": [
+                -1240.0,
+                -400.0
+            ],
+            "node_type": "N4DAC02",
+            "rotate": 90,
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbus_dev0:MODBUS:OUT"
+                }
+            }
+        },
+        {
+            "type": "mbus_device",
+            "uid": "mbus_dev5",
+            "pos": [
+                -1750.0,
+                -1270.0
+            ],
+            "node_type": "MA01-AXCX4020",
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbus_dev2:MODBUS:OUT"
+                }
+            },
+            "rotate": 0
+        },
+        {
+            "type": "mbus_hy",
+            "uid": "mbus_hy0",
+            "pos": [
+                -860.0,
+                -410.0
+            ],
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbus_dev3:MODBUS:OUT"
+                }
+            },
+            "signals": {
+                "speed_command": {
+                    "net": "spindle.0.speed-out-abs"
+                },
+                "spindle_forward": {
+                    "net": "spindle.0.forward"
+                },
+                "spindle_reverse": {
+                    "net": "spindle.0.reverse"
+                },
+                "spindle_on": {
+                    "net": "spindle.0.on"
+                }
+            }
+        },
+        {
+            "type": "mbus_device",
+            "uid": "mbus_dev4",
+            "pos": [
+                -1040.0,
+                -1400.0
+            ],
+            "node_type": "303E32DC812",
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbus_dev1:MODBUS:OUT"
+                }
+            }
+        },
+        {
+            "type": "mbus_device",
+            "node_type": "DDS519MR",
+            "uid": "mbus_device0",
+            "pos": [
+                -1520.0,
+                -490.0
+            ],
+            "pins": {
+                "MODBUS": {
+                    "pin": "mbmaster0:BUS:IO"
+                },
+                "base:MODBUS": {
+                    "pin": "mbmaster0:BUS:IO"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "image": "relay",
+            "pos": [
+                -2210.0,
+                -1700.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev2:do1_16:13"
+                }
+            },
+            "rotate": -90
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout1",
+            "image": "relay",
+            "pos": [
+                -2060.0,
+                -1700.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev2:do1_16:14"
+                }
+            },
+            "name": "",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.coolant-flood"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout2",
+            "image": "relay",
+            "pos": [
+                -1910.0,
+                -1700.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev2:do1_16:15"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin0",
+            "image": "proximity",
+            "pos": [
+                -1780.0,
+                -880.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev5:di:3"
+                }
+            },
+            "rotate": 90
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin1",
+            "image": "proximity",
+            "pos": [
+                -1710.0,
+                -880.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev5:di:2"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin2",
+            "image": "proximity",
+            "pos": [
+                -1640.0,
+                -880.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev5:di:1"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin3",
+            "image": "proximity",
+            "pos": [
+                -1570.0,
+                -880.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev5:di:0"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout3",
+            "image": "led",
+            "pos": [
+                -1620.0,
+                -1450.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev5:do:0"
+                }
+            },
+            "rotate": -90
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout4",
+            "image": "led",
+            "pos": [
+                -1680.0,
+                -1450.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev5:do:1"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin4",
+            "image": "proximity",
+            "pos": [
+                -480.0,
+                -710.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:di:7"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin5",
+            "image": "proximity",
+            "pos": [
+                -550.0,
+                -710.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:di:6"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin6",
+            "image": "proximity",
+            "pos": [
+                -620.0,
+                -710.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:di:5"
+                }
+            },
+            "name": "",
+            "rotate": 90
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout5",
+            "image": "ssr2a",
+            "pos": [
+                -340.0,
+                -1650.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:do:7"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout6",
+            "image": "ssr2a",
+            "pos": [
+                -430.0,
+                -1650.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:do:6"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout7",
+            "image": "ssr2a",
+            "pos": [
+                -520.0,
+                -1650.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:do:5"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout8",
+            "image": "ssr2a",
+            "pos": [
+                -610.0,
+                -1650.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "mbus_dev4:do:4"
+                }
+            },
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "image",
+            "uid": "image0",
+            "image": "dinrail",
+            "pos": [
+                -3150.0,
+                -1170.0
+            ]
+        },
+        {
+            "type": "image",
+            "uid": "image1",
+            "image": "dinrail",
+            "pos": [
+                -1110.0,
+                -1170.0
+            ],
+            "name": ""
+        },
+        {
+            "type": "image",
+            "uid": "image2",
+            "image": "dinrail",
+            "pos": [
+                -2130.0,
+                -1170.0
+            ],
+            "name": ""
+        },
+        {
+            "type": "image",
+            "uid": "image3",
+            "image": "dinrail",
+            "pos": [
+                -2110.0,
+                -380.0
+            ],
+            "name": ""
+        },
+        {
+            "type": "image",
+            "uid": "image4",
+            "image": "dinrail",
+            "pos": [
+                -3130.0,
+                -380.0
+            ],
+            "name": ""
+        },
+        {
+            "type": "image",
+            "uid": "image5",
+            "image": "fuse",
+            "pos": [
+                -210.0,
+                -1270.0
+            ]
+        },
+        {
+            "type": "image",
+            "uid": "image6",
+            "image": "fuse",
+            "pos": [
+                -130.0,
+                -1270.0
+            ],
+            "name": ""
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 1.42,
+            "pos": [
+                -1940,
+                -1945
+            ]
+        },
+        "hal": {
+            "misc": [
+                825.3287543995666,
+                397.0547228632355
+            ],
+            "spindle.0": [
+                833.8458862272005,
+                191.1069909269338
+            ],
+            "joint.3": [
+                833.8408785714018,
+                103.12258752610734
+            ],
+            "joint.2": [
+                829.9458670383008,
+                7.735890104503483
+            ],
+            "joint.1": [
+                832.5425413937016,
+                -87.65080731710029
+            ],
+            "joint.0": [
+                839.034227282204,
+                -186.93251627180555
+            ]
+        },
+        "board": {
+            "pos": [
+                -170.0,
+                -240.0
+            ],
+            "rotate": 0
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "EMCMOT": {
+                "SERVO_PERIOD": 500000
+            }
+        },
+        "scurve": false
+    }
+}

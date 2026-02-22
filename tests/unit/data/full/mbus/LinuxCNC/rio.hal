@@ -1,0 +1,240 @@
+
+# load the realtime components
+loadrt [KINS]KINEMATICS
+loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
+
+# pid controller
+loadrt pid num_chan=3
+
+# manual toolchanger
+loadusr -W hal_manualtoolchange
+
+# fpga board Tangbob
+loadrt riocomp-fpga0
+
+# if you need to test rio without hardware, set it to 1
+setp fpga0.sys-simulation 0
+
+# read
+addf fpga0.readwrite servo-thread
+# process
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
+addf motion-command-handler servo-thread
+addf motion-controller servo-thread
+# write
+
+#################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.or_0.2 personality=0x202
+addf func.or_0.2 servo-thread
+
+loadrt not names=func.not_halui_mode_is-auto
+addf func.not_halui_mode_is-auto servo-thread
+
+#################################################################################
+# iocontrol
+#################################################################################
+net sig_iocontrol_0_coolant-flood        <= iocontrol.0.coolant-flood
+net sig_fpga0_sys-status                 => iocontrol.0.emc-enable-in
+net tool-change                          <= iocontrol.0.tool-change
+net tool-changed                         => iocontrol.0.tool-changed
+net tool-prep-number                     <= iocontrol.0.tool-prep-number
+net tool-prepared                        <= iocontrol.0.tool-prepare
+net tool-prepared                        => iocontrol.0.tool-prepared
+net user-enable-out                      <= iocontrol.0.user-enable-out
+net user-request-enable                  <= iocontrol.0.user-request-enable
+
+#################################################################################
+# fpga0
+#################################################################################
+net sig_fpga0_bitin0_bit                 <= fpga0.bitin0.bit
+net sig_fpga0_bitin1_bit                 <= fpga0.bitin1.bit
+net sig_fpga0_bitin2_bit                 <= fpga0.bitin2.bit
+
+net sig_halui_mode_is-auto               => fpga0.fpga0_wled.0_blue
+net func_or_0_2_or                       => fpga0.fpga0_wled.0_green
+net sig_pyvcp_fpga0_fpga0_wled_0_red     => fpga0.fpga0_wled.0_red
+net sig_pyvcp_fpga0_fpga0_wled_1_blue    => fpga0.fpga0_wled.1_blue
+net sig_pyvcp_fpga0_fpga0_wled_1_green   => fpga0.fpga0_wled.1_green
+net sig_pyvcp_fpga0_fpga0_wled_1_red     => fpga0.fpga0_wled.1_red
+net sig_pyvcp_fpga0_fpga0_wled_2_blue    => fpga0.fpga0_wled.2_blue
+net sig_pyvcp_fpga0_fpga0_wled_2_green   => fpga0.fpga0_wled.2_green
+net sig_pyvcp_fpga0_fpga0_wled_2_red     => fpga0.fpga0_wled.2_red
+
+net sig_fpga0_i2cbus0_lm75_0_temp        <= fpga0.i2cbus0.lm75_0_temp
+net sig_fpga0_i2cbus0_lm75_0_valid       <= fpga0.i2cbus0.lm75_0_valid
+
+net sig_fpga0_mbus_dev0_temp_0           <= fpga0.mbus_dev0.temp_0
+net sig_fpga0_mbus_dev0_temp_1           <= fpga0.mbus_dev0.temp_1
+net sig_fpga0_mbus_dev0_temp_2           <= fpga0.mbus_dev0.temp_2
+net sig_fpga0_mbus_dev0_temp_3           <= fpga0.mbus_dev0.temp_3
+net sig_fpga0_mbus_dev1_ai_0             <= fpga0.mbus_dev1.ai_0
+net sig_fpga0_mbus_dev1_ai_1             <= fpga0.mbus_dev1.ai_1
+net sig_fpga0_mbus_dev1_ai_2             <= fpga0.mbus_dev1.ai_2
+net sig_fpga0_mbus_dev1_ai_3             <= fpga0.mbus_dev1.ai_3
+net sig_pyvcp_fpga0_mbus_dev2_do1_16_13  => fpga0.mbus_dev2.do1_16_13
+net sig_iocontrol_0_coolant-flood        => fpga0.mbus_dev2.do1_16_14
+net sig_pyvcp_fpga0_mbus_dev2_do1_16_15  => fpga0.mbus_dev2.do1_16_15
+net sig_pyvcp_fpga0_mbus_dev3_aout1_0-f  => fpga0.mbus_dev3.aout1_0
+net sig_pyvcp_fpga0_mbus_dev3_aout2_0-f  => fpga0.mbus_dev3.aout2_0
+net sig_fpga0_mbus_dev4_di_5             <= fpga0.mbus_dev4.di_5
+net sig_fpga0_mbus_dev4_di_6             <= fpga0.mbus_dev4.di_6
+net sig_fpga0_mbus_dev4_di_7             <= fpga0.mbus_dev4.di_7
+net sig_pyvcp_fpga0_mbus_dev4_do_4       => fpga0.mbus_dev4.do_4
+net sig_pyvcp_fpga0_mbus_dev4_do_5       => fpga0.mbus_dev4.do_5
+net sig_pyvcp_fpga0_mbus_dev4_do_6       => fpga0.mbus_dev4.do_6
+net sig_pyvcp_fpga0_mbus_dev4_do_7       => fpga0.mbus_dev4.do_7
+net sig_fpga0_mbus_dev5_di_0             <= fpga0.mbus_dev5.di_0
+net sig_fpga0_mbus_dev5_di_1             <= fpga0.mbus_dev5.di_1
+net sig_fpga0_mbus_dev5_di_2             <= fpga0.mbus_dev5.di_2
+net sig_fpga0_mbus_dev5_di_3             <= fpga0.mbus_dev5.di_3
+net sig_pyvcp_fpga0_mbus_dev5_do_0       => fpga0.mbus_dev5.do_0
+net sig_pyvcp_fpga0_mbus_dev5_do_1       => fpga0.mbus_dev5.do_1
+
+net sig_fpga0_mbus_device0_current_0     <= fpga0.mbus_device0.current_0
+net sig_fpga0_mbus_device0_freq_0        <= fpga0.mbus_device0.freq_0
+net sig_fpga0_mbus_device0_power_0       <= fpga0.mbus_device0.power_0
+net sig_fpga0_mbus_device0_power_factor_0 <= fpga0.mbus_device0.power_factor_0
+net sig_fpga0_mbus_device0_power_total_0 <= fpga0.mbus_device0.power_total_0
+net sig_fpga0_mbus_device0_voltage_0     <= fpga0.mbus_device0.voltage_0
+
+net sig_fpga0_mbus_hy0_ac_volt           <= fpga0.mbus_hy0.ac_volt
+net sig_fpga0_mbus_hy0_ampere            <= fpga0.mbus_hy0.ampere
+net sig_fpga0_mbus_hy0_at_speed          <= fpga0.mbus_hy0.at_speed
+net sig_fpga0_mbus_hy0_dc_volt           <= fpga0.mbus_hy0.dc_volt
+net sig_fpga0_mbus_hy0_error_count       <= fpga0.mbus_hy0.error_count
+net sig_fpga0_mbus_hy0_rpm               <= fpga0.mbus_hy0.rpm
+net sig_spindle_0_speed-out-abs          => fpga0.mbus_hy0.speed_command
+net sig_fpga0_mbus_hy0_speed_fb          <= fpga0.mbus_hy0.speed_fb
+net sig_spindle_0_forward                => fpga0.mbus_hy0.spindle_forward
+net sig_spindle_0_on                     => fpga0.mbus_hy0.spindle_on
+net sig_spindle_0_reverse                => fpga0.mbus_hy0.spindle_reverse
+
+net user-enable-out                      => fpga0.sys-enable
+net user-request-enable                  => fpga0.sys-enable-request
+net sig_fpga0_sys-error                  <= fpga0.sys-error
+net sig_fpga0_sys-status                 <= fpga0.sys-status
+
+#################################################################################
+# halui
+#################################################################################
+net sig_fpga0_sys-error                  => halui.estop.activate
+
+net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
+
+net sig_halui_mode_is-auto               <= halui.mode.is-auto
+
+net sig_halui_program_is-paused          <= halui.program.is-paused
+
+#################################################################################
+# func
+#################################################################################
+net sig_halui_mode_is-auto               => func.not_halui_mode_is-auto.in
+net func_not_halui_mode_is-auto_out      <= func.not_halui_mode_is-auto.out
+
+net func_not_halui_mode_is-auto_out      => func.or_0.2.in-00
+net sig_halui_program_is-paused          => func.or_0.2.in-01
+net func_or_0_2_or                       <= func.or_0.2.or
+
+#################################################################################
+# spindle
+#################################################################################
+net sig_spindle_0_forward                <= spindle.0.forward
+net sig_spindle_0_on                     <= spindle.0.on
+net sig_spindle_0_reverse                <= spindle.0.reverse
+net sig_spindle_0_speed-out-abs          <= spindle.0.speed-out-abs
+
+#################################################################################
+# joint
+#################################################################################
+net sig_fpga0_bitin0_bit                 => joint.0.home-sw-in
+net sig_fpga0_bitin1_bit                 => joint.1.home-sw-in
+net sig_fpga0_bitin2_bit                 => joint.2.home-sw-in
+
+#################################################################################
+# joint-0
+#################################################################################
+setp fpga0.stepdir0.velocity-scale       [JOINT_0]SCALE_OUT
+setp fpga0.stepdir0.position-scale       [JOINT_0]SCALE_IN
+setp pid.0.Pgain                         [JOINT_0]P
+setp pid.0.Igain                         [JOINT_0]I
+setp pid.0.Dgain                         [JOINT_0]D
+setp pid.0.bias                          [JOINT_0]BIAS
+setp pid.0.FF0                           [JOINT_0]FF0
+setp pid.0.FF1                           [JOINT_0]FF1
+setp pid.0.FF2                           [JOINT_0]FF2
+setp pid.0.deadband                      [JOINT_0]DEADBAND
+setp pid.0.maxoutput                     [JOINT_0]MAXOUTPUT
+net j0vel-cmd                            <= pid.0.output
+net j0pos-cmd                            <= joint.0.motor-pos-cmd
+net j0motor-pos-fb                       <= fpga0.stepdir0.position
+net j0enable                             <= joint.0.amp-enable-out
+net j0vel-cmd                            => fpga0.stepdir0.velocity
+net j0pos-cmd                            => pid.0.command
+net j0motor-pos-fb                       => joint.0.motor-pos-fb
+net j0motor-pos-fb                       => pid.0.feedback
+net j0enable                             => pid.0.enable
+net j0enable                             => fpga0.stepdir0.enable
+
+#################################################################################
+# joint-1
+#################################################################################
+setp fpga0.stepdir1.velocity-scale       [JOINT_1]SCALE_OUT
+setp fpga0.stepdir1.position-scale       [JOINT_1]SCALE_IN
+setp pid.1.Pgain                         [JOINT_1]P
+setp pid.1.Igain                         [JOINT_1]I
+setp pid.1.Dgain                         [JOINT_1]D
+setp pid.1.bias                          [JOINT_1]BIAS
+setp pid.1.FF0                           [JOINT_1]FF0
+setp pid.1.FF1                           [JOINT_1]FF1
+setp pid.1.FF2                           [JOINT_1]FF2
+setp pid.1.deadband                      [JOINT_1]DEADBAND
+setp pid.1.maxoutput                     [JOINT_1]MAXOUTPUT
+net j1vel-cmd                            <= pid.1.output
+net j1pos-cmd                            <= joint.1.motor-pos-cmd
+net j1motor-pos-fb                       <= fpga0.stepdir1.position
+net j1enable                             <= joint.1.amp-enable-out
+net j1vel-cmd                            => fpga0.stepdir1.velocity
+net j1pos-cmd                            => pid.1.command
+net j1motor-pos-fb                       => joint.1.motor-pos-fb
+net j1motor-pos-fb                       => pid.1.feedback
+net j1enable                             => pid.1.enable
+net j1enable                             => fpga0.stepdir1.enable
+
+#################################################################################
+# joint-2
+#################################################################################
+setp fpga0.stepdir2.velocity-scale       [JOINT_2]SCALE_OUT
+setp fpga0.stepdir2.position-scale       [JOINT_2]SCALE_IN
+setp pid.2.Pgain                         [JOINT_2]P
+setp pid.2.Igain                         [JOINT_2]I
+setp pid.2.Dgain                         [JOINT_2]D
+setp pid.2.bias                          [JOINT_2]BIAS
+setp pid.2.FF0                           [JOINT_2]FF0
+setp pid.2.FF1                           [JOINT_2]FF1
+setp pid.2.FF2                           [JOINT_2]FF2
+setp pid.2.deadband                      [JOINT_2]DEADBAND
+setp pid.2.maxoutput                     [JOINT_2]MAXOUTPUT
+net j2vel-cmd                            <= pid.2.output
+net j2pos-cmd                            <= joint.2.motor-pos-cmd
+net j2motor-pos-fb                       <= fpga0.stepdir2.position
+net j2enable                             <= joint.2.amp-enable-out
+net j2vel-cmd                            => fpga0.stepdir2.velocity
+net j2pos-cmd                            => pid.2.command
+net j2motor-pos-fb                       => joint.2.motor-pos-fb
+net j2motor-pos-fb                       => pid.2.feedback
+net j2enable                             => pid.2.enable
+net j2enable                             => fpga0.stepdir2.enable
+
+#################################################################################
+# setp
+#################################################################################
+
+#################################################################################
+# preformated
+#################################################################################

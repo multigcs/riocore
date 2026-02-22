@@ -1,0 +1,46 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_board0_bitout0_bit         <= pyvcp.board0.bitout0.bit
+net sig_pyvcp_board0_bitout1_bit         <= pyvcp.board0.bitout1.bit
+net sig_pyvcp_board0_satmcu0_gpioout0_bit <= pyvcp.board0.satmcu0.gpioout0.bit
+net sig_pyvcp_board0_satmcu0_gpioout1_bit <= pyvcp.board0.satmcu0.gpioout1.bit
+net sig_pyvcp_board0_satmcu0_gpioout2_bit <= pyvcp.board0.satmcu0.gpioout2.bit
+net sig_pyvcp_board0_satmcu0_gpioout3_bit <= pyvcp.board0.satmcu0.gpioout3.bit
+net sig_pyvcp_board0_satmcu0_gpioout4_bit <= pyvcp.board0.satmcu0.gpioout4.bit
+net sig_pyvcp_board0_satmcu0_gpioout5_bit <= pyvcp.board0.satmcu0.gpioout5.bit
+net sig_pyvcp_board0_satmcu0_gpioout6_bit <= pyvcp.board0.satmcu0.gpioout6.bit
+net sig_pyvcp_board0_satmcu0_gpioout7_bit <= pyvcp.board0.satmcu0.gpioout7.bit
+net sig_pyvcp_board0_satmcu0_gpioout8_bit <= pyvcp.board0.satmcu0.gpioout8.bit
+net sig_pyvcp_board0_satmcu1_gpioout9_bit <= pyvcp.board0.satmcu1.gpioout9.bit
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_board0_bitin0_bit                => pyvcp.board0.bitin0.bit
+net sig_board0_bitin1_bit                => pyvcp.board0.bitin1.bit
+net sig_board0_bitin2_bit                => pyvcp.board0.bitin2.bit
+net sig_board0_bitin3_bit                => pyvcp.board0.bitin3.bit
+net sig_board0_bitin4_bit                => pyvcp.board0.bitin4.bit
+net sig_board0_bitin5_bit                => pyvcp.board0.bitin5.bit
+net sig_board0_satmcu0_gpioin0_bit       => pyvcp.board0.satmcu0.gpioin0.bit
+net sig_board0_satmcu0_encoder0_position => pyvcp.board0.satmcu0.encoder0.position
+net sig_board0_satmcu0_encoder0_velocity => pyvcp.board0.satmcu0.encoder0.velocity
+net sig_board0_satmcu0_encoder0_velocity-rpm => pyvcp.board0.satmcu0.enc0.velocity-rpm
+net sig_board0_satmcu0_encoder1_position => pyvcp.board0.satmcu0.encoder1.position
+net sig_board0_satmcu0_encoder1_velocity => pyvcp.board0.satmcu0.encoder1.velocity
+net sig_board0_satmcu0_encoder1_velocity-rpm => pyvcp.board0.satmcu0.enc1.velocity-rpm
+net sig_board0_satmcu0_encoder2_position => pyvcp.board0.satmcu0.encoder2.position
+net sig_board0_satmcu0_encoder2_velocity => pyvcp.board0.satmcu0.encoder2.velocity
+net sig_board0_satmcu0_encoder2_velocity-rpm => pyvcp.board0.satmcu0.enc2.velocity-rpm
+net sig_board0_satmcu0_encoder3_position => pyvcp.board0.satmcu0.encoder3.position
+net sig_board0_satmcu0_encoder3_velocity => pyvcp.board0.satmcu0.encoder3.velocity
+net sig_board0_satmcu0_encoder3_velocity-rpm => pyvcp.board0.satmcu0.enc3.velocity-rpm
+net sig_board0_satmcu1_gpioin1_bit       => pyvcp.board0.satmcu1.gpioin1.bit
+
+#################################################################################
+# setp
+#################################################################################
+
