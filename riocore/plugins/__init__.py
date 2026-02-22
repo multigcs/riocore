@@ -17,8 +17,8 @@ class PluginBase:
         self.duration = 0
         self.timestamp = 0
         self.master = None  # the direct connected board or this plugin (plugin -> master-board)
-        self.gmaster = None  # the gateware master (verilog code for this plugin runs on gmaster / master -> gmaster)
-        self.fmaster = None  # this fpga is the connection to the PC (sub-board -> fmaster-fpga -> PC)
+        self.gmaster = None  # the gateware master (verilog code for this plugin runs on gmaster / master -> gmaster / for interface variables)
+        self.fmaster = None  # this fpga is the connection to the PC (sub-board -> fmaster-fpga -> PC / for the linuxcnc-component)
         self.protocol = None  # the protocol of the connected interface (UDB/UART/SPI/..)
         self.interface_instance = None  # the instance of the connected interface
         self.PINDEFAULTS = {}  # the hardware pins

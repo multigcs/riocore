@@ -213,36 +213,36 @@
         "GPIO"
       ]
     },
-    "IO:19": {
-      "pin": "19",
-      "direction": "all",
-      "pos": [
-        117,
-        82
-      ],
-      "edge": "source",
-      "type": [
-        "GPIO"
-      ]
-    },
-    "IO:18": {
-      "pin": "18",
-      "direction": "all",
-      "pos": [
-        117,
-        94
-      ],
-      "edge": "source",
-      "type": [
-        "GPIO"
-      ]
-    },
     "IO:5": {
       "pin": "5",
       "direction": "all",
       "pos": [
         117,
         105
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:17": {
+      "pin": "17",
+      "direction": "all",
+      "pos": [
+        117,
+        117
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:16": {
+      "pin": "16",
+      "direction": "all",
+      "pos": [
+        117,
+        129
       ],
       "edge": "source",
       "type": [
@@ -263,6 +263,7 @@
     },
     "IO:2": {
       "pin": "2",
+      "comment": "Onboard-LED",
       "direction": "all",
       "pos": [
         117,

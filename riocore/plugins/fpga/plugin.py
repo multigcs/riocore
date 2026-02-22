@@ -308,3 +308,16 @@ class Plugin(PluginBase):
             elif not instance.jdata["toolchain_generator"]:
                 instance.jdata["output_path"] = firmware_path
                 instance.firmware(parent, instances)
+
+            chain = [instance.instances_name]
+            if instance.master != instance.instances_name:
+                chain.append(instance.instances_name)
+            if instance.gmaster and instance.gmaster != instance.fmaster:
+                chain.append(instance.gmaster)
+            if instance.protocol:
+                chain.append(instance.protocol)
+            if instance.fmaster:
+                chain.append(instance.fmaster)
+            if not instance.fmaster:
+                chain.append("Component")
+            riocore.log(f"  chain: {' -> '.join(chain)}")
