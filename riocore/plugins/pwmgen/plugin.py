@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "pwmgen"
-        self.COMPONENT = "pwmgen"
         self.INFO = "software PWM/PDM generation"
         self.DESCRIPTION = """pwmgen is used to generate PWM (pulse width modulation) or PDM (pulse density modulation) signals.
 The maximum PWM frequency and the resolution is quite limited compared to hardware-based approaches,

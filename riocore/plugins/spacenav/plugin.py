@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "spacenav"
-        self.COMPONENT = "spacenav"
         self.INFO = "3d mouse support"
         self.DESCRIPTION = "spacenav 3d mouse jog support"
         self.KEYWORDS = "jog usb"

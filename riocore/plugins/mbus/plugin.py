@@ -11,7 +11,6 @@ class Plugin(PluginBase):
 
     def setup(self):
         self.NAME = "mbus"
-        self.COMPONENT = "mbus"
         self.INFO = "modbus plugin"
         self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
         self.KEYWORDS = "modbus rtu vfd spindle expansion analog digital"

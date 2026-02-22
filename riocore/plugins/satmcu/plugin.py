@@ -13,7 +13,7 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "satmcu"
-        self.COMPONENT = "fpga"
+        self.GENERATOR_GROUP = "fpga"
         self.INFO = "mcu based satellite"
         self.DESCRIPTION = "mcu based satellite connected via RS422"
         self.KEYWORDS = ""

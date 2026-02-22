@@ -36,3 +36,7 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         return None
+
+    @classmethod
+    def update_prefixes(cls, parent, instances):
+        pass

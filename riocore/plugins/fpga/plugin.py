@@ -21,7 +21,6 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "fpga"
-        self.COMPONENT = "fpga"
         self.INFO = "fpga board"
         self.DESCRIPTION = "fpga"
         self.KEYWORDS = "fpga board"

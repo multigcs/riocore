@@ -12,7 +12,6 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "mesa"
-        self.COMPONENT = "mesa"
         self.INFO = "support for mesa-cards with hm2 firmware"
         self.DESCRIPTION = """
 ## flashing 7i92

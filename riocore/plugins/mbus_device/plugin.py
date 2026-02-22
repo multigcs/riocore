@@ -23,7 +23,6 @@ class Plugin(PluginBase):
 
     def setup(self):
         self.NAME = "mbus_device"
-        self.COMPONENT = "mbus_device"
         self.INFO = "modbus device"
         self.DESCRIPTION = "modbus device"
         self.KEYWORDS = "modbus"

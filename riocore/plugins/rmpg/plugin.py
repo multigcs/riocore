@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rmpg"
-        self.COMPONENT = "rmpg"
         self.INFO = "remote mpg server"
         self.DESCRIPTION = "see riocore/plugins/rmpg/clients/ for clients"
         self.KEYWORDS = "jog cam remote"

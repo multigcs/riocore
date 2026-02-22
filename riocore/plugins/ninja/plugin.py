@@ -13,7 +13,6 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "ninja"
-        self.COMPONENT = "ninja"
         self.INFO = "stepgen-ninja"
         self.DESCRIPTION = "ninja"
         self.KEYWORDS = "stepgen pwm ninja board pico w5500"

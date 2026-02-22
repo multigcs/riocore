@@ -222,10 +222,10 @@ class LinuxCNC:
         # update_prefixes for multiple used components
         components = {}
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.COMPONENT:
-                if plugin_instance.COMPONENT not in components:
-                    components[plugin_instance.COMPONENT] = []
-                components[plugin_instance.COMPONENT].append(plugin_instance)
+            if plugin_instance.GENERATOR_GROUP:
+                if plugin_instance.GENERATOR_GROUP not in components:
+                    components[plugin_instance.GENERATOR_GROUP] = []
+                components[plugin_instance.GENERATOR_GROUP].append(plugin_instance)
         for component_type, instances in components.items():
             # run update_prefixes on the first instance of the plugin if exist
             if hasattr(instances[0], "update_prefixes"):
@@ -2057,10 +2057,10 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.BASETHREAD:
                 self.ini_setup["EMCMOT"]["BASE_PERIOD"] = 25000
-            if plugin_instance.COMPONENT:
-                if plugin_instance.COMPONENT not in components:
-                    components[plugin_instance.COMPONENT] = []
-                components[plugin_instance.COMPONENT].append(plugin_instance)
+            if plugin_instance.GENERATOR_GROUP:
+                if plugin_instance.GENERATOR_GROUP not in components:
+                    components[plugin_instance.GENERATOR_GROUP] = []
+                components[plugin_instance.GENERATOR_GROUP].append(plugin_instance)
 
         self.halg = hal_generator(halpin_info, gui=gui, vcp=self.gui_prefix)
 

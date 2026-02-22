@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rpigpio"
-        self.COMPONENT = "rpigpio"
         self.INFO = "gpio support"
         self.DESCRIPTION = """gpio support for Raspberry PI4/5 and maybe other boards
 

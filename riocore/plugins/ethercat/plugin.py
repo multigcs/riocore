@@ -12,7 +12,6 @@ from . import lcec_devices
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "ethercat"
-        self.COMPONENT = "ethercat"
         self.INFO = "experimental ethercat plugin"
         self.EXPERIMENTAL = True
         self.DESCRIPTION = ""

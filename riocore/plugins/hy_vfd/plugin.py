@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "hy_vfd"
-        self.COMPONENT = "hy_vfd"
         self.INFO = "non-realtime component for Huanyang VFDs"
         self.DESCRIPTION = "This component connects the Huanyang VFD to the LinuxCNC HAL via a serial (RS-485) connection."
         self.KEYWORDS = "jog usb"

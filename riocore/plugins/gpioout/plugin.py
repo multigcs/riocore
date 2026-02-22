@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "gpioout"
-        self.COMPONENT = "gpioout"
         self.INFO = "gpio output"
         self.DESCRIPTION = ""
         self.KEYWORDS = "output"

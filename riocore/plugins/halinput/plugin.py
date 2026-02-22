@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "halinput"
-        self.COMPONENT = "halinput"
         self.INFO = "joypad support"
         self.DESCRIPTION = "halinput joypad support"
         self.KEYWORDS = "jog joypad usb"

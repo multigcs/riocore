@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "stepgen"
-        self.COMPONENT = "stepgen"
         self.INFO = "software step pulse generation"
         self.DESCRIPTION = """stepgen is used to control stepper motors.
 The maximum step rate depends on the CPU and other factors,

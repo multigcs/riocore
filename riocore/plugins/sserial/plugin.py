@@ -14,7 +14,6 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "sserial"
-        self.COMPONENT = "sserial"
         self.INFO = "support for custom mesa-sserial devices"
         self.DESCRIPTION = ""
         self.KEYWORDS = "smart-serial rgb wled rs422"

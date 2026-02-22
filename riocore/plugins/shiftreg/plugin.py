@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "shiftreg"
-        self.COMPONENT = "shiftreg"
         self.INFO = "Expansion to add I/O's via shiftregister's"
         self.KEYWORDS = "expansion digital io"
         self.DESCRIPTION = """

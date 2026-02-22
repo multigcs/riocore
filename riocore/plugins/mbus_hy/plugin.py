@@ -75,7 +75,6 @@ class Plugin(PluginBase):
 
     def setup(self):
         self.NAME = "mbus_hy"
-        self.COMPONENT = "mbus_hy"
         self.INFO = "modbus hy vfd"
         self.DESCRIPTION = "modbus hy vfd"
         self.KEYWORDS = "modbus"

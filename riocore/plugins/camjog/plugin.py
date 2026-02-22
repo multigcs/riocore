@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "camjog"
-        self.COMPONENT = "camjog"
         self.INFO = "gui component to jog via camera image"
         self.DESCRIPTION = ""
         self.KEYWORDS = "jog gui robot"

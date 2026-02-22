@@ -11,7 +11,6 @@ fmt_pattern = re.compile(r"\{(?P<val>[a-z0-9_-]*):(?P<fmt>[0-9\.]*)(?P<type>[a-z
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "rpii2c"
-        self.COMPONENT = "rpii2c"
         self.INFO = "gpio support over i2c port"
         self.DESCRIPTION = "gpio support over i2c port"
         self.KEYWORDS = "ii2c gpio"

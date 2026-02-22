@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "robojog"
-        self.COMPONENT = "robojog"
         self.INFO = "gui component to jog robot axis"
         self.DESCRIPTION = ""
         self.KEYWORDS = "jog gui robot"

@@ -22,7 +22,7 @@ class PluginBase:
         self.PREFIX = ""
         self.PROVIDES = []
         self.NEEDS = []
-        self.COMPONENT = ""
+        self.GENERATOR_GROUP = ""
         self.BASETHREAD = False
         self.JOINT_DEFAULTS = {}
         self.TIMING_CONSTRAINTS = {}
@@ -71,6 +71,8 @@ class PluginBase:
         self.instances_name = self.plugin_setup["uid"]
 
         self.setup()
+        if not self.GENERATOR_GROUP:
+            self.GENERATOR_GROUP = self.NAME
 
         # update INTERFACE by user-signal-config
         for interface_name, interface_data in self.INTERFACE.items():

@@ -4,7 +4,6 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "camera"
-        self.COMPONENT = "camera"
         self.INFO = "gui component to display an camera image"
         self.DESCRIPTION = ""
         self.NEEDS = []
