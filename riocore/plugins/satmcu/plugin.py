@@ -64,10 +64,8 @@ class Plugin(PluginBase):
         board = self.plugin_setup.get("board", self.option_default("board"))
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.json")
         makefile_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.makefile")
-        platformio_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.platformio")
         self.board_data = json.loads(open(board_file).read())
         self.makefile = open(makefile_file).read()
-        self.platformio = open(platformio_file).read()
 
         self.PINDEFAULTS = {}
         for pin_name, pin_data in self.board_data["pins"].items():
@@ -117,6 +115,7 @@ class Plugin(PluginBase):
 
         serial = self.board_data["sserial"]
         baud = self.plugin_setup.get("baud", self.option_default("baud"))
+        upload_port = self.plugin_setup.get("upload_port", self.option_default("upload_port"))
 
         output = []
         output.append("")
@@ -289,7 +288,7 @@ class Plugin(PluginBase):
             variable_name = data_config["variable"]
             if data_config["direction"] == "input":
                 if hasattr(plugin_instance, "firmware_loop"):
-                    output.append(plugin_instance.firmware_loop(variable_name))
+                    output.append(plugin_instance.firmware_loop(data_name, variable_name))
         output.append("")
         output.append("    rio_rtx();")
         output.append("")
@@ -304,7 +303,7 @@ class Plugin(PluginBase):
             variable_name = data_config["variable"]
             if data_config["direction"] == "output":
                 if hasattr(plugin_instance, "firmware_loop"):
-                    output.append(plugin_instance.firmware_loop(variable_name))
+                    output.append(plugin_instance.firmware_loop(data_name, variable_name))
         output.append("")
         output.append("}")
         output.append("")
@@ -315,4 +314,15 @@ class Plugin(PluginBase):
         os.makedirs(lib_path, exist_ok=True)
         open(os.path.join(src_path, "main.ino"), "w").write("\n".join(output))
         open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(self.makefile)
-        open(os.path.join(self.jdata["output_path"], "platformio.ini"), "w").write(self.platformio)
+
+        platformio = f"""
+[env:esp32dev]
+framework = arduino
+board = {self.board_data["board"]}
+platform = {self.board_data["platform"]}
+upload_speed = 500000
+monitor_speed = 115200
+upload_port = {upload_port}
+"""
+
+        open(os.path.join(self.jdata["output_path"], "platformio.ini"), "w").write(platformio)

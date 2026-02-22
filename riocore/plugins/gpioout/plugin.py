@@ -40,5 +40,11 @@ class Plugin(PluginBase):
     def firmware_setup(self, variable_name):
         return f"    pinMode({variable_name}_PIN_BIT, OUTPUT);"
 
-    def firmware_loop(self, variable_name):
+    def firmware_loop(self, pin_name, variable_name):
+        inverted = 0
+        for modifier in self.plugin_setup.get("pins", {}).get(pin_name, {}).get("modifier", []):
+            if modifier["type"] == "invert":
+                inverted = 1 - inverted
+        if inverted:
+            return f"    digitalWrite({variable_name}_PIN_BIT, 1 - {variable_name});"
         return f"    digitalWrite({variable_name}_PIN_BIT, {variable_name});"

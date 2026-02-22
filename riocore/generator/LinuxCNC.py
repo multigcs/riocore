@@ -1261,20 +1261,17 @@ o<{oword}> endsub
                         else:
                             self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
-                        if gui == "axis":
-                            self.halg.net_add(f"axisui.jog.{laxis}", f"axis.{laxis}.jog-enable", f"jog-{laxis}-enable")
-                            self.halg.net_add(halname_wheel, f"axis.{laxis}.jog-counts", f"jog-{laxis}-counts")
-                            for joint_setup in axis_config["joints"]:
-                                joint = joint_setup["num"]
-                                self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
-
-                                if wheel_scale is not None:
-                                    self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
-                                else:
-                                    self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
-
-                                self.halg.net_add(f"axisui.jog.{laxis}", f"joint.{joint}.jog-enable", f"jog-{joint}-enable")
-                                self.halg.net_add(halname_wheel, f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                        self.halg.net_add(f"halui.axis.{laxis}.is-selected", f"axis.{laxis}.jog-enable")
+                        self.halg.net_add(halname_wheel, f"axis.{laxis}.jog-counts")
+                        for joint_setup in axis_config["joints"]:
+                            joint = joint_setup["num"]
+                            self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
+                            if wheel_scale is not None:
+                                self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                            else:
+                                self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+                            self.halg.net_add(f"halui.axis.{laxis}.is-selected", f"joint.{joint}.jog-enable")
+                            self.halg.net_add(halname_wheel, f"joint.{joint}.jog-counts")
 
             else:
                 for axis_name, axis_config in self.project.axis_dict.items():
@@ -1363,23 +1360,25 @@ o<{oword}> endsub
                         axis_name = function.split("-")[-1]
                         self.halg.net_add(f"{halname}", f"halui.axis.{axis_name}.select")
                         self.halg.net_add(f"{halname}", f"halui.joint.{joint_n}.select")
-                        # pname = gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
-                        # self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
-                        for axis_id, axis_config in self.project.axis_dict.items():
-                            laxis = axis_id.lower()
-                            if axis_name == laxis:
-                                self.halg.fmt_add("")
-                                self.halg.fmt_add(f"# axis {laxis} selection")
-                                self.halg.fmt_add(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                                self.halg.fmt_add(f"addf riof.axisui-{laxis}-oneshot servo-thread")
-                                self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
-                                self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
-                                if gui == "axis":
-                                    self.halg.net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
-                                    self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
-                                    for joint_setup in axis_config["joints"]:
-                                        joint = joint_setup["num"]
-                                        self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
+
+                        if gui == "axis":
+                            # pname = gui_gen.draw_led(f"Jog:{axis_name}", f"selected-{axis_name}")
+                            # self.halg.net_add(f"halui.axis.{axis_name}.is-selected", pname)
+                            for axis_id, axis_config in self.project.axis_dict.items():
+                                laxis = axis_id.lower()
+                                if axis_name == laxis:
+                                    self.halg.fmt_add("")
+                                    self.halg.fmt_add(f"# axis {laxis} selection")
+                                    self.halg.fmt_add(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
+                                    self.halg.fmt_add(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                                    self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
+                                    self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
+                                    if gui == "axis":
+                                        self.halg.net_add(f"axisui.jog.{laxis}", f"riof.axisui-{laxis}-oneshot.in")
+                                        self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.axis.{laxis}.select")
+                                        for joint_setup in axis_config["joints"]:
+                                            joint = joint_setup["num"]
+                                            self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
             else:
                 for axis_id, axis_config in self.project.axis_dict.items():

@@ -3,8 +3,15 @@
   "board": "pico",
   "sserial": "Serial1",
   "led": "25",
-  "rx": "2",
-  "tx": "1",
+  "tx": "0",
+  "rx": "1",
+  "options": {
+    "upload_port": {
+      "default": "/dev/ttyACM0",
+      "type": "str",
+      "description": "debug-port"
+    }
+  },
   "pins": {
     "SAT": {
         "direction": "output",

@@ -50,7 +50,7 @@ class config:
         if dialog.exec():
             halpin = halpin.currentText()
             if "(" in halpin:
-                halpin = halpin.currentText().split("(")[1].split(")")[0]
+                halpin = halpin.split("(")[1].split(")")[0]
             if halpin:
                 if "signals" not in self.plugin_setup:
                     self.self.plugin_setup["signals"] = {}

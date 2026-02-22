@@ -3,9 +3,11 @@
   "board": "wemos_d1_mini32",
   "multithread": true,
   "sserial": "Serial2",
+  "rx": "16",
+  "tx": "17",
   "options": {
     "upload_port": {
-      "default": "/dev/ttyUSB0",
+      "default": "/dev/ttyACM0",
       "type": "str",
       "description": "upload-port"
     }
@@ -22,7 +24,8 @@
     },
     "IO:39": {
       "pin": "39",
-      "direction": "all",
+      "direction": "input",
+      "comment": "do not use",
       "pos": [
         6,
         57
@@ -34,7 +37,7 @@
     },
     "IO:35": {
       "pin": "35",
-      "direction": "all",
+      "direction": "input",
       "pos": [
         6,
         69
@@ -58,7 +61,7 @@
     },
     "IO:34": {
       "pin": "34",
-      "direction": "all",
+      "direction": "input",
       "pos": [
         6,
         92
@@ -82,7 +85,7 @@
     },
     "IO:9": {
       "pin": "9",
-      "direction": "all",
+      "direction": "input",
       "pos": [
         6,
         126
@@ -92,8 +95,21 @@
         "GPIO"
       ]
     },
+    "IO:11": {
+      "pin": "11",
+      "direction": "input",
+      "pos": [
+        6,
+        137
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
     "IO:36": {
       "pin": "36",
+      "comment": "failed - do not use",
       "direction": "all",
       "pos": [
         18,
@@ -164,24 +180,24 @@
         "GPIO"
       ]
     },
-    "IO:13": {
-      "pin": "13",
-      "direction": "all",
-      "pos": [
-        18,
-        115
-      ],
-      "edge": "source",
-      "type": [
-        "GPIO"
-      ]
-    },
     "IO:10": {
       "pin": "10",
       "direction": "all",
       "pos": [
         18,
         126
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:13": {
+      "pin": "13",
+      "direction": "all",
+      "pos": [
+        18,
+        137
       ],
       "edge": "source",
       "type": [
@@ -218,6 +234,18 @@
       "pos": [
         120,
         126
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:7": {
+      "pin": "7",
+      "direction": "input",
+      "pos": [
+        120,
+        137
       ],
       "edge": "source",
       "type": [

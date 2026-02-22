@@ -123,6 +123,8 @@ Some hardware-based systems can count at MHz rates."""
 #define NUM_ENCODERS {inum}
 
 ESPRotary encoder[NUM_ENCODERS];
+
+/*
 hw_timer_t *timer = NULL;
 
 void IRAM_ATTR handleLoop() {{
@@ -130,6 +132,7 @@ void IRAM_ATTR handleLoop() {{
         encoder[i].loop();
     }}
 }}
+*/
 
 """
 
@@ -150,16 +153,21 @@ void IRAM_ATTR handleLoop() {{
                 output.append(f"    encoder[{inum}].begin(VARIN32_{instance.instances_name.upper()}_POSITION_PIN_A, VARIN32_{instance.instances_name.upper()}_POSITION_PIN_B, 4);")
         if flag:
             output.append("")
-            output.append("    timer = timerBegin(0, 80, true);")
-            output.append("    timerAttachInterrupt(timer, &handleLoop, true);")
-            output.append("    timerAlarmWrite(timer, 100, true);")
-            output.append("    timerAlarmEnable(timer);")
+            # output.append("    timer = timerBegin(0, 80, true);")
+            # output.append("    timerAttachInterrupt(timer, &handleLoop, true);")
+            # output.append("    timerAlarmWrite(timer, 100, true);")
+            # output.append("    timerAlarmEnable(timer);")
         return "\n".join(output)
 
     @classmethod
     def firmware_type_loop(cls, instances):
         output = []
+        output.append("    for (int i = 0; i < NUM_ENCODERS; i++) {")
+        output.append("        encoder[i].loop();")
+        output.append("    }")
+        output.append("")
         for inum, instance in enumerate(instances):
             if "mcu" in instance.MASTER_PROVIDES:
                 output.append(f"    VARIN32_{instance.instances_name.upper()}_POSITION = encoder[{inum}].getPosition();")
+        output.append("")
         return "\n".join(output)
