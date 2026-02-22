@@ -8,10 +8,10 @@ class Plugin(PluginBase):
         self.INFO = "gpio input"
         self.DESCRIPTION = ""
         self.KEYWORDS = "input"
-        self.NEEDS = ["gpio"]
         self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
+        self.NEEDS = ["gpio", "fpga"]
         self.SIGNALS = {
             "bit": {
                 "direction": "input",
@@ -22,7 +22,7 @@ class Plugin(PluginBase):
             "bit": {
                 "direction": "input",
                 "edge": "target",
-                "type": ["GPIO"],
+                "type": ["GPIO", "FPGA"],
             },
         }
         self.INTERFACE = {

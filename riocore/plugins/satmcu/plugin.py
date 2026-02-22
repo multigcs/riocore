@@ -94,9 +94,7 @@ class Plugin(PluginBase):
 
     def update_pins(self, parent):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
-            psetup = connected_pin["setup"]
-            pin = connected_pin["pin"]
-            psetup["pin"] = pin
+            connected_pin["setup"]["pin"] = connected_pin["pin"]
 
     def builder(self, config, command):
         if not isinstance(config, dict):

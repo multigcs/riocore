@@ -12,8 +12,6 @@ class Plugin(PluginBase):
         self.TYPE = "io"
         self.PLUGIN_TYPE = "gpio"
         self.NEEDS = ["gpio", "fpga"]
-        self.ORIGIN = ""
-        self.OPTIONS = {}
         self.SIGNALS = {
             "bit": {
                 "direction": "output",

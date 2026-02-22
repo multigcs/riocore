@@ -111,9 +111,6 @@ Some hardware-based systems can count at MHz rates."""
         output.append("")
         return "\n".join(output)
 
-    def gateware_instances(self):
-        return self.gateware_instances_base(direct=True)
-
     @classmethod
     def firmware_type_defines(cls, instances):
         inum = 0

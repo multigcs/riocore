@@ -237,7 +237,8 @@ class LinuxCNC:
             else:
                 # io plugins by instance idx
                 for num, instance in enumerate(instances):
-                    instance.PREFIX = f"{component_type}.{num}"
+                    if not instance.PREFIX:
+                        instance.PREFIX = f"{component_type}.{num}"
 
         machinetype = self.project.config["jdata"].get("linuxcnc", {}).get("machinetype")
         self.project.axis_names = "XYZACBUVW"

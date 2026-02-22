@@ -317,7 +317,8 @@ class PluginBase:
             signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
             signals[name]["plugin_instance"] = self
             gpio_pin = self.plugin_setup.get("pins", {}).get(name, {}).get("pin")
-            if self.NAME in {"gpioout", "gpioin"} and gpio_pin:
+
+            if self.NAME in {"gpioout", "gpioin"} and gpio_pin and not self.gmaster:
                 signals[name]["halname"] = gpio_pin
             else:
                 signals[name]["halname"] = halname
