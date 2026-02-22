@@ -3,6 +3,8 @@
   "board": "esp32dev",
   "multithread": true,
   "sserial": "Serial2",
+  "rx": "18",
+  "tx": "19",
   "options": {
     "upload_port": {
       "default": "/dev/ttyUSB0",

@@ -3,30 +3,17 @@
   "board": "pico",
   "sserial": "Serial1",
   "led": "25",
+  "rx": "2",
+  "tx": "1",
   "pins": {
-    "SSERIAL:RX": {
-      "pin": "RX",
-      "direction": "all",
-      "pos": [
-        5,
-        23
-      ],
-      "edge": "target",
-      "type": [
-        "MESASSerialTX"
-      ]
-    },
-    "SSERIAL:TX": {
-      "pin": "TX",
-      "direction": "all",
-      "pos": [
-        5,
-        11
-      ],
-      "edge": "target",
-      "type": [
-        "MESASSerialRX"
-      ]
+    "SAT": {
+        "direction": "output",
+        "pin": "",
+        "pos": [20, 20],
+        "edge": "target",
+        "type": ["SATCON"],
+        "optional": true,
+        "bus": true
     },
     "IO:2": {
       "pin": "2",

@@ -42,7 +42,7 @@ class Plugin(PluginBase):
                     "reload": True,
                 },
                 "baud": {
-                    "default": 2500000,
+                    "default": 1000000,
                     "type": int,
                     "min": 9600,
                     "max": 10000000,
@@ -63,7 +63,11 @@ class Plugin(PluginBase):
 
         board = self.plugin_setup.get("board", self.option_default("board"))
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.json")
+        makefile_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.makefile")
+        platformio_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.platformio")
         self.board_data = json.loads(open(board_file).read())
+        self.makefile = open(makefile_file).read()
+        self.platformio = open(platformio_file).read()
 
         self.PINDEFAULTS = {}
         for pin_name, pin_data in self.board_data["pins"].items():
@@ -111,10 +115,13 @@ class Plugin(PluginBase):
 
         riocore.log(f"  writing firmware to: {self.jdata['output_path']}")
 
+        serial = self.board_data["sserial"]
+        baud = self.plugin_setup.get("baud", self.option_default("baud"))
+
         output = []
         output.append("")
-        output.append("int rxPin = 18;")
-        output.append("int txPin = 19;")
+        output.append(f"int rxPin = {self.board_data['rx']};")
+        output.append(f"int txPin = {self.board_data['tx']};")
         output.append("")
 
         sym_io = False
@@ -179,14 +186,20 @@ class Plugin(PluginBase):
         output.append("    }")
         output.append("    tx_buffer[MCU_BUFFER_SIZE_TX] = (csum >> 8 & 0xFF);")
         output.append("    tx_buffer[MCU_BUFFER_SIZE_TX + 1] = (csum & 0xFF);")
-        output.append("    Serial2.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);")
+        output.append(f"    {serial}.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);")
         output.append("")
 
         # read rx_buffer
         output.append("    // receive rx_buffer")
-        output.append("    int flen = Serial2.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 2);")
+        output.append(f"    int flen = {serial}.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 2);")
         output.append("    if (flen == MCU_BUFFER_SIZE_RX + 2) {")
-        output.append("        // read rx_buffer")
+
+        output.append("        uint16_t rx_csum = 0;")
+        output.append("        for (int i = 0; i < MCU_BUFFER_SIZE_RX; i++) {")
+        output.append("            rx_csum += rx_buffer[i] + 1;")
+        output.append("        }")
+        output.append("        if (rx_buffer[MCU_BUFFER_SIZE_RX] == (rx_csum >> 8 & 0xFF) && rx_buffer[MCU_BUFFER_SIZE_RX + 1] == (rx_csum & 0xFF)) {")
+        output.append("            // read rx_buffer")
         output_pos = 32
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
@@ -196,17 +209,18 @@ class Plugin(PluginBase):
                 if data_config.get("expansion"):
                     continue
                 if size in {16, 32}:
-                    output.append(f"        memcpy(&{variable_name}, rx_buffer + {output_pos // 8}, {size // 8});")
+                    output.append(f"            memcpy(&{variable_name}, rx_buffer + {output_pos // 8}, {size // 8});")
                 elif size == 8:
-                    output.append(f"        rx_buffer[{output_pos // 8}] = variable_name;")
+                    output.append(f"            rx_buffer[{output_pos // 8}] = variable_name;")
                 elif size == 1:
                     bit = 7 - (output_pos - (output_pos // 8 * 8))
-                    output.append(f"        if ((rx_buffer[{output_pos // 8}] & (1<<{bit})) != 0) {{")
-                    output.append(f"            {variable_name} = 1;")
-                    output.append("        } else {")
-                    output.append(f"            {variable_name} = 0;")
-                    output.append("        }")
+                    output.append(f"            if ((rx_buffer[{output_pos // 8}] & (1<<{bit})) != 0) {{")
+                    output.append(f"                {variable_name} = 1;")
+                    output.append("            } else {")
+                    output.append(f"                {variable_name} = 0;")
+                    output.append("            }")
                 output_pos += size
+        output.append("        }")
         output.append("    }")
         output.append("}")
         output.append("")
@@ -250,8 +264,12 @@ class Plugin(PluginBase):
 
         output.append("    Serial.begin(115200);")
         output.append("    Serial.setTimeout(10);")
-        output.append("    Serial2.begin(1000000, SERIAL_8N1, rxPin, txPin);")
-        output.append("    Serial2.setTimeout(1);")
+
+        if self.board_data["platform"] == "raspberrypi":
+            output.append(f"    {serial}.begin({baud});")
+        else:
+            output.append(f"    {serial}.begin({baud}, SERIAL_8N1, rxPin, txPin);")
+        output.append(f"    {serial}.setTimeout(1);")
         output.append("    delay(100);")
         output.append("}")
         output.append("")
@@ -296,33 +314,5 @@ class Plugin(PluginBase):
         os.makedirs(src_path, exist_ok=True)
         os.makedirs(lib_path, exist_ok=True)
         open(os.path.join(src_path, "main.ino"), "w").write("\n".join(output))
-
-        makefile = """
-all: build
-
-~/.platformio/penv/bin/pio:
-	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
-	python3 /tmp/__get-platformio.py
-	rm -rf /tmp/__get-platformio.py
-
-build: ~/.platformio/penv/bin/pio
-	pio run
-
-load: ~/.platformio/penv/bin/pio
-	pio run --target=upload
-
-"""
-        open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(makefile)
-
-        platformio = """
-[env:esp32dev]
-framework = arduino
-board = esp32dev
-platform = espressif32
-#upload_speed = 115200
-upload_speed = 500000
-monitor_speed = 115200
-upload_port = /dev/ttyUSB0
-
-"""
-        open(os.path.join(self.jdata["output_path"], "platformio.ini"), "w").write(platformio)
+        open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(self.makefile)
+        open(os.path.join(self.jdata["output_path"], "platformio.ini"), "w").write(self.platformio)
