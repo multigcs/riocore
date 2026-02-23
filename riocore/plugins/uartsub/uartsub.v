@@ -1,12 +1,13 @@
 
 module uartsub
-    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter CSUM=0)
+    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter Timeout=2000000, parameter CSUM=0)
      (
          input clk,
          output reg [BUFFER_SIZE_RX-1:0] rx_data,
          input [BUFFER_SIZE_TX-1:0] tx_data,
-         input wire sync = 0,
+         output reg timeout = 0,
          output reg tx_enable = 0,
+         input wire sync_in,
          output tx,
          input rx
      );
@@ -46,9 +47,28 @@ module uartsub
     reg [7:0] rx_counter = 0;
     reg [15:0] rx_csum = 0;
 
+    reg sync = 0;
+    reg [31:0] timeout_counter = 0;
+
     always @(posedge clk) begin
+        if (sync == 1) begin
+            timeout_counter <= 0;
+            timeout <= 0;
+        end else begin
+            if (timeout_counter < Timeout) begin
+                timeout_counter <= timeout_counter + 1'd1;
+                timeout <= 0;
+            end else begin
+                timeout <= 1;
+            end
+        end
+    end
+
+    always @(posedge clk) begin
+        sync <= 0;
         if (RxD_endofpacket == 1) begin
             if (rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[15:0])) begin
+                sync <= 1;
                 if (CSUM == 1) begin
                     rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:16];
                 end else begin
@@ -97,7 +117,7 @@ module uartsub
                 end
             end
         end else begin
-            if (sync) begin
+            if (sync_in) begin
                 tx_data_buffer <= {tx_data, 16'd0};
                 // first byte for csum
                 tx_csum <= tx_data[BUFFER_SIZE_TX-1:BUFFER_SIZE_TX-8] + 1;

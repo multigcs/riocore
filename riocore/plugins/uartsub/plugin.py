@@ -30,6 +30,20 @@ class Plugin(PluginBase):
                 "type": ["SATCON"],
             },
         }
+
+        self.INTERFACE = {
+            "timeout": {
+                "size": 1,
+                "direction": "input",
+            },
+        }
+        self.SIGNALS = {
+            "timeout": {
+                "direction": "input",
+                "bool": True,
+            },
+        }
+
         self.OPTIONS = {
             "baud": {
                 "default": 2500000,
@@ -38,6 +52,14 @@ class Plugin(PluginBase):
                 "max": 10000000,
                 "unit": "bit/s",
                 "description": "serial baud rate",
+            },
+            "timeout": {
+                "default": 100,
+                "type": int,
+                "min": 1,
+                "max": 10000,
+                "unit": "ms",
+                "description": "timeout in ms",
             },
         }
 
@@ -51,13 +73,16 @@ class Plugin(PluginBase):
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        timeout = int(self.plugin_setup.get("timeout", self.OPTIONS["timeout"]["default"]))
         instance_parameter["BUFFER_SIZE_RX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_RX"
         instance_parameter["BUFFER_SIZE_TX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_TX"
         instance_parameter["MSGID"] = "32'h64617461"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
+        timeout_cnt = self.system_setup["speed"] * timeout // 1000
+        instance_parameter["Timeout"] = timeout_cnt
         instance_parameter["CSUM"] = 1
         instance["arguments"]["rx_data"] = f"sub{self.SUBNUM}_rx_data"
         instance["arguments"]["tx_data"] = f"sub{self.SUBNUM}_tx_data"
-        instance["arguments"]["sync"] = "INTERFACE_SYNC_RISINGEDGE"
+        instance["arguments"]["sync_in"] = "INTERFACE_SYNC_RISINGEDGE"
         return instances
