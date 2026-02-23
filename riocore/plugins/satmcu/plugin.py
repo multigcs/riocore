@@ -135,8 +135,8 @@ class Plugin(PluginBase):
         output.append("")
         in_bytes = self.gateware.sub_buffer_size_in // 8
         out_bytes = self.gateware.sub_buffer_size_out // 8
-        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {{0x64, 0x61, 0x74, 0x61,  {', '.join(['0'] * (in_bytes - 4))},  0, 0}};")
-        output.append(f"uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {{0, 0, 0, 0,  {', '.join(['0'] * (out_bytes - 4))},  0, 0}};")
+        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {{0x64, 0x61, 0x74, 0x61,  {', '.join(['0'] * (in_bytes - 4 + 2))}}};")
+        output.append(f"uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {{0, 0, 0, 0,  {', '.join(['0'] * (out_bytes - 4 + 2))}}};")
         output.append("")
 
         # Variables
