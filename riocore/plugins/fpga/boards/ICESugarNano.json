@@ -1,0 +1,193 @@
+{
+  "name": "ICESugarNano",
+  "description": "ICESugarNano",
+  "url": "",
+  "pinimage": "board.png",
+  "toolchain": "icestorm",
+  "family": "ice40",
+  "type": "lp1k",
+  "package": "cm36",
+  "provides": [
+    "pmod",
+    "pmod2"
+  ],
+  "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+  "clock": {
+    "speed": 48000000,
+    "pin": "D1"
+  },
+  "slots": [
+    {
+      "name": "UART",
+      "comment": "USB UART",
+      "pins": {
+        "RX": {
+          "pin": "6",
+          "pos": [
+            40,
+            20
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "9",
+          "pos": [
+            52,
+            20
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "BOTTOM",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "B1": {
+          "pin": "B1",
+          "pos": [
+            39,
+            169
+          ],
+          "direction": "all"
+        },
+        "E1": {
+          "pin": "E1",
+          "pos": [
+            52,
+            169
+          ],
+          "direction": "all"
+        },
+        "B5": {
+          "pin": "B5",
+          "pos": [
+            64,
+            169
+          ],
+          "direction": "all"
+        },
+        "B4": {
+          "pin": "B4",
+          "pos": [
+            76,
+            169
+          ],
+          "direction": "all"
+        },
+        "A1": {
+          "pin": "A1",
+          "pos": [
+            39,
+            181
+          ],
+          "direction": "all"
+        },
+        "C2": {
+          "pin": "C2",
+          "pos": [
+            52,
+            181
+          ],
+          "direction": "all"
+        },
+        "E3": {
+          "pin": "E3",
+          "pos": [
+            64,
+            181
+          ],
+          "direction": "all"
+        },
+        "C6": {
+          "pin": "C6",
+          "pos": [
+            76,
+            181
+          ],
+          "direction": "all"
+        }
+      }
+    },
+
+    {
+      "name": "LEFT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "A1": {
+          "pin": "A1",
+          "pos": [
+            8,
+            103
+          ],
+          "direction": "all"
+        },
+        "B1": {
+          "pin": "B1",
+          "pos": [
+            8,
+            114
+          ],
+          "direction": "all"
+        },
+        "D1": {
+          "pin": "D1",
+          "pos": [
+            8,
+            126
+          ],
+          "direction": "all"
+        },
+        "E2": {
+          "pin": "E2",
+          "pos": [
+            8,
+            138
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "RIGHT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "B3": {
+          "pin": "B3",
+          "pos": [
+            83,
+            78
+          ],
+          "direction": "all"
+        },
+        "A3": {
+          "pin": "A3",
+          "pos": [
+            83,
+            90
+          ],
+          "direction": "all"
+        },
+        "B6": {
+          "pin": "B6",
+          "pos": [
+            83,
+            102
+          ],
+          "direction": "all"
+        },
+        "C5": {
+          "pin": "C5",
+          "pos": [
+            83,
+            114
+          ],
+          "direction": "all"
+        }
+      }
+    }
+  ]
+}
