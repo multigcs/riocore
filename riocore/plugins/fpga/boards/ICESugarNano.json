@@ -1,7 +1,7 @@
 {
   "name": "ICESugarNano",
-  "description": "ICESugarNano",
-  "url": "",
+  "description": "ICESugarNano - usable as sat only",
+  "url": "https://github.com/wuxx/icesugar-nano",
   "pinimage": "board.png",
   "toolchain": "icestorm",
   "family": "ice40",
