@@ -18,7 +18,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "mcu based satellite connected via RS422"
         self.KEYWORDS = ""
         self.NEEDS = ["fpga"]
-        self.PROVIDES = ["gpio", "mcu"]
+        self.PROVIDES = ["mcu"]
         self.TYPE = "sub_interface"
         self.IMAGE_SHOW = False
         self.VERILOGS = ["satmcu.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
@@ -34,8 +34,8 @@ class Plugin(PluginBase):
             board_list.append(os.path.basename(jboard).replace(".json", ""))
         self.OPTIONS.update(
             {
-                "board": {
-                    "default": board_list[0],
+                "node_type": {
+                    "default": "pico",
                     "type": "select",
                     "options": board_list,
                     "description": "board type",
@@ -61,9 +61,12 @@ class Plugin(PluginBase):
             },
         }
 
-        board = self.plugin_setup.get("board", self.option_default("board"))
-        board_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.json")
-        makefile_file = os.path.join(os.path.dirname(__file__), "boards", f"{board}.makefile")
+        self.node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if not self.node_type:
+            return
+
+        board_file = os.path.join(os.path.dirname(__file__), "boards", f"{self.node_type}.json")
+        makefile_file = os.path.join(os.path.dirname(__file__), "boards", f"{self.node_type}.makefile")
         self.board_data = json.loads(open(board_file).read())
         self.makefile = open(makefile_file).read()
 
@@ -84,13 +87,12 @@ class Plugin(PluginBase):
             self.SUB_PLUGINS.append(sub_plugin)
 
         self.IMAGE_SHOW = True
-        self.IMAGE = f"boards/{board}.png"
+        self.IMAGE = f"boards/{self.node_type}.png"
         self.BUILDER = [
             "build",
             "load",
         ]
         self.master = self.instances_name
-        self.gmaster = "board0"
         self.gmaster = None
 
     def update_pins(self, parent):

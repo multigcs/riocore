@@ -9,7 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "output"
         self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
         self.TYPE = "io"
-        self.NEEDS = ["gpio", "fpga"]
+        self.NEEDS = ["gpio"]
         self.SIGNALS = {
             "bit": {
                 "direction": "output",
@@ -29,22 +29,3 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-
-    def gateware_instances(self):
-        return self.gateware_instances_base(direct=True)
-
-    def firmware_defines(self, variable_name):
-        pin = self.plugin_setup["pins"]["bit"]["pin"]
-        return f"#define {variable_name}_PIN_BIT {pin}"
-
-    def firmware_setup(self, variable_name):
-        return f"    pinMode({variable_name}_PIN_BIT, OUTPUT);"
-
-    def firmware_loop(self, pin_name, variable_name):
-        inverted = 0
-        for modifier in self.plugin_setup.get("pins", {}).get(pin_name, {}).get("modifier", []):
-            if modifier["type"] == "invert":
-                inverted = 1 - inverted
-        if inverted:
-            return f"    digitalWrite({variable_name}_PIN_BIT, 1 - {variable_name});"
-        return f"    digitalWrite({variable_name}_PIN_BIT, {variable_name});"

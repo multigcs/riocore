@@ -536,6 +536,7 @@ class PluginImages:
         "motor": {"image": "motor.png", "pins": [(220, 57)], "signals": []},
         "toggleswitch": {"image": "toggleswitch.png", "pins": [(60, 12)], "signals": []},
         "fuse": {"image": "fuse.png", "pins": [], "signals": []},
+        "potentiometer": {"image": "potentiometer.png", "pins": [(10, 38)], "signals": []},
     }
 
     def __init__(self):

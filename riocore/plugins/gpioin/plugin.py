@@ -9,7 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "input"
         self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
         self.TYPE = "io"
-        self.NEEDS = ["gpio", "fpga"]
+        self.NEEDS = ["gpio"]
         self.SIGNALS = {
             "bit": {
                 "direction": "input",
@@ -29,22 +29,3 @@ class Plugin(PluginBase):
                 "direction": "input",
             },
         }
-
-    def gateware_instances(self):
-        return self.gateware_instances_base(direct=True)
-
-    def firmware_defines(self, variable_name):
-        pin = self.plugin_setup["pins"]["bit"]["pin"]
-        return f"#define {variable_name}_PIN_BIT {pin}"
-
-    def firmware_setup(self, variable_name):
-        return f"    pinMode({variable_name}_PIN_BIT, INPUT_PULLUP);"
-
-    def firmware_loop(self, pin_name, variable_name):
-        inverted = 0
-        for modifier in self.plugin_setup.get("pins", {}).get(pin_name, {}).get("modifier", []):
-            if modifier["type"] == "invert":
-                inverted = 1 - inverted
-        if inverted:
-            return f"    {variable_name} = 1 - digitalRead({variable_name}_PIN_BIT);"
-        return f"    {variable_name} = digitalRead({variable_name}_PIN_BIT);"
