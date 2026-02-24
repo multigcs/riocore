@@ -22,7 +22,8 @@
       "comment": "USB UART",
       "pins": {
         "RX": {
-          "pin": "6",
+          "pin": "A3",
+          "comment": "serial RX->FTDI_TX",
           "pos": [
             40,
             20
@@ -30,7 +31,8 @@
           "direction": "input"
         },
         "TX": {
-          "pin": "9",
+          "pin": "B3",
+          "comment": "serial TX->FTDI_RX",
           "pos": [
             52,
             20
@@ -39,69 +41,121 @@
         }
       }
     },
+
     {
-      "name": "BOTTOM",
+      "name": "FLASH",
+      "comment": "SPI FLASH",
+      "pins": {
+        "MOSI": {
+          "pin": "E4",
+          "comment": "",
+          "pos": [
+            30,
+            95
+          ],
+          "direction": "input"
+        },
+        "MISO": {
+          "pin": "F5",
+          "comment": "",
+          "pos": [
+            40,
+            95
+          ],
+          "direction": "output"
+        },
+        "SCLK": {
+          "pin": "E5",
+          "comment": "",
+          "pos": [
+            50,
+            95
+          ],
+          "direction": "output"
+        },
+        "SEL": {
+          "pin": "D5",
+          "comment": "",
+          "pos": [
+            60,
+            95
+          ],
+          "direction": "output"
+        }
+      }
+    },
+
+    {
+      "name": "PMOD3",
       "comment": "",
       "default": "",
       "pins": {
-        "B1": {
+        "P4": {
           "pin": "B1",
+          "comment": "shared with PMOD1:P3",
           "pos": [
             39,
             169
           ],
           "direction": "all"
         },
-        "E1": {
+        "P3": {
           "pin": "E1",
+          "comment": "",
           "pos": [
             52,
             169
           ],
           "direction": "all"
         },
-        "B5": {
+        "P2": {
           "pin": "B5",
+          "comment": "",
           "pos": [
             64,
             169
           ],
           "direction": "all"
         },
-        "B4": {
+        "P1": {
           "pin": "B4",
+          "comment": "",
           "pos": [
             76,
             169
           ],
           "direction": "all"
         },
-        "A1": {
+        "P10": {
           "pin": "A1",
+          "comment": "shared with PMOD1:4",
           "pos": [
             39,
             181
           ],
           "direction": "all"
         },
-        "C2": {
+        "P9": {
           "pin": "C2",
+          "comment": "",
           "pos": [
             52,
             181
           ],
           "direction": "all"
         },
-        "E3": {
+        "P8": {
           "pin": "E3",
+          "comment": "",
           "pos": [
             64,
             181
           ],
           "direction": "all"
         },
-        "C6": {
+        "P7": {
           "pin": "C6",
+          "comment": "",
           "pos": [
             76,
             181
@@ -112,36 +166,41 @@
     },
 
     {
-      "name": "LEFT",
+      "name": "PMOD1",
       "comment": "",
       "default": "",
       "pins": {
-        "A1": {
+        "P4": {
           "pin": "A1",
+          "comment": "shared with PMOD3:10",
           "pos": [
             8,
             103
           ],
           "direction": "all"
         },
-        "B1": {
+        "P3": {
           "pin": "B1",
+          "comment": "shared with PMOD3:P4",
           "pos": [
             8,
             114
           ],
           "direction": "all"
         },
-        "D1": {
+        "P2": {
           "pin": "D1",
+          "visible": false,
+          "comment": "Shared with Clock-Pin",
           "pos": [
             8,
             126
           ],
           "direction": "all"
         },
-        "E2": {
+        "P1": {
           "pin": "E2",
+          "comment": "",
           "pos": [
             8,
             138
@@ -151,36 +210,40 @@
       }
     },
     {
-      "name": "RIGHT",
+      "name": "PMOD2",
       "comment": "",
       "default": "",
       "pins": {
-        "B3": {
+        "P1": {
           "pin": "B3",
+          "comment": "serial TX->FTDI_RX",
           "pos": [
             83,
             78
           ],
           "direction": "all"
         },
-        "A3": {
+        "P2": {
           "pin": "A3",
+          "comment": "serial RX->FTDI_TX",
           "pos": [
             83,
             90
           ],
           "direction": "all"
         },
-        "B6": {
+        "P3": {
           "pin": "B6",
+          "comment": "LED(Yellow)",
           "pos": [
             83,
             102
           ],
           "direction": "all"
         },
-        "C5": {
+        "P4": {
           "pin": "C5",
+          "comment": "",
           "pos": [
             83,
             114
