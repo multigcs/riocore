@@ -126,6 +126,7 @@ class Plugin(PluginBase):
                     "rotate": pin_data.get("rotate", 0.0),
                     "visible": pin_data.get("visible", True),
                     "direction": pin_data.get("direction", "all"),
+                    "comment": pin_data.get("comment", "all"),
                 }
 
         self.fpga_num = 0
