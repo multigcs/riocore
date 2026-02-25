@@ -929,6 +929,7 @@ class NodeViewer(QGraphicsView):
         self.setRenderHint(QPainter.RenderHint.Antialiasing)
         self.setTransformationAnchor(self.ViewportAnchor.AnchorUnderMouse)
         self.button_pressed = 0
+        self.mouse_pos_last = QPoint()
         self.mouse_pos = QPoint()
         self.selection_marker = None
         self.mouse_selection_start = None
@@ -1003,6 +1004,9 @@ class NodeViewer(QGraphicsView):
     def mouseDoubleClickEvent(self, event):
         if self.scene.hover or self.scene.edge_hover:
             super().mouseDoubleClickEvent(event)
+
+    def mousePressEvent2(self, event: QMouseEvent) -> None:
+        super().mousePressEvent(event)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         super().mousePressEvent(event)
@@ -1104,6 +1108,7 @@ class NodeViewer(QGraphicsView):
         super().mouseReleaseEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        self.mouse_pos_last = event.pos()
         if self.button_pressed in [Qt.LeftButton]:
             if self.mouse_selection_start is not None and self.selection_marker is not None:
                 mpos = event.pos()
@@ -1405,7 +1410,7 @@ class Window(QMainWindow):
         self.config = {}
         self.interfaces = []
 
-        self.clipboard = []
+        self.clipboard = QApplication.clipboard()
 
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
@@ -1619,8 +1624,6 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-
-
         icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
         copy_action = QAction(icon, "&Copy", self)
         copy_action.setStatusTip("copy")
@@ -1630,7 +1633,6 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-
         icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
         paste_action = QAction(icon, "&Paste", self)
         paste_action.setStatusTip("paste")
@@ -1639,8 +1641,6 @@ class Window(QMainWindow):
         toolbar.addAction(paste_action)
 
         toolbar.addSeparator()
-
-
 
         icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
         nesting_lr_action = QAction(icon, "Nesting &Left/Right (F7)", self)
@@ -1919,26 +1919,45 @@ class Window(QMainWindow):
             item.setSelected(True)
 
     def copy(self):
-        self.clipboard = []
-        for item in self.scene.selectedItems():
-            if isinstance(item, PluginNode):
-                plugin_config = item.plugin_instance.plugin_setup
-                self.clipboard.append(copy.deepcopy(plugin_config))
+        data = []
+        try:
+            for item in self.scene.selectedItems():
+                if isinstance(item, PluginNode):
+                    plugin_config = item.plugin_instance.plugin_setup
+                    data.append(copy.deepcopy(plugin_config))
+            self.clipboard.setText(json.dumps({"plugins": data}, indent=2))
+        except Exception as err:
+            riocore.log(f"ERROR: copy data into clipboard: {err}")
 
     def paste(self):
+        text = self.clipboard.text()
+        if not text:
+            riocore.log("ERROR: empty clipboard")
+            return
+        if text[0] != "{":
+            riocore.log("ERROR: unknown data in clipboard")
+            return
+        try:
+            data = json.loads(text)["plugins"]
+        except Exception as err:
+            riocore.log(f"ERROR: getting data from clipboard: {err}")
+            return
+        if not data:
+            riocore.log("ERROR: no data found in clipboard")
+            return
+
         all_uids = []
         all_names = []
         renamed_uids = {}
-        scene_max_x = -99999
-        scene_min_y = 999999
+        scene_insert_x = 0
+        scene_insert_y = 0
         for item in self.scene.items():
             # find new insert position in scene
             pos = item.pos()
             pos_x = pos.x()
             pos_y = pos.y()
-            scene_max_x = max(scene_max_x, pos_x + item.width)
-            scene_min_y = min(scene_min_y, pos_y)
-            
+            scene_insert_x = max(scene_insert_x, pos_x + item.width)
+            scene_insert_y = min(scene_insert_y, pos_y)
             # list all names and uids
             if isinstance(item, PluginNode):
                 plugin_config = item.plugin_instance.plugin_setup
@@ -1946,15 +1965,21 @@ class Window(QMainWindow):
                     all_uids.append(uid)
                 if name := plugin_config.get("name"):
                     all_names.append(name)
+        scene_insert_x += 40
+
+        # insert at mouse pos
+        insert_pos = self.view.mapToScene(self.view.mouse_pos_last.x(), self.view.mouse_pos_last.y())
+        scene_insert_x = insert_pos.x()
+        scene_insert_y = insert_pos.y()
 
         # check clipboard x/y
         clipboard_min_x = 999999
         clipboard_min_y = 999999
-        for plugin_config in self.clipboard:
+        for plugin_config in data:
             clipboard_min_x = min(clipboard_min_x, plugin_config["pos"][0])
             clipboard_min_y = min(clipboard_min_y, plugin_config["pos"][1])
 
-        for plugin_config in self.clipboard:
+        for plugin_config in data:
             # update uid
             uid = plugin_config.get("uid")
             if uid and uid in all_uids:
@@ -1977,7 +2002,8 @@ class Window(QMainWindow):
                 all_names.append(name)
                 plugin_config["name"] = name
 
-        for plugin_config in self.clipboard:
+        new_uids = []
+        for plugin_config in data:
             # reconnect wires with new uid's
             for pin_name, pin_config in plugin_config.get("pins", {}).items():
                 pin = pin_config.get("pin", "")
@@ -1989,17 +2015,28 @@ class Window(QMainWindow):
                         pin_config["pin"] = ""
 
             # set new position
-            plugin_config["pos"] = (
-                scene_max_x + (plugin_config["pos"][0] - clipboard_min_x) + 40,
-                scene_min_y + (plugin_config["pos"][1] - clipboard_min_y)
-            )
+            plugin_config["pos"] = (scene_insert_x + (plugin_config["pos"][0] - clipboard_min_x), scene_insert_y + (plugin_config["pos"][1] - clipboard_min_y))
             # append to config
+            new_uids.append(plugin_config["uid"])
             self.config["plugins"].append(copy.deepcopy(plugin_config))
 
         self.redraw()
         self.cfg_check()
-        self.fit_view()
+        # self.fit_view()
 
+        # select inserted items
+        # pos_x = 0
+        # pos_y = 0
+        for item in self.scene.items():
+            if isinstance(item, PluginNode):
+                plugin_config = item.plugin_instance.plugin_setup
+                if plugin_config["uid"] in new_uids:
+                    item.setSelected(True)
+                    # pos_x = plugin_config["pos"][0] + 10
+                    # pos_y = plugin_config["pos"][1] + 10
+
+        # press_event = QMouseEvent(QEvent.MouseButtonPress, pos, Qt.LeftButton, Qt.LeftButton, Qt.NoModifier)
+        # self.view.mousePressEvent2(press_event)
 
     def undo(self):
         if len(self.snapshots) > 1:
