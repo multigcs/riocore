@@ -1405,6 +1405,8 @@ class Window(QMainWindow):
         self.config = {}
         self.interfaces = []
 
+        self.clipboard = []
+
         self.gui_plugins = GuiPlugins(self)
         self.gui_modifiers = GuiModifiers(self)
 
@@ -1616,6 +1618,29 @@ class Window(QMainWindow):
         toolbar.addAction(selall_action)
 
         toolbar.addSeparator()
+
+
+
+        icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
+        copy_action = QAction(icon, "&Copy", self)
+        copy_action.setStatusTip("copy")
+        copy_action.setShortcut("Ctrl+C")
+        copy_action.triggered.connect(self.copy)
+        toolbar.addAction(copy_action)
+
+        toolbar.addSeparator()
+
+
+        icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
+        paste_action = QAction(icon, "&Paste", self)
+        paste_action.setStatusTip("paste")
+        paste_action.setShortcut("Ctrl+V")
+        paste_action.triggered.connect(self.paste)
+        toolbar.addAction(paste_action)
+
+        toolbar.addSeparator()
+
+
 
         icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
         nesting_lr_action = QAction(icon, "Nesting &Left/Right (F7)", self)
@@ -1892,6 +1917,89 @@ class Window(QMainWindow):
     def select_all(self):
         for item in self.scene.items():
             item.setSelected(True)
+
+    def copy(self):
+        self.clipboard = []
+        for item in self.scene.selectedItems():
+            if isinstance(item, PluginNode):
+                plugin_config = item.plugin_instance.plugin_setup
+                self.clipboard.append(copy.deepcopy(plugin_config))
+
+    def paste(self):
+        all_uids = []
+        all_names = []
+        renamed_uids = {}
+        scene_max_x = -99999
+        scene_min_y = 999999
+        for item in self.scene.items():
+            # find new insert position in scene
+            pos = item.pos()
+            pos_x = pos.x()
+            pos_y = pos.y()
+            scene_max_x = max(scene_max_x, pos_x + item.width)
+            scene_min_y = min(scene_min_y, pos_y)
+            
+            # list all names and uids
+            if isinstance(item, PluginNode):
+                plugin_config = item.plugin_instance.plugin_setup
+                if uid := plugin_config.get("uid"):
+                    all_uids.append(uid)
+                if name := plugin_config.get("name"):
+                    all_names.append(name)
+
+        # check clipboard x/y
+        clipboard_min_x = 999999
+        clipboard_min_y = 999999
+        for plugin_config in self.clipboard:
+            clipboard_min_x = min(clipboard_min_x, plugin_config["pos"][0])
+            clipboard_min_y = min(clipboard_min_y, plugin_config["pos"][1])
+
+        for plugin_config in self.clipboard:
+            # update uid
+            uid = plugin_config.get("uid")
+            if uid and uid in all_uids:
+                uid_old = uid
+                num = 0
+                while uid in all_uids:
+                    uid = f"{uid_old.rstrip('0123456789')}{num}"
+                    num += 1
+                renamed_uids[uid_old] = uid
+                all_uids.append(uid)
+                plugin_config["uid"] = uid
+            # update name
+            name = plugin_config.get("name")
+            if name and name in all_names:
+                name_old = name
+                num = 0
+                while name in all_names:
+                    name = f"{name_old.rstrip('0123456789')}{num}"
+                    num += 1
+                all_names.append(name)
+                plugin_config["name"] = name
+
+        for plugin_config in self.clipboard:
+            # reconnect wires with new uid's
+            for pin_name, pin_config in plugin_config.get("pins", {}).items():
+                pin = pin_config.get("pin", "")
+                if ":" in pin:
+                    board, port = pin.split(":", 1)
+                    if board in renamed_uids:
+                        pin_config["pin"] = f"{renamed_uids[board]}:{port}"
+                    else:
+                        pin_config["pin"] = ""
+
+            # set new position
+            plugin_config["pos"] = (
+                scene_max_x + (plugin_config["pos"][0] - clipboard_min_x) + 40,
+                scene_min_y + (plugin_config["pos"][1] - clipboard_min_y)
+            )
+            # append to config
+            self.config["plugins"].append(copy.deepcopy(plugin_config))
+
+        self.redraw()
+        self.cfg_check()
+        self.fit_view()
+
 
     def undo(self):
         if len(self.snapshots) > 1:
