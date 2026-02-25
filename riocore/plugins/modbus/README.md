@@ -62,7 +62,11 @@ max tx buffer size
 
 ## Signals:
 *signals/pins in LinuxCNC*
-the signals of this plugin are user configurable
+### temperature:
+
+ * type: float
+ * direction: input
+ * unit: °C
 
 
 ## Interfaces:

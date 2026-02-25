@@ -78,7 +78,29 @@ rx frame format
 
 ## Signals:
 *signals/pins in LinuxCNC*
-the signals of this plugin are user configurable
+### tx1:
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 255
+
+### tx2:
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 255
+
+### rx1:
+
+ * type: float
+ * direction: input
+
+### rx2:
+
+ * type: float
+ * direction: input
 
 
 ## Interfaces:

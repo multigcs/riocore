@@ -45,13 +45,30 @@ serial baud rate
  * default: 2500000
  * unit: bit/s
 
+### timeout:
+timeout in ms
+
+ * type: int
+ * min: 1
+ * max: 10000
+ * default: 100
+ * unit: ms
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
+### timeout:
+
+ * type: bit
+ * direction: input
 
 
 ## Interfaces:
 *transport layer*
+### timeout:
+
+ * size: 1 bit
+ * direction: input
 
 
 ## Basic-Example:
@@ -81,6 +98,7 @@ serial baud rate
     "type": "uartsub",
     "name": "",
     "baud": 2500000,
+    "timeout": 100,
     "pins": {
         "rx": {
             "pin": "0",
@@ -115,7 +133,17 @@ serial baud rate
             ]
         }
     },
-    "signals": {}
+    "signals": {
+        "timeout": {
+            "net": "xxx.yyy.zzz",
+            "function": "rio.xxx",
+            "display": {
+                "title": "timeout",
+                "section": "inputs",
+                "type": "led"
+            }
+        }
+    }
 }
 ```
 

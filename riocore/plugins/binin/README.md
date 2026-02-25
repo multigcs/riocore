@@ -8,13 +8,6 @@ reads binary values
 
 Keywords: binary bin2dec
 
-```mermaid
-graph LR;
-    FPGA-Pin0-->Bin2Dec;
-    FPGA-Pin1-->Bin2Dec;
-    Bin2Dec-->Hal-Value;
-```
-
 ## Pins:
 *FPGA-pins*
 ### bin0:

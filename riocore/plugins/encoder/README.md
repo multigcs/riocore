@@ -37,6 +37,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### image:
+hardware type
+
+ * type: imgselect
+ * default: generic
+
 ### counter-mode:
 counter-mode
 
@@ -122,6 +128,7 @@ calculates revolutions per minute
 {
     "type": "encoder",
     "name": "",
+    "image": "generic",
     "counter-mode": false,
     "x4-mode": false,
     "missing-teeth": 0,

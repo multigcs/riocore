@@ -4,13 +4,6 @@
 
 **routing one output pin to multiple inputs**
 
-```mermaid
-graph LR;
-    In0-->Routing;
-    In1-->Routing;
-    Routing-->Out;
-```
-
 ## Pins:
 *FPGA-pins*
 ### outA:

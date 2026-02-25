@@ -1,0 +1,340 @@
+{
+  "platform": "espressif32",
+  "board": "wemos_d1_mini32",
+  "multithread": true,
+  "sserial": "Serial2",
+  "rx": "16",
+  "tx": "17",
+  "options": {
+    "upload_port": {
+      "default": "/dev/ttyACM0",
+      "type": "str",
+      "description": "upload-port"
+    }
+  },
+  "pins": {
+    "SAT": {
+        "direction": "output",
+        "pin": "",
+        "pos": [20, 20],
+        "edge": "target",
+        "type": ["SATCON"],
+        "optional": true,
+        "bus": true
+    },
+    "IO:39": {
+      "pin": "39",
+      "direction": "input",
+      "comment": "do not use",
+      "pos": [
+        6,
+        57
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:35": {
+      "pin": "35",
+      "direction": "input",
+      "pos": [
+        6,
+        69
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:33": {
+      "pin": "33",
+      "direction": "all",
+      "pos": [
+        6,
+        80
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:34": {
+      "pin": "34",
+      "direction": "input",
+      "pos": [
+        6,
+        92
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:14": {
+      "pin": "14",
+      "direction": "all",
+      "pos": [
+        6,
+        103
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:9": {
+      "pin": "9",
+      "direction": "input",
+      "pos": [
+        6,
+        126
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:11": {
+      "pin": "11",
+      "direction": "input",
+      "pos": [
+        6,
+        137
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:36": {
+      "pin": "36",
+      "comment": "failed - do not use",
+      "direction": "all",
+      "pos": [
+        18,
+        46
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:26": {
+      "pin": "26",
+      "direction": "all",
+      "pos": [
+        18,
+        57
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:18": {
+      "pin": "18",
+      "direction": "all",
+      "pos": [
+        18,
+        69
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:19": {
+      "pin": "19",
+      "direction": "all",
+      "pos": [
+        18,
+        80
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:23": {
+      "pin": "23",
+      "direction": "all",
+      "pos": [
+        18,
+        92
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:5": {
+      "pin": "5",
+      "direction": "all",
+      "pos": [
+        18,
+        103
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:10": {
+      "pin": "10",
+      "direction": "all",
+      "pos": [
+        18,
+        126
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:13": {
+      "pin": "13",
+      "direction": "all",
+      "pos": [
+        18,
+        137
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:22": {
+      "pin": "22",
+      "direction": "all",
+      "pos": [
+        120,
+        57
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:21": {
+      "pin": "21",
+      "direction": "all",
+      "pos": [
+        120,
+        69
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:15": {
+      "pin": "15",
+      "direction": "all",
+      "pos": [
+        120,
+        126
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:7": {
+      "pin": "7",
+      "direction": "input",
+      "pos": [
+        120,
+        137
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:27": {
+      "pin": "27",
+      "direction": "all",
+      "pos": [
+        131,
+        46
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:25": {
+      "pin": "25",
+      "direction": "all",
+      "pos": [
+        131,
+        57
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:32": {
+      "pin": "32",
+      "direction": "all",
+      "pos": [
+        131,
+        69
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:12": {
+      "pin": "12",
+      "direction": "all",
+      "pos": [
+        131,
+        80
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:4": {
+      "pin": "4",
+      "direction": "all",
+      "pos": [
+        131,
+        92
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:0": {
+      "pin": "0",
+      "direction": "all",
+      "pos": [
+        131,
+        103
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    },
+    "IO:2": {
+      "pin": "2",
+      "direction": "all",
+      "pos": [
+        131,
+        115
+      ],
+      "edge": "source",
+      "type": [
+        "GPIO"
+      ]
+    }
+  }
+}

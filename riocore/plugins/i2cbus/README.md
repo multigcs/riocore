@@ -29,15 +29,6 @@ Devices:
 | [tlv493d](devices/tlv493d/) | 3axis magnetic sensor | <img src="devices/tlv493d/image.png" height="24"> |
 | [vl53l0x](devices/vl53l0x/) | ToF Distance Sensor | <img src="devices/vl53l0x/image.png" height="24"> |
 
-```mermaid
-graph LR;
-    FPGA-->Bus0;
-    Bus0-->Device0-->Device1..;
-    FPGA-->Bus1..;
-    Bus1..-->Device2-->Multiplexer0-->Device3-->Device4..;
-    Multiplexer0-->Device5-->Device6..;
-```
-
 ## Pins:
 *FPGA-pins*
 ### sda:

@@ -55,19 +55,13 @@ can-bus baud rate
  * unit: bit/s
 
 ### interval:
-update interval / normaly it should be 1khz, but with sync=true, this is a good default
+update interval
 
  * type: int
  * min: 100
  * max: 10000
  * default: 400
  * unit: Hz
-
-### sync:
-in sync with interface (eg UDP)
-
- * type: bool
- * default: True
 
 ### error:
 trigger error on connection/drive problems
@@ -227,7 +221,6 @@ trigger error on connection/drive problems
     "axis": "",
     "baud": 500000,
     "interval": 400,
-    "sync": true,
     "error": true,
     "pins": {
         "tx": {

@@ -13,12 +13,6 @@ Usage-Examples:
 
 Keywords: pin bit copy
 
-```mermaid
-graph LR;
-    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
-    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
-```
-
 ## Pins:
 *FPGA-pins*
 ### bit:
