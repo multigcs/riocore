@@ -66,12 +66,15 @@ class Plugin(PluginBase):
             return
 
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{self.node_type}.json")
-        makefile_file = os.path.join(os.path.dirname(__file__), "boards", f"{self.node_type}.makefile")
         self.board_data = json.loads(open(board_file).read())
-        self.makefile = open(makefile_file).read()
 
         self.PINDEFAULTS = {}
         for pin_name, pin_data in self.board_data["pins"].items():
+            if pin_data["pin"] and self.board_data["board"] == "pico":
+                if int(pin_data["pin"]) % 2 == 0:
+                    pin_data["type"].append("PIO_EVEN")
+                else:
+                    pin_data["type"].append("PIO_ODD")
             pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
             self.PINDEFAULTS[pin_name] = pin_data
 
@@ -315,14 +318,28 @@ class Plugin(PluginBase):
         os.makedirs(src_path, exist_ok=True)
         os.makedirs(lib_path, exist_ok=True)
         open(os.path.join(src_path, "main.ino"), "w").write("\n".join(output))
-        open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(self.makefile)
+
+        makefile = """
+~/.platformio/penv/bin/pio:
+	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
+	python3 /tmp/__get-platformio.py
+	rm -rf /tmp/__get-platformio.py
+
+build: ~/.platformio/penv/bin/pio
+	pio run
+
+load: ~/.platformio/penv/bin/pio
+	pio run --target=upload
+"""
+
+        open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(makefile)
 
         platformio = f"""
-[env:esp32dev]
+[env:{self.board_data["board"]}
 framework = arduino
 board = {self.board_data["board"]}
 platform = {self.board_data["platform"]}
-upload_speed = 500000
+# upload_speed = 500000
 monitor_speed = 115200
 upload_port = {upload_port}
 """
