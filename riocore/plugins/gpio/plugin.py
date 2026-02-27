@@ -19,7 +19,7 @@ class Plugin(PluginBase):
                     "default": "",
                     "type": "select",
                     # "options": ["adc", "input", "output", "freqin"],
-                    "options": ["adc", "input", "output", "dac"],
+                    "options": ["adc", "input", "output", "dac", "rcservo", "rgbled"],
                     "description": "io type",
                     "reload": True,
                 },
@@ -113,6 +113,66 @@ class Plugin(PluginBase):
                     "direction": "output",
                 },
             }
+        elif self.node_type == "rcservo":
+            self.IMAGES = ["rcservo"]
+            self.NEEDS = ["mcu"]
+            self.SIGNALS = {
+                "position": {
+                    "direction": "output",
+                    "min": 0,
+                    "max": 180,
+                },
+            }
+            self.PINDEFAULTS = {
+                "out": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": ["GPIO"],
+                },
+            }
+            self.INTERFACE = {
+                "position": {
+                    "size": 16,
+                    "direction": "output",
+                },
+            }
+        if self.node_type == "rgbled":
+            self.IMAGES = ["wled1"]
+            self.SIGNALS = {
+                "red": {
+                    "direction": "output",
+                    "bool": True,
+                },
+                "green": {
+                    "direction": "output",
+                    "bool": True,
+                },
+                "blue": {
+                    "direction": "output",
+                    "bool": True,
+                },
+            }
+            self.PINDEFAULTS = {
+                "data": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": ["GPIO"],
+                },
+            }
+            self.INTERFACE = {
+                "red": {
+                    "size": 1,
+                    "direction": "output",
+                },
+                "green": {
+                    "size": 1,
+                    "direction": "output",
+                },
+                "blue": {
+                    "size": 1,
+                    "direction": "output",
+                },
+            }
         elif self.node_type == "freqin":
             self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
             self.NEEDS = ["mcu"]
@@ -145,6 +205,19 @@ class Plugin(PluginBase):
         if self.node_type == "dac":
             pin = self.plugin_setup["pins"]["dac"]["pin"]
             return f"#define {variable_name}_PIN_DAC {pin}"
+        if self.node_type == "rcservo":
+            pin = self.plugin_setup["pins"]["out"]["pin"]
+            output = []
+            output.append("#include <Servo.h>")
+            output.append(f"Servo {variable_name}_SERVO;")
+            return "\n".join(output)
+        if self.node_type == "rgbled" and variable_name.endswith("_RED"):
+            pin = self.plugin_setup["pins"]["data"]["pin"]
+            output = []
+            output.append("#include <NeoPixelConnect.h>")
+            output.append(f"#define {variable_name[:-4]}_PIN_DATA {pin}")
+            output.append(f"NeoPixelConnect {variable_name[:-4]}_RGB({variable_name[:-4]}_PIN_DATA, 1);")
+            return "\n".join(output)
         if self.node_type == "freqin":
             pin = self.plugin_setup["pins"]["clock"]["pin"]
             output = []
@@ -161,6 +234,8 @@ class Plugin(PluginBase):
             return f"    pinMode({variable_name}_PIN_BIT, INPUT_PULLUP);"
         if self.node_type == "adc":
             return f"    pinMode({variable_name}_PIN_ADC, INPUT);"
+        if self.node_type == "rcservo":
+            return f"    myservo.attach({variable_name}_PIN_OUT);"
         if self.node_type == "dac":
             freq = 10000
             output = []
@@ -195,6 +270,10 @@ class Plugin(PluginBase):
             return f"    {variable_name} = analogRead({variable_name}_PIN_ADC);"
         if self.node_type == "dac":
             return f"    analogWrite({variable_name}_PIN_DAC, {variable_name});"
+        if self.node_type == "rcservo":
+            return f"    {variable_name}_SERVO.write({variable_name});"
+        if self.node_type == "rgbled" and variable_name.endswith("_RED"):
+            return f"    {variable_name[:-4]}_RGB.neoPixelSetValue({variable_name[:-4]}_RED, {variable_name[:-4]}_GREEN, {variable_name[:-4]}_BLUE, true);"
         if self.node_type == "freqin":
             output = []
             output.append("    if (FreqCountRP2.available()) {")

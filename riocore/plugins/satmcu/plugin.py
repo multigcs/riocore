@@ -335,7 +335,7 @@ load: ~/.platformio/penv/bin/pio
         open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(makefile)
 
         platformio = f"""
-[env:{self.board_data["board"]}
+[env:{self.board_data["board"]}]
 framework = arduino
 board = {self.board_data["board"]}
 platform = {self.board_data["platform"]}
