@@ -267,7 +267,20 @@ class Plugins:
     def load_plugins(self, config, system_setup=None):
         if config["plugins"]:
             plugin_id = 0
-            for plugin_config in list(config["plugins"]):
+
+            # sort plugins (fpga first)
+            unsorted_plugins = list(config["plugins"])
+            sorted_plugins = []
+            for plugin_config in unsorted_plugins:
+                if plugin_config["type"] != "fpga":
+                    continue
+                sorted_plugins.append(plugin_config)
+            for plugin_config in unsorted_plugins:
+                if plugin_config["type"] == "fpga":
+                    continue
+                sorted_plugins.append(plugin_config)
+
+            for plugin_config in sorted_plugins:
                 plugin_instance = self.load_plugin(plugin_id, plugin_config, system_setup=system_setup)
                 if not plugin_instance:
                     log(f"plugin not found: {plugin_config.get('type') or plugin_config}")
