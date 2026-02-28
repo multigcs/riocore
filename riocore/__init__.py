@@ -572,7 +572,7 @@ class PluginImages:
         return setup
 
     def wled1(self):
-        setup = {"image": "wled1.png", "pins": [(10, 36)], "signals": []}
+        setup = {"image": "wled1.png", "pins": [(10, 18)], "signals": []}
         px = 50
         for led in range(3):
             py = 10

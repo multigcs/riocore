@@ -75,14 +75,14 @@ class TabBuilder:
         self.block = False
 
         self.builder_tab = QWidget()
-        builder_tab_layout = QHBoxLayout()
-        self.builder_tab.setLayout(builder_tab_layout)
+        self.builder_tab_layout = QVBoxLayout()
+        self.builder_tab.setLayout(self.builder_tab_layout)
 
-        self.left = QVBoxLayout()
-        self.right = QVBoxLayout()
-
-        builder_tab_layout.addLayout(self.left, stretch=1)
-        builder_tab_layout.addLayout(self.right, stretch=4)
+        self.tab_builder = QScrollArea()
+        self.tab_builder.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.tab_builder.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.tab_builder.setWidgetResizable(True)
+        self.tab_builder.setWidget(self.builder_tab)
 
         self.compile_sub = {}
         self.output = {}
@@ -176,59 +176,53 @@ class TabBuilder:
         print(f"running cmd; {cmd}...")
         self.compile_sub[plugin_instance.instances_name] = subprocess.Popen(f"{cmd} > /tmp/buildlog-{plugin_instance.instances_name} 2>&1", shell=True, close_fds=True)
 
-    def update_right(self):
-        cleanLayout(self.right)
-        self.output = {}
-
-        self.output["generator"] = QPlainTextEdit("--- generator ---")
-        self.right.addWidget(self.output["generator"], stretch=1)
-
-        for item in self.parent.scene.items():
-            if hasattr(item, "plugin_instance"):
-                plugin_instance = item.plugin_instance
-                if not plugin_instance.BUILDER:
-                    continue
-
-                self.output[plugin_instance.instances_name] = QPlainTextEdit(f"--- {plugin_instance.instances_name} ---")
-                self.right.addWidget(self.output[plugin_instance.instances_name], stretch=1)
-
-        self.right.addStretch()
-
-    def update_left(self):
-        cleanLayout(self.left)
-
-        button = QPushButton("Generate files")
-        button.clicked.connect(self.generator_run)
-        self.left.addWidget(button)
-
-        for item in self.parent.scene.items():
-            if hasattr(item, "plugin_instance"):
-                plugin_instance = item.plugin_instance
-                if not plugin_instance.BUILDER:
-                    continue
-
-                vbox = QVBoxLayout()
-                self.left.addLayout(vbox)
-                vbox.addWidget(QLabel(""))
-                vbox.addWidget(QLabel(plugin_instance.title))
-
-                for command in plugin_instance.BUILDER:
-                    button = QPushButton(command)
-                    button.clicked.connect(partial(self.builder_run, plugin_instance, command))
-                    vbox.addWidget(button)
-
-        self.left.addStretch()
-
     def update(self):
         if self.block:
             print("wait to finish already running command")
             return
 
-        self.update_left()
-        self.update_right()
+        self.output = {}
+
+        cleanLayout(self.builder_tab_layout)
+
+        row = QHBoxLayout()
+        self.builder_tab_layout.addLayout(row, stretch=1)
+
+        vbox = QVBoxLayout()
+        row.addLayout(vbox, stretch=1)
+        button = QPushButton("Generate files")
+        button.clicked.connect(self.generator_run)
+        vbox.addWidget(button, stretch=1)
+        vbox.addStretch()
+
+        self.output["generator"] = QPlainTextEdit("--- generator ---")
+        row.addWidget(self.output["generator"], stretch=4)
+
+        for item in self.parent.scene.items():
+            if hasattr(item, "plugin_instance"):
+                plugin_instance = item.plugin_instance
+                if not plugin_instance.BUILDER:
+                    continue
+
+                row = QHBoxLayout()
+                self.builder_tab_layout.addLayout(row, stretch=1)
+
+                vbox = QVBoxLayout()
+                row.addLayout(vbox, stretch=1)
+                vbox.addWidget(QLabel(plugin_instance.title))
+                for command in plugin_instance.BUILDER:
+                    button = QPushButton(command)
+                    button.clicked.connect(partial(self.builder_run, plugin_instance, command))
+                    vbox.addWidget(button)
+                vbox.addStretch()
+
+                self.output[plugin_instance.instances_name] = QPlainTextEdit(f"--- {plugin_instance.instances_name} ---")
+                row.addWidget(self.output[plugin_instance.instances_name], stretch=4)
+
+        self.builder_tab_layout.addStretch()
 
     def widget(self):
-        return self.builder_tab
+        return self.tab_builder
 
 
 class TabDrawing:

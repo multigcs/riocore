@@ -138,20 +138,18 @@ class Plugin(PluginBase):
             }
         if self.node_type == "rgbled":
             self.IMAGES = ["wled1"]
-            self.SIGNALS = {
-                "red": {
-                    "direction": "output",
-                    "bool": True,
+            self.OPTIONS.update(
+                {
+                    "leds": {
+                        "default": 1,
+                        "min": 1,
+                        "max": 32,
+                        "type": int,
+                        "description": "number of leds",
+                    },
                 },
-                "green": {
-                    "direction": "output",
-                    "bool": True,
-                },
-                "blue": {
-                    "direction": "output",
-                    "bool": True,
-                },
-            }
+            )
+            leds = self.plugin_setup.get("leds", self.option_default("leds"))
             self.PINDEFAULTS = {
                 "data": {
                     "direction": "output",
@@ -159,20 +157,52 @@ class Plugin(PluginBase):
                     "type": ["GPIO"],
                 },
             }
-            self.INTERFACE = {
-                "red": {
-                    "size": 1,
+            self.SIGNALS = {
+                "level": {
                     "direction": "output",
-                },
-                "green": {
-                    "size": 1,
-                    "direction": "output",
-                },
-                "blue": {
-                    "size": 1,
-                    "direction": "output",
+                    "min": 0,
+                    "max": 255,
                 },
             }
+            self.INTERFACE = {
+                "level": {
+                    "direction": "output",
+                    "size": 8,
+                },
+            }
+            for led in range(leds):
+                self.SIGNALS.update(
+                    {
+                        f"l{led}r": {
+                            "direction": "output",
+                            "bool": True,
+                        },
+                        f"l{led}g": {
+                            "direction": "output",
+                            "bool": True,
+                        },
+                        f"l{led}b": {
+                            "direction": "output",
+                            "bool": True,
+                        },
+                    }
+                )
+                self.INTERFACE.update(
+                    {
+                        f"l{led}r": {
+                            "size": 1,
+                            "direction": "output",
+                        },
+                        f"l{led}g": {
+                            "size": 1,
+                            "direction": "output",
+                        },
+                        f"l{led}b": {
+                            "size": 1,
+                            "direction": "output",
+                        },
+                    }
+                )
         elif self.node_type == "freqin":
             self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
             self.NEEDS = ["mcu"]
@@ -211,12 +241,14 @@ class Plugin(PluginBase):
             output.append("#include <Servo.h>")
             output.append(f"Servo {variable_name}_SERVO;")
             return "\n".join(output)
-        if self.node_type == "rgbled" and variable_name.endswith("_RED"):
+        if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
             pin = self.plugin_setup["pins"]["data"]["pin"]
+            leds = self.plugin_setup.get("leds", self.option_default("leds"))
+            name = self.instances_name.upper()
             output = []
             output.append("#include <NeoPixelConnect.h>")
-            output.append(f"#define {variable_name[:-4]}_PIN_DATA {pin}")
-            output.append(f"NeoPixelConnect {variable_name[:-4]}_RGB({variable_name[:-4]}_PIN_DATA, 1);")
+            output.append(f"#define {name}_PIN_DATA {pin}")
+            output.append(f"NeoPixelConnect {name}_RGB({name}_PIN_DATA, {leds});")
             return "\n".join(output)
         if self.node_type == "freqin":
             pin = self.plugin_setup["pins"]["clock"]["pin"]
@@ -272,8 +304,14 @@ class Plugin(PluginBase):
             return f"    analogWrite({variable_name}_PIN_DAC, {variable_name});"
         if self.node_type == "rcservo":
             return f"    {variable_name}_SERVO.write({variable_name});"
-        if self.node_type == "rgbled" and variable_name.endswith("_RED"):
-            return f"    {variable_name[:-4]}_RGB.neoPixelSetValue({variable_name[:-4]}_RED, {variable_name[:-4]}_GREEN, {variable_name[:-4]}_BLUE, true);"
+        if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
+            name = self.instances_name.upper()
+            leds = self.plugin_setup.get("leds", self.option_default("leds"))
+            output = []
+            for led in range(leds):
+                output.append(f"    {name}_RGB.neoPixelSetValue({led}, VAROUT1_{name}_L{led}R * VAROUT8_{name}_LEVEL, VAROUT1_{name}_L{led}G * VAROUT8_{name}_LEVEL, VAROUT1_{name}_L{led}B * VAROUT8_{name}_LEVEL, true);")
+
+            return "\n".join(output)
         if self.node_type == "freqin":
             output = []
             output.append("    if (FreqCountRP2.available()) {")

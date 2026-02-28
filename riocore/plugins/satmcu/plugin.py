@@ -215,7 +215,7 @@ class Plugin(PluginBase):
                 if size in {16, 32}:
                     output.append(f"            memcpy(&{variable_name}, rx_buffer + {output_pos // 8}, {size // 8});")
                 elif size == 8:
-                    output.append(f"            rx_buffer[{output_pos // 8}] = variable_name;")
+                    output.append(f"            {variable_name} = rx_buffer[{output_pos // 8}];")
                 elif size == 1:
                     bit = 7 - (output_pos - (output_pos // 8 * 8))
                     output.append(f"            if ((rx_buffer[{output_pos // 8}] & (1<<{bit})) != 0) {{")
@@ -241,34 +241,36 @@ class Plugin(PluginBase):
         # defines
         for plugin_type, instances in ptypes.items():
             if hasattr(instances[0], "firmware_type_defines"):
-                output.append(instances[0].firmware_type_defines(instances))
-        output.append("")
+                ret = instances[0].firmware_type_defines(instances)
+                if ret.strip():
+                    output.append(ret)
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
             if hasattr(plugin_instance, "firmware_defines"):
-                output.append(plugin_instance.firmware_defines(variable_name))
+                ret = plugin_instance.firmware_defines(variable_name)
+                if ret.strip():
+                    output.append(ret)
         output.append("")
 
         # setup
         output.append("void setup() {")
-        output.append("")
         for plugin_type, instances in ptypes.items():
             if hasattr(instances[0], "firmware_type_setup"):
-                output.append(instances[0].firmware_type_setup(instances))
-        output.append("")
+                ret = instances[0].firmware_type_setup(instances)
+                if ret.strip():
+                    output.append(ret)
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
             if hasattr(plugin_instance, "firmware_setup"):
-                output.append(plugin_instance.firmware_setup(variable_name))
-        output.append("")
-
+                ret = plugin_instance.firmware_setup(variable_name)
+                if ret.strip():
+                    output.append(ret)
         output.append("    Serial.begin(115200);")
         output.append("    Serial.setTimeout(10);")
-
         if self.board_data["platform"] == "raspberrypi":
             output.append(f"    {serial}.begin({baud});")
         else:
@@ -280,36 +282,37 @@ class Plugin(PluginBase):
 
         # main loop
         output.append("void loop() {")
-        output.append("")
-
         for plugin_type, instances in ptypes.items():
             if data_config["direction"] == "input":
                 if hasattr(instances[0], "firmware_type_loop"):
-                    output.append(instances[0].firmware_type_loop(instances))
-        output.append("")
+                    ret = instances[0].firmware_type_loop(instances)
+                    if ret.strip():
+                        output.append(ret)
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
             if data_config["direction"] == "input":
                 if hasattr(plugin_instance, "firmware_loop"):
-                    output.append(plugin_instance.firmware_loop(data_name, variable_name))
-        output.append("")
+                    ret = plugin_instance.firmware_loop(data_name, variable_name)
+                    if ret.strip():
+                        output.append(ret)
         output.append("    rio_rtx();")
-        output.append("")
         for plugin_type, instances in ptypes.items():
             if data_config["direction"] == "output":
                 if hasattr(instances[0], "firmware_type_loop"):
-                    output.append(instances[0].firmware_type_loop(instances))
-        output.append("")
+                    ret = instances[0].firmware_type_loop(instances)
+                    if ret.strip():
+                        output.append(ret)
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
             if data_config["direction"] == "output":
                 if hasattr(plugin_instance, "firmware_loop"):
-                    output.append(plugin_instance.firmware_loop(data_name, variable_name))
-        output.append("")
+                    ret = plugin_instance.firmware_loop(data_name, variable_name)
+                    if ret.strip():
+                        output.append(ret)
         output.append("}")
         output.append("")
 
