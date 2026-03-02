@@ -39,6 +39,11 @@ class Plugin(PluginBase):
                 "unit": "bit/s",
                 "description": "serial baud rate",
             },
+            "uart": {
+                "default": "/dev/ttyUSB0",
+                "type": str,
+                "description": "serial device (if connected to host)",
+            },
             "csum": {
                 "default": False,
                 "type": bool,

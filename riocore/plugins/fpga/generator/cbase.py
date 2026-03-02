@@ -833,9 +833,12 @@ class cbase:
 
         protocol = self.instance.protocol
         interface_instance = self.instance.interface_instance
-        ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.1ß.194"))
+        ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))
         port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
         cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
+        uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
+        baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
+        csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
 
         # backward compatibility (SPI/UDP)
         ip = self.project.config["jdata"].get("ip", ip)
@@ -863,9 +866,9 @@ class cbase:
         udp_async = self.project.config["jdata"].get("async", False)
         if udp_async:
             defines["UDP_ASYNC"] = 1
-        defines["SERIAL_PORT"] = '"/dev/ttyUSB1"'
-        defines["SERIAL_BAUD"] = "B1000000"
-
+        defines["SERIAL_PORT"] = f'"{uart}"'
+        defines["SERIAL_BAUD"] = f"B{baud}"
+        defines["SERIAL_CSUM"] = str(int(csum))
         defines["SPI_PIN_MOSI"] = "10"
         defines["SPI_PIN_MISO"] = "9"
         defines["SPI_PIN_CLK"] = "11"
