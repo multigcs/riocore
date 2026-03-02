@@ -234,6 +234,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         if flashcmd:
             makefile_data.append("load:")
             makefile_data.append(f"	{flashcmd}")
+            makefile_data.append("")
         else:
             if board and board.startswith("TangNano"):
                 makefile_data.append("load:")
@@ -243,7 +244,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
                 makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs -f")
             else:
                 makefile_data.append("load:")
-                makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
+                makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName} -f")
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_flashed.txt")
             makefile_data.append("")
 
@@ -253,8 +254,11 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             elif board and board == "Tangoboard":
                 makefile_data.append("sload:")
                 makefile_data.append("	openFPGALoader -b tangnano9k $(PROJECT).fs")
+            else:
+                makefile_data.append("sload:")
+                makefile_data.append(f"	 openFPGALoader -b ice40_generic {bitfileName}")
             makefile_data.append(f"	{cmd_cp} hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
 
-        makefile_data.append("")
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
