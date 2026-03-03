@@ -841,16 +841,15 @@ class cbase:
             ip = self.project.config["jdata"].get("ip", ip)
             port = self.project.config["jdata"].get("port", port)
             dst_port = self.project.config["jdata"].get("dst_port", port)
+            # TODO: offset workaround
+            offset = int(self.instance.instances_name[-1])
+            src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1 + offset))
         elif protocol == "SPI":
             cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
         elif protocol == "UART":
             uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
             baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
             csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
-
-        # TODO: offset workaround
-        offset = int(self.instance.instances_name[-1])
-        src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1 + offset))
 
         defines = {
             "MODNAME": f'"riocomp-{self.instance.instances_name}"',
