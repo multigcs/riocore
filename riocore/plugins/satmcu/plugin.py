@@ -161,48 +161,18 @@ class Plugin(PluginBase):
 
         # write tx_buffer
         output.append("void rio_rtx(void) {")
-        output.append("    // write tx_buffer")
-        input_pos = 32
-        for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
-            if plugin_instance.master != subname:
-                continue
-            variable_name = data_config["variable"]
-            if data_config["direction"] == "input":
-                if data_config.get("expansion"):
-                    continue
-                if size in {16, 32}:
-                    output.append(f"    memcpy(tx_buffer + {input_pos // 8}, &{variable_name}, {size // 8});")
-                elif size == 8:
-                    output.append(f"    tx_buffer[{input_pos // 8}] = variable_name;")
-                elif size == 1:
-                    bit = 7 - (input_pos - (input_pos // 8 * 8))
-                    output.append(f"    if ({variable_name} == 1) {{")
-                    output.append(f"        tx_buffer[{input_pos // 8}] |= (1<<{bit});")
-                    output.append("    } else {")
-                    output.append(f"        tx_buffer[{input_pos // 8}] &= ~(1<<{bit});")
-                    output.append("    }")
-                input_pos += size
-        output.append("")
-        output.append("    // send tx_buffer")
-        output.append("    uint16_t csum = 0;")
-        output.append("    for (int i = 0; i < MCU_BUFFER_SIZE_TX; i++) {")
-        output.append("        csum += tx_buffer[i] + 1;")
-        output.append("    }")
-        output.append("    tx_buffer[MCU_BUFFER_SIZE_TX] = (csum >> 8 & 0xFF);")
-        output.append("    tx_buffer[MCU_BUFFER_SIZE_TX + 1] = (csum & 0xFF);")
-        output.append(f"    {serial}.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);")
-        output.append("")
+        output.append("    uint8_t received_ok = 0;")
 
         # read rx_buffer
         output.append("    // receive rx_buffer")
         output.append(f"    int flen = {serial}.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 2);")
-        output.append("    if (flen == MCU_BUFFER_SIZE_RX + 2) {")
+        output.append("    if (flen == MCU_BUFFER_SIZE_RX + 2 && rx_buffer[0] == 0x74 && rx_buffer[1] == 0x69 && rx_buffer[2] == 0x72 && rx_buffer[3] == 0x77) {")
 
         output.append("        uint16_t rx_csum = 0;")
         output.append("        for (int i = 0; i < MCU_BUFFER_SIZE_RX; i++) {")
         output.append("            rx_csum += rx_buffer[i] + 1;")
         output.append("        }")
-        output.append("        if (rx_buffer[MCU_BUFFER_SIZE_RX] == (rx_csum >> 8 & 0xFF) && rx_buffer[MCU_BUFFER_SIZE_RX + 1] == (rx_csum & 0xFF)) {")
+        output.append("        if (rx_buffer[MCU_BUFFER_SIZE_RX] == ((rx_csum>>8) & 0xFF) && rx_buffer[MCU_BUFFER_SIZE_RX + 1] == (rx_csum & 0xFF)) {")
         output.append("            // read rx_buffer")
         output_pos = 32
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
@@ -224,8 +194,43 @@ class Plugin(PluginBase):
                     output.append(f"                {variable_name} = 0;")
                     output.append("            }")
                 output_pos += size
+        output.append("            received_ok = 1;")
         output.append("        }")
         output.append("    }")
+
+        output.append("    if (received_ok == 1) {")
+        output.append("        // write tx_buffer")
+        input_pos = 32
+        for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
+            if plugin_instance.master != subname:
+                continue
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "input":
+                if data_config.get("expansion"):
+                    continue
+                if size in {16, 32}:
+                    output.append(f"        memcpy(tx_buffer + {input_pos // 8}, &{variable_name}, {size // 8});")
+                elif size == 8:
+                    output.append(f"        tx_buffer[{input_pos // 8}] = variable_name;")
+                elif size == 1:
+                    bit = 7 - (input_pos - (input_pos // 8 * 8))
+                    output.append(f"        if ({variable_name} == 1) {{")
+                    output.append(f"            tx_buffer[{input_pos // 8}] |= (1<<{bit});")
+                    output.append("        } else {")
+                    output.append(f"            tx_buffer[{input_pos // 8}] &= ~(1<<{bit});")
+                    output.append("        }")
+                input_pos += size
+        output.append("")
+        output.append("        // send tx_buffer")
+        output.append("        uint16_t csum = 0;")
+        output.append("        for (int i = 0; i < MCU_BUFFER_SIZE_TX; i++) {")
+        output.append("            csum += tx_buffer[i] + 1;")
+        output.append("        }")
+        output.append("        tx_buffer[MCU_BUFFER_SIZE_TX] = (csum >> 8 & 0xFF);")
+        output.append("        tx_buffer[MCU_BUFFER_SIZE_TX + 1] = (csum & 0xFF);")
+        output.append(f"        {serial}.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);")
+        output.append("    }")
+
         output.append("}")
         output.append("")
 
@@ -329,10 +334,10 @@ class Plugin(PluginBase):
 	rm -rf /tmp/__get-platformio.py
 
 build: ~/.platformio/penv/bin/pio
-	pio run
+	~/.platformio/penv/bin/pio run
 
 load: ~/.platformio/penv/bin/pio
-	pio run --target=upload
+	~/.platformio/penv/bin/pio run --target=upload
 """
 
         open(os.path.join(self.jdata["output_path"], "Makefile"), "w").write(makefile)
