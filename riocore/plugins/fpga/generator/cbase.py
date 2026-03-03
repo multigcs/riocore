@@ -882,7 +882,8 @@ class cbase:
         elif protocol == "UART":
             defines["SERIAL_PORT"] = f'"{uart}"'
             defines["SERIAL_BAUD"] = f"B{baud}"
-            defines["SERIAL_CSUM"] = str(int(csum))
+            if csum:
+                defines["SERIAL_CSUM"] = "1"
 
         for header in self.header_list:
             output.append(f"#include <{header}>")
