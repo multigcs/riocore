@@ -29,163 +29,117 @@
             "baud": 1000000,
             "uid": "uart0",
             "pos": [
-                730.0,
-                60.0
-            ]
+                670.0,
+                40.0
+            ],
+            "uart": "/dev/ttyUSB1"
         },
         {
-            "type": "flipflop_in",
+            "type": "pwmout",
+            "uid": "pwmout0",
+            "image": "spindle500w",
+            "pos": [
+                710.0,
+                310.0
+            ],
             "pins": {
-                "set": {
-                    "pin": "board0:SW:S1",
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ]
+                "pwm": {
+                    "pin": "board0:LED:L1"
                 },
-                "reset": {
-                    "pin": "board0:SW:S2",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                550.0,
-                                205.0
-                            ]
-                        }
-                    ]
+                "dir": {
+                    "pin": "board0:LED:L2"
                 },
-                "setbit": {
+                "en": {
+                    "pin": "board0:LED:L3"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "proximity",
+            "pos": [
+                470.0,
+                -80.0
+            ],
+            "pins": {
+                "bit": {
                     "pin": "board0:SW:S1"
                 }
             },
-            "uid": "flipflop_in0",
-            "pos": [
-                730.0,
-                170.0
-            ]
+            "rotate": -90
         },
         {
-            "type": "sinepwm",
-            "pins": {
-                "out0": {
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                550.0,
-                                290.0
-                            ]
-                        }
-                    ],
-                    "pin": "board0:LED:L1"
-                },
-                "out1": {
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                550.0,
-                                330.0
-                            ]
-                        }
-                    ],
-                    "pin": "board0:LED:L2"
-                },
-                "out2": {
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                550.0,
-                                370.0
-                            ]
-                        }
-                    ],
-                    "pin": "board0:LED:L3"
-                }
-            },
-            "phases": 3,
-            "uid": "sinepwm0",
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
             "pos": [
-                730.0,
-                260.0
-            ]
-        },
-        {
-            "type": "pdmout",
-            "pins": {
-                "pdm": {
-                    "pin": "board0:LED:L6",
-                    "modifier": [
-                        {
-                            "type": "invert",
-                            "pos": [
-                                550.0,
-                                410.0
-                            ]
-                        }
-                    ]
-                }
-            },
-            "uid": "pdmout0",
-            "pos": [
-                730.0,
-                390.0
+                320.0,
+                -80.0
             ],
-            "is_joint": true
-        },
-        {
-            "type": "bitcopy",
             "pins": {
                 "bit": {
-                    "pin": "board0:PIN:48"
+                    "pin": "board0:SW:S2"
                 }
             },
-            "origin": "PINOUT_SINEPWM2_OUT0",
-            "uid": "bitcopy0",
-            "pos": [
-                730.0,
-                480.0
-            ]
+            "name": "",
+            "rotate": -90
         },
         {
-            "type": "bitcopy",
+            "type": "bitout",
+            "uid": "bitout0",
+            "image": "relay",
+            "pos": [
+                60.0,
+                170.0
+            ],
             "pins": {
                 "bit": {
-                    "pin": "board0:PIN:49"
+                    "pin": "board0:LED:L4"
                 }
             },
-            "origin": "PINOUT_SINEPWM2_OUT1",
-            "uid": "bitcopy1",
-            "pos": [
-                730.0,
-                550.0
-            ]
+            "rotate": 180
         },
         {
-            "type": "bitcopy",
+            "type": "bitout",
+            "uid": "bitout1",
+            "image": "relay",
+            "pos": [
+                60.0,
+                316.0
+            ],
             "pins": {
                 "bit": {
-                    "pin": "board0:PIN:31"
+                    "pin": "board0:LED:L5"
                 }
             },
-            "origin": "PINOUT_SINEPWM2_OUT2",
-            "uid": "bitcopy2",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout2",
+            "image": "relay",
             "pos": [
-                730.0,
-                620.0
-            ]
+                60.0,
+                462.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:LED:L6"
+                }
+            },
+            "rotate": 180,
+            "name": ""
         }
     ],
     "toolchain": "icestorm",
     "flow": {
         "view": {
-            "scale": 0.77,
+            "scale": 0.88,
             "pos": [
-                139,
-                -5
+                301,
+                380
             ]
         },
         "board": {

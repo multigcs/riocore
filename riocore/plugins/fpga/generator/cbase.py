@@ -1092,7 +1092,7 @@ class cbase:
         output.append("            write_txbuffer(txBuffer);")
 
         if protocol == "UART":
-            output.append("            uart_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
+            output.append("            ret = uart_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
         elif protocol.startswith("SPI"):
             output.append("            spi_trx(txBuffer, rxBuffer, MAX(BUFFER_SIZE_RX, BUFFER_SIZE_TX));")
 
@@ -1108,7 +1108,7 @@ class cbase:
             print("ERROR: unsupported interface")
             sys.exit(1)
 
-        if protocol == "UDP":
+        if protocol in {"UDP", "UART"}:
             output.append("            if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         else:
             output.append("            if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
@@ -1130,7 +1130,7 @@ class cbase:
             output.append(f'                        {self.printf}("%li: wrong header (%i/3) - (%i %i - %0.4f %%):", stamp_new, err_counter, err_total, pkg_counter, (float)err_total * 100.0 / (float)pkg_counter);')
             output.append("                    }")
         else:
-            output.append(f'                {self.printf}("wronng data (%i/3): ", err_counter);')
+            output.append(f'                    {self.printf}("wrong data (%i/3): ", err_counter);')
         if protocol == "UDP":
             output.append("                    for (i = 0; i < ret; i++) {")
         else:

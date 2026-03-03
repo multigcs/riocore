@@ -11,8 +11,8 @@ module uart
          input rx
      );
 
-    localparam BUFFER_SIZE_RX2 = BUFFER_SIZE_RX + (CSUM * 16);
-    localparam BUFFER_SIZE_TX2 = BUFFER_SIZE_TX + (CSUM * 16);
+    localparam BUFFER_SIZE_RX2 = BUFFER_SIZE_RX + (CSUM * 8);
+    localparam BUFFER_SIZE_TX2 = BUFFER_SIZE_TX + (CSUM * 8);
 
     reg [BUFFER_SIZE_TX2-1:0] tx_data_buffer;
     reg [BUFFER_SIZE_RX2-1:0] rx_data_buffer;
@@ -47,20 +47,19 @@ module uart
     reg [7:0] rx_counter = 0;
     reg [7:0] tx_counter = 0;
 
-    reg [15:0] tx_csum = 0;
-    reg [15:0] rx_csum = 0;
+    reg [7:0] tx_csum = 0;
+    reg [7:0] rx_csum = 0;
 
     always @(posedge clk) begin
         sync <= 0;
         if (RxD_endofpacket == 1) begin
-            if (rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[15:0])) begin
+            if (rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
                 tx_enable <= 1;
                 tx_counter <= 0;
                 if (CSUM == 1) begin
-                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:16];
-                    tx_data_buffer <= {tx_data, 16'd0};
-                    // first byte for csum
-                    tx_csum <= tx_data[BUFFER_SIZE_RX-1:BUFFER_SIZE_RX-8] + 1;
+                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:8];
+                    tx_data_buffer <= {tx_data, 8'd0};
+                    tx_csum <= 0;
                 end else begin
                     rx_data <= rx_data_buffer;
                     tx_data_buffer <= tx_data;
@@ -73,22 +72,20 @@ module uart
             rx_csum <= 0;
 
         end else if (tx_state == 1) begin
-            if (TxD_busy == 0) begin
-                TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-1-7];
+            if (TxD_start == 0 && TxD_busy == 0) begin
+                TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 1 - 7];
+                tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 1 - 7];
                 TxD_start <= 1;
             end else if (TxD_start == 1) begin
                 TxD_start <= 0;
                 if (tx_counter < BUFFER_SIZE_TX2/8 - 1) begin
                     tx_counter <= tx_counter + 1'd1;
                     if (CSUM == 0) begin
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2-8-1:0], 8'd0};
-                    end else if (tx_counter < BUFFER_SIZE_TX2/8-1 - 2) begin
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2-8-1:0], 8'd0};
-                        tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE_TX2-8-1:BUFFER_SIZE_TX2-8-8] + 1;
-                    end else if (tx_counter < BUFFER_SIZE_TX2/8-1 - 1) begin
-                        tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-8] <= tx_csum[15:8];
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
+                    end else if (tx_counter < BUFFER_SIZE_TX2/8 - 1 - 1) begin
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
                     end else begin
-                        tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-8] <= tx_csum[7:0];
+                        tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 8] <= tx_csum;
                     end
                 end else begin
                     tx_state <= 0;
@@ -100,9 +97,9 @@ module uart
             end
         end else if (RxD_data_ready == 1) begin
             if (rx_counter < BUFFER_SIZE_RX2/8) begin
-                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2-1-8:0], RxD_data};
-                if (rx_counter < BUFFER_SIZE_RX2/8 - 2) begin
-                    rx_csum <= rx_csum + RxD_data + 1;
+                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2 - 1 - 8:0], RxD_data};
+                if (rx_counter < BUFFER_SIZE_RX2/8 - 1) begin
+                    rx_csum <= rx_csum + RxD_data;
                 end
                 rx_counter <= rx_counter + 1'd1;
             end
