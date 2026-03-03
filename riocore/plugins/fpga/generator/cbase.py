@@ -833,17 +833,20 @@ class cbase:
 
         protocol = self.instance.protocol
         interface_instance = self.instance.interface_instance
-        ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))
-        port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
-        cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
-        uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
-        baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
-        csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
 
-        # backward compatibility (SPI/UDP)
-        ip = self.project.config["jdata"].get("ip", ip)
-        port = self.project.config["jdata"].get("port", port)
-        dst_port = self.project.config["jdata"].get("dst_port", port)
+        if protocol == "UDP":
+            ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))
+            port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
+            # backward compatibility (SPI/UDP)
+            ip = self.project.config["jdata"].get("ip", ip)
+            port = self.project.config["jdata"].get("port", port)
+            dst_port = self.project.config["jdata"].get("dst_port", port)
+        elif protocol == "SPI":
+            cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
+        elif protocol == "UART":
+            uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
+            baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
+            csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
 
         # TODO: offset workaround
         offset = int(self.instance.instances_name[-1])
@@ -858,26 +861,28 @@ class cbase:
             "OSC_CLOCK": self.instance.gateware.jdata["speed"],
         }
 
-        if port and ip:
-            defines["UDP_IP"] = f'"{ip}"'
-            defines["SRC_PORT"] = src_port
-            defines["DST_PORT"] = dst_port
-
-        udp_async = self.project.config["jdata"].get("async", False)
-        if udp_async:
-            defines["UDP_ASYNC"] = 1
-        defines["SERIAL_PORT"] = f'"{uart}"'
-        defines["SERIAL_BAUD"] = f"B{baud}"
-        defines["SERIAL_CSUM"] = str(int(csum))
-        defines["SPI_PIN_MOSI"] = "10"
-        defines["SPI_PIN_MISO"] = "9"
-        defines["SPI_PIN_CLK"] = "11"
-        if cspin == 1:
-            defines["SPI_PIN_CS"] = "7"  # CE0 = 8 / CE1 = 7
-        else:
-            defines["SPI_PIN_CS"] = "8"  # CE0 = 8 / CE1 = 7
-        defines["SPI_DEVICE"] = f'"/dev/spidev0.{cspin}"'
-        defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
+        if protocol == "UDP":
+            if port and ip:
+                defines["UDP_IP"] = f'"{ip}"'
+                defines["SRC_PORT"] = src_port
+                defines["DST_PORT"] = dst_port
+            udp_async = self.project.config["jdata"].get("async", False)
+            if udp_async:
+                defines["UDP_ASYNC"] = 1
+        elif protocol == "SPI":
+            defines["SPI_PIN_MOSI"] = "10"
+            defines["SPI_PIN_MISO"] = "9"
+            defines["SPI_PIN_CLK"] = "11"
+            if cspin == 1:
+                defines["SPI_PIN_CS"] = "7"  # CE0 = 8 / CE1 = 7
+            else:
+                defines["SPI_PIN_CS"] = "8"  # CE0 = 8 / CE1 = 7
+            defines["SPI_DEVICE"] = f'"/dev/spidev0.{cspin}"'
+            defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
+        elif protocol == "UART":
+            defines["SERIAL_PORT"] = f'"{uart}"'
+            defines["SERIAL_BAUD"] = f"B{baud}"
+            defines["SERIAL_CSUM"] = str(int(csum))
 
         for header in self.header_list:
             output.append(f"#include <{header}>")

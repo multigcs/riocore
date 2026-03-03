@@ -7,12 +7,6 @@ import time
 from rio import RioWrapper
 
 def set_values(rio):
-    rio.data_set("SIGOUT_FPGA0_STEPDIR0_VELOCITY", 0.0)
-    rio.data_set("SIGOUT_FPGA0_STEPDIR0_ENABLE", 0)
-    rio.data_set("SIGOUT_FPGA0_STEPDIR1_VELOCITY", 0.0)
-    rio.data_set("SIGOUT_FPGA0_STEPDIR1_ENABLE", 0)
-    rio.data_set("SIGOUT_FPGA0_STEPDIR2_VELOCITY", 0.0)
-    rio.data_set("SIGOUT_FPGA0_STEPDIR2_ENABLE", 0)
     rio.data_set("SIGOUT_FPGA0_FPGA0_WLED_0_GREEN", 0)
     rio.data_set("SIGOUT_FPGA0_FPGA0_WLED_0_BLUE", 0)
     rio.data_set("SIGOUT_FPGA0_FPGA0_WLED_0_RED", 0)
@@ -22,6 +16,12 @@ def set_values(rio):
     rio.data_set("SIGOUT_FPGA0_FPGA0_WLED_2_GREEN", 0)
     rio.data_set("SIGOUT_FPGA0_FPGA0_WLED_2_BLUE", 0)
     rio.data_set("SIGOUT_FPGA0_FPGA0_WLED_2_RED", 0)
+    rio.data_set("SIGOUT_FPGA0_STEPDIR0_VELOCITY", 0.0)
+    rio.data_set("SIGOUT_FPGA0_STEPDIR0_ENABLE", 0)
+    rio.data_set("SIGOUT_FPGA0_STEPDIR1_VELOCITY", 0.0)
+    rio.data_set("SIGOUT_FPGA0_STEPDIR1_ENABLE", 0)
+    rio.data_set("SIGOUT_FPGA0_STEPDIR2_VELOCITY", 0.0)
+    rio.data_set("SIGOUT_FPGA0_STEPDIR2_ENABLE", 0)
     rio.data_set("SIGOUT_FPGA0_MBUS_DEV1_DO_0", 0)
     rio.data_set("SIGOUT_FPGA0_MBUS_DEV1_DO_1", 0)
     rio.data_set("SIGOUT_FPGA0_MBUS_DEV1_DO_2", 0)

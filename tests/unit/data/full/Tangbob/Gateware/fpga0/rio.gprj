@@ -6,6 +6,9 @@
     <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device>
     <FileList>
         <File path="globals.v" type="file.verilog" enable="1"/>
+        <File path="w5500.v" type="file.verilog" enable="1"/>
+        <File path="ws2812.v" type="file.verilog" enable="1"/>
+        <File path="wled.v" type="file.verilog" enable="1"/>
         <File path="modbus.v" type="file.verilog" enable="1"/>
         <File path="uart_baud.v" type="file.verilog" enable="1"/>
         <File path="uart_rx.v" type="file.verilog" enable="1"/>
@@ -14,9 +17,6 @@
         <File path="i2c_master.v" type="file.verilog" enable="1"/>
         <File path="i2cbus_i2cbus0.v" type="file.verilog" enable="1"/>
         <File path="stepdir.v" type="file.verilog" enable="1"/>
-        <File path="w5500.v" type="file.verilog" enable="1"/>
-        <File path="ws2812.v" type="file.verilog" enable="1"/>
-        <File path="wled.v" type="file.verilog" enable="1"/>
         <File path="debouncer.v" type="file.verilog" enable="1"/>
         <File path="toggle.v" type="file.verilog" enable="1"/>
         <File path="pwmmod.v" type="file.verilog" enable="1"/>

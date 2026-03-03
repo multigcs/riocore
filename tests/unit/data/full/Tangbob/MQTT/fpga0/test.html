@@ -56,6 +56,23 @@ body {
   <body>
     <div class="container">
         <div class="item">
+    <B>fpga0_wled</B>
+    <table>
+      <tr>
+        <td>0_green</td>
+        <td><input type="checkbox" id="fpga0/fpga0/fpga0_wled/0_green" /></td>
+      </tr>
+      <tr>
+        <td>0_blue</td>
+        <td><input type="checkbox" id="fpga0/fpga0/fpga0_wled/0_blue" /></td>
+      </tr>
+      <tr>
+        <td>0_red</td>
+        <td><input type="checkbox" id="fpga0/fpga0/fpga0_wled/0_red" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
     <B>modbus0</B>
     <table>
       <tr>
@@ -170,23 +187,6 @@ body {
     </table>
         </div>
         <div class="item">
-    <B>fpga0_wled</B>
-    <table>
-      <tr>
-        <td>0_green</td>
-        <td><input type="checkbox" id="fpga0/fpga0/fpga0_wled/0_green" /></td>
-      </tr>
-      <tr>
-        <td>0_blue</td>
-        <td><input type="checkbox" id="fpga0/fpga0/fpga0_wled/0_blue" /></td>
-      </tr>
-      <tr>
-        <td>0_red</td>
-        <td><input type="checkbox" id="fpga0/fpga0/fpga0_wled/0_red" /></td>
-      </tr>
-    </table>
-        </div>
-        <div class="item">
     <B>bitout0</B>
     <table>
       <tr>
@@ -201,6 +201,12 @@ body {
         var clientID = "ID-" + Math.round(Math.random() * 1000);
         var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
 
+        document.getElementById("fpga0/fpga0/fpga0_wled/0_green").addEventListener("change", publish, false);
+        document.getElementById("fpga0/fpga0/fpga0_wled/0_green").addEventListener("input", publish, false);
+        document.getElementById("fpga0/fpga0/fpga0_wled/0_blue").addEventListener("change", publish, false);
+        document.getElementById("fpga0/fpga0/fpga0_wled/0_blue").addEventListener("input", publish, false);
+        document.getElementById("fpga0/fpga0/fpga0_wled/0_red").addEventListener("change", publish, false);
+        document.getElementById("fpga0/fpga0/fpga0_wled/0_red").addEventListener("input", publish, false);
         document.getElementById("fpga0/fpga0/stepdir0/velocity").addEventListener("change", publish, false);
         document.getElementById("fpga0/fpga0/stepdir0/velocity").addEventListener("input", publish, false);
         document.getElementById("fpga0/fpga0/stepdir0/velocity_zero").addEventListener("click", publish, false);
@@ -216,12 +222,6 @@ body {
         document.getElementById("fpga0/fpga0/stepdir2/velocity_zero").addEventListener("click", publish, false);
         document.getElementById("fpga0/fpga0/stepdir2/enable").addEventListener("change", publish, false);
         document.getElementById("fpga0/fpga0/stepdir2/enable").addEventListener("input", publish, false);
-        document.getElementById("fpga0/fpga0/fpga0_wled/0_green").addEventListener("change", publish, false);
-        document.getElementById("fpga0/fpga0/fpga0_wled/0_green").addEventListener("input", publish, false);
-        document.getElementById("fpga0/fpga0/fpga0_wled/0_blue").addEventListener("change", publish, false);
-        document.getElementById("fpga0/fpga0/fpga0_wled/0_blue").addEventListener("input", publish, false);
-        document.getElementById("fpga0/fpga0/fpga0_wled/0_red").addEventListener("change", publish, false);
-        document.getElementById("fpga0/fpga0/fpga0_wled/0_red").addEventListener("input", publish, false);
         document.getElementById("fpga0/fpga0/bitout0/bit").addEventListener("change", publish, false);
         document.getElementById("fpga0/fpga0/bitout0/bit").addEventListener("input", publish, false);
         client.connect({onSuccess:onConnect});

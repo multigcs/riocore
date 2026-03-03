@@ -48,22 +48,22 @@ module.exports = {
     data.writeInt32LE(VAROUT32_STEPDIR0_VELOCITY, 20);
     data.writeInt32LE(VAROUT32_STEPDIR1_VELOCITY, 24);
     data.writeInt32LE(VAROUT32_STEPDIR2_VELOCITY, 28);
-    if (VAROUT1_STEPDIR0_ENABLE) {
+    if (VAROUT1_FPGA0_WLED_0_GREEN) {
         data[32] |= (1<<7);
     }
-    if (VAROUT1_STEPDIR1_ENABLE) {
+    if (VAROUT1_FPGA0_WLED_0_BLUE) {
         data[32] |= (1<<6);
     }
-    if (VAROUT1_STEPDIR2_ENABLE) {
+    if (VAROUT1_FPGA0_WLED_0_RED) {
         data[32] |= (1<<5);
     }
-    if (VAROUT1_FPGA0_WLED_0_GREEN) {
+    if (VAROUT1_STEPDIR0_ENABLE) {
         data[32] |= (1<<4);
     }
-    if (VAROUT1_FPGA0_WLED_0_BLUE) {
+    if (VAROUT1_STEPDIR1_ENABLE) {
         data[32] |= (1<<3);
     }
-    if (VAROUT1_FPGA0_WLED_0_RED) {
+    if (VAROUT1_STEPDIR2_ENABLE) {
         data[32] |= (1<<2);
     }
     if (VAROUT1_BITOUT0_BIT) {

@@ -159,6 +159,44 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
+          <text>"uartsub1-timeout"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"board0.uartsub1.timeout"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"uartsub0-timeout"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"board0.uartsub0.timeout"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
           <text>"gpioin0-bit"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>

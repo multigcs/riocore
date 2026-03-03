@@ -84,6 +84,9 @@ net user-request-enable                  => board0.sys-enable-request
 net sig_board0_sys-error                 <= board0.sys-error
 net sig_board0_sys-status                <= board0.sys-status
 
+net sig_board0_uartsub0_timeout          <= board0.uartsub0.timeout
+net sig_board0_uartsub1_timeout          <= board0.uartsub1.timeout
+
 #################################################################################
 # halui
 #################################################################################

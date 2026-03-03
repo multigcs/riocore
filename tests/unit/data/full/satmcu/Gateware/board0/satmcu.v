@@ -5,7 +5,7 @@ module satmcu
          input clk,
          output reg [BUFFER_SIZE_RX-1:0] rx_data,
          input [BUFFER_SIZE_TX-1:0] tx_data,
-         input wire sync = 0,
+         input wire sync,
          output reg tx_enable = 0,
          output tx,
          input rx

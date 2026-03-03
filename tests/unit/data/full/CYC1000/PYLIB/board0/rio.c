@@ -25,14 +25,6 @@
 #define UDP_IP "192.168.11.194"
 #define SRC_PORT 2391
 #define DST_PORT 2390
-#define SERIAL_PORT "/dev/ttyUSB1"
-#define SERIAL_BAUD B1000000
-#define SPI_PIN_MOSI 10
-#define SPI_PIN_MISO 9
-#define SPI_PIN_CLK 11
-#define SPI_PIN_CS 8
-#define SPI_DEVICE "/dev/spidev0.0"
-#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
 
 struct timespec ns_timestamp;

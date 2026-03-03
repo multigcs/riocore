@@ -66,7 +66,7 @@ module rio (
         output PINOUT_UARTSUB0_TX
     );
 
-    localparam BUFFER_SIZE_TX = 16'd296; // 37 bytes
+    localparam BUFFER_SIZE_TX = 16'd304; // 38 bytes
     localparam BUFFER_SIZE_RX = 16'd144; // 18 bytes
 
     reg INTERFACE_TIMEOUT = 0;
@@ -124,7 +124,9 @@ module rio (
     wire VARIN1_BITIN3_BIT;
     wire VARIN1_BITIN4_BIT;
     wire VARIN1_BITIN5_BIT;
+    wire VARIN1_UARTSUB1_TIMEOUT;
     wire VAROUT1_GPIOOUT0_BIT;
+    wire VARIN1_UARTSUB0_TIMEOUT;
     wire VAROUT1_GPIOOUT1_BIT;
     wire VAROUT1_GPIOOUT2_BIT;
     wire VAROUT1_GPIOOUT3_BIT;
@@ -163,7 +165,7 @@ module rio (
     assign VAROUT1_GPIOOUT9_BIT = {rx_data[1]};
     // assign FILL = rx_data[0:0];
 
-    // MASTER_FPGA -> PC IN (296 + FILL = 296)
+    // MASTER_FPGA -> PC IN (298 + FILL = 304)
     assign tx_data = {
         header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],
@@ -180,8 +182,11 @@ module rio (
         VARIN1_BITIN3_BIT,
         VARIN1_BITIN4_BIT,
         VARIN1_BITIN5_BIT,
+        VARIN1_UARTSUB1_TIMEOUT,
+        VARIN1_UARTSUB0_TIMEOUT,
         VARIN1_GPIOIN0_BIT,
-        VARIN1_GPIOIN1_BIT
+        VARIN1_GPIOIN1_BIT,
+        6'd0
     };
 
 
@@ -379,15 +384,17 @@ module rio (
         .MSGID(32'h64617461),
         .ClkFrequency(30000000),
         .Baud(1000000),
+        .Timeout(3000000),
         .CSUM(1)
     ) uartsub1 (
         .clk(sysclk),
         .rx(PININ_UARTSUB1_RX),
         .tx(PINOUT_UARTSUB1_TX_RAW),
         .tx_enable(UNUSED_PIN_UARTSUB1_TX_ENABLE),
+        .timeout(VARIN1_UARTSUB1_TIMEOUT),
         .rx_data(sub0_rx_data),
         .tx_data(sub0_tx_data),
-        .sync(INTERFACE_SYNC_RISINGEDGE)
+        .sync_in(INTERFACE_SYNC_RISINGEDGE)
     );
 
     // Name:  (uartsub)
@@ -400,15 +407,17 @@ module rio (
         .MSGID(32'h64617461),
         .ClkFrequency(30000000),
         .Baud(1000000),
+        .Timeout(3000000),
         .CSUM(1)
     ) uartsub0 (
         .clk(sysclk),
         .rx(PININ_UARTSUB0_RX),
         .tx(PINOUT_UARTSUB0_TX_RAW),
         .tx_enable(UNUSED_PIN_UARTSUB0_TX_ENABLE),
+        .timeout(VARIN1_UARTSUB0_TIMEOUT),
         .rx_data(sub1_rx_data),
         .tx_data(sub1_tx_data),
-        .sync(INTERFACE_SYNC_RISINGEDGE)
+        .sync_in(INTERFACE_SYNC_RISINGEDGE)
     );
 
 endmodule

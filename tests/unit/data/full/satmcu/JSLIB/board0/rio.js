@@ -52,7 +52,7 @@ module.exports = {
   },
 
   set_tx: function (rio_tx) {
-    data = Buffer.alloc(37, 0);
+    data = Buffer.alloc(38, 0);
     RX_HEADER = Buffer.from("74697277", "hex").readInt32LE(0);
     VAROUT32_STEPDIR0_VELOCITY = rio_tx["stepdir0"]["velocity"];
     VAROUT1_STEPDIR0_ENABLE = rio_tx["stepdir0"]["enable"];
@@ -167,11 +167,21 @@ module.exports = {
         VARIN1_BITIN5_BIT = 0;
     }
     if ((data[36] & (1<<1)) != 0) {
+        VARIN1_UARTSUB1_TIMEOUT = 1;
+    } else {
+        VARIN1_UARTSUB1_TIMEOUT = 0;
+    }
+    if ((data[36] & (1<<0)) != 0) {
+        VARIN1_UARTSUB0_TIMEOUT = 1;
+    } else {
+        VARIN1_UARTSUB0_TIMEOUT = 0;
+    }
+    if ((data[37] & (1<<7)) != 0) {
         VARIN1_GPIOIN0_BIT = 1;
     } else {
         VARIN1_GPIOIN0_BIT = 0;
     }
-    if ((data[36] & (1<<0)) != 0) {
+    if ((data[37] & (1<<6)) != 0) {
         VARIN1_GPIOIN1_BIT = 1;
     } else {
         VARIN1_GPIOIN1_BIT = 0;
@@ -216,6 +226,12 @@ module.exports = {
       },
       "bitin5": {
         "bit": VARIN1_BITIN5_BIT,
+      },
+      "uartsub1": {
+        "timeout": VARIN1_UARTSUB1_TIMEOUT,
+      },
+      "uartsub0": {
+        "timeout": VARIN1_UARTSUB0_TIMEOUT,
       },
       "gpioin0": {
         "bit": VARIN1_GPIOIN0_BIT,

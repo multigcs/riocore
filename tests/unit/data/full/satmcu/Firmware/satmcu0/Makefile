@@ -1,4 +1,3 @@
-all: build
 
 ~/.platformio/penv/bin/pio:
 	wget -O /tmp/__get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
@@ -10,4 +9,3 @@ build: ~/.platformio/penv/bin/pio
 
 load: ~/.platformio/penv/bin/pio
 	pio run --target=upload
-

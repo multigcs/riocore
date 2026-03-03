@@ -27,14 +27,6 @@
 #define UDP_IP "192.168.10.191"
 #define SRC_PORT 2391
 #define DST_PORT 2390
-#define SERIAL_PORT "/dev/ttyUSB1"
-#define SERIAL_BAUD B1000000
-#define SPI_PIN_MOSI 10
-#define SPI_PIN_MISO 9
-#define SPI_PIN_CLK 11
-#define SPI_PIN_CS 8
-#define SPI_DEVICE "/dev/spidev0.0"
-#define SPI_SPEED BCM2835_SPI_CLOCK_DIVIDER_256
 
 
 struct timespec ns_timestamp;
@@ -77,6 +69,15 @@ typedef struct {
     float *duration;
     float MULTIPLEXER_INPUT_VALUE;
     uint8_t MULTIPLEXER_INPUT_ID;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_0_BLUE;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_0_RED;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_1_GREEN;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_1_BLUE;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_1_RED;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_2_GREEN;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_2_BLUE;
+    bool   *SIGOUT_FPGA0_FPGA0_WLED_2_RED;
     float *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP;
     float *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS;
     int32_t *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32;
@@ -121,15 +122,6 @@ typedef struct {
     bool   *SIGIN_FPGA0_BITIN1_BIT_not;
     bool   *SIGIN_FPGA0_BITIN2_BIT;
     bool   *SIGIN_FPGA0_BITIN2_BIT_not;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_0_BLUE;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_0_RED;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_1_GREEN;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_1_BLUE;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_1_RED;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_2_GREEN;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_2_BLUE;
-    bool   *SIGOUT_FPGA0_FPGA0_WLED_2_RED;
     float *SIGIN_FPGA0_MBUS_DEV0_TEMP_0;
     float *SIGIN_FPGA0_MBUS_DEV0_TEMP_0_ABS;
     int32_t *SIGIN_FPGA0_MBUS_DEV0_TEMP_0_S32;
@@ -375,13 +367,6 @@ typedef struct {
     int32_t VAROUT32_STEPDIR2_VELOCITY;
     int32_t VARIN32_STEPDIR2_POSITION;
     int16_t VARIN16_I2CBUS0_LM75_0_TEMP;
-    bool VARIN1_I2CBUS0_LM75_0_VALID;
-    bool VAROUT1_STEPDIR0_ENABLE;
-    bool VAROUT1_STEPDIR1_ENABLE;
-    bool VAROUT1_STEPDIR2_ENABLE;
-    bool VARIN1_BITIN0_BIT;
-    bool VARIN1_BITIN1_BIT;
-    bool VARIN1_BITIN2_BIT;
     bool VAROUT1_FPGA0_WLED_0_GREEN;
     bool VAROUT1_FPGA0_WLED_0_BLUE;
     bool VAROUT1_FPGA0_WLED_0_RED;
@@ -391,6 +376,13 @@ typedef struct {
     bool VAROUT1_FPGA0_WLED_2_GREEN;
     bool VAROUT1_FPGA0_WLED_2_BLUE;
     bool VAROUT1_FPGA0_WLED_2_RED;
+    bool VARIN1_I2CBUS0_LM75_0_VALID;
+    bool VAROUT1_STEPDIR0_ENABLE;
+    bool VAROUT1_STEPDIR1_ENABLE;
+    bool VAROUT1_STEPDIR2_ENABLE;
+    bool VARIN1_BITIN0_BIT;
+    bool VARIN1_BITIN1_BIT;
+    bool VARIN1_BITIN2_BIT;
 } data_t;
 static data_t *data;
 
@@ -405,13 +397,6 @@ data_t *register_signals(void) {
     data->VAROUT32_STEPDIR2_VELOCITY = 0;
     data->VARIN32_STEPDIR2_POSITION = 0;
     data->VARIN16_I2CBUS0_LM75_0_TEMP = 0;
-    data->VARIN1_I2CBUS0_LM75_0_VALID = 0;
-    data->VAROUT1_STEPDIR0_ENABLE = 0;
-    data->VAROUT1_STEPDIR1_ENABLE = 0;
-    data->VAROUT1_STEPDIR2_ENABLE = 0;
-    data->VARIN1_BITIN0_BIT = 0;
-    data->VARIN1_BITIN1_BIT = 0;
-    data->VARIN1_BITIN2_BIT = 0;
     data->VAROUT1_FPGA0_WLED_0_GREEN = 0;
     data->VAROUT1_FPGA0_WLED_0_BLUE = 0;
     data->VAROUT1_FPGA0_WLED_0_RED = 0;
@@ -421,6 +406,13 @@ data_t *register_signals(void) {
     data->VAROUT1_FPGA0_WLED_2_GREEN = 0;
     data->VAROUT1_FPGA0_WLED_2_BLUE = 0;
     data->VAROUT1_FPGA0_WLED_2_RED = 0;
+    data->VARIN1_I2CBUS0_LM75_0_VALID = 0;
+    data->VAROUT1_STEPDIR0_ENABLE = 0;
+    data->VAROUT1_STEPDIR1_ENABLE = 0;
+    data->VAROUT1_STEPDIR2_ENABLE = 0;
+    data->VARIN1_BITIN0_BIT = 0;
+    data->VARIN1_BITIN1_BIT = 0;
+    data->VARIN1_BITIN2_BIT = 0;
 
     data->sys_error = (bool*)malloc(sizeof(bool));
     data->sys_status = (bool*)malloc(sizeof(bool));
@@ -430,6 +422,24 @@ data_t *register_signals(void) {
     *data->sys_simulation = 0;
     data->duration = (float*)malloc(sizeof(float));
     *data->duration = rtapi_get_time();
+    data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_1_RED = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_1_RED = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = 0;
+    data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = 0;
     data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE = (float*)malloc(sizeof(float));
     *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE = 1.0;
     data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET = (float*)malloc(sizeof(float));
@@ -518,24 +528,6 @@ data_t *register_signals(void) {
     *data->SIGIN_FPGA0_BITIN2_BIT = 0;
     data->SIGIN_FPGA0_BITIN2_BIT_not = (bool*)malloc(sizeof(bool));
     *data->SIGIN_FPGA0_BITIN2_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN2_BIT;
-    data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_1_RED = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_1_RED = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = 0;
-    data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = 0;
     data->SIGIN_FPGA0_MBUS_DEV0_TEMP_0_SCALE = (float*)malloc(sizeof(float));
     *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_0_SCALE = 1.0;
     data->SIGIN_FPGA0_MBUS_DEV0_TEMP_0_OFFSET = (float*)malloc(sizeof(float));
@@ -2472,51 +2464,6 @@ void mbus_device0_power_total_rx(uint8_t *frame_data, uint8_t frame_len) {
 
 // Generated by component_signal_converter()
 // output: SIGOUT -> calc -> VAROUT -> txBuffer
-void convert_varout32_stepdir0_velocity(data_t *data) {
-    float value = *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY;
-    value = value * *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE;
-    value = value + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET;
-    if (value != 0) {
-        value = OSC_CLOCK / value / 2;
-    }
-    data->VAROUT32_STEPDIR0_VELOCITY = value;
-}
-
-void convert_varout1_stepdir0_enable(data_t *data) {
-    bool value = *data->SIGOUT_FPGA0_STEPDIR0_ENABLE;
-    data->VAROUT1_STEPDIR0_ENABLE = value;
-}
-
-void convert_varout32_stepdir1_velocity(data_t *data) {
-    float value = *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY;
-    value = value * *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE;
-    value = value + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_OFFSET;
-    if (value != 0) {
-        value = OSC_CLOCK / value / 2;
-    }
-    data->VAROUT32_STEPDIR1_VELOCITY = value;
-}
-
-void convert_varout1_stepdir1_enable(data_t *data) {
-    bool value = *data->SIGOUT_FPGA0_STEPDIR1_ENABLE;
-    data->VAROUT1_STEPDIR1_ENABLE = value;
-}
-
-void convert_varout32_stepdir2_velocity(data_t *data) {
-    float value = *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY;
-    value = value * *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE;
-    value = value + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_OFFSET;
-    if (value != 0) {
-        value = OSC_CLOCK / value / 2;
-    }
-    data->VAROUT32_STEPDIR2_VELOCITY = value;
-}
-
-void convert_varout1_stepdir2_enable(data_t *data) {
-    bool value = *data->SIGOUT_FPGA0_STEPDIR2_ENABLE;
-    data->VAROUT1_STEPDIR2_ENABLE = value;
-}
-
 void convert_varout1_fpga0_wled_0_green(data_t *data) {
     bool value = *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
     data->VAROUT1_FPGA0_WLED_0_GREEN = value;
@@ -2560,6 +2507,51 @@ void convert_varout1_fpga0_wled_2_blue(data_t *data) {
 void convert_varout1_fpga0_wled_2_red(data_t *data) {
     bool value = *data->SIGOUT_FPGA0_FPGA0_WLED_2_RED;
     data->VAROUT1_FPGA0_WLED_2_RED = value;
+}
+
+void convert_varout32_stepdir0_velocity(data_t *data) {
+    float value = *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY;
+    value = value * *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE;
+    value = value + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET;
+    if (value != 0) {
+        value = OSC_CLOCK / value / 2;
+    }
+    data->VAROUT32_STEPDIR0_VELOCITY = value;
+}
+
+void convert_varout1_stepdir0_enable(data_t *data) {
+    bool value = *data->SIGOUT_FPGA0_STEPDIR0_ENABLE;
+    data->VAROUT1_STEPDIR0_ENABLE = value;
+}
+
+void convert_varout32_stepdir1_velocity(data_t *data) {
+    float value = *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY;
+    value = value * *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE;
+    value = value + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_OFFSET;
+    if (value != 0) {
+        value = OSC_CLOCK / value / 2;
+    }
+    data->VAROUT32_STEPDIR1_VELOCITY = value;
+}
+
+void convert_varout1_stepdir1_enable(data_t *data) {
+    bool value = *data->SIGOUT_FPGA0_STEPDIR1_ENABLE;
+    data->VAROUT1_STEPDIR1_ENABLE = value;
+}
+
+void convert_varout32_stepdir2_velocity(data_t *data) {
+    float value = *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY;
+    value = value * *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE;
+    value = value + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_OFFSET;
+    if (value != 0) {
+        value = OSC_CLOCK / value / 2;
+    }
+    data->VAROUT32_STEPDIR2_VELOCITY = value;
+}
+
+void convert_varout1_stepdir2_enable(data_t *data) {
+    bool value = *data->SIGOUT_FPGA0_STEPDIR2_ENABLE;
+    data->VAROUT1_STEPDIR2_ENABLE = value;
 }
 
 void convert_frame_mbmaster0_output(data_t *data) {
@@ -3173,12 +3165,6 @@ void convert_frame_mbmaster0_input(data_t *data) {
 // Generated by component_buffer_converter()
 void convert_outputs(void) {
     // output loop: SIGOUT -> calc -> VAROUT -> txBuffer
-    convert_varout32_stepdir0_velocity(data);
-    convert_varout1_stepdir0_enable(data);
-    convert_varout32_stepdir1_velocity(data);
-    convert_varout1_stepdir1_enable(data);
-    convert_varout32_stepdir2_velocity(data);
-    convert_varout1_stepdir2_enable(data);
     convert_varout1_fpga0_wled_0_green(data);
     convert_varout1_fpga0_wled_0_blue(data);
     convert_varout1_fpga0_wled_0_red(data);
@@ -3188,6 +3174,12 @@ void convert_outputs(void) {
     convert_varout1_fpga0_wled_2_green(data);
     convert_varout1_fpga0_wled_2_blue(data);
     convert_varout1_fpga0_wled_2_red(data);
+    convert_varout32_stepdir0_velocity(data);
+    convert_varout1_stepdir0_enable(data);
+    convert_varout32_stepdir1_velocity(data);
+    convert_varout1_stepdir1_enable(data);
+    convert_varout32_stepdir2_velocity(data);
+    convert_varout1_stepdir2_enable(data);
     convert_frame_mbmaster0_output(data);
 }
 
@@ -3220,18 +3212,18 @@ void write_txbuffer(uint8_t *txBuffer) {
     memcpy(&txBuffer[20], &data->VAROUT32_STEPDIR0_VELOCITY, 4);  // 160
     memcpy(&txBuffer[24], &data->VAROUT32_STEPDIR1_VELOCITY, 4);  // 128
     memcpy(&txBuffer[28], &data->VAROUT32_STEPDIR2_VELOCITY, 4);  // 96
-    txBuffer[32] |= (data->VAROUT1_STEPDIR0_ENABLE<<7);  // 64
-    txBuffer[32] |= (data->VAROUT1_STEPDIR1_ENABLE<<6);  // 63
-    txBuffer[32] |= (data->VAROUT1_STEPDIR2_ENABLE<<5);  // 62
-    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_GREEN<<4);  // 61
-    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_BLUE<<3);  // 60
-    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_RED<<2);  // 59
-    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_1_GREEN<<1);  // 58
-    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_1_BLUE<<0);  // 57
-    txBuffer[33] |= (data->VAROUT1_FPGA0_WLED_1_RED<<7);  // 56
-    txBuffer[33] |= (data->VAROUT1_FPGA0_WLED_2_GREEN<<6);  // 55
-    txBuffer[33] |= (data->VAROUT1_FPGA0_WLED_2_BLUE<<5);  // 54
-    txBuffer[33] |= (data->VAROUT1_FPGA0_WLED_2_RED<<4);  // 53
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_GREEN<<7);  // 64
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_BLUE<<6);  // 63
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_0_RED<<5);  // 62
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_1_GREEN<<4);  // 61
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_1_BLUE<<3);  // 60
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_1_RED<<2);  // 59
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_2_GREEN<<1);  // 58
+    txBuffer[32] |= (data->VAROUT1_FPGA0_WLED_2_BLUE<<0);  // 57
+    txBuffer[33] |= (data->VAROUT1_FPGA0_WLED_2_RED<<7);  // 56
+    txBuffer[33] |= (data->VAROUT1_STEPDIR0_ENABLE<<6);  // 55
+    txBuffer[33] |= (data->VAROUT1_STEPDIR1_ENABLE<<5);  // 54
+    txBuffer[33] |= (data->VAROUT1_STEPDIR2_ENABLE<<4);  // 53
     // FILL: 52
 }
 
@@ -3318,30 +3310,6 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
 }
 
 
-void cb_SIGOUT_FPGA0_STEPDIR0_VELOCITY(const std_msgs::Float32::ConstPtr& msg) {
-    *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY = msg->data;
-}
-
-void cb_SIGOUT_FPGA0_STEPDIR0_ENABLE(const std_msgs::Bool::ConstPtr& msg) {
-    *data->SIGOUT_FPGA0_STEPDIR0_ENABLE = msg->data;
-}
-
-void cb_SIGOUT_FPGA0_STEPDIR1_VELOCITY(const std_msgs::Float32::ConstPtr& msg) {
-    *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY = msg->data;
-}
-
-void cb_SIGOUT_FPGA0_STEPDIR1_ENABLE(const std_msgs::Bool::ConstPtr& msg) {
-    *data->SIGOUT_FPGA0_STEPDIR1_ENABLE = msg->data;
-}
-
-void cb_SIGOUT_FPGA0_STEPDIR2_VELOCITY(const std_msgs::Float32::ConstPtr& msg) {
-    *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY = msg->data;
-}
-
-void cb_SIGOUT_FPGA0_STEPDIR2_ENABLE(const std_msgs::Bool::ConstPtr& msg) {
-    *data->SIGOUT_FPGA0_STEPDIR2_ENABLE = msg->data;
-}
-
 void cb_SIGOUT_FPGA0_FPGA0_WLED_0_GREEN(const std_msgs::Bool::ConstPtr& msg) {
     *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = msg->data;
 }
@@ -3376,6 +3344,30 @@ void cb_SIGOUT_FPGA0_FPGA0_WLED_2_BLUE(const std_msgs::Bool::ConstPtr& msg) {
 
 void cb_SIGOUT_FPGA0_FPGA0_WLED_2_RED(const std_msgs::Bool::ConstPtr& msg) {
     *data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = msg->data;
+}
+
+void cb_SIGOUT_FPGA0_STEPDIR0_VELOCITY(const std_msgs::Float32::ConstPtr& msg) {
+    *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY = msg->data;
+}
+
+void cb_SIGOUT_FPGA0_STEPDIR0_ENABLE(const std_msgs::Bool::ConstPtr& msg) {
+    *data->SIGOUT_FPGA0_STEPDIR0_ENABLE = msg->data;
+}
+
+void cb_SIGOUT_FPGA0_STEPDIR1_VELOCITY(const std_msgs::Float32::ConstPtr& msg) {
+    *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY = msg->data;
+}
+
+void cb_SIGOUT_FPGA0_STEPDIR1_ENABLE(const std_msgs::Bool::ConstPtr& msg) {
+    *data->SIGOUT_FPGA0_STEPDIR1_ENABLE = msg->data;
+}
+
+void cb_SIGOUT_FPGA0_STEPDIR2_VELOCITY(const std_msgs::Float32::ConstPtr& msg) {
+    *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY = msg->data;
+}
+
+void cb_SIGOUT_FPGA0_STEPDIR2_ENABLE(const std_msgs::Bool::ConstPtr& msg) {
+    *data->SIGOUT_FPGA0_STEPDIR2_ENABLE = msg->data;
 }
 
 void cb_SIGOUT_FPGA0_MBUS_DEV1_DO_0(const std_msgs::Bool::ConstPtr& msg) {
@@ -3599,6 +3591,24 @@ int main(int argc, char **argv) {
     register_signals();
     interface_init();
 
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = nSIGOUT_FPGA0_FPGA0_WLED_0_GREEN.subscribe("fpga0/fpga0/fpga0_wled/0_green", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_0_GREEN);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_0_BLUE;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = nSIGOUT_FPGA0_FPGA0_WLED_0_BLUE.subscribe("fpga0/fpga0/fpga0_wled/0_blue", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_0_BLUE);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_0_RED;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_0_RED = nSIGOUT_FPGA0_FPGA0_WLED_0_RED.subscribe("fpga0/fpga0/fpga0_wled/0_red", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_0_RED);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_1_GREEN;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = nSIGOUT_FPGA0_FPGA0_WLED_1_GREEN.subscribe("fpga0/fpga0/fpga0_wled/1_green", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_1_GREEN);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_1_BLUE;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = nSIGOUT_FPGA0_FPGA0_WLED_1_BLUE.subscribe("fpga0/fpga0/fpga0_wled/1_blue", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_1_BLUE);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_1_RED;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_1_RED = nSIGOUT_FPGA0_FPGA0_WLED_1_RED.subscribe("fpga0/fpga0/fpga0_wled/1_red", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_1_RED);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_2_GREEN;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = nSIGOUT_FPGA0_FPGA0_WLED_2_GREEN.subscribe("fpga0/fpga0/fpga0_wled/2_green", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_2_GREEN);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_2_BLUE;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = nSIGOUT_FPGA0_FPGA0_WLED_2_BLUE.subscribe("fpga0/fpga0/fpga0_wled/2_blue", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_2_BLUE);
+    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_2_RED;
+    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_2_RED = nSIGOUT_FPGA0_FPGA0_WLED_2_RED.subscribe("fpga0/fpga0/fpga0_wled/2_red", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_2_RED);
     ros::NodeHandle nSIGIN_FPGA0_I2CBUS0_LM75_0_TEMP;
     std_msgs::Float32 msg_SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP;
     ros::Publisher pub_SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = nSIGIN_FPGA0_I2CBUS0_LM75_0_TEMP.advertise<std_msgs::Float32>("fpga0/fpga0/i2cbus0/lm75_0_temp", 1000);
@@ -3635,24 +3645,6 @@ int main(int argc, char **argv) {
     ros::NodeHandle nSIGIN_FPGA0_BITIN2_BIT;
     std_msgs::Bool msg_SIGIN_FPGA0_BITIN2_BIT;
     ros::Publisher pub_SIGIN_FPGA0_BITIN2_BIT = nSIGIN_FPGA0_BITIN2_BIT.advertise<std_msgs::Bool>("fpga0/fpga0/bitin2/bit", 1000);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_0_GREEN;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = nSIGOUT_FPGA0_FPGA0_WLED_0_GREEN.subscribe("fpga0/fpga0/fpga0_wled/0_green", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_0_GREEN);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_0_BLUE;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = nSIGOUT_FPGA0_FPGA0_WLED_0_BLUE.subscribe("fpga0/fpga0/fpga0_wled/0_blue", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_0_BLUE);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_0_RED;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_0_RED = nSIGOUT_FPGA0_FPGA0_WLED_0_RED.subscribe("fpga0/fpga0/fpga0_wled/0_red", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_0_RED);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_1_GREEN;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = nSIGOUT_FPGA0_FPGA0_WLED_1_GREEN.subscribe("fpga0/fpga0/fpga0_wled/1_green", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_1_GREEN);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_1_BLUE;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = nSIGOUT_FPGA0_FPGA0_WLED_1_BLUE.subscribe("fpga0/fpga0/fpga0_wled/1_blue", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_1_BLUE);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_1_RED;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_1_RED = nSIGOUT_FPGA0_FPGA0_WLED_1_RED.subscribe("fpga0/fpga0/fpga0_wled/1_red", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_1_RED);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_2_GREEN;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = nSIGOUT_FPGA0_FPGA0_WLED_2_GREEN.subscribe("fpga0/fpga0/fpga0_wled/2_green", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_2_GREEN);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_2_BLUE;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = nSIGOUT_FPGA0_FPGA0_WLED_2_BLUE.subscribe("fpga0/fpga0/fpga0_wled/2_blue", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_2_BLUE);
-    ros::NodeHandle nSIGOUT_FPGA0_FPGA0_WLED_2_RED;
-    ros::Subscriber sub_SIGOUT_FPGA0_FPGA0_WLED_2_RED = nSIGOUT_FPGA0_FPGA0_WLED_2_RED.subscribe("fpga0/fpga0/fpga0_wled/2_red", 1000, cb_SIGOUT_FPGA0_FPGA0_WLED_2_RED);
     ros::NodeHandle nSIGIN_FPGA0_MBUS_DEV0_TEMP_0;
     std_msgs::Float32 msg_SIGIN_FPGA0_MBUS_DEV0_TEMP_0;
     ros::Publisher pub_SIGIN_FPGA0_MBUS_DEV0_TEMP_0 = nSIGIN_FPGA0_MBUS_DEV0_TEMP_0.advertise<std_msgs::Float32>("fpga0/fpga0/mbus_dev0/temp_0", 1000);

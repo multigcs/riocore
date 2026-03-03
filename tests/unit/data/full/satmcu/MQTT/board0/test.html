@@ -191,11 +191,29 @@ body {
     </table>
         </div>
         <div class="item">
+    <B>uartsub1</B>
+    <table>
+      <tr>
+        <td>timeout</td>
+        <td><b id="board0/board0/uartsub1/timeout">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
     <B>gpioout0</B>
     <table>
       <tr>
         <td>bit</td>
         <td><input type="checkbox" id="board0/board0/satmcu0/gpioout0/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>uartsub0</B>
+    <table>
+      <tr>
+        <td>timeout</td>
+        <td><b id="board0/board0/uartsub0/timeout">0</b></td>
       </tr>
     </table>
         </div>
@@ -425,6 +443,8 @@ body {
             client.subscribe("board0/board0/bitin3/bit");
             client.subscribe("board0/board0/bitin4/bit");
             client.subscribe("board0/board0/bitin5/bit");
+            client.subscribe("board0/board0/uartsub1/timeout");
+            client.subscribe("board0/board0/uartsub0/timeout");
             client.subscribe("board0/board0/satmcu0/gpioin0/bit");
             client.subscribe("board0/board0/satmcu0/encoder0/position");
             client.subscribe("board0/board0/satmcu0/encoder0/velocity");
@@ -495,6 +515,12 @@ body {
             }
             if (message.destinationName == "board0/board0/bitin5/bit") {
                 document.getElementById("board0/board0/bitin5/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/uartsub1/timeout") {
+                document.getElementById("board0/board0/uartsub1/timeout").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/uartsub0/timeout") {
+                document.getElementById("board0/board0/uartsub0/timeout").innerHTML = message.payloadString;
             }
             if (message.destinationName == "board0/board0/satmcu0/gpioin0/bit") {
                 document.getElementById("board0/board0/satmcu0/gpioin0/bit").innerHTML = message.payloadString;

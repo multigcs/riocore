@@ -186,6 +186,12 @@ http.createServer(function (req, res) {
     res.write("bitin5.bit = ");
     res.write(String(rio_rx["bitin5"]["bit"]));
     res.write("<br/>");
+    res.write("uartsub1.timeout = ");
+    res.write(String(rio_rx["uartsub1"]["timeout"]));
+    res.write("<br/>");
+    res.write("uartsub0.timeout = ");
+    res.write(String(rio_rx["uartsub0"]["timeout"]));
+    res.write("<br/>");
     res.write("gpioin0.bit = ");
     res.write(String(rio_rx["gpioin0"]["bit"]));
     res.write("<br/>");

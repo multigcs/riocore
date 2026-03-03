@@ -1,12 +1,12 @@
 
-int rxPin = 2;
-int txPin = 1;
+int rxPin = 1;
+int txPin = 0;
 
 #define MCU_BUFFER_SIZE_TX 5
 #define MCU_BUFFER_SIZE_RX 5
 
-uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {0x64, 0x61, 0x74, 0x61,  0,  0, 0};
-uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {0, 0, 0, 0,  0,  0, 0};
+uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {0x64, 0x61, 0x74, 0x61,  0, 0, 0};
+uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {0, 0, 0, 0,  0, 0, 0};
 
 bool VAROUT1_GPIOOUT9_BIT = 0;
 bool VARIN1_GPIOIN1_BIT = 0;
@@ -47,15 +47,7 @@ void rio_rtx(void) {
 }
 
 
-#define VAROUT1_GPIOOUT9_BIT_PIN_BIT 14
-#define VARIN1_GPIOIN1_BIT_PIN_BIT 15
-
 void setup() {
-
-
-    pinMode(VAROUT1_GPIOOUT9_BIT_PIN_BIT, OUTPUT);
-    pinMode(VARIN1_GPIOIN1_BIT_PIN_BIT, INPUT_PULLUP);
-
     Serial.begin(115200);
     Serial.setTimeout(10);
     Serial1.begin(1000000);
@@ -64,13 +56,5 @@ void setup() {
 }
 
 void loop() {
-
-
-    VARIN1_GPIOIN1_BIT = digitalRead(VARIN1_GPIOIN1_BIT_PIN_BIT);
-
     rio_rtx();
-
-
-    digitalWrite(VAROUT1_GPIOOUT9_BIT_PIN_BIT, VAROUT1_GPIOOUT9_BIT);
-
 }
