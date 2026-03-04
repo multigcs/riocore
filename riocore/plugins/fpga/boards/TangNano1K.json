@@ -293,35 +293,6 @@
       }
     },
     {
-      "name": "LED",
-      "pins": {
-        "L1": {
-          "pin": "10",
-          "pos": [
-            114,
-            60
-          ],
-          "direction": "output"
-        },
-        "L2": {
-          "pin": "11",
-          "pos": [
-            114,
-            70
-          ],
-          "direction": "output"
-        },
-        "L3": {
-          "pin": "13",
-          "pos": [
-            114,
-            80
-          ],
-          "direction": "output"
-        }
-      }
-    },
-    {
       "name": "UART",
       "comment": "over USB",
       "pins": {
