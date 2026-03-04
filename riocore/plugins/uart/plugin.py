@@ -45,7 +45,7 @@ class Plugin(PluginBase):
                 "description": "serial device (if connected to host)",
             },
             "csum": {
-                "default": False,
+                "default": True,
                 "type": bool,
                 "description": "activate checksums",
             },

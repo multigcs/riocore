@@ -6,42 +6,17 @@
   "toolchain": "icestorm",
   "family": "ice40",
   "type": "lp1k",
+  "board": "ICESugarNano",
   "package": "cm36",
   "provides": [
     "pmod",
     "pmod2"
   ],
-  "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
   "clock": {
     "speed": 12000000,
     "pin": "D1"
   },
   "slots": [
-    {
-      "name": "UART",
-      "comment": "USB UART",
-      "pins": {
-        "RX": {
-          "pin": "A3",
-          "comment": "serial RX->FTDI_TX",
-          "pos": [
-            40,
-            20
-          ],
-          "direction": "input"
-        },
-        "TX": {
-          "pin": "B3",
-          "comment": "serial TX->FTDI_RX",
-          "pos": [
-            52,
-            20
-          ],
-          "direction": "output"
-        }
-      }
-    },
-
     {
       "name": "FLASH",
       "comment": "SPI FLASH",
@@ -170,24 +145,6 @@
       "comment": "",
       "default": "",
       "pins": {
-        "P4": {
-          "pin": "A1",
-          "comment": "shared with PMOD3:10",
-          "pos": [
-            8,
-            103
-          ],
-          "direction": "all"
-        },
-        "P3": {
-          "pin": "B1",
-          "comment": "shared with PMOD3:P4",
-          "pos": [
-            8,
-            114
-          ],
-          "direction": "all"
-        },
         "P2": {
           "pin": "D1",
           "visible": false,

@@ -141,7 +141,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append(f"PACKAGE   := {self.config['package']}")
         makefile_data.append(f"VERILOGS  := {verilogs}")
         makefile_data.append("")
-        makefile_data.append("all: clean build load")
+        makefile_data.append("all: clean build")
         makefile_data.append("")
         makefile_data.append(f"build: {bitfileName}")
         makefile_data.append("")
@@ -236,7 +236,18 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append(f"	{flashcmd}")
             makefile_data.append("")
         else:
-            if board and board.startswith("TangNano"):
+            if board and board.startswith("ICESugarNano"):
+                makefile_data.append("/dev/disk/by-label/iCELink:")
+                makefile_data.append("	@echo \"Device not found: iCELink\":")
+                makefile_data.append("")
+                makefile_data.append("load: /dev/disk/by-label/iCELink")
+                makefile_data.append("	mkdir -p fs_iCELink")
+                makefile_data.append("	sudo umount fs_iCELink || true")
+                makefile_data.append("	sudo mount /dev/disk/by-label/iCELink fs_iCELink")
+                makefile_data.append("	sudo cp $(PROJECT).bin fs_iCELink || true")
+                makefile_data.append("	sudo umount fs_iCELink")
+                makefile_data.append("	rmdir fs_iCELink")
+            elif board and board.startswith("TangNano"):
                 makefile_data.append("load:")
                 makefile_data.append(f"	openFPGALoader -b {board.lower()} $(PROJECT).fs -f")
             elif board and board == "Tangoboard":
