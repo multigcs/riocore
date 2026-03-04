@@ -5,7 +5,7 @@ module uartsub
          input clk,
          output reg [BUFFER_SIZE_RX-1:0] rx_data,
          input [BUFFER_SIZE_TX-1:0] tx_data,
-         output reg timeout = 0,
+         output reg timeout = 1,
          output reg tx_enable = 0,
          input wire sync_in,
          output tx,
@@ -47,8 +47,9 @@ module uartsub
     reg [7:0] rx_counter = 0;
     reg [7:0] rx_csum = 0;
 
+    localparam TIMEOUT_BITS = clog2(Timeout + 1);
     reg sync = 0;
-    reg [31:0] timeout_counter = 0;
+    reg [TIMEOUT_BITS:0] timeout_counter = 0;
 
     always @(posedge clk) begin
         if (sync == 1) begin
