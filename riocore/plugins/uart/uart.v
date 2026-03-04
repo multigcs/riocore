@@ -67,10 +67,8 @@ module uart
                 tx_state <= 1;
                 sync <= 1;
             end
-
             rx_counter <= 0;
             rx_csum <= 0;
-
         end else if (tx_state == 1) begin
             if (TxD_start == 0 && TxD_busy == 0) begin
                 TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 1 - 7];

@@ -76,7 +76,7 @@ class Plugin(PluginBase):
         timeout = int(self.plugin_setup.get("timeout", self.OPTIONS["timeout"]["default"]))
         instance_parameter["BUFFER_SIZE_RX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_RX"
         instance_parameter["BUFFER_SIZE_TX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_TX"
-        instance_parameter["MSGID"] = "32'h64617461"
+        instance_parameter["MSGID"] = "32'h61746164"
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
         timeout_cnt = self.system_setup["speed"] * timeout // 1000

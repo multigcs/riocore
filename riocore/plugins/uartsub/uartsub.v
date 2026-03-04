@@ -1,6 +1,6 @@
 
 module uartsub
-    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter Timeout=2000000, parameter CSUM=0)
+    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h61746164, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter Timeout=2000000, parameter CSUM=0)
      (
          input clk,
          output reg [BUFFER_SIZE_RX-1:0] rx_data,
@@ -12,8 +12,8 @@ module uartsub
          input rx
      );
 
-    localparam BUFFER_SIZE_RX2 = BUFFER_SIZE_RX + (CSUM * 16);
-    localparam BUFFER_SIZE_TX2 = BUFFER_SIZE_TX + (CSUM * 16);
+    localparam BUFFER_SIZE_RX2 = BUFFER_SIZE_RX + (CSUM * 8);
+    localparam BUFFER_SIZE_TX2 = BUFFER_SIZE_TX + (CSUM * 8);
 
     reg [BUFFER_SIZE_TX2-1:0] tx_data_buffer;
     reg [BUFFER_SIZE_RX2-1:0] rx_data_buffer;
@@ -45,7 +45,7 @@ module uartsub
             );
 
     reg [7:0] rx_counter = 0;
-    reg [15:0] rx_csum = 0;
+    reg [7:0] rx_csum = 0;
 
     reg sync = 0;
     reg [31:0] timeout_counter = 0;
@@ -67,10 +67,10 @@ module uartsub
     always @(posedge clk) begin
         sync <= 0;
         if (RxD_endofpacket == 1) begin
-            if (rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[15:0])) begin
+            if (rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
                 sync <= 1;
                 if (CSUM == 1) begin
-                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:16];
+                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:8];
                 end else begin
                     rx_data <= rx_data_buffer;
                 end
@@ -79,9 +79,9 @@ module uartsub
             rx_csum <= 0;
         end else if (RxD_data_ready == 1) begin
             if (rx_counter < BUFFER_SIZE_RX2/8) begin
-                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2-1-8:0], RxD_data};
-                if (rx_counter < BUFFER_SIZE_RX2/8 - 2) begin
-                    rx_csum <= rx_csum + RxD_data + 1;
+                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2 - 1 - 8:0], RxD_data};
+                if (rx_counter < BUFFER_SIZE_RX2/8 - 1) begin
+                    rx_csum <= rx_csum + RxD_data;
                 end
                 rx_counter <= rx_counter + 1'd1;
             end
@@ -91,26 +91,24 @@ module uartsub
 
     reg tx_state = 0;
     reg [7:0] tx_counter = 0;
-    reg [15:0] tx_csum = 0;
+    reg [7:0] tx_csum = 0;
 
     always @(posedge clk) begin
         if (tx_state == 1) begin
-            if (TxD_busy == 0) begin
-                TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-1-7];
+            if (TxD_start == 0 && TxD_busy == 0) begin
+                TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 8];
+                tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 8];
                 TxD_start <= 1;
             end else if (TxD_start == 1) begin
                 TxD_start <= 0;
                 if (tx_counter < BUFFER_SIZE_TX2/8 - 1) begin
                     tx_counter <= tx_counter + 1'd1;
                     if (CSUM == 0) begin
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2-8-1:0], 8'd0};
-                    end else if (tx_counter < BUFFER_SIZE_TX2/8-1 - 2) begin
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2-8-1:0], 8'd0};
-                        tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE_TX2-8-1:BUFFER_SIZE_TX2-8-8] + 1;
-                    end else if (tx_counter < BUFFER_SIZE_TX2/8-1 - 1) begin
-                        tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-8] <= tx_csum[15:8];
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
+                    end else if (tx_counter < BUFFER_SIZE_TX2/8 - 1 - 1) begin
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
                     end else begin
-                        tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-8] <= tx_csum[7:0];
+                        tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 8] <= tx_csum;
                     end
                 end else begin
                     tx_state <= 0;
@@ -118,9 +116,8 @@ module uartsub
             end
         end else begin
             if (sync_in) begin
-                tx_data_buffer <= {tx_data, 16'd0};
-                // first byte for csum
-                tx_csum <= tx_data[BUFFER_SIZE_TX-1:BUFFER_SIZE_TX-8] + 1;
+                tx_data_buffer <= {tx_data, 8'd0};
+                tx_csum <= 0;
                 tx_state <= 1;
                 tx_counter <= 0;
             end
