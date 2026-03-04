@@ -10,6 +10,12 @@
       "default": "/dev/ttyACM0",
       "type": "str",
       "description": "debug-port"
+    },
+    "serial": {
+      "default": "Serial1",
+      "type": "select",
+      "options": ["Serial", "Serial1"],
+      "description": "mcu serial port (Serial == USB)"
     }
   },
   "pins": {

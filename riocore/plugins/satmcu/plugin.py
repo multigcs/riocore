@@ -118,7 +118,7 @@ class Plugin(PluginBase):
 
         riocore.log(f"  writing firmware to: {self.jdata['output_path']}")
 
-        serial = self.board_data["sserial"]
+        serial = self.plugin_setup.get("serial", self.option_default("serial", self.board_data["sserial"]))
         baud = self.plugin_setup.get("baud", self.option_default("baud"))
         upload_port = self.plugin_setup.get("upload_port", self.option_default("upload_port"))
 
@@ -140,8 +140,8 @@ class Plugin(PluginBase):
         output.append("")
         in_bytes = self.gateware.sub_buffer_size_in // 8
         out_bytes = self.gateware.sub_buffer_size_out // 8
-        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {{0x64, 0x61, 0x74, 0x61,  {', '.join(['0'] * (in_bytes - 4 + 2))}}};")
-        output.append(f"uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {{0, 0, 0, 0,  {', '.join(['0'] * (out_bytes - 4 + 2))}}};")
+        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 1] = {{0x64, 0x61, 0x74, 0x61,  {', '.join(['0'] * (in_bytes - 4 + 1))}}};")
+        output.append(f"uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 1] = {{0, 0, 0, 0,  {', '.join(['0'] * (out_bytes - 4 + 1))}}};")
         output.append("")
 
         # Variables
@@ -165,14 +165,14 @@ class Plugin(PluginBase):
 
         # read rx_buffer
         output.append("    // receive rx_buffer")
-        output.append(f"    int flen = {serial}.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 2);")
-        output.append("    if (flen == MCU_BUFFER_SIZE_RX + 2 && rx_buffer[0] == 0x74 && rx_buffer[1] == 0x69 && rx_buffer[2] == 0x72 && rx_buffer[3] == 0x77) {")
+        output.append(f"    int flen = {serial}.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 1);")
+        output.append("    if (flen == MCU_BUFFER_SIZE_RX + 1 && rx_buffer[0] == 0x74 && rx_buffer[1] == 0x69 && rx_buffer[2] == 0x72 && rx_buffer[3] == 0x77) {")
 
-        output.append("        uint16_t rx_csum = 0;")
+        output.append("        uint8_t rx_csum = 0;")
         output.append("        for (int i = 0; i < MCU_BUFFER_SIZE_RX; i++) {")
-        output.append("            rx_csum += rx_buffer[i] + 1;")
+        output.append("            rx_csum += rx_buffer[i];")
         output.append("        }")
-        output.append("        if (rx_buffer[MCU_BUFFER_SIZE_RX] == ((rx_csum>>8) & 0xFF) && rx_buffer[MCU_BUFFER_SIZE_RX + 1] == (rx_csum & 0xFF)) {")
+        output.append("        if (rx_buffer[MCU_BUFFER_SIZE_RX] == rx_csum) {")
         output.append("            // read rx_buffer")
         output_pos = 32
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
@@ -222,13 +222,12 @@ class Plugin(PluginBase):
                 input_pos += size
         output.append("")
         output.append("        // send tx_buffer")
-        output.append("        uint16_t csum = 0;")
+        output.append("        uint8_t csum = 0;")
         output.append("        for (int i = 0; i < MCU_BUFFER_SIZE_TX; i++) {")
-        output.append("            csum += tx_buffer[i] + 1;")
+        output.append("            csum += tx_buffer[i];")
         output.append("        }")
-        output.append("        tx_buffer[MCU_BUFFER_SIZE_TX] = (csum >> 8 & 0xFF);")
-        output.append("        tx_buffer[MCU_BUFFER_SIZE_TX + 1] = (csum & 0xFF);")
-        output.append(f"        {serial}.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);")
+        output.append("        tx_buffer[MCU_BUFFER_SIZE_TX] = csum;")
+        output.append(f"        {serial}.write(tx_buffer, MCU_BUFFER_SIZE_TX + 1);")
         output.append("    }")
 
         output.append("}")
