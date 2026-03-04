@@ -1848,8 +1848,9 @@ if __name__ == "__main__":
                     for axis_name, axis_config in self.project.axis_dict.items():
                         joints = axis_config["joints"]
                         for joint in joints:
-                            pname = gui_gen.draw_number(f"J{joint}-Error", f"j{joint}error")
-                            self.halg.net_add(f"joint.{joint}.f-error", pname)
+                            jn = joint["num"]
+                            pname = gui_gen.draw_number(f"J{jn}-Error", f"j{jn}error")
+                            self.halg.net_add(f"joint.{jn}.f-error", pname)
 
                     gui_gen.draw_vbox_end()
                     gui_gen.draw_frame_end()

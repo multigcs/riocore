@@ -238,7 +238,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         else:
             if board and board.startswith("ICESugarNano"):
                 makefile_data.append("/dev/disk/by-label/iCELink:")
-                makefile_data.append("	@echo \"Device not found: iCELink\":")
+                makefile_data.append('	@echo "Device not found: iCELink":')
                 makefile_data.append("")
                 makefile_data.append("load: /dev/disk/by-label/iCELink")
                 makefile_data.append("	mkdir -p fs_iCELink")

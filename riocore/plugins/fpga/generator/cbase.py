@@ -883,6 +883,9 @@ class cbase:
             defines["SERIAL_BAUD"] = f"B{baud}"
             if csum:
                 defines["SERIAL_CSUM"] = "1"
+            serial_async = self.project.config["jdata"].get("async", False)
+            if serial_async:
+                defines["SERIAL_ASYNC"] = 1
 
         for header in self.header_list:
             output.append(f"#include <{header}>")
@@ -1092,7 +1095,14 @@ class cbase:
         output.append("            write_txbuffer(txBuffer);")
 
         if protocol == "UART":
-            output.append("            ret = uart_trx(txBuffer, BUFFER_SIZE_TX, rxBuffer, BUFFER_SIZE_RX);")
+            output.append("#ifdef SERIAL_ASYNC")
+            output.append("            ret = uart_rx(rxBuffer, BUFFER_SIZE_RX, 1);")
+            output.append("            uart_tx(txBuffer, BUFFER_SIZE_TX);")
+            output.append("#else")
+            output.append("            uart_tx(txBuffer, BUFFER_SIZE_TX);")
+            output.append("            ret = uart_rx(rxBuffer, BUFFER_SIZE_RX, 0);")
+            output.append("#endif")
+
         elif protocol.startswith("SPI"):
             output.append("            spi_trx(txBuffer, rxBuffer, MAX(BUFFER_SIZE_RX, BUFFER_SIZE_TX));")
 

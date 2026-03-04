@@ -1,7 +1,6 @@
 {
     "name": "Mesa7c81",
     "async": true,
-    "protocol": "UDP",
     "c_defines": {
         "SPI_SPEED": "BCM2835_SPI_CLOCK_DIVIDER_64"
     },

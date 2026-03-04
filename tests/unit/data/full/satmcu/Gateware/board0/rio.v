@@ -381,7 +381,7 @@ module rio (
     uartsub #(
         .BUFFER_SIZE_RX(SUB0_BUFFER_SIZE_RX),
         .BUFFER_SIZE_TX(SUB0_BUFFER_SIZE_TX),
-        .MSGID(32'h64617461),
+        .MSGID(32'h61746164),
         .ClkFrequency(30000000),
         .Baud(1000000),
         .Timeout(3000000),
@@ -404,7 +404,7 @@ module rio (
     uartsub #(
         .BUFFER_SIZE_RX(SUB1_BUFFER_SIZE_RX),
         .BUFFER_SIZE_TX(SUB1_BUFFER_SIZE_TX),
-        .MSGID(32'h64617461),
+        .MSGID(32'h61746164),
         .ClkFrequency(30000000),
         .Baud(1000000),
         .Timeout(3000000),

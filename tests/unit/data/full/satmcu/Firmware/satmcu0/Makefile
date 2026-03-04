@@ -5,7 +5,7 @@
 	rm -rf /tmp/__get-platformio.py
 
 build: ~/.platformio/penv/bin/pio
-	pio run
+	~/.platformio/penv/bin/pio run
 
 load: ~/.platformio/penv/bin/pio
-	pio run --target=upload
+	~/.platformio/penv/bin/pio run --target=upload

@@ -5,8 +5,8 @@ int txPin = 0;
 #define MCU_BUFFER_SIZE_TX 21
 #define MCU_BUFFER_SIZE_RX 6
 
-uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 2] = {0x64, 0x61, 0x74, 0x61,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 2] = {0, 0, 0, 0,  0, 0, 0, 0};
+uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 1] = {0x64, 0x61, 0x74, 0x61,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 1] = {0, 0, 0, 0,  0, 0, 0};
 
 int32_t VARIN32_ENCODER0_POSITION = 0;
 int32_t VARIN32_ENCODER1_POSITION = 0;
@@ -24,34 +24,15 @@ bool VAROUT1_GPIOOUT7_BIT = 0;
 bool VAROUT1_GPIOOUT8_BIT = 0;
 
 void rio_rtx(void) {
-    // write tx_buffer
-    memcpy(tx_buffer + 4, &VARIN32_ENCODER0_POSITION, 4);
-    memcpy(tx_buffer + 8, &VARIN32_ENCODER1_POSITION, 4);
-    memcpy(tx_buffer + 12, &VARIN32_ENCODER2_POSITION, 4);
-    memcpy(tx_buffer + 16, &VARIN32_ENCODER3_POSITION, 4);
-    if (VARIN1_GPIOIN0_BIT == 1) {
-        tx_buffer[20] |= (1<<7);
-    } else {
-        tx_buffer[20] &= ~(1<<7);
-    }
-
-    // send tx_buffer
-    uint16_t csum = 0;
-    for (int i = 0; i < MCU_BUFFER_SIZE_TX; i++) {
-        csum += tx_buffer[i] + 1;
-    }
-    tx_buffer[MCU_BUFFER_SIZE_TX] = (csum >> 8 & 0xFF);
-    tx_buffer[MCU_BUFFER_SIZE_TX + 1] = (csum & 0xFF);
-    Serial1.write(tx_buffer, MCU_BUFFER_SIZE_TX + 2);
-
+    uint8_t received_ok = 0;
     // receive rx_buffer
-    int flen = Serial1.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 2);
-    if (flen == MCU_BUFFER_SIZE_RX + 2) {
-        uint16_t rx_csum = 0;
+    int flen = Serial1.readBytes(rx_buffer, MCU_BUFFER_SIZE_RX + 1);
+    if (flen == MCU_BUFFER_SIZE_RX + 1 && rx_buffer[0] == 0x74 && rx_buffer[1] == 0x69 && rx_buffer[2] == 0x72 && rx_buffer[3] == 0x77) {
+        uint8_t rx_csum = 0;
         for (int i = 0; i < MCU_BUFFER_SIZE_RX; i++) {
-            rx_csum += rx_buffer[i] + 1;
+            rx_csum += rx_buffer[i];
         }
-        if (rx_buffer[MCU_BUFFER_SIZE_RX] == (rx_csum >> 8 & 0xFF) && rx_buffer[MCU_BUFFER_SIZE_RX + 1] == (rx_csum & 0xFF)) {
+        if (rx_buffer[MCU_BUFFER_SIZE_RX] == rx_csum) {
             // read rx_buffer
             if ((rx_buffer[4] & (1<<7)) != 0) {
                 VAROUT1_GPIOOUT0_BIT = 1;
@@ -98,7 +79,28 @@ void rio_rtx(void) {
             } else {
                 VAROUT1_GPIOOUT8_BIT = 0;
             }
+            received_ok = 1;
         }
+    }
+    if (received_ok == 1) {
+        // write tx_buffer
+        memcpy(tx_buffer + 4, &VARIN32_ENCODER0_POSITION, 4);
+        memcpy(tx_buffer + 8, &VARIN32_ENCODER1_POSITION, 4);
+        memcpy(tx_buffer + 12, &VARIN32_ENCODER2_POSITION, 4);
+        memcpy(tx_buffer + 16, &VARIN32_ENCODER3_POSITION, 4);
+        if (VARIN1_GPIOIN0_BIT == 1) {
+            tx_buffer[20] |= (1<<7);
+        } else {
+            tx_buffer[20] &= ~(1<<7);
+        }
+
+        // send tx_buffer
+        uint8_t csum = 0;
+        for (int i = 0; i < MCU_BUFFER_SIZE_TX; i++) {
+            csum += tx_buffer[i];
+        }
+        tx_buffer[MCU_BUFFER_SIZE_TX] = csum;
+        Serial1.write(tx_buffer, MCU_BUFFER_SIZE_TX + 1);
     }
 }
 
