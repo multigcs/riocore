@@ -13,7 +13,7 @@
   ],
   "flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
   "clock": {
-    "speed": 48000000,
+    "speed": 12000000,
     "pin": "D1"
   },
   "slots": [
