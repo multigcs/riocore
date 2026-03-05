@@ -487,6 +487,7 @@ class cbase:
 
     def c_buffer(self):
         self.use_timestamp = True
+        self.use_header = True
 
         diff = self.instance.gateware.buffer_size - self.instance.gateware.output_size
         output = []
@@ -499,14 +500,16 @@ class cbase:
         output.append("    }")
         output.append("    // raw vars to txBuffer")
         output_pos = self.instance.gateware.buffer_size
-        output.append(f"    txBuffer[0] = 0x74;  // {output_pos}")
-        output_pos -= 8
-        output.append(f"    txBuffer[1] = 0x69;  // {output_pos}")
-        output_pos -= 8
-        output.append(f"    txBuffer[2] = 0x72;  // {output_pos}")
-        output_pos -= 8
-        output.append(f"    txBuffer[3] = 0x77;  // {output_pos}")
-        output_pos -= 8
+
+        if self.use_header:
+            output.append(f"    txBuffer[0] = 0x74;  // {output_pos}")
+            output_pos -= 8
+            output.append(f"    txBuffer[1] = 0x69;  // {output_pos}")
+            output_pos -= 8
+            output.append(f"    txBuffer[2] = 0x72;  // {output_pos}")
+            output_pos -= 8
+            output.append(f"    txBuffer[3] = 0x77;  // {output_pos}")
+            output_pos -= 8
 
         if self.instance.gateware.multiplexed_output:
             output.append("    // copy next multiplexed value")
@@ -577,11 +580,12 @@ class cbase:
         output.append(f"    // FPGA -> PC ({self.instance.gateware.input_size} + {diff})")
         input_pos = self.instance.gateware.buffer_size
 
-        variable_size = 32
-        byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
-        byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
-        output.append(f"    // memcpy(&header, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}) // {input_pos};")
-        input_pos -= variable_size
+        if self.use_header:
+            variable_size = 32
+            byte_start, byte_size, bit_offset = self.get_bype_pos(input_pos, variable_size)
+            byte_start = self.instance.gateware.buffer_bytes - 1 - byte_start
+            output.append(f"    // memcpy(&header, &rxBuffer[{byte_start - (byte_size - 1)}], {byte_size}) // {input_pos};")
+            input_pos -= variable_size
 
         if self.use_timestamp:
             variable_size = 32
@@ -1124,9 +1128,16 @@ class cbase:
             sys.exit(1)
 
         if protocol in {"UDP", "UART"}:
-            output.append("            if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
-        else:
+            if self.use_header:
+                output.append("            if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+            else:
+                output.append("            if (ret == BUFFER_SIZE_RX) {")
+        elif self.use_header:
             output.append("            if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
+        else:
+            output.append("            if (1) {")
+            print("ERROR: unsupported interface for use_heade == False")
+            sys.exit(1)
         output.append("                if (err_counter > 0) {")
         output.append("                    err_counter = 0;")
         output.append(f'                    {self.printf}("recovered..\\n");')

@@ -53,7 +53,7 @@ module uart
     always @(posedge clk) begin
         sync <= 0;
         if (RxD_endofpacket == 1) begin
-            if (rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
+            if ((MSGID == 0 || rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID) && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
                 tx_enable <= 1;
                 tx_counter <= 0;
                 if (CSUM == 1) begin

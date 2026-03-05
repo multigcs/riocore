@@ -1,6 +1,6 @@
 class generator_base:
-    def calc_buffersize(self, project, timestamp_size=32, sym_io=True):
-        self.header_size = 32
+    def calc_buffersize(self, project, timestamp_size=32, header_size=32, sym_io=True):
+        self.header_size = header_size
         self.input_size = 0
         self.output_size = 0
         self.interface_sizes = set()
@@ -57,8 +57,8 @@ class generator_base:
         # log("# FPGA->PC", self.input_size)
         # log("# MAX", self.buffer_size)
 
-    def calc_buffersize_sub(self, project, subname, sym_io=True, firmware=False):
-        self.header_size = 32
+    def calc_buffersize_sub(self, project, subname, header_size=32, sym_io=True, firmware=False):
+        self.header_size = header_size
         self.sub_input_size = 0
         self.sub_output_size = 0
         self.sub_interface_sizes = set()
