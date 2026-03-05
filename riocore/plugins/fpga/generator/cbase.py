@@ -488,6 +488,10 @@ class cbase:
     def c_buffer(self):
         self.use_timestamp = True
         self.use_header = True
+        if self.instance.frame in {"no_timestamp", "minimum"}:
+            self.use_timestamp = False
+        if self.instance.frame in {"no_header", "minimum"}:
+            self.use_header = False
 
         diff = self.instance.gateware.buffer_size - self.instance.gateware.output_size
         output = []

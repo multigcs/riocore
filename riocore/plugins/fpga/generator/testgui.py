@@ -91,8 +91,11 @@ class WinForm(QWidget):
     def __init__(self, args, parent=None):
         super(WinForm, self).__init__(parent)
         self.args = args
+        self.blink_timer = 0
+        self.blink_stat = 0
+        self.blink_max = 0
 
-        self.rio = RioWrapper(sys.argv)
+        self.rio = RioWrapper(["", *args.rio.split()])
         self.data_info = self.rio.data_info()
         self.widgets = {}
 
@@ -154,6 +157,7 @@ class WinForm(QWidget):
                                     wid = f"widget_{variable.replace('GREEN', color.upper())}"
                                     self.widgets[wid] = QCheckBox()
                                     self.widgets[wid].setChecked(False)
+                                    self.blink_max += 1
                                     row_layout.addWidget(QLabel(color))
                                     row_layout.addWidget(self.widgets[wid], stretch=0)
                                 plugin_layout.addLayout(row_layout)
@@ -189,6 +193,7 @@ class WinForm(QWidget):
                                 if isinstance(self.widgets[wid], QCheckBox):
                                     self.widgets[wid].clicked.connect(self.runTimer)
                                     self.widgets[wid].setChecked(initval)
+                                    self.blink_max += 1
 
                                 button = plugin_ui.widget(f"{wname}_zero")
                                 if button:
@@ -242,6 +247,7 @@ class WinForm(QWidget):
             initval = signal_config.get("userconfig", {}).get("display", {}).get("initval", 0)
             self.widgets[wid] = QCheckBox()
             self.widgets[wid].setChecked(initval)
+            self.blink_max += 1
             row_layout.addWidget(self.widgets[wid], stretch=0)
         elif direction == "input":
             self.widgets[wid] = QLabel("---")
@@ -279,6 +285,15 @@ class WinForm(QWidget):
         widget.setValue(0)
 
     def runTimer(self):
+        if args.blink:
+            if self.blink_timer >= 50:
+                self.blink_timer = 0
+                self.blink_stat += 1
+                if self.blink_stat >= self.blink_max:
+                    self.blink_stat = 0
+            else:
+                self.blink_timer += 1
+        bnum = 0
         for plugin_name, plugin_config in self.rio.plugin_info().items():
             if plugin_config["variables"]:
                 for variable in plugin_config["variables"]:
@@ -288,6 +303,13 @@ class WinForm(QWidget):
                     direction = self.data_info[variable].get("direction")
                     if direction == "output":
                         if self.data_info[variable].get("type") == "bool":
+                            if args.blink:
+                                if self.blink_stat == bnum:
+                                    self.widgets[wid].setChecked(1)
+                                else:
+                                    self.widgets[wid].setChecked(0)
+                                bnum += 1
+
                             if self.widgets[wid].isChecked():
                                 self.rio.data_set(variable, 1)
                             else:
@@ -323,10 +345,12 @@ class WinForm(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     parser = argparse.ArgumentParser()
+    parser.add_argument("--rio", "-r", help="rio init string / connection", type=str, default="")
     parser.add_argument("--tab", "-t", help="tab position", type=str, default="north")
     parser.add_argument("--touch", "-T", help="touchscreen mode", default=False, action="store_true")
     parser.add_argument("--fullscreen", "-f", help="fullscreen mode", default=False, action="store_true")
     parser.add_argument("--nobox", "-n", help="no plugin group-boxes", default=False, action="store_true")
+    parser.add_argument("--blink", "-b", help="let blink all output bool values", default=False, action="store_true")
     args = parser.parse_args()
     form = WinForm(args)
     form.show()

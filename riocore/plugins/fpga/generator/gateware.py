@@ -324,6 +324,10 @@ class gateware(generator_base):
     def top(self):
         use_timestamp = True
         use_header = True
+        if self.instance.frame in {"no_timestamp", "minimum"}:
+            use_timestamp = False
+        if self.instance.frame in {"no_header", "minimum"}:
+            use_header = False
 
         header_size = 0
         if use_header:

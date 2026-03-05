@@ -186,8 +186,9 @@ class Plugin(PluginBase):
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 instance.hal_prefix = instance.instances_name
                 if connected_pin["instance"].TYPE == "interface":
-                    instance.protocol = connected_pin["instance"].HOST_INTERFACE
                     instance.interface_instance = connected_pin["instance"]
+                    instance.protocol = instance.interface_instance.HOST_INTERFACE
+                    instance.frame = connected_pin["instance"].plugin_setup.get("frame", "full")
                 plugin_instance = connected_pin["instance"]
                 plugin_instance.PREFIX = f"{instance.hal_prefix}.{plugin_instance.instances_name}"
                 plugin_instance.MASTER_PROVIDES = instance.PROVIDES
