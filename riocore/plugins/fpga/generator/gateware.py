@@ -316,8 +316,11 @@ class gateware(generator_base):
         return output
 
     def top(self):
+        use_timestamp = True
+        use_header = True
+
         timestamp_size = 0
-        if self.instance.fmaster is None:
+        if self.instance.fmaster is None and use_timestamp:
             # this is the FPGA Master (connected to the PC)
             timestamp_size = 32
 
@@ -329,29 +332,35 @@ class gateware(generator_base):
         self.calc_buffersize(self.parent.project, timestamp_size=timestamp_size, sym_io=sym_io)
 
         output = []
-        input_variables_list = ["header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]"]
-        if self.instance.fmaster is None:
-            input_variables_list += ["timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]"]
+        input_variables_list = []
+        if use_header:
+            input_variables_list.append("header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]")
+        if self.instance.fmaster is None and use_timestamp:
+            input_variables_list.append("timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]")
         output_variables_list = []
         self.parent.iface_in = []
         self.parent.iface_out = []
         output_pos = self.buffer_size_out
 
-        variable_name = "header_rx"
-        size = 32
-        pack_list = []
-        for bit_num in range(0, size, 8):
-            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
-            output_pos -= 8
+        if use_header:
+            variable_name = "header_rx"
+            size = 32
+            pack_list = []
+            for bit_num in range(0, size, 8):
+                pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
+                output_pos -= 8
 
         if self.instance.fmaster is None:
             output_variables_list.append(f"// PC -> MASTER_FPGA / OUT ({self.output_size} + FILL = {self.buffer_size_out})")
         else:
             output_variables_list.append(f"// MASTER_FPGA -> SUB_FPGA / OUT ({self.output_size} + FILL = {self.buffer_size_out})")
-        output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-        self.parent.iface_out.append(["RX_HEADER", size])
-        self.parent.iface_in.append(["TX_HEADER", size])
-        self.parent.iface_in.append(["TITMESTAMP", size])
+
+        if use_header:
+            output_variables_list.append(f"// assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+            self.parent.iface_out.append(["RX_HEADER", size])
+            self.parent.iface_in.append(["TX_HEADER", size])
+        if use_timestamp:
+            self.parent.iface_in.append(["TITMESTAMP", size])
 
         if self.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
@@ -597,12 +606,13 @@ class gateware(generator_base):
         output.append("    wire [BUFFER_SIZE_RX-1:0] rx_data;")
         output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
         output.append("")
-        output.append("    reg [31:0] timestamp = 0;")
         output.append("    reg signed [31:0] header_tx = 32'h64617461;")
-        output.append("    always @(posedge sysclk) begin")
-        output.append("        timestamp <= timestamp + 1'd1;")
-        output.append("    end")
-        output.append("")
+        if use_timestamp:
+            output.append("    reg [31:0] timestamp = 0;")
+            output.append("    always @(posedge sysclk) begin")
+            output.append("        timestamp <= timestamp + 1'd1;")
+            output.append("    end")
+            output.append("")
 
         if double_pins:
             output.append("    // linking double used input pins")

@@ -100,8 +100,8 @@ class WinForm(QWidget):
             self.setStyleSheet(STYLESHEET_TOUCH)
 
         self.setWindowTitle("RIO - TestGui")
-        # self.setMinimumWidth(800)
-        # self.setMinimumHeight(600)
+        self.setMinimumWidth(400)
+        self.setMinimumHeight(400)
         self.listFile = QListWidget()
         layout = QGridLayout()
         self.setLayout(layout)
