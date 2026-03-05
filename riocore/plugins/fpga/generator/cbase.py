@@ -837,6 +837,7 @@ class cbase:
         if protocol == "UDP":
             ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))
             port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
+            udp_async = interface_instance.plugin_setup.get("async", interface_instance.option_default("async", False))
             # backward compatibility (SPI/UDP)
             ip = self.project.config["jdata"].get("ip", ip)
             port = self.project.config["jdata"].get("port", port)
@@ -850,6 +851,7 @@ class cbase:
             uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
             baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
             csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
+            serial_async = interface_instance.plugin_setup.get("async", interface_instance.option_default("async", False))
 
         defines = {
             "MODNAME": f'"riocomp-{self.instance.instances_name}"',
@@ -865,7 +867,6 @@ class cbase:
                 defines["UDP_IP"] = f'"{ip}"'
                 defines["SRC_PORT"] = src_port
                 defines["DST_PORT"] = dst_port
-            udp_async = self.project.config["jdata"].get("async", False)
             if udp_async:
                 defines["UDP_ASYNC"] = 1
         elif protocol == "SPI":
@@ -883,7 +884,6 @@ class cbase:
             defines["SERIAL_BAUD"] = f"B{baud}"
             if csum:
                 defines["SERIAL_CSUM"] = "1"
-            serial_async = self.project.config["jdata"].get("async", False)
             if serial_async:
                 defines["SERIAL_ASYNC"] = 1
 

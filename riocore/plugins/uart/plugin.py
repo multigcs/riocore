@@ -49,6 +49,11 @@ class Plugin(PluginBase):
                 "type": bool,
                 "description": "activate checksums",
             },
+            "async": {
+                "default": False,
+                "type": bool,
+                "description": "async",
+            },
         }
         self.TYPE = "interface"
         self.HOST_INTERFACE = "UART"

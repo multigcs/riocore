@@ -78,6 +78,11 @@ class Plugin(PluginBase):
                 "type": int,
                 "description": "SPI clock",
             },
+            "async": {
+                "default": False,
+                "type": bool,
+                "description": "async",
+            },
         }
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
