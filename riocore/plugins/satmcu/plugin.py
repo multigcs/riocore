@@ -140,7 +140,7 @@ class Plugin(PluginBase):
         output.append("")
         in_bytes = self.gateware.sub_buffer_size_in // 8
         out_bytes = self.gateware.sub_buffer_size_out // 8
-        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 1] = {{0x64, 0x61, 0x74, 0x61,  {', '.join(['0'] * (in_bytes - 4 + 1))}}};")
+        output.append(f"uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 1] = {{0x61, 0x74, 0x61, 0x64,  {', '.join(['0'] * (in_bytes - 4 + 1))}}};")
         output.append(f"uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 1] = {{0, 0, 0, 0,  {', '.join(['0'] * (out_bytes - 4 + 1))}}};")
         output.append("")
 
@@ -265,21 +265,30 @@ class Plugin(PluginBase):
                 ret = instances[0].firmware_type_setup(instances)
                 if ret.strip():
                     output.append(ret)
+        found_encoder = False
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
+            if plugin_instance.NAME == "encoder":
+                found_encoder = True
             variable_name = data_config["variable"]
             if hasattr(plugin_instance, "firmware_setup"):
                 ret = plugin_instance.firmware_setup(variable_name)
                 if ret.strip():
                     output.append(ret)
-        output.append("    Serial.begin(115200);")
-        output.append("    Serial.setTimeout(10);")
+        if serial != "Serial":
+            output.append("    Serial.begin(115200);")
+            output.append("    Serial.setTimeout(10);")
         if self.board_data["platform"] == "raspberrypi":
             output.append(f"    {serial}.begin({baud});")
         else:
             output.append(f"    {serial}.begin({baud}, SERIAL_8N1, rxPin, txPin);")
-        output.append(f"    {serial}.setTimeout(1);")
+
+        # workaround, needs PIO encoder support or timer interrupt
+        serial_timeout = 1
+        if found_encoder and self.board_data["platform"] == "raspberrypi":
+            serial_timeout = 0
+        output.append(f"    {serial}.setTimeout({serial_timeout});")
         output.append("    delay(100);")
         output.append("}")
         output.append("")
