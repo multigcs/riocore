@@ -62,11 +62,6 @@ class generator_base:
         self.sub_input_size = 0
         self.sub_output_size = 0
         self.sub_interface_sizes = set()
-        self.sub_multiplexed_input = 0
-        self.sub_multiplexed_input_size = 0
-        self.sub_multiplexed_output = 0
-        self.sub_multiplexed_output_size = 0
-        self.sub_multiplexed_output_id = 0
         for plugin_instance in project.plugin_instances:
             if not firmware and (plugin_instance.gmaster != self.instance.instances_name or plugin_instance.master == plugin_instance.gmaster):
                 continue
@@ -75,31 +70,16 @@ class generator_base:
             for data_config in plugin_instance.interface_data().values():
                 self.sub_interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
-                multiplexed = data_config.get("multiplexed", False)
                 expansion = data_config.get("expansion", False)
                 if expansion:
                     continue
                 if data_config["direction"] == "input":
                     if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.sub_multiplexed_input += 1
-                            self.sub_multiplexed_input_size = (max(self.sub_multiplexed_input_size, variable_size) + 7) // 8 * 8
-                            self.sub_multiplexed_input_size = max(self.sub_multiplexed_input_size, 8)
-                        else:
-                            self.sub_input_size += variable_size
+                        self.sub_input_size += variable_size
                 elif data_config["direction"] == "output":
                     if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.sub_multiplexed_output += 1
-                            self.sub_multiplexed_output_size = (max(self.sub_multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            self.sub_multiplexed_output_size = max(self.sub_multiplexed_output_size, 8)
-                        else:
-                            self.sub_output_size += variable_size
+                        self.sub_output_size += variable_size
 
-        if self.sub_multiplexed_input:
-            self.sub_input_size += self.sub_multiplexed_input_size + 8
-        if self.sub_multiplexed_output:
-            self.sub_output_size += self.sub_multiplexed_output_size + 8
         self.sub_input_size = self.sub_input_size + self.header_size
         self.sub_output_size = self.sub_output_size + self.header_size
         self.sub_buffer_size = (max(self.sub_input_size, self.sub_output_size) + 7) // 8 * 8

@@ -248,9 +248,9 @@ class gateware(generator_base):
                 continue
             if plugin_instance.master != subname:
                 continue
-            multiplexed = data_config.get("multiplexed", False)
-            if multiplexed:
-                continue
+            # multiplexed = data_config.get("multiplexed", False)
+            # if multiplexed:
+            #    continue
             variable_name = data_config["variable"]
             if data_config["direction"] == "output":
                 if not data_config.get("expansion"):
