@@ -1,9 +1,9 @@
 
 module pwmout
-    #(parameter DIVIDER = 255)
+    #(parameter DIVIDER = 255, parameter BITWIDTH = 32)
      (
          input clk,
-         input signed [31:0] dty,
+         input signed [BITWIDTH-1:0] dty,
          input enable,
          output reg dir = 0,
          output pwm,
@@ -12,8 +12,7 @@ module pwmout
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] counter = 0;
-
-    reg [31:0] dtyAbs = 32'd0;
+    reg [BITWIDTH-1:0] dtyAbs = 0;
     reg pulse = 0;
     assign en = enable;
     assign pwm = pulse;

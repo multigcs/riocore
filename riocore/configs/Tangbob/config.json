@@ -333,25 +333,6 @@
             "rotate": 180
         },
         {
-            "type": "bitout",
-            "uid": "bitout0",
-            "image": "spindle500w",
-            "pos": [
-                650.0,
-                60.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "china-bob5x0:RELAIS:out"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "spindle.0.on"
-                }
-            }
-        },
-        {
             "type": "bitin",
             "uid": "bitin3",
             "image": "probe",
@@ -369,14 +350,29 @@
                     "net": "motion.probe-input"
                 }
             }
+        },
+        {
+            "type": "pwmout",
+            "uid": "pwmout0",
+            "image": "spindle500w",
+            "pos": [
+                660.0,
+                30.0
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "china-bob5x0:PWM:analog"
+                }
+            },
+            "bitwidth": 16
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.8255451713395638,
+            "scale": 1.26,
             "pos": [
-                -25.426791277258587,
-                -41.0
+                -157,
+                -50
             ]
         },
         "hal": {

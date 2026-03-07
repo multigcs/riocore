@@ -43,10 +43,39 @@ class Plugin(PluginBase):
                 "description": "PWM frequency",
             },
         }
+
+        freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
+        divider = 24000000 // freq  # 24Mhz is the lowest used FPGA clock
+        self.DESCRIPTION += f"\n\n PWM-Resolution: >= {self.clog2(divider) - 1}bit at {freq}Hz and 24Mhz FPGA-Clock"
+
+        # additional options depands on other options
+        bitlist = []
+        for width in [32, 24, 16, 8]:
+            if width < self.clog2(divider):
+                break
+            bitlist.append(str(width))
+        self.OPTIONS.update(
+            {
+                "bitwidth": {
+                    "default": "32",
+                    "type": "select",
+                    "options": bitlist,
+                    "unit": "bits",
+                    "description": "bit-width on the interface frequency",
+                },
+            }
+        )
+
+        bitwidth = int(self.plugin_setup.get("bitwidth", self.OPTIONS["bitwidth"]["default"]))
+        if bitwidth < self.clog2(divider):
+            print(f"  ERROR: {self.instances_name}: please incrase the bitwidth to min. {self.clog2(divider)}bit")
+            self.plugin_setup["bitwidth"] = bitlist[-1]
+            bitwidth = int(bitlist[-1])
+
         # all the values that needs to transfare betweed PC and FPGA
         self.INTERFACE = {
             "dty": {
-                "size": 32,
+                "size": bitwidth,
                 "direction": "output",
             },
             "enable": {
@@ -95,17 +124,30 @@ class Plugin(PluginBase):
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         return f"{freq} Hz"
 
+    def clog2(self, x):
+        if x <= 0:
+            err = "clog2: domain error"
+            raise ValueError(err)
+        return (x - 1).bit_length()
+
     # optional function, only needed if you add parameter to the verilog functions
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
+        instance_predefines = instance["predefines"]
         # this will read the frequency configuration
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         # and calc the clock cycles that is needed (using the fpga clock (speed))
         divider = self.system_setup["speed"] // freq
+        instance_predefines.append(f"// PWM-Resolution: >= {self.clog2(divider) - 1}bit")
+        bitwidth = int(self.plugin_setup.get("bitwidth", self.OPTIONS["bitwidth"]["default"]))
+        if bitwidth < self.clog2(divider):
+            print(f"  ERROR: {self.instances_name}: please incrase the bitwidth to min. {self.clog2(divider)}bit")
+
         # this will set the parameter in verilog
         instance_parameter["DIVIDER"] = divider
+        instance_parameter["BITWIDTH"] = bitwidth
         return instances
 
     # optional calculation for the signals (self.SIGNALS)
