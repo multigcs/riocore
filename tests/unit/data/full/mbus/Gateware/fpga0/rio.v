@@ -94,8 +94,8 @@ module rio (
     wire [BUFFER_SIZE_RX-1:0] rx_data;
     wire [BUFFER_SIZE_TX-1:0] tx_data;
 
-    reg [31:0] timestamp = 0;
     reg signed [31:0] header_tx = 32'h64617461;
+    reg [31:0] timestamp = 0;
     always @(posedge sysclk) begin
         timestamp <= timestamp + 1'd1;
     end

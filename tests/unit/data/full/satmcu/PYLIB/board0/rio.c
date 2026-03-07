@@ -904,10 +904,10 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     uint8_t rxBuffer[BUFFER_SIZE_RX * 2];
     uint8_t txBuffer[BUFFER_SIZE_TX * 2];
     int64_t stamp_new = rtapi_get_time();
-    stamp_last = stamp_new;
     float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;
     *data->duration = timestamp - fpga_stamp_last;
     fpga_stamp_last = timestamp;
+    stamp_last = stamp_new;
     if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
         pkg_counter += 1;
         convert_outputs();

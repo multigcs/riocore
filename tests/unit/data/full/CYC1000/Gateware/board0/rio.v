@@ -79,8 +79,8 @@ module rio (
     wire [BUFFER_SIZE_RX-1:0] rx_data;
     wire [BUFFER_SIZE_TX-1:0] tx_data;
 
-    reg [31:0] timestamp = 0;
     reg signed [31:0] header_tx = 32'h64617461;
+    reg [31:0] timestamp = 0;
     always @(posedge sysclk) begin
         timestamp <= timestamp + 1'd1;
     end
@@ -145,8 +145,10 @@ module rio (
     assign PINOUT_PWMOUT0_PWM = PINOUT_PWMOUT0_PWM_RAW;
     assign PINOUT_PWMOUT0_DIR = PINOUT_PWMOUT0_DIR_RAW;
     assign PINOUT_PWMOUT0_EN = PINOUT_PWMOUT0_EN_RAW;
+    // PWM-Resolution: >= 12bit
     pwmout #(
-        .DIVIDER(4800)
+        .DIVIDER(4800),
+        .BITWIDTH(32)
     ) pwmout0 (
         .clk(sysclk),
         .pwm(PINOUT_PWMOUT0_PWM_RAW),
