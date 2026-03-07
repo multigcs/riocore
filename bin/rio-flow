@@ -2005,17 +2005,26 @@ class Window(QMainWindow):
         new_uids = []
         for plugin_config in data:
             # reconnect wires with new uid's
+            # print(plugin_config)
+
             for pin_name, pin_config in plugin_config.get("pins", {}).items():
                 pin = pin_config.get("pin", "")
                 if ":" in pin:
                     board, port = pin.split(":", 1)
                     if board in renamed_uids:
                         pin_config["pin"] = f"{renamed_uids[board]}:{port}"
-                    else:
-                        pin_config["pin"] = ""
+                    # else:
+                    #    pin_config["pin"] = ""
 
             # set new position
             plugin_config["pos"] = (scene_insert_x + (plugin_config["pos"][0] - clipboard_min_x), scene_insert_y + (plugin_config["pos"][1] - clipboard_min_y))
+
+            # set new modifier position
+            for pin_config in plugin_config.get("pins", {}).values():
+                for modifier in pin_config.get("modifier", []):
+                    if "pos" in modifier:
+                        modifier["pos"] = (scene_insert_x + (modifier["pos"][0] - clipboard_min_x), scene_insert_y + (modifier["pos"][1] - clipboard_min_y))
+
             # append to config
             new_uids.append(plugin_config["uid"])
             self.config["plugins"].append(copy.deepcopy(plugin_config))
