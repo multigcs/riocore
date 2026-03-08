@@ -3,7 +3,7 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
-        # some plugin infos (used by make redmes and in the gui for the titles and tooltips)
+        # some plugin infos (used by make readme's and in the gui for the titles and tooltips)
         self.NAME = "pwmout"
         self.INFO = "pwm output"
         self.DESCRIPTION = "to control AC/DC-Motors or for analog outputs"
