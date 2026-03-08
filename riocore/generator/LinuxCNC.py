@@ -194,6 +194,10 @@ class LinuxCNC:
         "i2cbus": "i2c",
         "green": "gr",
         "blue": "bl",
+        "board": "brd",
+        "short": "st",
+        "long": "lg",
+        "satmcu": "sm",
     }
 
     def __init__(self, project):
@@ -447,9 +451,7 @@ class LinuxCNC:
                     riocore.log(f"ERROR: overwriting MDI command title: {title} -> {command}")
                 self.ini_setup["HALUI"][f"MDI_COMMAND|{title}"] = command
             else:
-                # self.ini_setup["HALUI"][f"MDI_COMMAND|{mdi_index:02d}"] = command
                 self.ini_setup["HALUI"][f"MDI_COMMAND|{command}"] = command
-
         return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
@@ -2304,6 +2306,16 @@ if __name__ == "__main__":
                         if direction == "inout":
                             self.halg.fmt_add(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
                         elif direction == "input":
+                            if netname.startswith("MDI"):
+                                mdi, cmd = netname.split(":")
+                                cmd = cmd.strip()
+                                title = None
+                                if "|" in mdi:
+                                    title = mdi.split("|")[1].strip()
+                                net_target = self.ini_mdi_command(cmd, title)
+                                self.halg.net_add(f"({rprefix}{halname})", net_target)
+                                continue
+
                             for net_raw in netname.split(","):
                                 net = net_raw.strip()
                                 net_type = halpins.LINUXCNC_SIGNALS[direction].get(net, {}).get("type", float)

@@ -314,10 +314,13 @@ class cbase:
                                 variable_size = data_config["size"]
                                 var_prefix = signal_config["var_prefix"]
                                 varname = signal_config["varname"]
-
                                 check1 = "_".join(variable_name.split("_")[1:]).replace(plugin_instance.instances_name.upper(), var_prefix)
-                                check2 = "_".join(varname.split("_")[1:])
+                                if varname.endswith(("_SHORT", "_LONG1S", "_LONG3S")):
+                                    check2 = "_".join(varname.split("_")[1:-1])
+                                else:
+                                    check2 = "_".join(varname.split("_")[1:])
 
+                                # signal to interface
                                 if check1 == check2:
                                     source = variable_name.split()[-1].strip("*")
 
@@ -403,10 +406,47 @@ class cbase:
                                         output.append(f"    *data->{varname}_ABS = fabs(value);")
                                         output.append(f"    *data->{varname}_S32 = value;")
                                         output.append(f"    *data->{varname}_U32_ABS = fabs(value);")
-                                    output.append(f"    *data->{varname} = value;")
                                     if boolean:
-                                        if direction == "input":
+                                        in_filter = signal_config.get("filter")
+                                        if in_filter == "longpress":
+                                            varname = "_".join(varname.split("_")[:-1])  # base name
+                                            output.append("    static bool last = 0;")
+                                            output.append("    static uint16_t press_timer = 0;")
+                                            output.append("    static uint16_t reset_timer = 0;")
+                                            output.append("    if (value == 1) {")
+                                            output.append("        if (press_timer < 9000) {")
+                                            output.append("            press_timer++;")
+                                            output.append("        }")
+                                            output.append("    } else if (last == 1 && value == 0) {")
+                                            output.append("        reset_timer = servo_period * 100 / 1000000;")
+                                            output.append("        if ((servo_period * press_timer / 1000000) > 1500) {")
+                                            output.append("            // long 2")
+                                            output.append(f"            *data->{varname}_LONG2 = 1;")
+                                            output.append(f"            *data->{varname}_LONG2_not = 0;")
+                                            output.append("        } else if ((servo_period * press_timer / 1000000) > 500) {")
+                                            output.append("            // long 1")
+                                            output.append(f"            *data->{varname}_LONG1 = 1;")
+                                            output.append(f"            *data->{varname}_LONG1_not = 0;")
+                                            output.append("        } else {")
+                                            output.append("            // short")
+                                            output.append(f"            *data->{varname}_SHORT = 1;")
+                                            output.append(f"            *data->{varname}_SHORT_not = 0;")
+                                            output.append("        }")
+                                            output.append("    } else if (reset_timer > 0) {")
+                                            output.append("        reset_timer--;")
+                                            output.append("    } else {")
+                                            output.append("        // reset all")
+                                            output.append("        press_timer = 0;")
+                                            for suffix in ("SHORT", "LONG1", "LONG2"):
+                                                output.append(f"        *data->{varname}_{suffix} = 0;")
+                                                output.append(f"        *data->{varname}_{suffix}_not = 1;")
+                                            output.append("    }")
+                                            output.append("    last = value;")
+                                        else:
+                                            output.append(f"    *data->{varname} = value;")
                                             output.append(f"    *data->{varname}_not = 1 - value;")
+                                    else:
+                                        output.append(f"    *data->{varname} = value;")
 
                                     for target, calc in signal_targets.items():
                                         tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
@@ -942,6 +982,7 @@ class cbase:
         output.append("int64_t stamp_last = 0;")
         output.append("float fpga_stamp_last = 0;")
         output.append("uint32_t fpga_timestamp = 0;")
+        output.append("int64_t servo_period = 1000000000;")
         output.append("")
         output.append("void rio_readwrite(void *inst, int64_t period);")
         output.append("int error_handler(int retval);")
@@ -1100,6 +1141,7 @@ class cbase:
         else:
             output.append("    *data->duration = (float)(stamp_new - stamp_last) / 1000000000.0;")
         output.append("    stamp_last = stamp_new;")
+        output.append("    servo_period = period;")
 
         output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
         output.append("        pkg_counter += 1;")

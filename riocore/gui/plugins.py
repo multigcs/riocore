@@ -402,11 +402,11 @@ class GuiPlugins:
             signal_setup["net"] = {"type": "select", "options": options_net}
             signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "net", signal_setup["net"], cb=update), stretch=5)
 
-            # signal_cols = QHBoxLayout()
-            # signal_rows.addLayout(signal_cols)
-            # signal_cols.addWidget(QLabel("Function:"), stretch=1)
-            # signal_setup["function"] = {"type": "select", "options": options_func}
-            # signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
+            signal_cols = QHBoxLayout()
+            signal_rows.addLayout(signal_cols)
+            signal_cols.addWidget(QLabel("Function:"), stretch=1)
+            signal_setup["function"] = {"type": "select", "options": options_func}
+            signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
 
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)

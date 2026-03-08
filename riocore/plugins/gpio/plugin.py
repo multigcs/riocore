@@ -50,12 +50,44 @@ class Plugin(PluginBase):
             }
         elif self.node_type == "input":
             self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+            self.OPTIONS.update(
+                {
+                    "longpress": {
+                        "default": "OFF",
+                        "type": "select",
+                        "options": ["OFF", "ON"],
+                        "description": "allow longpress events (for buttons)",
+                    },
+                },
+            )
             self.SIGNALS = {
                 "bit": {
                     "direction": "input",
                     "bool": True,
                 },
             }
+            longpress = self.plugin_setup.get("longpress", self.option_default("longpress"))
+            if longpress == "ON":
+                self.SIGNALS.update(
+                    {
+                        "bit_short": {
+                            "direction": "input",
+                            "filter": "longpress",
+                            "bool": True,
+                        },
+                        "bit_long1": {
+                            "direction": "input",
+                            "no_convert": True,
+                            "bool": True,
+                        },
+                        "bit_long2": {
+                            "direction": "input",
+                            "no_convert": True,
+                            "bool": True,
+                        },
+                    }
+                )
+
             self.PINDEFAULTS = {
                 "bit": {
                     "direction": "input",
