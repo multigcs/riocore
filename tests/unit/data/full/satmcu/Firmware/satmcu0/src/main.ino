@@ -5,7 +5,7 @@ int txPin = 0;
 #define MCU_BUFFER_SIZE_TX 21
 #define MCU_BUFFER_SIZE_RX 6
 
-uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 1] = {0x64, 0x61, 0x74, 0x61,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+uint8_t tx_buffer[MCU_BUFFER_SIZE_TX + 1] = {0x61, 0x74, 0x61, 0x64,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 uint8_t rx_buffer[MCU_BUFFER_SIZE_RX + 1] = {0, 0, 0, 0,  0, 0, 0};
 
 int32_t VARIN32_ENCODER0_POSITION = 0;
@@ -139,7 +139,7 @@ void setup() {
     Serial.begin(115200);
     Serial.setTimeout(10);
     Serial1.begin(1000000);
-    Serial1.setTimeout(1);
+    Serial1.setTimeout(0);
     delay(100);
 }
 
