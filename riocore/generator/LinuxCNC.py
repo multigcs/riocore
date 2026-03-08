@@ -2310,8 +2310,8 @@ if __name__ == "__main__":
                                 mdi, cmd = netname.split(":")
                                 cmd = cmd.strip()
                                 title = None
-                                if "|" in mdi:
-                                    title = mdi.split("|")[1].strip()
+                                if "#" in mdi:
+                                    title = mdi.split("#")[1].strip()
                                 net_target = self.ini_mdi_command(cmd, title)
                                 self.halg.net_add(f"({rprefix}{halname})", net_target)
                                 continue
