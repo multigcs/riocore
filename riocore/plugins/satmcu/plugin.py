@@ -116,6 +116,10 @@ class Plugin(PluginBase):
     def firmware(self, parent, instances):
         subname = self.instances_name
 
+        firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", self.instances_name)
+        os.makedirs(firmware_path, exist_ok=True)
+        self.BUILDER_PATH = firmware_path
+
         riocore.log(f"  writing firmware to: {self.jdata['output_path']}")
 
         serial = self.plugin_setup.get("serial", self.option_default("serial", self.board_data["sserial"]))

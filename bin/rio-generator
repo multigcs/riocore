@@ -33,6 +33,7 @@ if sys.platform == "linux":
     parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
     parser.add_argument("--gui", "-G", help="start linuxcnc with other gui", type=str, default=None)
     parser.add_argument("--vcp", "-V", help="start linuxcnc with other vcp", type=str, default=None)
+    parser.add_argument("--instances", "-i", help="build only this instance", type=str, default=None)
 
 
 args = parser.parse_args()
@@ -145,6 +146,8 @@ if args.config:
         if args.build:
             for plugin_instance in project.plugin_instances:
                 if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                    if args.instances and args.instances != plugin_instance.instances_name:
+                        continue
                     arguments = []
                     for element in plugin_instance.BUILDER:
                         if element in ["clean", "build"]:
@@ -163,6 +166,8 @@ if args.config:
         if args.flash:
             for plugin_instance in project.plugin_instances:
                 if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                    if args.instances and args.instances != plugin_instance.instances_name:
+                        continue
                     arguments = []
                     for element in plugin_instance.BUILDER:
                         if element in ["load"]:
@@ -180,23 +185,24 @@ if args.config:
                         sys.exit(1)
         if args.ram:
             for plugin_instance in project.plugin_instances:
-                for ptype in ("Gateware", "Firmware"):
-                    if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
-                        arguments = []
-                        for element in plugin_instance.BUILDER:
-                            if element in ["sload"]:
-                                arguments.append(element)
-                        cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
-                        print()
-                        print("running:")
-                        print(f"  {cmd}")
-                        if sys.platform.startswith("win"):
-                            print(f"  cd {os.getcwd()}")
-                        print()
-                        ret = os.system(cmd)
-                        if ret != 0:
-                            print(f"ERROR: code {ret}")
-                            sys.exit(1)
+                if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                    arguments = []
+                    if args.instances and args.instances != plugin_instance.instances_name:
+                        continue
+                    for element in plugin_instance.BUILDER:
+                        if element in ["sload"]:
+                            arguments.append(element)
+                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    print()
+                    print("running:")
+                    print(f"  {cmd}")
+                    if sys.platform.startswith("win"):
+                        print(f"  cd {os.getcwd()}")
+                    print()
+                    ret = os.system(cmd)
+                    if ret != 0:
+                        print(f"ERROR: code {ret}")
+                        sys.exit(1)
         if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
             proc_sims = {}
             if args.udpsim:
