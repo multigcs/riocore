@@ -296,7 +296,8 @@ class Plugin(PluginBase):
 
             # gateware
             instance.gateware = gateware(parent, instance)
-            instance.gateware.generator()
+            if instance.jdata["toolchain"]:
+                instance.gateware.generator()
 
             # linuxcnc-component
             if not instance.fmaster:
@@ -307,7 +308,7 @@ class Plugin(PluginBase):
                 if instance.protocol == "UDP":
                     jslib(parent.project, instance=instance)
                     simulator(parent.project, instance=instance)
-            elif not instance.jdata["toolchain_generator"]:
+            elif not instance.jdata["toolchain"]:
                 instance.jdata["output_path"] = firmware_path
                 instance.firmware(parent, instances)
 
