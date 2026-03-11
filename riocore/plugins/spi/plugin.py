@@ -50,6 +50,12 @@ class Plugin(PluginBase):
                 "max": 1,
                 "description": "Chip-Select pin on the Host-Side CS0/CS1",
             },
+            "frame": {
+                "default": "full",
+                "type": "select",
+                "options": ["full", "no_timestamp", "no_header", "minimum"],
+                "description": "frame size",
+            },
         }
         spitype = self.plugin_setup.get("spitype", self.option_default("spitype", 0))
         if spitype == "rpi5":

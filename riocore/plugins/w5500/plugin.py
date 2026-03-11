@@ -83,6 +83,12 @@ class Plugin(PluginBase):
                 "type": bool,
                 "description": "async",
             },
+            "frame": {
+                "default": "full",
+                "type": "select",
+                "options": ["full", "no_timestamp", "no_header", "minimum"],
+                "description": "frame size",
+            },
         }
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
