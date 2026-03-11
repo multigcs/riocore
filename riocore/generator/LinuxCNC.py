@@ -1172,6 +1172,7 @@ o<{oword}> endsub
             self.halg.fmt_add("")
             self.halg.fmt_add("# Jogging")
             speed_selector = False
+            scale_selector = False
             axis_selector = False
             axis_leds = False
             axis_move = False
@@ -1184,8 +1185,10 @@ o<{oword}> endsub
                     axis_leds = True
                 elif function in {"plus", "minus"}:
                     axis_move = True
-                elif function in {"fast"} or function in {"speed0"} or function in {"speed1"}:
+                elif function in {"fast", "speed0", "speed1"}:
                     speed_selector = True
+                elif function in {"scale0", "scale1", "scale2"}:
+                    scale_selector = True
                 elif function in {"position"}:
                     position_display = True
                 elif function in {"wheel"}:
@@ -1197,6 +1200,28 @@ o<{oword}> endsub
                 return riof_jog_default.get(section, {}).get(key, halpins.RIO_FUNCTION_DEFAULTS["jog"][section][key]["default"])
 
             wheel_scale = riof_jog_setup("wheel", "scale")
+
+            if scale_selector:
+                scale_selectors = 0
+                for function, halname in self.rio_functions["jog"].items():
+                    if function.startswith("scale") and not function.startswith("scaled"):
+                        scale_selectors += 1
+                        self.halg.net_add(halname, f"scale-select.in{function[-1]}")
+                    if function.startswith("scaled"):
+                        self.halg.net_add(f"scale-select.selected{function[-1]}", halname)
+
+                shutil.copy(os.path.join(riocore_path, "files", "fselect.py"), os.path.join(self.configuration_path, "fselect.py"))
+                self.halg.fmt_add(f"loadusr -Wn scale-select ./fselect.py scale-select {scale_selectors}")
+                self.halg.net_add("0.001", "scale-select.value0")
+                self.halg.net_add("0.01", "scale-select.value1")
+                self.halg.net_add("0.1", "scale-select.value2")
+
+                for axis_name, axis_config in self.project.axis_dict.items():
+                    laxis = axis_name.lower()
+                    self.halg.net_add("scale-select.out", f"axis.{laxis}.jog-scale")
+                    for joint_setup in axis_config["joints"]:
+                        joint = joint_setup["num"]
+                        self.halg.net_add("scale-select.out", f"joint.{joint}.jog-scale")
 
             if speed_selector:
                 wheel_scale = None
@@ -1258,20 +1283,22 @@ o<{oword}> endsub
                         laxis = axis_name.lower()
                         self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
 
-                        if wheel_scale is not None:
-                            self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
-                        else:
-                            self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+                        if not scale_selector:
+                            if wheel_scale is not None:
+                                self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                            else:
+                                self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
                         self.halg.net_add(f"halui.axis.{laxis}.is-selected", f"axis.{laxis}.jog-enable")
                         self.halg.net_add(halname_wheel, f"axis.{laxis}.jog-counts")
                         for joint_setup in axis_config["joints"]:
                             joint = joint_setup["num"]
                             self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
-                            if wheel_scale is not None:
-                                self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
-                            else:
-                                self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+                            if not scale_selector:
+                                if wheel_scale is not None:
+                                    self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                else:
+                                    self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
                             self.halg.net_add(f"halui.axis.{laxis}.is-selected", f"joint.{joint}.jog-enable")
                             self.halg.net_add(halname_wheel, f"joint.{joint}.jog-counts")
 
@@ -1282,10 +1309,11 @@ o<{oword}> endsub
                     if fname in self.rio_functions["jog"]:
                         self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
 
-                        if wheel_scale is not None:
-                            self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
-                        else:
-                            self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
+                        if not scale_selector:
+                            if wheel_scale is not None:
+                                self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
+                            else:
+                                self.halg.net_add("riof.jog.wheelscale_mux.out", f"axis.{laxis}.jog-scale")
 
                         self.halg.setp_add(f"axis.{laxis}.jog-enable", 1)
                         for function, halname in self.rio_functions["jog"].items():
@@ -1296,10 +1324,11 @@ o<{oword}> endsub
                             joint = joint_setup["num"]
                             self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 1)
 
-                            if wheel_scale is not None:
-                                self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
-                            else:
-                                self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
+                            if not scale_selector:
+                                if wheel_scale is not None:
+                                    self.halg.setp_add(f"joint.{joint}.jog-scale", wheel_scale)
+                                else:
+                                    self.halg.net_add("riof.jog.wheelscale_mux.out", f"joint.{joint}.jog-scale")
 
                             self.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():

@@ -433,8 +433,8 @@ class hal_generator:
             return None
 
         # if input is a number, then use setp
-        if input_pin.replace(".", "").lstrip("-").lstrip("-").isnumeric():
-            return self.setp_add(output_pin, input_pin)
+        if input_pin.replace(".", "").rstrip(")").lstrip("(-0").isnumeric():
+            return self.setp_add(output_pin, input_pin.strip("()"))
 
         # replace some command/operation words
         input_pin = input_pin.replace("!(", "not(")
