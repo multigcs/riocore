@@ -602,7 +602,7 @@ class gateware(generator_base):
 
         output.append(f"    parameter TIMEOUT = {sysclk_speed // 10};")
         output.append("    localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);")
-        output.append("    reg [TIMEOUT_BITS:0] timeout_counter = 0;")
+        output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
         output.append("")
         output.append("    always @(posedge sysclk) begin")
         output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
