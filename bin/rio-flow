@@ -517,6 +517,8 @@ class MyNode(QGraphicsItem):
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red, rotate)
                 elif port_data.get("type") == "SIGNAL":
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.green, rotate)
+                elif port_data.get("special", False) is True:
+                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.white, rotate)
                 else:
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.yellow, rotate)
             painted_ports.append(key)

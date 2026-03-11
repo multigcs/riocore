@@ -26,6 +26,7 @@
             9
           ],
           "rotate": true,
+          "special": true,
           "comment": "KEY_B / JTAG_SEL",
           "direction": "all"
         },
@@ -76,6 +77,7 @@
             9
           ],
           "rotate": true,
+          "special": true,
           "comment": "PSRAM CE / MODE1",
           "direction": "all"
         },
@@ -131,6 +133,7 @@
             9
           ],
           "rotate": true,
+          "special": true,
           "comment": "MCSN",
           "direction": "all"
         },
@@ -141,6 +144,7 @@
             9
           ],
           "rotate": true,
+          "special": true,
           "comment": "MI",
           "direction": "all"
         },
@@ -153,6 +157,7 @@
             112
           ],
           "rotate": true,
+          "special": true,
           "comment": "KEY_A",
           "direction": "all"
         },
@@ -163,6 +168,7 @@
             112
           ],
           "rotate": true,
+          "special": true,
           "comment": "READY",
           "direction": "all"
         },
@@ -173,6 +179,7 @@
             112
           ],
           "rotate": true,
+          "special": true,
           "comment": "DONE",
           "direction": "all"
         },
@@ -213,6 +220,7 @@
             112
           ],
           "rotate": true,
+          "special": true,
           "comment": "SO",
           "direction": "all"
         },
@@ -241,7 +249,9 @@
             112
           ],
           "rotate": true,
-          "direction": "all"
+          "special": true,
+          "direction": "all",
+          "comment": "UART-RX"
         },
         "17": {
           "pin": "17",
@@ -250,7 +260,9 @@
             112
           ],
           "rotate": true,
-          "direction": "all"
+          "special": true,
+          "direction": "all",
+          "comment": "UART-TX"
         },
         "16": {
           "pin": "16",
@@ -268,6 +280,7 @@
             112
           ],
           "rotate": true,
+          "special": true,
           "comment": "MCLK",
           "direction": "all"
         },

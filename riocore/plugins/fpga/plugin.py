@@ -127,6 +127,7 @@ class Plugin(PluginBase):
                     "visible": pin_data.get("visible", True),
                     "direction": pin_data.get("direction", "all"),
                     "comment": pin_data.get("comment", "all"),
+                    "special": pin_data.get("special", False),
                 }
 
         self.fpga_num = 0
