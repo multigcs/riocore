@@ -53,22 +53,26 @@ module uart
     always @(posedge clk) begin
         sync <= 0;
         if (RxD_endofpacket == 1) begin
-            if ((MSGID == 0 || rx_data_buffer[BUFFER_SIZE_RX2-1:BUFFER_SIZE_RX2-32] == MSGID) && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
-                tx_enable <= 1;
-                tx_counter <= 0;
+            if ((MSGID == 0 || rx_data_buffer[BUFFER_SIZE_RX2 - 1:BUFFER_SIZE_RX2 - 32] == MSGID) && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
                 if (CSUM == 1) begin
-                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:8];
+                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2 - 1:8];
+
                     tx_data_buffer <= {tx_data, 8'd0};
                     tx_csum <= 0;
                 end else begin
                     rx_data <= rx_data_buffer;
+
                     tx_data_buffer <= tx_data;
                 end
-                tx_state <= 1;
                 sync <= 1;
+
+                tx_counter <= 0;
+                tx_enable <= 1;
+                tx_state <= 1;
             end
             rx_counter <= 0;
             rx_csum <= 0;
+
         end else if (tx_state == 1) begin
             if (TxD_start == 0 && TxD_busy == 0) begin
                 TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 1 - 7];
@@ -76,7 +80,7 @@ module uart
                 TxD_start <= 1;
             end else if (TxD_start == 1) begin
                 TxD_start <= 0;
-                if (tx_counter < BUFFER_SIZE_TX2/8 - 1) begin
+                if (tx_counter < BUFFER_SIZE_TX2 / 8 - 1) begin
                     tx_counter <= tx_counter + 1'd1;
                     if (CSUM == 0) begin
                         tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
@@ -93,10 +97,11 @@ module uart
             if (TxD_busy == 0) begin
                 tx_enable <= 0;
             end
+
         end else if (RxD_data_ready == 1) begin
-            if (rx_counter < BUFFER_SIZE_RX2/8) begin
+            if (rx_counter < BUFFER_SIZE_RX2 / 8) begin
                 rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2 - 1 - 8:0], RxD_data};
-                if (rx_counter < BUFFER_SIZE_RX2/8 - 1) begin
+                if (rx_counter < BUFFER_SIZE_RX2 / 8 - 1) begin
                     rx_csum <= rx_csum + RxD_data;
                 end
                 rx_counter <= rx_counter + 1'd1;
