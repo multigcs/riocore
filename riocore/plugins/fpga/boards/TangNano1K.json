@@ -133,7 +133,7 @@
             9
           ],
           "rotate": true,
-          "special": true,
+          "special": false,
           "comment": "MCSN",
           "direction": "all"
         },
@@ -144,7 +144,7 @@
             9
           ],
           "rotate": true,
-          "special": true,
+          "special": false,
           "comment": "MI",
           "direction": "all"
         },
@@ -220,7 +220,7 @@
             112
           ],
           "rotate": true,
-          "special": true,
+          "special": false,
           "comment": "SO",
           "direction": "all"
         },
@@ -280,7 +280,7 @@
             112
           ],
           "rotate": true,
-          "special": true,
+          "special": false,
           "comment": "MCLK",
           "direction": "all"
         },
