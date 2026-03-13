@@ -8,7 +8,8 @@
   "type": "hx8k",
   "package": "cb132",
   "provides": [
-    "pmod"
+    "pmod",
+    "icewerx"
   ],
   "flashcmd": "iceFUNprog rio.bin",
   "clock": {

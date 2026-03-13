@@ -1,6 +1,6 @@
 
 module uart
-    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter CSUM=0)
+    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter CSUM=0, parameter DEBUG=0)
      (
          input clk,
          output reg [BUFFER_SIZE_RX-1:0] rx_data,
@@ -66,10 +66,19 @@ module uart
                 end
                 sync <= 1;
 
+                if (DEBUG == 0) begin
+                    tx_counter <= 0;
+                    tx_enable <= 1;
+                    tx_state <= 1;
+                end
+            end
+
+            if (DEBUG == 1) begin
                 tx_counter <= 0;
                 tx_enable <= 1;
                 tx_state <= 1;
             end
+
             rx_counter <= 0;
             rx_csum <= 0;
 

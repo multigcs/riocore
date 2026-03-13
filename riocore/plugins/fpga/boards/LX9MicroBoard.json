@@ -1,11 +1,12 @@
 {
   "name": "LX9MicroBoard",
-  "description": "LX9MicroBoard - Spartan6 devboard\non my debian12, it works with openFPGAloader",
+  "description": "LX9MicroBoard - Spartan6 devboard\non my debian12, it works with openFPGAloader - linux usb flashtool: Adept 2",
   "url": "https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf",
   "toolchain": "ise",
   "family": "xc6",
   "type": "xc6slx9-csg324",
-  "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 -f rio.bit",
+  "flashcmd": "djtgcfg -d obp -i 0 prog -f rio.bin",
+  "flashcmd_alt": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 -f rio.bit",
   "sflashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9csg324 rio.bit",
   "package": "csg324",
   "provides": [
@@ -17,7 +18,7 @@
     "startup": "CClk"
   },
   "clock_66": {
-    "speed": "66700000",
+    "speed": "66667000",
     "pin": "K15",
     "startup": "CClk"
   },
@@ -52,10 +53,20 @@
       "comment": "I2C for the CDCE913",
       "pins": {
         "SCL": {
-          "pin": "P12"
+          "pin": "P12",
+          "comment": "SCL/CDCE913",
+          "pos": [
+            190,
+            69
+          ]
         },
         "SDA": {
-          "pin": "U13"
+          "pin": "U13",
+          "comment": "SDA/CDCE913",
+          "pos": [
+            190,
+            80
+          ]
         }
       }
     },

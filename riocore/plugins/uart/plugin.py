@@ -60,6 +60,11 @@ class Plugin(PluginBase):
                 "options": ["full", "no_timestamp", "no_header", "minimum"],
                 "description": "frame size",
             },
+            "debug": {
+                "default": False,
+                "type": bool,
+                "description": "always response",
+            },
         }
         self.TYPE = "interface"
         self.HOST_INTERFACE = "UART"
@@ -71,6 +76,7 @@ class Plugin(PluginBase):
         frame = self.plugin_setup.get("frame", self.OPTIONS["frame"]["default"])
         csum = self.plugin_setup.get("csum", self.OPTIONS["csum"]["default"])
         baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        debug = self.plugin_setup.get("debug", self.OPTIONS["debug"]["default"])
         instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
         instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         if frame in {"no_header", "minimum"}:
@@ -80,4 +86,5 @@ class Plugin(PluginBase):
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
         instance_parameter["CSUM"] = int(csum)
+        instance_parameter["DEBUG"] = int(debug)
         return instances
