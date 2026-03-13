@@ -3,7 +3,7 @@
 # installer script for LinuxCNC-RIO
 #
 
-if ! lsb_release -c | grep -s -q "bookworm"
+if ! lsb_release -c | grep -s -q "bookworm\|trixie"
 then
 	echo "ONLY FOR DEBIAN BOOKWORK"
 	exit 1
@@ -369,14 +369,15 @@ echo ""
 echo "# command examples:"
 echo ""
 echo "  cd $TARGETDIR/riocore/"
+echo "  git checkout dev"
 echo ""
 echo "  # create new setup:"
-echo "    bin/rio-setup riocore/configs/Tangbob/config.json"
+echo "    bin/rio-flow riocore/configs/Tangbob/config.json"
 echo ""
 echo "  # generate, build and flash the Tangbob config"
 echo "    bin/rio-generator -b -f riocore/configs/Tangbob/config.json"
 echo ""
-if ! which linuxcnc >/dev/null
+if which linuxcnc >/dev/null
 then
 	echo "  # generate and start linuxcnc for the Tangbob config"
 	echo "    bin/rio-generator -s riocore/configs/Tangbob/config.json"
