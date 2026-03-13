@@ -139,6 +139,12 @@ debug-port
  * type: str
  * default: /dev/ttyACM0
 
+### serial:
+mcu serial port (Serial == USB)
+
+ * type: select
+ * default: Serial1
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -240,6 +246,7 @@ debug-port
     "node_type": "pico",
     "baud": 1000000,
     "upload_port": "/dev/ttyACM0",
+    "serial": "Serial1",
     "pins": {
         "SAT": {
             "pin": "0",

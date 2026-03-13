@@ -46,8 +46,32 @@ serial baud rate
  * default: 1000000
  * unit: bit/s
 
+### uart:
+serial device (if connected to host)
+
+ * type: str
+ * default: /dev/ttyUSB0
+
 ### csum:
 activate checksums
+
+ * type: bool
+ * default: True
+
+### async:
+async
+
+ * type: bool
+ * default: False
+
+### frame:
+frame size
+
+ * type: select
+ * default: full
+
+### debug:
+always response
 
  * type: bool
  * default: False
@@ -88,7 +112,11 @@ activate checksums
     "type": "uart",
     "name": "",
     "baud": 1000000,
-    "csum": false,
+    "uart": "/dev/ttyUSB0",
+    "csum": true,
+    "async": false,
+    "frame": "full",
+    "debug": false,
     "pins": {
         "rx": {
             "pin": "0",

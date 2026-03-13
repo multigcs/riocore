@@ -49,6 +49,12 @@ Chip-Select pin on the Host-Side CS0/CS1
  * max: 1
  * default: 0
 
+### frame:
+frame size
+
+ * type: select
+ * default: full
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -86,6 +92,7 @@ Chip-Select pin on the Host-Side CS0/CS1
     "name": "",
     "spitype": "rpi4",
     "cs": 0,
+    "frame": "full",
     "pins": {
         "mosi": {
             "pin": "0",

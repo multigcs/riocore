@@ -6,6 +6,8 @@
 
 to control AC/DC-Motors or for analog outputs
 
+ PWM-Resolution: >= 11bit at 10000Hz and 24Mhz FPGA-Clock
+
 Keywords: joint dcservo acservo 10v 5v dac analog
 
 ## Pins:
@@ -59,6 +61,13 @@ PWM frequency
  * max: 1000000
  * default: 10000
  * unit: Hz
+
+### bitwidth:
+bit-width on the interface frequency
+
+ * type: select
+ * default: 32
+ * unit: bits
 
 
 ## Signals:
@@ -117,6 +126,7 @@ PWM frequency
     "axis": "",
     "image": "generic",
     "frequency": 10000,
+    "bitwidth": "32",
     "pins": {
         "pwm": {
             "pin": "0",

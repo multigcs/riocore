@@ -6,8 +6,8 @@
             "node_type": "Master",
             "uid": "ethercat0",
             "pos": [
-                20.0,
-                50.0
+                -240.0,
+                -20.0
             ]
         },
         {
@@ -17,8 +17,8 @@
             "is_joint": true,
             "image": "ethercatservo",
             "pos": [
-                180.0,
-                -20.0
+                20.0,
+                -30.0
             ],
             "pins": {
                 "BUS:in": {
@@ -31,7 +31,7 @@
             "node_type": "ek1100",
             "uid": "ethercat2",
             "pos": [
-                740.0,
+                990.0,
                 20.0
             ],
             "modules": "el1008 el1008 el2008 el2008 el4002",
@@ -65,8 +65,8 @@
             "is_joint": true,
             "image": "ethercatservo",
             "pos": [
-                340.0,
-                -20.0
+                330.0,
+                -30.0
             ],
             "pins": {
                 "BUS:in": {
@@ -82,8 +82,8 @@
             "is_joint": true,
             "image": "ethercatservo",
             "pos": [
-                500.0,
-                -20.0
+                640.0,
+                -30.0
             ],
             "pins": {
                 "BUS:in": {
@@ -97,8 +97,8 @@
             "uid": "gpioin0",
             "image": "proximity",
             "pos": [
-                910.0,
-                410.0
+                1410.0,
+                310.0
             ],
             "pins": {
                 "bit": {
@@ -116,8 +116,8 @@
             "uid": "gpioout0",
             "image": "relay",
             "pos": [
-                970.0,
-                510.0
+                1470.0,
+                410.0
             ],
             "pins": {
                 "bit": {
@@ -133,10 +133,10 @@
     ],
     "flow": {
         "view": {
-            "scale": 0.91,
+            "scale": 0.89,
             "pos": [
-                -7,
-                -98
+                -261,
+                -224
             ]
         }
     }

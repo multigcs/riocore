@@ -87,6 +87,18 @@ SPI clock
  * type: int
  * default: 10000000
 
+### async:
+async
+
+ * type: bool
+ * default: False
+
+### frame:
+frame size
+
+ * type: select
+ * default: full
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -135,6 +147,8 @@ SPI clock
     "gw": "192.168.10.1",
     "port": 2390,
     "speed": 10000000,
+    "async": false,
+    "frame": "full",
     "pins": {
         "mosi": {
             "pin": "0",

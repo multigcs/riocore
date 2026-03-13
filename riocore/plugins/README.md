@@ -78,14 +78,6 @@
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
@@ -133,14 +125,6 @@
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
 |  | [spipoti](spipoti/README.md) | spi digital poti | <img src="spipoti/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
-|  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
 |  | [tlc549c](tlc549c/README.md) | spi adc input | <img src="tlc549c/image.png" height="48"> |  |
 |  | [tm1638b8s7l8](tm1638b8s7l8/README.md) | 7segment display with buttons | <img src="tm1638b8s7l8/image.png" height="48"> |  |
 |  | [udpoti](udpoti/README.md) | digital-poti with up/down+dir interface | <img src="udpoti/image.png" height="48"> |  |
@@ -174,7 +158,6 @@
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> |  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> |  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> |  |
-|  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |
 |  | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> |  |
 |  | [camjog](camjog/README.md) | gui component to jog via camera image | <img src="camjog/image.png" height="48"> |  |
 |  | [ethercat](ethercat/README.md) | Ethercat - Master | <img src="ethercat/image.png" height="48"> | Experimental  |
@@ -191,4 +174,3 @@
 |  | [rpigpio](rpigpio/README.md) | gpio support | <img src="rpigpio/image.png" height="48"> |  |
 |  | [rpii2c](rpii2c/README.md) | gpio support over i2c port | <img src="rpii2c/image.png" height="48"> |  |
 |  | [spacenav](spacenav/README.md) | 3d mouse support | <img src="spacenav/image.png" height="48"> |  |
-|  | [sserial](sserial/README.md) | support for custom mesa-sserial devices | <img src="sserial/image.png" height="48"> |  |
