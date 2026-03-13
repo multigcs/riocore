@@ -46,15 +46,7 @@ else
 fi
 if ! which linuxcnc >/dev/null
 then
-	echo "	linuxcnc \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
-	echo "	halcompile \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
-else
-	if ! test -e /usr/lib/linuxcnc/modules/rio.so
-	then
-		echo "	halcompile \"install rio component loader \" ON \\" >> ${TEMPFILE}2
-	else
-		echo "	halcompile \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
-	fi
+	echo "	linuxcnc \"install linuxcnc packages \" OFF \\" >> ${TEMPFILE}2
 fi
 if ! test -d riocore/toolchains/oss-cad-suite && ! which nextpnr-himbaechel >/dev/null
 then
