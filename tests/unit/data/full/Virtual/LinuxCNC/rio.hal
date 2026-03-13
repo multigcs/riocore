@@ -111,6 +111,7 @@ net func_and_13_1_and                    <= func.and_13.1.and
 net sig_riov_Bool1_value                 => func.and_13.1.in-00
 net sig_riov_Bool2_value                 => func.and_13.1.in-01
 
+net sig_0                                => func.deadzone-1.center
 net sig_riov_Float1_value                => func.deadzone-1.in
 net func_deadzone-1_out                  <= func.deadzone-1.out
 
@@ -170,6 +171,11 @@ net sig_riov_Float1_value                => func.wcomp_under_9.1.in
 net sig_riov_Float2_value                => func.wcomp_under_9.1.max
 net sig_riov_Float2_value                => func.wcomp_under_9.1.min
 net func_wcomp_under_9_1_under           <= func.wcomp_under_9.1.under
+
+#################################################################################
+# 0
+#################################################################################
+net sig_0                                <= 0
 
 #################################################################################
 # halui
@@ -258,7 +264,6 @@ net j2enable                             => board0.stepdir2.enable
 #################################################################################
 # setp
 #################################################################################
-setp func.deadzone-1.center                 0
 setp func.deadzone-1.threshold              50
 setp func.div2_6.1.in1                      5
 setp func.limit1-1.max                      50

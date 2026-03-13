@@ -5,7 +5,7 @@ module stepdir
         input clk,
         input enable,
         input signed [31:0] velocity,
-        output signed [31:0] position,
+        output reg signed [31:0] position = 32'd0,
         output reg dir = 0,
         output reg step = 0,
         output en
@@ -16,9 +16,7 @@ module stepdir
     reg [31:0] jointCounter = 32'd0;
     reg [31:0] velocityAbs = 32'd0;
     reg [31:0] pulseEnd = 32'd0;
-    reg signed [31:0] positionMem = 32'd0;
     assign en = enable;
-    assign position = positionMem;
 
     always @ (posedge clk) begin
         if (dirFlag) begin
@@ -26,17 +24,18 @@ module stepdir
         end else begin
             velocityAbs <= -velocity;
         end
+    end
 
+    always @ (posedge clk) begin
         if (PULSE_LEN == 0) begin
             pulseEnd <= velocityAbs / 2;
         end else begin
             pulseEnd <= PULSE_LEN;
         end
+    end
 
-        if ((velocity == 0 || enable == 0) && step == 0) begin
-            jointCounter <= 0;
-        end else if (jointCounter < velocityAbs) begin
-
+    always @ (posedge clk) begin
+        if (velocity != 0 && enable == 1 && jointCounter < velocityAbs) begin
             if (step == 0 && dir != dirFlag) begin
                 dir <= dirFlag;
                 dir_changed <= 1;
@@ -50,12 +49,11 @@ module stepdir
                 jointCounter <= 0;
 
             end else begin
-
                 if (jointCounter == 0) begin
                     if (dir) begin
-                        positionMem <= positionMem + 1;
+                        position <= position + 1;
                     end else begin
-                        positionMem <= positionMem - 1;
+                        position <= position - 1;
                     end
                 end
 

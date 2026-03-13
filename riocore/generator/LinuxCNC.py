@@ -198,6 +198,8 @@ class LinuxCNC:
         "short": "st",
         "long": "lg",
         "satmcu": "sm",
+        "button": "btn",
+        "jogwheel": "jw",
     }
 
     def __init__(self, project):
