@@ -72,10 +72,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         board = self.config.get("board")
         if family.startswith("GW"):
             device_family = family
-            if shutil.which("nextpnr-himbaechel") is not None:
-                family = "himbaechel"
-            else:
-                family = "gowin"
+            family = "himbaechel"
 
         if sys.platform == "linux":
             nextpnr = shutil.which(f"{prefix}nextpnr-{family}")
