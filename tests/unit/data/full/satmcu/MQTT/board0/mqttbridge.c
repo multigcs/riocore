@@ -18,12 +18,13 @@
 #define MODNAME "riocomp-board0"
 #define PREFIX "board0"
 #define JOINTS 3
-#define BUFFER_SIZE_RX 38
-#define BUFFER_SIZE_TX 18
-#define OSC_CLOCK 30000000
-#define UDP_IP "192.168.11.194"
+#define BUFFER_SIZE_RX 28
+#define BUFFER_SIZE_TX 20
+#define OSC_CLOCK 27000000
+#define UDP_IP "192.168.11.201"
 #define SRC_PORT 2391
 #define DST_PORT 2390
+#define UDP_ASYNC 1
 
 
 struct timespec ns_timestamp;
@@ -65,6 +66,14 @@ typedef struct {
     bool   *sys_simulation;
     uint32_t   *fpga_timestamp;
     float *duration;
+    float MULTIPLEXER_INPUT_VALUE;
+    uint8_t MULTIPLEXER_INPUT_ID;
+    bool   *SIGIN_BOARD0_BITIN0_BIT;
+    bool   *SIGIN_BOARD0_BITIN0_BIT_not;
+    bool   *SIGIN_BOARD0_BITIN1_BIT;
+    bool   *SIGIN_BOARD0_BITIN1_BIT_not;
+    bool   *SIGIN_BOARD0_BITIN2_BIT;
+    bool   *SIGIN_BOARD0_BITIN2_BIT_not;
     float *SIGOUT_BOARD0_STEPDIR0_VELOCITY;
     float *SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE;
     float *SIGOUT_BOARD0_STEPDIR0_VELOCITY_OFFSET;
@@ -85,8 +94,6 @@ typedef struct {
     float *SIGIN_BOARD0_STEPDIR1_POSITION_SCALE;
     float *SIGIN_BOARD0_STEPDIR1_POSITION_OFFSET;
     bool   *SIGOUT_BOARD0_STEPDIR1_ENABLE;
-    bool   *SIGIN_BOARD0_BITIN0_BIT;
-    bool   *SIGIN_BOARD0_BITIN0_BIT_not;
     float *SIGOUT_BOARD0_STEPDIR2_VELOCITY;
     float *SIGOUT_BOARD0_STEPDIR2_VELOCITY_SCALE;
     float *SIGOUT_BOARD0_STEPDIR2_VELOCITY_OFFSET;
@@ -97,68 +104,86 @@ typedef struct {
     float *SIGIN_BOARD0_STEPDIR2_POSITION_SCALE;
     float *SIGIN_BOARD0_STEPDIR2_POSITION_OFFSET;
     bool   *SIGOUT_BOARD0_STEPDIR2_ENABLE;
-    bool   *SIGOUT_BOARD0_BITOUT0_BIT;
-    bool   *SIGOUT_BOARD0_BITOUT1_BIT;
-    bool   *SIGIN_BOARD0_BITIN1_BIT;
-    bool   *SIGIN_BOARD0_BITIN1_BIT_not;
-    bool   *SIGIN_BOARD0_BITIN2_BIT;
-    bool   *SIGIN_BOARD0_BITIN2_BIT_not;
     bool   *SIGIN_BOARD0_BITIN3_BIT;
     bool   *SIGIN_BOARD0_BITIN3_BIT_not;
     bool   *SIGIN_BOARD0_BITIN4_BIT;
     bool   *SIGIN_BOARD0_BITIN4_BIT_not;
     bool   *SIGIN_BOARD0_BITIN5_BIT;
     bool   *SIGIN_BOARD0_BITIN5_BIT_not;
-    bool   *SIGIN_BOARD0_UARTSUB1_TIMEOUT;
-    bool   *SIGIN_BOARD0_UARTSUB1_TIMEOUT_not;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT0_BIT;
+    float *SIGOUT_BOARD0_PWMOUT0_DTY;
+    float *SIGOUT_BOARD0_PWMOUT0_DTY_SCALE;
+    float *SIGOUT_BOARD0_PWMOUT0_DTY_OFFSET;
+    bool   *SIGOUT_BOARD0_PWMOUT0_ENABLE;
+    bool   *SIGOUT_BOARD0_BITOUT0_BIT;
+    bool   *SIGOUT_BOARD0_BITOUT1_BIT;
+    bool   *SIGIN_BOARD0_BITIN6_BIT;
+    bool   *SIGIN_BOARD0_BITIN6_BIT_not;
+    bool   *SIGIN_BOARD0_BITIN7_BIT;
+    bool   *SIGIN_BOARD0_BITIN7_BIT_not;
+    float *SIGIN_BOARD0_SATMCU0_FEED_POSITION;
+    float *SIGIN_BOARD0_SATMCU0_FEED_POSITION_ABS;
+    int32_t *SIGIN_BOARD0_SATMCU0_FEED_POSITION_S32;
+    uint32_t *SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS;
+    float *SIGIN_BOARD0_SATMCU0_FEED_POSITION_SCALE;
+    float *SIGIN_BOARD0_SATMCU0_FEED_POSITION_OFFSET;
     bool   *SIGIN_BOARD0_UARTSUB0_TIMEOUT;
     bool   *SIGIN_BOARD0_UARTSUB0_TIMEOUT_not;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT1_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT2_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT3_BIT;
-    bool   *SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT;
-    bool   *SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT_not;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_ABS;
-    int32_t *SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_S32;
-    uint32_t *SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_U32_ABS;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_SCALE;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_OFFSET;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY_RPM;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_ABS;
-    int32_t *SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_S32;
-    uint32_t *SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_U32_ABS;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_SCALE;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_OFFSET;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY_RPM;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_ABS;
-    int32_t *SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_S32;
-    uint32_t *SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_U32_ABS;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_SCALE;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_OFFSET;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY_RPM;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_ABS;
-    int32_t *SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_S32;
-    uint32_t *SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_U32_ABS;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_SCALE;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_OFFSET;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY;
-    float *SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY_RPM;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT4_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT5_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT6_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT7_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU0_GPIOOUT8_BIT;
-    bool   *SIGOUT_BOARD0_SATMCU1_GPIOOUT9_BIT;
-    bool   *SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT;
-    bool   *SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT_not;
+    float *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION;
+    float *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_ABS;
+    int32_t *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_S32;
+    uint32_t *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_U32_ABS;
+    float *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE;
+    float *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_OFFSET;
+    float *SIGIN_BOARD0_SATMCU0_RAPID_POSITION;
+    float *SIGIN_BOARD0_SATMCU0_RAPID_POSITION_ABS;
+    int32_t *SIGIN_BOARD0_SATMCU0_RAPID_POSITION_S32;
+    uint32_t *SIGIN_BOARD0_SATMCU0_RAPID_POSITION_U32_ABS;
+    float *SIGIN_BOARD0_SATMCU0_RAPID_POSITION_SCALE;
+    float *SIGIN_BOARD0_SATMCU0_RAPID_POSITION_OFFSET;
+    float *SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION;
+    float *SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_ABS;
+    int32_t *SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_S32;
+    uint32_t *SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_U32_ABS;
+    float *SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_SCALE;
+    float *SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_OFFSET;
+    bool   *SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_SCALE0_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SCALE0_BIT_not;
+    bool   *SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SCALE1_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SCALE1_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_SCALE2_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SCALE2_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_SELECTX_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SELECTX_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_SELECTY_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SELECTY_BIT_not;
+    bool   *SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT;
+    bool   *SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT;
+    bool   *SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT;
+    bool   *SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT;
+    bool   *SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SELECTZ_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_SELECTZ_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1_not;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2;
+    bool   *SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2_not;
+    bool   *SIGIN_BOARD0_SATMCU0_CBUTTON_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_CBUTTON_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT_not;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1_not;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2;
+    bool   *SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2_not;
     // raw variables
     int32_t VAROUT32_STEPDIR0_VELOCITY;
     int32_t VARIN32_STEPDIR0_POSITION;
@@ -166,35 +191,42 @@ typedef struct {
     int32_t VARIN32_STEPDIR1_POSITION;
     int32_t VAROUT32_STEPDIR2_VELOCITY;
     int32_t VARIN32_STEPDIR2_POSITION;
-    int32_t VARIN32_ENCODER0_POSITION;
-    int32_t VARIN32_ENCODER1_POSITION;
-    int32_t VARIN32_ENCODER2_POSITION;
-    int32_t VARIN32_ENCODER3_POSITION;
-    bool VAROUT1_STEPDIR0_ENABLE;
-    bool VAROUT1_STEPDIR1_ENABLE;
+    int32_t VARIN32_FEED_POSITION;
+    int32_t VARIN32_SPINDLE_POSITION;
+    int32_t VARIN32_RAPID_POSITION;
+    int32_t VARIN32_JOGWHEEL_POSITION;
+    int16_t VAROUT16_PWMOUT0_DTY;
     bool VARIN1_BITIN0_BIT;
-    bool VAROUT1_STEPDIR2_ENABLE;
-    bool VAROUT1_BITOUT0_BIT;
-    bool VAROUT1_BITOUT1_BIT;
     bool VARIN1_BITIN1_BIT;
     bool VARIN1_BITIN2_BIT;
+    bool VAROUT1_STEPDIR0_ENABLE;
+    bool VAROUT1_STEPDIR1_ENABLE;
+    bool VAROUT1_STEPDIR2_ENABLE;
     bool VARIN1_BITIN3_BIT;
     bool VARIN1_BITIN4_BIT;
     bool VARIN1_BITIN5_BIT;
-    bool VARIN1_UARTSUB1_TIMEOUT;
-    bool VAROUT1_GPIOOUT0_BIT;
+    bool VAROUT1_PWMOUT0_ENABLE;
+    bool VAROUT1_BITOUT0_BIT;
+    bool VAROUT1_BITOUT1_BIT;
+    bool VARIN1_BITIN6_BIT;
+    bool VARIN1_BITIN7_BIT;
     bool VARIN1_UARTSUB0_TIMEOUT;
-    bool VAROUT1_GPIOOUT1_BIT;
-    bool VAROUT1_GPIOOUT2_BIT;
-    bool VAROUT1_GPIOOUT3_BIT;
-    bool VARIN1_GPIOIN0_BIT;
-    bool VAROUT1_GPIOOUT4_BIT;
-    bool VAROUT1_GPIOOUT5_BIT;
-    bool VAROUT1_GPIOOUT6_BIT;
-    bool VAROUT1_GPIOOUT7_BIT;
-    bool VAROUT1_GPIOOUT8_BIT;
-    bool VAROUT1_GPIOOUT9_BIT;
-    bool VARIN1_GPIOIN1_BIT;
+    bool VARIN1_MPGESTOP_BIT;
+    bool VARIN1_SCALE0_BIT;
+    bool VAROUT1_LEDSCALE0_BIT;
+    bool VARIN1_SCALE1_BIT;
+    bool VARIN1_SCALE2_BIT;
+    bool VARIN1_SELECTX_BIT;
+    bool VARIN1_SELECTY_BIT;
+    bool VAROUT1_LEDSCALE1_BIT;
+    bool VAROUT1_LEDSCALE2_BIT;
+    bool VAROUT1_SELECTEDX_BIT;
+    bool VAROUT1_SELECTEDY_BIT;
+    bool VAROUT1_SELECTEDZ_BIT;
+    bool VARIN1_SELECTZ_BIT;
+    bool VARIN1_LBUTTON_BIT;
+    bool VARIN1_CBUTTON_BIT;
+    bool VARIN1_RBUTTON_BIT;
 } data_t;
 static data_t *data;
 
@@ -206,35 +238,42 @@ data_t *register_signals(void) {
     data->VARIN32_STEPDIR1_POSITION = 0;
     data->VAROUT32_STEPDIR2_VELOCITY = 0;
     data->VARIN32_STEPDIR2_POSITION = 0;
-    data->VARIN32_ENCODER0_POSITION = 0;
-    data->VARIN32_ENCODER1_POSITION = 0;
-    data->VARIN32_ENCODER2_POSITION = 0;
-    data->VARIN32_ENCODER3_POSITION = 0;
-    data->VAROUT1_STEPDIR0_ENABLE = 0;
-    data->VAROUT1_STEPDIR1_ENABLE = 0;
+    data->VARIN32_FEED_POSITION = 0;
+    data->VARIN32_SPINDLE_POSITION = 0;
+    data->VARIN32_RAPID_POSITION = 0;
+    data->VARIN32_JOGWHEEL_POSITION = 0;
+    data->VAROUT16_PWMOUT0_DTY = 0;
     data->VARIN1_BITIN0_BIT = 0;
-    data->VAROUT1_STEPDIR2_ENABLE = 0;
-    data->VAROUT1_BITOUT0_BIT = 0;
-    data->VAROUT1_BITOUT1_BIT = 0;
     data->VARIN1_BITIN1_BIT = 0;
     data->VARIN1_BITIN2_BIT = 0;
+    data->VAROUT1_STEPDIR0_ENABLE = 0;
+    data->VAROUT1_STEPDIR1_ENABLE = 0;
+    data->VAROUT1_STEPDIR2_ENABLE = 0;
     data->VARIN1_BITIN3_BIT = 0;
     data->VARIN1_BITIN4_BIT = 0;
     data->VARIN1_BITIN5_BIT = 0;
-    data->VARIN1_UARTSUB1_TIMEOUT = 0;
-    data->VAROUT1_GPIOOUT0_BIT = 0;
+    data->VAROUT1_PWMOUT0_ENABLE = 0;
+    data->VAROUT1_BITOUT0_BIT = 0;
+    data->VAROUT1_BITOUT1_BIT = 0;
+    data->VARIN1_BITIN6_BIT = 0;
+    data->VARIN1_BITIN7_BIT = 0;
     data->VARIN1_UARTSUB0_TIMEOUT = 0;
-    data->VAROUT1_GPIOOUT1_BIT = 0;
-    data->VAROUT1_GPIOOUT2_BIT = 0;
-    data->VAROUT1_GPIOOUT3_BIT = 0;
-    data->VARIN1_GPIOIN0_BIT = 0;
-    data->VAROUT1_GPIOOUT4_BIT = 0;
-    data->VAROUT1_GPIOOUT5_BIT = 0;
-    data->VAROUT1_GPIOOUT6_BIT = 0;
-    data->VAROUT1_GPIOOUT7_BIT = 0;
-    data->VAROUT1_GPIOOUT8_BIT = 0;
-    data->VAROUT1_GPIOOUT9_BIT = 0;
-    data->VARIN1_GPIOIN1_BIT = 0;
+    data->VARIN1_MPGESTOP_BIT = 0;
+    data->VARIN1_SCALE0_BIT = 0;
+    data->VAROUT1_LEDSCALE0_BIT = 0;
+    data->VARIN1_SCALE1_BIT = 0;
+    data->VARIN1_SCALE2_BIT = 0;
+    data->VARIN1_SELECTX_BIT = 0;
+    data->VARIN1_SELECTY_BIT = 0;
+    data->VAROUT1_LEDSCALE1_BIT = 0;
+    data->VAROUT1_LEDSCALE2_BIT = 0;
+    data->VAROUT1_SELECTEDX_BIT = 0;
+    data->VAROUT1_SELECTEDY_BIT = 0;
+    data->VAROUT1_SELECTEDZ_BIT = 0;
+    data->VARIN1_SELECTZ_BIT = 0;
+    data->VARIN1_LBUTTON_BIT = 0;
+    data->VARIN1_CBUTTON_BIT = 0;
+    data->VARIN1_RBUTTON_BIT = 0;
 
     data->sys_error = (bool*)malloc(sizeof(bool));
     data->sys_status = (bool*)malloc(sizeof(bool));
@@ -244,6 +283,18 @@ data_t *register_signals(void) {
     *data->sys_simulation = 0;
     data->duration = (float*)malloc(sizeof(float));
     *data->duration = rtapi_get_time();
+    data->SIGIN_BOARD0_BITIN0_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN0_BIT = 0;
+    data->SIGIN_BOARD0_BITIN0_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN0_BIT;
+    data->SIGIN_BOARD0_BITIN1_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN1_BIT = 0;
+    data->SIGIN_BOARD0_BITIN1_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN1_BIT;
+    data->SIGIN_BOARD0_BITIN2_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN2_BIT = 0;
+    data->SIGIN_BOARD0_BITIN2_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN2_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN2_BIT;
     data->SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE = (float*)malloc(sizeof(float));
     *data->SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE = 1.0;
     data->SIGOUT_BOARD0_STEPDIR0_VELOCITY_OFFSET = (float*)malloc(sizeof(float));
@@ -284,10 +335,6 @@ data_t *register_signals(void) {
     *data->SIGIN_BOARD0_STEPDIR1_POSITION_U32_ABS = 0;
     data->SIGOUT_BOARD0_STEPDIR1_ENABLE = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_STEPDIR1_ENABLE = 0;
-    data->SIGIN_BOARD0_BITIN0_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN0_BIT = 0;
-    data->SIGIN_BOARD0_BITIN0_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN0_BIT;
     data->SIGOUT_BOARD0_STEPDIR2_VELOCITY_SCALE = (float*)malloc(sizeof(float));
     *data->SIGOUT_BOARD0_STEPDIR2_VELOCITY_SCALE = 1.0;
     data->SIGOUT_BOARD0_STEPDIR2_VELOCITY_OFFSET = (float*)malloc(sizeof(float));
@@ -308,18 +355,6 @@ data_t *register_signals(void) {
     *data->SIGIN_BOARD0_STEPDIR2_POSITION_U32_ABS = 0;
     data->SIGOUT_BOARD0_STEPDIR2_ENABLE = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_STEPDIR2_ENABLE = 0;
-    data->SIGOUT_BOARD0_BITOUT0_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_BITOUT0_BIT = 0;
-    data->SIGOUT_BOARD0_BITOUT1_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_BITOUT1_BIT = 0;
-    data->SIGIN_BOARD0_BITIN1_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN1_BIT = 0;
-    data->SIGIN_BOARD0_BITIN1_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN1_BIT;
-    data->SIGIN_BOARD0_BITIN2_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN2_BIT = 0;
-    data->SIGIN_BOARD0_BITIN2_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN2_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN2_BIT;
     data->SIGIN_BOARD0_BITIN3_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN3_BIT = 0;
     data->SIGIN_BOARD0_BITIN3_BIT_not = (bool*)malloc(sizeof(bool));
@@ -332,106 +367,154 @@ data_t *register_signals(void) {
     *data->SIGIN_BOARD0_BITIN5_BIT = 0;
     data->SIGIN_BOARD0_BITIN5_BIT_not = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN5_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN5_BIT;
-    data->SIGIN_BOARD0_UARTSUB1_TIMEOUT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_UARTSUB1_TIMEOUT = 0;
-    data->SIGIN_BOARD0_UARTSUB1_TIMEOUT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_UARTSUB1_TIMEOUT_not = 1 - *data->SIGIN_BOARD0_UARTSUB1_TIMEOUT;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT0_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT0_BIT = 0;
+    data->SIGOUT_BOARD0_PWMOUT0_DTY_SCALE = (float*)malloc(sizeof(float));
+    *data->SIGOUT_BOARD0_PWMOUT0_DTY_SCALE = 1.0;
+    data->SIGOUT_BOARD0_PWMOUT0_DTY_OFFSET = (float*)malloc(sizeof(float));
+    *data->SIGOUT_BOARD0_PWMOUT0_DTY_OFFSET = 0.0;
+    data->SIGOUT_BOARD0_PWMOUT0_DTY = (float*)malloc(sizeof(float));
+    *data->SIGOUT_BOARD0_PWMOUT0_DTY = 0;
+    data->SIGOUT_BOARD0_PWMOUT0_ENABLE = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_PWMOUT0_ENABLE = 0;
+    data->SIGOUT_BOARD0_BITOUT0_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_BITOUT0_BIT = 0;
+    data->SIGOUT_BOARD0_BITOUT1_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_BITOUT1_BIT = 0;
+    data->SIGIN_BOARD0_BITIN6_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN6_BIT = 0;
+    data->SIGIN_BOARD0_BITIN6_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN6_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN6_BIT;
+    data->SIGIN_BOARD0_BITIN7_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN7_BIT = 0;
+    data->SIGIN_BOARD0_BITIN7_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_BITIN7_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN7_BIT;
+    data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_SCALE = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_SCALE = 1.0;
+    data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_OFFSET = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_OFFSET = 0.0;
+    data->SIGIN_BOARD0_SATMCU0_FEED_POSITION = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION = 0;
+    data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_ABS = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_S32 = 0;
+    data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS = 0;
     data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = 0;
     data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = 1 - *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT1_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT1_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT2_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT2_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT3_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT3_BIT = 0;
-    data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT = 0;
-    data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_SCALE = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_SCALE = 1.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_OFFSET = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_OFFSET = 0.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_ABS = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_S32 = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_U32_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY_RPM = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY_RPM = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_SCALE = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_SCALE = 1.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_OFFSET = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_OFFSET = 0.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_ABS = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_S32 = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_U32_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY_RPM = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY_RPM = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_SCALE = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_SCALE = 1.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_OFFSET = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_OFFSET = 0.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_ABS = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_S32 = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_U32_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY_RPM = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY_RPM = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_SCALE = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_SCALE = 1.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_OFFSET = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_OFFSET = 0.0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_ABS = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_S32 = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_U32_ABS = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY = 0;
-    data->SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY_RPM = (float*)malloc(sizeof(float));
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY_RPM = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT4_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT4_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT5_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT5_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT6_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT6_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT7_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT7_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU0_GPIOOUT8_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT8_BIT = 0;
-    data->SIGOUT_BOARD0_SATMCU1_GPIOOUT9_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_SATMCU1_GPIOOUT9_BIT = 0;
-    data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT = 0;
-    data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT;
+    data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE = 1.0;
+    data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_OFFSET = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_OFFSET = 0.0;
+    data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION = 0;
+    data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_ABS = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_S32 = 0;
+    data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_U32_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_SCALE = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_SCALE = 1.0;
+    data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_OFFSET = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_OFFSET = 0.0;
+    data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION = 0;
+    data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_ABS = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_S32 = 0;
+    data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_U32_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_SCALE = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_SCALE = 1.0;
+    data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_OFFSET = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_OFFSET = 0.0;
+    data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION = 0;
+    data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_ABS = (float*)malloc(sizeof(float));
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_S32 = (int32_t*)malloc(sizeof(int32_t));
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_S32 = 0;
+    data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_U32_ABS = 0;
+    data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT;
+    data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT;
+    data->SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT;
+    data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT;
+    data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT;
+    data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT;
+    data->SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT = 0;
+    data->SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT = 0;
+    data->SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT = 0;
+    data->SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT = 0;
+    data->SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT = 0;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1 = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1 = 0;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1_not = 1 - *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2 = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2 = 0;
+    data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2_not = 1 - *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2;
+    data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT = 0;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT = 0;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT_not = 1 - *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1 = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1 = 0;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1_not = 1 - *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2 = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2 = 0;
+    data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2_not = 1 - *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2;
     return data;
 }
 
@@ -664,6 +747,10 @@ uint16_t crc16_update(uint16_t crc, uint8_t a) {
 
 
 
+
+
+
+
 /***********************************************************************/
 
 // Generated by component_signal_converter()
@@ -713,6 +800,19 @@ void convert_varout1_stepdir2_enable(data_t *data) {
     data->VAROUT1_STEPDIR2_ENABLE = value;
 }
 
+void convert_varout16_pwmout0_dty(data_t *data) {
+    float value = *data->SIGOUT_BOARD0_PWMOUT0_DTY;
+    value = value * *data->SIGOUT_BOARD0_PWMOUT0_DTY_SCALE;
+    value = value + *data->SIGOUT_BOARD0_PWMOUT0_DTY_OFFSET;
+    value = (value - 0) * (OSC_CLOCK / 1000) / (100 - 0);
+    data->VAROUT16_PWMOUT0_DTY = value;
+}
+
+void convert_varout1_pwmout0_enable(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_PWMOUT0_ENABLE;
+    data->VAROUT1_PWMOUT0_ENABLE = value;
+}
+
 void convert_varout1_bitout0_bit(data_t *data) {
     bool value = *data->SIGOUT_BOARD0_BITOUT0_BIT;
     data->VAROUT1_BITOUT0_BIT = value;
@@ -723,58 +823,56 @@ void convert_varout1_bitout1_bit(data_t *data) {
     data->VAROUT1_BITOUT1_BIT = value;
 }
 
-void convert_varout1_gpioout0_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT0_BIT;
-    data->VAROUT1_GPIOOUT0_BIT = value;
+void convert_varout1_ledscale0_bit(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT;
+    data->VAROUT1_LEDSCALE0_BIT = value;
 }
 
-void convert_varout1_gpioout1_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT1_BIT;
-    data->VAROUT1_GPIOOUT1_BIT = value;
+void convert_varout1_ledscale1_bit(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT;
+    data->VAROUT1_LEDSCALE1_BIT = value;
 }
 
-void convert_varout1_gpioout2_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT2_BIT;
-    data->VAROUT1_GPIOOUT2_BIT = value;
+void convert_varout1_ledscale2_bit(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT;
+    data->VAROUT1_LEDSCALE2_BIT = value;
 }
 
-void convert_varout1_gpioout3_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT3_BIT;
-    data->VAROUT1_GPIOOUT3_BIT = value;
+void convert_varout1_selectedx_bit(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT;
+    data->VAROUT1_SELECTEDX_BIT = value;
 }
 
-void convert_varout1_gpioout4_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT4_BIT;
-    data->VAROUT1_GPIOOUT4_BIT = value;
+void convert_varout1_selectedy_bit(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT;
+    data->VAROUT1_SELECTEDY_BIT = value;
 }
 
-void convert_varout1_gpioout5_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT5_BIT;
-    data->VAROUT1_GPIOOUT5_BIT = value;
-}
-
-void convert_varout1_gpioout6_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT6_BIT;
-    data->VAROUT1_GPIOOUT6_BIT = value;
-}
-
-void convert_varout1_gpioout7_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT7_BIT;
-    data->VAROUT1_GPIOOUT7_BIT = value;
-}
-
-void convert_varout1_gpioout8_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT8_BIT;
-    data->VAROUT1_GPIOOUT8_BIT = value;
-}
-
-void convert_varout1_gpioout9_bit(data_t *data) {
-    bool value = *data->SIGOUT_BOARD0_SATMCU1_GPIOOUT9_BIT;
-    data->VAROUT1_GPIOOUT9_BIT = value;
+void convert_varout1_selectedz_bit(data_t *data) {
+    bool value = *data->SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT;
+    data->VAROUT1_SELECTEDZ_BIT = value;
 }
 
 
 // input: rxBuffer -> VAROUT -> calc -> SIGOUT
+void convert_sigin_board0_bitin0_bit(data_t *data) {
+    bool value = data->VARIN1_BITIN0_BIT;
+    *data->SIGIN_BOARD0_BITIN0_BIT = value;
+    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_bitin1_bit(data_t *data) {
+    bool value = data->VARIN1_BITIN1_BIT;
+    *data->SIGIN_BOARD0_BITIN1_BIT = value;
+    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_bitin2_bit(data_t *data) {
+    bool value = data->VARIN1_BITIN2_BIT;
+    *data->SIGIN_BOARD0_BITIN2_BIT = value;
+    *data->SIGIN_BOARD0_BITIN2_BIT_not = 1 - value;
+}
+
 void convert_sigin_board0_stepdir0_position(data_t *data) {
     float value = data->VARIN32_STEPDIR0_POSITION;
     float offset = *data->SIGIN_BOARD0_STEPDIR0_POSITION_OFFSET;
@@ -783,6 +881,13 @@ void convert_sigin_board0_stepdir0_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_BOARD0_STEPDIR0_POSITION + *data->SIGOUT_BOARD0_STEPDIR0_VELOCITY / 1000.0;
+        // simulating X homing
+        float home_offset = 80.0;
+        if (value < home_offset) {
+            data->VARIN1_BITIN0_BIT = 1;
+        } else {
+            data->VARIN1_BITIN0_BIT = 0;
+        }
     }
     *data->SIGIN_BOARD0_STEPDIR0_POSITION_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR0_POSITION_S32 = value;
@@ -798,17 +903,18 @@ void convert_sigin_board0_stepdir1_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_BOARD0_STEPDIR1_POSITION + *data->SIGOUT_BOARD0_STEPDIR1_VELOCITY / 1000.0;
+        // simulating Y homing
+        float home_offset = 20.0;
+        if (value < home_offset) {
+            data->VARIN1_BITIN1_BIT = 1;
+        } else {
+            data->VARIN1_BITIN1_BIT = 0;
+        }
     }
     *data->SIGIN_BOARD0_STEPDIR1_POSITION_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR1_POSITION_S32 = value;
     *data->SIGIN_BOARD0_STEPDIR1_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR1_POSITION = value;
-}
-
-void convert_sigin_board0_bitin0_bit(data_t *data) {
-    bool value = data->VARIN1_BITIN0_BIT;
-    *data->SIGIN_BOARD0_BITIN0_BIT = value;
-    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - value;
 }
 
 void convert_sigin_board0_stepdir2_position(data_t *data) {
@@ -819,23 +925,18 @@ void convert_sigin_board0_stepdir2_position(data_t *data) {
     value = value / scale;
     if (*data->sys_simulation == 1) {
         value = *data->SIGIN_BOARD0_STEPDIR2_POSITION + *data->SIGOUT_BOARD0_STEPDIR2_VELOCITY / 1000.0;
+        // simulating Z homing
+        float home_offset = -15.0;
+        if (value > home_offset) {
+            data->VARIN1_BITIN2_BIT = 1;
+        } else {
+            data->VARIN1_BITIN2_BIT = 0;
+        }
     }
     *data->SIGIN_BOARD0_STEPDIR2_POSITION_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR2_POSITION_S32 = value;
     *data->SIGIN_BOARD0_STEPDIR2_POSITION_U32_ABS = fabs(value);
     *data->SIGIN_BOARD0_STEPDIR2_POSITION = value;
-}
-
-void convert_sigin_board0_bitin1_bit(data_t *data) {
-    bool value = data->VARIN1_BITIN1_BIT;
-    *data->SIGIN_BOARD0_BITIN1_BIT = value;
-    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1 - value;
-}
-
-void convert_sigin_board0_bitin2_bit(data_t *data) {
-    bool value = data->VARIN1_BITIN2_BIT;
-    *data->SIGIN_BOARD0_BITIN2_BIT = value;
-    *data->SIGIN_BOARD0_BITIN2_BIT_not = 1 - value;
 }
 
 void convert_sigin_board0_bitin3_bit(data_t *data) {
@@ -856,10 +957,28 @@ void convert_sigin_board0_bitin5_bit(data_t *data) {
     *data->SIGIN_BOARD0_BITIN5_BIT_not = 1 - value;
 }
 
-void convert_sigin_board0_uartsub1_timeout(data_t *data) {
-    bool value = data->VARIN1_UARTSUB1_TIMEOUT;
-    *data->SIGIN_BOARD0_UARTSUB1_TIMEOUT = value;
-    *data->SIGIN_BOARD0_UARTSUB1_TIMEOUT_not = 1 - value;
+void convert_sigin_board0_bitin6_bit(data_t *data) {
+    bool value = data->VARIN1_BITIN6_BIT;
+    *data->SIGIN_BOARD0_BITIN6_BIT = value;
+    *data->SIGIN_BOARD0_BITIN6_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_bitin7_bit(data_t *data) {
+    bool value = data->VARIN1_BITIN7_BIT;
+    *data->SIGIN_BOARD0_BITIN7_BIT = value;
+    *data->SIGIN_BOARD0_BITIN7_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_feed_position(data_t *data) {
+    float value = data->VARIN32_FEED_POSITION;
+    float offset = *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_OFFSET;
+    float scale = *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_SCALE;
+    value = value + offset;
+    value = value / scale;
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_S32 = value;
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION = value;
 }
 
 void convert_sigin_board0_uartsub0_timeout(data_t *data) {
@@ -868,64 +987,178 @@ void convert_sigin_board0_uartsub0_timeout(data_t *data) {
     *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = 1 - value;
 }
 
-void convert_sigin_board0_satmcu0_gpioin0_bit(data_t *data) {
-    bool value = data->VARIN1_GPIOIN0_BIT;
-    *data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT = value;
-    *data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT_not = 1 - value;
-}
-
-void convert_sigin_board0_satmcu0_encoder0_position(data_t *data) {
-    float value = data->VARIN32_ENCODER0_POSITION;
-    float offset = *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_OFFSET;
-    float scale = *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_SCALE;
+void convert_sigin_board0_satmcu0_spindle_position(data_t *data) {
+    float value = data->VARIN32_SPINDLE_POSITION;
+    float offset = *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_OFFSET;
+    float scale = *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE;
     value = value + offset;
     value = value / scale;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION_U32_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION = value;
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_S32 = value;
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_U32_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION = value;
 }
 
-void convert_sigin_board0_satmcu0_encoder1_position(data_t *data) {
-    float value = data->VARIN32_ENCODER1_POSITION;
-    float offset = *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_OFFSET;
-    float scale = *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_SCALE;
+void convert_sigin_board0_satmcu0_rapid_position(data_t *data) {
+    float value = data->VARIN32_RAPID_POSITION;
+    float offset = *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_OFFSET;
+    float scale = *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_SCALE;
     value = value + offset;
     value = value / scale;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION_U32_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION = value;
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_S32 = value;
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION_U32_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION = value;
 }
 
-void convert_sigin_board0_satmcu0_encoder2_position(data_t *data) {
-    float value = data->VARIN32_ENCODER2_POSITION;
-    float offset = *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_OFFSET;
-    float scale = *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_SCALE;
+void convert_sigin_board0_satmcu0_jogwheel_position(data_t *data) {
+    float value = data->VARIN32_JOGWHEEL_POSITION;
+    float offset = *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_OFFSET;
+    float scale = *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_SCALE;
     value = value + offset;
     value = value / scale;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION_U32_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION = value;
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_S32 = value;
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION_U32_ABS = fabs(value);
+    *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION = value;
 }
 
-void convert_sigin_board0_satmcu0_encoder3_position(data_t *data) {
-    float value = data->VARIN32_ENCODER3_POSITION;
-    float offset = *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_OFFSET;
-    float scale = *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_SCALE;
-    value = value + offset;
-    value = value / scale;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_S32 = value;
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION_U32_ABS = fabs(value);
-    *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION = value;
+void convert_sigin_board0_satmcu0_mpgestop_bit(data_t *data) {
+    bool value = data->VARIN1_MPGESTOP_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT_not = 1 - value;
 }
 
-void convert_sigin_board0_satmcu1_gpioin1_bit(data_t *data) {
-    bool value = data->VARIN1_GPIOIN1_BIT;
-    *data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT = value;
-    *data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT_not = 1 - value;
+void convert_sigin_board0_satmcu0_scale0_bit(data_t *data) {
+    bool value = data->VARIN1_SCALE0_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_scale1_bit(data_t *data) {
+    bool value = data->VARIN1_SCALE1_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_scale2_bit(data_t *data) {
+    bool value = data->VARIN1_SCALE2_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_selectx_bit(data_t *data) {
+    bool value = data->VARIN1_SELECTX_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_selecty_bit(data_t *data) {
+    bool value = data->VARIN1_SELECTY_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_selectz_bit(data_t *data) {
+    bool value = data->VARIN1_SELECTZ_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_lbutton_bit(data_t *data) {
+    bool value = data->VARIN1_LBUTTON_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_lbutton_bit_short(data_t *data) {
+    bool value = data->VARIN1_LBUTTON_BIT;
+    static bool last = 0;
+    static uint16_t press_timer = 0;
+    static uint16_t reset_timer = 0;
+    if (value == 1) {
+        if (press_timer < 9000) {
+            press_timer++;
+        }
+    } else if (last == 1 && value == 0) {
+        reset_timer = servo_period * 100 / 1000000;
+        if ((servo_period * press_timer / 1000000) > 1500) {
+            // long 2
+            *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2 = 1;
+            *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2_not = 0;
+        } else if ((servo_period * press_timer / 1000000) > 500) {
+            // long 1
+            *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1 = 1;
+            *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1_not = 0;
+        } else {
+            // short
+            *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT = 1;
+            *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT_not = 0;
+        }
+    } else if (reset_timer > 0) {
+        reset_timer--;
+    } else {
+        // reset all
+        press_timer = 0;
+        *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT = 0;
+        *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT_not = 1;
+        *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1 = 0;
+        *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1_not = 1;
+        *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2 = 0;
+        *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2_not = 1;
+    }
+    last = value;
+}
+
+void convert_sigin_board0_satmcu0_cbutton_bit(data_t *data) {
+    bool value = data->VARIN1_CBUTTON_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_rbutton_bit(data_t *data) {
+    bool value = data->VARIN1_RBUTTON_BIT;
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT = value;
+    *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_not = 1 - value;
+}
+
+void convert_sigin_board0_satmcu0_rbutton_bit_short(data_t *data) {
+    bool value = data->VARIN1_RBUTTON_BIT;
+    static bool last = 0;
+    static uint16_t press_timer = 0;
+    static uint16_t reset_timer = 0;
+    if (value == 1) {
+        if (press_timer < 9000) {
+            press_timer++;
+        }
+    } else if (last == 1 && value == 0) {
+        reset_timer = servo_period * 100 / 1000000;
+        if ((servo_period * press_timer / 1000000) > 1500) {
+            // long 2
+            *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2 = 1;
+            *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2_not = 0;
+        } else if ((servo_period * press_timer / 1000000) > 500) {
+            // long 1
+            *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1 = 1;
+            *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1_not = 0;
+        } else {
+            // short
+            *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT = 1;
+            *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT_not = 0;
+        }
+    } else if (reset_timer > 0) {
+        reset_timer--;
+    } else {
+        // reset all
+        press_timer = 0;
+        *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT = 0;
+        *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT_not = 1;
+        *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1 = 0;
+        *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1_not = 1;
+        *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2 = 0;
+        *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2_not = 1;
+    }
+    last = value;
 }
 
 
@@ -939,96 +1172,122 @@ void convert_outputs(void) {
     convert_varout1_stepdir1_enable(data);
     convert_varout32_stepdir2_velocity(data);
     convert_varout1_stepdir2_enable(data);
+    convert_varout16_pwmout0_dty(data);
+    convert_varout1_pwmout0_enable(data);
     convert_varout1_bitout0_bit(data);
     convert_varout1_bitout1_bit(data);
-    convert_varout1_gpioout0_bit(data);
-    convert_varout1_gpioout1_bit(data);
-    convert_varout1_gpioout2_bit(data);
-    convert_varout1_gpioout3_bit(data);
-    convert_varout1_gpioout4_bit(data);
-    convert_varout1_gpioout5_bit(data);
-    convert_varout1_gpioout6_bit(data);
-    convert_varout1_gpioout7_bit(data);
-    convert_varout1_gpioout8_bit(data);
-    convert_varout1_gpioout9_bit(data);
+    convert_varout1_ledscale0_bit(data);
+    convert_varout1_ledscale1_bit(data);
+    convert_varout1_ledscale2_bit(data);
+    convert_varout1_selectedx_bit(data);
+    convert_varout1_selectedy_bit(data);
+    convert_varout1_selectedz_bit(data);
 }
 
 void convert_inputs(void) {
     // input: rxBuffer -> VAROUT -> calc -> SIGOUT
-    convert_sigin_board0_stepdir0_position(data);
-    convert_sigin_board0_stepdir1_position(data);
     convert_sigin_board0_bitin0_bit(data);
-    convert_sigin_board0_stepdir2_position(data);
     convert_sigin_board0_bitin1_bit(data);
     convert_sigin_board0_bitin2_bit(data);
+    convert_sigin_board0_stepdir0_position(data);
+    convert_sigin_board0_stepdir1_position(data);
+    convert_sigin_board0_stepdir2_position(data);
     convert_sigin_board0_bitin3_bit(data);
     convert_sigin_board0_bitin4_bit(data);
     convert_sigin_board0_bitin5_bit(data);
-    convert_sigin_board0_uartsub1_timeout(data);
+    convert_sigin_board0_bitin6_bit(data);
+    convert_sigin_board0_bitin7_bit(data);
+    convert_sigin_board0_satmcu0_feed_position(data);
     convert_sigin_board0_uartsub0_timeout(data);
-    convert_sigin_board0_satmcu0_gpioin0_bit(data);
-    convert_sigin_board0_satmcu0_encoder0_position(data);
-    convert_sigin_board0_satmcu0_encoder1_position(data);
-    convert_sigin_board0_satmcu0_encoder2_position(data);
-    convert_sigin_board0_satmcu0_encoder3_position(data);
-    convert_sigin_board0_satmcu1_gpioin1_bit(data);
+    convert_sigin_board0_satmcu0_spindle_position(data);
+    convert_sigin_board0_satmcu0_rapid_position(data);
+    convert_sigin_board0_satmcu0_jogwheel_position(data);
+    convert_sigin_board0_satmcu0_mpgestop_bit(data);
+    convert_sigin_board0_satmcu0_scale0_bit(data);
+    convert_sigin_board0_satmcu0_scale1_bit(data);
+    convert_sigin_board0_satmcu0_scale2_bit(data);
+    convert_sigin_board0_satmcu0_selectx_bit(data);
+    convert_sigin_board0_satmcu0_selecty_bit(data);
+    convert_sigin_board0_satmcu0_selectz_bit(data);
+    convert_sigin_board0_satmcu0_lbutton_bit(data);
+    convert_sigin_board0_satmcu0_lbutton_bit_short(data);
+    convert_sigin_board0_satmcu0_cbutton_bit(data);
+    convert_sigin_board0_satmcu0_rbutton_bit(data);
+    convert_sigin_board0_satmcu0_rbutton_bit_short(data);
 }
 
 // Generated by component_buffer()
 void write_txbuffer(uint8_t *txBuffer) {
-    // PC -> FPGA (143 + 161)
+    // PC -> FPGA (156 + 68)
     int i = 0;
     for (i = 0; i < BUFFER_SIZE_TX; i++) {
         txBuffer[i] = 0;
     }
     // raw vars to txBuffer
-    txBuffer[0] = 0x74;  // 304
-    txBuffer[1] = 0x69;  // 296
-    txBuffer[2] = 0x72;  // 288
-    txBuffer[3] = 0x77;  // 280
-    memcpy(&txBuffer[4], &data->VAROUT32_STEPDIR0_VELOCITY, 4);  // 272
-    memcpy(&txBuffer[8], &data->VAROUT32_STEPDIR1_VELOCITY, 4);  // 240
-    memcpy(&txBuffer[12], &data->VAROUT32_STEPDIR2_VELOCITY, 4);  // 208
-    txBuffer[16] |= (data->VAROUT1_STEPDIR0_ENABLE<<7);  // 176
-    txBuffer[16] |= (data->VAROUT1_STEPDIR1_ENABLE<<6);  // 175
-    txBuffer[16] |= (data->VAROUT1_STEPDIR2_ENABLE<<5);  // 174
-    txBuffer[16] |= (data->VAROUT1_BITOUT0_BIT<<4);  // 173
-    txBuffer[16] |= (data->VAROUT1_BITOUT1_BIT<<3);  // 172
-    txBuffer[16] |= (data->VAROUT1_GPIOOUT0_BIT<<2);  // 171
-    txBuffer[16] |= (data->VAROUT1_GPIOOUT1_BIT<<1);  // 170
-    txBuffer[16] |= (data->VAROUT1_GPIOOUT2_BIT<<0);  // 169
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT3_BIT<<7);  // 168
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT4_BIT<<6);  // 167
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT5_BIT<<5);  // 166
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT6_BIT<<4);  // 165
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT7_BIT<<3);  // 164
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT8_BIT<<2);  // 163
-    txBuffer[17] |= (data->VAROUT1_GPIOOUT9_BIT<<1);  // 162
-    // FILL: 161
+    txBuffer[0] = 0x74;  // 224
+    txBuffer[1] = 0x69;  // 216
+    txBuffer[2] = 0x72;  // 208
+    txBuffer[3] = 0x77;  // 200
+    memcpy(&txBuffer[4], &data->VAROUT32_STEPDIR0_VELOCITY, 4);  // 192
+    memcpy(&txBuffer[8], &data->VAROUT32_STEPDIR1_VELOCITY, 4);  // 160
+    memcpy(&txBuffer[12], &data->VAROUT32_STEPDIR2_VELOCITY, 4);  // 128
+    memcpy(&txBuffer[16], &data->VAROUT16_PWMOUT0_DTY, 2);  // 96
+    txBuffer[18] |= (data->VAROUT1_STEPDIR0_ENABLE<<7);  // 80
+    txBuffer[18] |= (data->VAROUT1_STEPDIR1_ENABLE<<6);  // 79
+    txBuffer[18] |= (data->VAROUT1_STEPDIR2_ENABLE<<5);  // 78
+    txBuffer[18] |= (data->VAROUT1_PWMOUT0_ENABLE<<4);  // 77
+    txBuffer[18] |= (data->VAROUT1_BITOUT0_BIT<<3);  // 76
+    txBuffer[18] |= (data->VAROUT1_BITOUT1_BIT<<2);  // 75
+    txBuffer[18] |= (data->VAROUT1_LEDSCALE0_BIT<<1);  // 74
+    txBuffer[18] |= (data->VAROUT1_LEDSCALE1_BIT<<0);  // 73
+    txBuffer[19] |= (data->VAROUT1_LEDSCALE2_BIT<<7);  // 72
+    txBuffer[19] |= (data->VAROUT1_SELECTEDX_BIT<<6);  // 71
+    txBuffer[19] |= (data->VAROUT1_SELECTEDY_BIT<<5);  // 70
+    txBuffer[19] |= (data->VAROUT1_SELECTEDZ_BIT<<4);  // 69
+    // FILL: 68
 }
 
 void read_rxbuffer(uint8_t *rxBuffer) {
-    // FPGA -> PC (298 + 6)
-    // memcpy(&header, &rxBuffer[0], 4) // 304;
-    memcpy(&fpga_timestamp, &rxBuffer[4], 4);  // 272
-    memcpy(&data->VARIN32_STEPDIR0_POSITION, &rxBuffer[8], 4);  // 240
-    memcpy(&data->VARIN32_STEPDIR1_POSITION, &rxBuffer[12], 4);  // 208
-    memcpy(&data->VARIN32_STEPDIR2_POSITION, &rxBuffer[16], 4);  // 176
-    memcpy(&data->VARIN32_ENCODER0_POSITION, &rxBuffer[20], 4);  // 144
-    memcpy(&data->VARIN32_ENCODER1_POSITION, &rxBuffer[24], 4);  // 112
-    memcpy(&data->VARIN32_ENCODER2_POSITION, &rxBuffer[28], 4);  // 80
-    memcpy(&data->VARIN32_ENCODER3_POSITION, &rxBuffer[32], 4);  // 48
-    data->VARIN1_BITIN0_BIT = (rxBuffer[36] & (1<<7));  // 16
-    data->VARIN1_BITIN1_BIT = (rxBuffer[36] & (1<<6));  // 15
-    data->VARIN1_BITIN2_BIT = (rxBuffer[36] & (1<<5));  // 14
-    data->VARIN1_BITIN3_BIT = (rxBuffer[36] & (1<<4));  // 13
-    data->VARIN1_BITIN4_BIT = (rxBuffer[36] & (1<<3));  // 12
-    data->VARIN1_BITIN5_BIT = (rxBuffer[36] & (1<<2));  // 11
-    data->VARIN1_UARTSUB1_TIMEOUT = (rxBuffer[36] & (1<<1));  // 10
-    data->VARIN1_UARTSUB0_TIMEOUT = (rxBuffer[36] & (1<<0));  // 9
-    data->VARIN1_GPIOIN0_BIT = (rxBuffer[37] & (1<<7));  // 8
-    data->VARIN1_GPIOIN1_BIT = (rxBuffer[37] & (1<<6));  // 7
-    // FILL: 6
+    // FPGA -> PC (219 + 5)
+    // memcpy(&header, &rxBuffer[0], 4) // 224;
+    memcpy(&fpga_timestamp, &rxBuffer[4], 4);  // 192
+    memcpy(&data->MULTIPLEXER_INPUT_VALUE, &rxBuffer[8], 4);
+    memcpy(&data->MULTIPLEXER_INPUT_ID, &rxBuffer[12], 1);
+    memcpy(&data->VARIN32_STEPDIR0_POSITION, &rxBuffer[13], 4);  // 120
+    memcpy(&data->VARIN32_STEPDIR1_POSITION, &rxBuffer[17], 4);  // 88
+    memcpy(&data->VARIN32_STEPDIR2_POSITION, &rxBuffer[21], 4);  // 56
+    data->VARIN1_BITIN0_BIT = (rxBuffer[25] & (1<<7));  // 24
+    data->VARIN1_BITIN1_BIT = (rxBuffer[25] & (1<<6));  // 23
+    data->VARIN1_BITIN2_BIT = (rxBuffer[25] & (1<<5));  // 22
+    data->VARIN1_BITIN3_BIT = (rxBuffer[25] & (1<<4));  // 21
+    data->VARIN1_BITIN4_BIT = (rxBuffer[25] & (1<<3));  // 20
+    data->VARIN1_BITIN5_BIT = (rxBuffer[25] & (1<<2));  // 19
+    data->VARIN1_BITIN6_BIT = (rxBuffer[25] & (1<<1));  // 18
+    data->VARIN1_BITIN7_BIT = (rxBuffer[25] & (1<<0));  // 17
+    data->VARIN1_UARTSUB0_TIMEOUT = (rxBuffer[26] & (1<<7));  // 16
+    data->VARIN1_MPGESTOP_BIT = (rxBuffer[26] & (1<<6));  // 15
+    data->VARIN1_SCALE0_BIT = (rxBuffer[26] & (1<<5));  // 14
+    data->VARIN1_SCALE1_BIT = (rxBuffer[26] & (1<<4));  // 13
+    data->VARIN1_SCALE2_BIT = (rxBuffer[26] & (1<<3));  // 12
+    data->VARIN1_SELECTX_BIT = (rxBuffer[26] & (1<<2));  // 11
+    data->VARIN1_SELECTY_BIT = (rxBuffer[26] & (1<<1));  // 10
+    data->VARIN1_SELECTZ_BIT = (rxBuffer[26] & (1<<0));  // 9
+    data->VARIN1_LBUTTON_BIT = (rxBuffer[27] & (1<<7));  // 8
+    data->VARIN1_CBUTTON_BIT = (rxBuffer[27] & (1<<6));  // 7
+    data->VARIN1_RBUTTON_BIT = (rxBuffer[27] & (1<<5));  // 6
+    // FILL: 5
+    if (data->MULTIPLEXER_INPUT_ID == 0) {;
+        memcpy(&data->VARIN32_FEED_POSITION, &data->MULTIPLEXER_INPUT_VALUE, 4);
+    }
+    if (data->MULTIPLEXER_INPUT_ID == 1) {;
+        memcpy(&data->VARIN32_SPINDLE_POSITION, &data->MULTIPLEXER_INPUT_VALUE, 4);
+    }
+    if (data->MULTIPLEXER_INPUT_ID == 2) {;
+        memcpy(&data->VARIN32_RAPID_POSITION, &data->MULTIPLEXER_INPUT_VALUE, 4);
+    }
+    if (data->MULTIPLEXER_INPUT_ID == 3) {;
+        memcpy(&data->VARIN32_JOGWHEEL_POSITION, &data->MULTIPLEXER_INPUT_VALUE, 4);
+    }
 }
 
 void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) int64_t period) {
@@ -1122,41 +1381,35 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     if (strlen(topicName) == 29 && strcmp(topicName, "board0/board0/stepdir2/enable") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR2_ENABLE = atoi((char*)message->payload);
     }
+    if (strlen(topicName) == 25 && strcmp(topicName, "board0/board0/pwmout0/dty") == 0) {
+        *data->SIGOUT_BOARD0_PWMOUT0_DTY = atof((char*)message->payload);
+    }
+    if (strlen(topicName) == 28 && strcmp(topicName, "board0/board0/pwmout0/enable") == 0) {
+        *data->SIGOUT_BOARD0_PWMOUT0_ENABLE = atoi((char*)message->payload);
+    }
     if (strlen(topicName) == 25 && strcmp(topicName, "board0/board0/bitout0/bit") == 0) {
         *data->SIGOUT_BOARD0_BITOUT0_BIT = atoi((char*)message->payload);
     }
     if (strlen(topicName) == 25 && strcmp(topicName, "board0/board0/bitout1/bit") == 0) {
         *data->SIGOUT_BOARD0_BITOUT1_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout0/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT0_BIT = atoi((char*)message->payload);
+    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/ledscale0/bit") == 0) {
+        *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout1/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT1_BIT = atoi((char*)message->payload);
+    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/ledscale1/bit") == 0) {
+        *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout2/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT2_BIT = atoi((char*)message->payload);
+    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/ledscale2/bit") == 0) {
+        *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout3/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT3_BIT = atoi((char*)message->payload);
+    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/selectedx/bit") == 0) {
+        *data->SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout4/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT4_BIT = atoi((char*)message->payload);
+    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/selectedy/bit") == 0) {
+        *data->SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout5/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT5_BIT = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout6/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT6_BIT = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout7/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT7_BIT = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu0/gpioout8/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU0_GPIOOUT8_BIT = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 34 && strcmp(topicName, "board0/board0/satmcu1/gpioout9/bit") == 0) {
-        *data->SIGOUT_BOARD0_SATMCU1_GPIOOUT9_BIT = atoi((char*)message->payload);
+    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/selectedz/bit") == 0) {
+        *data->SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT = atoi((char*)message->payload);
     }
 
     MQTTClient_freeMessage(&message);
@@ -1236,6 +1489,16 @@ int main(int argc, char **argv) {
     	rc = EXIT_FAILURE;
     }
 
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/pwmout0/dty", 0)) != MQTTCLIENT_SUCCESS) {
+    	printf("Failed to subscribe, return code %d\n", rc);
+    	rc = EXIT_FAILURE;
+    }
+
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/pwmout0/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    	printf("Failed to subscribe, return code %d\n", rc);
+    	rc = EXIT_FAILURE;
+    }
+
     if ((rc = MQTTClient_subscribe(client, "board0/board0/bitout0/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
@@ -1246,52 +1509,32 @@ int main(int argc, char **argv) {
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout0/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/ledscale0/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout1/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/ledscale1/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout2/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/ledscale2/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout3/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/selectedx/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout4/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/selectedy/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout5/bit", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout6/bit", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout7/bit", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/gpioout8/bit", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu1/gpioout9/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/selectedz/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
@@ -1299,42 +1542,12 @@ int main(int argc, char **argv) {
 
     while (1) {
         rio_readwrite(NULL, 0);
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_STEPDIR0_POSITION);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_STEPDIR1_POSITION);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
         sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_BITIN0_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
         if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_STEPDIR2_POSITION);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1355,6 +1568,36 @@ int main(int argc, char **argv) {
         pubmsg.qos = 0;
         pubmsg.retained = 0;
         if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_STEPDIR0_POSITION);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_STEPDIR1_POSITION);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_STEPDIR2_POSITION);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1389,12 +1632,32 @@ int main(int argc, char **argv) {
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_UARTSUB1_TIMEOUT);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_BITIN6_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/uartsub1/timeout", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin6/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_BITIN7_BIT);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin7/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/feed/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1409,142 +1672,192 @@ int main(int argc, char **argv) {
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_GPIOIN0_BIT);
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/gpioin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/spindle/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER0_POSITION);
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_RAPID_POSITION);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rapid/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY);
+        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder0/velocity", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/jogwheel/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER0_VELOCITY_RPM);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder0/velocity_rpm", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/mpgestop/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER1_POSITION);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_SCALE0_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/scale0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_SCALE1_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder1/velocity", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/scale1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER1_VELOCITY_RPM);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_SCALE2_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder1/velocity_rpm", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/scale2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER2_POSITION);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_SELECTX_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/selectx/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_SELECTY_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder2/velocity", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/selecty/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER2_VELOCITY_RPM);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_SELECTZ_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder2/velocity_rpm", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/selectz/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER3_POSITION);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder3/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder3/velocity", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit_short", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%f", *data->SIGIN_BOARD0_SATMCU0_ENCODER3_VELOCITY_RPM);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/encoder3/velocity_rpm", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit_long1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU1_GPIOIN1_BIT);
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu1/gpioin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit_long2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_CBUTTON_BIT);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/cbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit_short", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit_long1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit_long2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }

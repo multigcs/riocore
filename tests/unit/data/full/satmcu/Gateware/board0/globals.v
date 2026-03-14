@@ -1,8 +1,7 @@
-localparam FPGA_FAMILY = "ice40";
-localparam FPGA_TYPE = "up5k";
-localparam TOOLCHAIN = "icestorm";
+localparam FPGA_FAMILY = "GW1N-9C";
+localparam FPGA_TYPE = "GW1NR-LV9QN88PC6/I5";
+localparam TOOLCHAIN = "gowin";
 
-`define DSP_CALC
 
 // replacement for $clog2
 function integer clog2;

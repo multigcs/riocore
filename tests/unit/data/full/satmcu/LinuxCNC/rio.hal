@@ -6,10 +6,7 @@ loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EM
 # pid controller
 loadrt pid num_chan=3
 
-# manual toolchanger
-loadusr -W hal_manualtoolchange
-
-# fpga board ICEBreakerV1.0e
+# fpga board Tangoboard
 loadrt riocomp-board0
 
 # if you need to test rio without hardware, set it to 1
@@ -26,9 +23,18 @@ addf motion-controller servo-thread
 # write
 
 #################################################################################
+# logic and calc components
+#################################################################################
+loadrt logic names=func.and_0.1 personality=0x107
+addf func.and_0.1 servo-thread
+
+loadrt not names=func.not_board0_uartsub0_timeout
+addf func.not_board0_uartsub0_timeout servo-thread
+
+#################################################################################
 # iocontrol
 #################################################################################
-net sig_board0_sys-status                => iocontrol.0.emc-enable-in
+net func_and_0_1_and                     => iocontrol.0.emc-enable-in
 net tool-change                          <= iocontrol.0.tool-change
 net tool-changed                         => iocontrol.0.tool-changed
 net tool-prep-number                     <= iocontrol.0.tool-prep-number
@@ -46,38 +52,54 @@ net sig_board0_bitin2_bit                <= board0.bitin2.bit
 net sig_board0_bitin3_bit                <= board0.bitin3.bit
 net sig_board0_bitin4_bit                <= board0.bitin4.bit
 net sig_board0_bitin5_bit                <= board0.bitin5.bit
+net sig_board0_bitin6_bit                <= board0.bitin6.bit
+net sig_board0_bitin7_bit                <= board0.bitin7.bit
 
-net sig_pyvcp_board0_bitout0_bit         => board0.bitout0.bit
-net sig_pyvcp_board0_bitout1_bit         => board0.bitout1.bit
+net sig_spindle_0_forward                => board0.bitout0.bit
+net sig_spindle_0_reverse                => board0.bitout1.bit
 
-net sig_board0_satmcu0_encoder0_position <= board0.satmcu0.encoder0.position
-net sig_board0_satmcu0_encoder0_velocity <= board0.satmcu0.encoder0.velocity
-net sig_board0_satmcu0_encoder0_velocity-rpm <= board0.satmcu0.encoder0.velocity-rpm
-net sig_board0_satmcu0_encoder1_position <= board0.satmcu0.encoder1.position
-net sig_board0_satmcu0_encoder1_velocity <= board0.satmcu0.encoder1.velocity
-net sig_board0_satmcu0_encoder1_velocity-rpm <= board0.satmcu0.encoder1.velocity-rpm
-net sig_board0_satmcu0_encoder2_position <= board0.satmcu0.encoder2.position
-net sig_board0_satmcu0_encoder2_velocity <= board0.satmcu0.encoder2.velocity
-net sig_board0_satmcu0_encoder2_velocity-rpm <= board0.satmcu0.encoder2.velocity-rpm
-net sig_board0_satmcu0_encoder3_position <= board0.satmcu0.encoder3.position
-net sig_board0_satmcu0_encoder3_velocity <= board0.satmcu0.encoder3.velocity
-net sig_board0_satmcu0_encoder3_velocity-rpm <= board0.satmcu0.encoder3.velocity-rpm
+net sig_spindle_0_speed-out              => board0.pwmout0.dty
 
-net sig_board0_satmcu0_gpioin0_bit       <= board0.satmcu0.gpioin0.bit
+net sig_board0_satmcu0_cbutton_bit       <= board0.satmcu0.cbutton.bit
 
-net sig_pyvcp_board0_satmcu0_gpioout0_bit => board0.satmcu0.gpioout0.bit
-net sig_pyvcp_board0_satmcu0_gpioout1_bit => board0.satmcu0.gpioout1.bit
-net sig_pyvcp_board0_satmcu0_gpioout2_bit => board0.satmcu0.gpioout2.bit
-net sig_pyvcp_board0_satmcu0_gpioout3_bit => board0.satmcu0.gpioout3.bit
-net sig_pyvcp_board0_satmcu0_gpioout4_bit => board0.satmcu0.gpioout4.bit
-net sig_pyvcp_board0_satmcu0_gpioout5_bit => board0.satmcu0.gpioout5.bit
-net sig_pyvcp_board0_satmcu0_gpioout6_bit => board0.satmcu0.gpioout6.bit
-net sig_pyvcp_board0_satmcu0_gpioout7_bit => board0.satmcu0.gpioout7.bit
-net sig_pyvcp_board0_satmcu0_gpioout8_bit => board0.satmcu0.gpioout8.bit
+net sig_board0_satmcu0_feed_position     <= board0.satmcu0.feed.position
+net sig_board0_satmcu0_feed_position-s32 <= board0.satmcu0.feed.position-s32
 
-net sig_board0_satmcu1_gpioin1_bit       <= board0.satmcu1.gpioin1.bit
+net sig_board0_satmcu0_jogwheel_position-s32 <= board0.satmcu0.jogwheel.position-s32
 
-net sig_pyvcp_board0_satmcu1_gpioout9_bit => board0.satmcu1.gpioout9.bit
+net sig_board0_satmcu0_lbutton_bit       <= board0.satmcu0.lbutton.bit
+net sig_board0_satmcu0_lbutton_bit_long1 <= board0.satmcu0.lbutton.bit_long1
+net sig_board0_satmcu0_lbutton_bit_long2 <= board0.satmcu0.lbutton.bit_long2
+net sig_board0_satmcu0_lbutton_bit_short <= board0.satmcu0.lbutton.bit_short
+
+net sig_scale-select_selected0           => board0.satmcu0.ledscale0.bit
+net sig_scale-select_selected1           => board0.satmcu0.ledscale1.bit
+net sig_scale-select_selected2           => board0.satmcu0.ledscale2.bit
+
+net sig_board0_satmcu0_mpgestop_bit      <= board0.satmcu0.mpgestop.bit
+
+net sig_board0_satmcu0_rapid_position    <= board0.satmcu0.rapid.position
+net sig_board0_satmcu0_rapid_position-s32 <= board0.satmcu0.rapid.position-s32
+
+net sig_board0_satmcu0_rbutton_bit       <= board0.satmcu0.rbutton.bit
+net sig_board0_satmcu0_rbutton_bit_long1 <= board0.satmcu0.rbutton.bit_long1
+net sig_board0_satmcu0_rbutton_bit_long2 <= board0.satmcu0.rbutton.bit_long2
+net sig_board0_satmcu0_rbutton_bit_short <= board0.satmcu0.rbutton.bit_short
+
+net sig_board0_satmcu0_scale0_bit        <= board0.satmcu0.scale0.bit
+net sig_board0_satmcu0_scale1_bit        <= board0.satmcu0.scale1.bit
+net sig_board0_satmcu0_scale2_bit        <= board0.satmcu0.scale2.bit
+
+net sig_halui_axis_x_is-selected         => board0.satmcu0.selectedx.bit
+net sig_halui_axis_y_is-selected         => board0.satmcu0.selectedy.bit
+net sig_halui_axis_z_is-selected         => board0.satmcu0.selectedz.bit
+
+net sig_board0_satmcu0_selectx_bit       <= board0.satmcu0.selectx.bit
+net sig_board0_satmcu0_selecty_bit       <= board0.satmcu0.selecty.bit
+net sig_board0_satmcu0_selectz_bit       <= board0.satmcu0.selectz.bit
+
+net sig_board0_satmcu0_spindle_position  <= board0.satmcu0.spindle.position
+net sig_board0_satmcu0_spindle_position-s32 <= board0.satmcu0.spindle.position-s32
 
 net user-enable-out                      => board0.sys-enable
 net user-request-enable                  => board0.sys-enable-request
@@ -85,16 +107,103 @@ net sig_board0_sys-error                 <= board0.sys-error
 net sig_board0_sys-status                <= board0.sys-status
 
 net sig_board0_uartsub0_timeout          <= board0.uartsub0.timeout
-net sig_board0_uartsub1_timeout          <= board0.uartsub1.timeout
+
+#################################################################################
+# func
+#################################################################################
+net func_and_0_1_and                     <= func.and_0.1.and
+net sig_board0_sys-status                => func.and_0.1.in-00
+net sig_board0_bitin3_bit                => func.and_0.1.in-01
+net sig_board0_bitin4_bit                => func.and_0.1.in-02
+net sig_board0_bitin5_bit                => func.and_0.1.in-03
+net sig_board0_bitin7_bit                => func.and_0.1.in-04
+net func_not_board0_uartsub0_timeout_out => func.and_0.1.in-05
+net sig_board0_satmcu0_mpgestop_bit      => func.and_0.1.in-06
+
+net sig_board0_uartsub0_timeout          => func.not_board0_uartsub0_timeout.in
+net func_not_board0_uartsub0_timeout_out <= func.not_board0_uartsub0_timeout.out
+
+#################################################################################
+# spindle
+#################################################################################
+net sig_spindle_0_forward                <= spindle.0.forward
+net sig_spindle_0_reverse                <= spindle.0.reverse
+net sig_spindle_0_speed-out              <= spindle.0.speed-out
+
+#################################################################################
+# scale-select
+#################################################################################
+net sig_board0_satmcu0_scale0_bit        => scale-select.in0
+net sig_board0_satmcu0_scale1_bit        => scale-select.in1
+net sig_board0_satmcu0_scale2_bit        => scale-select.in2
+net sig_scale-select_out                 <= scale-select.out
+net sig_scale-select_selected0           <= scale-select.selected0
+net sig_scale-select_selected1           <= scale-select.selected1
+net sig_scale-select_selected2           <= scale-select.selected2
 
 #################################################################################
 # halui
 #################################################################################
+net sig_halui_axis_x_is-selected         <= halui.axis.x.is-selected
+net sig_board0_satmcu0_selectx_bit       => halui.axis.x.select
+net sig_halui_axis_y_is-selected         <= halui.axis.y.is-selected
+net sig_board0_satmcu0_selecty_bit       => halui.axis.y.select
+net sig_halui_axis_z_is-selected         <= halui.axis.z.is-selected
+net sig_board0_satmcu0_selectz_bit       => halui.axis.z.select
+
 net sig_board0_sys-error                 => halui.estop.activate
 
-net sig_pyvcp_halui_mdi-command-00       => halui.mdi-command-00
-net sig_pyvcp_halui_mdi-command-01       => halui.mdi-command-01
-net sig_pyvcp_halui_mdi-command-02       => halui.mdi-command-02
+net sig_board0_satmcu0_feed_position-s32 => halui.feed-override.counts
+
+net sig_board0_satmcu0_selectx_bit       => halui.joint.0.select
+net sig_board0_satmcu0_selecty_bit       => halui.joint.1.select
+net sig_board0_satmcu0_selectz_bit       => halui.joint.2.select
+
+net sig_qtdragon_rio-gui_halui_mdi-command-00 => halui.mdi-command-00
+net sig_qtdragon_rio-gui_halui_mdi-command-01 => halui.mdi-command-01
+net sig_qtdragon_rio-gui_halui_mdi-command-02 => halui.mdi-command-02
+net sig_qtdragon_rio-gui_halui_mdi-command-03 => halui.mdi-command-03
+
+net sig_board0_satmcu0_rapid_position-s32 => halui.rapid-override.counts
+
+net sig_board0_satmcu0_spindle_position-s32 => halui.spindle.0.override.counts
+
+net sig_board0_satmcu0_lbutton_bit_long1 => halui.spindle.0.start
+net sig_board0_satmcu0_lbutton_bit_short => halui.spindle.0.stop
+
+#################################################################################
+# joint
+#################################################################################
+net sig_board0_bitin0_bit                => joint.0.home-sw-in
+net sig_board0_satmcu0_jogwheel_position-s32 => joint.0.jog-counts
+net sig_halui_axis_x_is-selected         => joint.0.jog-enable
+net sig_scale-select_out                 => joint.0.jog-scale
+net sig_board0_bitin1_bit                => joint.1.home-sw-in
+net sig_board0_satmcu0_jogwheel_position-s32 => joint.1.jog-counts
+net sig_halui_axis_y_is-selected         => joint.1.jog-enable
+net sig_scale-select_out                 => joint.1.jog-scale
+net sig_board0_bitin2_bit                => joint.2.home-sw-in
+net sig_board0_satmcu0_jogwheel_position-s32 => joint.2.jog-counts
+net sig_halui_axis_z_is-selected         => joint.2.jog-enable
+net sig_scale-select_out                 => joint.2.jog-scale
+
+#################################################################################
+# motion
+#################################################################################
+net sig_board0_bitin6_bit                => motion.probe-input
+
+#################################################################################
+# axis
+#################################################################################
+net sig_board0_satmcu0_jogwheel_position-s32 => axis.x.jog-counts
+net sig_halui_axis_x_is-selected         => axis.x.jog-enable
+net sig_scale-select_out                 => axis.x.jog-scale
+net sig_board0_satmcu0_jogwheel_position-s32 => axis.y.jog-counts
+net sig_halui_axis_y_is-selected         => axis.y.jog-enable
+net sig_scale-select_out                 => axis.y.jog-scale
+net sig_board0_satmcu0_jogwheel_position-s32 => axis.z.jog-counts
+net sig_halui_axis_z_is-selected         => axis.z.jog-enable
+net sig_scale-select_out                 => axis.z.jog-scale
 
 #################################################################################
 # joint-0
@@ -174,7 +283,26 @@ net j2enable                             => board0.stepdir2.enable
 #################################################################################
 # setp
 #################################################################################
+setp axis.x.jog-vel-mode                    1
+setp axis.y.jog-vel-mode                    1
+setp axis.z.jog-vel-mode                    1
+setp board0.pwmout0.dty-scale               0.00412
+setp board0.pwmout0.enable                  1
+setp halui.axis.jog-speed                   1.0
+setp halui.feed-override.scale              0.01
+setp halui.joint.jog-speed                  1.0
+setp halui.rapid-override.scale             0.01
+setp halui.spindle.0.override.scale         0.01
+setp joint.0.jog-vel-mode                   1
+setp joint.1.jog-vel-mode                   1
+setp joint.2.jog-vel-mode                   1
+setp scale-select.value0                    0.001
+setp scale-select.value1                    0.01
+setp scale-select.value2                    0.1
 
 #################################################################################
 # preformated
 #################################################################################
+
+# Jogging
+loadusr -Wn scale-select ./fselect.py scale-select 3

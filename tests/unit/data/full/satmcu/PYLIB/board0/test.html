@@ -1,4 +1,28 @@
 
+    <B>bitin0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin0/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>bitin1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin1/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>bitin2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin2/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
     <B>stepdir0</B>
     <table>
       <tr>
@@ -39,14 +63,6 @@
       </tr>
     </table>
         </div>
-    <B>bitin0</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><b id="board0/board0/bitin0/bit">0</b></td>
-      </tr>
-    </table>
-        </div>
     <B>stepdir2</B>
     <table>
       <tr>
@@ -64,38 +80,6 @@
       <tr>
         <td>enable</td>
         <td><input type="checkbox" id="board0/board0/stepdir2/enable" /></td>
-      </tr>
-    </table>
-        </div>
-    <B>bitout0</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/bitout0/bit" /></td>
-      </tr>
-    </table>
-        </div>
-    <B>bitout1</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/bitout1/bit" /></td>
-      </tr>
-    </table>
-        </div>
-    <B>bitin1</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><b id="board0/board0/bitin1/bit">0</b></td>
-      </tr>
-    </table>
-        </div>
-    <B>bitin2</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><b id="board0/board0/bitin2/bit">0</b></td>
       </tr>
     </table>
         </div>
@@ -123,19 +107,57 @@
       </tr>
     </table>
         </div>
-    <B>uartsub1</B>
+    <B>pwmout0</B>
     <table>
       <tr>
-        <td>timeout</td>
-        <td><b id="board0/board0/uartsub1/timeout">0</b></td>
+        <td>dty</td>
+        <td><b id="board0/board0/pwmout0/dty_fb">0</b></td>
+        <td>%</td>
+        <td><input type="range" min="0" max="100" id="board0/board0/pwmout0/dty" value="0" /></td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/pwmout0/enable" /></td>
       </tr>
     </table>
         </div>
-    <B>gpioout0</B>
+    <B>bitout0</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout0/bit" /></td>
+        <td><input type="checkbox" id="board0/board0/bitout0/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>bitout1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/bitout1/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>bitin6</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin6/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>bitin7</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin7/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>feed</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
+        <td><b id="board0/board0/satmcu0/feed/position">0</b></td>
       </tr>
     </table>
         </div>
@@ -147,155 +169,179 @@
       </tr>
     </table>
         </div>
-    <B>gpioout1</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout1/bit" /></td>
-      </tr>
-    </table>
-        </div>
-    <B>gpioout2</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout2/bit" /></td>
-      </tr>
-    </table>
-        </div>
-    <B>gpioout3</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout3/bit" /></td>
-      </tr>
-    </table>
-        </div>
-    <B>gpioin0</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><b id="board0/board0/satmcu0/gpioin0/bit">0</b></td>
-      </tr>
-    </table>
-        </div>
-    <B>encoder0</B>
+    <B>spindle</B>
     <table>
       <tr>
         <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder0/position">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">calculates revolutions per second</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder0/velocity">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity-rpm<span class="tooltiptext">calculates revolutions per minute</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder0/velocity_rpm">0</b></td>
+        <td><b id="board0/board0/satmcu0/spindle/position">0</b></td>
       </tr>
     </table>
         </div>
-    <B>encoder1</B>
+    <B>rapid</B>
     <table>
       <tr>
         <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder1/position">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">calculates revolutions per second</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder1/velocity">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity-rpm<span class="tooltiptext">calculates revolutions per minute</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder1/velocity_rpm">0</b></td>
+        <td><b id="board0/board0/satmcu0/rapid/position">0</b></td>
       </tr>
     </table>
         </div>
-    <B>encoder2</B>
+    <B>jogwheel</B>
     <table>
       <tr>
         <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder2/position">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">calculates revolutions per second</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder2/velocity">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity-rpm<span class="tooltiptext">calculates revolutions per minute</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder2/velocity_rpm">0</b></td>
+        <td><b id="board0/board0/satmcu0/jogwheel/position">0</b></td>
       </tr>
     </table>
         </div>
-    <B>encoder3</B>
-    <table>
-      <tr>
-        <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder3/position">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">calculates revolutions per second</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder3/velocity">0</b></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">velocity-rpm<span class="tooltiptext">calculates revolutions per minute</span></div>:</td>
-        <td><b id="board0/board0/satmcu0/encoder3/velocity_rpm">0</b></td>
-      </tr>
-    </table>
-        </div>
-    <B>gpioout4</B>
+    <B>mpgestop</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout4/bit" /></td>
+        <td><b id="board0/board0/satmcu0/mpgestop/bit">0</b></td>
       </tr>
     </table>
         </div>
-    <B>gpioout5</B>
+    <B>scale0</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout5/bit" /></td>
+        <td><b id="board0/board0/satmcu0/scale0/bit">0</b></td>
       </tr>
     </table>
         </div>
-    <B>gpioout6</B>
+    <B>ledscale0</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout6/bit" /></td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/ledscale0/bit" /></td>
       </tr>
     </table>
         </div>
-    <B>gpioout7</B>
+    <B>scale1</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout7/bit" /></td>
+        <td><b id="board0/board0/satmcu0/scale1/bit">0</b></td>
       </tr>
     </table>
         </div>
-    <B>gpioout8</B>
+    <B>scale2</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu0/gpioout8/bit" /></td>
+        <td><b id="board0/board0/satmcu0/scale2/bit">0</b></td>
       </tr>
     </table>
         </div>
-    <B>gpioout9</B>
+    <B>selectx</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/satmcu1/gpioout9/bit" /></td>
+        <td><b id="board0/board0/satmcu0/selectx/bit">0</b></td>
       </tr>
     </table>
         </div>
-    <B>gpioin1</B>
+    <B>selecty</B>
     <table>
       <tr>
         <td>bit</td>
-        <td><b id="board0/board0/satmcu1/gpioin1/bit">0</b></td>
+        <td><b id="board0/board0/satmcu0/selecty/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>ledscale1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/ledscale1/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>ledscale2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/ledscale2/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>selectedx</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/selectedx/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>selectedy</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/selectedy/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>selectedz</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/selectedz/bit" /></td>
+      </tr>
+    </table>
+        </div>
+    <B>selectz</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/selectz/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>lbutton</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_short</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit_short">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long1</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit_long1">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long2</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit_long2">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>cbutton</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/cbutton/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+    <B>rbutton</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_short</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit_short">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long1</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit_long1">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long2</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit_long2">0</b></td>
       </tr>
     </table>
         </div>
