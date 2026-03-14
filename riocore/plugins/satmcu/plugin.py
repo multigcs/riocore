@@ -364,4 +364,23 @@ monitor_speed = 115200
 upload_port = {upload_port}
 """
 
+        # libs
+        lib_list = []
+        for plugin_type, instances in ptypes.items():
+            for instance in instances:
+                if not hasattr(instance, "firmware_libs"):
+                    continue
+                libs = instance.firmware_libs()
+                if not libs:
+                    continue
+                for lib in libs:
+                    if lib in lib_list:
+                        continue
+                    lib_list.append(lib)
+        if lib_list:
+            platformio += ""
+            platformio += "lib_deps =\n"
+            for lib in lib_list:
+                platformio += f"    {lib}\n"
+
         open(os.path.join(self.jdata["output_path"], "platformio.ini"), "w").write(platformio)

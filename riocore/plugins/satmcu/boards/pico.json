@@ -37,7 +37,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:3": {
@@ -49,7 +49,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:4": {
@@ -61,7 +61,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:5": {
@@ -73,7 +73,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:6": {
@@ -85,7 +85,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:7": {
@@ -97,7 +97,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:8": {
@@ -109,7 +109,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:9": {
@@ -121,7 +121,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:10": {
@@ -133,7 +133,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:11": {
@@ -145,7 +145,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:12": {
@@ -157,7 +157,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:13": {
@@ -169,7 +169,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:14": {
@@ -181,7 +181,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:15": {
@@ -193,7 +193,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:28": {
@@ -205,7 +205,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO",
+        "MCUIO",
         "ADC"
       ]
     },
@@ -218,7 +218,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO",
+        "MCUIO",
         "ADC"
       ]
     },
@@ -231,7 +231,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO",
+        "MCUIO",
         "ADC"
       ]
     },
@@ -244,7 +244,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:21": {
@@ -256,7 +256,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:20": {
@@ -268,7 +268,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:19": {
@@ -280,7 +280,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:18": {
@@ -292,7 +292,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:17": {
@@ -304,7 +304,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     },
     "IO:16": {
@@ -316,7 +316,7 @@
       ],
       "edge": "source",
       "type": [
-        "GPIO"
+        "MCUIO"
       ]
     }
   }

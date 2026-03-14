@@ -1,4 +1,4 @@
-# gpio
+# mcuio
 
 <img align="right" width="320" src="image.png">
 
@@ -38,7 +38,7 @@ io type
 ## Basic-Example:
 ```
 {
-    "type": "gpio",
+    "type": "mcuio",
     "pins": {}
 }
 ```
@@ -46,7 +46,7 @@ io type
 ## Full-Example:
 ```
 {
-    "type": "gpio",
+    "type": "mcuio",
     "name": "",
     "node_type": "",
     "pins": {},

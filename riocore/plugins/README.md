@@ -55,7 +55,6 @@
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
-|  | [gpio](gpio/README.md) | mcu based io's | <img src="gpio/image.png" height="48"> |  |
 |  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> |  |
 |  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
@@ -68,6 +67,7 @@
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
+|  | [mcuio](mcuio/README.md) | mcu based io's | <img src="mcuio/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> |  |
@@ -102,7 +102,6 @@
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
-|  | [gpio](gpio/README.md) | mcu based io's | <img src="gpio/image.png" height="48"> |  |
 |  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> |  |
 |  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
@@ -115,6 +114,7 @@
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
+|  | [mcuio](mcuio/README.md) | mcu based io's | <img src="mcuio/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> |  |

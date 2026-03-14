@@ -7,7 +7,7 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 class Plugin(PluginBase):
     def setup(self):
-        self.NAME = "gpio"
+        self.NAME = "mcuio"
         self.INFO = "mcu based io's"
         self.DESCRIPTION = "mcu based io's"
         self.KEYWORDS = "input output analog adc dac pwm"
@@ -18,8 +18,15 @@ class Plugin(PluginBase):
                 "node_type": {
                     "default": "",
                     "type": "select",
-                    # "options": ["adc", "input", "output", "freqin"],
-                    "options": ["adc", "input", "output", "dac", "rcservo", "rgbled"],
+                    "options": [
+                        "adc",
+                        "input",
+                        "output",
+                        "dac",
+                        "rcservo",
+                        "rgbled",
+                        "encoder",
+                    ],
                     "description": "io type",
                     "reload": True,
                 },
@@ -39,7 +46,7 @@ class Plugin(PluginBase):
                 "bit": {
                     "direction": "output",
                     "edge": "target",
-                    "type": ["GPIO"],
+                    "type": ["MCUIO"],
                 },
             }
             self.INTERFACE = {
@@ -92,7 +99,7 @@ class Plugin(PluginBase):
                 "bit": {
                     "direction": "input",
                     "edge": "target",
-                    "type": ["GPIO"],
+                    "type": ["MCUIO"],
                 },
             }
             self.INTERFACE = {
@@ -136,7 +143,7 @@ class Plugin(PluginBase):
                 "dac": {
                     "direction": "output",
                     "edge": "target",
-                    "type": ["GPIO"],
+                    "type": ["MCUIO"],
                 },
             }
             self.INTERFACE = {
@@ -159,7 +166,7 @@ class Plugin(PluginBase):
                 "out": {
                     "direction": "output",
                     "edge": "target",
-                    "type": ["GPIO"],
+                    "type": ["MCUIO"],
                 },
             }
             self.INTERFACE = {
@@ -168,7 +175,31 @@ class Plugin(PluginBase):
                     "direction": "output",
                 },
             }
-        if self.node_type == "rgbled":
+        elif self.node_type == "encoder":
+            self.IMAGES = ["encoder", "encoder_optical"]
+            self.SIGNALS = {
+                "position": {
+                    "direction": "input",
+                    "description": "position feedback in steps",
+                },
+            }
+            self.PINDEFAULTS = {
+                "a": {
+                    "direction": "input",
+                    "type": ["MCUIO"],
+                },
+                "b": {
+                    "direction": "input",
+                    "type": ["MCUIO"],
+                },
+            }
+            self.INTERFACE = {
+                "position": {
+                    "size": 32,
+                    "direction": "input",
+                },
+            }
+        elif self.node_type == "rgbled":
             self.IMAGES = ["wled1"]
             self.OPTIONS.update(
                 {
@@ -186,7 +217,7 @@ class Plugin(PluginBase):
                 "data": {
                     "direction": "output",
                     "edge": "target",
-                    "type": ["GPIO"],
+                    "type": ["MCUIO"],
                 },
             }
             self.SIGNALS = {
@@ -257,16 +288,49 @@ class Plugin(PluginBase):
                 },
             }
 
+    @classmethod
+    def firmware_type_defines(cls, instances):
+        inum = 0
+        for instance in instances:
+            if instance.node_type != "encoder":
+                continue
+            if "mcu" in instance.MASTER_PROVIDES:
+                inum += 1
+        if not inum:
+            return ""
+        return f"""
+#include <ESPRotary.h>
+#define NUM_ENCODERS {inum}
+
+ESPRotary encoder[NUM_ENCODERS];
+
+/*
+hw_timer_t *timer = NULL;
+
+void IRAM_ATTR handleLoop() {{
+    for (int i = 0; i < NUM_ENCODERS; i++) {{
+        encoder[i].loop();
+    }}
+}}
+*/
+
+"""
+
     def firmware_defines(self, variable_name):
+        name = self.instances_name.upper()
         if self.node_type == "output" or self.node_type == "input":
             pin = self.plugin_setup["pins"]["bit"]["pin"]
-            return f"#define {variable_name}_PIN_BIT {pin}"
+            return f"#define {name}_PIN_BIT {pin}"
         if self.node_type == "adc":
             pin = self.plugin_setup["pins"]["adc"]["pin"]
-            return f"#define {variable_name}_PIN_ADC {pin}"
+            return f"#define {name}_PIN_ADC {pin}"
+        if self.node_type == "encoder":
+            pin_a = self.plugin_setup["pins"]["a"]["pin"]
+            pin_b = self.plugin_setup["pins"]["b"]["pin"]
+            return f"#define {name}_PIN_A {pin_a}\n#define {name}_PIN_B {pin_b}"
         if self.node_type == "dac":
             pin = self.plugin_setup["pins"]["dac"]["pin"]
-            return f"#define {variable_name}_PIN_DAC {pin}"
+            return f"#define {name}_PIN_DAC {pin}"
         if self.node_type == "rcservo":
             pin = self.plugin_setup["pins"]["out"]["pin"]
             output = []
@@ -276,7 +340,6 @@ class Plugin(PluginBase):
         if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
             pin = self.plugin_setup["pins"]["data"]["pin"]
             leds = self.plugin_setup.get("leds", self.option_default("leds"))
-            name = self.instances_name.upper()
             output = []
             output.append("#include <NeoPixelConnect.h>")
             output.append(f"#define {name}_PIN_DATA {pin}")
@@ -286,54 +349,55 @@ class Plugin(PluginBase):
             pin = self.plugin_setup["pins"]["clock"]["pin"]
             output = []
             output.append('#include "FreqCountRP2.h"')
-            output.append(f"#define {variable_name}_PIN_IN {pin}")
+            output.append(f"#define {name}_PIN_IN {pin}")
             output.append(f"int {variable_name}_TIMER_MS = 1000;")
             return "\n".join(output)
         return ""
 
     def firmware_setup(self, variable_name):
+        name = self.instances_name.upper()
         if self.node_type == "output":
-            return f"    pinMode({variable_name}_PIN_BIT, OUTPUT);"
+            return f"    pinMode({name}_PIN_BIT, OUTPUT);"
         if self.node_type == "input":
-            return f"    pinMode({variable_name}_PIN_BIT, INPUT_PULLUP);"
+            return f"    pinMode({name}_PIN_BIT, INPUT_PULLUP);"
         if self.node_type == "adc":
-            return f"    pinMode({variable_name}_PIN_ADC, INPUT);"
+            return f"    pinMode({name}_PIN_ADC, INPUT);"
         if self.node_type == "rcservo":
-            return f"    myservo.attach({variable_name}_PIN_OUT);"
+            return f"    myservo.attach({name}_PIN_OUT);"
         if self.node_type == "dac":
             freq = 10000
             output = []
-            output.append(f"    pinMode({variable_name}_PIN_DAC, OUTPUT);")
+            output.append(f"    pinMode({name}_PIN_DAC, OUTPUT);")
             output.append("    // analogWriteRange(65535);")
             output.append("    analogWriteResolution(16);")
             output.append(f"    // analogWriteFreq({freq});")
             return "\n".join(output)
-
         if self.node_type == "freqin":
-            return f"    FreqCountRP2.beginTimer({variable_name}_PIN_IN, {variable_name}_TIMER_MS);"
+            return f"    FreqCountRP2.beginTimer({name}_PIN_IN, {variable_name}_TIMER_MS);"
         return ""
 
     def firmware_loop(self, pin_name, variable_name):
+        name = self.instances_name.upper()
         if self.node_type == "output":
             inverted = 0
             for modifier in self.plugin_setup.get("pins", {}).get(pin_name, {}).get("modifier", []):
                 if modifier["type"] == "invert":
                     inverted = 1 - inverted
             if inverted:
-                return f"    digitalWrite({variable_name}_PIN_BIT, 1 - {variable_name});"
-            return f"    digitalWrite({variable_name}_PIN_BIT, {variable_name});"
+                return f"    digitalWrite({name}_PIN_BIT, 1 - {variable_name});"
+            return f"    digitalWrite({name}_PIN_BIT, {variable_name});"
         if self.node_type == "input":
             inverted = 0
             for modifier in self.plugin_setup.get("pins", {}).get(pin_name, {}).get("modifier", []):
                 if modifier["type"] == "invert":
                     inverted = 1 - inverted
             if inverted:
-                return f"    {variable_name} = 1 - digitalRead({variable_name}_PIN_BIT);"
-            return f"    {variable_name} = digitalRead({variable_name}_PIN_BIT);"
+                return f"    {variable_name} = 1 - digitalRead({name}_PIN_BIT);"
+            return f"    {variable_name} = digitalRead({name}_PIN_BIT);"
         if self.node_type == "adc":
-            return f"    {variable_name} = analogRead({variable_name}_PIN_ADC);"
+            return f"    {variable_name} = analogRead({name}_PIN_ADC);"
         if self.node_type == "dac":
-            return f"    analogWrite({variable_name}_PIN_DAC, {variable_name});"
+            return f"    analogWrite({name}_PIN_DAC, {variable_name});"
         if self.node_type == "rcservo":
             return f"    {variable_name}_SERVO.write({variable_name});"
         if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
@@ -351,3 +415,47 @@ class Plugin(PluginBase):
             output.append("    }")
             return "\n".join(output)
         return ""
+
+    def firmware_libs(self):
+        if self.node_type == "encoder":
+            return ["https://github.com/LennartHennigs/ESPRotary"]
+        if self.node_type == "rgbled":
+            return ["https://github.com/MrYsLab/NeoPixelConnect"]
+
+    @classmethod
+    def firmware_type_setup(cls, instances):
+        output = []
+        flag = False
+        for inum, instance in enumerate(instances):
+            if instance.node_type != "encoder":
+                continue
+            if "mcu" in instance.MASTER_PROVIDES:
+                flag = True
+                output.append(f"    encoder[{inum}].begin({instance.instances_name.upper()}_PIN_A, {instance.instances_name.upper()}_PIN_B, 4);")
+        if flag:
+            output.append("")
+            # output.append("    timer = timerBegin(0, 80, true);")
+            # output.append("    timerAttachInterrupt(timer, &handleLoop, true);")
+            # output.append("    timerAlarmWrite(timer, 100, true);")
+            # output.append("    timerAlarmEnable(timer);")
+        return "\n".join(output)
+
+    @classmethod
+    def firmware_type_loop(cls, instances):
+        output = []
+        flag = False
+        for inum, instance in enumerate(instances):
+            if "mcu" in instance.MASTER_PROVIDES:
+                flag = True
+        if flag:
+            output.append("    for (int i = 0; i < NUM_ENCODERS; i++) {")
+            output.append("        encoder[i].loop();")
+            output.append("    }")
+            output.append("")
+            for inum, instance in enumerate(instances):
+                if instance.node_type != "encoder":
+                    continue
+                if "mcu" in instance.MASTER_PROVIDES:
+                    output.append(f"    VARIN32_{instance.instances_name.upper()}_POSITION = encoder[{inum}].getPosition();")
+            output.append("")
+        return "\n".join(output)
