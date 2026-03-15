@@ -557,6 +557,9 @@ class GuiPlugins:
         self.main_options = {}
         for option_name, option_defaults in plugin_instance.OPTIONS.items():
             title = option_name.title()
+            experimental = option_defaults.get("experimental", False)
+            if experimental is True:
+                continue
             unit = option_defaults.get("unit")
             if unit:
                 title = f"{title} ({unit})"

@@ -52,6 +52,7 @@ class Plugin(PluginBase):
             "async": {
                 "default": False,
                 "type": bool,
+                "experimental": True,
                 "description": "async",
             },
             "frame": {

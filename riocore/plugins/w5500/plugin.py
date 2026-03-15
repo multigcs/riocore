@@ -82,6 +82,7 @@ class Plugin(PluginBase):
                 "default": False,
                 "type": bool,
                 "description": "async",
+                "experimental": True,
             },
             "frame": {
                 "default": "full",
