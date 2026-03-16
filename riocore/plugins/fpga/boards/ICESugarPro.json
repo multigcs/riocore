@@ -6,6 +6,7 @@
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",
+    "flashcmd": "icesprog rio.bit",
     "package": "CABGA256",
     "provides": [
         "pmod",
