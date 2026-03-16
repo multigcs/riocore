@@ -9,7 +9,29 @@ class cclient(generator_base):
         self.instance = instance
         self.prefix = instance.hal_prefix
         self.simulator_path = simulator_path
-        self.calc_buffersize(self.project)
+
+        use_timestamp = True
+        use_header = True
+        if self.instance.frame in {"no_timestamp", "minimum"}:
+            use_timestamp = False
+        if self.instance.frame in {"no_header", "minimum"}:
+            use_header = False
+
+        header_size = 0
+        if use_header:
+            header_size = 32
+
+        timestamp_size = 0
+        if self.instance.fmaster is None and use_timestamp:
+            # this is the FPGA Master (connected to the PC)
+            timestamp_size = 32
+
+        sym_io = False
+        if self.instance.protocol == "SPI":
+            # input and output frames with has same size
+            sym_io = True
+
+        self.calc_buffersize(self.project, timestamp_size=timestamp_size, header_size=header_size, sym_io=sym_io)
         self.project.buffer_size = self.buffer_size
 
     def riocore_h(self):

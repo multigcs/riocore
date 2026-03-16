@@ -19,7 +19,7 @@ module.exports = {
   },
 
   set_tx: function (rio_tx) {
-    data = Buffer.alloc(21, 0);
+    data = Buffer.alloc(17, 0);
     RX_HEADER = Buffer.from("74697277", "hex").readInt32LE(0);
     VAROUT32_STEPDIR0_VELOCITY = rio_tx["stepdir0"]["velocity"];
     VAROUT1_STEPDIR0_ENABLE = rio_tx["stepdir0"]["enable"];

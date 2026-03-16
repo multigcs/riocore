@@ -27,7 +27,7 @@ module.exports = {
   },
 
   set_tx: function (rio_tx) {
-    data = Buffer.alloc(40, 0);
+    data = Buffer.alloc(33, 0);
     RX_HEADER = Buffer.from("74697277", "hex").readInt32LE(0);
     VAROUT128_MODBUS0_TXDATA = rio_tx["modbus0"]["txdata"];
     VAROUT32_STEPDIR0_VELOCITY = rio_tx["stepdir0"]["velocity"];
