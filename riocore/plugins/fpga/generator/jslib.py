@@ -14,7 +14,6 @@ class jslib(generator_base):
         self.iface_in = []
         self.iface_out = []
 
-
         use_timestamp = True
         use_header = True
         if self.instance.frame in {"no_timestamp", "minimum"}:

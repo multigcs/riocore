@@ -6,7 +6,7 @@
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",
-    "package": "CABGA381",
+    "package": "CABGA256",
     "provides": [
         "pmod",
         "pmod2"
