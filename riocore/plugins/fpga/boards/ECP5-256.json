@@ -1,0 +1,285 @@
+{
+    "name": "ECP5-256",
+    "description": "Lattice ECP5 devboard",
+    "comment": "",
+    "url": "https://de.aliexpress.com/item/1005008834546994.html?spm=a2g0o.order_list.order_list_main.34.2c0618029pMjxL&gatewayAdapt=glo2deu",
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "_flashcmd": "icesprog rio.bit",
+    "package": "CABGA256",
+    "provides": [
+        "pmod",
+        "pmod2"
+    ],
+    "clock": {
+        "speed": "25000000",
+        "pin": "P6"
+    },
+    "slots": [
+        {
+            "name": "UART",
+            "comment": "USB",
+            "pins": {
+                "RX": {
+                    "pin": "B9",
+                    "pos": [
+                        20,
+                        98
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "A9",
+                    "pos": [
+                        20,
+                        111
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "B11",
+                    "pos": [
+                        74,
+                        10
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "B11",
+                    "pos": [
+                        89,
+                        10
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "B11",
+                    "pos": [
+                        104,
+                        10
+                    ],
+                    "direction": "output"
+                },
+                "L4": {
+                    "pin": "B11",
+                    "pos": [
+                        119,
+                        10
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "P1",
+            "comment": "",
+            "pins": {
+                "P5": {
+                    "pin": "R1",
+                    "pos": [
+                        279,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "P1",
+                    "pos": [
+                        279,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "P2",
+                    "pos": [
+                        268,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "N1",
+                    "pos": [
+                        268,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "M2",
+                    "pos": [
+                        257,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "M1",
+                    "pos": [
+                        257,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "L2",
+                    "pos": [
+                        246,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "L1",
+                    "pos": [
+                        246,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "K2",
+                    "pos": [
+                        235,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "K1",
+                    "pos": [
+                        235,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "J2",
+                    "pos": [
+                        224,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "J1",
+                    "pos": [
+                        224,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "G2",
+                    "pos": [
+                        213,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P18": {
+                    "pin": "F1",
+                    "pos": [
+                        213,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P19": {
+                    "pin": "E1",
+                    "pos": [
+                        202,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P20": {
+                    "pin": "F2",
+                    "pos": [
+                        202,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P21": {
+                    "pin": "E1",
+                    "pos": [
+                        191,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P22": {
+                    "pin": "D1",
+                    "pos": [
+                        191,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P23": {
+                    "pin": "D2",
+                    "pos": [
+                        180,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P24": {
+                    "pin": "C1",
+                    "pos": [
+                        180,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P25": {
+                    "pin": "B2",
+                    "pos": [
+                        169,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P26": {
+                    "pin": "B1",
+                    "pos": [
+                        169,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                }
+            }
+        }
+    ]
+}
