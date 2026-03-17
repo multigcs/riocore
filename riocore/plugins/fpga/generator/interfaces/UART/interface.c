@@ -23,14 +23,15 @@ int uart_set_interface_attribs (int fd, int speed) {
     return 0;
 }
 
-int uart_init(void) {
-    rtapi_print("Info: Initialize serial connection: %s\n", SERIAL_PORT);
-    uart_serial_fd = open (SERIAL_PORT, O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY);
+int uart_init(char *serialPort) {
+    rtapi_print("Info: Initialize serial connection: %s\n", serialPort);
+    uart_serial_fd = open (serialPort, O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY);
     if (uart_serial_fd < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR,"usb setup error\n");
         return errno;
     }
     uart_set_interface_attribs(uart_serial_fd, SERIAL_BAUD);
+    return 0;
 }
 
 void uart_tx(uint8_t *txBuffer, uint16_t size) {

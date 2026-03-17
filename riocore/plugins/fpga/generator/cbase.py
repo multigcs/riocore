@@ -1055,7 +1055,13 @@ class cbase:
             output.append("    modbus_init();")
 
         if protocol == "UART":
-            output.append("    uart_init();")
+            output.append("    char serialPort[1024];")
+            output.append("    if (argc > 1) {")
+            output.append("        strncpy(serialPort, argv[1], 1023);")
+            output.append("    } else {")
+            output.append("        strncpy(serialPort, SERIAL_PORT, 1023);")
+            output.append("    }")
+            output.append("    uart_init(serialPort);")
         elif protocol.startswith("SPI"):
             output.append("    spi_init();")
         elif protocol == "UDP":
