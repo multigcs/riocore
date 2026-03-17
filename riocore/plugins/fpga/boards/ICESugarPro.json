@@ -94,7 +94,7 @@
                 "P3": {
                     "pin": "B2",
                     "pos": [
-                        255,
+                        256,
                         27
                     ],
                     "rotate": true,
@@ -103,7 +103,7 @@
                 "P4": {
                     "pin": "A2",
                     "pos": [
-                        266,
+                        267,
                         27
                     ],
                     "rotate": true,
@@ -113,7 +113,7 @@
                     "pin": "F2",
                     "pos": [
                         234,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -122,7 +122,7 @@
                     "pin": "D1",
                     "pos": [
                         245,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -130,8 +130,8 @@
                 "P9": {
                     "pin": "C1",
                     "pos": [
-                        255,
-                        15
+                        256,
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -139,8 +139,8 @@
                 "P10": {
                     "pin": "B1",
                     "pos": [
-                        266,
-                        15
+                        267,
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -191,7 +191,7 @@
                     "pin": "B5",
                     "pos": [
                         321,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -200,7 +200,7 @@
                     "pin": "B6",
                     "pos": [
                         332,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -209,7 +209,7 @@
                     "pin": "B7",
                     "pos": [
                         343,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -218,7 +218,7 @@
                     "pin": "B8",
                     "pos": [
                         354,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -241,7 +241,7 @@
                 "P2": {
                     "pin": "R5",
                     "pos": [
-                        21,
+                        22,
                         27
                     ],
                     "rotate": true,
@@ -250,7 +250,7 @@
                 "P3": {
                     "pin": "R4",
                     "pos": [
-                        32,
+                        33,
                         27
                     ],
                     "rotate": true,
@@ -259,7 +259,7 @@
                 "P4": {
                     "pin": "R3",
                     "pos": [
-                        43,
+                        44,
                         27
                     ],
                     "rotate": true,
@@ -269,7 +269,7 @@
                     "pin": "P7",
                     "pos": [
                         11,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -277,8 +277,8 @@
                 "P8": {
                     "pin": "R6",
                     "pos": [
-                        21,
-                        15
+                        22,
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -286,8 +286,8 @@
                 "P9": {
                     "pin": "T4",
                     "pos": [
-                        32,
-                        15
+                        33,
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -295,8 +295,8 @@
                 "P10": {
                     "pin": "T3",
                     "pos": [
-                        43,
-                        15
+                        44,
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -347,7 +347,7 @@
                     "pin": "P1",
                     "pos": [
                         99,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -356,7 +356,7 @@
                     "pin": "N1",
                     "pos": [
                         110,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -365,7 +365,7 @@
                     "pin": "M1",
                     "pos": [
                         121,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -374,7 +374,7 @@
                     "pin": "K1",
                     "pos": [
                         132,
-                        15
+                        16
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -389,7 +389,7 @@
                     "pin": "E3",
                     "pos": [
                         22,
-                        126
+                        127
                     ],
                     "rotate": false,
                     "direction": "all"
@@ -424,8 +424,8 @@
                 "P7": {
                     "pin": "E4",
                     "pos": [
-                        9,
-                        126
+                        11,
+                        127
                     ],
                     "rotate": false,
                     "direction": "all"
@@ -433,7 +433,7 @@
                 "P8": {
                     "pin": "D4",
                     "pos": [
-                        9,
+                        11,
                         116
                     ],
                     "rotate": false,
@@ -442,7 +442,7 @@
                 "P9": {
                     "pin": "D5",
                     "pos": [
-                        9,
+                        11,
                         105
                     ],
                     "rotate": false,
@@ -451,7 +451,7 @@
                 "P10": {
                     "pin": "R7",
                     "pos": [
-                        9,
+                        11,
                         94
                     ],
                     "rotate": false,
@@ -469,7 +469,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         150,
-                        260
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -480,7 +480,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         139,
-                        260
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -491,7 +491,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         128,
-                        260
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -501,8 +501,8 @@
                     "special": true,
                     "comment": "Shared with dapalink",
                     "pos": [
-                        118,
-                        260
+                        117,
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -545,7 +545,7 @@
                     "special": true,
                     "comment": "Shared with dapalink",
                     "pos": [
-                        118,
+                        117,
                         272
                     ],
                     "rotate": true,
@@ -561,7 +561,7 @@
                     "pin": "D9",
                     "pos": [
                         62,
-                        260
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -570,7 +570,7 @@
                     "pin": "D8",
                     "pos": [
                         51,
-                        260
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -578,8 +578,8 @@
                 "P3": {
                     "pin": "D7",
                     "pos": [
-                        41,
-                        260
+                        40,
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -587,8 +587,8 @@
                 "P4": {
                     "pin": "D6",
                     "pos": [
-                        30,
-                        260
+                        29,
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -614,7 +614,7 @@
                 "P9": {
                     "pin": "C6",
                     "pos": [
-                        41,
+                        40,
                         272
                     ],
                     "rotate": true,
@@ -623,7 +623,7 @@
                 "P10": {
                     "pin": "C5",
                     "pos": [
-                        30,
+                        29,
                         272
                     ],
                     "rotate": true,
@@ -639,7 +639,7 @@
                     "pin": "P11",
                     "pos": [
                         373,
-                        259
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -648,7 +648,7 @@
                     "pin": "N12",
                     "pos": [
                         362,
-                        259
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -657,7 +657,7 @@
                     "pin": "N13",
                     "pos": [
                         351,
-                        259
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -665,8 +665,8 @@
                 "P4": {
                     "pin": "M12",
                     "pos": [
-                        341,
-                        259
+                        340,
+                        261
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -675,7 +675,7 @@
                     "pin": "P12",
                     "pos": [
                         373,
-                        271
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -684,7 +684,7 @@
                     "pin": "P13",
                     "pos": [
                         362,
-                        271
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -693,7 +693,7 @@
                     "pin": "P14",
                     "pos": [
                         351,
-                        271
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -701,8 +701,8 @@
                 "P10": {
                     "pin": "M13",
                     "pos": [
-                        341,
-                        271
+                        340,
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -716,7 +716,7 @@
                 "P1": {
                     "pin": "J14",
                     "pos": [
-                        284,
+                        285,
                         261
                     ],
                     "rotate": true,
@@ -752,8 +752,8 @@
                 "P7": {
                     "pin": "J13",
                     "pos": [
-                        284,
-                        273
+                        285,
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -762,7 +762,7 @@
                     "pin": "H13",
                     "pos": [
                         274,
-                        273
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -771,7 +771,7 @@
                     "pin": "G13",
                     "pos": [
                         263,
-                        273
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -780,7 +780,7 @@
                     "pin": "F13",
                     "pos": [
                         252,
-                        273
+                        272
                     ],
                     "rotate": true,
                     "direction": "all"
