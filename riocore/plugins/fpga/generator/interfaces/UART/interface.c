@@ -49,10 +49,10 @@ void uart_tx(uint8_t *txBuffer, uint16_t size) {
 }
 
 int uart_rx(uint8_t *rxBuffer, uint16_t size, uint8_t uart_async) {
-#ifdef SERIAL_CSUM
-    int n = 0;
     int rec = 0;
     int cnt = 0;
+#ifdef SERIAL_CSUM
+    int n = 0;
     // clear buffer
     memset(rxBuffer, 0, size + 1);
     if (uart_async == 1) {
