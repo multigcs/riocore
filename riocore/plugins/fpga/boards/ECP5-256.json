@@ -1,7 +1,7 @@
 {
     "name": "ECP5-256",
+    "comment": "Lattice ECP5 devboard",
     "description": "Lattice ECP5 devboard",
-    "comment": "",
     "url": "https://de.aliexpress.com/item/1005008834546994.html?spm=a2g0o.order_list.order_list_main.34.2c0618029pMjxL&gatewayAdapt=glo2deu",
     "toolchain": "icestorm",
     "family": "ecp5",
@@ -13,7 +13,8 @@
         "pmod2"
     ],
     "clock": {
-        "speed": "24000000",
+        "osc": "24000000",
+        "speed": "100000000",
         "pin": "K16"
     },
     "slots": [
