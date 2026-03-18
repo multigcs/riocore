@@ -1040,14 +1040,14 @@ class cbase:
                 output.append(f"    interface: {os.path.basename(os.path.dirname(ppath))}")
                 output.append("*/")
                 iface_data = open(ppath).read()
-        if not self.rtapi_mode:
-            iface_data = iface_data.replace("rtapi_print_msg(RTAPI_MSG_ERR,", "printf(")
-            iface_data = iface_data.replace('#include "rtapi.h"', "")
-            iface_data = iface_data.replace('#include "rtapi_app.h"', "")
-            iface_data = iface_data.replace("rtapi_print", "printf")
-            iface_data = iface_data.replace("strerror(errno)", '"error"')
-            iface_data = iface_data.replace("errno", "1")
         if iface_data:
+            if not self.rtapi_mode:
+                iface_data = iface_data.replace("rtapi_print_msg(RTAPI_MSG_ERR,", "printf(")
+                iface_data = iface_data.replace('#include "rtapi.h"', "")
+                iface_data = iface_data.replace('#include "rtapi_app.h"', "")
+                iface_data = iface_data.replace("rtapi_print", "printf")
+                iface_data = iface_data.replace("strerror(errno)", '"error"')
+                iface_data = iface_data.replace("errno", "1")
             output.append(iface_data)
 
         output.append("int interface_init(int argc, char **argv) {")
@@ -1062,9 +1062,9 @@ class cbase:
             output.append("        strncpy(serialPort, SERIAL_PORT, 1023);")
             output.append("    }")
             output.append("    uart_init(serialPort);")
-        elif protocol.startswith("SPI"):
+        elif protocol and protocol.startswith("SPI"):
             output.append("    spi_init();")
-        elif protocol == "UDP":
+        elif protocol and protocol == "UDP":
             output.append("    char dstAddress[20];")
             output.append("    int dstPort = DST_PORT;")
             output.append("    if (argc > 1) {")
@@ -1084,9 +1084,12 @@ class cbase:
             output.append("    } else {")
             output.append("        udp_init(UDP_IP, DST_PORT, SRC_PORT);")
             output.append("    }")
-        else:
+        elif protocol is not None:
             print("ERROR: unsupported interface")
             sys.exit(1)
+        else:
+            print("WARNING: no interface found")
+
         output.append("    return 0;")
         output.append("}")
         output.append("")
@@ -1101,9 +1104,9 @@ class cbase:
         output.append("void interface_exit(void) {")
         if protocol == "UART":
             output.append("    uart_exit();")
-        elif protocol.startswith("SPI"):
+        elif protocol and protocol.startswith("SPI"):
             output.append("    spi_exit();")
-        elif protocol == "UDP":
+        elif protocol and protocol == "UDP":
             output.append("    udp_exit();")
         output.append("}")
         output.append("")
@@ -1164,10 +1167,10 @@ class cbase:
             output.append("            ret = uart_rx(rxBuffer, BUFFER_SIZE_RX, 0);")
             output.append("#endif")
 
-        elif protocol.startswith("SPI"):
+        elif protocol and protocol.startswith("SPI"):
             output.append("            spi_trx(txBuffer, rxBuffer, MAX(BUFFER_SIZE_RX, BUFFER_SIZE_TX));")
 
-        elif protocol == "UDP":
+        elif protocol and protocol == "UDP":
             output.append("#ifdef UDP_ASYNC")
             output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 1);")
             output.append("            udp_tx(txBuffer, BUFFER_SIZE_TX);")
@@ -1175,7 +1178,7 @@ class cbase:
             output.append("            udp_tx(txBuffer, BUFFER_SIZE_TX);")
             output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 0);")
             output.append("#endif")
-        else:
+        elif protocol is not None:
             print("ERROR: unsupported interface")
             sys.exit(1)
 
