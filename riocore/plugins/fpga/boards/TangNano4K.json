@@ -1,0 +1,56 @@
+{
+  "name": "TangNano4K",
+  "description": "TangNano4K - cheap Devboard",
+  "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-4K/Nano-4K.html",
+  "board": "TangNano4K",
+  "type": "GW1NSR-LV4CQN48PC6/I5",
+  "family": "GW1NSR-4C",
+  "toolchains": [
+    "gowin",
+    "icestorm"
+  ],
+  "toolchain": "gowin",
+  "package": "",
+  "clock": {
+    "speed": "27000000",
+    "pin": "45"
+  },
+  "slots": [
+    {
+      "name": "LED",
+      "pins": {
+        "L1": {
+          "pin": "10",
+          "pos": [
+            114,
+            60
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "SW",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "S1": {
+          "pin": "14",
+          "pos": [
+            25,
+            31
+          ],
+          "direction": "input"
+        },
+        "S2": {
+          "pin": "15",
+          "pos": [
+            25,
+            138
+          ],
+          "direction": "input"
+        }
+      }
+    }
+  ]
+}
