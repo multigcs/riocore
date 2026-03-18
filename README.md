@@ -60,7 +60,7 @@ and do not, take any responsibility for such compliance
 * [cnc-aus-holz (de)](https://www.cnc-aus-holz.at/)
 
 ## Boards <a name = "boards"></a>
-list of all boards: [BOARDS](riocore/boards/README.md)
+list of all boards: [BOARDS](riocore/plugins/fpga/BOARDS.md)
 
 ## Plugins/Drivers <a name = "plugins"></a>
 list of all plugins: [PLUGINS](riocore/plugins/README.md)
