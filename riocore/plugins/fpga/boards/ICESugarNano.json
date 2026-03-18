@@ -3,6 +3,7 @@
   "description": "ICESugarNano - usable as sat only",
   "url": "https://github.com/wuxx/icesugar-nano",
   "pinimage": "board.png",
+  "size": [39, 18],
   "toolchain": "icestorm",
   "family": "ice40",
   "type": "lp1k",

@@ -3,6 +3,7 @@
     "comment": "Lattice ECP5 devboard",
     "description": "Lattice ECP5 devboard",
     "url": "https://de.aliexpress.com/item/1005008834546994.html?spm=a2g0o.order_list.order_list_main.34.2c0618029pMjxL&gatewayAdapt=glo2deu",
+    "size": [80, 50],
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",

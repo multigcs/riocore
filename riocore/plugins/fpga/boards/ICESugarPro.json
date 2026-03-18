@@ -3,6 +3,7 @@
     "description": "Lattice ECP5 on SODIMM-200P board",
     "comment": "",
     "url": "https://github.com/wuxx/icesugar-pro",
+    "size": [100, 75],
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",

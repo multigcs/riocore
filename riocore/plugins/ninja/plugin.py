@@ -140,7 +140,6 @@ class Plugin(PluginBase):
                 }
             )
             self.TYPE = "io"
-            self.IMAGE_SHOW = True
             self.IMAGE_SHOW = False
             self.IMAGES = ["generic", "encoder"]
             scale = self.plugin_setup.get("scale", self.option_default("scale"))

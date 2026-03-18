@@ -2,6 +2,7 @@
   "name": "OctoBot",
   "description": "RIO-OctoBot board",
   "url": "https://github.com/multigcs/rio-octobot",
+  "size": [100, 100],
   "pinimage": "board.png",
   "toolchain": "icestorm",
   "family": "ice40",

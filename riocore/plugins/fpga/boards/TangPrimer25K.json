@@ -2,6 +2,7 @@
   "name": "TangPrimer25K",
   "description": "TangPrimer25K-Devboard on Dev-Board",
   "url": "https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html",
+  "size": [64, 40],
   "board": "TangPrimer25K",
   "type": "GW5A-LV25MG121NC1/I0",
   "family": "GW5A-25A",

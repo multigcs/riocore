@@ -2,6 +2,7 @@
   "name": "EBAZ4205",
   "description": "EBAZ4205 - WIP",
   "url": "https://github.com/xjtuecho/EBAZ4205",
+  "size": [100, 97],
   "toolchain": "vivado",
   "family": "XC7",
   "type": "xc7z010clg400-1",

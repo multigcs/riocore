@@ -8,6 +8,8 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)"
         self.KEYWORDS = "display info status keyboard buttons"
         self.NEEDS = ["fpga"]
+        self.IMAGE_SHOW = True
+        self.IMAGE = "image.png"
         self.ORIGIN = ""
         self.VERILOGS = ["tm1638b8s7l8.v"]
         self.PINDEFAULTS = {
@@ -15,18 +17,21 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "pos": (11, 150),
                 "description": "Select-Pin (STB)",
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "pos": (11, 161),
                 "description": "Clock-Pin (CLK)",
             },
             "data": {
                 "direction": "inout",
                 "invert": False,
                 "pull": None,
+                "pos": (11, 172),
                 "description": "Data-Pin (DIO)",
             },
         }
@@ -34,92 +39,92 @@ class Plugin(PluginBase):
             "sw0": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw1": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw2": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw3": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw4": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw5": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw6": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "sw7": {
                 "size": 1,
                 "direction": "input",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led0": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led1": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led2": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led3": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led4": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led5": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led6": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "led7": {
                 "size": 1,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "number1": {
-                "size": 24,
+                "size": 32,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
             "number2": {
                 "size": 8,
                 "direction": "output",
-                "multiplexed": True,
+                "multiplexed": False,
             },
         }
         self.SIGNALS = {

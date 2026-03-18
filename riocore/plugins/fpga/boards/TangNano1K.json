@@ -2,6 +2,7 @@
   "name": "TangNano1K",
   "description": "TangNano1K - cheap GW1NR-1 Devboard - usable as sat only",
   "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-1K/Nano-1k.html",
+  "size": [59, 22],
   "board": "TangNano1K",
   "type": "GW1NZ-LV1QN48C6/I5",
   "family": "GW1NZ-1",
