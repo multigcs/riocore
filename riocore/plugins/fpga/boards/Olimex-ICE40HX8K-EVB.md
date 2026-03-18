@@ -1,6 +1,8 @@
 # Olimex-ICE40HX8K-EVB
 <img align="right" width="400" src="Olimex-ICE40HX8K-EVB.png">
+
 ICE40HX8K FPGA development board
+
 
 | Name | Value |
 | --- | --- |

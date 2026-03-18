@@ -1,6 +1,8 @@
 # MotoMan
 <img align="right" width="400" src="MotoMan.png">
+
 RIO-MotoMan board
+
 
 | Name | Value |
 | --- | --- |

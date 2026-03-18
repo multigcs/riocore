@@ -1,6 +1,8 @@
 # Basys2
 <img align="right" width="400" src="Basys2.png">
+
 Digilent - Basys2
+
 
 | Name | Value |
 | --- | --- |

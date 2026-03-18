@@ -1,6 +1,8 @@
 # Numato-Spartan6
 <img align="right" width="400" src="Numato-Spartan6.png">
+
 Spartan6 - only for testing the toolchain
+
 
 | Name | Value |
 | --- | --- |

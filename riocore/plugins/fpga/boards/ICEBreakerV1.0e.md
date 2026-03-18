@@ -1,6 +1,8 @@
 # ICEBreakerV1.0e
 <img align="right" width="400" src="ICEBreakerV1.0e.png">
+
 Small and low cost FPGA educational and development board
+
 
 | Name | Value |
 | --- | --- |

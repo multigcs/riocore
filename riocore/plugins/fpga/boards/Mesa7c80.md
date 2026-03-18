@@ -1,6 +1,8 @@
 # Mesa7c80
 <img align="right" width="400" src="Mesa7c80.png">
+
 Mesa7c80 over SPI - untested, i have no hardware
+
 
 | Name | Value |
 | --- | --- |

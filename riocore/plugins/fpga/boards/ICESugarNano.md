@@ -1,6 +1,8 @@
 # ICESugarNano
 <img align="right" width="400" src="ICESugarNano.png">
+
 ICESugarNano - usable as sat only
+
 
 | Name | Value |
 | --- | --- |

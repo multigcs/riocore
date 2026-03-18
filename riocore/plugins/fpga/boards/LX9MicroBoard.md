@@ -1,6 +1,8 @@
 # LX9MicroBoard
 <img align="right" width="400" src="LX9MicroBoard.png">
+
 LX9MicroBoard - Spartan6 devboard<BR/>on my debian12, it works with openFPGAloader - linux usb flashtool: Adept 2
+
 
 | Name | Value |
 | --- | --- |

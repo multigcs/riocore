@@ -1,6 +1,8 @@
 # OctoBot
 <img align="right" width="400" src="OctoBot.png">
+
 RIO-OctoBot board
+
 
 | Name | Value |
 | --- | --- |

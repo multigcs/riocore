@@ -39,12 +39,14 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     if os.path.isfile(imgfile):
         img = f'<img width="300" src="boards/{name}.png">'
         bimg = f'<img align="right" width="400" src="{name}.png">'
-    output.append(f"| {name} | {family} | {ftype} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
+    output.append(f"| [{name}](boards/{name}.md) | {family} | {ftype} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
 
     boutput = []
     boutput.append(f"# {name}")
     boutput.append(bimg)
+    boutput.append("")
     boutput.append(description)
+    boutput.append("")
     boutput.append("")
     boutput.append("| Name | Value |")
     boutput.append("| --- | --- |")

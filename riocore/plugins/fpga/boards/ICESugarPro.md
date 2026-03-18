@@ -1,6 +1,8 @@
 # ICESugarPro
 <img align="right" width="400" src="ICESugarPro.png">
+
 Lattice ECP5 on SODIMM-200P board
+
 
 | Name | Value |
 | --- | --- |
