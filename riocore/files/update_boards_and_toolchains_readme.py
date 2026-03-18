@@ -61,8 +61,8 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
         boutput.append("")
         boutput.append("| Name | Pin | Direction |")
         boutput.append("| --- | --- | --- |")
-        for pin_name, pin_data in bdata.get("pins", {}).items():
-            boutput.append(f"| {pin_name} | {pin_data['pin']} | {pin_data['direction']} |")
+        for pin_name, pin_data in slot.get("pins", {}).items():
+            boutput.append(f"| {pin_name} | {pin_data['pin']} | {pin_data.get('direction', '')} |")
         boutput.append("")
     boutput.append("")
     boutput.append("")

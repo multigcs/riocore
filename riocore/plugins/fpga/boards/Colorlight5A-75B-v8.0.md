@@ -15,11 +15,13 @@ LED
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| 1 | T6 |  |
 
 ### BUTTON
 BUTTON
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| 1 | R7 |  |
 
 
