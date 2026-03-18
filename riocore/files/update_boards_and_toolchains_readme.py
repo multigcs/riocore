@@ -26,7 +26,6 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     name = bdata.get("name", "?")
     family = bdata.get("family", "")
     ftype = bdata.get("type", "")
-    name = bdata.get("name", "?")
     speed = int(bdata.get("clock", {}).get("speed", "0")) / 1000000
     toolchain = bdata.get("toolchain", "?")
     toolchains = bdata.get("toolchains", [])
@@ -34,10 +33,45 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
         if tc != toolchain:
             toolchain += f" ({tc})"
     description = bdata.get("description", "").replace("\n", "<BR/>")
+    bimg = ""
     img = ""
-    if os.path.isfile(bpath.replace(".json", ".png")):
-        img = f'<img align="right" width="300" src="boards/{name}.png">'
+    imgfile = bpath.replace(".json", ".png")
+    if os.path.isfile(imgfile):
+        img = f'<img width="300" src="boards/{name}.png">'
+        bimg = f'<img align="right" width="400" src="{name}.png">'
     output.append(f"| {name} | {family} | {ftype} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
+
+    boutput = []
+    boutput.append(f"# {name}")
+    boutput.append(bimg)
+    boutput.append(description)
+    boutput.append("")
+    boutput.append("| Name | Value |")
+    boutput.append("| --- | --- |")
+    boutput.append(f"| Family | {family} |")
+    boutput.append(f"| Type | {ftype} |")
+    boutput.append(f"| Clock | {speed} |")
+    boutput.append(f"| Toolchain | {toolchain} |")
+    boutput.append("")
+
+    boutput.append("## Slots")
+
+    for slot in bdata.get("slots", []):
+        boutput.append(f"### {slot['name']}")
+        boutput.append(f"{slot.get('comment', '')}")
+        boutput.append("")
+        boutput.append("| Name | Pin | Direction |")
+        boutput.append("| --- | --- | --- |")
+        for pin_name, pin_data in bdata.get("pins", {}).items():
+            boutput.append(f"| {pin_name} | {pin_data['pin']} | {pin_data['direction']} |")
+        boutput.append("")
+    boutput.append("")
+    boutput.append("")
+
+    mdfile = bpath.replace(".json", ".md")
+    open(mdfile, "w").write("\n".join(boutput))
+
+
 
 output.append("")
 open("riocore/plugins/fpga/BOARDS.md", "w").write("\n".join(output))
