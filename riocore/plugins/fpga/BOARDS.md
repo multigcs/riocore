@@ -24,6 +24,7 @@
 | [Olimex-ICE40HX8K-EVB](boards/Olimex-ICE40HX8K-EVB.md) | ice40 | hx8k | 100.00Mhz | icestorm | ICE40HX8K FPGA development board | <img width="300" src="boards/Olimex-ICE40HX8K-EVB.png"> |
 | [TangNano1K](boards/TangNano1K.md) | GW1NZ-1 | GW1NZ-LV1QN48C6/I5 | 27.00Mhz | gowin (icestorm) | TangNano1K - cheap GW1NR-1 Devboard - usable as sat only | <img width="300" src="boards/TangNano1K.png"> |
 | [TangNano20K](boards/TangNano20K.md) | GW2AR-18C | GW2AR-LV18QN88C8/I7 | 27.00Mhz | gowin (icestorm) | TangNano20K - GW2AR-18 devboard | <img width="300" src="boards/TangNano20K.png"> |
+| [TangNano4K](boards/TangNano4K.md) | GW1NSR-4C | GW1NSR-LV4CQN48PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano4K - cheap Devboard | <img width="300" src="boards/TangNano4K.png"> |
 | [TangNano9K](boards/TangNano9K.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/TangNano9K.png"> |
 | [TangPrimer20K](boards/TangPrimer20K.md) | GW2A-18C | GW2A-LV18PG256C8/I7 | 27.00Mhz | gowin (icestorm) | TangPrimer20K-Devboard on Dock ext-board | <img width="300" src="boards/TangPrimer20K.png"> |
 | [TangPrimer25K](boards/TangPrimer25K.md) | GW5A-25A | GW5A-LV25MG121NC1/I0 | 50.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img width="300" src="boards/TangPrimer25K.png"> |

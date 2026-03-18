@@ -1,56 +1,437 @@
 {
-  "name": "TangNano4K",
-  "description": "TangNano4K - cheap Devboard",
-  "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-4K/Nano-4K.html",
-  "board": "TangNano4K",
-  "type": "GW1NSR-LV4CQN48PC6/I5",
-  "family": "GW1NSR-4C",
-  "toolchains": [
-    "gowin",
-    "icestorm"
-  ],
-  "toolchain": "gowin",
-  "package": "",
-  "clock": {
-    "speed": "27000000",
-    "pin": "45"
-  },
-  "slots": [
-    {
-      "name": "LED",
-      "pins": {
-        "L1": {
-          "pin": "10",
-          "pos": [
-            114,
-            60
-          ],
-          "direction": "output"
-        }
-      }
+    "name": "TangNano4K",
+    "description": "TangNano4K - cheap Devboard",
+    "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-4K/Nano-4K.html",
+    "board": "TangNano4K",
+    "type": "GW1NSR-LV4CQN48PC6/I5",
+    "family": "GW1NSR-4C",
+    "toolchains": [
+        "gowin",
+        "icestorm"
+    ],
+    "toolchain": "gowin",
+    "package": "",
+    "clock": {
+        "speed": "27000000",
+        "pin": "45"
     },
-    {
-      "name": "SW",
-      "comment": "",
-      "default": "",
-      "pins": {
-        "S1": {
-          "pin": "14",
-          "pos": [
-            25,
-            31
-          ],
-          "direction": "input"
+    "slots": [
+        {
+            "name": "PIN",
+            "pins": {
+                "14": {
+                    "pin": "14",
+                    "pos": [
+                        37,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "shared with S1",
+                    "special": true,
+                    "direction": "all"
+                },
+                "7": {
+                    "pin": "7",
+                    "pos": [
+                        51,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "JTAG_TCK",
+                    "special": true,
+                    "direction": "all"
+                },
+                "4": {
+                    "pin": "4",
+                    "pos": [
+                        65,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "JTAG_TDO",
+                    "special": true,
+                    "direction": "all"
+                },
+                "3": {
+                    "pin": "3",
+                    "pos": [
+                        80,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "JTAG_TDI",
+                    "special": true,
+                    "direction": "all"
+                },
+                "6": {
+                    "pin": "6",
+                    "pos": [
+                        94,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "JTAG_TMS",
+                    "special": true,
+                    "direction": "all"
+                },
+                "44": {
+                    "pin": "44",
+                    "pos": [
+                        138,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "46": {
+                    "pin": "46",
+                    "pos": [
+                        152,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "1": {
+                    "pin": "1",
+                    "pos": [
+                        167,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "FLASH_CLK",
+                    "special": true,
+                    "direction": "all"
+                },
+                "48": {
+                    "pin": "48",
+                    "pos": [
+                        181,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "FLASH_DI",
+                    "special": true,
+                    "direction": "all"
+                },
+                "47": {
+                    "pin": "47",
+                    "pos": [
+                        196,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "FLASH_DO",
+                    "special": true,
+                    "direction": "all"
+                },
+                "43": {
+                    "pin": "43",
+                    "pos": [
+                        210,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "42": {
+                    "pin": "42",
+                    "pos": [
+                        225,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "41": {
+                    "pin": "41",
+                    "pos": [
+                        239,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "40": {
+                    "pin": "40",
+                    "pos": [
+                        254,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "39": {
+                    "pin": "39",
+                    "pos": [
+                        268,
+                        7
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "10": {
+                    "pin": "10",
+                    "pos": [
+                        282,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "shared with LED",
+                    "special": true,
+                    "direction": "all"
+                },
+                "35": {
+                    "pin": "35",
+                    "pos": [
+                        297,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "34": {
+                    "pin": "34",
+                    "pos": [
+                        312,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "32": {
+                    "pin": "32",
+                    "pos": [
+                        326,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "31": {
+                    "pin": "31",
+                    "pos": [
+                        341,
+                        7
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "15": {
+                    "pin": "63",
+                    "pos": [
+                        37,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "shared with S2",
+                    "special": true,
+                    "direction": "all"
+                },
+                "2": {
+                    "pin": "2",
+                    "pos": [
+                        109,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "FLASH_CS",
+                    "special": true,
+                    "direction": "all"
+                },
+                "33": {
+                    "pin": "33",
+                    "pos": [
+                        123,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "8": {
+                    "pin": "8",
+                    "pos": [
+                        138,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "FLASH_WP",
+                    "special": true,
+                    "direction": "all"
+                },
+                "9": {
+                    "pin": "9",
+                    "pos": [
+                        152,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "FLASH_HOLD",
+                    "special": true,
+                    "direction": "all"
+                },
+                "16": {
+                    "pin": "16",
+                    "pos": [
+                        167,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "13": {
+                    "pin": "13",
+                    "pos": [
+                        181,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "17": {
+                    "pin": "17",
+                    "pos": [
+                        196,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "18": {
+                    "pin": "18",
+                    "pos": [
+                        210,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "19": {
+                    "pin": "19",
+                    "pos": [
+                        225,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "20": {
+                    "pin": "20",
+                    "pos": [
+                        239,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "21": {
+                    "pin": "21",
+                    "pos": [
+                        254,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "22": {
+                    "pin": "22",
+                    "pos": [
+                        268,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "23": {
+                    "pin": "23",
+                    "pos": [
+                        282,
+                        121
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "27": {
+                    "pin": "27",
+                    "pos": [
+                        297,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "28": {
+                    "pin": "28",
+                    "pos": [
+                        312,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "29": {
+                    "pin": "29",
+                    "pos": [
+                        326,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                },
+                "30": {
+                    "pin": "30",
+                    "pos": [
+                        341,
+                        121
+                    ],
+                    "rotate": true,
+                    "comment": "shared with HDMI",
+                    "direction": "all"
+                }
+            }
         },
-        "S2": {
-          "pin": "15",
-          "pos": [
-            25,
-            138
-          ],
-          "direction": "input"
+        {
+            "name": "LED",
+            "pins": {
+                "L1": {
+                    "pin": "10",
+                    "pos": [
+                        267,
+                        20
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "SW",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "S1": {
+                    "pin": "14",
+                    "pos": [
+                        18,
+                        16
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "15",
+                    "pos": [
+                        18,
+                        111
+                    ],
+                    "direction": "input"
+                }
+            }
         }
-      }
-    }
-  ]
+    ]
 }
