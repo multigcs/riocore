@@ -15,6 +15,32 @@ for cpath in sorted(glob.glob(os.path.join("riocore", "configs", "*", "config.js
     cjdata = open(cpath).read()
     cdata = json.loads(cjdata)
 
+
+print("# FPGA-Boards")
+output = []
+output.append("# BOARDS")
+output.append("| Name | clock | Toolchain | Description | Image |")
+output.append("| --- | --- | --- | --- | --- |")
+
+for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards", "*.json"))):
+    bdata = json.loads(open(bpath).read())
+    name = bdata.get("name", "?")
+    speed = int(bdata.get("clock", {}).get("speed", "0")) / 1000000
+    toolchain = bdata.get("toolchain", "?")
+    description = bdata.get("description", "")
+
+    img = ""
+    if os.path.isfile(bpath.replace(".json", ".png")):
+        img = f'<img align="right" width="300" src="boards/{name}.png">'
+
+
+    output.append(f"| {name} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
+
+output.append("")
+open("riocore/plugins/fpga/BOARDS.md", "w").write("\n".join(output))
+
+exit(0)
+
 print("# TOOLCHAINS")
 output = []
 output.append("# TOOLCHAINS")
@@ -56,10 +82,7 @@ for ppath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "genera
         toutput.append("")
         open(os.path.join("riocore", "plugins", "fpga", "generator", "toolchains", toolchain_name, "README.md"), "w").write("\n".join(toutput))
 
-
 output.append("")
-
-
 open("riocore/plugins/fpga/generator/toolchains/README.md", "w").write("\n".join(output))
 
 
