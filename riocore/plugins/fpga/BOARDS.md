@@ -19,7 +19,7 @@
 | Mesa7c80 | 100.00Mhz | ise | Mesa7c80 over SPI - untested, i have no hardware | <img align="right" width="300" src="boards/Mesa7c80.png"> |
 | Mesa7c81 | 100.00Mhz | ise | Mesa7c81 over SPI - WIP | <img align="right" width="300" src="boards/Mesa7c81.png"> |
 | MotoMan | 60.00Mhz | icestorm | RIO-MotoMan board | <img align="right" width="300" src="boards/MotoMan.png"> |
-| Spartan6 | 50.00Mhz | ise | Spartan6 - only for testing the toolchain | <img align="right" width="300" src="boards/Spartan6.png"> |
+| Numato-Spartan6 | 50.00Mhz | ise | Spartan6 - only for testing the toolchain | <img align="right" width="300" src="boards/Numato-Spartan6.png"> |
 | OctoBot | 60.00Mhz | icestorm | RIO-OctoBot board | <img align="right" width="300" src="boards/OctoBot.png"> |
 | Olimex-ICE40HX8K-EVB | 100.00Mhz | icestorm | ICE40HX8K FPGA development board | <img align="right" width="300" src="boards/Olimex-ICE40HX8K-EVB.png"> |
 | TangNano1K | 27.00Mhz | gowin (icestorm) | TangNano1K - cheap GW1NR-1 Devboard - usable as sat only | <img align="right" width="300" src="boards/TangNano1K.png"> |

@@ -1,5 +1,5 @@
 {
-  "name": "Spartan6",
+  "name": "Numato-Spartan6",
   "description": "Spartan6 - only for testing the toolchain",
   "url": "https://numato.com/product/mimas-spartan-6-fpga-development-board/",
   "toolchain": "ise",
