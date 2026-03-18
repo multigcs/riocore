@@ -27,19 +27,18 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     name = bdata.get("name", "?")
     speed = int(bdata.get("clock", {}).get("speed", "0")) / 1000000
     toolchain = bdata.get("toolchain", "?")
-    description = bdata.get("description", "")
-
+    toolchains = bdata.get("toolchains", [])
+    for tc in toolchains:
+        if tc != toolchain:
+            toolchain += f" ({tc})"
+    description = bdata.get("description", "").replace("\n", "<BR/>")
     img = ""
     if os.path.isfile(bpath.replace(".json", ".png")):
         img = f'<img align="right" width="300" src="boards/{name}.png">'
-
-
     output.append(f"| {name} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
 
 output.append("")
 open("riocore/plugins/fpga/BOARDS.md", "w").write("\n".join(output))
-
-exit(0)
 
 print("# TOOLCHAINS")
 output = []
@@ -48,7 +47,7 @@ output.append("| Name | Info |")
 output.append("| --- | --- |")
 for ppath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "generator", "toolchains", "*", "toolchain.py"))):
     toolchain_name = os.path.basename(os.path.dirname(ppath))
-    print(toolchain_name)
+    # print(toolchain_name)
     toolchain = importlib.import_module(".toolchain", f"riocore.plugins.fpga.generator.toolchains.{toolchain_name}")
     info = toolchain.Toolchain.info()
     if info:
@@ -102,7 +101,7 @@ output.append("")
 
 
 for name, data in Modifiers().info().items():
-    print(name, data)
+    # print(name, data)
     info = data.get("info", "")
     title = data.get("title", name.title())
     options = data.get("options")

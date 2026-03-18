@@ -15,19 +15,18 @@
 | ICESugarNano | 12.00Mhz | icestorm | ICESugarNano - usable as sat only | <img align="right" width="300" src="boards/ICESugarNano.png"> |
 | ICESugarPro | 25.00Mhz | icestorm | Lattice ECP5 on SODIMM-200P board | <img align="right" width="300" src="boards/ICESugarPro.png"> |
 | IceShield | 29.81Mhz | icestorm | RIO-IceShield board for Raspberry PI4 | <img align="right" width="300" src="boards/IceShield.png"> |
-| LX9MicroBoard | 100.00Mhz | ise | LX9MicroBoard - Spartan6 devboard
-on my debian12, it works with openFPGAloader - linux usb flashtool: Adept 2 | <img align="right" width="300" src="boards/LX9MicroBoard.png"> |
+| LX9MicroBoard | 100.00Mhz | ise | LX9MicroBoard - Spartan6 devboard<BR/>on my debian12, it works with openFPGAloader - linux usb flashtool: Adept 2 | <img align="right" width="300" src="boards/LX9MicroBoard.png"> |
 | Mesa7c80 | 100.00Mhz | ise | Mesa7c80 over SPI - untested, i have no hardware | <img align="right" width="300" src="boards/Mesa7c80.png"> |
 | Mesa7c81 | 100.00Mhz | ise | Mesa7c81 over SPI - WIP | <img align="right" width="300" src="boards/Mesa7c81.png"> |
 | MotoMan | 60.00Mhz | icestorm | RIO-MotoMan board | <img align="right" width="300" src="boards/MotoMan.png"> |
 | Spartan6 | 50.00Mhz | ise | Spartan6 - only for testing the toolchain | <img align="right" width="300" src="boards/Spartan6.png"> |
 | OctoBot | 60.00Mhz | icestorm | RIO-OctoBot board | <img align="right" width="300" src="boards/OctoBot.png"> |
 | Olimex-ICE40HX8K-EVB | 100.00Mhz | icestorm | ICE40HX8K FPGA development board | <img align="right" width="300" src="boards/Olimex-ICE40HX8K-EVB.png"> |
-| TangNano1K | 27.00Mhz | gowin | TangNano1K - cheap GW1NR-1 Devboard - usable as sat only | <img align="right" width="300" src="boards/TangNano1K.png"> |
-| TangNano20K | 27.00Mhz | gowin | TangNano20K - GW2AR-18 devboard | <img align="right" width="300" src="boards/TangNano20K.png"> |
-| TangNano9K | 27.00Mhz | gowin | TangNano9K - cheap GW1NR-9 Devboard | <img align="right" width="300" src="boards/TangNano9K.png"> |
-| TangPrimer20K | 27.00Mhz | gowin | TangPrimer20K-Devboard on Dock ext-board | <img align="right" width="300" src="boards/TangPrimer20K.png"> |
-| TangPrimer25K | 50.00Mhz | gowin | TangPrimer25K-Devboard on Dev-Board | <img align="right" width="300" src="boards/TangPrimer25K.png"> |
-| Tangbob | 27.00Mhz | gowin | TangNano9K - cheap GW1NR-9 Devboard | <img align="right" width="300" src="boards/Tangbob.png"> |
-| Tangoboard | 27.00Mhz | gowin | based on TangNano9k | <img align="right" width="300" src="boards/Tangoboard.png"> |
+| TangNano1K | 27.00Mhz | gowin (icestorm) | TangNano1K - cheap GW1NR-1 Devboard - usable as sat only | <img align="right" width="300" src="boards/TangNano1K.png"> |
+| TangNano20K | 27.00Mhz | gowin (icestorm) | TangNano20K - GW2AR-18 devboard | <img align="right" width="300" src="boards/TangNano20K.png"> |
+| TangNano9K | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img align="right" width="300" src="boards/TangNano9K.png"> |
+| TangPrimer20K | 27.00Mhz | gowin (icestorm) | TangPrimer20K-Devboard on Dock ext-board | <img align="right" width="300" src="boards/TangPrimer20K.png"> |
+| TangPrimer25K | 50.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img align="right" width="300" src="boards/TangPrimer25K.png"> |
+| Tangbob | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img align="right" width="300" src="boards/Tangbob.png"> |
+| Tangoboard | 27.00Mhz | gowin (icestorm) | based on TangNano9k | <img align="right" width="300" src="boards/Tangoboard.png"> |
 | rioctrl | 100.00Mhz | icestorm | rioctrl- a modular hardware for riocore | <img align="right" width="300" src="boards/rioctrl.png"> |
