@@ -1,5 +1,6 @@
 import os
 
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -35,7 +36,7 @@ class Plugin(PluginBase):
 
         self.node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         if self.node_type == "output":
-            self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
+            self.IMAGES = PluginImages.bitout
             self.SIGNALS = {
                 "bit": {
                     "direction": "output",
@@ -56,7 +57,7 @@ class Plugin(PluginBase):
                 },
             }
         elif self.node_type == "input":
-            self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+            self.IMAGES = PluginImages.biin
             self.OPTIONS.update(
                 {
                     "longpress": {
@@ -267,7 +268,7 @@ class Plugin(PluginBase):
                     }
                 )
         elif self.node_type == "freqin":
-            self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+            self.IMAGES = PluginImages.biin
             self.NEEDS = ["mcu"]
             self.SIGNALS = {
                 "value": {

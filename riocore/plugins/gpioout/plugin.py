@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -7,7 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "gpio output"
         self.DESCRIPTION = ""
         self.KEYWORDS = "output"
-        self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
+        self.IMAGES = PluginImages.bitout
         self.TYPE = "io"
         self.NEEDS = ["gpio"]
         self.SIGNALS = {

@@ -5,6 +5,7 @@ import os
 
 import riocore
 
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -101,7 +102,8 @@ class Plugin(PluginBase):
             else:
                 self.JOINT_MODE = "position"
             self.IMAGE_SHOW = True
-            self.IMAGES = ["stepper", "servo42"]
+            self.IMAGES = PluginImages.stepdir
+
             self.SIGNALS = {
                 "velocity": {
                     "direction": "output",
@@ -196,7 +198,7 @@ class Plugin(PluginBase):
             )
             self.TYPE = "io"
             self.IMAGE_SHOW = True
-            self.IMAGES = ["spindle500w", "laser", "led"]
+            self.IMAGES = PluginImages.pwmout
             scale = self.plugin_setup.get("scale", self.option_default("scale"))
             min_limit = self.plugin_setup.get("min_limit", self.option_default("min_limit"))
             self.SIGNALS = {

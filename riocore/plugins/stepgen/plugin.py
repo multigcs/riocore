@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -10,7 +11,7 @@ The maximum step rate depends on the CPU and other factors,
 and is usually in the range of 5 kHz to 25 kHz.
 If higher rates are needed, a hardware step generator is a better choice."""
         self.KEYWORDS = "stepper"
-        self.IMAGES = ["stepper", "servo42", "stepstick", "servo"]
+        self.IMAGES = PluginImages.stepdir
         self.TYPE = "joint"
         self.NEEDS = ["gpio", "basethread"]
         self.JOINT_MODE = "position"

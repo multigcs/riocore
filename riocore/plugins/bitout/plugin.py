@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -7,7 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "singe bit output pin"
         self.DESCRIPTION = "to control relay, leds, valves, ...."
         self.KEYWORDS = "led relais relay valve lamp motor magnet"
-        self.IMAGES = ["relay", "ssr", "ssr2a", "led", "smdled", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
+        self.IMAGES = PluginImages.bitout
         self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PLUGIN_CONFIGS = {"Wizard": "config.py"}

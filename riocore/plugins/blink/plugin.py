@@ -7,7 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "blinking output pin"
         self.DESCRIPTION = "outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals"
         self.KEYWORDS = "led blinking"
-        self.IMAGES = ["led", "smdled"]
+        self.IMAGES = ["led", "led_r", "led_g", "led_b", "led_y", "smdled", "smdled_r", "smdled_g", "smdled_b", "smdled_y"]
         self.ORIGIN = ""
         self.VERILOGS = ["blink.v"]
         self.NEEDS = ["fpga"]

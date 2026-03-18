@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -7,7 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "single input pin"
         self.DESCRIPTION = "to read switches or other 1bit signals"
         self.KEYWORDS = "switch limit estop keyboard"
-        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+        self.IMAGES = PluginImages.biin
         self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PLUGIN_CONFIGS = {"Wizard": "config.py"}

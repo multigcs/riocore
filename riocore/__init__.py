@@ -513,14 +513,26 @@ class Project:
 
 
 class PluginImages:
+    bitout = ["relay", "ssr", "ssr2a", "led", "led_r", "led_g", "led_b", "led_y", "smdled", "smdled_r", "smdled_g", "smdled_b", "smdled_y", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
+    biin = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+    stepdir = ["stepper", "servo42", "stepstick", "servo", "clstepper"]
+    pwmout = ["spindle500w", "laser", "led"]
     images = {
         "relay": {"image": "relay.png", "pins": [(7, 75)], "signals": [(177, 75)]},
         "relay_min": {"image": "relay_min.png", "pins": [(7, 75)], "signals": [(177, 75)]},
         "ssr": {"image": "ssr.png", "pins": [(18, 18)], "signals": [(139, 20)]},
         "ssr2a": {"image": "ssr2a.png", "pins": [(20, 29)], "signals": [(139, 29)]},
         "led": {"image": "led.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "led_r": {"image": "led_r.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "led_g": {"image": "led_g.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "led_b": {"image": "led_b.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "led_y": {"image": "led_y.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
         "smdbutton": {"image": "smdbutton.png", "pins": [(5, 5)], "signals": [(30, 5)]},
         "smdled": {"image": "smdled.png", "pins": [(4, 6)], "signals": [(21, 6)]},
+        "smdled_r": {"image": "smdled_r.png", "pins": [(4, 6)], "signals": [(21, 6)]},
+        "smdled_g": {"image": "smdled_g.png", "pins": [(4, 6)], "signals": [(21, 6)]},
+        "smdled_b": {"image": "smdled_b.png", "pins": [(4, 6)], "signals": [(21, 6)]},
+        "smdled_y": {"image": "smdled_y.png", "pins": [(4, 6)], "signals": [(21, 6)]},
         "proximity": {"image": "proximity.png", "pins": [(5, 30)], "signals": [(180, 30), (170, 30)]},
         "estop": {"image": "estop.png", "pins": [(5, 80)], "signals": [(180, 80)]},
         "probe": {"image": "probe.png", "pins": [(5, 80)], "signals": [(140, 80)]},

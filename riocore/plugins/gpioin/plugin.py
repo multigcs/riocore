@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -7,7 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "gpio input"
         self.DESCRIPTION = ""
         self.KEYWORDS = "input"
-        self.IMAGES = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+        self.IMAGES = PluginImages.biin
         self.TYPE = "io"
         self.NEEDS = ["gpio"]
         self.SIGNALS = {

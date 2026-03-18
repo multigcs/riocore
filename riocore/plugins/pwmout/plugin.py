@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -10,7 +11,7 @@ class Plugin(PluginBase):
         # search strings for the rio-setup gui, but it search also over name, info and description (add new plugin)
         self.KEYWORDS = "joint dcservo acservo 10v 5v dac analog"
         # optional list of possible images (for the flow frontend)
-        self.IMAGES = ["spindle500w", "laser", "led"]
+        self.IMAGES = PluginImages.pwmout
         # a link to the orign sources of the verilog code (empty for own code)
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]

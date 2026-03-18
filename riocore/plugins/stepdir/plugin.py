@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -9,7 +10,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "stepper servo joint"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.IMAGES = ["stepper", "servo42", "stepstick", "servo", "clstepper"]
+        self.IMAGES = PluginImages.stepdir
         self.VERILOGS = ["stepdir.v"]
         self.TYPE = "joint"
         self.PINDEFAULTS = {
