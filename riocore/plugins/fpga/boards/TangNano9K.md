@@ -10,7 +10,7 @@ TangNano9K - cheap GW1NR-9 Devboard
 | Type | GW1NR-LV9QN88PC6/I5 |
 | Clock | 27.0 |
 | Toolchain | gowin (icestorm) |
-| URL | https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html |
+| URL | [link](https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html) |
 
 ## Slots
 ### PIN

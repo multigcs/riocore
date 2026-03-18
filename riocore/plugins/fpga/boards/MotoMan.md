@@ -10,7 +10,7 @@ RIO-MotoMan board
 | Type | hx8k |
 | Clock | 60.0 |
 | Toolchain | icestorm |
-| URL | https://github.com/multigcs/rio-motoman |
+| URL | [link](https://github.com/multigcs/rio-motoman) |
 
 ## Slots
 ### ENC0

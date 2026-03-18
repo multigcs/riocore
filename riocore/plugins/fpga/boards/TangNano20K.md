@@ -10,7 +10,7 @@ TangNano20K - GW2AR-18 devboard
 | Type | GW2AR-LV18QN88C8/I7 |
 | Clock | 27.0 |
 | Toolchain | gowin (icestorm) |
-| URL | https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html |
+| URL | [link](https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html) |
 
 ## Slots
 ### PIN

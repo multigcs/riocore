@@ -10,7 +10,7 @@ rioctrl- a modular hardware for riocore
 | Type | 12k |
 | Clock | 100.0 |
 | Toolchain | icestorm |
-| URL | https://github.com/festlv/rioctrl-hw |
+| URL | [link](https://github.com/festlv/rioctrl-hw) |
 
 ## Slots
 ### LED

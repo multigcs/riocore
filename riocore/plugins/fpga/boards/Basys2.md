@@ -10,7 +10,7 @@ Digilent - Basys2
 | Type | xc3s100e-4-cp132 |
 | Clock | 50.0 |
 | Toolchain | ise |
-| URL | https://digilent.com/reference/programmable-logic/basys-2/start |
+| URL | [link](https://digilent.com/reference/programmable-logic/basys-2/start) |
 
 ## Slots
 ### LEDS

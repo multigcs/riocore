@@ -10,7 +10,7 @@ TangPrimer25K-Devboard on Dev-Board
 | Type | GW5A-LV25MG121NC1/I0 |
 | Clock | 50.0 |
 | Toolchain | gowin (icestorm) |
-| URL | https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html |
+| URL | [link](https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html) |
 
 ## Slots
 ### LED

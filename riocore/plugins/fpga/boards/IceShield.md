@@ -10,7 +10,7 @@ RIO-IceShield board for Raspberry PI4
 | Type | up5k |
 | Clock | 29.812 |
 | Toolchain | icestorm |
-| URL | https://github.com/multigcs/rio-iceshield |
+| URL | [link](https://github.com/multigcs/rio-iceshield) |
 
 ## Slots
 ### LED

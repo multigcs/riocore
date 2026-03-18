@@ -10,7 +10,7 @@ TangPrimer20K-Devboard on Dock ext-board
 | Type | GW2A-LV18PG256C8/I7 |
 | Clock | 27.0 |
 | Toolchain | gowin (icestorm) |
-| URL | https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html |
+| URL | [link](https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html) |
 
 ## Slots
 ### LED

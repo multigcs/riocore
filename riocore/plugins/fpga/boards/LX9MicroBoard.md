@@ -10,7 +10,7 @@ LX9MicroBoard - Spartan6 devboard<BR/>on my debian12, it works with openFPGAload
 | Type | xc6slx9-csg324 |
 | Clock | 100.0 |
 | Toolchain | ise |
-| URL | https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf |
+| URL | [link](https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf) |
 
 ## Slots
 ### UART

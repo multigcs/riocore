@@ -10,7 +10,7 @@ RIO-OctoBot board
 | Type | hx8k |
 | Clock | 60.0 |
 | Toolchain | icestorm |
-| URL | https://github.com/multigcs/rio-octobot |
+| URL | [link](https://github.com/multigcs/rio-octobot) |
 
 ## Slots
 ### SPI

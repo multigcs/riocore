@@ -10,7 +10,7 @@ Small and low cost FPGA educational and development board
 | Type | up5k |
 | Clock | 30.0 |
 | Toolchain | icestorm |
-| URL | https://github.com/icebreaker-fpga/icebreaker |
+| URL | [link](https://github.com/icebreaker-fpga/icebreaker) |
 
 ## Slots
 ### UART

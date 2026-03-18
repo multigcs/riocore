@@ -10,7 +10,7 @@ Lattice ECP5 on SODIMM-200P board
 | Type | 25k |
 | Clock | 25.0 |
 | Toolchain | icestorm |
-| URL | https://github.com/wuxx/Colorlight-FPGA-Projects |
+| URL | [link](https://github.com/wuxx/Colorlight-FPGA-Projects) |
 
 ## Slots
 ### LED

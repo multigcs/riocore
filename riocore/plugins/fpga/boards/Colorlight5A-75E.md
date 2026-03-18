@@ -10,7 +10,7 @@ Lattice ECP5 board
 | Type | 25k |
 | Clock | 25.0 |
 | Toolchain | icestorm |
-| URL | https://github.com/q3k/chubby75/blob/master/5a-75e/README.md |
+| URL | [link](https://github.com/q3k/chubby75/blob/master/5a-75e/README.md) |
 
 ## Slots
 ### J1

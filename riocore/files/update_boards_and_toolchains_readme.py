@@ -55,7 +55,7 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     boutput.append(f"| Type | {ftype} |")
     boutput.append(f"| Clock | {speed} |")
     boutput.append(f"| Toolchain | {toolchain} |")
-    boutput.append(f"| URL | {url} |")
+    boutput.append(f"| URL | [link]({url}) |")
     boutput.append("")
 
     boutput.append("## Slots")

@@ -10,7 +10,7 @@ based on TangNano9k
 | Type | GW1NR-LV9QN88PC6/I5 |
 | Clock | 27.0 |
 | Toolchain | gowin (icestorm) |
-| URL | https://github.com/multigcs/LinuxCNC-RIO/tree/main/configs/Tangoboard |
+| URL | [link](https://github.com/multigcs/LinuxCNC-RIO/tree/main/configs/Tangoboard) |
 
 ## Slots
 ### LED

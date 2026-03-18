@@ -10,7 +10,7 @@ Mesa7c80 over SPI - untested, i have no hardware
 | Type | xc6slx9-2tqg144 |
 | Clock | 100.0 |
 | Toolchain | ise |
-| URL | https://eusurplus.com/index.php?route=product/product&product_id=131 |
+| URL | [link](https://eusurplus.com/index.php?route=product/product&product_id=131) |
 
 ## Slots
 ### SPI
