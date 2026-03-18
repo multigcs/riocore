@@ -19,11 +19,13 @@ for cpath in sorted(glob.glob(os.path.join("riocore", "configs", "*", "config.js
 print("# FPGA-Boards")
 output = []
 output.append("# BOARDS")
-output.append("| Name | clock | Toolchain | Description | Image |")
-output.append("| --- | --- | --- | --- | --- |")
-
+output.append("| Name | Family | Type | Clock | Toolchain | Description | Image |")
+output.append("| --- | --- | --- | --- | --- | --- | --- |")
 for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards", "*.json"))):
     bdata = json.loads(open(bpath).read())
+    name = bdata.get("name", "?")
+    family = bdata.get("family", "")
+    ftype = bdata.get("type", "")
     name = bdata.get("name", "?")
     speed = int(bdata.get("clock", {}).get("speed", "0")) / 1000000
     toolchain = bdata.get("toolchain", "?")
@@ -35,7 +37,7 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     img = ""
     if os.path.isfile(bpath.replace(".json", ".png")):
         img = f'<img align="right" width="300" src="boards/{name}.png">'
-    output.append(f"| {name} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
+    output.append(f"| {name} | {family} | {ftype} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
 
 output.append("")
 open("riocore/plugins/fpga/BOARDS.md", "w").write("\n".join(output))
