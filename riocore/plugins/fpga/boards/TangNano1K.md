@@ -10,6 +10,7 @@ TangNano1K - cheap GW1NR-1 Devboard - usable as sat only
 | Type | GW1NZ-LV1QN48C6/I5 |
 | Clock | 27.0 |
 | Toolchain | gowin (icestorm) |
+| URL | https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-1K/Nano-1k.html |
 
 ## Slots
 ### PIN

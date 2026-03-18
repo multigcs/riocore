@@ -10,6 +10,7 @@ ICESugarNano - usable as sat only
 | Type | lp1k |
 | Clock | 12.0 |
 | Toolchain | icestorm |
+| URL | https://github.com/wuxx/icesugar-nano |
 
 ## Slots
 ### FLASH

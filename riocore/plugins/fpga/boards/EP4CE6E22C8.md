@@ -10,6 +10,7 @@ EP4CE6E22C8 devboard
 | Type | EP4CE6E22C8 |
 | Clock | 100.0 |
 | Toolchain | quartus |
+| URL | https://de.aliexpress.com/item/1005009306876743.html |
 
 ## Slots
 ### TOP

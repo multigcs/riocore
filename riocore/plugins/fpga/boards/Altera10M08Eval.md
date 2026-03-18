@@ -10,6 +10,7 @@ Altera10M08Eval - Evaluation Kit
 | Type | 10M08SAE144C8G |
 | Clock | 50.0 |
 | Toolchain | quartus |
+| URL | https://www.intel.com/content/www/us/en/products/details/fpga/development-kits/max/10m08-evaluation-kit.html |
 
 ## Slots
 ### ChipKit

@@ -10,6 +10,7 @@ ICE40HX8K FPGA development board
 | Type | hx8k |
 | Clock | 100.0 |
 | Toolchain | icestorm |
+| URL | https://www.olimex.com/Products/FPGA/iCE40/iCE40HX8K-EVB/open-source-hardware |
 
 ## Slots
 ### EXT

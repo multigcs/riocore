@@ -10,6 +10,7 @@ Lattice ECP5 on SODIMM-200P board
 | Type | 25k |
 | Clock | 25.0 |
 | Toolchain | icestorm |
+| URL | https://github.com/wuxx/icesugar-pro |
 
 ## Slots
 ### UART

@@ -10,6 +10,7 @@ Spartan6 - only for testing the toolchain
 | Type | xc6slx9-2tqg144 |
 | Clock | 50.0 |
 | Toolchain | ise |
+| URL | https://numato.com/product/mimas-spartan-6-fpga-development-board/ |
 
 ## Slots
 ### LED

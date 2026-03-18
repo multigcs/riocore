@@ -26,6 +26,7 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     name = bdata.get("name", "?")
     family = bdata.get("family", "")
     ftype = bdata.get("type", "")
+    url = bdata.get("url", "")
     speed = int(bdata.get("clock", {}).get("speed", "0")) / 1000000
     toolchain = bdata.get("toolchain", "?")
     toolchains = bdata.get("toolchains", [])
@@ -54,6 +55,7 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     boutput.append(f"| Type | {ftype} |")
     boutput.append(f"| Clock | {speed} |")
     boutput.append(f"| Toolchain | {toolchain} |")
+    boutput.append(f"| URL | {url} |")
     boutput.append("")
 
     boutput.append("## Slots")
