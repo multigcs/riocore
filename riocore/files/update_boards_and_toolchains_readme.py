@@ -55,7 +55,6 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
     boutput.append("")
 
     boutput.append("## Slots")
-
     for slot in bdata.get("slots", []):
         boutput.append(f"### {slot['name']}")
         boutput.append(f"{slot.get('comment', '')}")
