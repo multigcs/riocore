@@ -1,231 +1,416 @@
 # fpga
-**TangNano20K - GW2AR-18 devboard**
+**Spartan6 - only for testing the toolchain**
 
-Keywords: TangNano20K board fpga gateware
+Keywords: Numato-Spartan6 board fpga gateware
 
 ## Pins:
 *FPGA-pins*
-### PIN:76:
+### LED:D1:
 
  * direction: all
  * optional: True
 
-### PIN:80:
+### LED:D2:
 
  * direction: all
  * optional: True
 
-### PIN:42:
+### LED:D3:
 
  * direction: all
  * optional: True
 
-### PIN:41:
+### LED:D4:
 
  * direction: all
  * optional: True
 
-### PIN:56:
+### LED:D5:
 
  * direction: all
  * optional: True
 
-### PIN:54:
+### LED:D6:
 
  * direction: all
  * optional: True
 
-### PIN:51:
+### LED:D7:
 
  * direction: all
  * optional: True
 
-### PIN:48:
-
- * direction: all
- * optional: True
-
-### PIN:55:
-
- * direction: all
- * optional: True
-
-### PIN:49:
-
- * direction: all
- * optional: True
-
-### PIN:86:
-
- * direction: all
- * optional: True
-
-### PIN:79:
-
- * direction: all
- * optional: True
-
-### PIN:72:
-
- * direction: all
- * optional: True
-
-### PIN:71:
-
- * direction: all
- * optional: True
-
-### PIN:53:
-
- * direction: all
- * optional: True
-
-### PIN:52:
-
- * direction: all
- * optional: True
-
-### PIN:73:
-
- * direction: all
- * optional: True
-
-### PIN:74:
-
- * direction: all
- * optional: True
-
-### PIN:75:
-
- * direction: all
- * optional: True
-
-### PIN:85:
-
- * direction: all
- * optional: True
-
-### PIN:77:
-
- * direction: all
- * optional: True
-
-### PIN:15:
-
- * direction: all
- * optional: True
-
-### PIN:16:
-
- * direction: all
- * optional: True
-
-### PIN:27:
-
- * direction: all
- * optional: True
-
-### PIN:28:
-
- * direction: all
- * optional: True
-
-### PIN:25:
-
- * direction: all
- * optional: True
-
-### PIN:26:
-
- * direction: all
- * optional: True
-
-### PIN:29:
-
- * direction: all
- * optional: True
-
-### PIN:30:
-
- * direction: all
- * optional: True
-
-### PIN:31:
-
- * direction: all
- * optional: True
-
-### PIN:17:
-
- * direction: all
- * optional: True
-
-### PIN:20:
-
- * direction: all
- * optional: True
-
-### PIN:19:
-
- * direction: all
- * optional: True
-
-### PIN:18:
-
- * direction: all
- * optional: True
-
-### LED:L0:
-
- * direction: all
- * optional: True
-
-### LED:L1:
-
- * direction: all
- * optional: True
-
-### LED:L2:
-
- * direction: all
- * optional: True
-
-### LED:L3:
-
- * direction: all
- * optional: True
-
-### LED:L4:
-
- * direction: all
- * optional: True
-
-### LED:L5:
+### LED:D8:
 
  * direction: all
  * optional: True
 
 ### SW:S1:
 
- * direction: input
+ * direction: all
  * optional: True
 
 ### SW:S2:
 
- * direction: input
+ * direction: all
  * optional: True
 
-### UART:RX:
+### SW:S3:
 
- * direction: input
+ * direction: all
  * optional: True
 
-### UART:TX:
+### SW:S4:
 
- * direction: output
+ * direction: all
  * optional: True
 
-### WLED:DATA:
+### GPIO_HEADER_1:G3:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G4:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G5:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G6:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G7:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G8:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G9:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G10:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G11:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G12:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G13:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G14:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G15:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G16:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G17:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G18:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G19:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G20:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G21:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G22:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G23:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G24:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G25:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G26:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G27:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G28:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G29:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G30:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G31:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G32:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G33:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G34:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G35:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G36:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G37:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_1:G38:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G3:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G4:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G5:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G6:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G7:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G8:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G9:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G10:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G11:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G12:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G13:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G14:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G15:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G16:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G17:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G18:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G21:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G22:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G23:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G24:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G25:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G26:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G27:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G28:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G29:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G30:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G31:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G32:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G33:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G34:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G35:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G36:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G37:
+
+ * direction: all
+ * optional: True
+
+### GPIO_HEADER_2:G38:
 
  * direction: all
  * optional: True
@@ -243,7 +428,7 @@ name of this plugin instance
 board type
 
  * type: select
- * default: TangNano20K
+ * default: Numato-Spartan6
 
 ### simulation:
 simulation mode
@@ -251,20 +436,20 @@ simulation mode
  * type: bool
  * default: False
 
-### toolchain:
-used toolchain
-
- * type: select
- * default: gowin
-
 ### speed:
 FPGA clock speed
 
  * type: int
  * min: 1000000
  * max: 500000000
- * default: 27000000
+ * default: 50000000
  * unit: Hz
+
+### flashcmd:
+overwrite flash command for this instance
+
+ * type: str
+ * default: 
 
 
 ## Signals:
@@ -280,140 +465,251 @@ FPGA clock speed
 {
     "type": "fpga",
     "pins": {
-        "PIN:76": {
+        "LED:D1": {
             "pin": "0"
         },
-        "PIN:80": {
+        "LED:D2": {
             "pin": "1"
         },
-        "PIN:42": {
+        "LED:D3": {
             "pin": "2"
         },
-        "PIN:41": {
+        "LED:D4": {
             "pin": "3"
         },
-        "PIN:56": {
+        "LED:D5": {
             "pin": "4"
         },
-        "PIN:54": {
+        "LED:D6": {
             "pin": "5"
         },
-        "PIN:51": {
+        "LED:D7": {
             "pin": "6"
         },
-        "PIN:48": {
+        "LED:D8": {
             "pin": "7"
         },
-        "PIN:55": {
+        "SW:S1": {
             "pin": "8"
         },
-        "PIN:49": {
+        "SW:S2": {
             "pin": "9"
         },
-        "PIN:86": {
+        "SW:S3": {
             "pin": "10"
         },
-        "PIN:79": {
+        "SW:S4": {
             "pin": "11"
         },
-        "PIN:72": {
+        "GPIO_HEADER_1:G3": {
             "pin": "12"
         },
-        "PIN:71": {
+        "GPIO_HEADER_1:G4": {
             "pin": "13"
         },
-        "PIN:53": {
+        "GPIO_HEADER_1:G5": {
             "pin": "14"
         },
-        "PIN:52": {
+        "GPIO_HEADER_1:G6": {
             "pin": "15"
         },
-        "PIN:73": {
+        "GPIO_HEADER_1:G7": {
             "pin": "16"
         },
-        "PIN:74": {
+        "GPIO_HEADER_1:G8": {
             "pin": "17"
         },
-        "PIN:75": {
+        "GPIO_HEADER_1:G9": {
             "pin": "18"
         },
-        "PIN:85": {
+        "GPIO_HEADER_1:G10": {
             "pin": "19"
         },
-        "PIN:77": {
+        "GPIO_HEADER_1:G11": {
             "pin": "20"
         },
-        "PIN:15": {
+        "GPIO_HEADER_1:G12": {
             "pin": "21"
         },
-        "PIN:16": {
+        "GPIO_HEADER_1:G13": {
             "pin": "22"
         },
-        "PIN:27": {
+        "GPIO_HEADER_1:G14": {
             "pin": "23"
         },
-        "PIN:28": {
+        "GPIO_HEADER_1:G15": {
             "pin": "24"
         },
-        "PIN:25": {
+        "GPIO_HEADER_1:G16": {
             "pin": "25"
         },
-        "PIN:26": {
+        "GPIO_HEADER_1:G17": {
             "pin": "26"
         },
-        "PIN:29": {
+        "GPIO_HEADER_1:G18": {
             "pin": "27"
         },
-        "PIN:30": {
+        "GPIO_HEADER_1:G19": {
             "pin": "28"
         },
-        "PIN:31": {
+        "GPIO_HEADER_1:G20": {
             "pin": "29"
         },
-        "PIN:17": {
+        "GPIO_HEADER_1:G21": {
             "pin": "30"
         },
-        "PIN:20": {
+        "GPIO_HEADER_1:G22": {
             "pin": "31"
         },
-        "PIN:19": {
+        "GPIO_HEADER_1:G23": {
             "pin": "32"
         },
-        "PIN:18": {
+        "GPIO_HEADER_1:G24": {
             "pin": "33"
         },
-        "LED:L0": {
+        "GPIO_HEADER_1:G25": {
             "pin": "34"
         },
-        "LED:L1": {
+        "GPIO_HEADER_1:G26": {
             "pin": "35"
         },
-        "LED:L2": {
+        "GPIO_HEADER_1:G27": {
             "pin": "36"
         },
-        "LED:L3": {
+        "GPIO_HEADER_1:G28": {
             "pin": "37"
         },
-        "LED:L4": {
+        "GPIO_HEADER_1:G29": {
             "pin": "38"
         },
-        "LED:L5": {
+        "GPIO_HEADER_1:G30": {
             "pin": "39"
         },
-        "SW:S1": {
+        "GPIO_HEADER_1:G31": {
             "pin": "40"
         },
-        "SW:S2": {
+        "GPIO_HEADER_1:G32": {
             "pin": "41"
         },
-        "UART:RX": {
+        "GPIO_HEADER_1:G33": {
             "pin": "42"
         },
-        "UART:TX": {
+        "GPIO_HEADER_1:G34": {
             "pin": "43"
         },
-        "WLED:DATA": {
+        "GPIO_HEADER_1:G35": {
             "pin": "44"
+        },
+        "GPIO_HEADER_1:G36": {
+            "pin": "45"
+        },
+        "GPIO_HEADER_1:G37": {
+            "pin": "46"
+        },
+        "GPIO_HEADER_1:G38": {
+            "pin": "47"
+        },
+        "GPIO_HEADER_2:G3": {
+            "pin": "48"
+        },
+        "GPIO_HEADER_2:G4": {
+            "pin": "49"
+        },
+        "GPIO_HEADER_2:G5": {
+            "pin": "50"
+        },
+        "GPIO_HEADER_2:G6": {
+            "pin": "51"
+        },
+        "GPIO_HEADER_2:G7": {
+            "pin": "52"
+        },
+        "GPIO_HEADER_2:G8": {
+            "pin": "53"
+        },
+        "GPIO_HEADER_2:G9": {
+            "pin": "54"
+        },
+        "GPIO_HEADER_2:G10": {
+            "pin": "55"
+        },
+        "GPIO_HEADER_2:G11": {
+            "pin": "56"
+        },
+        "GPIO_HEADER_2:G12": {
+            "pin": "57"
+        },
+        "GPIO_HEADER_2:G13": {
+            "pin": "58"
+        },
+        "GPIO_HEADER_2:G14": {
+            "pin": "59"
+        },
+        "GPIO_HEADER_2:G15": {
+            "pin": "60"
+        },
+        "GPIO_HEADER_2:G16": {
+            "pin": "61"
+        },
+        "GPIO_HEADER_2:G17": {
+            "pin": "62"
+        },
+        "GPIO_HEADER_2:G18": {
+            "pin": "63"
+        },
+        "GPIO_HEADER_2:G21": {
+            "pin": "64"
+        },
+        "GPIO_HEADER_2:G22": {
+            "pin": "65"
+        },
+        "GPIO_HEADER_2:G23": {
+            "pin": "66"
+        },
+        "GPIO_HEADER_2:G24": {
+            "pin": "67"
+        },
+        "GPIO_HEADER_2:G25": {
+            "pin": "68"
+        },
+        "GPIO_HEADER_2:G26": {
+            "pin": "69"
+        },
+        "GPIO_HEADER_2:G27": {
+            "pin": "70"
+        },
+        "GPIO_HEADER_2:G28": {
+            "pin": "71"
+        },
+        "GPIO_HEADER_2:G29": {
+            "pin": "72"
+        },
+        "GPIO_HEADER_2:G30": {
+            "pin": "73"
+        },
+        "GPIO_HEADER_2:G31": {
+            "pin": "74"
+        },
+        "GPIO_HEADER_2:G32": {
+            "pin": "75"
+        },
+        "GPIO_HEADER_2:G33": {
+            "pin": "76"
+        },
+        "GPIO_HEADER_2:G34": {
+            "pin": "77"
+        },
+        "GPIO_HEADER_2:G35": {
+            "pin": "78"
+        },
+        "GPIO_HEADER_2:G36": {
+            "pin": "79"
+        },
+        "GPIO_HEADER_2:G37": {
+            "pin": "80"
+        },
+        "GPIO_HEADER_2:G38": {
+            "pin": "81"
         }
     }
 }
@@ -424,12 +720,12 @@ FPGA clock speed
 {
     "type": "fpga",
     "name": "",
-    "node_type": "TangNano20K",
+    "node_type": "Numato-Spartan6",
     "simulation": false,
-    "toolchain": "gowin",
-    "speed": 27000000,
+    "speed": 50000000,
+    "flashcmd": "",
     "pins": {
-        "PIN:76": {
+        "LED:D1": {
             "pin": "0",
             "modifiers": [
                 {
@@ -437,7 +733,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:80": {
+        "LED:D2": {
             "pin": "1",
             "modifiers": [
                 {
@@ -445,7 +741,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:42": {
+        "LED:D3": {
             "pin": "2",
             "modifiers": [
                 {
@@ -453,7 +749,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:41": {
+        "LED:D4": {
             "pin": "3",
             "modifiers": [
                 {
@@ -461,7 +757,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:56": {
+        "LED:D5": {
             "pin": "4",
             "modifiers": [
                 {
@@ -469,7 +765,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:54": {
+        "LED:D6": {
             "pin": "5",
             "modifiers": [
                 {
@@ -477,7 +773,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:51": {
+        "LED:D7": {
             "pin": "6",
             "modifiers": [
                 {
@@ -485,7 +781,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:48": {
+        "LED:D8": {
             "pin": "7",
             "modifiers": [
                 {
@@ -493,7 +789,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:55": {
+        "SW:S1": {
             "pin": "8",
             "modifiers": [
                 {
@@ -501,7 +797,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:49": {
+        "SW:S2": {
             "pin": "9",
             "modifiers": [
                 {
@@ -509,7 +805,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:86": {
+        "SW:S3": {
             "pin": "10",
             "modifiers": [
                 {
@@ -517,7 +813,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:79": {
+        "SW:S4": {
             "pin": "11",
             "modifiers": [
                 {
@@ -525,7 +821,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:72": {
+        "GPIO_HEADER_1:G3": {
             "pin": "12",
             "modifiers": [
                 {
@@ -533,7 +829,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:71": {
+        "GPIO_HEADER_1:G4": {
             "pin": "13",
             "modifiers": [
                 {
@@ -541,7 +837,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:53": {
+        "GPIO_HEADER_1:G5": {
             "pin": "14",
             "modifiers": [
                 {
@@ -549,7 +845,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:52": {
+        "GPIO_HEADER_1:G6": {
             "pin": "15",
             "modifiers": [
                 {
@@ -557,7 +853,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:73": {
+        "GPIO_HEADER_1:G7": {
             "pin": "16",
             "modifiers": [
                 {
@@ -565,7 +861,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:74": {
+        "GPIO_HEADER_1:G8": {
             "pin": "17",
             "modifiers": [
                 {
@@ -573,7 +869,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:75": {
+        "GPIO_HEADER_1:G9": {
             "pin": "18",
             "modifiers": [
                 {
@@ -581,7 +877,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:85": {
+        "GPIO_HEADER_1:G10": {
             "pin": "19",
             "modifiers": [
                 {
@@ -589,7 +885,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:77": {
+        "GPIO_HEADER_1:G11": {
             "pin": "20",
             "modifiers": [
                 {
@@ -597,7 +893,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:15": {
+        "GPIO_HEADER_1:G12": {
             "pin": "21",
             "modifiers": [
                 {
@@ -605,7 +901,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:16": {
+        "GPIO_HEADER_1:G13": {
             "pin": "22",
             "modifiers": [
                 {
@@ -613,7 +909,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:27": {
+        "GPIO_HEADER_1:G14": {
             "pin": "23",
             "modifiers": [
                 {
@@ -621,7 +917,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:28": {
+        "GPIO_HEADER_1:G15": {
             "pin": "24",
             "modifiers": [
                 {
@@ -629,7 +925,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:25": {
+        "GPIO_HEADER_1:G16": {
             "pin": "25",
             "modifiers": [
                 {
@@ -637,7 +933,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:26": {
+        "GPIO_HEADER_1:G17": {
             "pin": "26",
             "modifiers": [
                 {
@@ -645,7 +941,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:29": {
+        "GPIO_HEADER_1:G18": {
             "pin": "27",
             "modifiers": [
                 {
@@ -653,7 +949,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:30": {
+        "GPIO_HEADER_1:G19": {
             "pin": "28",
             "modifiers": [
                 {
@@ -661,7 +957,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:31": {
+        "GPIO_HEADER_1:G20": {
             "pin": "29",
             "modifiers": [
                 {
@@ -669,7 +965,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:17": {
+        "GPIO_HEADER_1:G21": {
             "pin": "30",
             "modifiers": [
                 {
@@ -677,7 +973,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:20": {
+        "GPIO_HEADER_1:G22": {
             "pin": "31",
             "modifiers": [
                 {
@@ -685,7 +981,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:19": {
+        "GPIO_HEADER_1:G23": {
             "pin": "32",
             "modifiers": [
                 {
@@ -693,7 +989,7 @@ FPGA clock speed
                 }
             ]
         },
-        "PIN:18": {
+        "GPIO_HEADER_1:G24": {
             "pin": "33",
             "modifiers": [
                 {
@@ -701,7 +997,7 @@ FPGA clock speed
                 }
             ]
         },
-        "LED:L0": {
+        "GPIO_HEADER_1:G25": {
             "pin": "34",
             "modifiers": [
                 {
@@ -709,7 +1005,7 @@ FPGA clock speed
                 }
             ]
         },
-        "LED:L1": {
+        "GPIO_HEADER_1:G26": {
             "pin": "35",
             "modifiers": [
                 {
@@ -717,7 +1013,7 @@ FPGA clock speed
                 }
             ]
         },
-        "LED:L2": {
+        "GPIO_HEADER_1:G27": {
             "pin": "36",
             "modifiers": [
                 {
@@ -725,7 +1021,7 @@ FPGA clock speed
                 }
             ]
         },
-        "LED:L3": {
+        "GPIO_HEADER_1:G28": {
             "pin": "37",
             "modifiers": [
                 {
@@ -733,7 +1029,7 @@ FPGA clock speed
                 }
             ]
         },
-        "LED:L4": {
+        "GPIO_HEADER_1:G29": {
             "pin": "38",
             "modifiers": [
                 {
@@ -741,7 +1037,7 @@ FPGA clock speed
                 }
             ]
         },
-        "LED:L5": {
+        "GPIO_HEADER_1:G30": {
             "pin": "39",
             "modifiers": [
                 {
@@ -749,40 +1045,31 @@ FPGA clock speed
                 }
             ]
         },
-        "SW:S1": {
+        "GPIO_HEADER_1:G31": {
             "pin": "40",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "SW:S2": {
+        "GPIO_HEADER_1:G32": {
             "pin": "41",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "UART:RX": {
+        "GPIO_HEADER_1:G33": {
             "pin": "42",
             "modifiers": [
                 {
-                    "type": "debounce"
-                },
-                {
                     "type": "invert"
                 }
             ]
         },
-        "UART:TX": {
+        "GPIO_HEADER_1:G34": {
             "pin": "43",
             "modifiers": [
                 {
@@ -790,8 +1077,304 @@ FPGA clock speed
                 }
             ]
         },
-        "WLED:DATA": {
+        "GPIO_HEADER_1:G35": {
             "pin": "44",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_1:G36": {
+            "pin": "45",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_1:G37": {
+            "pin": "46",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_1:G38": {
+            "pin": "47",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G3": {
+            "pin": "48",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G4": {
+            "pin": "49",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G5": {
+            "pin": "50",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G6": {
+            "pin": "51",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G7": {
+            "pin": "52",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G8": {
+            "pin": "53",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G9": {
+            "pin": "54",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G10": {
+            "pin": "55",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G11": {
+            "pin": "56",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G12": {
+            "pin": "57",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G13": {
+            "pin": "58",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G14": {
+            "pin": "59",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G15": {
+            "pin": "60",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G16": {
+            "pin": "61",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G17": {
+            "pin": "62",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G18": {
+            "pin": "63",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G21": {
+            "pin": "64",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G22": {
+            "pin": "65",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G23": {
+            "pin": "66",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G24": {
+            "pin": "67",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G25": {
+            "pin": "68",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G26": {
+            "pin": "69",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G27": {
+            "pin": "70",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G28": {
+            "pin": "71",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G29": {
+            "pin": "72",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G30": {
+            "pin": "73",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G31": {
+            "pin": "74",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G32": {
+            "pin": "75",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G33": {
+            "pin": "76",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G34": {
+            "pin": "77",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G35": {
+            "pin": "78",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G36": {
+            "pin": "79",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G37": {
+            "pin": "80",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "GPIO_HEADER_2:G38": {
+            "pin": "81",
             "modifiers": [
                 {
                     "type": "invert"

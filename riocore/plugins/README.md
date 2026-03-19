@@ -145,7 +145,7 @@
 | Misc | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> |  |
 |  | [camjog](camjog/README.md) | gui component to jog via camera image | <img src="camjog/image.png" height="48"> |  |
 |  | [ethercat](ethercat/README.md) | Ethercat - Master | <img src="ethercat/image.png" height="48"> | Experimental  |
-|  | [fpga](fpga/README.md) | TangNano20K - GW2AR-18 devboard |  |  |
+|  | [fpga](fpga/README.md) | Spartan6 - only for testing the toolchain |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> |  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
@@ -161,7 +161,7 @@
 |  | [camera](camera/README.md) | gui component to display an camera image | <img src="camera/image.png" height="48"> |  |
 |  | [camjog](camjog/README.md) | gui component to jog via camera image | <img src="camjog/image.png" height="48"> |  |
 |  | [ethercat](ethercat/README.md) | Ethercat - Master | <img src="ethercat/image.png" height="48"> | Experimental  |
-|  | [fpga](fpga/README.md) | TangNano20K - GW2AR-18 devboard |  |  |
+|  | [fpga](fpga/README.md) | Spartan6 - only for testing the toolchain |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> |  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |

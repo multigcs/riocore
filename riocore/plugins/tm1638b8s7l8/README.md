@@ -4,7 +4,7 @@
 
 **7segment display with buttons**
 
-with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)
+with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO) / works with 3.3V
 
 Keywords: display info status keyboard buttons
 
@@ -240,7 +240,7 @@ first 2 digits (0 -> 99)
 
 ### number1:
 
- * size: 24 bit
+ * size: 32 bit
  * direction: output
  * multiplexed: True
 

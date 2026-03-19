@@ -6,7 +6,7 @@ class Plugin(PluginBase):
         self.NAME = "max7219"
         self.INFO = "7segment display based on max7219"
         self.KEYWORDS = "info display"
-        self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
+        self.DESCRIPTION = "to display values on 7segment display's (needs 5V power)"
         self.NEEDS = ["fpga"]
         self.IMAGE_SHOW = True
         self.IMAGE = "image.png"

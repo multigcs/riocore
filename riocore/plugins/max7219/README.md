@@ -4,7 +4,7 @@
 
 **7segment display based on max7219**
 
-to display values from LinuxCNC on 7segment display's
+to display values on 7segment display's (needs 5V power)
 
 Keywords: info display
 

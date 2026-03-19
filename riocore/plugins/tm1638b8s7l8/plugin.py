@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "tm1638b8s7l8"
         self.INFO = "7segment display with buttons"
-        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)"
+        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO) / works with 3.3V"
         self.KEYWORDS = "display info status keyboard buttons"
         self.NEEDS = ["fpga"]
         self.IMAGE_SHOW = True
