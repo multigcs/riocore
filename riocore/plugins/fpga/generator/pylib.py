@@ -156,8 +156,8 @@ class pylib(cbase):
         if self.instance.gateware.multiplexed_output or self.instance.gateware.multiplexed_input:
             output.append("      # multiplexer")
         if self.instance.gateware.multiplexed_output:
-            output.append('      ("MULTIPLEXER_OUTPUT_VALUE", ctypes.POINTER(ctypes.c_float)),')
-            output.append('      ("MULTIPLEXER_OUTPUT_ID", ctypes.POINTER(ctypes.c_char)),')
+            output.append('      ("MULTIPLEXER_OUTPUT_VALUE", ctypes.c_float),')
+            output.append('      ("MULTIPLEXER_OUTPUT_ID", ctypes.c_char),')
         if self.instance.gateware.multiplexed_input:
             output.append('      ("MULTIPLEXER_INPUT_VALUE", ctypes.c_float),')
             output.append('      ("MULTIPLEXER_INPUT_ID", ctypes.c_char),')
