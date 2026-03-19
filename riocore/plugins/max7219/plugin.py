@@ -8,20 +8,25 @@ class Plugin(PluginBase):
         self.KEYWORDS = "info display"
         self.DESCRIPTION = "to display values from LinuxCNC on 7segment display's"
         self.NEEDS = ["fpga"]
+        self.IMAGE_SHOW = True
+        self.IMAGE = "image.png"
         self.ORIGIN = ""
         self.VERILOGS = ["max7219.v"]
         self.PINDEFAULTS = {
             "mosi": {
                 "direction": "output",
                 "pull": None,
+                "pos": (32, 35),
             },
             "sclk": {
                 "direction": "output",
                 "pull": None,
+                "pos": (32, 46),
             },
             "sel": {
                 "direction": "output",
                 "pull": None,
+                "pos": (32, 57),
             },
         }
         self.INTERFACE = {
