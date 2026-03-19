@@ -38,12 +38,12 @@ module max7219
     reg [23:0] numberAbs = 0;
     reg [3:0] prefix = 4'hb;
 
-    bin2bcd bin2bcd1 (
+    max7_bin2bcd bin2bcd1 (
         .bin (numberAbs),
         .bcd (bcd)
     );
 
-    seven_segments sg0 (
+    max7_seven_segments sg0 (
         .clk(mclk),
         .binary(val),
         .display(digit)
@@ -158,7 +158,7 @@ module max7219
 endmodule
 
 
-module seven_segments (
+module max7_seven_segments (
         input wire clk,
         input wire [3:0] binary,
         output reg [6:0] display
@@ -203,7 +203,7 @@ endmodule
 
 
 
-module bin2bcd(
+module max7_bin2bcd(
         input [19:0] bin,
         output reg [23:0] bcd
     );
