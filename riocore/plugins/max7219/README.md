@@ -47,10 +47,18 @@ interface clock frequency
  * max: 10000000
  * default: 1000000
 
+### displays:
+number of displays / values
+
+ * type: int
+ * min: 1
+ * max: 10
+ * default: 1
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### value:
+### value0:
 
  * type: float
  * direction: output
@@ -60,10 +68,11 @@ interface clock frequency
 
 ## Interfaces:
 *transport layer*
-### value:
+### value0:
 
  * size: 24 bit
  * direction: output
+ * multiplexed: True
 
 
 ## Basic-Example:
@@ -91,6 +100,7 @@ interface clock frequency
     "name": "",
     "brightness": 15,
     "frequency": 1000000,
+    "displays": 1,
     "pins": {
         "mosi": {
             "pin": "0",
@@ -118,13 +128,13 @@ interface clock frequency
         }
     },
     "signals": {
-        "value": {
+        "value0": {
             "net": "xxx.yyy.zzz",
             "function": "rio.xxx",
             "scale": 100.0,
             "offset": 0.0,
             "display": {
-                "title": "value",
+                "title": "value0",
                 "section": "outputs",
                 "type": "scale"
             }

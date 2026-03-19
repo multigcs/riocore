@@ -29,19 +29,6 @@ class Plugin(PluginBase):
                 "pos": (32, 57),
             },
         }
-        self.INTERFACE = {
-            "value": {
-                "size": 24,
-                "direction": "output",
-            },
-        }
-        self.SIGNALS = {
-            "value": {
-                "min": -999999,
-                "max": 999999,
-                "direction": "output",
-            },
-        }
         self.OPTIONS = {
             "brightness": {
                 "min": 0,
@@ -57,17 +44,45 @@ class Plugin(PluginBase):
                 "type": int,
                 "description": "interface clock frequency",
             },
+            "displays": {
+                "min": 1,
+                "max": 10,
+                "default": 1,
+                "type": int,
+                "description": "number of displays / values",
+            },
         }
+        self.INTERFACE = {}
+        self.SIGNALS = {}
+        displays = self.plugin_setup.get("displays", self.OPTIONS["displays"]["default"])
+        for vn in range(displays):
+            self.INTERFACE[f"value{vn}"] = {
+                "size": 24,
+                "direction": "output",
+                "multiplexed": True,
+            }
+            self.SIGNALS[f"value{vn}"] = {
+                "min": -999999,
+                "max": 999999,
+                "direction": "output",
+            }
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["predefines"]
         instance_parameter = instance["parameter"]
-        instance["arguments"]
+        instance_arguments = instance["arguments"]
         brightness = self.plugin_setup.get("brightness", self.OPTIONS["brightness"]["default"])
         instance_parameter["BRIGHTNESS"] = f"8'h0{brightness:x}"
+        displays = self.plugin_setup.get("displays", self.OPTIONS["displays"]["default"])
+        instance_parameter["DISPLAYS"] = displays
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // frequency // 5
         instance_parameter["DIVIDER"] = divider
+        values = []
+        for vn in range(displays):
+            del instance_arguments[f"value{vn}"]
+            values.append(f"VAROUT24_{self.instances_name.upper()}_VALUE{displays - vn - 1}")
+        instance_arguments["values"] = f"{{{', '.join(values)}}}"
+
         return instances
