@@ -157,6 +157,8 @@ class cbase:
         homes = {}
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
+            if self.instance.fmaster is not None:
+                multiplexed = False
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
                 continue
@@ -565,6 +567,8 @@ class cbase:
         mpid = 0
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
+            if self.instance.fmaster is not None:
+                multiplexed = False
             if not multiplexed:
                 continue
             variable_name = data_config["variable"]
@@ -591,6 +595,8 @@ class cbase:
 
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
+            if self.instance.fmaster is not None:
+                multiplexed = False
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
                 continue
@@ -652,6 +658,8 @@ class cbase:
 
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
+            if self.instance.fmaster is not None:
+                multiplexed = False
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
                 continue
@@ -676,6 +684,8 @@ class cbase:
         mpid = 0
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             multiplexed = data_config.get("multiplexed", False)
+            if self.instance.fmaster is not None:
+                multiplexed = False
             if not multiplexed:
                 continue
             variable_name = data_config["variable"]

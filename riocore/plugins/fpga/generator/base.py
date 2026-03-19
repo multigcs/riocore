@@ -16,6 +16,8 @@ class generator_base:
                 self.interface_sizes.add(data_config["size"])
                 variable_size = data_config["size"]
                 multiplexed = data_config.get("multiplexed", False)
+                if self.instance.fmaster is not None:
+                    multiplexed = False
                 expansion = data_config.get("expansion", False)
                 if expansion:
                     continue

@@ -414,6 +414,8 @@ class gateware(generator_base):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             multiplexed = data_config.get("multiplexed", False)
+            if self.instance.fmaster is not None:
+                multiplexed = False
             if multiplexed:
                 continue
             variable_name = data_config["variable"]
@@ -680,6 +682,8 @@ class gateware(generator_base):
                     variable_size = data_config["size"]
                     direction = data_config["direction"]
                     multiplexed = data_config.get("multiplexed", False)
+                    if self.instance.fmaster is not None:
+                        multiplexed = False
                     if variable_size > 1:
                         if multiplexed and direction == "output":
                             output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
@@ -784,6 +788,8 @@ class gateware(generator_base):
                 if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                     continue
                 multiplexed = data_config.get("multiplexed", False)
+                if self.instance.fmaster is not None:
+                    multiplexed = False
                 if not multiplexed:
                     continue
                 variable_name = data_config["variable"]
@@ -806,6 +812,8 @@ class gateware(generator_base):
                 if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                     continue
                 multiplexed = data_config.get("multiplexed", False)
+                if self.instance.fmaster is not None:
+                    multiplexed = False
                 if not multiplexed:
                     continue
                 variable_name = data_config["variable"]
