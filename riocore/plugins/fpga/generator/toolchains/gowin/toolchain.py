@@ -77,6 +77,8 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         if board_id in {"tangoboard", "tangbob"}:
             board_id = "tangnano9k"
 
+        flashcmd = self.config.get("flashcmd")
+
         makefile_data = []
         makefile_data.append("")
         makefile_data.append("# Toolchain: Gowin")
@@ -137,7 +139,10 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             # makefile_data.append('	type impl\\pnr\\project.rpt.txt')
             makefile_data.append("")
             makefile_data.append("load:")
-            makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
+            if flashcmd:
+                makefile_data.append(f"	{flashcmd}")
+            else:
+                makefile_data.append(f"	openFPGALoader -b {board_id} -f impl\\pnr\\project.fs")
             makefile_data.append("	copy hash_new.txt hash_flashed.txt")
             makefile_data.append("")
             makefile_data.append("sload:")
@@ -175,7 +180,10 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
             makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
             makefile_data.append("")
             makefile_data.append("load:")
-            makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs -f")
+            if flashcmd:
+                makefile_data.append(f"	{flashcmd}")
+            else:
+                makefile_data.append(f"	openFPGALoader -b {board_id} -f impl/pnr/project.fs")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
             makefile_data.append("sload:")

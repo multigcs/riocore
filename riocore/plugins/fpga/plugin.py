@@ -106,6 +106,16 @@ class Plugin(PluginBase):
                 }
             )
 
+        self.OPTIONS.update(
+            {
+                "flashcmd": {
+                    "default": "",
+                    "type": str,
+                    "description": "overwrite flash command for this instance",
+                }
+            }
+        )
+
         self.IMAGE = f"boards/{node_type}.png"
         self.IMAGE_SHOW = True
         self.DESCRIPTION = self.jdata.get("comment", "")
@@ -280,9 +290,12 @@ class Plugin(PluginBase):
             instance.jdata["json_path"] = parent.project.config["json_path"]
             instance.jdata["riocore_path"] = riocore_path
             instance.jdata["output_path"] = gateware_path
-            # overwrite flash command if exsist
+            # overwrite flash command if exsist in json config
             if "flashcmd" in parent.project.config["jdata"]:
                 instance.jdata["flashcmd"] = parent.project.config["jdata"]["flashcmd"]
+            # overwrite flash command if exsist in plugin config
+            if "flashcmd" in instance.plugin_setup:
+                instance.jdata["flashcmd"] = instance.plugin_setup["flashcmd"]
             # overwrite chip type if exsist
             if "chip_type" in instance.plugin_setup:
                 instance.jdata["type"] = instance.plugin_setup["chip_type"]
