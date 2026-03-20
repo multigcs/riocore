@@ -1138,7 +1138,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     fpga_stamp_last = timestamp;
     stamp_last = stamp_new;
     servo_period = period;
-    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
+    if (1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {

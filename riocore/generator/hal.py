@@ -294,7 +294,10 @@ class hal_generator:
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.{in_name}"] = {"signals": [input_signal], "target": target}
         for arg_num, arg_name in enumerate(arg_names):
-            self.net_add(args[arg_num].strip(), f"{fname}.{arg_name}")
+            if args[arg_num].strip().replace(".", "").rstrip(")").lstrip("(-").isnumeric():
+                self.setp_add(f"{fname}.{arg_name}", args[arg_num].strip())
+            else:
+                self.net_add(args[arg_num].strip(), f"{fname}.{arg_name}")
         self.function_cache[fname] = f"{fname}.{out_name}"
         return f"{fname}.{out_name}"
 
@@ -433,7 +436,7 @@ class hal_generator:
             return None
 
         # if input is a number, then use setp
-        if input_pin.replace(".", "").rstrip(")").lstrip("(-0").isnumeric():
+        if input_pin.replace(".", "").rstrip(")").lstrip("(-").isnumeric():
             return self.setp_add(output_pin, input_pin.strip("()"))
 
         # replace some command/operation words
