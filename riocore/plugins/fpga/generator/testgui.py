@@ -31,6 +31,10 @@ from rio import RioWrapper
 
 STYLESHEET_TOUCH = """
 
+QLabel {
+    font-size: 32px;
+}
+
 QSlider::groove:horizontal {
     border-radius: 1px;
     height: 9px;
@@ -334,12 +338,13 @@ class WinForm(QWidget):
                         continue
                     direction = self.data_info[variable].get("direction")
                     if direction == "input":
+                        value = self.rio.data_get(variable)
                         if self.data_info[variable].get("type") == "bool":
-                            self.widgets[wid].setChecked(self.rio.data_get(variable))
+                            self.widgets[wid].setChecked(value)
                         elif hasattr(self.widgets[wid], "setText"):
-                            self.widgets[wid].setText(str(self.rio.data_get(variable)))
-                        else:
-                            self.widgets[wid].display(self.rio.data_get(variable))
+                            if vformat := self.data_info[variable].get("signal_config", {}).get("format"):
+                                value = f"{{:{vformat}}}".format(value)
+                            self.widgets[wid].setText(str(value))
 
 
 if __name__ == "__main__":

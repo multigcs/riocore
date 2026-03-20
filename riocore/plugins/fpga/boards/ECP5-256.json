@@ -7,7 +7,7 @@
     "toolchain": "icestorm",
     "family": "ecp5",
     "type": "25k",
-    "flashcmd": "openFPGALoader -v -c usb-blaster rio.bit",
+    "flashcmd": "openFPGALoader -v -c usb-blaster rio.bit -f",
     "package": "CABGA256",
     "provides": [
         "pmod",
@@ -15,7 +15,7 @@
     ],
     "clock": {
         "osc": "24000000",
-        "speed": "100000000",
+        "speed": "48000000",
         "pin": "K16"
     },
     "slots": [
@@ -264,7 +264,7 @@
                     "direction": "all"
                 },
                 "P21": {
-                    "pin": "E1",
+                    "pin": "E2",
                     "pos": [
                         193,
                         183
@@ -282,7 +282,7 @@
                     "direction": "all"
                 },
                 "P23": {
-                    "pin": "D2",
+                    "pin": "C2",
                     "pos": [
                         182,
                         183

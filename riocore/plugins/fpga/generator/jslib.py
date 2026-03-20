@@ -59,7 +59,7 @@ class jslib(generator_base):
 
         if self.multiplexed_output:
             variable_name = "MULTIPLEXED_OUTPUT_VALUE"
-            size = self.project.multiplexed_output_size
+            size = self.multiplexed_output_size
             for bit_num in range(0, size, 8):
                 input_pos -= 8
             self.iface_out.append([variable_name, size])

@@ -114,8 +114,10 @@ class cbase:
 
                             comp_signals.append(varname)
                             check = varname.split("_")[-1].strip()
-                            if plugin_instance.NAME in {"wled", "i2cbus", "riosub"}:
+                            if plugin_instance.NAME in {"wled", "riosub"}:
                                 check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
+                            elif plugin_instance.NAME in {"i2cbus"}:
+                                check = "_".join(varname.split("_")[-3:])
                             if data_name.upper() == check:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
@@ -1162,7 +1164,10 @@ class cbase:
         output.append("    stamp_last = stamp_new;")
         output.append("    servo_period = period;")
 
-        output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
+        if libmode:
+            output.append("    if (1) {")
+        else:
+            output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         output.append("        if (*data->sys_simulation != 1) {")
