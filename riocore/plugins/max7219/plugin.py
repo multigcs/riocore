@@ -55,6 +55,7 @@ class Plugin(PluginBase):
         self.INTERFACE = {}
         self.SIGNALS = {}
         displays = self.plugin_setup.get("displays", self.OPTIONS["displays"]["default"])
+        self.IMAGE = f"image{min(displays, 4)}x.png"
         for vn in range(displays):
             self.INTERFACE[f"value{vn}"] = {
                 "size": 24,
