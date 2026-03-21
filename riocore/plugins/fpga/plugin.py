@@ -208,6 +208,17 @@ class Plugin(PluginBase):
                 plugin_instance.gmaster = instance.instances_name
                 instance.fmaster = None
 
+        # copy sub interface options from connected plugin (like baud)
+        for instance in instances:
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                plugin_instance = connected_pin["instance"]
+                for sub_pin in parent.get_all_plugin_pins(configured=True, prefix=plugin_instance.instances_name):
+                    if plugin_instance.TYPE in {"interface", "sub_interface"}:
+                        for option in plugin_instance.SUB_OPTIONS:
+                            value = sub_pin["instance"].plugin_setup.get(option, sub_pin["instance"].option_default(option))
+                            if value is not None:
+                                plugin_instance.SUB_OPTIONS[option] = value
+
         subs = {}
         for instance in instances:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):

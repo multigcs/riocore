@@ -43,16 +43,7 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-
         self.OPTIONS = {
-            "baud": {
-                "default": 2500000,
-                "type": int,
-                "min": 9600,
-                "max": 10000000,
-                "unit": "bit/s",
-                "description": "serial baud rate",
-            },
             "timeout": {
                 "default": 100,
                 "type": int,
@@ -62,6 +53,7 @@ class Plugin(PluginBase):
                 "description": "timeout in ms",
             },
         }
+        self.SUB_OPTIONS = {"baud": 2500000}
 
     @classmethod
     def component_loader(cls, instances):
@@ -72,7 +64,7 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        baud = int(self.plugin_setup.get("baud", self.OPTIONS["baud"]["default"]))
+        baud = int(self.SUB_OPTIONS["baud"])
         timeout = int(self.plugin_setup.get("timeout", self.OPTIONS["timeout"]["default"]))
         instance_parameter["BUFFER_SIZE_RX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_RX"
         instance_parameter["BUFFER_SIZE_TX"] = f"SUB{self.SUBNUM}_BUFFER_SIZE_TX"
