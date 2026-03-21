@@ -140,7 +140,6 @@
         }
       }
     },
-
     {
       "name": "PMOD1",
       "comment": "",
@@ -148,13 +147,13 @@
       "pins": {
         "P2": {
           "pin": "D1",
-          "visible": false,
           "comment": "Shared with Clock-Pin",
           "pos": [
             8,
             126
           ],
-          "direction": "all"
+          "special": true,
+          "direction": "input"
         },
         "P1": {
           "pin": "E2",
@@ -174,21 +173,23 @@
       "pins": {
         "P1": {
           "pin": "B3",
-          "comment": "serial TX->FTDI_RX",
+          "comment": "serial TX->IceLink-RX (pullup)",
           "pos": [
             83,
             78
           ],
+          "special": true,
           "direction": "all"
         },
         "P2": {
           "pin": "A3",
-          "comment": "serial RX->FTDI_TX",
+          "comment": "serial RX->IceLink-TX",
           "pos": [
             83,
             90
           ],
-          "direction": "all"
+          "special": true,
+          "direction": "input"
         },
         "P3": {
           "pin": "B6",

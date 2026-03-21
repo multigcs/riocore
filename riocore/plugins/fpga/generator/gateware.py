@@ -20,7 +20,7 @@ class gateware(generator_base):
         self.jdata = instance.jdata
 
     def generator(self, generate_pll=True):
-        riocore.log(f"{self.instance.instances_name}:")
+        riocore.log(f" {self.instance.instances_name}:")
         os.makedirs(self.jdata["output_path"], exist_ok=True)
         toolchains_json_path = os.path.join(riocore_path, "toolchains.json")
         if os.path.isfile(toolchains_json_path):

@@ -115,6 +115,7 @@ class Plugin(PluginBase):
 
     def firmware(self, parent, instances):
         subname = self.instances_name
+        riocore.log(f" {subname}:")
 
         firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", self.instances_name)
         os.makedirs(firmware_path, exist_ok=True)

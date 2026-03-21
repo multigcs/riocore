@@ -77,14 +77,15 @@ class Plugin(PluginBase):
             )
 
         use_internal = "OFF"
-        if internal := self.jdata["clock"].get("internal"):
+        internal_osc = self.jdata["clock"].get("internal")
+        if internal_osc:
             self.OPTIONS.update(
                 {
                     "use_internal": {
                         "default": "OFF",
                         "type": "select",
-                        "options": ["OFF", *internal],
-                        "description": f"use internal clock {internal}",
+                        "options": ["OFF", *internal_osc],
+                        "description": f"use internal clock {internal_osc}",
                         "reload": True,
                     }
                 }
@@ -92,16 +93,17 @@ class Plugin(PluginBase):
             use_internal = self.plugin_setup.get("use_internal", self.option_default("use_internal"))
 
         clock_pin = (self.jdata["clock"].get("pin"),)
-        if use_internal == "OFF" and clock_pin != "internal":
+        osc = self.jdata["clock"].get("osc")
+        if use_internal == "OFF" and clock_pin != "internal" and osc:
             self.OPTIONS.update(
                 {
                     "speed": {
-                        "default": int(self.jdata["clock"].get("speed")),
+                        "default": int(self.jdata["clock"].get("speed", 0)),
                         "type": int,
                         "min": 1000000,
                         "max": 500000000,
                         "unit": "Hz",
-                        "description": "FPGA clock speed",
+                        "description": f"FPGA clock speed (default: {self.jdata['clock'].get('speed', 0)})",
                     }
                 }
             )
@@ -146,7 +148,6 @@ class Plugin(PluginBase):
         self.hal_prefix = ""
 
         toolchain = self.plugin_setup.get("toolchain", self.option_default("toolchain")) or self.jdata.get("toolchain")
-        speed = self.plugin_setup.get("speed", self.option_default("speed") or int(self.jdata["clock"].get("speed")))
         if use_internal != "OFF":
             speed = int(use_internal)
             self.jdata["clock"]["pin"] = "internal"
@@ -154,7 +155,9 @@ class Plugin(PluginBase):
             if "osc" in self.jdata["clock"]:
                 del self.jdata["clock"]["osc"]
 
+        speed = self.plugin_setup.get("speed", self.option_default("speed") or int(self.jdata["clock"].get("speed")))
         self.jdata["toolchain"] = toolchain
+        self.jdata["clock"]["speed"] = speed
         self.jdata["speed"] = speed
         self.jdata["osc_clock"] = int(self.jdata["clock"].get("osc_clock") or self.jdata["speed"])
         self.jdata["sysclk_pin"] = self.jdata["clock"].get("pin")
