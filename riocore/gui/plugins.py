@@ -2,6 +2,7 @@ import copy
 import importlib
 import os
 import textwrap
+import webbrowser
 
 from functools import partial
 
@@ -586,6 +587,11 @@ class GuiPlugins:
         descriptiontext = plugin_instance.DESCRIPTION
         label = QLabel(f"{textwrap.fill(descriptiontext, 50)}\n")
         options.addWidget(label)
+
+        if plugin_instance.URL:
+            urlbtn = QPushButton(plugin_instance.URL)
+            urlbtn.clicked.connect(partial(webbrowser.open, plugin_instance.URL))
+            options.addWidget(urlbtn)
 
         options_widget = QWidget()
         options.addStretch()

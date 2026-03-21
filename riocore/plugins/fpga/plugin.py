@@ -120,6 +120,7 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = True
         self.DESCRIPTION = self.jdata.get("comment", "")
         self.INFO = self.jdata.get("description", "")
+        self.URL = self.jdata.get("url", "")
         self.KEYWORDS = f"{node_type} board fpga gateware"
         self.PINDEFAULTS = {}
         for slot in self.jdata["slots"]:

@@ -200,6 +200,7 @@ class LinuxCNC:
         "satmcu": "sm",
         "button": "btn",
         "jogwheel": "jw",
+        "quadencoder": "qenc",
     }
 
     def __init__(self, project):
