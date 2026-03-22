@@ -137,7 +137,7 @@ class Plugin(PluginBase):
                 "value": {
                     "direction": "output",
                     "min": 0,
-                    "max": 65535 // 2,
+                    "max": 4095,
                 },
             }
             self.PINDEFAULTS = {
@@ -291,17 +291,17 @@ class Plugin(PluginBase):
 
     @classmethod
     def firmware_type_defines(cls, instances):
-        inum = 0
+        encoders = 0
         for instance in instances:
             if instance.node_type != "encoder":
                 continue
             if "mcu" in instance.MASTER_PROVIDES:
-                inum += 1
-        if not inum:
+                encoders += 1
+        if not encoders:
             return ""
         return f"""
 #include <ESPRotary.h>
-#define NUM_ENCODERS {inum}
+#define NUM_ENCODERS {encoders}
 
 ESPRotary encoder[NUM_ENCODERS];
 
@@ -369,8 +369,7 @@ void IRAM_ATTR handleLoop() {{
             freq = 10000
             output = []
             output.append(f"    pinMode({name}_PIN_DAC, OUTPUT);")
-            output.append("    // analogWriteRange(65535);")
-            output.append("    analogWriteResolution(16);")
+            output.append("    analogWriteResolution(12);")
             output.append(f"    // analogWriteFreq({freq});")
             return "\n".join(output)
         if self.node_type == "freqin":
@@ -398,6 +397,12 @@ void IRAM_ATTR handleLoop() {{
         if self.node_type == "adc":
             return f"    {variable_name} = analogRead({name}_PIN_ADC);"
         if self.node_type == "dac":
+            inverted = 0
+            for modifier in self.plugin_setup.get("pins", {}).get("dac", {}).get("modifier", []):
+                if modifier["type"] == "invert":
+                    inverted = 1 - inverted
+            if inverted:
+                return f"    analogWrite({name}_PIN_DAC, 4095 - {variable_name});"
             return f"    analogWrite({name}_PIN_DAC, {variable_name});"
         if self.node_type == "rcservo":
             return f"    {variable_name}_SERVO.write({variable_name});"
@@ -445,14 +450,18 @@ void IRAM_ATTR handleLoop() {{
     def firmware_type_loop(cls, instances):
         output = []
         flag = False
+        encoders = 0
         for inum, instance in enumerate(instances):
             if "mcu" in instance.MASTER_PROVIDES:
                 flag = True
-        if flag:
+                if instance.node_type == "encoder":
+                    encoders += 1
+        if encoders:
             output.append("    for (int i = 0; i < NUM_ENCODERS; i++) {")
             output.append("        encoder[i].loop();")
             output.append("    }")
             output.append("")
+        if flag:
             for inum, instance in enumerate(instances):
                 if instance.node_type != "encoder":
                     continue
