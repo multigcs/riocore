@@ -688,3 +688,9 @@ class PluginBase:
 
             output.append("")
         return "\n".join(output)
+
+    def clog2(self, x):
+        if x <= 0:
+            err = "clog2: domain error"
+            raise ValueError(err)
+        return (x - 1).bit_length()

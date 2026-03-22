@@ -11,13 +11,6 @@ plugin_path = os.path.dirname(__file__)
 
 
 class Plugin(PluginBase):
-    def clog2(self, x):
-        """Ceiling of log2!!!"""
-        if x <= 0:
-            err = "domain error"
-            raise ValueError(err)
-        return (x - 1).bit_length()
-
     def setup(self):
         sys.path.insert(0, plugin_path)
         self.NAME = "i2cbus"
@@ -153,12 +146,14 @@ graph LR;
                 verilog_data += extra
                 verilog_data += [""]
 
+        dev_divider_max = 0
         for dev_n, name in enumerate(self.devices):
             setup = self.devices[name]
             setup["name"] = name
             i2c_dev = setup["i2cdev"]
             dev_speed = setup.get("speed", speed)
             dev_divider = self.system_setup.get("speed", 27000000) // dev_speed // 6
+            dev_divider_max = max(dev_divider_max, dev_divider)
             subbus = setup.get("subbus", "none")
             vaddr = i2c_dev.addr.replace("0x", "7'h")
             devname = f"DEVICE_{name.replace(' ', '').upper()}"
@@ -177,13 +172,18 @@ graph LR;
                     verilog_data.append(f"    {entry}")
             verilog_data.append("")
 
+        dev_divider_bits = self.clog2(dev_divider_max + 1)
+        verilog_data.append(f"    localparam DIVIDER_BITS = {dev_divider_bits};")
         for name, setup in self.devices.items():
             lname = name.replace(" ", "").lower()
             i2c_dev = setup["i2cdev"]
 
             needs_timeout = 0
             needs_delay = 0
-
+            # total_dev_steps = self.add_steps(setup, i2c_dev.INITS)[0] + self.add_steps(setup, i2c_dev.STEPS)[0]
+            # total_dev_steps_bits = self.clog2(total_dev_steps + 1)
+            total_dev_steps_bits = 8
+            verilog_data.append(f"    reg [{total_dev_steps_bits - 1}:0] device_{lname}_step = 0;")
             for data in i2c_dev.INITS + i2c_dev.STEPS:
                 if data["mode"] == "delay":
                     ms = data.get("ms")
@@ -191,7 +191,6 @@ graph LR;
                 if data.get("until"):
                     timeout = data.get("timeout")
                     needs_timeout = max(int(self.system_setup.get("speed", 50000000) / 1000 * timeout), needs_timeout)
-            verilog_data.append(f"    reg [7:0] device_{lname}_step = 0;")
             if needs_timeout:
                 bits = self.clog2(needs_timeout + 1)
                 verilog_data.append(f"    reg device_{lname}_timeout_error = 0;")
@@ -201,7 +200,7 @@ graph LR;
                 verilog_data.append(f"    reg [{bits}:0] device_{lname}_delay_cnt = 0;")
         verilog_data.append("")
 
-        verilog_data.append("    reg [31:0] divider = 100;")
+        verilog_data.append("    reg [DIVIDER_BITS-1:0] divider = 100;")
         verilog_data.append("    reg [7:0] mpx_last = 255;")
         verilog_data.append("    reg [15:0] temp = 0;")
         verilog_data.append("    reg do_init = 1;")
@@ -308,13 +307,12 @@ graph LR;
             else:
                 verilog_data.append("                if (do_init) begin")
             verilog_data.append(f"                    // init steps for {name}")
-            verilog_data += self.add_steps(setup, i2c_dev.INITS)
+            verilog_data += self.add_steps(setup, i2c_dev.INITS)[1]
             verilog_data.append("                end else begin")
             verilog_data.append(f"                    // loop steps for {name}")
-            verilog_data += self.add_steps(setup, i2c_dev.STEPS)
+            verilog_data += self.add_steps(setup, i2c_dev.STEPS)[1]
             verilog_data.append("                end")
             verilog_data.append("")
-
             dev_n += 1
 
         verilog_data.append("            end else begin")
@@ -324,7 +322,7 @@ graph LR;
         verilog_data.append("        end")
         verilog_data.append("    end")
         verilog_data.append("")
-        verilog_data.append("    i2c_master #(.MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN)) i2cinst0 (")
+        verilog_data.append("    i2c_master #(.MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN), .DIVIDER_BITS(DIVIDER_BITS)) i2cinst0 (")
         verilog_data.append("        .clk(clk),")
         verilog_data.append("        .sda(sda),")
         verilog_data.append("        .scl(scl),")
@@ -736,7 +734,7 @@ graph LR;
         verilog_data.append("                        end")
         verilog_data.append("                    endcase")
         verilog_data.append("")
-        return verilog_data
+        return (dev_step, verilog_data)
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()

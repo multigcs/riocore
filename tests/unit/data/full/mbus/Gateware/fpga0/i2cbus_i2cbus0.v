@@ -16,9 +16,10 @@ module i2cbus_i2cbus0
     localparam DEVICE_LM75_0_ADDR = 7'h48;
     localparam DEVICE_LM75_0_DIVIDER = 45;
 
+    localparam DIVIDER_BITS = 6;
     reg [7:0] device_lm75_0_step = 0;
 
-    reg [31:0] divider = 100;
+    reg [DIVIDER_BITS-1:0] divider = 100;
     reg [7:0] mpx_last = 255;
     reg [15:0] temp = 0;
     reg do_init = 1;
@@ -91,7 +92,7 @@ module i2cbus_i2cbus0
         end
     end
 
-    i2c_master #(.MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN)) i2cinst0 (
+    i2c_master #(.MAX_BITS(MAX_BITS), .MAX_DIN(MAX_DIN), .DIVIDER_BITS(DIVIDER_BITS)) i2cinst0 (
         .clk(clk),
         .sda(sda),
         .scl(scl),

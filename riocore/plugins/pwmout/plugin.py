@@ -125,12 +125,6 @@ class Plugin(PluginBase):
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         return f"{freq} Hz"
 
-    def clog2(self, x):
-        if x <= 0:
-            err = "clog2: domain error"
-            raise ValueError(err)
-        return (x - 1).bit_length()
-
     # optional function, only needed if you add parameter to the verilog functions
     def gateware_instances(self):
         instances = self.gateware_instances_base()
