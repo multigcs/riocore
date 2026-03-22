@@ -27,6 +27,7 @@ class Plugin(PluginBase):
                         "rcservo",
                         "rgbled",
                         "encoder",
+                        "mcp4725",
                     ],
                     "description": "io type",
                     "reload": True,
@@ -130,6 +131,35 @@ class Plugin(PluginBase):
                     "direction": "input",
                 },
             }
+        elif self.node_type == "mcp4725":
+            self.IMAGES = ["led"]
+            self.NEEDS = ["mcu"]
+            self.SIGNALS = {
+                "value": {
+                    "direction": "output",
+                    "min": 0,
+                    "max": 4095,
+                },
+            }
+            self.PINDEFAULTS = {
+                "sda": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": ["MCUIO"],
+                },
+                "scl": {
+                    "direction": "all",
+                    "edge": "target",
+                    "type": ["MCUIO"],
+                },
+            }
+            self.INTERFACE = {
+                "value": {
+                    "size": 16,
+                    "direction": "output",
+                },
+            }
+
         elif self.node_type == "dac":
             self.IMAGES = ["led"]
             self.NEEDS = ["mcu"]
@@ -332,6 +362,17 @@ void IRAM_ATTR handleLoop() {{
         if self.node_type == "dac":
             pin = self.plugin_setup["pins"]["dac"]["pin"]
             return f"#define {name}_PIN_DAC {pin}"
+        if self.node_type == "mcp4725":
+            sda = self.plugin_setup["pins"]["sda"]["pin"]
+            scl = self.plugin_setup["pins"]["scl"]["pin"]
+            output = []
+            output.append("#include <Wire.h>")
+            output.append("#include <MCP4725.h>")
+            output.append(f"#define {name}_PIN_SDA {sda}")
+            output.append(f"#define {name}_PIN_SCL {scl}")
+            output.append(f"MbedI2C Wire1({name}_PIN_SDA, {name}_PIN_SCL);")
+            output.append("MCP4725 MCP(0x61, &Wire1);")
+            return "\n".join(output)
         if self.node_type == "rcservo":
             pin = self.plugin_setup["pins"]["out"]["pin"]
             output = []
@@ -365,6 +406,12 @@ void IRAM_ATTR handleLoop() {{
             return f"    pinMode({name}_PIN_ADC, INPUT);"
         if self.node_type == "rcservo":
             return f"    myservo.attach({name}_PIN_OUT);"
+        if self.node_type == "mcp4725":
+            output = []
+            output.append("    Wire1.begin();")
+            output.append("    MCP.setValue(10);")
+            output.append("    MCP.begin();")
+            return "\n".join(output)
         if self.node_type == "dac":
             freq = 10000
             output = []
@@ -404,6 +451,8 @@ void IRAM_ATTR handleLoop() {{
             if inverted:
                 return f"    analogWrite({name}_PIN_DAC, 4095 - {variable_name});"
             return f"    analogWrite({name}_PIN_DAC, {variable_name});"
+        if self.node_type == "mcp4725":
+            return f"    MCP.setValue({variable_name});"
         if self.node_type == "rcservo":
             return f"    {variable_name}_SERVO.write({variable_name});"
         if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
@@ -427,6 +476,8 @@ void IRAM_ATTR handleLoop() {{
             return ["https://github.com/LennartHennigs/ESPRotary"]
         if self.node_type == "rgbled":
             return ["https://github.com/MrYsLab/NeoPixelConnect"]
+        if self.node_type == "mcp4725":
+            return ["https://github.com/RobTillaart/MCP4725"]
 
     @classmethod
     def firmware_type_setup(cls, instances):
