@@ -1606,6 +1606,13 @@ class Window(QMainWindow):
         reload_action.triggered.connect(self.cfg_reload)
         toolbar.addAction(reload_action)
 
+        icon = self.style().standardIcon(QStyle.SP_BrowserReload)
+        fit_action = QAction(icon, "&Fit View", self)
+        fit_action.setStatusTip("Fit")
+        fit_action.setShortcut("Ctrl+F")
+        fit_action.triggered.connect(self.fit_view)
+        toolbar.addAction(fit_action)
+
         toolbar.addSeparator()
 
         icon = self.style().standardIcon(QStyle.SP_ArrowLeft)
@@ -1898,9 +1905,9 @@ class Window(QMainWindow):
                 if not plugin.get("board"):
                     plugin["board"] = "esp32dev"
 
-        self.nesting_all()
+        # self.nesting_all()
         self.redraw()
-        self.fit_view()
+        # self.fit_view()
         self.cfg_check()
 
     def snapshot(self):
@@ -2053,8 +2060,6 @@ class Window(QMainWindow):
         if len(self.snapshots) > 1:
             self.snapshots.pop()
         self.cfg_reload(config=copy.deepcopy(self.snapshots[-1]))
-        self.cfg_check()
-        self.fit_view()
 
     def json_save(self):
         self.cfg_save()
