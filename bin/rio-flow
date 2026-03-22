@@ -118,7 +118,7 @@ class NodeEdge(QGraphicsPathItem):
         self.hover = False
 
     def paint(self, painter: QPainter, option, widget):
-        if hasattr(self._target_node, "plugin_instance") and self._target_node.plugin_instance.SUB_OF and self._source_node.plugin_instance.SUB_OF:
+        if hasattr(self._target_node, "plugin_instance") and hasattr(self._source_node, "plugin_instance") and self._target_node.plugin_instance.SUB_OF and self._source_node.plugin_instance.SUB_OF:
             return
         if self.isSelected():
             self._pen_default = QPen(Qt.GlobalColor.yellow)
@@ -815,6 +815,7 @@ class SubNode(MyNode):
 class ModifierNode(MyNode):
     port_top = 7
     port_bottom = 8
+    text_map = {"invert": "inv"}
 
     def __init__(self, scene, x, y, modifier):
         super().__init__(scene, x, y)
@@ -823,6 +824,9 @@ class ModifierNode(MyNode):
         self.name = modifier["type"]
         self._width = grid(150)
         self._height = grid(30)
+        text = self.text_map.get(self.name, self.name)
+        lh = self.title_size * 1.5
+        self._width = grid(len(text) * lh + 36)
         self.width = self._width
         self.height = self._height
         self.setZValue(9)
@@ -861,16 +865,17 @@ class ModifierNode(MyNode):
 
         painter.setPen(QPen(self.title_color, 1))
         painter.setFont(QFont(self.text_font, self.title_size))
+        text = self.text_map.get(self.name, self.name)
         if self.flow_cfg.get("rotate", 0) in {0, 180}:
             painter.drawText(
                 QRectF(0, 0, self.width, self.height),
                 Qt.AlignmentFlag.AlignCenter,
-                self.name,
+                text,
             )
         else:
             lh = self.title_size * 1.5
-            py = int((self.height - (len(self.name) * lh)) / 2 + (lh / 2))
-            for char in self.name:
+            py = int((self.height - (len(text) * lh)) / 2 + (lh / 2))
+            for char in text:
                 painter.drawText(
                     QRectF(0, py - 10, self.width, 20),
                     Qt.AlignmentFlag.AlignCenter,
@@ -2691,6 +2696,10 @@ class Window(QMainWindow):
                         if modifier.get("pos"):
                             pos_x = modifier["pos"][0]
                             pos_y = modifier["pos"][1]
+
+                        if modifier.get("visable", True) is False:
+                            continue
+
                         mnode = ModifierNode(self.scene, pos_x, pos_y, modifier)
                         self.scene.addItem(mnode)
                         edge = NodeEdge(self.scene, "pin", last_con[0], last_con[1], mnode, "in", color=colors[color_n])

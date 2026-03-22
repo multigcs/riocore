@@ -57,6 +57,8 @@ class PluginBase:
         self.IMAGE_SHOW = False  # show plugin as image in flow gui
         self.BUILDER = []  # make commands for this plugin (if needed)
         self.BUILDER_PATH = ""  # path to the generated plugin sources (if needed)
+        self.SUBBOARD = None
+        self.SUB_OPTIONS = {}
 
         if "uid" not in self.plugin_setup:
             self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"

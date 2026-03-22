@@ -514,9 +514,10 @@ class Project:
 
 class PluginImages:
     bitout = ["relay", "ssr", "ssr2a", "led", "led_r", "led_g", "led_b", "led_y", "smdled", "smdled_r", "smdled_g", "smdled_b", "smdled_y", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
-    biin = ["proximity", "estop", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch"]
+    biin = ["proximity", "estop", "estop2", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch", "mbutton"]
     stepdir = ["stepper", "servo42", "stepstick", "servo", "clstepper"]
     pwmout = ["spindle500w", "laser", "led"]
+    encoders = ["encoder", "encoder_optical", "jogwheel", "knob1"]
     images = {
         "relay": {"image": "relay.png", "pins": [(7, 75)], "signals": [(177, 75)]},
         "relay_min": {"image": "relay_min.png", "pins": [(7, 75)], "signals": [(177, 75)]},
@@ -527,7 +528,12 @@ class PluginImages:
         "led_g": {"image": "led_g.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
         "led_b": {"image": "led_b.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
         "led_y": {"image": "led_y.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "dot_r": {"image": "dot_r.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "dot_g": {"image": "dot_g.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "dot_b": {"image": "dot_b.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
+        "dot_y": {"image": "dot_y.png", "pins": [(5, 5), (5, 15)], "signals": [(30, 5), (30, 15)]},
         "smdbutton": {"image": "smdbutton.png", "pins": [(5, 5)], "signals": [(30, 5)]},
+        "mbutton": {"image": "mbutton.png", "pins": [(5, 5)], "signals": [(30, 5)]},
         "smdled": {"image": "smdled.png", "pins": [(4, 6)], "signals": [(21, 6)]},
         "smdled_r": {"image": "smdled_r.png", "pins": [(4, 6)], "signals": [(21, 6)]},
         "smdled_g": {"image": "smdled_g.png", "pins": [(4, 6)], "signals": [(21, 6)]},
@@ -535,6 +541,7 @@ class PluginImages:
         "smdled_y": {"image": "smdled_y.png", "pins": [(4, 6)], "signals": [(21, 6)]},
         "proximity": {"image": "proximity.png", "pins": [(5, 30)], "signals": [(180, 30), (170, 30)]},
         "estop": {"image": "estop.png", "pins": [(5, 80)], "signals": [(180, 80)]},
+        "estop2": {"image": "estop2.png", "pins": [(5, 10)], "signals": [(20, 20)]},
         "probe": {"image": "probe.png", "pins": [(5, 80)], "signals": [(140, 80)]},
         "switch": {"image": "switch.png", "pins": [(45, 50)], "signals": [(135, 50)]},
         "opto": {"image": "opto.png", "pins": [(25, 13)], "signals": [(172, 13)]},
@@ -551,7 +558,9 @@ class PluginImages:
         "ethercatservo": {"image": "ethercat-servo.png", "pins": [(45, 135), (85, 135)], "signals": [(80, 120), (80, 135), (80, 150)]},
         "flow": {"image": "flow.png", "pins": [(50, 50)], "signals": [(87, 10), (87, 25)]},
         "encoder": {"image": "encoder.png", "pins": [(105, 13), (105, 25), (105, 39)], "signals": [(40, 37), (40, 50), (40, 25)]},
+        "knob1": {"image": "knob1.png", "pins": [(15, 13), (15, 25), (15, 39)], "signals": [(40, 37), (40, 50), (40, 25)]},
         "encoder_optical": {"image": "encoder_optical.png", "pins": [(6, 60), (6, 71), (6, 82)], "signals": [(56, 60), (56, 71), (56, 82)]},
+        "jogwheel": {"image": "jogwheel.png", "pins": [(6, 60), (6, 71), (6, 82)], "signals": [(56, 60), (56, 71), (56, 82)]},
         "dinrail": {"image": "dinrail.png", "pins": [], "signals": []},
         "compressor": {"image": "compressor.png", "pins": [(466, 215)], "signals": []},
         "vacuum": {"image": "vacuum.png", "pins": [(191, 93)], "signals": []},

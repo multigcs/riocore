@@ -844,6 +844,8 @@ class gateware(generator_base):
                 continue
             if plugin_instance.TYPE != "sub_interface":
                 continue
+            if plugin_instance.SUBBOARD is None:
+                continue
             sub_configs.append((plugin_instance.SUBBOARD, plugin_instance.SUBNUM))
 
         for sub_number, sub_config in enumerate(sub_configs):

@@ -161,7 +161,7 @@ class Plugin(PluginBase):
             }
 
         elif self.node_type == "dac":
-            self.IMAGES = ["led"]
+            self.IMAGES = PluginImages.pwmout
             self.NEEDS = ["mcu"]
             self.SIGNALS = {
                 "value": {

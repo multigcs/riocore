@@ -78,6 +78,17 @@ class Plugin(PluginBase):
             pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
             self.PINDEFAULTS[pin_name] = pin_data
 
+        for slot in self.board_data.get("slots", []):
+            slot_name = slot["name"]
+            for pin_name, pin_data in slot["pins"].items():
+                if pin_data["pin"] and self.board_data["board"] == "pico" and pin_data["pin"].isnumeric():
+                    if int(pin_data["pin"]) % 2 == 0:
+                        pin_data["type"].append("PIO_EVEN")
+                    else:
+                        pin_data["type"].append("PIO_ODD")
+                pin_data["pin"] = f"{self.instances_name}:{pin_data['pin']}"
+                self.PINDEFAULTS[f"{slot_name}:{pin_name}"] = pin_data
+
         self.OPTIONS.update(self.board_data.get("options", {}))
         type_mapping = {"str": str, "bool": bool, "int": int, "float": float}
         for option in self.OPTIONS.values():
@@ -85,8 +96,13 @@ class Plugin(PluginBase):
 
         self.SUB_PLUGINS = []
         for spn, sub_plugin in enumerate(self.board_data.get("plugins", [])):
-            if "uid" not in sub_plugin:
-                sub_plugin["uid"] = f"{sub_plugin['type']}{spn}"
+            if "uid" in sub_plugin:
+                sub_plugin["uid"] = f"{self.instances_name}{sub_plugin['uid']}"
+            else:
+                sub_plugin["uid"] = f"{self.instances_name}{sub_plugin['type']}{spn}"
+            for pin_name, pin_data in sub_plugin.get("pins", {}).items():
+                for modifier in pin_data.get("modifier", []):
+                    modifier["visable"] = False
             self.SUB_PLUGINS.append(sub_plugin)
 
         self.IMAGE_SHOW = True

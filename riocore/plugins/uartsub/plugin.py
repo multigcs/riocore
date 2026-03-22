@@ -58,9 +58,15 @@ class Plugin(PluginBase):
     @classmethod
     def component_loader(cls, instances):
         for sub_num, instance in enumerate(instances):
+            if instance.SUBBOARD is None:
+                # do not build, if no sub connected
+                instance.INTERFACE = {}
+                instance.PINDEFAULTS = {}
             instance.SUBNUM = sub_num
 
     def gateware_instances(self):
+        if self.SUBBOARD is None:
+            return None
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
