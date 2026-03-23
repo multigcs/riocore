@@ -896,6 +896,9 @@ class cbase:
 
         protocol = self.instance.protocol
         interface_instance = self.instance.interface_instance
+        if interface_instance is None:
+            print(f"ERROR: {self.instance.instances_name}: no interface found")
+            exit(1)
 
         if protocol == "UDP":
             ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))

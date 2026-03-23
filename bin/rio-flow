@@ -620,16 +620,42 @@ class PluginNode(MyNode):
                 mpos = master_node.pos()
                 mwidth = master_node.width
                 mheight = master_node.height
-                center_x = mwidth / 2
-                center_y = mheight / 2
+                center_x = 0
+                center_y = 0
                 scenter_x = rpos[0] / 2 + self.width / 2
                 scenter_y = rpos[1] / 2 + self.height / 2
-
                 pos_x, pos_y = self.scene.rotate_point((center_x, center_y), (scenter_x, scenter_y), rotate)
                 pos_x -= self.width / 2
                 pos_y -= self.height / 2
 
+                # work around :(
+                if rotate == 90:
+                    pos_x += mwidth
+                elif rotate == 180:
+                    pos_x += mwidth
+                    pos_y += mheight
+                elif rotate == -90:
+                    pos_y += mheight
+
+                self.img_show()
                 self.setPos(mpos.x() + pos_x, mpos.y() + pos_y)
+
+    def img_show(self):
+        if self.plugin_instance.IMAGE_SHOW:
+            if self.plugin_instance.TYPE == "background":
+                self.setZValue(-99)
+            else:
+                self.setZValue(1)
+            image = None
+            if self.plugin_instance.IMAGE:
+                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
+                if not image or not os.path.exists(image):
+                    image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
+                self.load_image(image)
+            else:
+                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
+                self.load_image(image)
+                # self.plugin_instance.IMAGE_SHOW = False
 
     def reload(self):
         self.master_pos()
@@ -669,21 +695,7 @@ class PluginNode(MyNode):
                     pin_data["title"] = pin_name
                 self.ports[f"sig_{pin_name}"] = pin_data
 
-        if self.plugin_instance.IMAGE_SHOW:
-            if self.plugin_instance.TYPE == "background":
-                self.setZValue(-99)
-            else:
-                self.setZValue(1)
-            image = None
-            if self.plugin_instance.IMAGE:
-                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, self.plugin_instance.IMAGE)
-                if not image or not os.path.exists(image):
-                    image = os.path.join(riocore_path, "files", "images", self.plugin_instance.IMAGE)
-                self.load_image(image)
-            else:
-                image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
-                self.load_image(image)
-                # self.plugin_instance.IMAGE_SHOW = False
+        self.img_show()
 
         if hasattr(self.plugin_instance, "flow"):
             devices = self.plugin_instance.flow()
@@ -702,7 +714,6 @@ class PluginNode(MyNode):
             devices = self.plugin_instance.flow()
             for device, device_data in devices.items():
                 ports = device_data.get("ports", {})
-                image = device_data.get("image")
                 spos = self.flow_cfg.get("sub_pos", {}).get(device, [pos_x + self.width + 50, py])
                 ports["bus"] = {"title": "bus", "edge": "target", "type": "BUS"}
                 snode = SubNode(self.scene, spos[0], spos[1], self, device, ports)
