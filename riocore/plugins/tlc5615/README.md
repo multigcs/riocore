@@ -8,6 +8,8 @@ Analog-Output via spi dac
 
 Keywords: analog dac
 
+URL: https://www.ti.com/lit/ds/symlink/tlc5615.pdf?ts=1774302230717
+
 ## Pins:
 *FPGA-pins*
 ### mosi:
