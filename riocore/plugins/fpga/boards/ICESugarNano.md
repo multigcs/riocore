@@ -42,7 +42,7 @@ SPI FLASH
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| P2 | D1 | all |
+| P2 | D1 | input |
 | P1 | E2 | all |
 
 ### PMOD2
@@ -51,7 +51,7 @@ SPI FLASH
 | Name | Pin | Direction |
 | --- | --- | --- |
 | P1 | B3 | all |
-| P2 | A3 | all |
+| P2 | A3 | input |
 | P3 | B6 | all |
 | P4 | C5 | all |
 

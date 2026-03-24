@@ -36,15 +36,6 @@ name of this plugin instance
  * type: str
  * default: 
 
-### baud:
-serial baud rate
-
- * type: int
- * min: 9600
- * max: 10000000
- * default: 2500000
- * unit: bit/s
-
 ### timeout:
 timeout in ms
 
@@ -97,7 +88,6 @@ timeout in ms
 {
     "type": "uartsub",
     "name": "",
-    "baud": 2500000,
     "timeout": 100,
     "pins": {
         "rx": {

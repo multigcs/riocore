@@ -18,8 +18,8 @@ USB
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| RX | B9 | input |
-| TX | A9 | output |
+| RX | A9 | input |
+| TX | B9 | output |
 
 ### LED
 LED

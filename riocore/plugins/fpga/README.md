@@ -3,6 +3,8 @@
 
 Keywords: Numato-Spartan6 board fpga gateware
 
+URL: https://numato.com/product/mimas-spartan-6-fpga-development-board/
+
 ## Pins:
 *FPGA-pins*
 ### LED:D1:
@@ -436,15 +438,6 @@ simulation mode
  * type: bool
  * default: False
 
-### speed:
-FPGA clock speed
-
- * type: int
- * min: 1000000
- * max: 500000000
- * default: 50000000
- * unit: Hz
-
 ### flashcmd:
 overwrite flash command for this instance
 
@@ -722,7 +715,6 @@ overwrite flash command for this instance
     "name": "",
     "node_type": "Numato-Spartan6",
     "simulation": false,
-    "speed": 50000000,
     "flashcmd": "",
     "pins": {
         "LED:D1": {

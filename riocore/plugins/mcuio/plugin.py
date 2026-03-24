@@ -457,7 +457,7 @@ uint8_t NUM7SEG[] = {
     0b1111011,
     0b0000000,
     0b0000001,
-}; 
+};
 
 static void max7219_write(uint8_t address, uint8_t data) {
     shiftOut(MAX7219_PIN_MOSI, MAX7219_PIN_SCLK, MSBFIRST, address);
@@ -588,7 +588,7 @@ static void max7219_display(int32_t *values) {
             return f"    myservo.attach({name}_PIN_OUT);"
         if self.node_type == "max7219" and variable_name.endswith("0"):
             output = []
-            output.append(f"    max7219_init();")
+            output.append("    max7219_init();")
             return "\n".join(output)
         if self.node_type == "mcp4725":
             output = []
@@ -641,7 +641,7 @@ static void max7219_display(int32_t *values) {
             output = []
             for display in range(displays):
                 output.append(f"    MAX7219_VALUES[{display}] = VAROUT32_{name}_VALUE{display};")
-            output.append(f"    max7219_display(MAX7219_VALUES);")
+            output.append("    max7219_display(MAX7219_VALUES);")
             return "\n".join(output)
         if self.node_type == "mcp4725":
             return f"    MCP.setValue({variable_name});"
