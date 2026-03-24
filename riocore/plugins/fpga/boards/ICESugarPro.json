@@ -23,7 +23,7 @@
             "comment": "USB",
             "pins": {
                 "RX": {
-                    "pin": "B9",
+                    "pin": "A9",
                     "pos": [
                         346,
                         208
@@ -31,7 +31,7 @@
                     "direction": "input"
                 },
                 "TX": {
-                    "pin": "A9",
+                    "pin": "B9",
                     "pos": [
                         346,
                         218

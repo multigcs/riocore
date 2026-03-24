@@ -28,6 +28,7 @@ class Plugin(PluginBase):
                         "rgbled",
                         "encoder",
                         "mcp4725",
+                        "max7219",
                     ],
                     "description": "io type",
                     "reload": True,
@@ -159,6 +160,61 @@ class Plugin(PluginBase):
                     "direction": "output",
                 },
             }
+
+        elif self.node_type == "max7219":
+            self.IMAGES = ["max7219x1.png", "max7219x2.png", "max7219x3.png", "max7219x4.png"]
+            self.NEEDS = ["mcu"]
+            self.PINDEFAULTS = {
+                "mosi": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": ["MCUIO"],
+                    "pos": (32, 35),
+                },
+                "sclk": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": ["MCUIO"],
+                    "pos": (32, 46),
+                },
+                "sel": {
+                    "direction": "output",
+                    "edge": "target",
+                    "type": ["MCUIO"],
+                    "pos": (32, 57),
+                },
+            }
+            self.OPTIONS.update(
+                {
+                    "displays": {
+                        "default": 1,
+                        "min": 1,
+                        "max": 6,
+                        "type": int,
+                        "description": "number of displays",
+                    },
+                    "dotpos": {
+                        "default": 2,
+                        "min": 0,
+                        "max": 8,
+                        "type": int,
+                        "description": "dot position",
+                    },
+                },
+            )
+            displays = self.plugin_setup.get("displays", self.option_default("displays"))
+            self.SIGNALS = {}
+            self.INTERFACE = {}
+            for display in range(displays):
+                self.SIGNALS[f"value{display}"] = {
+                    "direction": "output",
+                    "min": -9999999,
+                    "max": 9999999,
+                }
+                self.INTERFACE[f"value{display}"] = {
+                    "size": 32,
+                    "direction": "output",
+                }
 
         elif self.node_type == "dac":
             self.IMAGES = PluginImages.pwmout
@@ -373,6 +429,130 @@ void IRAM_ATTR handleLoop() {{
             output.append(f"MbedI2C Wire1({name}_PIN_SDA, {name}_PIN_SCL);")
             output.append("MCP4725 MCP(0x61, &Wire1);")
             return "\n".join(output)
+        if self.node_type == "max7219" and variable_name.endswith("0"):
+            displays = self.plugin_setup.get("displays", self.option_default("displays"))
+            dotpos = self.plugin_setup.get("dotpos", self.option_default("dotpos"))
+            mosi = self.plugin_setup["pins"]["mosi"]["pin"]
+            sclk = self.plugin_setup["pins"]["sclk"]["pin"]
+            sel = self.plugin_setup["pins"]["sel"]["pin"]
+            output = []
+            output.append(f"#define MAX7219_DISPLAYS {displays}")
+            output.append(f"#define MAX7219_DOT_POS {dotpos}")
+            output.append(f"#define MAX7219_PIN_MOSI {mosi}")
+            output.append(f"#define MAX7219_PIN_SCLK {sclk}")
+            output.append(f"#define MAX7219_PIN_SEL {sel}")
+            output.append(f"int32_t MAX7219_VALUES[{displays}] = {{{', '.join(['0'] * displays)}}};")
+
+            output.append("""
+uint8_t NUM7SEG[] = {
+    0b1111110,
+    0b0110000,
+    0b1101101,
+    0b1111001,
+    0b0110011,
+    0b1011011,
+    0b1011111,
+    0b1110000,
+    0b1111111,
+    0b1111011,
+    0b0000000,
+    0b0000001,
+}; 
+
+static void max7219_write(uint8_t address, uint8_t data) {
+    shiftOut(MAX7219_PIN_MOSI, MAX7219_PIN_SCLK, MSBFIRST, address);
+    shiftOut(MAX7219_PIN_MOSI, MAX7219_PIN_SCLK, MSBFIRST, data);
+}
+
+static void max7219_init(void) {
+    int d = 0;
+    pinMode(MAX7219_PIN_SEL, OUTPUT);
+    digitalWrite(MAX7219_PIN_SEL, HIGH);
+    pinMode(MAX7219_PIN_SCLK, OUTPUT);
+    digitalWrite(MAX7219_PIN_SCLK, LOW);
+    pinMode(MAX7219_PIN_MOSI, OUTPUT);
+    digitalWrite(MAX7219_PIN_MOSI, LOW);
+
+    // display test off
+    digitalWrite(MAX7219_PIN_SEL, LOW);
+    for (d = 0; d < MAX7219_DISPLAYS; d++) {
+        max7219_write(0x0F, 0x00);
+    }
+    digitalWrite(MAX7219_PIN_SEL, HIGH);
+    // shutdown register: normal operation
+    digitalWrite(MAX7219_PIN_SEL, LOW);
+    for (d = 0; d < MAX7219_DISPLAYS; d++) {
+        max7219_write(0x0C, 0x01);
+    }
+    digitalWrite(MAX7219_PIN_SEL, HIGH);
+    // decode mode off
+    digitalWrite(MAX7219_PIN_SEL, LOW);
+    for (d = 0; d < MAX7219_DISPLAYS; d++) {
+        max7219_write(0x09, 0x00);
+    }
+    digitalWrite(MAX7219_PIN_SEL, HIGH);
+    // scan limit = 8 digits
+    digitalWrite(MAX7219_PIN_SEL, LOW);
+    for (d = 0; d < MAX7219_DISPLAYS; d++) {
+        max7219_write(0x0B, 0x07);
+    }
+    digitalWrite(MAX7219_PIN_SEL, HIGH);
+    // intensity
+    digitalWrite(MAX7219_PIN_SEL, LOW);
+    for (d = 0; d < MAX7219_DISPLAYS; d++) {
+        max7219_write(0x0A, 0x07);
+    }
+    digitalWrite(MAX7219_PIN_SEL, HIGH);
+    // clear all digits
+    for (int i = 0; i < 8; i++) {
+        digitalWrite(MAX7219_PIN_SEL, LOW);
+        for (d = 0; d < MAX7219_DISPLAYS; d++) {
+            max7219_write(i, 0x00);
+        }
+        digitalWrite(MAX7219_PIN_SEL, LOW);
+    }
+}
+
+static void max7219_display(int32_t *values) {
+    uint8_t d = 0;
+    uint8_t neg[MAX7219_DISPLAYS];
+    uint32_t tmp[MAX7219_DISPLAYS];
+    for (d = 0; d < MAX7219_DISPLAYS; d++) {
+        if (values[d] < 0) {
+            neg[d] = 1;
+        } else {
+            neg[d] = 0;
+        }
+        tmp[d] = abs(values[d]);
+    }
+    for (int i = 0; i < 8; i++) {
+        digitalWrite(MAX7219_PIN_SEL, HIGH);
+        for (d = 0; d < MAX7219_DISPLAYS; d++) {
+            uint8_t dn = MAX7219_DISPLAYS - d - 1;
+            uint8_t digit = 0;
+            if (tmp[dn] > 0 || i == 0) {
+                digit = NUM7SEG[tmp[dn] % 10];
+            } else if (i == 7) {
+                if (neg[dn] == 1) {
+                    digit = NUM7SEG[11];
+                } else {
+                    digit = NUM7SEG[10];
+                }
+            } else {
+                digit = NUM7SEG[0];
+                // digit = NUM7SEG[10];
+            }
+            if (i == MAX7219_DOT_POS) {
+                digit |= (1<<7);
+            }
+            max7219_write(i + 1, digit);
+            tmp[dn] = tmp[dn] / 10;
+        }
+        digitalWrite(MAX7219_PIN_SEL, LOW);
+    }
+}
+            """)
+            return "\n".join(output)
         if self.node_type == "rcservo":
             pin = self.plugin_setup["pins"]["out"]["pin"]
             output = []
@@ -406,6 +586,10 @@ void IRAM_ATTR handleLoop() {{
             return f"    pinMode({name}_PIN_ADC, INPUT);"
         if self.node_type == "rcservo":
             return f"    myservo.attach({name}_PIN_OUT);"
+        if self.node_type == "max7219" and variable_name.endswith("0"):
+            output = []
+            output.append(f"    max7219_init();")
+            return "\n".join(output)
         if self.node_type == "mcp4725":
             output = []
             output.append("    Wire1.begin();")
@@ -451,6 +635,14 @@ void IRAM_ATTR handleLoop() {{
             if inverted:
                 return f"    analogWrite({name}_PIN_DAC, 4095 - {variable_name});"
             return f"    analogWrite({name}_PIN_DAC, {variable_name});"
+        if self.node_type == "max7219" and variable_name.endswith("0"):
+            name = self.instances_name.upper()
+            displays = self.plugin_setup.get("displays", self.option_default("displays"))
+            output = []
+            for display in range(displays):
+                output.append(f"    MAX7219_VALUES[{display}] = VAROUT32_{name}_VALUE{display};")
+            output.append(f"    max7219_display(MAX7219_VALUES);")
+            return "\n".join(output)
         if self.node_type == "mcp4725":
             return f"    MCP.setValue({variable_name});"
         if self.node_type == "rcservo":
