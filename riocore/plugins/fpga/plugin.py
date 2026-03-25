@@ -142,6 +142,7 @@ class Plugin(PluginBase):
                     "direction": pin_data.get("direction", "all"),
                     "comment": pin_data.get("comment", "all"),
                     "special": pin_data.get("special", False),
+                    "marker": pin_data.get("marker", False),
                 }
 
         self.fpga_num = 0

@@ -20,6 +20,37 @@
     {
       "name": "PIN",
       "pins": {
+        "GND_1": {
+          "pin": "GND",
+          "pos": [
+            337,
+            9
+          ],
+          "marker": true,
+          "rotate": true,
+          "direction": "none"
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "pos": [
+            351,
+            9
+          ],
+          "marker": true,
+          "rotate": true,
+          "direction": "none"
+        },
+        "5V_1": {
+          "pin": "5V",
+          "pos": [
+            265,
+            9
+          ],
+          "marker": true,
+          "rotate": true,
+          "direction": "none"
+        },
+
         "63": {
           "pin": "63",
           "pos": [

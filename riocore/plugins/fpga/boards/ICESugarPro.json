@@ -562,17 +562,86 @@
                 }
             }
         },
+
+        {
+            "name": "PMOD_5E",
+            "comment": "extra pins",
+            "pins": {
+                "5V_1": {
+                    "pin": "5V",
+                    "pos": [
+                        89,
+                        296
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+                "5V_2": {
+                    "pin": "5V",
+                    "pos": [
+                        89,
+                        307
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                }
+            }
+        },
+
         {
             "name": "PMOD_5A",
             "comment": "PMOD 5A on i5_extboard_v1.2",
             "pins": {
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        121,
+                        296
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        121,
+                        307
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+
+                "3V3_1": {
+                    "pin": "3V3",
+                    "pos": [
+                        110,
+                        296
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "pos": [
+                        110,
+                        307
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
                 "P1": {
                     "pin": "E14",
                     "special": true,
                     "comment": "Shared with dapalink",
                     "pos": [
                         165,
-                        298
+                        296
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -583,7 +652,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         154,
-                        298
+                        296
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -594,7 +663,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         143,
-                        298
+                        296
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -605,7 +674,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         132,
-                        298
+                        296
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -616,7 +685,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         165,
-                        309
+                        307
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -627,7 +696,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         154,
-                        309
+                        307
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -638,7 +707,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         143,
-                        309
+                        307
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -649,7 +718,7 @@
                     "comment": "Shared with dapalink",
                     "pos": [
                         132,
-                        309
+                        307
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -660,6 +729,47 @@
             "name": "PMOD_5B",
             "comment": "PMOD 5B on i5_extboard_v1.2",
             "pins": {
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        23,
+                        296
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        23,
+                        307
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+
+                "3V3_1": {
+                    "pin": "3V3",
+                    "pos": [
+                        11,
+                        296
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "pos": [
+                        11,
+                        307
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "all"
+                },
                 "P1": {
                     "pin": "D9",
                     "pos": [

@@ -307,6 +307,8 @@ class MyNode(QGraphicsItem):
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             pname = self.port_selected(event.pos())
+            if self.ports[pname].get("marker", False) is True:
+                return
             ptype = None
             if pname and pname in self.ports:
                 ptype = self.ports[pname].get("edge")
@@ -513,8 +515,14 @@ class MyNode(QGraphicsItem):
             key = f"{pos_x}-{pos_y}"
             selected = (self, port_name) == self.scene.selection_source or (self, port_name) == self.scene.selection_target
             if key not in painted_ports:
-                if selected:
-                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red, rotate)
+                if port_data.get("marker", False) is True:
+                    pin = port_data.get("pin", "").split(":")[-1]
+                    if pin in {"3V3", "5V"}:
+                        self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red, rotate)
+                    else:
+                        self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.gray, rotate)
+                elif selected:
+                    self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.blue, rotate)
                 elif port_data.get("type") == "SIGNAL":
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.green, rotate)
                 elif port_data.get("special", False) is True:
