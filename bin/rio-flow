@@ -517,8 +517,10 @@ class MyNode(QGraphicsItem):
             if key not in painted_ports:
                 if port_data.get("marker", False) is True:
                     pin = port_data.get("pin", "").split(":")[-1]
-                    if pin in {"3V3", "5V"}:
+                    if pin in {"3V3"}:
                         self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red, rotate)
+                    elif pin in {"5V"}:
+                        self.paint_port(painter, pos_x, pos_y, QColor(250, 100, 100), rotate)
                     else:
                         self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.gray, rotate)
                 elif selected:
