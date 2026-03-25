@@ -263,6 +263,95 @@
       }
     },
     {
+      "name": "RIGHT_POWER",
+      "comment": "power pins",
+      "pins": {
+        "GND_1": {
+          "pin": "GND",
+          "pos": [
+            341,
+            73
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_2": {
+          "pin": "GND",
+          "pos": [
+            341,
+            85
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_3": {
+          "pin": "GND",
+          "pos": [
+            341,
+            97
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_4": {
+          "pin": "GND",
+          "pos": [
+            341,
+            109
+          ],
+          "direction": "none",
+          "marker": true
+        },
+
+        "5V/GND_1": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            121
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_2": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            133
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_3": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            145
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_4": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            157
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_5": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            169
+          ],
+          "direction": "none",
+          "marker": true
+        }
+
+      }
+    },
+    {
       "name": "RIGHT",
       "comment": "right bob adapter",
       "default_module": "china-bob5x",
@@ -409,6 +498,95 @@
           ],
           "direction": "all"
         }
+      }
+    },
+    {
+      "name": "LEFT_POWER",
+      "comment": "power pins",
+      "pins": {
+        "GND_1": {
+          "pin": "GND",
+          "pos": [
+            42,
+            121
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_2": {
+          "pin": "GND",
+          "pos": [
+            42,
+            109
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_3": {
+          "pin": "GND",
+          "pos": [
+            42,
+            97
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_4": {
+          "pin": "GND",
+          "pos": [
+            42,
+            85
+          ],
+          "direction": "none",
+          "marker": true
+        },
+
+        "5V/GND_1": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            73
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_2": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            61
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_3": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            49
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_4": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            37
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_5": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            25
+          ],
+          "direction": "none",
+          "marker": true
+        }
+
       }
     },
     {

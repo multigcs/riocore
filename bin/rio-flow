@@ -521,8 +521,10 @@ class MyNode(QGraphicsItem):
                         self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.red, rotate)
                     elif pin in {"5V"}:
                         self.paint_port(painter, pos_x, pos_y, QColor(250, 100, 100), rotate)
-                    else:
+                    elif pin in {"GND"}:
                         self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.gray, rotate)
+                    else:
+                        self.paint_port(painter, pos_x, pos_y, QColor(150, 100, 200), rotate)
                 elif selected:
                     self.paint_port(painter, pos_x, pos_y, Qt.GlobalColor.blue, rotate)
                 elif port_data.get("type") == "SIGNAL":
