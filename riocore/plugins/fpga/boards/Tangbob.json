@@ -154,13 +154,54 @@
         "wled_expansion"
       ],
       "pins": {
+        "5V": {
+          "pin": "5V",
+          "pos": [
+            39,
+            236
+          ],
+          "marker": true,
+          "direction": "none"
+        },
         "DATA": {
           "pin": "54",
           "direction": "output",
           "pos": [
             39,
-            223
+            225
           ]
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            39,
+            214
+          ],
+          "marker": true,
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "POWER",
+      "pins": {
+        "5V": {
+          "pin": "5V",
+          "pos": [
+            109,
+            314
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            120,
+            314
+          ],
+          "marker": true,
+          "direction": "none"
         }
       }
     },
@@ -205,7 +246,7 @@
           "pin": "56",
           "pos": [
             39,
-            301
+            304
           ],
           "direction": "all"
         },
@@ -213,9 +254,27 @@
           "pin": "55",
           "pos": [
             39,
-            291
+            293
           ],
           "direction": "output"
+        },
+        "5V": {
+          "pin": "5V",
+          "pos": [
+            39,
+            282
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            39,
+            315
+          ],
+          "marker": true,
+          "direction": "none"
         }
       }
     },

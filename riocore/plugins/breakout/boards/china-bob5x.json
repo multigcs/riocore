@@ -172,6 +172,76 @@
       }
     },
     {
+      "name": "POWER",
+      "comment": "",
+      "pins": {
+        "5V_1": {
+          "pin": "5V",
+          "pos": [
+            297,
+            41
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "5V_2": {
+          "pin": "5V",
+          "pos": [
+            297,
+            64
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            297,
+            86
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+
+        "F_GND_1": {
+          "pin": "GND",
+          "pos": [
+            140,
+            14
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "F_GND_2": {
+          "pin": "GND",
+          "pos": [
+            208,
+            14
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "F_24V": {
+          "pin": "24V",
+          "pos": [
+            163,
+            14
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "F_GND_3": {
+          "pin": "GND",
+          "pos": [
+            220,
+            384
+          ],
+          "marker": true,
+          "direction": "none"
+        }
+      }
+    },
+    {
       "name": "PWM",
       "comment": "",
       "default": "pwmout",
@@ -179,7 +249,7 @@
         "analog": {
           "pin": "P1",
           "pos": [
-            163,
+            185,
             14
           ],
           "direction": "output"

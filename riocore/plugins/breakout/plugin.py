@@ -62,6 +62,7 @@ class Plugin(PluginBase):
                     direction = data.get("direction", "all")
                     source_pin = f"SLOT:{source}"
                     pintype = "PASSTHROUGH"
+                    marker = data.get("marker", False)
 
                     if source.split(":")[0] in sub_uids:
                         source_pin = f"{self.instances_name}_{source}"
@@ -74,4 +75,7 @@ class Plugin(PluginBase):
                         "type": [pintype],
                         "optional": True,
                         "pos": data.get("pos"),
+                        "marker": marker,
                     }
+                    if marker is True:
+                        self.PINDEFAULTS[f"{slot_name}:{pin}"]["pin"] = data.get("pin")
