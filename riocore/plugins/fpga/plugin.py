@@ -301,6 +301,7 @@ class Plugin(PluginBase):
         for instance in instances:
             gateware_path = os.path.join(parent.project.config["output_path"], "Gateware", instance.instances_name)
             firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
+            parent.gateware_path = gateware_path
             instance.jdata["flashcmd"] = instance.plugin_setup.get("flashcmd", instance.jdata.get("flashcmd"))
             instance.jdata["name"] = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.jdata["json_path"] = parent.project.config["json_path"]

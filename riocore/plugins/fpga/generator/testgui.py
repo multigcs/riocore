@@ -256,6 +256,8 @@ class WinForm(QWidget):
         elif direction == "input":
             self.widgets[wid] = QLabel("---")
             row_layout.addWidget(self.widgets[wid], stretch=0)
+            unit_label = QLabel(unit)
+            row_layout.addWidget(unit_label, stretch=0)
         else:
             vmin = signal_config.get("userconfig", {}).get("display", {}).get("min", signal_config.get("min", 0))
             vmax = signal_config.get("userconfig", {}).get("display", {}).get("max", signal_config.get("max", 10000))

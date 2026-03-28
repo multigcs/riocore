@@ -18,6 +18,9 @@ TangNano9K - cheap GW1NR-9 Devboard
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | none |
+| 3V3_1 | 3V3 | none |
+| 5V_1 | 5V | none |
 | 63 | 63 | all |
 | 86 | 86 | all |
 | 85 | 85 | all |

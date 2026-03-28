@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (
     QDialogButtonBox,
     QDoubleSpinBox,
     QFileDialog,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
@@ -422,6 +423,72 @@ class edit_text(QLineEdit):
 
     def get(self):
         return self.text()
+
+
+class edit_bits(QWidget):
+    def __init__(self, win, obj, key, bitwidth=8, cb=None, help_text=None, default=None):
+        super().__init__()
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.bitwidth = bitwidth
+        self.no_update = False
+        if help_text:
+            self.setToolTip(help_text)
+
+        if key in obj:
+            self.value = int(obj[key])
+        elif default is not None:
+            self.value = int(default)
+
+        blayout = QHBoxLayout()
+        self.setLayout(blayout)
+        self.bits = {}
+        for bit in reversed(range(self.bitwidth)):
+            vlayout = QVBoxLayout()
+            vwidget = QWidget()
+            vwidget.setLayout(vlayout)
+            bcheck = QCheckBox()
+            bcheck.setStyleSheet(STYLESHEET_CHECKBOX)
+            bcheck.setChecked(self.value & (1 << bit))
+            self.bits[bit] = bcheck
+            vlayout.addWidget(QLabel(f"{bit}"), stretch=0)
+            vlayout.addWidget(bcheck, stretch=0)
+            blayout.addWidget(vwidget, stretch=0)
+            bcheck.stateChanged.connect(self.change)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.value = int(self.obj[self.key])
+        elif self.default is not None:
+            self.value = int(self.default)
+        for bit in reversed(range(self.bitwidth)):
+            self.bits[bit].setChecked(self.value & (1 << bit))
+        self.no_update = False
+
+    def change(self):
+        if self.no_update:
+            return
+        self.value = 0
+        for bit in reversed(range(self.bitwidth)):
+            if self.bits[bit].isChecked():
+                self.value |= 1 << bit
+        if self.value != self.default:
+            self.obj[self.key] = self.value
+        elif self.key in self.obj:
+            del self.obj[self.key]
+        if self.cb:
+            self.cb(self.value)
+        else:
+            self.win.display()
+
+    def get(self):
+        return self.value
 
 
 class edit_multiline(QTextEdit):

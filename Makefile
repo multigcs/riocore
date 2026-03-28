@@ -40,8 +40,6 @@ exifclean:
 	rm -rf riocore/plugins/*/*.png_original
 	exiftool -all= riocore/modules/*/*.png
 	rm -rf riocore/modules/*/*.png_original
-	exiftool -all= riocore/plugins/*/devices/*/*.png
-	rm -rf riocore/plugins/*/devices/*/*.png_original
 	exiftool -all= riocore/plugins/*/boards/*.png
 	rm -rf riocore/plugins/*/boards/*.png_original
 	exiftool -all= riocore/files/images/*.png

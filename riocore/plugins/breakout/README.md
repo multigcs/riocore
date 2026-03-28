@@ -121,6 +121,41 @@
  * direction: output
  * optional: True
 
+### POWER:5V_1:
+
+ * direction: none
+ * optional: True
+
+### POWER:5V_2:
+
+ * direction: none
+ * optional: True
+
+### POWER:GND:
+
+ * direction: none
+ * optional: True
+
+### POWER:F_GND_1:
+
+ * direction: none
+ * optional: True
+
+### POWER:F_GND_2:
+
+ * direction: none
+ * optional: True
+
+### POWER:F_24V:
+
+ * direction: none
+ * optional: True
+
+### POWER:F_GND_3:
+
+ * direction: none
+ * optional: True
+
 ### PWM:analog:
 
  * direction: output
@@ -284,44 +319,65 @@ board type
         "RELAIS:out": {
             "pin": "22"
         },
-        "PWM:analog": {
+        "POWER:5V_1": {
             "pin": "23"
         },
-        "PWM:digital": {
+        "POWER:5V_2": {
             "pin": "24"
         },
-        "B:dir": {
+        "POWER:GND": {
             "pin": "25"
         },
-        "B:step": {
+        "POWER:F_GND_1": {
             "pin": "26"
         },
-        "ALL:en": {
+        "POWER:F_GND_2": {
             "pin": "27"
         },
-        "A:dir": {
+        "POWER:F_24V": {
             "pin": "28"
         },
-        "A:step": {
+        "POWER:F_GND_3": {
             "pin": "29"
         },
-        "Z:dir": {
+        "PWM:analog": {
             "pin": "30"
         },
-        "Z:step": {
+        "PWM:digital": {
             "pin": "31"
         },
-        "Y:dir": {
+        "B:dir": {
             "pin": "32"
         },
-        "Y:step": {
+        "B:step": {
             "pin": "33"
         },
-        "X:dir": {
+        "ALL:en": {
             "pin": "34"
         },
-        "X:step": {
+        "A:dir": {
             "pin": "35"
+        },
+        "A:step": {
+            "pin": "36"
+        },
+        "Z:dir": {
+            "pin": "37"
+        },
+        "Z:step": {
+            "pin": "38"
+        },
+        "Y:dir": {
+            "pin": "39"
+        },
+        "Y:step": {
+            "pin": "40"
+        },
+        "X:dir": {
+            "pin": "41"
+        },
+        "X:step": {
+            "pin": "42"
         }
     }
 }
@@ -533,7 +589,7 @@ board type
                 }
             ]
         },
-        "PWM:analog": {
+        "POWER:5V_1": {
             "pin": "23",
             "modifiers": [
                 {
@@ -541,7 +597,7 @@ board type
                 }
             ]
         },
-        "PWM:digital": {
+        "POWER:5V_2": {
             "pin": "24",
             "modifiers": [
                 {
@@ -549,7 +605,7 @@ board type
                 }
             ]
         },
-        "B:dir": {
+        "POWER:GND": {
             "pin": "25",
             "modifiers": [
                 {
@@ -557,7 +613,7 @@ board type
                 }
             ]
         },
-        "B:step": {
+        "POWER:F_GND_1": {
             "pin": "26",
             "modifiers": [
                 {
@@ -565,7 +621,7 @@ board type
                 }
             ]
         },
-        "ALL:en": {
+        "POWER:F_GND_2": {
             "pin": "27",
             "modifiers": [
                 {
@@ -573,7 +629,7 @@ board type
                 }
             ]
         },
-        "A:dir": {
+        "POWER:F_24V": {
             "pin": "28",
             "modifiers": [
                 {
@@ -581,7 +637,7 @@ board type
                 }
             ]
         },
-        "A:step": {
+        "POWER:F_GND_3": {
             "pin": "29",
             "modifiers": [
                 {
@@ -589,7 +645,7 @@ board type
                 }
             ]
         },
-        "Z:dir": {
+        "PWM:analog": {
             "pin": "30",
             "modifiers": [
                 {
@@ -597,7 +653,7 @@ board type
                 }
             ]
         },
-        "Z:step": {
+        "PWM:digital": {
             "pin": "31",
             "modifiers": [
                 {
@@ -605,7 +661,7 @@ board type
                 }
             ]
         },
-        "Y:dir": {
+        "B:dir": {
             "pin": "32",
             "modifiers": [
                 {
@@ -613,7 +669,7 @@ board type
                 }
             ]
         },
-        "Y:step": {
+        "B:step": {
             "pin": "33",
             "modifiers": [
                 {
@@ -621,7 +677,7 @@ board type
                 }
             ]
         },
-        "X:dir": {
+        "ALL:en": {
             "pin": "34",
             "modifiers": [
                 {
@@ -629,8 +685,64 @@ board type
                 }
             ]
         },
-        "X:step": {
+        "A:dir": {
             "pin": "35",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "A:step": {
+            "pin": "36",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Z:dir": {
+            "pin": "37",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Z:step": {
+            "pin": "38",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Y:dir": {
+            "pin": "39",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "Y:step": {
+            "pin": "40",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "X:dir": {
+            "pin": "41",
+            "modifiers": [
+                {
+                    "type": "invert"
+                }
+            ]
+        },
+        "X:step": {
+            "pin": "42",
             "modifiers": [
                 {
                     "type": "invert"

@@ -103,6 +103,7 @@ class cbase:
                         output.append(f"void convert_{variable_name.lower()}(data_t *data) {{")
                         for signal_name, signal_config in plugin_instance.signals().items():
                             varname = signal_config["varname"]
+                            interface = signal_config.get("interface")
                             var_prefix = signal_config["var_prefix"]
                             boolean = signal_config.get("bool")
                             userconfig = signal_config.get("userconfig", {})
@@ -111,10 +112,11 @@ class cbase:
                             virtual = signal_config.get("virtual")
                             if virtual:
                                 continue
-
                             comp_signals.append(varname)
                             check = varname.split("_")[-1].strip()
-                            if plugin_instance.NAME in {"wled", "riosub"}:
+                            if interface:
+                                check = interface.upper()
+                            elif plugin_instance.NAME in {"wled", "riosub"}:
                                 check = varname.split("_")[-2].strip() + "_" + varname.split("_")[-1].strip()
                             elif plugin_instance.NAME in {"i2cbus"}:
                                 check = "_".join(varname.split("_")[-3:])
@@ -316,10 +318,15 @@ class cbase:
                             for data_name, data_config in plugin_instance.interface_data().items():
                                 variable_name = data_config["variable"]
                                 variable_size = data_config["size"]
+                                interface = signal_config.get("interface")
                                 var_prefix = signal_config["var_prefix"]
                                 varname = signal_config["varname"]
                                 check1 = "_".join(variable_name.split("_")[1:]).replace(plugin_instance.instances_name.upper(), var_prefix)
-                                if varname.endswith(("_SHORT", "_LONG1S", "_LONG3S")):
+                                if interface:
+                                    clen = len(interface.split("_"))
+                                    check1 = "_".join(check1.split("_")[-clen:])
+                                    check2 = interface.upper()
+                                elif varname.endswith(("_SHORT", "_LONG1S", "_LONG3S")):
                                     check2 = "_".join(varname.split("_")[1:-1])
                                 else:
                                     check2 = "_".join(varname.split("_")[1:])

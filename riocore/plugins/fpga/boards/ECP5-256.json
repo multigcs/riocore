@@ -19,6 +19,97 @@
         "pin": "K16"
     },
     "slots": [
+
+        {
+            "name": "JTAG",
+            "comment": "JTAG-Port",
+            "pins": {
+                "TCK": {
+                    "pin": "TCK",
+                    "pos": [
+                        321,
+                        61
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "TMS": {
+                    "pin": "TMS",
+                    "pos": [
+                        321,
+                        72
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "TDI": {
+                    "pin": "TDI",
+                    "pos": [
+                        321,
+                        83
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "TDO": {
+                    "pin": "TDO",
+                    "pos": [
+                        321,
+                        94
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "RST": {
+                    "pin": "RST",
+                    "pos": [
+                        321,
+                        105
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+
+
+
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        332,
+                        61
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        332,
+                        72
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "3V3": {
+                    "pin": "3V3",
+                    "pos": [
+                        332,
+                        83
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "pos": [
+                        332,
+                        105
+                    ],
+                    "direction": "all",
+                    "marker": true
+                }
+            }
+        },
         {
             "name": "UART",
             "comment": "USB",
@@ -119,6 +210,89 @@
             "name": "P1",
             "comment": "",
             "pins": {
+                "3V3_1": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+                "3V3_3": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_4": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_4": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+
                 "P5": {
                     "pin": "R1",
                     "pos": [
@@ -323,6 +497,88 @@
             "name": "P2",
             "comment": "",
             "pins": {
+                "3V3_1": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+                "3V3_3": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_4": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_4": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
                 "P26": {
                     "pin": "T14",
                     "pos": [

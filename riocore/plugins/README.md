@@ -60,7 +60,6 @@
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
 |  | [hx710](hx710/README.md) | 24bit adc | <img src="hx710/image.png" height="48"> |  |
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |  |
-|  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |  |
 |  | [icewerxadc](icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="icewerxadc/image.png" height="48"> |  |
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
@@ -108,7 +107,6 @@
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
 |  | [hx710](hx710/README.md) | 24bit adc | <img src="hx710/image.png" height="48"> |  |
 |  | [hx711](hx711/README.md) | digital weight sensor | <img src="hx711/image.png" height="48"> |  |
-|  | [i2cbus](i2cbus/README.md) | I2C-Bus | <img src="i2cbus/image.png" height="48"> |  |
 |  | [icewerxadc](icewerxadc/README.md) | 4-channel adc of the iceWerx-board | <img src="icewerxadc/image.png" height="48"> |  |
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
@@ -150,6 +148,8 @@
 |  | [fpga](fpga/README.md) | Spartan6 - only for testing the toolchain |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> |  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> |  |
+|  | [i2c](i2c/README.md) | i2c plugin | <img src="i2c/image.png" height="48"> |  |
+|  | [i2c_device](i2c_device/README.md) | i2c device |  |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
@@ -165,6 +165,8 @@
 |  | [fpga](fpga/README.md) | Spartan6 - only for testing the toolchain |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> |  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> |  |
+|  | [i2c](i2c/README.md) | i2c plugin | <img src="i2c/image.png" height="48"> |  |
+|  | [i2c_device](i2c_device/README.md) | i2c device |  |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |

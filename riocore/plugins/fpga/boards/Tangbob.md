@@ -38,7 +38,17 @@ USB-UART
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| 5V | 5V | none |
 | DATA | 54 | output |
+| GND | GND | none |
+
+### POWER
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V | 5V | none |
+| GND | GND | none |
 
 ### MODBUS
 
@@ -56,6 +66,8 @@ USB-UART
 | --- | --- | --- |
 | sda | 56 | all |
 | scl | 55 | output |
+| 5V | 5V | none |
+| GND | GND | none |
 
 ### SPI
 spi port of the w5500 header
@@ -66,6 +78,21 @@ spi port of the w5500 header
 | SCLK | 31 | all |
 | SEL | 49 | all |
 | MISO | 48 | all |
+
+### RIGHT_POWER
+power pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| GND_1 | GND | none |
+| GND_2 | GND | none |
+| GND_3 | GND | none |
+| GND_4 | GND | none |
+| 5V/GND_1 | 5V/GND | none |
+| 5V/GND_2 | 5V/GND | none |
+| 5V/GND_3 | 5V/GND | none |
+| 5V/GND_4 | 5V/GND | none |
+| 5V/GND_5 | 5V/GND | none |
 
 ### RIGHT
 right bob adapter
@@ -89,6 +116,21 @@ right bob adapter
 | P15 | 84 | all |
 | P16 | 82 | all |
 | P17 | 80 | all |
+
+### LEFT_POWER
+power pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| GND_1 | GND | none |
+| GND_2 | GND | none |
+| GND_3 | GND | none |
+| GND_4 | GND | none |
+| 5V/GND_1 | 5V/GND | none |
+| 5V/GND_2 | 5V/GND | none |
+| 5V/GND_3 | 5V/GND | none |
+| 5V/GND_4 | 5V/GND | none |
+| 5V/GND_5 | 5V/GND | none |
 
 ### LEFT
 left  bob adapter

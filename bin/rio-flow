@@ -58,6 +58,7 @@ from riocore.gui.modifiers import GuiModifiers
 from riocore.gui.plugins import GuiPlugins
 from riocore.gui.widgets import (
     edit_avgfilter,
+    edit_bits,
     edit_bool,
     edit_combobox,
     edit_file,
@@ -2326,7 +2327,10 @@ class Window(QMainWindow):
         for plugin_id, plugin_config in enumerate(self.config.get("plugins", [])):
             uid = plugin_config.get("uid")
             if not uid:
-                uid_prefix = plugin_config["type"]
+                if node_type := plugin_config.get("node_type"):
+                    uid_prefix = node_type
+                else:
+                    uid_prefix = plugin_config["type"]
                 unum = 0
                 while f"{uid_prefix}{unum}" in self.plugin_uids:
                     unum += 1
@@ -2835,6 +2839,8 @@ class Window(QMainWindow):
             return edit_float(self, obj, key, vmin=var_setup.get("min"), vmax=var_setup.get("max"), cb=cb, help_text=help_text, default=var_setup.get("default"), decimals=var_setup.get("decimals"), need_enter=need_enter)
         if var_setup["type"] is bool:
             return edit_bool(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        if var_setup["type"] == "bits":
+            return edit_bits(self, obj, key, cb=cb, bitwidth=var_setup.get("width", 8), help_text=help_text, default=var_setup.get("default"))
         if var_setup["type"] == "file":
             return edit_file(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
         if var_setup["type"] == "avgfilter":

@@ -201,6 +201,7 @@ class LinuxCNC:
         "button": "btn",
         "jogwheel": "jw",
         "quadencoder": "qenc",
+        "i2c_device": "idev",
     }
 
     def __init__(self, project):
