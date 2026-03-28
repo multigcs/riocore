@@ -2331,6 +2331,7 @@ class Window(QMainWindow):
                     uid_prefix = node_type
                 else:
                     uid_prefix = plugin_config["type"]
+                uid_prefix = uid_prefix.replace("-", "").replace(" ", "").replace("_", "")
                 unum = 0
                 while f"{uid_prefix}{unum}" in self.plugin_uids:
                     unum += 1

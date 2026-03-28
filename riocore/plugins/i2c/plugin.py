@@ -24,17 +24,6 @@ class Plugin(PluginBase):
         self.PROVIDES = ["i2c"]
         self.NEEDS = ["fpga"]
         self.OPTIONS = {}
-        self.OPTIONS.update(
-            {
-                "multiplexer": {
-                    "default": "",
-                    "type": "select",
-                    "options": ["", "0x70", "0x71", "0x72", "0x73", "0x74", "0x75", "0x76", "0x77"],
-                    "description": "Sub-Bus multiplexer address (pca9548)",
-                },
-            }
-        )
-        self.multiplexer = self.plugin_setup.get("multiplexer", self.OPTIONS["multiplexer"]["default"])
         self.INTERFACE = {}
         self.PINDEFAULTS = {
             "sda": {
@@ -56,12 +45,19 @@ class Plugin(PluginBase):
     @classmethod
     def update_prefixes(cls, parent, instances):
         for instance in instances:
+            instance.multiplexer = None
             instance.device_instances = []
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 plugin_instance = connected_pin["instance"]
-                instance.device_instances.append(plugin_instance)
                 plugin_instance.master = instance.master
                 plugin_instance.PREFIX = f"{instance.master}.{plugin_instance.instances_name}"
+                if plugin_instance.options.get("multiplexer") is True:
+                    dev_address = plugin_instance.plugin_setup.get("address", plugin_instance.option_default("address"))
+                    if instance.multiplexer is not None:
+                        print(f"ERROR: {instance.instances_name}: only one multiplexer is allowed per bus")
+                    instance.multiplexer = dev_address
+                    continue
+                instance.device_instances.append(plugin_instance)
 
             verilog_data = []
             verilog_data = []
@@ -111,10 +107,12 @@ class Plugin(PluginBase):
                 dev_speed = plugin_instance.plugin_setup.get("speed", plugin_instance.option_default("speed"))
                 dev_divider = instance.system_setup.get("speed", 100000000) // dev_speed // 6
                 dev_divider_max = max(dev_divider_max, dev_divider)
-                subbus = setup.get("subbus", "none")
                 vaddr = dev_address.replace("0x", "7'h")
                 devname = f"DEVICE_{name.replace(' ', '').upper()}"
-                if subbus != "none":
+                subbus = None
+                if hasattr(plugin_instance, "busid"):
+                    subbus = plugin_instance.busid
+                if subbus is not None:
                     verilog_data.append(f"    // device {name} on sub-bus: {subbus} ({dev_speed}Hz)")
                 else:
                     verilog_data.append(f"    // device {name} ({dev_speed}Hz)")
@@ -214,7 +212,6 @@ class Plugin(PluginBase):
                 devname = f"DEVICE_{name.replace(' ', '').upper()}"
                 lname = name.replace(" ", "").lower()
                 setup["name"] = name
-                subbus = setup.get("subbus", "none")
                 needs_timeout = False
                 needs_delay = False
                 for data in device_instance.INITS + device_instance.STEPS:
@@ -239,14 +236,15 @@ class Plugin(PluginBase):
                 else:
                     next_if = ""
 
+                subbus = None
+                if hasattr(device_instance, "busid"):
+                    subbus = device_instance.busid
                 if instance.multiplexer:
-                    if subbus != "none" and int(subbus) > 7:
-                        print(f"ERROR: i2cbus: subbus {subbus} not in range: 0-7")
-                    if subbus == "none":
-                        subbus_bits = 0
-                    else:
+                    if subbus is not None:
                         subbus_bits = 1 << int(subbus)
-                elif subbus != "none":
+                    else:
+                        subbus_bits = 0
+                elif subbus is not None:
                     print("ERROR: i2cbus: no multiplxer configured for subbus")
 
                 if instance.multiplexer:

@@ -317,6 +317,24 @@ class Project:
         self.load_config(configuration, output_path)
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
 
+        def bus_trace(target_pin, tracelist):
+            tracelist.append(target_pin)
+            busid = None
+            for plugin_instance in self.plugin_instances:
+                for pin_name, pin_data in plugin_instance.PINDEFAULTS.items():
+                    if target_pin == f"{plugin_instance.instances_name}:{pin_name}":
+                        if source := pin_data.get("source"):
+                            busid = bus_trace(plugin_instance.plugin_setup.get("pins", {}).get(source, {}).get("pin"), tracelist) or pin_data.get("busid") or busid
+            return busid
+
+        for plugin_instance in self.plugin_instances:
+            for pin_name, pin_data in plugin_instance.plugin_setup.get("pins", {}).items():
+                if plugin_instance.PINDEFAULTS.get(pin_name, {}).get("bus") is True:
+                    tracelist = []
+                    busid = bus_trace(pin_data.get("pin"), tracelist)
+                    plugin_instance.tracelist = tracelist
+                    plugin_instance.busid = busid
+
         for plugin_instance in self.plugin_instances:
             if hasattr(plugin_instance, "update_system_setup"):
                 plugin_instance.update_system_setup(self)
@@ -381,6 +399,9 @@ class Project:
                         pin_data["pin"] = self.pin_mapping[pin_data["pin"]]
 
         self.generator_linuxcnc = LinuxCNC(self)
+
+        #        for plugin in self.config["plugins"]:
+        #            print(plugin["uid"], plugin.get("busid"))
 
         # check names
         varnames = {}

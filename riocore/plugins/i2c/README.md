@@ -33,12 +33,6 @@ name of this plugin instance
  * type: str
  * default: 
 
-### multiplexer:
-Sub-Bus multiplexer address (pca9548)
-
- * type: select
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -71,7 +65,6 @@ Sub-Bus multiplexer address (pca9548)
 {
     "type": "i2c",
     "name": "",
-    "multiplexer": "",
     "pins": {
         "sda": {
             "pin": "0",
