@@ -196,9 +196,8 @@ class Plugins:
             output.append(f"* PROVIDES: {', '.join(plugin.PROVIDES)}")
         output.append("")
 
-
         if "node_type" in plugin.OPTIONS:
-            output.append(f"## Node-Types")
+            output.append("## Node-Types")
             output.append("| Name | Image |")
             output.append("| --- | --- |")
             for node_type in plugin.OPTIONS["node_type"]["options"]:
@@ -509,15 +508,6 @@ class Project:
         project["plugins"] = copy.deepcopy(project["jdata"].get("plugins", []))
 
         self.pin_mapping = {}
-
-        # loading modules
-        project["modules"] = {}
-        modules_path = self.get_path("modules")
-        for path in sorted(glob.glob(os.path.join(modules_path, "*", "module.json"))):
-            module = path.split(os.sep)[-2]
-            mdata = open(path).read()
-            project["modules"][module] = json.loads(mdata)
-
         self.config = project
         self.config["pin_mapping"] = self.pin_mapping
         self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])

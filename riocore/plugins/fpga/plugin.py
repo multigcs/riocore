@@ -36,7 +36,7 @@ class Plugin(PluginBase):
 
         self.OPTIONS = {
             "node_type": {
-                "default": board_list[0],
+                "default": "",
                 "type": "select",
                 "options": sorted(board_list),
                 "description": "board type",
@@ -49,6 +49,8 @@ class Plugin(PluginBase):
             },
         }
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        if node_type == "":
+            return
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
         self.jdata = json.loads(open(board_file).read())
         self.PROVIDES += self.jdata.get("provides", [])
