@@ -12,10 +12,8 @@ https://eu.robotshop.com/de/products/devantech-icewerx-ice40-hx8k-fpga
 
 should work also with the iceFUN board
 
-Keywords: analog adc voltage ampere
-
-## Limitations
-* boards: iceWerx-iCE40-HX8K, OctoBot
+* Keywords: analog adc voltage ampere
+* NEEDS: fpga, icewerx
 
 ## Pins:
 *FPGA-pins*
@@ -94,96 +92,6 @@ name of this plugin instance
  * direction: input
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "icewerxadc",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "icewerxadc",
-    "name": "",
-    "pins": {
-        "tx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "rx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc4": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc4",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [icewerxadc.v](icewerxadc.v)

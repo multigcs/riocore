@@ -6,7 +6,8 @@
 
 3 phases hallsensor
 
-Keywords: feedback encoder rotary bldc brushless
+* Keywords: feedback encoder rotary bldc brushless
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -90,112 +91,6 @@ calculates revolutions per minute
  * size: 16 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "hallsensor",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        },
-        "c": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "hallsensor",
-    "name": "",
-    "poles": 7,
-    "rps_sum": 10,
-    "pins": {
-        "a": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "b": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "c": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "angle": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "angle",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rps": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rps",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rpm": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rpm",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [hallsensor.v](hallsensor.v)

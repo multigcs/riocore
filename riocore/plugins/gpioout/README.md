@@ -4,7 +4,8 @@
 
 **gpio output**
 
-Keywords: output
+* Keywords: output
+* NEEDS: gpio
 
 ## Pins:
 *FPGA-pins*
@@ -43,45 +44,3 @@ hardware type
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "gpioout",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "gpioout",
-    "name": "",
-    "image": "generic",
-    "pins": {
-        "bit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "bit": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```

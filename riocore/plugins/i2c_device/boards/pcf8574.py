@@ -42,9 +42,9 @@ class i2c_device:
         self.outputs = setup.get("outputs", self.options["config"]["outputs"]["default"])
         self.INTERFACE = {}
         self.SIGNALS = {}
+        setup_data_in = []
+        setup_value = ""
         if self.bitvar:
-            setup["data_in"] = []
-
             # write single bits into data_out byte
             bitlist = []
             for bit in range(8):
@@ -53,12 +53,12 @@ class i2c_device:
                 else:
                     bitlist.append("1'd1")
 
-            setup["value"] = f"{{{', '.join(reversed(bitlist))}}}"
+            setup_value = f"{{{', '.join(reversed(bitlist))}}}"
 
             # write data_in into single bits
             for bit in range(8):
                 if (1 << bit) & self.inputs:
-                    setup["data_in"].append(f"                                {self.name}_in{bit} <= data_in[{bit}];")
+                    setup_data_in.append(f"                                {self.name}_in{bit} <= data_in[{bit}];")
 
             for bit in range(8):
                 if (1 << bit) & self.inputs:
@@ -124,7 +124,6 @@ class i2c_device:
             "IO:P1": {"direction": "all", "edge": "source", "pos": [119, 7], "type": ["GPIO"]},
             "IO:P0": {"direction": "all", "edge": "source", "pos": [130, 7], "type": ["GPIO"]},
         }
-
         self.PARAMS = {}
         self.INITS = []
         self.STEPS = [
@@ -132,14 +131,15 @@ class i2c_device:
                 "mode": "write",
                 "var": f"{self.name}_out",
                 "bytes": 1,
+                "value": setup_value,
             },
         ]
-
         if self.inputs:
             self.STEPS.append(
                 {
                     "mode": "read",
                     "var": f"{self.name}_in",
                     "bytes": 1,
+                    "data_in": setup_data_in,
                 }
             )

@@ -6,7 +6,8 @@
 
 usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE
 
-Keywords: feedback encoder rotary linear glassscale  index
+* Keywords: feedback encoder rotary linear glassscale  index
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -116,129 +117,6 @@ calculates revolutions per minute
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "quadencoderz",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        },
-        "z": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "quadencoderz",
-    "name": "",
-    "image": "generic",
-    "quad_type": 2,
-    "rps_sum": 10,
-    "pins": {
-        "a": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "b": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "z": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "indexenable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "indexenable",
-                "section": "status",
-                "type": "meter"
-            }
-        },
-        "indexout": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "indexout",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "cntreset": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "cntreset",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rps": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rps",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rpm": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rpm",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [quadencoderz.v](quadencoderz.v)

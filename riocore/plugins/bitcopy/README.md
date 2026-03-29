@@ -11,7 +11,8 @@ Usage-Examples:
 * or delayed signals for generating sequences (modifier: debounce with hight delay)
 * make short signals visible (modifier: oneshot -> LED)
 
-Keywords: pin bit copy
+* Keywords: pin bit copy
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -42,35 +43,3 @@ Origin Bit/Pin
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "bitcopy",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "bitcopy",
-    "name": "",
-    "origin": "ERROR",
-    "pins": {
-        "bit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```

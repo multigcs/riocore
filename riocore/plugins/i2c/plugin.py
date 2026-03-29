@@ -10,11 +10,11 @@ class Plugin(PluginBase):
 
     def setup(self):
         self.NAME = "i2c"
-        self.INFO = "i2c plugin"
-        self.DESCRIPTION = "to read and write values (analog/digital) via modbus, also supports hy_vfd spindles"
-        self.KEYWORDS = "modbus rtu vfd spindle expansion analog digital"
-        self.URL = "https://www.modbustools.com/modbus.html#function16"
-        self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
+        self.INFO = "i2c bus master"
+        self.DESCRIPTION = "for sensors and io-expansion"
+        self.KEYWORDS = "expansion analog digital"
+        self.URL = ""
+        self.ORIGIN = ""
         self.TYPE = "base"
         self.VERILOGS = ["i2c_master.v"]
         self.IMAGE = ""
@@ -38,7 +38,6 @@ class Plugin(PluginBase):
             },
             "BUS:IO": {"direction": "output", "edge": "source", "bus": True, "type": ["I2C"]},
         }
-
         self.MAX_BITS = 16
         self.MAX_DIN = 48
 
@@ -70,7 +69,6 @@ class Plugin(PluginBase):
                 for iname, iface in device_instance.INTERFACE.items():
                     direction = iface["direction"]
                     size = iface["size"]
-
                     if direction == "input":
                         if size == 1:
                             verilog_data.append(f"        output reg {iname} = 0,")
@@ -339,7 +337,6 @@ class Plugin(PluginBase):
     def add_steps(self, plugin_instance, steps):
         verilog_data = []
         name = plugin_instance.instances_name
-        setup = plugin_instance.plugin_setup
         lname = name.replace(" ", "").lower()
         dev_valid = None
         for iname, iface in plugin_instance.INTERFACE.items():
@@ -356,11 +353,9 @@ class Plugin(PluginBase):
             stype = data["mode"]
             nbytes = data.get("bytes", 1)
             size = nbytes * 8
-            data_out = setup.get("data_out")
-            data_in = setup.get("data_in")
-            data_in = data.get("data_in", data_in)
-            value = setup.get("value")
-            value = data.get("value", value)
+            data_out = data.get("data_out")
+            data_in = data.get("data_in")
+            value = data.get("value")
             values = data.get("values")
             stop = data.get("stop", True)
             var_set = data.get("var_set")

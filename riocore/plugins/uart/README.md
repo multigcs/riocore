@@ -6,7 +6,8 @@
 
 simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
 
-Keywords: serial uart interface
+* Keywords: serial uart interface
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -69,6 +70,7 @@ frame size
 
  * type: select
  * default: full
+ * options: full, no_timestamp, no_header, minimum
 
 ### debug:
 always response
@@ -84,76 +86,6 @@ always response
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "uart",
-    "pins": {
-        "rx": {
-            "pin": "0"
-        },
-        "tx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        },
-        "SAT": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "uart",
-    "name": "",
-    "baud": 1000000,
-    "uart": "/dev/ttyUSB0",
-    "csum": true,
-    "async": false,
-    "frame": "full",
-    "debug": false,
-    "pins": {
-        "rx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "tx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "SAT": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [uart.v](uart.v)

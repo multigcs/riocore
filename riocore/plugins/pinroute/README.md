@@ -4,6 +4,8 @@
 
 **routing one output pin to multiple inputs**
 
+* NEEDS: fpga
+
 ## Pins:
 *FPGA-pins*
 ### outA:
@@ -63,76 +65,3 @@ input selector
  * direction: output
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "pinroute",
-    "pins": {
-        "outA": {
-            "pin": "0"
-        },
-        "inA0": {
-            "pin": "1"
-        },
-        "inA1": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "pinroute",
-    "name": "",
-    "inputs": 2,
-    "channels": 1,
-    "pins": {
-        "outA": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "inA0": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "inA1": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "input": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "input",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```

@@ -6,9 +6,10 @@
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
-Keywords: modbus rtu vfd spindle expansion analog digital
-
-URL: https://www.modbustools.com/modbus.html#function16
+* Keywords: modbus rtu vfd spindle expansion analog digital
+* URL: https://www.modbustools.com/modbus.html#function16
+* NEEDS: fpga
+* PROVIDES: modbus
 
 ## Pins:
 *FPGA-pins*
@@ -81,73 +82,6 @@ max tx buffer size
  * size: 128 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "mbus",
-    "pins": {
-        "rx": {
-            "pin": "0"
-        },
-        "tx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        },
-        "BUS:IO": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "mbus",
-    "name": "",
-    "baud": 9600,
-    "rx_buffersize": 128,
-    "tx_buffersize": 128,
-    "pins": {
-        "rx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "tx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "BUS:IO": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [mbus.v](mbus.v)

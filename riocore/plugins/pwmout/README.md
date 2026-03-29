@@ -8,7 +8,8 @@ to control AC/DC-Motors or for analog outputs
 
  PWM-Resolution: >= 11bit at 10000Hz and 24Mhz FPGA-Clock
 
-Keywords: joint dcservo acservo 10v 5v dac analog
+* Keywords: joint dcservo acservo 10v 5v dac analog
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -46,6 +47,7 @@ axis name (X,Y,Z,...)
 
  * type: select
  * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
 
 ### image:
 hardware type
@@ -68,6 +70,7 @@ bit-width on the interface frequency
  * type: select
  * default: 32
  * unit: bits
+ * options: 32, 24, 16
 
 
 ## Signals:
@@ -98,85 +101,6 @@ bit-width on the interface frequency
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "pwmout",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
-        },
-        "en": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "pwmout",
-    "name": "",
-    "is_joint": false,
-    "axis": "",
-    "image": "generic",
-    "frequency": 10000,
-    "bitwidth": "32",
-    "pins": {
-        "pwm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "dir": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "en": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "dty": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "dty",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [pwmout.v](pwmout.v)

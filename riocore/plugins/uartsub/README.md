@@ -6,7 +6,8 @@
 
 simple uartsub interface, not usable for realtime stuff in LinuxCNC / only for testing
 
-Keywords: serial uartsub interface
+* Keywords: serial uartsub interface
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -61,81 +62,6 @@ timeout in ms
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "uartsub",
-    "pins": {
-        "rx": {
-            "pin": "0"
-        },
-        "tx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        },
-        "SAT:OUT": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "uartsub",
-    "name": "",
-    "timeout": 100,
-    "pins": {
-        "rx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "tx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "SAT:OUT": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "timeout": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "timeout",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [uartsub.v](uartsub.v)

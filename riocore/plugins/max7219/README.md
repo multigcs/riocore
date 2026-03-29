@@ -6,7 +6,8 @@
 
 to display values on 7segment display's (needs 5V power)
 
-Keywords: info display
+* Keywords: info display
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -74,74 +75,6 @@ number of displays / values
  * direction: output
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "max7219",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "max7219",
-    "name": "",
-    "brightness": 15,
-    "frequency": 1000000,
-    "displays": 1,
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value0",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [max7219.v](max7219.v)

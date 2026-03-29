@@ -6,7 +6,8 @@
 
 This component connects the Huanyang VFD to the LinuxCNC HAL via a serial (RS-485) connection.
 
-Keywords: jog usb
+* Keywords: jog usb
+* NEEDS: 
 
 ## Pins:
 *FPGA-pins*
@@ -41,6 +42,7 @@ name of this plugin instance
 
  * type: select
  * default: even
+ * options: even, odd, none
 
 
 ## Signals:
@@ -50,25 +52,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "hy_vfd",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "hy_vfd",
-    "name": "",
-    "spindle": 0,
-    "device": "/dev/ttyUSB0",
-    "baud": "9600",
-    "parity": "even",
-    "pins": {},
-    "signals": {}
-}
-```

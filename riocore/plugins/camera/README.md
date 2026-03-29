@@ -4,7 +4,7 @@
 
 **gui component to display an camera image**
 
-Keywords: jog gui robot
+* Keywords: jog gui robot
 
 ## Pins:
 *FPGA-pins*
@@ -31,22 +31,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "camera",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "camera",
-    "name": "",
-    "device": "/dev/video0",
-    "pins": {},
-    "signals": {}
-}
-```

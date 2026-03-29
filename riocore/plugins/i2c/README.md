@@ -2,13 +2,13 @@
 
 <img align="right" width="320" src="image.png">
 
-**i2c plugin**
+**i2c bus master**
 
-to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
+for sensors and io-expansion
 
-Keywords: modbus rtu vfd spindle expansion analog digital
-
-URL: https://www.modbustools.com/modbus.html#function16
+* Keywords: expansion analog digital
+* NEEDS: fpga
+* PROVIDES: i2c
 
 ## Pins:
 *FPGA-pins*
@@ -41,59 +41,6 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "i2c",
-    "pins": {
-        "sda": {
-            "pin": "0"
-        },
-        "scl": {
-            "pin": "1"
-        },
-        "BUS:IO": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "i2c",
-    "name": "",
-    "pins": {
-        "sda": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "scl": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "BUS:IO": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [i2c_master.v](i2c_master.v)

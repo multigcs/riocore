@@ -6,7 +6,9 @@
 
 for direct connections via SPI
 
-Keywords: interface spi raspberry rpi
+* Keywords: interface spi raspberry rpi
+* NEEDS: fpga
+* PROVIDES: spi, interface
 
 ## Pins:
 *FPGA-pins*
@@ -40,6 +42,7 @@ SPI-Type
 
  * type: select
  * default: rpi4
+ * options: rpi4, rpi5, generic
 
 ### cs:
 Chip-Select pin on the Host-Side CS0/CS1
@@ -54,6 +57,7 @@ frame size
 
  * type: select
  * default: full
+ * options: full, no_timestamp, no_header, minimum
 
 
 ## Signals:
@@ -63,79 +67,6 @@ frame size
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "spi",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "miso": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "sel": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "spi",
-    "name": "",
-    "spitype": "rpi4",
-    "cs": 0,
-    "frame": "full",
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "miso": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [spi.v](spi.v)

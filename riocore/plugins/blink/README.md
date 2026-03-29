@@ -6,7 +6,8 @@
 
 outputs a fixed frequency / was used to indicate that the FPGA is runing / no control signals
 
-Keywords: led blinking
+* Keywords: led blinking
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -44,39 +45,6 @@ blink frequency in Hz
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "blink",
-    "pins": {
-        "led": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "blink",
-    "name": "",
-    "image": "generic",
-    "frequency": 1.0,
-    "pins": {
-        "led": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [blink.v](blink.v)

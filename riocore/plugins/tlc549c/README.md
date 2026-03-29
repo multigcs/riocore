@@ -6,7 +6,8 @@
 
 Analog input via tlc549 ADC
 
-Keywords: analog adc
+* Keywords: analog adc
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -49,71 +50,6 @@ measured voltage
  * size: 8 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "tlc549c",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "tlc549c",
-    "name": "",
-    "pins": {
-        "miso": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [tlc549c.v](tlc549c.v)

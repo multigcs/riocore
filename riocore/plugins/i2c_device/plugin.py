@@ -55,7 +55,6 @@ class Plugin(PluginBase):
                 self.INITS = board_instance.INITS
                 self.STEPS = board_instance.STEPS
                 self.options = board_instance.options
-
                 if hasattr(board_instance, "convert_c"):
                     self.convert_c = board_instance.convert_c
                 for signal_name, signal_data in self.SIGNALS.items():

@@ -6,7 +6,7 @@
 
 halinput joypad support
 
-Keywords: jog joypad usb
+* Keywords: jog joypad usb
 
 ## Pins:
 *FPGA-pins*
@@ -120,37 +120,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "halinput",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "halinput",
-    "name": "",
-    "joypad_name": "Joystick",
-    "slow": "btn-top2",
-    "medium": "btn-base",
-    "fast": "btn-pinkie",
-    "x": "abs-x",
-    "x_scale": 127.5,
-    "y": "abs-y",
-    "y_scale": -127.5,
-    "z": "abs-rz",
-    "z_scale": -127.5,
-    "a": "",
-    "a_scale": 127.5,
-    "b": "",
-    "b_scale": 127.5,
-    "c": "",
-    "c_scale": 127.5,
-    "pins": {},
-    "signals": {}
-}
-```

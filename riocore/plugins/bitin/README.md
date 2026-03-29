@@ -6,7 +6,8 @@
 
 to read switches or other 1bit signals
 
-Keywords: switch limit estop keyboard
+* Keywords: switch limit estop keyboard
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -45,45 +46,3 @@ hardware type
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "bitin",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "bitin",
-    "name": "",
-    "image": "generic",
-    "pins": {
-        "bit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "bit": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```

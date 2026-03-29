@@ -6,7 +6,8 @@
 
 that was just a gimmick, not really useful
 
-Keywords: remote control keyboard
+* Keywords: remote control keyboard
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -39,49 +40,6 @@ name of this plugin instance
  * size: 8 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "irin",
-    "pins": {
-        "ir": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "irin",
-    "name": "",
-    "pins": {
-        "ir": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "code": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "code",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [irin.v](irin.v)

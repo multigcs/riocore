@@ -15,7 +15,6 @@ for cpath in sorted(glob.glob(os.path.join("riocore", "configs", "*", "config.js
     cjdata = open(cpath).read()
     cdata = json.loads(cjdata)
 
-
 print("# FPGA-Boards")
 output = []
 output.append("# BOARDS")
@@ -73,7 +72,6 @@ for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards
 
     mdfile = bpath.replace(".json", ".md")
     open(mdfile, "w").write("\n".join(boutput))
-
 
 output.append("")
 open("riocore/plugins/fpga/BOARDS.md", "w").write("\n".join(output))

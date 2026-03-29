@@ -6,7 +6,8 @@
 
 reads binary values
 
-Keywords: binary bin2dec
+* Keywords: binary bin2dec
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -60,89 +61,3 @@ number of inputs
  * size: 8 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "binin",
-    "pins": {
-        "bin0": {
-            "pin": "0"
-        },
-        "bin1": {
-            "pin": "1"
-        },
-        "bin2": {
-            "pin": "2"
-        },
-        "bin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "binin",
-    "name": "",
-    "bits": 4,
-    "pins": {
-        "bin0": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "bin1": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin2": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin3": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```

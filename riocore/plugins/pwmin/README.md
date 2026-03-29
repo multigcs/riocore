@@ -6,7 +6,8 @@
 
 measuring pulse len
 
-Keywords: pulse digital
+* Keywords: pulse digital
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -59,59 +60,6 @@ minimum measured frequency (for faster updates)
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "pwmin",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "pwmin",
-    "name": "",
-    "freq_min": 10,
-    "pins": {
-        "pwm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "width": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "width",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "valid": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "valid",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [pwmin.v](pwmin.v)

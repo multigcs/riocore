@@ -6,7 +6,9 @@
 
 to read and write values (analog/digital) via modbus, also supports hy_vfd spindles
 
-Keywords: modbus vfd spindle expansion analog digital
+* Keywords: modbus vfd spindle expansion analog digital
+* NEEDS: fpga
+* PROVIDES: modbus
 
 ## Pins:
 *FPGA-pins*
@@ -81,77 +83,6 @@ max tx buffer size
  * size: 128 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "modbus",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "modbus",
-    "name": "",
-    "baud": 9600,
-    "rx_buffersize": 128,
-    "tx_buffersize": 128,
-    "pins": {
-        "tx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "rx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "temperature": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "temperature",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [modbus.v](modbus.v)

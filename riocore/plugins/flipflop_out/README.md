@@ -6,7 +6,8 @@
 
 set and reset an output pin
 
-Keywords: sr-flipflop
+* Keywords: sr-flipflop
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -56,61 +57,6 @@ default value after startup
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "flipflop_out",
-    "pins": {
-        "outbit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "flipflop_out",
-    "name": "",
-    "default": 0,
-    "pins": {
-        "outbit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "setbit": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "setbit",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "reset": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "reset",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [flipflop_out.v](flipflop_out.v)

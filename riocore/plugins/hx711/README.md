@@ -6,7 +6,8 @@
 
 to measure weight's
 
-Keywords: adc analog weight
+* Keywords: adc analog weight
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -44,6 +45,7 @@ sensor mode
 
  * type: select
  * default: CHA_128
+ * options: CHA_128, CHB_32, CHB_64
 
 
 ## Signals:
@@ -73,83 +75,6 @@ sensor mode
  * direction: input
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "hx711",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "hx711",
-    "name": "",
-    "zero": 0,
-    "scale": 1.0,
-    "mode": "CHA_128",
-    "pins": {
-        "miso": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "weight": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "weight",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "tare": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "tare",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "toffset": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "toffset",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [hx711.v](hx711.v)

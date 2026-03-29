@@ -6,9 +6,9 @@
 
 Analog-Output via spi dac
 
-Keywords: analog dac
-
-URL: https://www.ti.com/lit/ds/symlink/tlc5615.pdf?ts=1774302230717
+* Keywords: analog dac
+* URL: https://www.ti.com/lit/ds/symlink/tlc5615.pdf?ts=1774302230717
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -51,71 +51,6 @@ name of this plugin instance
  * size: 16 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "tlc5615",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "tlc5615",
-    "name": "",
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [tlc5615.v](tlc5615.v)

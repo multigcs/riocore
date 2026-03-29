@@ -6,7 +6,9 @@
 
 w5500 driver for the interface communication over UDP
 
-Keywords: ethernet network udp interface
+* Keywords: ethernet network udp interface
+* NEEDS: fpga
+* PROVIDES: udp, interface
 
 ## Pins:
 *FPGA-pins*
@@ -98,6 +100,7 @@ frame size
 
  * type: select
  * default: full
+ * options: full, no_timestamp, no_header, minimum
 
 
 ## Signals:
@@ -107,107 +110,6 @@ frame size
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "w5500",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "miso": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "sel": {
-            "pin": "3"
-        },
-        "rst": {
-            "pin": "4"
-        },
-        "intr": {
-            "pin": "5"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "w5500",
-    "name": "",
-    "image": "generic",
-    "mac": "AA:AF:FA:CC:E3:1C",
-    "ip": "192.168.10.194",
-    "mask": "255.255.255.0",
-    "gw": "192.168.10.1",
-    "port": 2390,
-    "speed": 10000000,
-    "async": false,
-    "frame": "full",
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "miso": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "rst": {
-            "pin": "4",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "intr": {
-            "pin": "5",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [w5500.v](w5500.v)

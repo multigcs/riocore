@@ -6,7 +6,8 @@
 
 usable as position feedback for closed-loop configuration or as variable input to control LinuxCNC overwrites
 
-Keywords: feedback encoder rotary linear glassscale
+* Keywords: feedback encoder rotary linear glassscale
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -82,88 +83,6 @@ calculates revolutions per minute
  * size: 32 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "quadencoder",
-    "pins": {
-        "a": {
-            "pin": "0"
-        },
-        "b": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "quadencoder",
-    "name": "",
-    "image": "generic",
-    "quad_type": 2,
-    "rps_sum": 10,
-    "pins": {
-        "a": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "b": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rps": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rps",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rpm": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rpm",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [quadencoder.v](quadencoder.v)

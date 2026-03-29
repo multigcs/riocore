@@ -6,6 +6,19 @@
 
 mcu based satellite connected via RS422
 
+* NEEDS: fpga
+* PROVIDES: mcu
+
+## Node-Types
+| Name | Image |
+| --- | --- |
+| wemos_d1_mini32 | <img width="300" src="boards/wemos_d1_mini32.png"> |
+| mpgsat | <img width="300" src="boards/mpgsat.png"> |
+| esp32dev | <img width="300" src="boards/esp32dev.png"> |
+| pico | <img width="300" src="boards/pico.png"> |
+| vfdsat | <img width="300" src="boards/vfdsat.png"> |
+| rp2040-zero | <img width="300" src="boards/rp2040-zero.png"> |
+
 ## Pins:
 *FPGA-pins*
 ### SAT:
@@ -123,6 +136,7 @@ board type
 
  * type: select
  * default: pico
+ * options: wemos_d1_mini32, mpgsat, esp32dev, pico, vfdsat, rp2040-zero
 
 ### baud:
 serial baud rate
@@ -144,6 +158,7 @@ mcu serial port (Serial == USB)
 
  * type: select
  * default: Serial1
+ * options: Serial, Serial1
 
 
 ## Signals:
@@ -153,305 +168,6 @@ mcu serial port (Serial == USB)
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "satmcu",
-    "pins": {
-        "SAT": {
-            "pin": "0"
-        },
-        "IO:2": {
-            "pin": "1"
-        },
-        "IO:3": {
-            "pin": "2"
-        },
-        "IO:4": {
-            "pin": "3"
-        },
-        "IO:5": {
-            "pin": "4"
-        },
-        "IO:6": {
-            "pin": "5"
-        },
-        "IO:7": {
-            "pin": "6"
-        },
-        "IO:8": {
-            "pin": "7"
-        },
-        "IO:9": {
-            "pin": "8"
-        },
-        "IO:10": {
-            "pin": "9"
-        },
-        "IO:11": {
-            "pin": "10"
-        },
-        "IO:12": {
-            "pin": "11"
-        },
-        "IO:13": {
-            "pin": "12"
-        },
-        "IO:14": {
-            "pin": "13"
-        },
-        "IO:15": {
-            "pin": "14"
-        },
-        "IO:28": {
-            "pin": "15"
-        },
-        "IO:27": {
-            "pin": "16"
-        },
-        "IO:26": {
-            "pin": "17"
-        },
-        "IO:22": {
-            "pin": "18"
-        },
-        "IO:21": {
-            "pin": "19"
-        },
-        "IO:20": {
-            "pin": "20"
-        },
-        "IO:19": {
-            "pin": "21"
-        },
-        "IO:18": {
-            "pin": "22"
-        },
-        "IO:17": {
-            "pin": "23"
-        },
-        "IO:16": {
-            "pin": "24"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "satmcu",
-    "name": "",
-    "node_type": "pico",
-    "baud": 1000000,
-    "upload_port": "/dev/ttyACM0",
-    "serial": "Serial1",
-    "pins": {
-        "SAT": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:2": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:3": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:4": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:5": {
-            "pin": "4",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:6": {
-            "pin": "5",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:7": {
-            "pin": "6",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:8": {
-            "pin": "7",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:9": {
-            "pin": "8",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:10": {
-            "pin": "9",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:11": {
-            "pin": "10",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:12": {
-            "pin": "11",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:13": {
-            "pin": "12",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:14": {
-            "pin": "13",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:15": {
-            "pin": "14",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:28": {
-            "pin": "15",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:27": {
-            "pin": "16",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:26": {
-            "pin": "17",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:22": {
-            "pin": "18",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:21": {
-            "pin": "19",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:20": {
-            "pin": "20",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:19": {
-            "pin": "21",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:18": {
-            "pin": "22",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:17": {
-            "pin": "23",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:16": {
-            "pin": "24",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [satmcu.v](satmcu.v)

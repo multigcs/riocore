@@ -24,7 +24,17 @@ on TangNano9k:
  "speed": "32400000",
  parameter DELAY=3, parameter DELAY_NEXT=4
 
-Keywords: absolute angle encoder
+* Keywords: absolute angle encoder
+* NEEDS: fpga
+
+## Node-Types
+| Name | Image |
+| --- | --- |
+| panasonic | - |
+| stepperonline | - |
+| t3d | - |
+| yaskawa | - |
+| rioencoder | - |
 
 ## Pins:
 *FPGA-pins*
@@ -64,6 +74,7 @@ encoder type
 
  * type: select
  * default: yaskawa
+ * options: panasonic, stepperonline, t3d, yaskawa, rioencoder
 
 ### delay:
 clock delay for next manchester bit
@@ -149,149 +160,6 @@ clock delay for center of the next manchester bit
  * size: 32 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "abs_encoder",
-    "pins": {
-        "rx": {
-            "pin": "0"
-        },
-        "tx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        },
-        "debug_bit": {
-            "pin": "3"
-        },
-        "rx_synced": {
-            "pin": "4"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "abs_encoder",
-    "name": "",
-    "node_type": "yaskawa",
-    "delay": 3,
-    "delay_next": 4,
-    "pins": {
-        "rx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "tx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "debug_bit": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "rx_synced": {
-            "pin": "4",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "batt_error": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "batt_error",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "temp": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "temp",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "angle": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "angle",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "csum": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "csum",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "debug_data": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "debug_data",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [yaskawa_abs.v](yaskawa_abs.v)

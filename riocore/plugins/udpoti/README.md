@@ -6,7 +6,8 @@
 
 controling digital poti for analog outputs
 
-Keywords: analog dac poti
+* Keywords: analog dac poti
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -60,62 +61,6 @@ interface frequency
  * size: 32 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "udpoti",
-    "pins": {
-        "updown": {
-            "pin": "0"
-        },
-        "increment": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "udpoti",
-    "name": "",
-    "resolution": 100,
-    "frequency": 100,
-    "pins": {
-        "updown": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "increment": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [udpoti.v](udpoti.v)

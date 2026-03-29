@@ -8,7 +8,19 @@
 
 **Ethercat - Master**
 
-Keywords: stepper servo master
+* Keywords: stepper servo master
+* PROVIDES: ethercat, gpio, base
+
+## Node-Types
+| Name | Image |
+| --- | --- |
+| Master | - |
+| Servo/Stepper | - |
+| GPIO | - |
+| ek1100 | - |
+| el1008 | - |
+| el2008 | - |
+| el7411 | - |
 
 ## Pins:
 *FPGA-pins*
@@ -30,6 +42,7 @@ Type
 
  * type: select
  * default: Master
+ * options: Master, Servo/Stepper, GPIO, ek1100, el1008, el2008, el7411
 
 
 ## Signals:
@@ -39,35 +52,3 @@ Type
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "ethercat",
-    "pins": {
-        "BUS:out": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "ethercat",
-    "name": "",
-    "node_type": "Master",
-    "pins": {
-        "BUS:out": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```

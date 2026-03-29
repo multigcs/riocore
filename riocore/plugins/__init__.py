@@ -509,83 +509,6 @@ class PluginBase:
     def option_default(self, name, default=None):
         return self.OPTIONS.get(name, {}).get("default", default)
 
-    def basic_config(self):
-        basic_config = {
-            "type": self.NAME,
-            "pins": {},
-        }
-        pn = 0
-        for pin_name, pin_setup in self.PINDEFAULTS.items():
-            if pin_setup.get("type") == "PASSTHROUGH":
-                continue
-            default = pin_setup.get("default")
-            if default is not None:
-                basic_config["pins"][pin_name] = {"pin": f"{default}"}
-            else:
-                basic_config["pins"][pin_name] = {"pin": f"{pn}"}
-            pn += 1
-        return basic_config
-
-    def full_config(self):
-        full_config = {
-            "type": self.NAME,
-        }
-
-        for option_name, option_setup in self.OPTIONS.items():
-            default = ""
-            if option_setup["type"] is int:
-                default = 0
-            elif option_setup["type"] is float:
-                default = 0.0
-            elif option_setup["type"] is bool:
-                default = False
-            full_config[option_name] = option_setup.get("default", default)
-
-        pn = 0
-        full_config["pins"] = {}
-        for pin_name, pin_setup in self.PINDEFAULTS.items():
-            default = pin_setup.get("default")
-            if default is not None:
-                full_config["pins"][pin_name] = {"pin": f"{default}", "modifiers": []}
-            else:
-                full_config["pins"][pin_name] = {"pin": f"{pn}", "modifiers": []}
-            if pin_setup["direction"] == "input":
-                full_config["pins"][pin_name]["modifiers"].append({"type": "debounce"})
-                if pn > 0:
-                    full_config["pins"][pin_name]["modifiers"].append({"type": "invert"})
-            else:
-                full_config["pins"][pin_name]["modifiers"].append({"type": "invert"})
-            pn += 1
-
-        full_config["signals"] = {}
-        for signal_name, signal_setup in self.SIGNALS.items():
-            full_config["signals"][signal_name] = {
-                "net": "xxx.yyy.zzz",
-                "function": "rio.xxx",
-            }
-            if signal_setup.get("bool", False) is False:
-                full_config["signals"][signal_name]["scale"] = 100.0
-                full_config["signals"][signal_name]["offset"] = 0.0
-
-            full_config["signals"][signal_name]["display"] = {
-                "title": signal_name,
-                "section": "status",
-                "type": "meter",
-            }
-
-            if signal_setup["direction"] == "input":
-                full_config["signals"][signal_name]["display"]["section"] = "inputs"
-                if signal_setup.get("bool", False) is True:
-                    full_config["signals"][signal_name]["display"]["type"] = "led"
-            elif signal_setup["direction"] == "output":
-                full_config["signals"][signal_name]["display"]["section"] = "outputs"
-                if signal_setup.get("bool", False) is True:
-                    full_config["signals"][signal_name]["display"]["type"] = "checkbox"
-                else:
-                    full_config["signals"][signal_name]["display"]["type"] = "scale"
-
-        return full_config
-
     def show_pins(self):
         output = []
         for pin_name, pin_setup in self.PINDEFAULTS.items():
@@ -635,6 +558,8 @@ class PluginBase:
             output.append(f" * default: {option_setup.get('default')}")
             if unit is not None:
                 output.append(f" * unit: {unit}")
+            if vtype == "select":
+                output.append(f" * options: {', '.join(option_setup['options'])}")
 
             output.append("")
         return "\n".join(output)

@@ -6,7 +6,7 @@
 
 spacenav 3d mouse jog support
 
-Keywords: jog usb
+* Keywords: jog usb
 
 ## Pins:
 *FPGA-pins*
@@ -73,30 +73,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "spacenav",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "spacenav",
-    "name": "",
-    "jointjog": false,
-    "botton-0": "halui.spindle.0.start",
-    "botton-1": "halui.spindle.0.stop",
-    "x-scale": -0.2,
-    "y-scale": -0.2,
-    "z-scale": 0.2,
-    "a-scale": 0.02,
-    "b-scale": 0.02,
-    "c-scale": 0.02,
-    "pins": {},
-    "signals": {}
-}
-```

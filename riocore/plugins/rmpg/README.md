@@ -6,7 +6,7 @@
 
 see riocore/plugins/rmpg/clients/ for clients
 
-Keywords: jog cam remote
+* Keywords: jog cam remote
 
 ## Pins:
 *FPGA-pins*
@@ -33,22 +33,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "rmpg",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "rmpg",
-    "name": "",
-    "port": 10000,
-    "pins": {},
-    "signals": {}
-}
-```

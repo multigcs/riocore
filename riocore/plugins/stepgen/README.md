@@ -9,7 +9,8 @@ The maximum step rate depends on the CPU and other factors,
 and is usually in the range of 5 kHz to 25 kHz.
 If higher rates are needed, a hardware step generator is a better choice.
 
-Keywords: stepper
+* Keywords: stepper
+* NEEDS: gpio, basethread
 
 ## Pins:
 *FPGA-pins*
@@ -41,6 +42,7 @@ axis name (X,Y,Z,...)
 
  * type: select
  * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
 
 ### image:
 hardware type
@@ -53,6 +55,7 @@ Modus
 
  * type: select
  * default: 0
+ * options: 0|step/dir, 1|up/down, 2|quadrature, 3|three phase, full step, 4|three phase, half step, 5|four phase, full step (unipolar), 6|four phase, full step (unipolar), 7|four phase, full step (bipolar), 8|four phase, full step (bipolar), 9|four phase, half step (unipolar), 10|four phase, half step (bipolar), 11|five phase, full step, 12|five phase, full step, 13|five phase, half step, 14|five phase, half step, 15|user-specified
 
 
 ## Signals:
@@ -80,83 +83,3 @@ steps / unit
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "stepgen",
-    "pins": {
-        "step": {
-            "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "stepgen",
-    "name": "",
-    "is_joint": true,
-    "axis": "",
-    "image": "generic",
-    "mode": "0",
-    "pins": {
-        "step": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "dir": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "position-cmd": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position-cmd",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "position-fb": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position-fb",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "position-scale": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position-scale",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```

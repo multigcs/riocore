@@ -6,7 +6,7 @@
 
 virtual signal
 
-Keywords: virtual
+* Keywords: virtual
 
 ## Pins:
 *FPGA-pins*
@@ -25,12 +25,14 @@ signal direction
 
  * type: select
  * default: input
+ * options: input, output
 
 ### vtype:
 signal type
 
  * type: select
  * default: float
+ * options: float, bool
 
 
 ## Signals:
@@ -44,35 +46,3 @@ signal type
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "signal",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "signal",
-    "name": "",
-    "dir": "input",
-    "vtype": "float",
-    "pins": {},
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```

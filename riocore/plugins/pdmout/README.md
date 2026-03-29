@@ -6,7 +6,8 @@
 
 to analog values via sigma-delta modulator
 
-Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
+* Keywords: joint dcservo acservo 10v 5v dac analog sigma-delta pdm
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -39,6 +40,7 @@ axis name (X,Y,Z,...)
 
  * type: select
  * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
 
 ### resolution:
 PDM Resolution
@@ -78,72 +80,6 @@ PDM Resolution
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "pdmout",
-    "pins": {
-        "pdm": {
-            "pin": "0"
-        },
-        "en": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "pdmout",
-    "name": "",
-    "is_joint": true,
-    "axis": "",
-    "resolution": 8,
-    "pins": {
-        "pdm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "en": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [pdmout.v](pdmout.v)

@@ -4,6 +4,7 @@
 
 **only an image for the flow plan**
 
+
 ## Pins:
 *FPGA-pins*
 
@@ -30,22 +31,3 @@ hardware type
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "image",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "image",
-    "name": "",
-    "image": "generic",
-    "pins": {},
-    "signals": {}
-}
-```

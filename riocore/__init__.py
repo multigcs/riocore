@@ -187,16 +187,26 @@ class Plugins:
             output.append(plugin.DESCRIPTION.strip())
             output.append("")
         if plugin.KEYWORDS:
-            output.append(f"Keywords: {plugin.KEYWORDS}")
-            output.append("")
+            output.append(f"* Keywords: {plugin.KEYWORDS}")
         if plugin.URL:
-            output.append(f"URL: {plugin.URL.strip()}")
-            output.append("")
+            output.append(f"* URL: {plugin.URL.strip()}")
+        if plugin.NEEDS:
+            output.append(f"* NEEDS: {', '.join(plugin.NEEDS)}")
+        if plugin.PROVIDES:
+            output.append(f"* PROVIDES: {', '.join(plugin.PROVIDES)}")
+        output.append("")
 
-        if plugin.LIMITATIONS:
-            output.append("## Limitations")
-            for key, values in plugin.LIMITATIONS.items():
-                output.append(f"* {key}: {', '.join(values)}")
+
+        if "node_type" in plugin.OPTIONS:
+            output.append(f"## Node-Types")
+            output.append("| Name | Image |")
+            output.append("| --- | --- |")
+            for node_type in plugin.OPTIONS["node_type"]["options"]:
+                image_path = os.path.join(plugin_path, "boards", f"{node_type}.png")
+                img = "-"
+                if os.path.isfile(image_path):
+                    img = f'<img width="300" src="boards/{node_type}.png">'
+                output.append(f"| {node_type} | {img} |")
             output.append("")
 
         output.append("## Pins:")
@@ -214,16 +224,6 @@ class Plugins:
         output.append("## Interfaces:")
         output.append("*transport layer*")
         output.append(plugin.show_interfaces())
-        output.append("")
-        output.append("## Basic-Example:")
-        output.append("```")
-        output.append(json.dumps(plugin.basic_config(), indent=4))
-        output.append("```")
-        output.append("")
-        output.append("## Full-Example:")
-        output.append("```")
-        output.append(json.dumps(plugin.full_config(), indent=4))
-        output.append("```")
         output.append("")
         if plugin.VERILOGS:
             output.append("## Verilogs:")

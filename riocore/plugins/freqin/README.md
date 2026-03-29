@@ -6,7 +6,8 @@
 
 to measurement digital frequencies
 
-Keywords: frequency
+* Keywords: frequency
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -74,61 +75,6 @@ maximum measured frequency (for filtering)
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "freqin",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "freqin",
-    "name": "",
-    "image": "generic",
-    "freq_min": 10,
-    "freq_max": 1000000,
-    "pins": {
-        "freq": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "frequency": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "frequency",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "valid": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "valid",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [freqin.v](freqin.v)

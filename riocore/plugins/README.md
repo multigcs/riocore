@@ -148,7 +148,7 @@
 |  | [fpga](fpga/README.md) | Spartan6 - only for testing the toolchain |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> |  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> |  |
-|  | [i2c](i2c/README.md) | i2c plugin | <img src="i2c/image.png" height="48"> |  |
+|  | [i2c](i2c/README.md) | i2c bus master | <img src="i2c/image.png" height="48"> |  |
 |  | [i2c_device](i2c_device/README.md) | i2c device |  |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
@@ -165,7 +165,7 @@
 |  | [fpga](fpga/README.md) | Spartan6 - only for testing the toolchain |  |  |
 |  | [halinput](halinput/README.md) | joypad support | <img src="halinput/image.png" height="48"> |  |
 |  | [hy_vfd](hy_vfd/README.md) | non-realtime component for Huanyang VFDs | <img src="hy_vfd/image.png" height="48"> |  |
-|  | [i2c](i2c/README.md) | i2c plugin | <img src="i2c/image.png" height="48"> |  |
+|  | [i2c](i2c/README.md) | i2c bus master | <img src="i2c/image.png" height="48"> |  |
 |  | [i2c_device](i2c_device/README.md) | i2c device |  |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |

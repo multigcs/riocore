@@ -6,7 +6,8 @@
 
 outputs binary values
 
-Keywords: binary dec2bin r2r-dac
+* Keywords: binary dec2bin r2r-dac
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -60,80 +61,3 @@ number of inputs
  * size: 8 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "binout",
-    "pins": {
-        "bin0": {
-            "pin": "0"
-        },
-        "bin1": {
-            "pin": "1"
-        },
-        "bin2": {
-            "pin": "2"
-        },
-        "bin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "binout",
-    "name": "",
-    "bits": 4,
-    "pins": {
-        "bin0": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin1": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin2": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin3": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```

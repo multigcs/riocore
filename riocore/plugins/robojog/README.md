@@ -4,7 +4,7 @@
 
 **gui component to jog robot axis**
 
-Keywords: jog gui robot
+* Keywords: jog gui robot
 
 ## Pins:
 *FPGA-pins*
@@ -26,21 +26,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "robojog",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "robojog",
-    "name": "",
-    "pins": {},
-    "signals": {}
-}
-```

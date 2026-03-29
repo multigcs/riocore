@@ -6,7 +6,8 @@
 
 to output variable frequency signals
 
-Keywords: frequency
+* Keywords: frequency
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -49,50 +50,6 @@ output frequency
  * size: 32 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "freqout",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "freqout",
-    "name": "",
-    "image": "generic",
-    "pins": {
-        "freq": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "frequency": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "frequency",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [freqout.v](freqout.v)

@@ -6,9 +6,17 @@
 
 ninja
 
-Keywords: stepgen pwm ninja board pico w5500
+* Keywords: stepgen pwm ninja board pico w5500
+* URL: https://github.com/atrex66/stepper-ninja
+* PROVIDES: ninja, gpio, base, db25
 
-URL: https://github.com/atrex66/stepper-ninja
+## Node-Types
+| Name | Image |
+| --- | --- |
+| board | - |
+| stepper | - |
+| pwm | - |
+| encoder | - |
 
 ## Pins:
 *FPGA-pins*
@@ -134,12 +142,14 @@ instance type
 
  * type: select
  * default: board
+ * options: board, stepper, pwm, encoder
 
 ### board:
 board type
 
  * type: select
  * default: w5500-evb-pico
+ * options: w5500-evb-pico, w5500-evb-pico-parport
 
 ### mac:
 MAC-Address
@@ -179,327 +189,3 @@ UDP-Port
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "ninja",
-    "pins": {
-        "IO:LED": {
-            "pin": "0"
-        },
-        "IO:GP15": {
-            "pin": "1"
-        },
-        "IO:GP14": {
-            "pin": "2"
-        },
-        "IO:GP13": {
-            "pin": "3"
-        },
-        "IO:GP12": {
-            "pin": "4"
-        },
-        "IO:GP11": {
-            "pin": "5"
-        },
-        "IO:GP10": {
-            "pin": "6"
-        },
-        "IO:GP9": {
-            "pin": "7"
-        },
-        "IO:GP8": {
-            "pin": "8"
-        },
-        "IO:GP7": {
-            "pin": "9"
-        },
-        "IO:GP6": {
-            "pin": "10"
-        },
-        "IO:GP5": {
-            "pin": "11"
-        },
-        "IO:GP4": {
-            "pin": "12"
-        },
-        "IO:GP3": {
-            "pin": "13"
-        },
-        "IO:GP2": {
-            "pin": "14"
-        },
-        "IO:GP1": {
-            "pin": "15"
-        },
-        "IO:GP0": {
-            "pin": "16"
-        },
-        "IO:GP16": {
-            "pin": "17"
-        },
-        "IO:GP17": {
-            "pin": "18"
-        },
-        "IO:GP18": {
-            "pin": "19"
-        },
-        "IO:GP19": {
-            "pin": "20"
-        },
-        "IO:GP20": {
-            "pin": "21"
-        },
-        "IO:GP21": {
-            "pin": "22"
-        },
-        "IO:GP22": {
-            "pin": "23"
-        },
-        "IO:GP26": {
-            "pin": "24"
-        },
-        "IO:GP27": {
-            "pin": "25"
-        },
-        "IO:GP28": {
-            "pin": "26"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "ninja",
-    "name": "",
-    "node_type": "board",
-    "board": "w5500-evb-pico",
-    "mac": "00:08:DC:12:34:56",
-    "ip": "192.168.0.177",
-    "mask": "255.255.255.0",
-    "gw": "192.168.10.1",
-    "port": 8888,
-    "pins": {
-        "IO:LED": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP15": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP14": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP13": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP12": {
-            "pin": "4",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP11": {
-            "pin": "5",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP10": {
-            "pin": "6",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP9": {
-            "pin": "7",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP8": {
-            "pin": "8",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP7": {
-            "pin": "9",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP6": {
-            "pin": "10",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP5": {
-            "pin": "11",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP4": {
-            "pin": "12",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP3": {
-            "pin": "13",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP2": {
-            "pin": "14",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP1": {
-            "pin": "15",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP0": {
-            "pin": "16",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP16": {
-            "pin": "17",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP17": {
-            "pin": "18",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP18": {
-            "pin": "19",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP19": {
-            "pin": "20",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP20": {
-            "pin": "21",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP21": {
-            "pin": "22",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP22": {
-            "pin": "23",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP26": {
-            "pin": "24",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP27": {
-            "pin": "25",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "IO:GP28": {
-            "pin": "26",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```

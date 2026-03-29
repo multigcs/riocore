@@ -3,7 +3,28 @@
 
 i2c device
 
-Keywords: i2c
+* Keywords: i2c
+* NEEDS: i2c
+
+## Node-Types
+| Name | Image |
+| --- | --- |
+| pcf8574 | <img width="300" src="boards/pcf8574.png"> |
+| bmp280 | <img width="300" src="boards/bmp280.png"> |
+| lm75 | <img width="300" src="boards/lm75.png"> |
+| vl53l0x | <img width="300" src="boards/vl53l0x.png"> |
+| ads1115 | <img width="300" src="boards/ads1115.png"> |
+| mcp4725 | <img width="300" src="boards/mcp4725.png"> |
+| tca9548a | <img width="300" src="boards/tca9548a.png"> |
+| mlx90614 | <img width="300" src="boards/mlx90614.png"> |
+| adxl345 | <img width="300" src="boards/adxl345.png"> |
+| as5600 | <img width="300" src="boards/as5600.png"> |
+| ina219 | <img width="300" src="boards/ina219.png"> |
+| pcf8591 | <img width="300" src="boards/pcf8591.png"> |
+| mcp23017 | <img width="300" src="boards/mcp23017.png"> |
+| pca9685 | <img width="300" src="boards/pca9685.png"> |
+| ina3221 | <img width="300" src="boards/ina3221.png"> |
+| tlv493d | <img width="300" src="boards/tlv493d.png"> |
 
 ## Pins:
 *FPGA-pins*
@@ -22,6 +43,7 @@ device type
 
  * type: select
  * default: 
+ * options: pcf8574, bmp280, lm75, vl53l0x, ads1115, mcp4725, tca9548a, mlx90614, adxl345, as5600, ina219, pcf8591, mcp23017, pca9685, ina3221, tlv493d
 
 
 ## Signals:
@@ -31,22 +53,3 @@ device type
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "i2c_device",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "i2c_device",
-    "name": "",
-    "node_type": "",
-    "pins": {},
-    "signals": {}
-}
-```

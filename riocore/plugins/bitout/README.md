@@ -6,7 +6,8 @@
 
 to control relay, leds, valves, ....
 
-Keywords: led relais relay valve lamp motor magnet
+* Keywords: led relais relay valve lamp motor magnet
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -45,45 +46,3 @@ hardware type
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "bitout",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "bitout",
-    "name": "",
-    "image": "generic",
-    "pins": {
-        "bit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "bit": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```

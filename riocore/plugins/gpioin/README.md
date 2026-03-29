@@ -4,7 +4,8 @@
 
 **gpio input**
 
-Keywords: input
+* Keywords: input
+* NEEDS: gpio
 
 ## Pins:
 *FPGA-pins*
@@ -43,45 +44,3 @@ hardware type
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "gpioin",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "gpioin",
-    "name": "",
-    "image": "generic",
-    "pins": {
-        "bit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "bit": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```

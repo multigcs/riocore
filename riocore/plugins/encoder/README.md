@@ -11,7 +11,8 @@ The limit is in the range of 10 kHz to 50 kHz, depending on the computer speed a
 If better performance is needed, a hardware encoder counter is a better choice.
 Some hardware-based systems can count at MHz rates.
 
-Keywords: encoder quadencoder scale jog
+* Keywords: encoder quadencoder scale jog
+* NEEDS: gpio, basethread
 
 ## Pins:
 *FPGA-pins*
@@ -104,101 +105,3 @@ calculates revolutions per minute
  * size: 32 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "encoder",
-    "pins": {
-        "phase-A": {
-            "pin": "0"
-        },
-        "phase-B": {
-            "pin": "1"
-        },
-        "phase-Z": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "encoder",
-    "name": "",
-    "image": "generic",
-    "counter-mode": false,
-    "x4-mode": false,
-    "missing-teeth": 0,
-    "position-scale": 1.0,
-    "pins": {
-        "phase-A": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "phase-B": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phase-Z": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "velocity": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "velocity",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "velocity-rpm": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "velocity-rpm",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```

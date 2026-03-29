@@ -6,7 +6,8 @@
 
 decodes binary values
 
-Keywords: binary demultiplexer
+* Keywords: binary demultiplexer
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -82,86 +83,3 @@ number of inputs
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "demux",
-    "pins": {
-        "pin0": {
-            "pin": "0"
-        },
-        "pin1": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "demux",
-    "name": "",
-    "bits": 2,
-    "pins": {
-        "pin0": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "pin1": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "bit0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit0",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "bit1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit1",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "bit2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit2",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "bit3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit3",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```

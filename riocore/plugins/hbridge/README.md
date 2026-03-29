@@ -6,7 +6,8 @@
 
 to control DC-Motors
 
-Keywords: joint dcservo
+* Keywords: joint dcservo
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -43,6 +44,7 @@ axis name (X,Y,Z,...)
 
  * type: select
  * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
 
 ### frequency:
 PWM frequency
@@ -82,83 +84,6 @@ PWM frequency
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "hbridge",
-    "pins": {
-        "out1": {
-            "pin": "0"
-        },
-        "out2": {
-            "pin": "1"
-        },
-        "en": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "hbridge",
-    "name": "",
-    "is_joint": true,
-    "axis": "",
-    "frequency": 10000,
-    "pins": {
-        "out1": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "out2": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "en": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "dty": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "dty",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [hbridge.v](hbridge.v)

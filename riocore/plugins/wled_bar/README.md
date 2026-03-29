@@ -6,7 +6,8 @@
 
 simple ws2812b driver with variable input to build led-bars
 
-Keywords: led rgb status info
+* Keywords: led rgb status info
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -55,51 +56,6 @@ LED brighness
  * size: 8 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "wled_bar",
-    "pins": {
-        "data": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "wled_bar",
-    "name": "",
-    "leds": 12,
-    "level": 127,
-    "pins": {
-        "data": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [ws2812.v](ws2812.v)

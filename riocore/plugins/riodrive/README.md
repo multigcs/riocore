@@ -10,9 +10,9 @@
 
 riodrive is a fork of odrive (v3.6)
 
-Keywords: canbus odrive bldc brushless servo
-
-URL: https://github.com/multigcs/riodrive
+* Keywords: canbus odrive bldc brushless servo
+* URL: https://github.com/multigcs/riodrive
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -44,6 +44,7 @@ axis name (X,Y,Z,...)
 
  * type: select
  * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
 
 ### baud:
 can-bus baud rate
@@ -196,166 +197,6 @@ trigger error on connection/drive problems
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "riodrive",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "riodrive",
-    "name": "",
-    "is_joint": true,
-    "axis": "",
-    "baud": 500000,
-    "interval": 400,
-    "error": true,
-    "pins": {
-        "tx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "rx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "power": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "power",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "temp": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "temp",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "state": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "state",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "traj": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "traj",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "mot": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "mot",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "enc": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enc",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "ctrl": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "ctrl",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "velocity": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "velocity",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "error": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "error",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [riodrive.v](riodrive.v)

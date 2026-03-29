@@ -6,7 +6,8 @@
 
 scale: 4096
 
-Keywords: absolute encoder with pwm output
+* Keywords: absolute encoder with pwm output
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -55,69 +56,6 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "as5600pwm",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "as5600pwm",
-    "name": "",
-    "pins": {
-        "pwm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "angle": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "angle",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "valid": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "valid",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [as5600pwm.v](as5600pwm.v)

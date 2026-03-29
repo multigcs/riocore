@@ -6,7 +6,21 @@
 
 mcu based io's
 
-Keywords: input output analog adc dac pwm
+* Keywords: input output analog adc dac pwm
+* NEEDS: mcu
+
+## Node-Types
+| Name | Image |
+| --- | --- |
+| adc | - |
+| input | - |
+| output | - |
+| dac | - |
+| rcservo | - |
+| rgbled | - |
+| encoder | - |
+| mcp4725 | - |
+| max7219 | - |
 
 ## Pins:
 *FPGA-pins*
@@ -25,6 +39,7 @@ io type
 
  * type: select
  * default: 
+ * options: adc, input, output, dac, rcservo, rgbled, encoder, mcp4725, max7219
 
 
 ## Signals:
@@ -34,22 +49,3 @@ io type
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "mcuio",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "mcuio",
-    "name": "",
-    "node_type": "",
-    "pins": {},
-    "signals": {}
-}
-```

@@ -6,7 +6,8 @@
 
 to control rc-servos, usable as joint or as variable/analog output in LinuxCNC
 
-Keywords: joint rcservo
+* Keywords: joint rcservo
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -34,6 +35,7 @@ axis name (X,Y,Z,...)
 
  * type: select
  * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
 
 ### image:
 hardware type
@@ -78,62 +80,6 @@ absolute position (-100 = 1ms / 100 = 2ms)
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "rcservo",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "rcservo",
-    "name": "",
-    "is_joint": true,
-    "axis": "",
-    "image": "generic",
-    "frequency": 100,
-    "pins": {
-        "pwm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [rcservo.v](rcservo.v)

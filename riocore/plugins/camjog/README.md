@@ -4,7 +4,7 @@
 
 **gui component to jog via camera image**
 
-Keywords: jog gui robot
+* Keywords: jog gui robot
 
 ## Pins:
 *FPGA-pins*
@@ -56,27 +56,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "camjog",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "camjog",
-    "name": "",
-    "device": "/dev/video0",
-    "width": 640,
-    "height": 480,
-    "scale": 1.0,
-    "tabname": "camjog",
-    "external": false,
-    "pins": {},
-    "signals": {}
-}
-```

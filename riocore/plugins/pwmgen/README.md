@@ -9,7 +9,8 @@ The maximum PWM frequency and the resolution is quite limited compared to hardwa
 but in many cases software PWM can be very useful. If better performance is needed,
 a hardware PWM generator is a better choice.
 
-Keywords: pwm
+* Keywords: pwm
+* NEEDS: gpio, basethread
 
 ## Pins:
 *FPGA-pins*
@@ -42,6 +43,7 @@ modus
 
  * type: select
  * default: 1
+ * options: 1|pwm/direction, 2|up/down
 
 ### pwm-freq:
 pwm frequency
@@ -113,74 +115,3 @@ dither-pwm
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "pwmgen",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "pwmgen",
-    "name": "",
-    "image": "generic",
-    "mode": "1",
-    "pwm-freq": 100,
-    "scale": 100.0,
-    "offset": 0.0,
-    "min-dc": 0.0,
-    "max-dc": 1.0,
-    "dither-pwm": false,
-    "pins": {
-        "pwm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "dir": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```

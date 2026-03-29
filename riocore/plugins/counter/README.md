@@ -6,7 +6,8 @@
 
 to counting digital pulses, supporting up,down and reset signals
 
-Keywords: counter pulse
+* Keywords: counter pulse
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -53,77 +54,6 @@ name of this plugin instance
  * size: 32 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "counter",
-    "pins": {
-        "up": {
-            "pin": "0"
-        },
-        "down": {
-            "pin": "1"
-        },
-        "reset": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "counter",
-    "name": "",
-    "pins": {
-        "up": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "down": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "reset": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "counter": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "counter",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [counter.v](counter.v)
