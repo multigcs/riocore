@@ -8,37 +8,37 @@
 ## Node-Types
 | Name | Image |
 | --- | --- |
-| Altera10M08Eval | <img width="300" src="boards/Altera10M08Eval.png"> |
-| Basys2 | <img width="300" src="boards/Basys2.png"> |
-| CYC1000 | <img width="300" src="boards/CYC1000.png"> |
-| Colorlight5A-75B-v8.0 | <img width="300" src="boards/Colorlight5A-75B-v8.0.png"> |
-| Colorlight5A-75E | <img width="300" src="boards/Colorlight5A-75E.png"> |
-| Colorlight_i5-v7_0 | <img width="300" src="boards/Colorlight_i5-v7_0.png"> |
-| EBAZ4205 | <img width="300" src="boards/EBAZ4205.png"> |
-| ECP5-256 | <img width="300" src="boards/ECP5-256.png"> |
-| EP2C5T144 | <img width="300" src="boards/EP2C5T144.png"> |
-| EP4CE6E22C8 | <img width="300" src="boards/EP4CE6E22C8.png"> |
-| ICEBreakerV1.0e | <img width="300" src="boards/ICEBreakerV1.0e.png"> |
-| ICESugarNano | <img width="300" src="boards/ICESugarNano.png"> |
-| ICESugarPro | <img width="300" src="boards/ICESugarPro.png"> |
-| IceShield | <img width="300" src="boards/IceShield.png"> |
-| LX9MicroBoard | <img width="300" src="boards/LX9MicroBoard.png"> |
-| Mesa7c80 | <img width="300" src="boards/Mesa7c80.png"> |
-| Mesa7c81 | <img width="300" src="boards/Mesa7c81.png"> |
-| MotoMan | <img width="300" src="boards/MotoMan.png"> |
-| Numato-Spartan6 | <img width="300" src="boards/Numato-Spartan6.png"> |
-| OctoBot | <img width="300" src="boards/OctoBot.png"> |
-| Olimex-ICE40HX8K-EVB | <img width="300" src="boards/Olimex-ICE40HX8K-EVB.png"> |
-| TangNano1K | <img width="300" src="boards/TangNano1K.png"> |
-| TangNano20K | <img width="300" src="boards/TangNano20K.png"> |
-| TangNano4K | <img width="300" src="boards/TangNano4K.png"> |
-| TangNano9K | <img width="300" src="boards/TangNano9K.png"> |
-| TangPrimer20K | <img width="300" src="boards/TangPrimer20K.png"> |
-| TangPrimer25K | <img width="300" src="boards/TangPrimer25K.png"> |
-| Tangbob | <img width="300" src="boards/Tangbob.png"> |
-| Tangbob-noudp | <img width="300" src="boards/Tangbob-noudp.png"> |
-| Tangoboard | <img width="300" src="boards/Tangoboard.png"> |
-| rioctrl | <img width="300" src="boards/rioctrl.png"> |
+| Altera10M08Eval | <img heigh="48" src="boards/Altera10M08Eval.png"> |
+| Basys2 | <img heigh="48" src="boards/Basys2.png"> |
+| CYC1000 | <img heigh="48" src="boards/CYC1000.png"> |
+| Colorlight5A-75B-v8.0 | <img heigh="48" src="boards/Colorlight5A-75B-v8.0.png"> |
+| Colorlight5A-75E | <img heigh="48" src="boards/Colorlight5A-75E.png"> |
+| Colorlight_i5-v7_0 | <img heigh="48" src="boards/Colorlight_i5-v7_0.png"> |
+| EBAZ4205 | <img heigh="48" src="boards/EBAZ4205.png"> |
+| ECP5-256 | <img heigh="48" src="boards/ECP5-256.png"> |
+| EP2C5T144 | <img heigh="48" src="boards/EP2C5T144.png"> |
+| EP4CE6E22C8 | <img heigh="48" src="boards/EP4CE6E22C8.png"> |
+| ICEBreakerV1.0e | <img heigh="48" src="boards/ICEBreakerV1.0e.png"> |
+| ICESugarNano | <img heigh="48" src="boards/ICESugarNano.png"> |
+| ICESugarPro | <img heigh="48" src="boards/ICESugarPro.png"> |
+| IceShield | <img heigh="48" src="boards/IceShield.png"> |
+| LX9MicroBoard | <img heigh="48" src="boards/LX9MicroBoard.png"> |
+| Mesa7c80 | <img heigh="48" src="boards/Mesa7c80.png"> |
+| Mesa7c81 | <img heigh="48" src="boards/Mesa7c81.png"> |
+| MotoMan | <img heigh="48" src="boards/MotoMan.png"> |
+| Numato-Spartan6 | <img heigh="48" src="boards/Numato-Spartan6.png"> |
+| OctoBot | <img heigh="48" src="boards/OctoBot.png"> |
+| Olimex-ICE40HX8K-EVB | <img heigh="48" src="boards/Olimex-ICE40HX8K-EVB.png"> |
+| TangNano1K | <img heigh="48" src="boards/TangNano1K.png"> |
+| TangNano20K | <img heigh="48" src="boards/TangNano20K.png"> |
+| TangNano4K | <img heigh="48" src="boards/TangNano4K.png"> |
+| TangNano9K | <img heigh="48" src="boards/TangNano9K.png"> |
+| TangPrimer20K | <img heigh="48" src="boards/TangPrimer20K.png"> |
+| TangPrimer25K | <img heigh="48" src="boards/TangPrimer25K.png"> |
+| Tangbob | <img heigh="48" src="boards/Tangbob.png"> |
+| Tangbob-noudp | <img heigh="48" src="boards/Tangbob-noudp.png"> |
+| Tangoboard | <img heigh="48" src="boards/Tangoboard.png"> |
+| rioctrl | <img heigh="48" src="boards/rioctrl.png"> |
 
 ## Pins:
 *FPGA-pins*

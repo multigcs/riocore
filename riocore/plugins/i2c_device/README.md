@@ -9,22 +9,22 @@ i2c device
 ## Node-Types
 | Name | Image |
 | --- | --- |
-| pcf8574 | <img width="300" src="boards/pcf8574.png"> |
-| bmp280 | <img width="300" src="boards/bmp280.png"> |
-| lm75 | <img width="300" src="boards/lm75.png"> |
-| vl53l0x | <img width="300" src="boards/vl53l0x.png"> |
-| ads1115 | <img width="300" src="boards/ads1115.png"> |
-| mcp4725 | <img width="300" src="boards/mcp4725.png"> |
-| tca9548a | <img width="300" src="boards/tca9548a.png"> |
-| mlx90614 | <img width="300" src="boards/mlx90614.png"> |
-| adxl345 | <img width="300" src="boards/adxl345.png"> |
-| as5600 | <img width="300" src="boards/as5600.png"> |
-| ina219 | <img width="300" src="boards/ina219.png"> |
-| pcf8591 | <img width="300" src="boards/pcf8591.png"> |
-| mcp23017 | <img width="300" src="boards/mcp23017.png"> |
-| pca9685 | <img width="300" src="boards/pca9685.png"> |
-| ina3221 | <img width="300" src="boards/ina3221.png"> |
-| tlv493d | <img width="300" src="boards/tlv493d.png"> |
+| pcf8574 | <img heigh="48" src="boards/pcf8574.png"> |
+| bmp280 | <img heigh="48" src="boards/bmp280.png"> |
+| lm75 | <img heigh="48" src="boards/lm75.png"> |
+| vl53l0x | <img heigh="48" src="boards/vl53l0x.png"> |
+| ads1115 | <img heigh="48" src="boards/ads1115.png"> |
+| mcp4725 | <img heigh="48" src="boards/mcp4725.png"> |
+| tca9548a | <img heigh="48" src="boards/tca9548a.png"> |
+| mlx90614 | <img heigh="48" src="boards/mlx90614.png"> |
+| adxl345 | <img heigh="48" src="boards/adxl345.png"> |
+| as5600 | <img heigh="48" src="boards/as5600.png"> |
+| ina219 | <img heigh="48" src="boards/ina219.png"> |
+| pcf8591 | <img heigh="48" src="boards/pcf8591.png"> |
+| mcp23017 | <img heigh="48" src="boards/mcp23017.png"> |
+| pca9685 | <img heigh="48" src="boards/pca9685.png"> |
+| ina3221 | <img heigh="48" src="boards/ina3221.png"> |
+| tlv493d | <img heigh="48" src="boards/tlv493d.png"> |
 
 ## Pins:
 *FPGA-pins*

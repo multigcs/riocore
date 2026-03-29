@@ -9,13 +9,13 @@
 ## Node-Types
 | Name | Image |
 | --- | --- |
-| db25-1205 | <img width="300" src="boards/db25-1205.png"> |
-| china-bob5x | <img width="300" src="boards/china-bob5x.png"> |
-| rioctrl-shiftio | <img width="300" src="boards/rioctrl-shiftio.png"> |
-| rioctrl-stepdir | <img width="300" src="boards/rioctrl-stepdir.png"> |
-| rio-icebreaker3x | <img width="300" src="boards/rio-icebreaker3x.png"> |
-| rioctrl-quadenc4 | <img width="300" src="boards/rioctrl-quadenc4.png"> |
-| rpi-db25hat | <img width="300" src="boards/rpi-db25hat.png"> |
+| db25-1205 | <img heigh="48" src="boards/db25-1205.png"> |
+| china-bob5x | <img heigh="48" src="boards/china-bob5x.png"> |
+| rioctrl-shiftio | <img heigh="48" src="boards/rioctrl-shiftio.png"> |
+| rioctrl-stepdir | <img heigh="48" src="boards/rioctrl-stepdir.png"> |
+| rio-icebreaker3x | <img heigh="48" src="boards/rio-icebreaker3x.png"> |
+| rioctrl-quadenc4 | <img heigh="48" src="boards/rioctrl-quadenc4.png"> |
+| rpi-db25hat | <img heigh="48" src="boards/rpi-db25hat.png"> |
 
 ## Pins:
 *FPGA-pins*
