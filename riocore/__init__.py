@@ -205,7 +205,7 @@ class Plugins:
                 image_path = os.path.join(plugin_path, "boards", f"{node_type}.png")
                 img = "-"
                 if os.path.isfile(image_path):
-                    img = f'<img heigh="48" src="boards/{node_type}.png">'
+                    img = f'<img height="48" src="boards/{node_type}.png">'
                 output.append(f"| {node_type} | {img} |")
             output.append("")
 
