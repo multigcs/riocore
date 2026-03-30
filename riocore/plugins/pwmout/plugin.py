@@ -8,7 +8,7 @@ class Plugin(PluginBase):
         self.NAME = "pwmout"
         self.INFO = "pwm output"
         self.DESCRIPTION = "to control AC/DC-Motors or for analog outputs"
-        # search strings for the rio-setup gui, but it search also over name, info and description (add new plugin)
+        # search strings for the rio-flow gui, but it search also over name, info and description (add new plugin)
         self.KEYWORDS = "joint dcservo acservo 10v 5v dac analog"
         # optional list of possible images (for the flow frontend)
         self.IMAGES = PluginImages.pwmout

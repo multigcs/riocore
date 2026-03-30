@@ -281,13 +281,13 @@ EOF
 EOF
 
 	mkdir -p ~/.local/share/applications/
-	cat <<EOF > ~/.local/share/applications/rio-setup.desktop
+	cat <<EOF > ~/.local/share/applications/rio-flow.desktop
 [Desktop Entry]
 Version=1.0
-Name=RIO-Setup
-Comment=RIO-Setup tool
+Name=RIO-Flow
+Comment=RIO-Flow tool
 Type=Application
-Exec=xfce4-terminal -e "bash -c 'cd $TARGETDIR/riocore; ./bin/rio-setup'"
+Exec=xfce4-terminal -e "bash -c 'cd $TARGETDIR/riocore; ./bin/rio-flow'"
 Icon=linuxcncicon
 X-GNOME-DocPath=
 Terminal=false
