@@ -1893,7 +1893,6 @@ class Window(QMainWindow):
                 "node_type": board_name,
                 "toolchain": board.get("toolchain", ""),
                 "flashcmd": board.get("flashcmd", ""),
-                "protocol": self.config.get("protocol", "SPI"),
                 "uid": board_uid,
                 "pos": self.config.get("flow", {}).get("board", {}).get("pos", (0, 0)),
                 "rotate": self.config.get("flow", {}).get("board", {}).get("rotate", 0),
