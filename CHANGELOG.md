@@ -1,9 +1,16 @@
 # Changelog
 
 ## v0.9.5
+### Gui
+* new graphical config-gui: rio-flow
+* removing old rio-setup
 ### Genaral
-* changing component/gpio stuff into boards and plugin
-* expansions: using instance name for expansion pin names
+* move all stuff into plugins (boards/modules/breakouts)
+* replacing modbus -> mbus/mbus_device/mbus_hy
+* replacing i2cbus -> i2c/i2c_device
+* better simulation
+* test-tool is now based on the hal-component c-code
+
 
 
 ## v0.9.4
