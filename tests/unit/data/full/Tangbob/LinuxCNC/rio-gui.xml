@@ -114,29 +114,6 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"modbus0-temperature"</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-          <width>15</width>
-        </label>
-        <number>
-          <halpin>"fpga0.modbus0.temperature"</halpin>
-          <font>("Helvetica",14)</font>
-          <format>"0.1f"</format>
-          <anchor>"e"</anchor>
-          <width>13</width>
-        </number>
-        <label>
-          <text>"&#176;C        "</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-        </label>
-      </hbox>
-      <hbox>
-        <boxexpand expand="yes"/>
-        <boxfill fill="both"/>
-        <boxanchor anchor="e"/>
-        <label>
           <text>"i2c_lm75_0-i2c_lm75_0_temp"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>

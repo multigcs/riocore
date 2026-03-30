@@ -10,7 +10,7 @@ UDP-Configuration:
 
 Plugins:
   breakout (1x)
-  modbus (1x)
+  mbus (1x)
   blink (1x)
   i2c (1x)
   stepdir (3x)

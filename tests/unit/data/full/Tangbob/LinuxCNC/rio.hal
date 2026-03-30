@@ -53,8 +53,6 @@ net sig_pyvcp_fpga0_fpga0_wled_0_red     => fpga0.fpga0_wled.0_red
 net sig_fpga0_i2c_lm75_0_i2c_lm75_0_temp <= fpga0.i2c_lm75_0.i2c_lm75_0_temp
 net sig_fpga0_i2c_lm75_0_i2c_lm75_0_valid <= fpga0.i2c_lm75_0.i2c_lm75_0_valid
 
-net sig_fpga0_modbus0_temperature        <= fpga0.modbus0.temperature
-
 net user-enable-out                      => fpga0.sys-enable
 net user-request-enable                  => fpga0.sys-enable-request
 net sig_fpga0_sys-error                  <= fpga0.sys-error
