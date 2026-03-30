@@ -1525,6 +1525,7 @@ class Window(QMainWindow):
         return project
 
     def prebuild(self):
+        self.fit_view()
         output_dir = "/tmp/rio-test-build"
         doc_path = os.path.join(output_dir, self.config["name"], "DOC")
         flow_img = os.path.join(doc_path, "flow.png")
