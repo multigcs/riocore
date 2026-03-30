@@ -103,7 +103,7 @@
             "rotate": 0
         },
         {
-            "type": "i2cbus",
+            "type": "i2c",
             "pins": {
                 "sda": {
                     "pin": "fpga0:I2C:sda"
@@ -113,25 +113,10 @@
                 }
             },
             "uid": "i2cbus0",
-            "config": {
-                "devices": {
-                    "lm75_0": {
-                        "type": "lm75",
-                        "address": "0x48",
-                        "subbus": "none"
-                    }
-                }
-            },
             "pos": [
                 80.0,
                 730.0
-            ],
-            "sub_pos": {
-                "dev-lm75_0(0x48)": [
-                    330.0,
-                    730.0
-                ]
-            }
+            ]
         },
         {
             "type": "stepdir",
@@ -333,6 +318,9 @@
                             "setp": ""
                         }
                     }
+                },
+                "fpga0_w5500": {
+                    "ip": "192.168.11.194"
                 }
             }
         },
@@ -354,14 +342,28 @@
                     "net": "spindle.0.on"
                 }
             }
+        },
+        {
+            "type": "i2c_device",
+            "node_type": "lm75",
+            "uid": "i2c_lm75_0",
+            "pins": {
+                "I2C": {
+                    "pin": "i2cbus0:BUS:IO"
+                }
+            },
+            "pos": [
+                350.0,
+                740.0
+            ]
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.65,
+            "scale": 0.59,
             "pos": [
-                -10,
-                109
+                -50,
+                -14
             ]
         },
         "hal": {

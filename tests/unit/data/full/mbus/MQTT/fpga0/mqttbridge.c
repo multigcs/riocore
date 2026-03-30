@@ -76,14 +76,6 @@ typedef struct {
     bool   *SIGOUT_FPGA0_FPGA0_WLED_2_GREEN;
     bool   *SIGOUT_FPGA0_FPGA0_WLED_2_BLUE;
     bool   *SIGOUT_FPGA0_FPGA0_WLED_2_RED;
-    float *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP;
-    float *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS;
-    int32_t *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32;
-    uint32_t *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS;
-    float *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE;
-    float *SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET;
-    bool   *SIGIN_FPGA0_I2CBUS0_LM75_0_VALID;
-    bool   *SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not;
     float *SIGOUT_FPGA0_STEPDIR0_VELOCITY;
     float *SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE;
     float *SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET;
@@ -355,6 +347,14 @@ typedef struct {
     bool   *SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID;
     bool   *SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID_not;
     float *SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS;
+    float *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP;
+    float *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS;
+    int32_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32;
+    uint32_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS;
+    float *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE;
+    float *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET;
+    bool   *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID;
+    bool   *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not;
     // raw variables
     uint8_t VARIN128_MBMASTER0_RXDATA[16];
     uint8_t VAROUT128_MBMASTER0_TXDATA[16];
@@ -364,7 +364,7 @@ typedef struct {
     int32_t VARIN32_STEPDIR1_POSITION;
     int32_t VAROUT32_STEPDIR2_VELOCITY;
     int32_t VARIN32_STEPDIR2_POSITION;
-    int16_t VARIN16_I2CBUS0_LM75_0_TEMP;
+    int16_t VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP;
     bool VAROUT1_FPGA0_WLED_0_GREEN;
     bool VAROUT1_FPGA0_WLED_0_BLUE;
     bool VAROUT1_FPGA0_WLED_0_RED;
@@ -374,13 +374,13 @@ typedef struct {
     bool VAROUT1_FPGA0_WLED_2_GREEN;
     bool VAROUT1_FPGA0_WLED_2_BLUE;
     bool VAROUT1_FPGA0_WLED_2_RED;
-    bool VARIN1_I2CBUS0_LM75_0_VALID;
     bool VAROUT1_STEPDIR0_ENABLE;
     bool VAROUT1_STEPDIR1_ENABLE;
     bool VAROUT1_STEPDIR2_ENABLE;
     bool VARIN1_BITIN0_BIT;
     bool VARIN1_BITIN1_BIT;
     bool VARIN1_BITIN2_BIT;
+    bool VARIN1_I2C_LM75_0_I2C_LM75_0_VALID;
 } data_t;
 static data_t *data;
 
@@ -394,7 +394,7 @@ data_t *register_signals(void) {
     data->VARIN32_STEPDIR1_POSITION = 0;
     data->VAROUT32_STEPDIR2_VELOCITY = 0;
     data->VARIN32_STEPDIR2_POSITION = 0;
-    data->VARIN16_I2CBUS0_LM75_0_TEMP = 0;
+    data->VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP = 0;
     data->VAROUT1_FPGA0_WLED_0_GREEN = 0;
     data->VAROUT1_FPGA0_WLED_0_BLUE = 0;
     data->VAROUT1_FPGA0_WLED_0_RED = 0;
@@ -404,13 +404,13 @@ data_t *register_signals(void) {
     data->VAROUT1_FPGA0_WLED_2_GREEN = 0;
     data->VAROUT1_FPGA0_WLED_2_BLUE = 0;
     data->VAROUT1_FPGA0_WLED_2_RED = 0;
-    data->VARIN1_I2CBUS0_LM75_0_VALID = 0;
     data->VAROUT1_STEPDIR0_ENABLE = 0;
     data->VAROUT1_STEPDIR1_ENABLE = 0;
     data->VAROUT1_STEPDIR2_ENABLE = 0;
     data->VARIN1_BITIN0_BIT = 0;
     data->VARIN1_BITIN1_BIT = 0;
     data->VARIN1_BITIN2_BIT = 0;
+    data->VARIN1_I2C_LM75_0_I2C_LM75_0_VALID = 0;
 
     data->sys_error = (bool*)malloc(sizeof(bool));
     data->sys_status = (bool*)malloc(sizeof(bool));
@@ -438,22 +438,6 @@ data_t *register_signals(void) {
     *data->SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = 0;
     data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = 0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE = (float*)malloc(sizeof(float));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE = 1.0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET = (float*)malloc(sizeof(float));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET = 0.0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = (float*)malloc(sizeof(float));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = 0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = (float*)malloc(sizeof(float));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = 0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32 = (int32_t*)malloc(sizeof(int32_t));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32 = 0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = 0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID = 0;
-    data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID;
     data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE = (float*)malloc(sizeof(float));
     *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE = 1.0;
     data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET = (float*)malloc(sizeof(float));
@@ -996,6 +980,22 @@ data_t *register_signals(void) {
     *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID_not = 1 - *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID;
     data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS = (float*)malloc(sizeof(float));
     *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS = 0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE = (float*)malloc(sizeof(float));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE = 1.0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET = (float*)malloc(sizeof(float));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET = 0.0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP = (float*)malloc(sizeof(float));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP = 0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS = (float*)malloc(sizeof(float));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS = 0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32 = (int32_t*)malloc(sizeof(int32_t));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32 = 0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS = 0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID = 0;
+    data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID;
     return data;
 }
 
@@ -2458,6 +2458,7 @@ void mbus_device0_power_total_rx(uint8_t *frame_data, uint8_t frame_len) {
 
 
 
+
 /***********************************************************************/
 
 // Generated by component_signal_converter()
@@ -2933,27 +2934,6 @@ void convert_frame_mbmaster0_output(data_t *data) {
 
 
 // input: rxBuffer -> VAROUT -> calc -> SIGOUT
-void convert_sigin_fpga0_i2cbus0_lm75_0_temp(data_t *data) {
-    float value = data->VARIN16_I2CBUS0_LM75_0_TEMP;
-    float offset = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_OFFSET;
-    float scale = *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_SCALE;
-    // -- calc --
-    value = value / 256.0;
-    // ----------
-    value = value + offset;
-    value = value / scale;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_ABS = fabs(value);
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_S32 = value;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP_U32_ABS = fabs(value);
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP = value;
-}
-
-void convert_sigin_fpga0_i2cbus0_lm75_0_valid(data_t *data) {
-    bool value = data->VARIN1_I2CBUS0_LM75_0_VALID;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID = value;
-    *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID_not = 1 - value;
-}
-
 void convert_sigin_fpga0_stepdir0_position(data_t *data) {
     float value = data->VARIN32_STEPDIR0_POSITION;
     float offset = *data->SIGIN_FPGA0_STEPDIR0_POSITION_OFFSET;
@@ -3158,6 +3138,27 @@ void convert_frame_mbmaster0_input(data_t *data) {
     /**************************/
 }
 
+void convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_temp(data_t *data) {
+    float value = data->VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP;
+    float offset = *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET;
+    float scale = *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE;
+    // -- calc --
+    value = value / 256.0;
+    // ----------
+    value = value + offset;
+    value = value / scale;
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS = fabs(value);
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32 = value;
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS = fabs(value);
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP = value;
+}
+
+void convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_valid(data_t *data) {
+    bool value = data->VARIN1_I2C_LM75_0_I2C_LM75_0_VALID;
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID = value;
+    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not = 1 - value;
+}
+
 
 
 // Generated by component_buffer_converter()
@@ -3183,8 +3184,6 @@ void convert_outputs(void) {
 
 void convert_inputs(void) {
     // input: rxBuffer -> VAROUT -> calc -> SIGOUT
-    convert_sigin_fpga0_i2cbus0_lm75_0_temp(data);
-    convert_sigin_fpga0_i2cbus0_lm75_0_valid(data);
     convert_sigin_fpga0_stepdir0_position(data);
     convert_sigin_fpga0_stepdir1_position(data);
     convert_sigin_fpga0_stepdir2_position(data);
@@ -3192,6 +3191,8 @@ void convert_inputs(void) {
     convert_sigin_fpga0_bitin1_bit(data);
     convert_sigin_fpga0_bitin2_bit(data);
     convert_frame_mbmaster0_input(data);
+    convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_temp(data);
+    convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_valid(data);
 }
 
 // Generated by component_buffer()
@@ -3240,10 +3241,10 @@ void read_rxbuffer(uint8_t *rxBuffer) {
     data->VARIN1_BITIN2_BIT = (rxBuffer[39] & (1<<5));  // 6
     // FILL: 5
     if (data->MULTIPLEXER_INPUT_ID == 0) {;
-        memcpy(&data->VARIN16_I2CBUS0_LM75_0_TEMP, &data->MULTIPLEXER_INPUT_VALUE, 2);
+        memcpy(&data->VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP, &data->MULTIPLEXER_INPUT_VALUE, 2);
     }
     if (data->MULTIPLEXER_INPUT_ID == 1) {;
-        memcpy(&data->VARIN1_I2CBUS0_LM75_0_VALID, &data->MULTIPLEXER_INPUT_VALUE, 1);
+        memcpy(&data->VARIN1_I2C_LM75_0_I2C_LM75_0_VALID, &data->MULTIPLEXER_INPUT_VALUE, 1);
     }
 }
 
@@ -3915,26 +3916,6 @@ int main(int argc, char **argv) {
 
     while (1) {
         rio_readwrite(NULL, 0);
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_I2CBUS0_LM75_0_TEMP);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2cbus0/lm75_0_temp", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_I2CBUS0_LM75_0_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2cbus0/lm75_0_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
         sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_STEPDIR0_POSITION);
         pubmsg.payload = tmp_str;
         pubmsg.payloadlen = (int)strlen(tmp_str);
@@ -4711,6 +4692,26 @@ int main(int argc, char **argv) {
         pubmsg.qos = 0;
         pubmsg.retained = 0;
         if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_total_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_temp", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+             printf("Failed to publish message, return code %d\n", rc);
+             exit(EXIT_FAILURE);
+        }
+
+        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID);
+        pubmsg.payload = tmp_str;
+        pubmsg.payloadlen = (int)strlen(tmp_str);
+        pubmsg.qos = 0;
+        pubmsg.retained = 0;
+        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }

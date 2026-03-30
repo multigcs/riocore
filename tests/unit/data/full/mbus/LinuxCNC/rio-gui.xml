@@ -158,48 +158,6 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"i2cbus0-lm75_0_temp"</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-          <width>15</width>
-        </label>
-        <number>
-          <halpin>"fpga0.i2cbus0.lm75_0_temp"</halpin>
-          <font>("Helvetica",14)</font>
-          <format>"0.1f"</format>
-          <anchor>"e"</anchor>
-          <width>13</width>
-        </number>
-        <label>
-          <text>"&#176;C        "</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-        </label>
-      </hbox>
-      <hbox>
-        <boxexpand expand="yes"/>
-        <boxfill fill="both"/>
-        <boxanchor anchor="e"/>
-        <label>
-          <text>"i2cbus0-lm75_0_valid"</text>
-          <anchor>"w"</anchor>
-          <font>("Helvetica",9)</font>
-          <width>30</width>
-        </label>
-        <led>
-          <halpin>"fpga0.i2cbus0.lm75_0_valid"</halpin>
-          <size>16</size>
-          <on_color>"yellow"</on_color>
-          <off_color>"red"</off_color>
-          <anchor>"e"</anchor>
-          <width>16</width>
-        </led>
-      </hbox>
-      <hbox>
-        <boxexpand expand="yes"/>
-        <boxfill fill="both"/>
-        <boxanchor anchor="e"/>
-        <label>
           <text>"gpioin0-bit"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
@@ -321,6 +279,48 @@
         </label>
         <led>
           <halpin>"fpga0.mbus_dev4.di_5"</halpin>
+          <size>16</size>
+          <on_color>"yellow"</on_color>
+          <off_color>"red"</off_color>
+          <anchor>"e"</anchor>
+          <width>16</width>
+        </led>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"i2c_lm75_0-i2c_lm75_0_temp"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>15</width>
+        </label>
+        <number>
+          <halpin>"fpga0.i2c_lm75_0.i2c_lm75_0_temp"</halpin>
+          <font>("Helvetica",14)</font>
+          <format>"0.1f"</format>
+          <anchor>"e"</anchor>
+          <width>13</width>
+        </number>
+        <label>
+          <text>"&#176;C        "</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+        </label>
+      </hbox>
+      <hbox>
+        <boxexpand expand="yes"/>
+        <boxfill fill="both"/>
+        <boxanchor anchor="e"/>
+        <label>
+          <text>"i2c_lm75_0-i2c_lm75_0_valid"</text>
+          <anchor>"w"</anchor>
+          <font>("Helvetica",9)</font>
+          <width>30</width>
+        </label>
+        <led>
+          <halpin>"fpga0.i2c_lm75_0.i2c_lm75_0_valid"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>

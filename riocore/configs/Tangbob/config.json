@@ -101,7 +101,7 @@
             "rotate": 0
         },
         {
-            "type": "i2cbus",
+            "type": "i2c",
             "pins": {
                 "sda": {
                     "pin": "fpga0:I2C:sda"
@@ -111,25 +111,10 @@
                 }
             },
             "uid": "i2cbus0",
-            "config": {
-                "devices": {
-                    "lm75_0": {
-                        "type": "lm75",
-                        "address": "0x48",
-                        "subbus": "none"
-                    }
-                }
-            },
             "pos": [
                 150.0,
                 -20.0
-            ],
-            "sub_pos": {
-                "dev-lm75_0(0x48)": [
-                    390.0,
-                    -20.0
-                ]
-            }
+            ]
         },
         {
             "type": "stepdir",
@@ -365,14 +350,28 @@
                 }
             },
             "bitwidth": 16
+        },
+        {
+            "type": "i2c_device",
+            "node_type": "lm75",
+            "uid": "i2c_lm75_0",
+            "pins": {
+                "I2C": {
+                    "pin": "i2cbus0:BUS:IO"
+                }
+            },
+            "pos": [
+                410.0,
+                -20.0
+            ]
         }
     ],
     "flow": {
         "view": {
-            "scale": 1.06,
+            "scale": 0.53,
             "pos": [
-                115,
-                124
+                -84,
+                -35
             ]
         },
         "hal": {

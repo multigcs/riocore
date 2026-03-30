@@ -78,3 +78,5 @@ IO_PORT "PINOUT_MBMASTER0_TX_ENABLE" DRIVE=4;
 
 // ### mbus_device0 ###
 
+// ### i2c_lm75_0 ###
+

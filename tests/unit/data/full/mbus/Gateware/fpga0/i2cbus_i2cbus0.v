@@ -3,21 +3,21 @@ module i2cbus_i2cbus0
     #(parameter MAX_BITS = 64, parameter MAX_DIN = 64)
     (
         input clk,
-        output reg [15:0] lm75_0_temp = 0,
-        output reg lm75_0_valid = 0,
+        output reg [15:0] i2c_lm75_0_temp = 0,
+        output reg i2c_lm75_0_valid = 0,
         inout sda,
         output scl
     );
     localparam RW_WRITE = 0;
     localparam RW_READ = 1;
 
-    // device lm75_0 (100000Hz)
-    localparam DEVICE_LM75_0 = 0;
-    localparam DEVICE_LM75_0_ADDR = 7'h48;
-    localparam DEVICE_LM75_0_DIVIDER = 45;
+    // device i2c_lm75_0 (100000Hz)
+    localparam DEVICE_I2C_LM75_0 = 0;
+    localparam DEVICE_I2C_LM75_0_ADDR = 7'h48;
+    localparam DEVICE_I2C_LM75_0_DIVIDER = 166;
 
-    localparam DIVIDER_BITS = 6;
-    reg [7:0] device_lm75_0_step = 0;
+    localparam DIVIDER_BITS = 8;
+    reg [7:0] device_i2c_lm75_0_step = 0;
 
     reg [DIVIDER_BITS-1:0] divider = 100;
     reg [7:0] mpx_last = 255;
@@ -42,44 +42,44 @@ module i2cbus_i2cbus0
             start <= 0;
         end else if (start == 0 && busy == 0) begin
 
-            if (device_n == DEVICE_LM75_0) begin
-                divider <= DEVICE_LM75_0_DIVIDER;
+            if (device_n == DEVICE_I2C_LM75_0) begin
+                divider <= DEVICE_I2C_LM75_0_DIVIDER;
 
                 if (do_init) begin
-                    // init steps for lm75_0
-                    case (device_lm75_0_step)
+                    // init steps for i2c_lm75_0
+                    case (device_i2c_lm75_0_step)
                         default: begin
-                            device_lm75_0_step <= 0;
+                            device_i2c_lm75_0_step <= 0;
                             device_n <= device_n + 7'd1;
-                            lm75_0_valid <= ~error;
+                            i2c_lm75_0_valid <= ~error;
                         end
                     endcase
 
                 end else begin
-                    // loop steps for lm75_0
-                    case (device_lm75_0_step)
-                        // lm75_0: read
+                    // loop steps for i2c_lm75_0
+                    case (device_i2c_lm75_0_step)
+                        // i2c_lm75_0: read
                         0: begin
-                            // lm75_0: read: request the data
-                            device_lm75_0_step <= device_lm75_0_step + 7'd1;
-                            addr <= DEVICE_LM75_0_ADDR;
+                            // i2c_lm75_0: read: request the data
+                            device_i2c_lm75_0_step <= device_i2c_lm75_0_step + 7'd1;
+                            addr <= DEVICE_I2C_LM75_0_ADDR;
                             rw <= RW_READ;
                             bytes <= 2;
                             stop <= 1;
                             start <= 1;
                         end
                         1: begin
-                            device_lm75_0_step <= device_lm75_0_step + 7'd1;
-                            // lm75_0: read: check for error / return variable
+                            device_i2c_lm75_0_step <= device_i2c_lm75_0_step + 7'd1;
+                            // i2c_lm75_0: read: check for error / return variable
                             if (error == 0) begin
-                                lm75_0_temp <= data_in[15:0];
+                                i2c_lm75_0_temp <= data_in[15:0];
                             end
                         end
 
                         default: begin
-                            device_lm75_0_step <= 0;
+                            device_i2c_lm75_0_step <= 0;
                             device_n <= device_n + 7'd1;
-                            lm75_0_valid <= ~error;
+                            i2c_lm75_0_valid <= ~error;
                         end
                     endcase
 

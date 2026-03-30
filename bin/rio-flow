@@ -1927,12 +1927,14 @@ class Window(QMainWindow):
             self.config["plugins"].insert(0, bpdict)
             del self.config["breakouts"][0]
 
-        # upgrade: mesa/sserial -> sserial
+        # upgrade: i2c_bus -> i2c + i2c_device
         for pn, plugin in enumerate(list(self.config.get("plugins", []))):
-            if plugin["type"] == "mesa" and plugin.get("node_type") in {"sserial", "rgb", "adc"}:
-                plugin["type"] = "sserial"
-                if not plugin.get("board"):
-                    plugin["board"] = "esp32dev"
+            if plugin["type"] == "i2cbus":
+                plugin["type"] = "i2c"
+                if "config" in plugin:
+                    for name, device in plugin["config"].get("devices", {}).items():
+                        self.config["plugins"].append({"type": "i2c_device", "node_type": device["type"], "uid": f"i2c_{name}", "pins": {"I2C": {"pin": f"{plugin['uid']}:BUS:IO"}}})
+                    del plugin["config"]
 
         # self.nesting_all()
         self.redraw()

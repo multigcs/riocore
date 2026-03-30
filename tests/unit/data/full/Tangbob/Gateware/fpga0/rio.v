@@ -109,8 +109,6 @@ module rio (
     wire VAROUT1_FPGA0_WLED_0_RED;
     wire [127:0] VARIN128_MODBUS0_RXDATA;
     wire [127:0] VAROUT128_MODBUS0_TXDATA;
-    wire [15:0] VARIN16_I2CBUS0_LM75_0_TEMP;
-    wire VARIN1_I2CBUS0_LM75_0_VALID;
     wire [31:0] VAROUT32_STEPDIR0_VELOCITY;
     wire VAROUT1_STEPDIR0_ENABLE;
     wire [31:0] VARIN32_STEPDIR0_POSITION;
@@ -124,6 +122,8 @@ module rio (
     wire VARIN1_BITIN1_BIT;
     wire VARIN1_BITIN2_BIT;
     wire VAROUT1_BITOUT0_BIT;
+    wire [15:0] VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP;
+    wire VARIN1_I2C_LM75_0_I2C_LM75_0_VALID;
 
     // PC -> MASTER_FPGA / OUT (263 + FILL = 264)
     // assign header_rx = {rx_data[239:232], rx_data[247:240], rx_data[255:248], rx_data[263:256]};
@@ -165,10 +165,10 @@ module rio (
                 MULTIPLEXED_INPUT_ID = 0;
             end
             if (MULTIPLEXED_INPUT_ID == 0) begin
-                MULTIPLEXED_INPUT_VALUE <= VARIN16_I2CBUS0_LM75_0_TEMP[15:0];
+                MULTIPLEXED_INPUT_VALUE <= VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP[15:0];
             end
             if (MULTIPLEXED_INPUT_ID == 1) begin
-                MULTIPLEXED_INPUT_VALUE <= VARIN1_I2CBUS0_LM75_0_VALID;
+                MULTIPLEXED_INPUT_VALUE <= VARIN1_I2C_LM75_0_I2C_LM75_0_VALID;
             end
         end
     end
@@ -270,7 +270,7 @@ module rio (
         .led(PINOUT_BLINK0_LED_RAW)
     );
 
-    // Name: i2cbus0 (i2cbus)
+    // Name: i2cbus0 (i2c)
     wire PINOUT_I2CBUS0_SCL_RAW;
     assign PINOUT_I2CBUS0_SCL = PINOUT_I2CBUS0_SCL_RAW;
     i2cbus_i2cbus0 #(
@@ -280,8 +280,8 @@ module rio (
         .clk(sysclk),
         .sda(PININOUT_I2CBUS0_SDA),
         .scl(PINOUT_I2CBUS0_SCL_RAW),
-        .lm75_0_temp(VARIN16_I2CBUS0_LM75_0_TEMP),
-        .lm75_0_valid(VARIN1_I2CBUS0_LM75_0_VALID)
+        .i2c_lm75_0_temp(VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP),
+        .i2c_lm75_0_valid(VARIN1_I2C_LM75_0_I2C_LM75_0_VALID)
     );
 
     // Name: stepdir0 (stepdir)
