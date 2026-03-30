@@ -314,6 +314,12 @@ class Project:
         self.timestamp_last = 0
         self.duration = 0
         self.load_config(configuration, output_path)
+
+        if self.config.get("jdata", {}).get("boardcfg"):
+            print("ERROR: old config found, please open in rio-flow to convert and review:")
+            print(f"    bin/rio-flow {configuration}")
+            sys.exit(1)
+
         self.plugin_instances = plugins.load_plugins(self.config, system_setup=self.config)
 
         def bus_trace(target_pin, tracelist):
