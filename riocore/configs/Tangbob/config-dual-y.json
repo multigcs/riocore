@@ -102,8 +102,8 @@
             "uid": "stepdir0",
             "image": "stepper",
             "pos": [
-                980.0,
-                540.0
+                1090.0,
+                750.0
             ],
             "pins": {
                 "step": {
@@ -117,23 +117,15 @@
                 }
             },
             "is_joint": true,
-            "joint": {
-                "scale": -800.0,
-                "max_velocity": 25.0,
-                "min_limit": -100.0,
-                "max_limit": 230.0,
-                "home_search_vel": -10.0,
-                "home_latch_vel": -1.0,
-                "home_final_vel": 20.0
-            }
+            "axis": "X"
         },
         {
             "type": "stepdir",
             "uid": "stepdir1",
             "image": "stepper",
             "pos": [
-                980.0,
-                280.0
+                1090.0,
+                490.0
             ],
             "pins": {
                 "step": {
@@ -144,23 +136,15 @@
                 }
             },
             "is_joint": true,
-            "joint": {
-                "scale": -800.0,
-                "max_velocity": 25.0,
-                "min_limit": -100.0,
-                "max_limit": 160.0,
-                "home_search_vel": -10.0,
-                "home_latch_vel": -1.0,
-                "home_final_vel": 20.0
-            }
+            "axis": "Y"
         },
         {
             "type": "stepdir",
             "uid": "stepdir2",
             "image": "stepper",
             "pos": [
-                980.0,
-                20.0
+                1090.0,
+                230.0
             ],
             "pins": {
                 "step": {
@@ -171,15 +155,7 @@
                 }
             },
             "is_joint": true,
-            "joint": {
-                "scale": -1600.0,
-                "max_velocity": 15.0,
-                "min_limit": -32.0,
-                "max_limit": 100.0,
-                "home_search_vel": 10.0,
-                "home_latch_vel": 1.0,
-                "home_final_vel": 10.0
-            }
+            "axis": "Z"
         },
         {
             "type": "bitin",
@@ -350,6 +326,25 @@
                     "pin": "fpga0:MODBUS:RX"
                 }
             }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir3",
+            "image": "stepper",
+            "pos": [
+                1090.0,
+                -30.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:A:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:A:dir"
+                }
+            },
+            "is_joint": true,
+            "axis": "Y"
         }
     ]
 }
