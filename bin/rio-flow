@@ -996,10 +996,12 @@ class NodeViewer(QGraphicsView):
             if " " in plugin_name:
                 plugin_name, node_type = plugin_name.split(" ")
             psetup = {"type": plugin_name}
+            uid_prefix = plugin_name
             if node_type:
                 psetup["node_type"] = node_type
+                uid_prefix = node_type
             unum = 0
-            while f"{plugin_name}{unum}" in self.scene.parent.plugin_uids:
+            while f"{uid_prefix}{unum}" in self.scene.parent.plugin_uids:
                 unum += 1
             self.scene.parent.plugins.load_plugin(unum, psetup, self.scene.parent.config)
             plugin_instance = self.scene.parent.plugins.plugin_instances[-1]

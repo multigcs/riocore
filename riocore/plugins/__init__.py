@@ -61,7 +61,10 @@ class PluginBase:
         self.SUB_OPTIONS = {}
 
         if "uid" not in self.plugin_setup:
-            self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"
+            if node_type := self.plugin_setup.get("node_type"):
+                self.plugin_setup["uid"] = f"{node_type}{self.plugin_id}"
+            else:
+                self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"
         self.instances_name = self.plugin_setup["uid"]
 
         self.setup()
