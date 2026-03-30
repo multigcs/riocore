@@ -1884,10 +1884,10 @@ class Window(QMainWindow):
         board_name = self.config.get("boardcfg")
         board_uid = "board0"
         if board_name:
+            riocore.log(f"INFO: converting board into fpga-plugin: {board_name}")
             boardpath = os.path.join(riocore_path, "plugins", "fpga", "boards", f"{board_name}.json")
-            riocore.log(f"INFO: converting board {boardpath} into plugin")
-            data = open(boardpath).read()
-            board = json.loads(data)
+            bdata = open(boardpath).read()
+            board = json.loads(bdata)
             bdict = {
                 "type": "fpga",
                 "node_type": board_name,
@@ -1900,14 +1900,34 @@ class Window(QMainWindow):
             }
             self.config["plugins"].insert(0, bdict)
             del self.config["boardcfg"]
-            for plugin_data in self.config.get("plugins", []):
+            pin_mapping = {}
+            for slot in board.get("slots", []):
+                for spin_name, spin_data in slot.get("pins", {}).items():
+                    if spin_data.get("pin"):
+                        pin_mapping[spin_data.get("pin")] = f"{slot['name']}:{spin_name}"
+            board_plugins = {}
+            for plugin in board.get("plugins", []):
+                board_plugins[plugin["type"]] = plugin
+            if "protocol" in self.config:
+                del self.config["protocol"]
+            for pn, plugin_data in enumerate(self.config.get("plugins", [])):
+                # remove plugins that exist as sub in the board-file
+                if plugin_data["type"] in {"wled", "w5500"} and plugin_data["type"] in board_plugins:
+                    riocore.log(f"INFO: removing plugin: {plugin_data['type']} (is sub-plugin in board-file)")
+                    del self.config["plugins"][pn]
+                # rename pins
                 for pin_name, pin_data_raw in plugin_data.get("pins", {}).items():
                     pin_data = pin_data_raw
                     if isinstance(pin_data, str):
                         pin_data = {"pin": pin_data}
                     pin = pin_data.get("pin")
                     if pin:
-                        if len(pin.split(":")) < 3:
+                        if len(pin.split(":")) < 2:
+                            new_pin = pin_mapping.get(pin_data["pin"], pin_data["pin"])
+                            riocore.log(f"INFO: renaming pin: {pin_data['pin']} -> {board_uid}:{new_pin}")
+                            pin_data["pin"] = f"{board_uid}:{new_pin}"
+                        elif len(pin.split(":")) < 3:
+                            riocore.log(f"INFO: renaming pin: {pin_data['pin']} -> {board_uid}:{pin}")
                             pin_data["pin"] = f"{board_uid}:{pin}"
 
         # upgrade: breakouts -> plugins
@@ -1931,10 +1951,30 @@ class Window(QMainWindow):
         # upgrade: i2c_bus -> i2c + i2c_device
         for pn, plugin in enumerate(list(self.config.get("plugins", []))):
             if plugin["type"] == "i2cbus":
+                riocore.log("INFO: converting i2cbus into i2c plugin")
                 plugin["type"] = "i2c"
                 if "config" in plugin:
                     for name, device in plugin["config"].get("devices", {}).items():
+                        riocore.log("INFO: converting i2cbus device into i2cbus_device plugin")
                         self.config["plugins"].append({"type": "i2c_device", "node_type": device["type"], "uid": f"i2c_{name}", "pins": {"I2C": {"pin": f"{plugin['uid']}:BUS:IO"}}})
+                    del plugin["config"]
+
+        # upgrade: modbus -> mbus + mbus_device
+        for pn, plugin in enumerate(list(self.config.get("plugins", []))):
+            if plugin["type"] == "modbus":
+                riocore.log("INFO: converting modbus into mbus plugin")
+                plugin["type"] = "mbus"
+                if "config" in plugin:
+                    for name, device in plugin["config"].items():
+                        riocore.log("INFO: converting modbus device into mbus_device plugin")
+                        new_plugin = {"type": "mbus_device", "node_type": "generic", "uid": f"mbus_{name}", "pins": {"MODBUS": {"pin": f"{plugin['uid']}:BUS:IO"}}}
+                        for key, value in device.items():
+                            newkey = {"type": "ctype"}.get(key, key)
+                            if newkey == "ctype" and value == 101:
+                                new_plugin["type"] = "mbus_hy"
+                            elif newkey not in new_plugin:
+                                new_plugin[newkey] = value
+                        self.config["plugins"].append(new_plugin)
                     del plugin["config"]
 
         # self.nesting_all()
