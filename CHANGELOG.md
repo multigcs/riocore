@@ -12,7 +12,6 @@
 * test-tool is now based on the hal-component c-code
 
 
-
 ## v0.9.4
 
 ### Gui and Generator
