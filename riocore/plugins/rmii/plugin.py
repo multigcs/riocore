@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "interface network ethernet udp"
         self.ORIGIN = "https://github.com/sipeed/TangPrimer-20K-example/tree/main/Ethernet/verilog_UDP"
         self.EXPERIMENTAL = True
+        self.HOST_INTERFACE = "UDP"
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["udp.v", "rmii.v"]
         self.LIMITATIONS = {

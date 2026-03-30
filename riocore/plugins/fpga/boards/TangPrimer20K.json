@@ -127,14 +127,14 @@
         "wled_bar",
         "wled_expansion"
       ],
-      "pos": [
-        757,
-        71
-      ],
       "pins": {
         "DATA": {
           "pin": "T9",
-          "direction": "output"
+          "direction": "output",
+          "pos": [
+            385,
+            40
+          ]
         }
       }
     },
@@ -266,18 +266,96 @@
         "TX": {
           "pin": "M11",
           "pos": [
-            232,
-            335
+            340,
+            300
           ],
           "direction": "output"
         },
         "RX": {
           "pin": "T13",
           "pos": [
-            247,
-            335
+            355,
+            300
           ],
           "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "RMII",
+      "comment": "Ethernet-Port",
+      "pins": {
+        "TXD0": {
+          "pin": "D16",
+          "pos": [
+            80,
+            250
+          ],
+          "direction": "all"
+        },
+        "TXD1": {
+          "pin": "E14",
+          "pos": [
+            100,
+            250
+          ],
+          "direction": "all"
+        },
+        "TXEN": {
+          "pin": "E16",
+          "pos": [
+            120,
+            250
+          ],
+          "direction": "all"
+        },
+        "RXD0": {
+          "pin": "F15",
+          "pos": [
+            80,
+            270
+          ],
+          "direction": "all"
+        },
+        "RXD1": {
+          "pin": "C9",
+          "pos": [
+            100,
+            270
+          ],
+          "direction": "all"
+        },
+        "RXCRS": {
+          "pin": "M6",
+          "pos": [
+            120,
+            270
+          ],
+          "direction": "all"
+        },
+        "MDC": {
+          "pin": "F14",
+          "pos": [
+            80,
+            270
+          ],
+          "direction": "all"
+        },
+        "CLK50M": {
+          "pin": "A9",
+          "pos": [
+            100,
+            270
+          ],
+          "direction": "all"
+        },
+        "MDIO": {
+          "pin": "F16",
+          "pos": [
+            120,
+            270
+          ],
+          "direction": "all"
         }
       }
     }

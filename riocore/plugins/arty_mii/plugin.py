@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.ORIGIN = "https://github.com/alexforencich/verilog-ethernet"
         self.NEEDS = ["fpga"]
         self.EXPERIMENTAL = True
+        self.HOST_INTERFACE = "UDP"
         self.LIMITATIONS = {
             "boards": ["Arty-a7-35t"],
             "toolchains": ["vivado"],

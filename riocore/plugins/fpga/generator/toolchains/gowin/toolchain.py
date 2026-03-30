@@ -66,7 +66,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
 
         verilogs = " ".join(self.config["verilog_files"])
 
-        board = self.config.get("board")
+        board = self.config.get("board") or self.config.get("name")
         family = self.config["family"]
         ftype = self.config["type"]
         if family == "GW1N-9C":
