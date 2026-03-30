@@ -1886,6 +1886,9 @@ class Window(QMainWindow):
         if board_name:
             riocore.log(f"INFO: converting board into fpga-plugin: {board_name}")
             boardpath = os.path.join(riocore_path, "plugins", "fpga", "boards", f"{board_name}.json")
+            if not os.path.exists(boardpath):
+                riocore.log(f"ERROR: can not convert board, no fpga-board found: {boardpath}")
+                sys.exit(1)
             bdata = open(boardpath).read()
             board = json.loads(bdata)
             bdict = {
