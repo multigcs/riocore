@@ -29,5 +29,6 @@
 | [TangPrimer20K](boards/TangPrimer20K.md) | GW2A-18C | GW2A-LV18PG256C8/I7 | 27.00Mhz | gowin (icestorm) | TangPrimer20K-Devboard on Dock ext-board | <img width="300" src="boards/TangPrimer20K.png"> |
 | [TangPrimer25K](boards/TangPrimer25K.md) | GW5A-25A | GW5A-LV25MG121NC1/I0 | 50.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img width="300" src="boards/TangPrimer25K.png"> |
 | [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
+| [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
 | [Tangoboard](boards/Tangoboard.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | based on TangNano9k | <img width="300" src="boards/Tangoboard.png"> |
 | [rioctrl](boards/rioctrl.md) | ecp5 | 12k | 100.00Mhz | icestorm | rioctrl- a modular hardware for riocore | <img width="300" src="boards/rioctrl.png"> |
