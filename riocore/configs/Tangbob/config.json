@@ -67,25 +67,6 @@
             }
         },
         {
-            "type": "modbus",
-            "pins": {
-                "tx": {
-                    "pin": "fpga0:MODBUS:TX"
-                },
-                "rx": {
-                    "pin": "fpga0:MODBUS:RX"
-                },
-                "tx_enable": {
-                    "pin": "fpga0:MODBUS:TX_ENABLE"
-                }
-            },
-            "uid": "modbus0",
-            "pos": [
-                390.0,
-                110.0
-            ]
-        },
-        {
             "type": "blink",
             "pins": {
                 "led": {
@@ -112,8 +93,8 @@
             },
             "uid": "i2cbus0",
             "pos": [
-                150.0,
-                -20.0
+                300.0,
+                -30.0
             ]
         },
         {
@@ -352,26 +333,31 @@
             "bitwidth": 16
         },
         {
-            "type": "i2c_device",
-            "node_type": "lm75",
-            "uid": "i2c_lm75_0",
-            "pins": {
-                "I2C": {
-                    "pin": "i2cbus0:BUS:IO"
-                }
-            },
+            "type": "mbus",
+            "uid": "mbus0",
             "pos": [
-                410.0,
-                -20.0
-            ]
+                310.0,
+                70.0
+            ],
+            "pins": {
+                "tx_enable": {
+                    "pin": "fpga0:MODBUS:TX_ENABLE"
+                },
+                "tx": {
+                    "pin": "fpga0:MODBUS:TX"
+                },
+                "rx": {
+                    "pin": "fpga0:MODBUS:RX"
+                }
+            }
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.53,
+            "scale": 0.6,
             "pos": [
-                -84,
-                -35
+                -165,
+                -51
             ]
         },
         "hal": {
