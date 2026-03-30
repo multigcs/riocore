@@ -11,13 +11,13 @@ modbus device
 | Name | Image |
 | --- | --- |
 | generic | - |
-| MA01-AXCX4020 | <img height="48" src="boards/MA01-AXCX4020.png"> |
-| N4DOK32 | <img height="48" src="boards/N4DOK32.png"> |
-| DDS519MR | <img height="48" src="boards/DDS519MR.png"> |
-| NT18B07 | <img height="48" src="boards/NT18B07.png"> |
-| N4DAC02 | <img height="48" src="boards/N4DAC02.png"> |
-| 303E32DC812 | <img height="48" src="boards/303E32DC812.png"> |
 | MA01-XACX0440 | <img height="48" src="boards/MA01-XACX0440.png"> |
+| DDS519MR | <img height="48" src="boards/DDS519MR.png"> |
+| 303E32DC812 | <img height="48" src="boards/303E32DC812.png"> |
+| NT18B07 | <img height="48" src="boards/NT18B07.png"> |
+| MA01-AXCX4020 | <img height="48" src="boards/MA01-AXCX4020.png"> |
+| N4DAC02 | <img height="48" src="boards/N4DAC02.png"> |
+| N4DOK32 | <img height="48" src="boards/N4DOK32.png"> |
 
 ## Pins:
 *FPGA-pins*
@@ -39,7 +39,7 @@ device type
 
  * type: select
  * default: generic
- * options: generic, MA01-AXCX4020, N4DOK32, DDS519MR, NT18B07, N4DAC02, 303E32DC812, MA01-XACX0440
+ * options: generic, MA01-XACX0440, DDS519MR, 303E32DC812, NT18B07, MA01-AXCX4020, N4DAC02, N4DOK32
 
 ### address:
 device address

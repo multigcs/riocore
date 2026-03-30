@@ -107,4 +107,19 @@ UART2USB
 | TX | M11 | output |
 | RX | T13 | input |
 
+### RMII
+Ethernet-Port
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| TXD0 | D16 | all |
+| TXD1 | E14 | all |
+| TXEN | E16 | all |
+| RXD0 | F15 | all |
+| RXD1 | C9 | all |
+| RXCRS | M6 | all |
+| MDC | F14 | all |
+| CLK50M | A9 | all |
+| MDIO | F16 | all |
+
 

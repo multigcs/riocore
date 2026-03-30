@@ -20,11 +20,75 @@ LED
 | --- | --- | --- |
 | G | U16 | output |
 
+### P2
+extra pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| GND | GND | all |
+| 5V | 5V | all |
+| B3 | B3 | all |
+| A3 | A3 | all |
+| B4 | L14 | all |
+| A4 | L13 | all |
+
+### P3
+extra pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| GND | GND | all |
+| 5V | 5V | all |
+| T2 | T2 | all |
+| R2 | R2 | all |
+| R1 | R1 | all |
+| P2 | P2 | all |
+
+### P4
+extra pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V | 5V | all |
+| GND | GND | all |
+| C1 | F3 | all |
+| C2 | F4 | all |
+| C3 | G3 | all |
+| C4 | G4 | all |
+
+### P5
+extra pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V | 5V | all |
+| GND | GND | all |
+| D10 | D10 | all |
+| C9 | C9 | all |
+| D11 | D11 | all |
+| C10 | C10 | all |
+
+### P6
+extra pins
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V | 5V | all |
+| GND | GND | all |
+| K14 | K14 | all |
+| K13 | K13 | all |
+| L14 | L14 | all |
+| L13 | L13 | all |
+
 ### PMOD_2A
 PMOD 2A on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | J20 | all |
 | P2 | L18 | all |
 | P3 | M18 | all |
@@ -39,6 +103,10 @@ PMOD 2B on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | P17 | all |
 | P2 | R18 | all |
 | P3 | C18 | all |
@@ -53,6 +121,10 @@ PMOD 3A on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | D1 | all |
 | P2 | C1 | all |
 | P3 | C2 | all |
@@ -67,6 +139,10 @@ PMOD 3B on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | C17 | all |
 | P2 | B18 | all |
 | P3 | B20 | all |
@@ -81,6 +157,10 @@ PMOD 4B on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | H4 | all |
 | P2 | G3 | all |
 | P3 | F1 | all |
@@ -95,6 +175,10 @@ PMOD 5A on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | J17 | all |
 | P2 | H17 | all |
 | P3 | H16 | all |
@@ -109,6 +193,10 @@ PMOD 5B on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | D18 | all |
 | P2 | G5 | all |
 | P3 | F5 | all |
@@ -123,6 +211,10 @@ PMOD 6A on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | R1 | all |
 | P2 | U1 | all |
 | P3 | W1 | all |
@@ -137,6 +229,10 @@ PMOD 6B on i5_extboard_v1.2
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 | P1 | R3 | all |
 | P2 | M4 | all |
 | P3 | L5 | all |

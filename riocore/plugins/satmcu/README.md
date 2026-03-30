@@ -12,12 +12,12 @@ mcu based satellite connected via RS422
 ## Node-Types
 | Name | Image |
 | --- | --- |
+| rp2040-zero | <img height="48" src="boards/rp2040-zero.png"> |
 | wemos_d1_mini32 | <img height="48" src="boards/wemos_d1_mini32.png"> |
+| vfdsat | <img height="48" src="boards/vfdsat.png"> |
+| pico | <img height="48" src="boards/pico.png"> |
 | mpgsat | <img height="48" src="boards/mpgsat.png"> |
 | esp32dev | <img height="48" src="boards/esp32dev.png"> |
-| pico | <img height="48" src="boards/pico.png"> |
-| vfdsat | <img height="48" src="boards/vfdsat.png"> |
-| rp2040-zero | <img height="48" src="boards/rp2040-zero.png"> |
 
 ## Pins:
 *FPGA-pins*
@@ -136,7 +136,7 @@ board type
 
  * type: select
  * default: pico
- * options: wemos_d1_mini32, mpgsat, esp32dev, pico, vfdsat, rp2040-zero
+ * options: rp2040-zero, wemos_d1_mini32, vfdsat, pico, mpgsat, esp32dev
 
 ### baud:
 serial baud rate

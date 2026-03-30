@@ -9,13 +9,13 @@
 ## Node-Types
 | Name | Image |
 | --- | --- |
-| db25-1205 | <img height="48" src="boards/db25-1205.png"> |
-| china-bob5x | <img height="48" src="boards/china-bob5x.png"> |
 | rioctrl-shiftio | <img height="48" src="boards/rioctrl-shiftio.png"> |
-| rioctrl-stepdir | <img height="48" src="boards/rioctrl-stepdir.png"> |
-| rio-icebreaker3x | <img height="48" src="boards/rio-icebreaker3x.png"> |
-| rioctrl-quadenc4 | <img height="48" src="boards/rioctrl-quadenc4.png"> |
 | rpi-db25hat | <img height="48" src="boards/rpi-db25hat.png"> |
+| rioctrl-quadenc4 | <img height="48" src="boards/rioctrl-quadenc4.png"> |
+| rioctrl-stepdir | <img height="48" src="boards/rioctrl-stepdir.png"> |
+| china-bob5x | <img height="48" src="boards/china-bob5x.png"> |
+| db25-1205 | <img height="48" src="boards/db25-1205.png"> |
+| rio-icebreaker3x | <img height="48" src="boards/rio-icebreaker3x.png"> |
 
 ## Pins:
 *FPGA-pins*
@@ -248,7 +248,7 @@ board type
 
  * type: select
  * default: china-bob5x
- * options: db25-1205, china-bob5x, rioctrl-shiftio, rioctrl-stepdir, rio-icebreaker3x, rioctrl-quadenc4, rpi-db25hat
+ * options: rioctrl-shiftio, rpi-db25hat, rioctrl-quadenc4, rioctrl-stepdir, china-bob5x, db25-1205, rio-icebreaker3x
 
 
 ## Signals:

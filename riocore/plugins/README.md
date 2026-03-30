@@ -131,10 +131,8 @@
 |  | [wled](wled/README.md) | ws2812b interface | <img src="wled/image.png" height="48"> |  |
 |  | [wled_bar](wled_bar/README.md) | ws2812b interface for bar-displays | <img src="wled_bar/image.png" height="48"> |  |
 | FrameIO | [mbus](mbus/README.md) | modbus plugin | <img src="mbus/image.png" height="48"> |  |
-|  | [modbus](modbus/README.md) | generic modbus plugin - deprecated, please use the mbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
 |  | [mbus](mbus/README.md) | modbus plugin | <img src="mbus/image.png" height="48"> |  |
-|  | [modbus](modbus/README.md) | generic modbus plugin - deprecated, please use the mbus plugin | <img src="modbus/image.png" height="48"> |  |
 |  | [uartbridge](uartbridge/README.md) | uart bridge - python only | <img src="uartbridge/image.png" height="48"> | Experimental  |
 | Expansions | [bitinsel](bitinsel/README.md) | input selector / demultiplexer |  |  |
 |  | [shiftreg](shiftreg/README.md) | Expansion to add I/O's via shiftregister's | <img src="shiftreg/image.png" height="48"> |  |
