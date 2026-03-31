@@ -297,6 +297,9 @@ class LinuxCNC:
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
+        output.append("# compile and install dynamic-loader")
+        output.append("# sudo halcompile --install riocore/files/rio.c")
+        output.append("")
 
         for plugin_instance in self.project.plugin_instances:
             if hasattr(plugin_instance, "start_sh"):
