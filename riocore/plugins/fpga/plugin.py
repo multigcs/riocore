@@ -263,11 +263,25 @@ class Plugin(PluginBase):
         parent.halg.net_add(f"{self.hal_prefix}.sys-error", "halui.estop.activate")
 
     def start_sh(self, parent):
-        return f'sudo halcompile --install "$DIRNAME/riocomp-{self.instances_name}.c"\n'
+        return f'# sudo halcompile --install "$DIRNAME/riocomp-{self.instances_name}.c"\n'
 
     @classmethod
     def component_loader(cls, instances):
         output = []
+
+        comp_names = []
+        for instance in instances:
+            node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
+            simulation = instance.plugin_setup.get("simulation", instance.option_default("simulation"))
+            if instance.fmaster:
+                # is sub fpga
+                continue
+            comp_names.append(f"riocomp-{instance.instances_name}")
+            output.append(f"# fpga board(s) {node_type}")
+
+        output.append(f"loadrt rio comp_names={','.join(comp_names)}")
+        output.append("")
+
         for instance in instances:
             node_type = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             simulation = instance.plugin_setup.get("simulation", instance.option_default("simulation"))
@@ -275,9 +289,6 @@ class Plugin(PluginBase):
                 # is sub fpga
                 continue
 
-            output.append(f"# fpga board {node_type}")
-            output.append(f"loadrt riocomp-{instance.instances_name}")
-            output.append("")
             output.append("# if you need to test rio without hardware, set it to 1")
             if simulation:
                 output.append(f"setp {instance.hal_prefix}.sys-simulation 1")
