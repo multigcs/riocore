@@ -9,8 +9,8 @@ loadrt pid num_chan=3
 # manual toolchanger
 loadusr -W hal_manualtoolchange
 
-# fpga board Tangbob
-loadrt riocomp-fpga0
+# fpga board(s) Tangbob
+loadrt rio comp_names=riocomp-fpga0
 
 # if you need to test rio without hardware, set it to 1
 setp fpga0.sys-simulation 0

@@ -6,8 +6,8 @@ loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EM
 # pid controller
 loadrt pid num_chan=3
 
-# fpga board Tangoboard
-loadrt riocomp-board0
+# fpga board(s) Tangoboard
+loadrt rio comp_names=riocomp-board0
 
 # if you need to test rio without hardware, set it to 1
 setp board0.sys-simulation 0
