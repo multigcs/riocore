@@ -1,12 +1,12 @@
-# uartsub
+# satuart
 
 <img align="right" width="320" src="image.png">
 
-**uartsub interface for host cominucation**
+**uart interface for satellite cominucation**
 
-simple uartsub interface, not usable for realtime stuff in LinuxCNC / only for testing
+simple uart interface to connect satellite mcu/fpga
 
-* Keywords: serial uartsub interface
+* Keywords: serial satuart interface rs422
 * NEEDS: fpga
 
 ## Pins:
@@ -20,6 +20,7 @@ simple uartsub interface, not usable for realtime stuff in LinuxCNC / only for t
  * direction: output
 
 ### tx_enable:
+for RS485 mode
 
  * direction: output
  * optional: True
@@ -64,7 +65,7 @@ timeout in ms
 
 
 ## Verilogs:
- * [uartsub.v](uartsub.v)
+ * [satuart.v](satuart.v)
  * [uart_baud.v](uart_baud.v)
  * [uart_rx.v](uart_rx.v)
  * [uart_tx.v](uart_tx.v)

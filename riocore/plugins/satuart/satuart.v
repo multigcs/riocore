@@ -1,5 +1,5 @@
 
-module uartsub
+module satuart
     #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h61746164, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter Timeout=2000000, parameter CSUM=0)
      (
          input clk,

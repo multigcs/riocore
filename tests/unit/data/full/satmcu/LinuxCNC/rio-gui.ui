@@ -860,7 +860,7 @@ QLabel {
     <item>
      <widget class="QLabel">
       <property name="text">
-       <string>uartsub0-timeout</string>
+       <string>satuart0-timeout</string>
       </property>
       <property name="indent">
        <number>4</number>
@@ -868,7 +868,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="board0.uartsub0.timeout">
+     <widget class="LED" name="board0.satuart0.timeout">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>

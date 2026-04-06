@@ -88,7 +88,7 @@ data_t *register_signals(void) {
     data->VAROUT1_BITOUT1_BIT = 0;
     data->VARIN1_BITIN6_BIT = 0;
     data->VARIN1_BITIN7_BIT = 0;
-    data->VARIN1_UARTSUB0_TIMEOUT = 0;
+    data->VARIN1_SATUART0_TIMEOUT = 0;
     data->VARIN1_MPGESTOP_BIT = 0;
     data->VARIN1_SCALE0_BIT = 0;
     data->VAROUT1_LEDSCALE0_BIT = 0;
@@ -230,10 +230,10 @@ data_t *register_signals(void) {
     *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_S32 = 0;
     data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS = (uint32_t*)malloc(sizeof(uint32_t));
     *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS = 0;
-    data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = 0;
-    data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = 1 - *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT;
+    data->SIGIN_BOARD0_SATUART0_TIMEOUT = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT = 0;
+    data->SIGIN_BOARD0_SATUART0_TIMEOUT_not = (bool*)malloc(sizeof(bool));
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT_not = 1 - *data->SIGIN_BOARD0_SATUART0_TIMEOUT;
     data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE = (float*)malloc(sizeof(float));
     *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE = 1.0;
     data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_OFFSET = (float*)malloc(sizeof(float));
@@ -818,10 +818,10 @@ void convert_sigin_board0_satmcu0_feed_position(data_t *data) {
     *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION = value;
 }
 
-void convert_sigin_board0_uartsub0_timeout(data_t *data) {
-    bool value = data->VARIN1_UARTSUB0_TIMEOUT;
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = value;
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = 1 - value;
+void convert_sigin_board0_satuart0_timeout(data_t *data) {
+    bool value = data->VARIN1_SATUART0_TIMEOUT;
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT = value;
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT_not = 1 - value;
 }
 
 void convert_sigin_board0_satmcu0_spindle_position(data_t *data) {
@@ -1035,7 +1035,7 @@ void convert_inputs(void) {
     convert_sigin_board0_bitin6_bit(data);
     convert_sigin_board0_bitin7_bit(data);
     convert_sigin_board0_satmcu0_feed_position(data);
-    convert_sigin_board0_uartsub0_timeout(data);
+    convert_sigin_board0_satuart0_timeout(data);
     convert_sigin_board0_satmcu0_spindle_position(data);
     convert_sigin_board0_satmcu0_rapid_position(data);
     convert_sigin_board0_satmcu0_jogwheel_position(data);
@@ -1101,7 +1101,7 @@ void read_rxbuffer(uint8_t *rxBuffer) {
     data->VARIN1_BITIN5_BIT = (rxBuffer[25] & (1<<2));  // 19
     data->VARIN1_BITIN6_BIT = (rxBuffer[25] & (1<<1));  // 18
     data->VARIN1_BITIN7_BIT = (rxBuffer[25] & (1<<0));  // 17
-    data->VARIN1_UARTSUB0_TIMEOUT = (rxBuffer[26] & (1<<7));  // 16
+    data->VARIN1_SATUART0_TIMEOUT = (rxBuffer[26] & (1<<7));  // 16
     data->VARIN1_MPGESTOP_BIT = (rxBuffer[26] & (1<<6));  // 15
     data->VARIN1_SCALE0_BIT = (rxBuffer[26] & (1<<5));  // 14
     data->VARIN1_SCALE1_BIT = (rxBuffer[26] & (1<<4));  // 13

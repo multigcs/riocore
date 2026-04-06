@@ -233,11 +233,11 @@ body {
     </table>
         </div>
         <div class="item">
-    <B>uartsub0</B>
+    <B>satuart0</B>
     <table>
       <tr>
         <td>timeout</td>
-        <td><b id="board0/board0/uartsub0/timeout">0</b></td>
+        <td><b id="board0/board0/satuart0/timeout">0</b></td>
       </tr>
     </table>
         </div>
@@ -494,7 +494,7 @@ body {
             client.subscribe("board0/board0/bitin6/bit");
             client.subscribe("board0/board0/bitin7/bit");
             client.subscribe("board0/board0/satmcu0/feed/position");
-            client.subscribe("board0/board0/uartsub0/timeout");
+            client.subscribe("board0/board0/satuart0/timeout");
             client.subscribe("board0/board0/satmcu0/spindle/position");
             client.subscribe("board0/board0/satmcu0/rapid/position");
             client.subscribe("board0/board0/satmcu0/jogwheel/position");
@@ -580,8 +580,8 @@ body {
             if (message.destinationName == "board0/board0/satmcu0/feed/position") {
                 document.getElementById("board0/board0/satmcu0/feed/position").innerHTML = message.payloadString;
             }
-            if (message.destinationName == "board0/board0/uartsub0/timeout") {
-                document.getElementById("board0/board0/uartsub0/timeout").innerHTML = message.payloadString;
+            if (message.destinationName == "board0/board0/satuart0/timeout") {
+                document.getElementById("board0/board0/satuart0/timeout").innerHTML = message.payloadString;
             }
             if (message.destinationName == "board0/board0/satmcu0/spindle/position") {
                 document.getElementById("board0/board0/satmcu0/spindle/position").innerHTML = message.payloadString;

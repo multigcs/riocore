@@ -3,12 +3,12 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
-        self.NAME = "uartsub"
-        self.INFO = "uartsub interface for host cominucation"
-        self.DESCRIPTION = "simple uartsub interface, not usable for realtime stuff in LinuxCNC / only for testing"
-        self.KEYWORDS = "serial uartsub interface"
+        self.NAME = "satuart"
+        self.INFO = "uart interface for satellite cominucation"
+        self.DESCRIPTION = "simple uart interface to connect satellite mcu/fpga"
+        self.KEYWORDS = "serial satuart interface rs422"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
-        self.VERILOGS = ["uartsub.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
+        self.VERILOGS = ["satuart.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.NEEDS = ["fpga"]
         self.TYPE = "sub_interface"
         self.PINDEFAULTS = {
@@ -21,7 +21,7 @@ class Plugin(PluginBase):
             "tx_enable": {
                 "direction": "output",
                 "optional": True,
-                "descruption": "for RS485 mode",
+                "description": "for RS485 mode",
             },
             "SAT:OUT": {
                 "direction": "output",

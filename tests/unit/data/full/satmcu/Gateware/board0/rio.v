@@ -30,8 +30,8 @@
     PINOUT_BITOUT1_BIT -> 74 
     PININ_BITIN6_BIT <- 55 PULLUP
     PININ_BITIN7_BIT <- 56 PULLUP
-    PININ_UARTSUB0_RX <- 33 
-    PINOUT_UARTSUB0_TX -> 40 
+    PININ_SATUART0_RX <- 33 
+    PINOUT_SATUART0_TX -> 40 
 
 */
 
@@ -62,8 +62,8 @@ module rio (
         output PINOUT_BITOUT1_BIT,
         input PININ_BITIN6_BIT,
         input PININ_BITIN7_BIT,
-        input PININ_UARTSUB0_RX,
-        output PINOUT_UARTSUB0_TX
+        input PININ_SATUART0_RX,
+        output PINOUT_SATUART0_TX
     );
 
     localparam BUFFER_SIZE_TX = 16'd224; // 28 bytes
@@ -130,7 +130,7 @@ module rio (
     wire VARIN1_BITIN6_BIT;
     wire VARIN1_BITIN7_BIT;
     wire [31:0] VARIN32_FEED_POSITION;
-    wire VARIN1_UARTSUB0_TIMEOUT;
+    wire VARIN1_SATUART0_TIMEOUT;
     wire [31:0] VARIN32_SPINDLE_POSITION;
     wire [31:0] VARIN32_RAPID_POSITION;
     wire [31:0] VARIN32_JOGWHEEL_POSITION;
@@ -188,7 +188,7 @@ module rio (
         VARIN1_BITIN5_BIT,
         VARIN1_BITIN6_BIT,
         VARIN1_BITIN7_BIT,
-        VARIN1_UARTSUB0_TIMEOUT,
+        VARIN1_SATUART0_TIMEOUT,
         VARIN1_MPGESTOP_BIT,
         VARIN1_SCALE0_BIT,
         VARIN1_SCALE1_BIT,
@@ -416,11 +416,11 @@ module rio (
     assign PININ_BITIN7_BIT_INVERTED = ~PININ_BITIN7_BIT;
     assign VARIN1_BITIN7_BIT = PININ_BITIN7_BIT_INVERTED;
 
-    // Name: uartsub0 (uartsub)
-    wire PINOUT_UARTSUB0_TX_RAW;
-    wire UNUSED_PIN_UARTSUB0_TX_ENABLE;
-    assign PINOUT_UARTSUB0_TX = PINOUT_UARTSUB0_TX_RAW;
-    uartsub #(
+    // Name: satuart0 (satuart)
+    wire PINOUT_SATUART0_TX_RAW;
+    wire UNUSED_PIN_SATUART0_TX_ENABLE;
+    assign PINOUT_SATUART0_TX = PINOUT_SATUART0_TX_RAW;
+    satuart #(
         .BUFFER_SIZE_RX(SUB0_BUFFER_SIZE_RX),
         .BUFFER_SIZE_TX(SUB0_BUFFER_SIZE_TX),
         .MSGID(32'h61746164),
@@ -428,12 +428,12 @@ module rio (
         .Baud(1000000),
         .Timeout(2700000),
         .CSUM(1)
-    ) uartsub0 (
+    ) satuart0 (
         .clk(sysclk),
-        .rx(PININ_UARTSUB0_RX),
-        .tx(PINOUT_UARTSUB0_TX_RAW),
-        .tx_enable(UNUSED_PIN_UARTSUB0_TX_ENABLE),
-        .timeout(VARIN1_UARTSUB0_TIMEOUT),
+        .rx(PININ_SATUART0_RX),
+        .tx(PINOUT_SATUART0_TX_RAW),
+        .tx_enable(UNUSED_PIN_SATUART0_TX_ENABLE),
+        .timeout(VARIN1_SATUART0_TIMEOUT),
         .rx_data(sub0_rx_data),
         .tx_data(sub0_tx_data),
         .sync_in(INTERFACE_SYNC_RISINGEDGE)

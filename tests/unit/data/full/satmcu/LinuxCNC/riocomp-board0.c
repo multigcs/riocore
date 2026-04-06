@@ -117,8 +117,8 @@ typedef struct {
     hal_u32_t *SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS;
     hal_float_t *SIGIN_BOARD0_SATMCU0_FEED_POSITION_SCALE;
     hal_float_t *SIGIN_BOARD0_SATMCU0_FEED_POSITION_OFFSET;
-    hal_bit_t   *SIGIN_BOARD0_UARTSUB0_TIMEOUT;
-    hal_bit_t   *SIGIN_BOARD0_UARTSUB0_TIMEOUT_not;
+    hal_bit_t   *SIGIN_BOARD0_SATUART0_TIMEOUT;
+    hal_bit_t   *SIGIN_BOARD0_SATUART0_TIMEOUT_not;
     hal_float_t *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION;
     hal_float_t *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_ABS;
     hal_s32_t *SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_S32;
@@ -201,7 +201,7 @@ typedef struct {
     bool VAROUT1_BITOUT1_BIT;
     bool VARIN1_BITIN6_BIT;
     bool VARIN1_BITIN7_BIT;
-    bool VARIN1_UARTSUB0_TIMEOUT;
+    bool VARIN1_SATUART0_TIMEOUT;
     bool VARIN1_MPGESTOP_BIT;
     bool VARIN1_SCALE0_BIT;
     bool VAROUT1_LEDSCALE0_BIT;
@@ -248,7 +248,7 @@ data_t *register_signals(void) {
     data->VAROUT1_BITOUT1_BIT = 0;
     data->VARIN1_BITIN6_BIT = 0;
     data->VARIN1_BITIN7_BIT = 0;
-    data->VARIN1_UARTSUB0_TIMEOUT = 0;
+    data->VARIN1_SATUART0_TIMEOUT = 0;
     data->VARIN1_MPGESTOP_BIT = 0;
     data->VARIN1_SCALE0_BIT = 0;
     data->VAROUT1_LEDSCALE0_BIT = 0;
@@ -390,10 +390,10 @@ data_t *register_signals(void) {
     *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_S32 = 0;
     if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS), comp_id, "board0.satmcu0.feed.position-u32-abs")) != 0) error_handler(retval);
     *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION_U32_ABS = 0;
-    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_UARTSUB0_TIMEOUT), comp_id, "board0.uartsub0.timeout")) != 0) error_handler(retval);
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = 0;
-    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not), comp_id, "board0.uartsub0.timeout-not")) != 0) error_handler(retval);
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = 1 - *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT;
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_SATUART0_TIMEOUT), comp_id, "board0.satuart0.timeout")) != 0) error_handler(retval);
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT = 0;
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_SATUART0_TIMEOUT_not), comp_id, "board0.satuart0.timeout-not")) != 0) error_handler(retval);
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT_not = 1 - *data->SIGIN_BOARD0_SATUART0_TIMEOUT;
     if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE), comp_id, "board0.satmcu0.spindle.position-scale")) != 0) error_handler(retval);
     *data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_SCALE = 1.0;
     if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION_OFFSET), comp_id, "board0.satmcu0.spindle.position-offset")) != 0) error_handler(retval);
@@ -1013,10 +1013,10 @@ void convert_sigin_board0_satmcu0_feed_position(data_t *data) {
     *data->SIGIN_BOARD0_SATMCU0_FEED_POSITION = value;
 }
 
-void convert_sigin_board0_uartsub0_timeout(data_t *data) {
-    bool value = data->VARIN1_UARTSUB0_TIMEOUT;
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT = value;
-    *data->SIGIN_BOARD0_UARTSUB0_TIMEOUT_not = 1 - value;
+void convert_sigin_board0_satuart0_timeout(data_t *data) {
+    bool value = data->VARIN1_SATUART0_TIMEOUT;
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT = value;
+    *data->SIGIN_BOARD0_SATUART0_TIMEOUT_not = 1 - value;
 }
 
 void convert_sigin_board0_satmcu0_spindle_position(data_t *data) {
@@ -1230,7 +1230,7 @@ void convert_inputs(void) {
     convert_sigin_board0_bitin6_bit(data);
     convert_sigin_board0_bitin7_bit(data);
     convert_sigin_board0_satmcu0_feed_position(data);
-    convert_sigin_board0_uartsub0_timeout(data);
+    convert_sigin_board0_satuart0_timeout(data);
     convert_sigin_board0_satmcu0_spindle_position(data);
     convert_sigin_board0_satmcu0_rapid_position(data);
     convert_sigin_board0_satmcu0_jogwheel_position(data);
@@ -1296,7 +1296,7 @@ void read_rxbuffer(uint8_t *rxBuffer) {
     data->VARIN1_BITIN5_BIT = (rxBuffer[25] & (1<<2));  // 19
     data->VARIN1_BITIN6_BIT = (rxBuffer[25] & (1<<1));  // 18
     data->VARIN1_BITIN7_BIT = (rxBuffer[25] & (1<<0));  // 17
-    data->VARIN1_UARTSUB0_TIMEOUT = (rxBuffer[26] & (1<<7));  // 16
+    data->VARIN1_SATUART0_TIMEOUT = (rxBuffer[26] & (1<<7));  // 16
     data->VARIN1_MPGESTOP_BIT = (rxBuffer[26] & (1<<6));  // 15
     data->VARIN1_SCALE0_BIT = (rxBuffer[26] & (1<<5));  // 14
     data->VARIN1_SCALE1_BIT = (rxBuffer[26] & (1<<4));  // 13

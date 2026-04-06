@@ -28,8 +28,8 @@ addf motion-controller servo-thread
 loadrt logic names=func.and_0.1 personality=0x107
 addf func.and_0.1 servo-thread
 
-loadrt not names=func.not_board0_uartsub0_timeout
-addf func.not_board0_uartsub0_timeout servo-thread
+loadrt not names=func.not_board0_satuart0_timeout
+addf func.not_board0_satuart0_timeout servo-thread
 
 #################################################################################
 # iocontrol
@@ -101,12 +101,12 @@ net sig_board0_satmcu0_selectz_bit       <= board0.satmcu0.selectz.bit
 net sig_board0_satmcu0_spindle_position  <= board0.satmcu0.spindle.position
 net sig_board0_satmcu0_spindle_position-s32 <= board0.satmcu0.spindle.position-s32
 
+net sig_board0_satuart0_timeout          <= board0.satuart0.timeout
+
 net user-enable-out                      => board0.sys-enable
 net user-request-enable                  => board0.sys-enable-request
 net sig_board0_sys-error                 <= board0.sys-error
 net sig_board0_sys-status                <= board0.sys-status
-
-net sig_board0_uartsub0_timeout          <= board0.uartsub0.timeout
 
 #################################################################################
 # func
@@ -117,11 +117,11 @@ net sig_board0_bitin3_bit                => func.and_0.1.in-01
 net sig_board0_bitin4_bit                => func.and_0.1.in-02
 net sig_board0_bitin5_bit                => func.and_0.1.in-03
 net sig_board0_bitin7_bit                => func.and_0.1.in-04
-net func_not_board0_uartsub0_timeout_out => func.and_0.1.in-05
+net func_not_board0_satuart0_timeout_out => func.and_0.1.in-05
 net sig_board0_satmcu0_mpgestop_bit      => func.and_0.1.in-06
 
-net sig_board0_uartsub0_timeout          => func.not_board0_uartsub0_timeout.in
-net func_not_board0_uartsub0_timeout_out <= func.not_board0_uartsub0_timeout.out
+net sig_board0_satuart0_timeout          => func.not_board0_satuart0_timeout.in
+net func_not_board0_satuart0_timeout_out <= func.not_board0_satuart0_timeout.out
 
 #################################################################################
 # spindle

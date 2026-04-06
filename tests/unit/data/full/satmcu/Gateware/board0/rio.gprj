@@ -9,7 +9,7 @@
         <File path="stepdir.v" type="file.verilog" enable="1"/>
         <File path="w5500.v" type="file.verilog" enable="1"/>
         <File path="pwmout.v" type="file.verilog" enable="1"/>
-        <File path="uartsub.v" type="file.verilog" enable="1"/>
+        <File path="satuart.v" type="file.verilog" enable="1"/>
         <File path="uart_baud.v" type="file.verilog" enable="1"/>
         <File path="uart_rx.v" type="file.verilog" enable="1"/>
         <File path="uart_tx.v" type="file.verilog" enable="1"/>

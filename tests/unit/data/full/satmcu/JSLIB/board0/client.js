@@ -170,8 +170,8 @@ http.createServer(function (req, res) {
     res.write("bitin7.bit = ");
     res.write(String(rio_rx["bitin7"]["bit"]));
     res.write("<br/>");
-    res.write("uartsub0.timeout = ");
-    res.write(String(rio_rx["uartsub0"]["timeout"]));
+    res.write("satuart0.timeout = ");
+    res.write(String(rio_rx["satuart0"]["timeout"]));
     res.write("<br/>");
     res.write("mpgestop.bit = ");
     res.write(String(rio_rx["mpgestop"]["bit"]));

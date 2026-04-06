@@ -1963,6 +1963,12 @@ class Window(QMainWindow):
                         self.config["plugins"].append({"type": "i2c_device", "node_type": device["type"], "uid": f"i2c_{name}", "pins": {"I2C": {"pin": f"{plugin['uid']}:BUS:IO"}}})
                     del plugin["config"]
 
+        # upgrade: rename uartsub to satuart
+        for plugin in list(self.config.get("plugins", [])):
+            if plugin["type"] == "uartsub":
+                riocore.log("INFO: rename uartsub into satuart")
+                plugin["type"] = "satuart"
+
         # upgrade: modbus -> mbus + mbus_device
         for pn, plugin in enumerate(list(self.config.get("plugins", []))):
             if plugin["type"] == "modbus":

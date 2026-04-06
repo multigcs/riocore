@@ -459,8 +459,8 @@
             }
         },
         {
-            "type": "uartsub",
-            "uid": "uartsub0",
+            "type": "satuart",
+            "uid": "satuart0",
             "pos": [
                 540.0,
                 130.0
@@ -600,7 +600,7 @@
             "rotate": -90,
             "pins": {
                 "SAT": {
-                    "pin": "uartsub0:SAT:OUT"
+                    "pin": "satuart0:SAT:OUT"
                 }
             },
             "node_type": "pico"

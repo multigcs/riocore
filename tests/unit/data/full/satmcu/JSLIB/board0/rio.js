@@ -157,9 +157,9 @@ module.exports = {
         VARIN1_BITIN7_BIT = 0;
     }
     if ((data[26] & (1<<7)) != 0) {
-        VARIN1_UARTSUB0_TIMEOUT = 1;
+        VARIN1_SATUART0_TIMEOUT = 1;
     } else {
-        VARIN1_UARTSUB0_TIMEOUT = 0;
+        VARIN1_SATUART0_TIMEOUT = 0;
     }
     if ((data[26] & (1<<6)) != 0) {
         VARIN1_MPGESTOP_BIT = 1;
@@ -246,8 +246,8 @@ module.exports = {
       "bitin7": {
         "bit": VARIN1_BITIN7_BIT,
       },
-      "uartsub0": {
-        "timeout": VARIN1_UARTSUB0_TIMEOUT,
+      "satuart0": {
+        "timeout": VARIN1_SATUART0_TIMEOUT,
       },
       "mpgestop": {
         "bit": VARIN1_MPGESTOP_BIT,
