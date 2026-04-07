@@ -119,16 +119,17 @@ class documentation:
         output = [f"# {self.project.config['name']}"]
         jdata = self.project.config["jdata"]
 
-        flow_path = os.path.join(self.doc_path, "flow.png")
-        if os.path.exists(flow_path):
-            image = '<img align="right" height="320" src="flow.png">'
-            output.append(image)
-
         output.append(jdata.get("description", ""))
         output.append("")
         if self.project.config["json_file"]:
             output.append(f"* Config-Path: {self.project.config['json_file']}")
         output.append(f"* Output-Path: {self.project.config['output_path']}")
+
+        flow_path = os.path.join(self.doc_path, "flow.png")
+        if os.path.exists(flow_path):
+            image = '<img height="320" src="flow.png">'
+            output.append(image)
+
         output.append("")
 
         self.board_infos = {}
