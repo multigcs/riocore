@@ -2,7 +2,6 @@
     "name": "satmcu",
     "description": "Tangoboard with TangNano9K and pico mpg",
     "protocol": "SPI",
-    "syncto": "cnc@192.168.10.184:/home/cnc/Output/Tangoboard/",
     "plugins": [
         {
             "type": "fpga",
