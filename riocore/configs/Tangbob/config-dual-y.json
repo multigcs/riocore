@@ -1,299 +1,350 @@
 {
     "name": "Tangbob",
-    "boardcfg": "Tangbob",
     "description": "Tangbob with one 5x china BOB",
     "protocol": "UDP",
     "plugins": [
         {
-            "type": "w5500",
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "china-bob5x0",
+            "pos": [
+                570.0,
+                210.0
+            ],
+            "rotate": 0,
             "pins": {
-                "mosi": {
-                    "pin": "SPI:MOSI"
+                "SLOT:P1": {
+                    "pin": "fpga0:LEFT:P1"
                 },
-                "miso": {
-                    "pin": "SPI:MISO"
+                "SLOT:P2": {
+                    "pin": "fpga0:LEFT:P2"
                 },
-                "sclk": {
-                    "pin": "SPI:SCLK"
+                "SLOT:P3": {
+                    "pin": "fpga0:LEFT:P3"
                 },
-                "sel": {
-                    "pin": "SPI:SEL"
+                "SLOT:P4": {
+                    "pin": "fpga0:LEFT:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "fpga0:LEFT:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "fpga0:LEFT:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "fpga0:LEFT:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "fpga0:LEFT:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "fpga0:LEFT:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "fpga0:LEFT:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "fpga0:LEFT:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "fpga0:LEFT:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "fpga0:LEFT:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "fpga0:LEFT:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "fpga0:LEFT:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "fpga0:LEFT:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "fpga0:LEFT:P17"
                 }
-            },
-            "uid": "w55000"
-        },
-        {
-            "type": "wled",
-            "pins": {
-                "data": {
-                    "pin": "WLED:DATA"
-                }
-            },
-            "signals": {
-                "0_green": {
-                    "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused"
-                },
-                "0_red": {
-                    "net": "axisui.error"
-                },
-                "0_blue": {
-                    "net": "halui.mode.is-auto"
-                }
-            },
-            "uid": "wled0"
-        },
-        {
-            "type": "modbus",
-            "pins": {
-                "tx": {
-                    "pin": "MODBUS:TX"
-                },
-                "rx": {
-                    "pin": "MODBUS:RX"
-                },
-                "tx_enable": {
-                    "pin": "MODBUS:TX_ENABLE"
-                }
-            },
-            "uid": "modbus0"
+            }
         },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "10"
+                    "pin": "fpga0:LED:L6"
                 }
             },
-            "uid": "blink0"
+            "uid": "blink0",
+            "pos": [
+                370.0,
+                580.0
+            ],
+            "image": "led",
+            "rotate": 0
         },
         {
-            "type": "i2cbus",
+            "type": "i2c",
             "pins": {
                 "sda": {
-                    "pin": "I2C:sda"
+                    "pin": "fpga0:I2C:sda"
                 },
                 "scl": {
-                    "pin": "I2C:scl"
+                    "pin": "fpga0:I2C:scl"
                 }
             },
             "uid": "i2cbus0",
-            "config": {
-                "devices": {
-                    "lm75_0": {
-                        "type": "lm75",
-                        "address": "0x48",
-                        "subbus": "none"
-                    }
+            "pos": [
+                300.0,
+                -30.0
+            ]
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "image": "stepper",
+            "pos": [
+                1090.0,
+                750.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:X:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:X:dir"
+                },
+                "en": {
+                    "pin": "china-bob5x0:ALL:en"
+                }
+            },
+            "is_joint": true,
+            "axis": "X"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "image": "stepper",
+            "pos": [
+                1090.0,
+                490.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Y:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Y:dir"
+                }
+            },
+            "is_joint": true,
+            "axis": "Y"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "image": "stepper",
+            "pos": [
+                1090.0,
+                230.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "china-bob5x0:Z:step"
+                },
+                "dir": {
+                    "pin": "china-bob5x0:Z:dir"
+                }
+            },
+            "is_joint": true,
+            "axis": "Z"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "proximity",
+            "pos": [
+                650.0,
+                850.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in0",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                530.0,
+                                830.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "name": "home-x"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "proximity",
+            "pos": [
+                650.0,
+                780.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                530.0,
+                                800.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            },
+            "name": "home-y"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                650.0,
+                710.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                530.0,
+                                770.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            },
+            "name": "home-z"
+        },
+        {
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "uid": "fpga0",
+            "pos": [
+                130.0,
+                240.0
+            ],
+            "simulation": false,
+            "protocol": "UDP",
+            "sub": {
+                "fpga0_w5500": {
+                    "ip": "192.168.11.194"
+                },
+                "fpga0_wled": {
+                    "signals": {
+                        "0_green": {
+                            "net": "(!halui.mode.is-auto) or halui.program.is-paused",
+                            "setp": ""
+                        },
+                        "0_blue": {
+                            "net": "halui.mode.is-auto",
+                            "setp": ""
+                        }
+                    },
+                    "leds": 3
+                }
+            },
+            "rotate": 180
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "probe",
+            "pos": [
+                880.0,
+                790.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "china-bob5x0:OPTO:in3"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input"
                 }
             }
         },
         {
-            "type": "bitout",
-            "name": "enable",
-            "pins": {
-                "bit": {
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        },
-                        {
-                            "type": "onerror"
-                        },
-                        {
-                            "type": "invert"
-                        }
-                    ],
-                    "pin": "LEFT:P14"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "halui.machine.is-on",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "uid": "bitout0"
-        },
-        {
-            "type": "bitin",
-            "name": "home-x",
-            "pins": {
-                "bit": {
-                    "pull": "up",
-                    "pin": "LEFT:P12"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "joint.0.home-sw-in",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "uid": "bitin0"
-        },
-        {
-            "type": "bitin",
-            "name": "home-y1",
-            "pins": {
-                "bit": {
-                    "pull": "up",
-                    "pin": "LEFT:P13"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "joint.1.home-sw-in",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "uid": "bitin1"
-        },
-        {
-            "type": "bitin",
-            "name": "home-y2",
-            "pins": {
-                "bit": {
-                    "pull": "up",
-                    "pin": "LEFT:P15"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "joint.2.home-sw-in",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "uid": "bitin2"
-        },
-        {
-            "type": "bitin",
-            "name": "home-z",
-            "pins": {
-                "bit": {
-                    "pull": "up",
-                    "pin": "LEFT:P10"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "joint.3.home-sw-in",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "uid": "bitin3"
-        },
-        {
-            "type": "bitout",
-            "name": "spindle-enable",
-            "pins": {
-                "bit": {
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ],
-                    "pin": "LEFT:P17"
-                }
-            },
-            "signals": {
-                "bit": {
-                    "net": "spindle.0.on",
-                    "function": "",
-                    "setp": ""
-                }
-            },
-            "uid": "bitout1"
-        },
-        {
             "type": "pwmout",
-            "name": "pwm",
+            "uid": "pwmout0",
+            "image": "spindle500w",
+            "pos": [
+                660.0,
+                30.0
+            ],
             "pins": {
                 "pwm": {
-                    "modifier": [
-                        {
-                            "type": "invert"
-                        }
-                    ],
-                    "pin": "LEFT:P1"
+                    "pin": "china-bob5x0:PWM:analog"
                 }
             },
-            "uid": "pwmout0"
+            "bitwidth": 16
         },
         {
-            "type": "bitin",
-            "name": "probe",
+            "type": "mbus",
+            "uid": "mbus0",
+            "pos": [
+                310.0,
+                70.0
+            ],
             "pins": {
-                "bit": {
-                    "pull": "up",
-                    "pin": "LEFT:P11"
-                }
-            },
-            "uid": "bitin4"
-        },
-        {
-            "name": "joint-0",
-            "type": "stepdir",
-            "is_joint": true,
-            "uid": "stepdir0",
-            "pins": {
-                "step": {
-                    "pin": "LEFT:P2"
+                "tx_enable": {
+                    "pin": "fpga0:MODBUS:TX_ENABLE"
                 },
-                "dir": {
-                    "pin": "LEFT:P3"
-                }
-            },
-            "axis": "X"
-        },
-        {
-            "name": "joint-1",
-            "type": "stepdir",
-            "is_joint": true,
-            "uid": "stepdir1",
-            "pins": {
-                "step": {
-                    "pin": "LEFT:P4"
+                "tx": {
+                    "pin": "fpga0:MODBUS:TX"
                 },
-                "dir": {
-                    "pin": "LEFT:P5"
+                "rx": {
+                    "pin": "fpga0:MODBUS:RX"
                 }
-            },
-            "axis": "Y"
+            }
         },
         {
-            "name": "joint-2",
             "type": "stepdir",
-            "is_joint": true,
-            "uid": "stepdir2",
-            "pins": {
-                "step": {
-                    "pin": "LEFT:P6"
-                },
-                "dir": {
-                    "pin": "LEFT:P7"
-                }
-            },
-            "axis": "Y"
-        },
-        {
-            "name": "joint-3",
-            "type": "stepdir",
-            "is_joint": true,
             "uid": "stepdir3",
+            "image": "stepper",
+            "pos": [
+                1090.0,
+                -30.0
+            ],
             "pins": {
                 "step": {
-                    "pin": "LEFT:P8"
+                    "pin": "china-bob5x0:A:step"
                 },
                 "dir": {
-                    "pin": "LEFT:P9"
+                    "pin": "china-bob5x0:A:dir"
                 }
             },
-            "axis": "Z"
+            "is_joint": true,
+            "axis": "Y"
         }
     ]
 }

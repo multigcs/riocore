@@ -15,6 +15,7 @@ and also some without output
 both on the image are working
 """
         self.KEYWORDS = ""
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["caliper.v"]
         self.PINDEFAULTS = {
@@ -55,17 +56,6 @@ both on the image are working
         timeout = self.system_setup["speed"] // 1000 * 1  # 1 ms
         instance_parameter["TIMEOUT"] = timeout
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        print(signal_name, f"{value} {value:b}")
-        if signal_name == "position":
-            if value >= 1048576:
-                value = 1048576 - value
-            if self.signals()["mode"]["value"] == 0:
-                return value / 100.0
-            else:
-                return value / 2000.0 * 25.4
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "position":

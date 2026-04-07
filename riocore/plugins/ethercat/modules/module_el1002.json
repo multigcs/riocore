@@ -1,0 +1,20 @@
+{
+    "info": "EtherCAT 2-channel digital input",
+    "description": "2-channel digital input, 24 V DC, 3 ms",
+    "pins": {
+        "IN:I0": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-0",
+            "pos": [17, 217]
+        },
+        "IN:I1": {
+            "direction": "input",
+            "edge": "source",
+            "type": "GPIO",
+            "pin": "dout-1",
+            "pos": [50, 217]
+        }
+    }
+}

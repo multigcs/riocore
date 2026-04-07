@@ -8,11 +8,8 @@
 
 **udp interface for host comunication - Arty7-35t only**
 
-Keywords: network ethernet interface udp
-
-## Limitations
-* boards: Arty-a7-35t
-* toolchains: vivado
+* Keywords: network ethernet interface udp
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -104,6 +101,12 @@ Keywords: network ethernet interface udp
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### mac:
 MAC-Address
 
@@ -122,12 +125,6 @@ UDP-Port
  * type: int
  * default: 2390
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -136,243 +133,6 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "arty_mii",
-    "pins": {
-        "phy_rx_clk": {
-            "pin": "F15"
-        },
-        "phy_rxd0": {
-            "pin": "D18"
-        },
-        "phy_rxd1": {
-            "pin": "E17"
-        },
-        "phy_rxd2": {
-            "pin": "E18"
-        },
-        "phy_rxd3": {
-            "pin": "G17"
-        },
-        "phy_rx_dv": {
-            "pin": "G16"
-        },
-        "phy_rx_er": {
-            "pin": "C17"
-        },
-        "phy_tx_clk": {
-            "pin": "H16"
-        },
-        "phy_txd0": {
-            "pin": "H14"
-        },
-        "phy_txd1": {
-            "pin": "J14"
-        },
-        "phy_txd2": {
-            "pin": "J13"
-        },
-        "phy_txd3": {
-            "pin": "H17"
-        },
-        "phy_tx_en": {
-            "pin": "H15"
-        },
-        "phy_col": {
-            "pin": "D17"
-        },
-        "phy_crs": {
-            "pin": "G14"
-        },
-        "phy_ref_clk": {
-            "pin": "G18"
-        },
-        "phy_reset_n": {
-            "pin": "C16"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "arty_mii",
-    "mac": "AA:AF:FA:CC:E3:1C",
-    "ip": "192.168.10.194",
-    "port": 2390,
-    "name": "",
-    "pins": {
-        "phy_rx_clk": {
-            "pin": "F15",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "phy_rxd0": {
-            "pin": "D18",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_rxd1": {
-            "pin": "E17",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_rxd2": {
-            "pin": "E18",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_rxd3": {
-            "pin": "G17",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_rx_dv": {
-            "pin": "G16",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_rx_er": {
-            "pin": "C17",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_tx_clk": {
-            "pin": "H16",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_txd0": {
-            "pin": "H14",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_txd1": {
-            "pin": "J14",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_txd2": {
-            "pin": "J13",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_txd3": {
-            "pin": "H17",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_tx_en": {
-            "pin": "H15",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_col": {
-            "pin": "D17",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_crs": {
-            "pin": "G14",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_ref_clk": {
-            "pin": "G18",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "phy_reset_n": {
-            "pin": "C16",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [sync_signal.v](sync_signal.v)

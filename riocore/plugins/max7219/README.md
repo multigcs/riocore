@@ -4,9 +4,10 @@
 
 **7segment display based on max7219**
 
-to display values from LinuxCNC on 7segment display's
+to display values on 7segment display's (needs 5V power)
 
-Keywords: info display
+* Keywords: info display
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -25,6 +26,12 @@ Keywords: info display
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### brightness:
 display brightness
 
@@ -41,16 +48,18 @@ interface clock frequency
  * max: 10000000
  * default: 1000000
 
-### name:
-name of this plugin instance
+### displays:
+number of displays / values
 
- * type: str
- * default: 
+ * type: int
+ * min: 1
+ * max: 10
+ * default: 1
 
 
 ## Signals:
 *signals/pins in LinuxCNC*
-### value:
+### value0:
 
  * type: float
  * direction: output
@@ -60,78 +69,12 @@ name of this plugin instance
 
 ## Interfaces:
 *transport layer*
-### value:
+### value0:
 
  * size: 24 bit
  * direction: output
+ * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "max7219",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "max7219",
-    "brightness": 15,
-    "frequency": 1000000,
-    "name": "",
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [max7219.v](max7219.v)

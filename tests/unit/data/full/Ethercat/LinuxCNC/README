@@ -1,0 +1,9 @@
+RIO - Ethercat
+
+Configuration: tests/unit/data/full/Ethercat.json
+
+Plugins:
+  ethercat (11x)
+  gpioin (4x)
+  gpioout (4x)
+

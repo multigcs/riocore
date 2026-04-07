@@ -10,7 +10,8 @@
 
 axi driver for the interface communication to an embedded arm-core
 
-Keywords: zynq xilinx interface
+* Keywords: zynq xilinx interface
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -32,21 +33,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "axi",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "axi",
-    "name": "",
-    "pins": {},
-    "signals": {}
-}
-```

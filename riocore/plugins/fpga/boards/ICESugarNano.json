@@ -1,0 +1,215 @@
+{
+  "name": "ICESugarNano",
+  "description": "ICESugarNano - usable as sat only",
+  "url": "https://github.com/wuxx/icesugar-nano",
+  "pinimage": "board.png",
+  "size": [39, 18],
+  "toolchain": "icestorm",
+  "family": "ice40",
+  "type": "lp1k",
+  "board": "ICESugarNano",
+  "package": "cm36",
+  "provides": [
+    "pmod",
+    "pmod2"
+  ],
+  "clock": {
+    "speed": 12000000,
+    "pin": "D1"
+  },
+  "slots": [
+    {
+      "name": "FLASH",
+      "comment": "SPI FLASH",
+      "pins": {
+        "MOSI": {
+          "pin": "E4",
+          "comment": "",
+          "pos": [
+            30,
+            95
+          ],
+          "direction": "input"
+        },
+        "MISO": {
+          "pin": "F5",
+          "comment": "",
+          "pos": [
+            40,
+            95
+          ],
+          "direction": "output"
+        },
+        "SCLK": {
+          "pin": "E5",
+          "comment": "",
+          "pos": [
+            50,
+            95
+          ],
+          "direction": "output"
+        },
+        "SEL": {
+          "pin": "D5",
+          "comment": "",
+          "pos": [
+            60,
+            95
+          ],
+          "direction": "output"
+        }
+      }
+    },
+
+    {
+      "name": "PMOD3",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P4": {
+          "pin": "B1",
+          "comment": "shared with PMOD1:P3",
+          "pos": [
+            39,
+            169
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "E1",
+          "comment": "",
+          "pos": [
+            52,
+            169
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "B5",
+          "comment": "",
+          "pos": [
+            64,
+            169
+          ],
+          "direction": "all"
+        },
+        "P1": {
+          "pin": "B4",
+          "comment": "",
+          "pos": [
+            76,
+            169
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "A1",
+          "comment": "shared with PMOD1:4",
+          "pos": [
+            39,
+            181
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "C2",
+          "comment": "",
+          "pos": [
+            52,
+            181
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "E3",
+          "comment": "",
+          "pos": [
+            64,
+            181
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "C6",
+          "comment": "",
+          "pos": [
+            76,
+            181
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD1",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P2": {
+          "pin": "D1",
+          "comment": "Shared with Clock-Pin",
+          "pos": [
+            8,
+            126
+          ],
+          "special": true,
+          "direction": "input"
+        },
+        "P1": {
+          "pin": "E2",
+          "comment": "",
+          "pos": [
+            8,
+            138
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD2",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P1": {
+          "pin": "B3",
+          "comment": "serial TX->IceLink-RX (pullup)",
+          "pos": [
+            83,
+            78
+          ],
+          "special": true,
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "A3",
+          "comment": "serial RX->IceLink-TX",
+          "pos": [
+            83,
+            90
+          ],
+          "special": true,
+          "direction": "input"
+        },
+        "P3": {
+          "pin": "B6",
+          "comment": "LED(Yellow)",
+          "pos": [
+            83,
+            102
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "C5",
+          "comment": "",
+          "pos": [
+            83,
+            114
+          ],
+          "direction": "all"
+        }
+      }
+    }
+  ]
+}

@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "virtual signal"
         self.KEYWORDS = "virtual"
         self.ORIGIN = ""
+        self.NEEDS = []
         self.VERILOGS = []
         self.OPTIONS = {
             "dir": {
@@ -35,3 +36,7 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         return None
+
+    @classmethod
+    def update_prefixes(cls, parent, instances):
+        pass

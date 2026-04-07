@@ -17,22 +17,21 @@ module testb_toggle;
 
         #3
         din = 1;
-        #3
+        #10
+        din = 0;
+        #20
+        din = 1;
+        #10
         din = 0;
         #10
         din = 1;
-        #3
+        #20
         din = 0;
-        #10
+        #20
         din = 1;
-        #3
+        #30
         din = 0;
-        #10
-        din = 1;
-        #3
-        din = 0;
-
-        # 100 $finish;
+        # 20 $finish;
     end
 
     toggle toggle0 (

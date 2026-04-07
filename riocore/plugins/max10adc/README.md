@@ -6,11 +6,8 @@
 
 only usable for the max10 fpga boards
 
-Keywords: analog adc voltage ampere
-
-## Limitations
-* family: MAX 10
-* toolchains: quartus
+* Keywords: analog adc voltage ampere
+* NEEDS: fpga, max10
 
 ## Pins:
 *FPGA-pins*
@@ -110,113 +107,6 @@ name of this plugin instance
  * size: 16 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "max10adc",
-    "pins": {}
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "max10adc",
-    "name": "",
-    "pins": {},
-    "signals": {
-        "adc0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc0",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc3",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc4": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc4",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc5": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc5",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc6": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc6",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "adc7": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "adc7",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [max10adc.v](max10adc.v)

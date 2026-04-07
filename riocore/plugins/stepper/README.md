@@ -6,7 +6,8 @@
 
 direct stepper driver with 4pin's directly controlled by the FPGA
 
-Keywords: stepper joint hbridge
+* Keywords: stepper joint hbridge
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -35,17 +36,18 @@ name of this plugin instance
  * type: str
  * default: 
 
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: True
+
 ### axis:
 axis name (X,Y,Z,...)
 
  * type: select
  * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
+ * options: X, Y, Z, A, B, C, U, V, W
 
 
 ## Signals:
@@ -89,104 +91,6 @@ position feedback
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "stepper",
-    "pins": {
-        "a1": {
-            "pin": "0"
-        },
-        "a2": {
-            "pin": "1"
-        },
-        "b1": {
-            "pin": "2"
-        },
-        "b2": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "stepper",
-    "name": "",
-    "axis": "",
-    "is_joint": false,
-    "pins": {
-        "a1": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "a2": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "b1": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "b2": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "velocity": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "velocity",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [stepper.v](stepper.v)

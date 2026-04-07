@@ -1,0 +1,801 @@
+{
+  "name": "Tangbob",
+  "description": "TangNano9K - cheap GW1NR-9 Devboard",
+  "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-9K/Nano-9K.html",
+  "size": [91, 73],
+  "board": "TangNano9K",
+  "type": "GW1NR-LV9QN88PC6/I5",
+  "family": "GW1N-9C",
+  "provides": [
+    "db25"
+  ],
+  "toolchains": [
+    "gowin",
+    "icestorm"
+  ],
+  "toolchain": "gowin",
+  "package": "",
+  "clock": {
+    "speed": "27000000",
+    "_osc": "27000000",
+    "_speed": "32400000",
+    "pin": "52"
+  },
+  "plugins": [
+    {
+      "type": "w5500",
+      "uid": "w5500",
+      "pins": {
+        "mosi": {
+          "pin": "SPI:MOSI"
+        },
+        "miso": {
+          "pin": "SPI:MISO"
+        },
+        "sclk": {
+          "pin": "SPI:SCLK"
+        },
+        "sel": {
+          "pin": "SPI:SEL"
+        }
+      },
+      "rpos": [
+        528.0,
+        406.0
+      ],
+      "image": "w5500mini",
+      "rotate": 0,
+      "ip": "192.168.11.194"
+    },
+    {
+      "type": "wled",
+      "pins": {
+        "data": {
+          "pin": "WLED:DATA"
+        }
+      },
+      "uid": "wled",
+      "rpos": [
+        130.0,
+        405.0
+      ],
+      "image": "wled1"
+    }
+  ],
+  "slots": [
+    {
+      "name": "LED",
+      "comment": "LED",
+      "pins": {
+        "L1": {
+          "pin": "10",
+          "rotate": true,
+          "pos": [
+            215,
+            54
+          ],
+          "direction": "output"
+        },
+        "L2": {
+          "pin": "11",
+          "rotate": true,
+          "pos": [
+            207,
+            54
+          ],
+          "direction": "output"
+        },
+        "L3": {
+          "pin": "13",
+          "rotate": true,
+          "pos": [
+            200,
+            54
+          ],
+          "direction": "output"
+        },
+        "L4": {
+          "pin": "14",
+          "rotate": true,
+          "pos": [
+            192,
+            54
+          ],
+          "direction": "output"
+        },
+        "L5": {
+          "pin": "15",
+          "rotate": true,
+          "pos": [
+            185,
+            54
+          ],
+          "direction": "output"
+        },
+        "L6": {
+          "pin": "16",
+          "rotate": true,
+          "pos": [
+            177,
+            54
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "UART",
+      "comment": "USB-UART",
+      "default": "",
+      "pins": {
+        "RX": {
+          "pin": "18",
+          "pos": [
+            191,
+            19
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "17",
+          "pos": [
+            201,
+            19
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "WLED",
+      "compatible": [
+        "wled",
+        "wled_bar",
+        "wled_expansion"
+      ],
+      "pins": {
+        "5V": {
+          "pin": "5V",
+          "pos": [
+            39,
+            236
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "DATA": {
+          "pin": "54",
+          "direction": "output",
+          "pos": [
+            39,
+            225
+          ]
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            39,
+            214
+          ],
+          "marker": true,
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "POWER",
+      "pins": {
+        "5V": {
+          "pin": "5V",
+          "pos": [
+            109,
+            314
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            120,
+            314
+          ],
+          "marker": true,
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "MODBUS",
+      "compatible": [
+        "modbus",
+        "uartbridge"
+      ],
+      "pins": {
+        "RX": {
+          "pin": "69",
+          "pos": [
+            75,
+            301
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "57",
+          "pos": [
+            75,
+            311
+          ],
+          "direction": "output"
+        },
+        "TX_ENABLE": {
+          "pin": "68",
+          "pos": [
+            75,
+            321
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "I2C",
+      "comment": "5V I2C port",
+      "pins": {
+        "sda": {
+          "pin": "56",
+          "pos": [
+            39,
+            304
+          ],
+          "direction": "all"
+        },
+        "scl": {
+          "pin": "55",
+          "pos": [
+            39,
+            293
+          ],
+          "direction": "output"
+        },
+        "5V": {
+          "pin": "5V",
+          "pos": [
+            39,
+            282
+          ],
+          "marker": true,
+          "direction": "none"
+        },
+        "GND": {
+          "pin": "GND",
+          "pos": [
+            39,
+            315
+          ],
+          "marker": true,
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "SPI",
+      "comment": "spi port of the w5500 header",
+      "default": "w5500",
+      "pins": {
+        "MOSI": {
+          "pin": "32",
+          "pos": [
+            356,
+            257
+          ],
+          "visible": false,
+          "direction": "all"
+        },
+        "SCLK": {
+          "pin": "31",
+          "pos": [
+            356,
+            247
+          ],
+          "visible": false,
+          "direction": "all"
+        },
+        "SEL": {
+          "pin": "49",
+          "pos": [
+            356,
+            238
+          ],
+          "visible": false,
+          "direction": "all"
+        },
+        "MISO": {
+          "pin": "48",
+          "pos": [
+            266,
+            226
+          ],
+          "visible": false,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "RIGHT_POWER",
+      "comment": "power pins",
+      "pins": {
+        "GND_1": {
+          "pin": "GND",
+          "pos": [
+            341,
+            73
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_2": {
+          "pin": "GND",
+          "pos": [
+            341,
+            85
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_3": {
+          "pin": "GND",
+          "pos": [
+            341,
+            97
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_4": {
+          "pin": "GND",
+          "pos": [
+            341,
+            109
+          ],
+          "direction": "none",
+          "marker": true
+        },
+
+        "5V/GND_1": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            121
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_2": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            133
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_3": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            145
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_4": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            157
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_5": {
+          "pin": "5V/GND",
+          "pos": [
+            341,
+            169
+          ],
+          "direction": "none",
+          "marker": true
+        }
+
+      }
+    },
+    {
+      "name": "RIGHT",
+      "comment": "right bob adapter",
+      "default_module": "china-bob5x",
+      "rect": [
+        640,
+        20,
+        70,
+        360
+      ],
+      "pins": {
+        "P1": {
+          "pin": "63",
+          "pos": [
+            329,
+            25
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "85",
+          "pos": [
+            329,
+            37
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "83",
+          "pos": [
+            329,
+            49
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "81",
+          "pos": [
+            329,
+            61
+          ],
+          "direction": "all"
+        },
+        "P5": {
+          "pin": "79",
+          "pos": [
+            329,
+            73
+          ],
+          "direction": "all"
+        },
+        "P6": {
+          "pin": "77",
+          "pos": [
+            329,
+            85
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "76",
+          "pos": [
+            329,
+            97
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "75",
+          "pos": [
+            329,
+            109
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "74",
+          "pos": [
+            329,
+            121
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "73",
+          "pos": [
+            329,
+            133
+          ],
+          "direction": "all"
+        },
+        "P11": {
+          "pin": "72",
+          "pos": [
+            329,
+            145
+          ],
+          "direction": "all"
+        },
+        "P12": {
+          "pin": "71",
+          "pos": [
+            329,
+            157
+          ],
+          "direction": "all"
+        },
+        "P13": {
+          "pin": "51",
+          "pos": [
+            329,
+            169
+          ],
+          "direction": "all"
+        },
+        "P14": {
+          "pin": "86",
+          "pos": [
+            341,
+            25
+          ],
+          "direction": "all"
+        },
+        "P15": {
+          "pin": "84",
+          "pos": [
+            341,
+            37
+          ],
+          "direction": "all"
+        },
+        "P16": {
+          "pin": "82",
+          "pos": [
+            341,
+            49
+          ],
+          "direction": "all"
+        },
+        "P17": {
+          "pin": "80",
+          "pos": [
+            341,
+            61
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "LEFT_POWER",
+      "comment": "power pins",
+      "pins": {
+        "GND_1": {
+          "pin": "GND",
+          "pos": [
+            42,
+            121
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_2": {
+          "pin": "GND",
+          "pos": [
+            42,
+            109
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_3": {
+          "pin": "GND",
+          "pos": [
+            42,
+            97
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "GND_4": {
+          "pin": "GND",
+          "pos": [
+            42,
+            85
+          ],
+          "direction": "none",
+          "marker": true
+        },
+
+        "5V/GND_1": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            73
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_2": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            61
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_3": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            49
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_4": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            37
+          ],
+          "direction": "none",
+          "marker": true
+        },
+        "5V/GND_5": {
+          "pin": "5V/GND",
+          "pos": [
+            42,
+            25
+          ],
+          "direction": "none",
+          "marker": true
+        }
+
+      }
+    },
+    {
+      "name": "LEFT",
+      "comment": "left  bob adapter",
+      "default_module": "china-bob5x",
+      "rect": [
+        75,
+        20,
+        70,
+        360
+      ],
+      "pins": {
+        "P1": {
+          "pin": "53",
+          "pos": [
+            54,
+            169
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "41",
+          "pos": [
+            54,
+            157
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "40",
+          "pos": [
+            54,
+            145
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "33",
+          "pos": [
+            54,
+            133
+          ],
+          "direction": "all"
+        },
+        "P5": {
+          "pin": "29",
+          "pos": [
+            54,
+            121
+          ],
+          "direction": "all"
+        },
+        "P6": {
+          "pin": "28",
+          "pos": [
+            54,
+            109
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "27",
+          "pos": [
+            54,
+            97
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "26",
+          "pos": [
+            54,
+            85
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "25",
+          "pos": [
+            54,
+            73
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "39",
+          "pos": [
+            54,
+            61
+          ],
+          "direction": "all"
+        },
+        "P11": {
+          "pin": "36",
+          "pos": [
+            54,
+            49
+          ],
+          "direction": "all"
+        },
+        "P12": {
+          "pin": "37",
+          "pos": [
+            54,
+            37
+          ],
+          "direction": "all"
+        },
+        "P13": {
+          "pin": "38",
+          "pos": [
+            54,
+            25
+          ],
+          "direction": "all"
+        },
+        "P14": {
+          "pin": "42",
+          "pos": [
+            42,
+            169
+          ],
+          "direction": "all"
+        },
+        "P15": {
+          "pin": "35",
+          "pos": [
+            42,
+            157
+          ],
+          "direction": "all"
+        },
+        "P16": {
+          "pin": "34",
+          "pos": [
+            42,
+            145
+          ],
+          "direction": "all"
+        },
+        "P17": {
+          "pin": "30",
+          "pos": [
+            42,
+            133
+          ],
+          "direction": "all"
+        }
+      }
+    }
+  ]
+}

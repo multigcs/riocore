@@ -10,7 +10,9 @@
 
 uart bridge to send and receive custom frames via uart port
 
-Keywords: serial uart
+* Keywords: serial uart
+* NEEDS: fpga
+* PROVIDES: uart, interface
 
 ## Pins:
 *FPGA-pins*
@@ -30,6 +32,12 @@ Keywords: serial uart
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### baud:
 serial baud rate
 
@@ -69,16 +77,32 @@ rx frame format
  * type: str
  * default: rx1:u8|rx2:u8
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
-the signals of this plugin are user configurable
+### tx1:
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 255
+
+### tx2:
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 255
+
+### rx1:
+
+ * type: float
+ * direction: input
+
+### rx2:
+
+ * type: float
+ * direction: input
 
 
 ## Interfaces:
@@ -93,112 +117,6 @@ the signals of this plugin are user configurable
  * size: 32 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "uartbridge",
-    "pins": {
-        "tx": {
-            "pin": "0"
-        },
-        "rx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "uartbridge",
-    "baud": 9600,
-    "rx_buffersize": 40,
-    "tx_buffersize": 32,
-    "tx_frame": "tx1:u8|tx2:u8",
-    "rx_frame": "rx1:u8|rx2:u8",
-    "name": "",
-    "pins": {
-        "tx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "rx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "tx1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "tx1",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "tx2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "tx2",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "rx1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rx1",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "rx2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "rx2",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [uartbridge.v](uartbridge.v)

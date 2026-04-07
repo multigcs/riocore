@@ -7,6 +7,8 @@ class Plugin(PluginBase):
         self.INFO = "frequency input"
         self.DESCRIPTION = "to measurement digital frequencies"
         self.KEYWORDS = "frequency"
+        self.NEEDS = ["fpga"]
+        self.IMAGES = ["flow", "proximity"]
         self.ORIGIN = ""
         self.VERILOGS = ["freqin.v"]
         self.PINDEFAULTS = {
@@ -69,14 +71,6 @@ class Plugin(PluginBase):
         instance_parameter["RESET_CNT"] = self.system_setup["speed"] // freq_min
 
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "frequency":
-            if value != 0:
-                value = self.system_setup["speed"] / value
-            else:
-                self.vlast = 0
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "frequency":

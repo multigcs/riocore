@@ -6,7 +6,8 @@
 
 24bit adc (HX710B)
 
-Keywords: adc analog
+* Keywords: adc analog
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -21,6 +22,12 @@ Keywords: adc analog
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### zero:
 zero value
 
@@ -32,12 +39,6 @@ scale value
 
  * type: float
  * default: 1e-05
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -57,62 +58,6 @@ name of this plugin instance
  * direction: input
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "hx710",
-    "pins": {
-        "miso": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "hx710",
-    "zero": 1379496,
-    "scale": 1e-05,
-    "name": "",
-    "pins": {
-        "miso": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "pressure": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "pressure",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [hx710.v](hx710.v)

@@ -1,0 +1,770 @@
+{
+  "name": "OctoBot",
+  "description": "RIO-OctoBot board",
+  "url": "https://github.com/multigcs/rio-octobot",
+  "size": [100, 100],
+  "pinimage": "board.png",
+  "toolchain": "icestorm",
+  "family": "ice40",
+  "type": "hx8k",
+  "package": "cb132",
+  "provides": [
+    "pmod",
+    "icewerx"
+  ],
+  "flashcmd": "iceFUNprog rio.bin",
+  "clock": {
+    "osc": "12000000",
+    "speed": "60000000",
+    "pin": "P7"
+  },
+  "slots": [
+    {
+      "name": "SPI",
+      "comment": "SPI - WT32",
+      "default": "spi",
+      "pins": {
+        "MOSI": {
+          "pin": "H1",
+          "pos": [
+            125,
+            292
+          ]
+        },
+        "SCLK": {
+          "pin": "G3",
+          "pos": [
+            125,
+            303
+          ]
+        },
+        "MISO": {
+          "pin": "J1",
+          "pos": [
+            125,
+            313
+          ]
+        },
+        "SEL": {
+          "pin": "H3",
+          "pos": [
+            125,
+            324
+          ]
+        }
+      }
+    },
+    {
+      "name": "ADC_UART",
+      "comment": "ADC_UART",
+      "default": "icewerxadc",
+      "pins": {
+        "TX": {
+          "pin": "P4",
+          "pos": [
+            232,
+            335
+          ],
+          "direction": "output"
+        },
+        "RX": {
+          "pin": "P5",
+          "pos": [
+            247,
+            335
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "LED",
+      "comment": "LED",
+      "pins": {
+        "G": {
+          "pin": "M4",
+          "pos": [
+            247,
+            257
+          ],
+          "direction": "output"
+        },
+        "R": {
+          "pin": "A5",
+          "pos": [
+            232,
+            257
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT1",
+      "comment": "JOINT1",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "J3",
+          "pos": [
+            32,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "K3",
+          "pos": [
+            32,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT2",
+      "comment": "JOINT2",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "F3",
+          "pos": [
+            67,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "G1",
+          "pos": [
+            67,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT3",
+      "comment": "JOINT3",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "D1",
+          "pos": [
+            101,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "E1",
+          "pos": [
+            101,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT4",
+      "comment": "JOINT4",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "D3",
+          "pos": [
+            135,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "C1",
+          "pos": [
+            135,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT5",
+      "comment": "JOINT5",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "A7",
+          "pos": [
+            170,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "A6",
+          "pos": [
+            170,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT6",
+      "comment": "JOINT6",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "C7",
+          "pos": [
+            204,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "C6",
+          "pos": [
+            204,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT7",
+      "comment": "JOINT7",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "D7",
+          "pos": [
+            239,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "D6",
+          "pos": [
+            239,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT8",
+      "comment": "JOINT8",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "A10",
+          "pos": [
+            273,
+            121
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "D10",
+          "pos": [
+            273,
+            107
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT1",
+      "comment": "OUT1",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "A3",
+          "pos": [
+            32,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT2",
+      "comment": "OUT2",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "C5",
+          "pos": [
+            67,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT3",
+      "comment": "OUT3",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "A4",
+          "pos": [
+            101,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT4",
+      "comment": "OUT4",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "C4",
+          "pos": [
+            135,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT5",
+      "comment": "OUT5",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "A1",
+          "pos": [
+            170,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT6",
+      "comment": "OUT6",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "C3",
+          "pos": [
+            204,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT7",
+      "comment": "OUT7",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "B1",
+          "pos": [
+            239,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "OUT8",
+      "comment": "OUT8",
+      "default": "bitout",
+      "pins": {
+        "BIT": {
+          "pin": "A2",
+          "pos": [
+            273,
+            81
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "IN1",
+      "comment": "IN1",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "D14",
+          "pos": [
+            32,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN2",
+      "comment": "IN2",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "C12",
+          "pos": [
+            67,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN3",
+      "comment": "IN3",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "C14",
+          "pos": [
+            101,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN4",
+      "comment": "IN4",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "B14",
+          "pos": [
+            135,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN5",
+      "comment": "IN5",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "A12",
+          "pos": [
+            170,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN6",
+      "comment": "IN6",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "A11",
+          "pos": [
+            204,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN7",
+      "comment": "IN7",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "C11",
+          "pos": [
+            239,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "IN8",
+      "comment": "IN8",
+      "default": "bitin",
+      "pins": {
+        "BIT": {
+          "pin": "C10",
+          "pos": [
+            273,
+            33
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "MODBUS",
+      "comment": "MODBUS",
+      "compatible": [
+        "modbus",
+        "uartbridge"
+      ],
+      "pos": [
+        659,
+        45
+      ],
+      "pins": {
+        "RX": {
+          "pin": "P8",
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "P14",
+          "direction": "output"
+        },
+        "TX_ENABLE": {
+          "pin": "N14",
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "WLED",
+      "comment": "WLED",
+      "compatible": [
+        "wled",
+        "wled_bar",
+        "wled_expansion"
+      ],
+      "pos": [
+        9,
+        313
+      ],
+      "pins": {
+        "DATA": {
+          "pin": "M7",
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "PMOD",
+      "comment": "PMOD",
+      "default": "",
+      "pins": {
+        "P1": {
+          "pin": "M1",
+          "pos": [
+            151,
+            321
+          ]
+        },
+        "P2": {
+          "pin": "M3",
+          "pos": [
+            151,
+            331
+          ]
+        },
+        "P3": {
+          "pin": "P2",
+          "pos": [
+            151,
+            342
+          ]
+        },
+        "P4": {
+          "pin": "P3",
+          "pos": [
+            151,
+            352
+          ]
+        },
+        "P7": {
+          "pin": "L1",
+          "pos": [
+            164,
+            321
+          ]
+        },
+        "P8": {
+          "pin": "N1",
+          "pos": [
+            164,
+            331
+          ]
+        },
+        "P9": {
+          "pin": "P1",
+          "pos": [
+            164,
+            342
+          ]
+        },
+        "P10": {
+          "pin": "M6",
+          "pos": [
+            164,
+            352
+          ]
+        }
+      }
+    },
+    {
+      "name": "I2C1",
+      "comment": "I2C1",
+      "default": "",
+      "pins": {
+        "SCL": {
+          "pin": "D12",
+          "pos": [
+            327,
+            81
+          ]
+        },
+        "SDA": {
+          "pin": "E14",
+          "pos": [
+            327,
+            91
+          ]
+        }
+      }
+    },
+    {
+      "name": "I2C2",
+      "comment": "I2C2",
+      "default": "",
+      "pins": {
+        "SCL": {
+          "pin": "K14",
+          "pos": [
+            359,
+            81
+          ]
+        },
+        "SDA": {
+          "pin": "J12",
+          "pos": [
+            359,
+            91
+          ]
+        }
+      }
+    },
+    {
+      "name": "ENC1",
+      "comment": "ENC1",
+      "default": "",
+      "pins": {
+        "Z": {
+          "pin": "E12",
+          "pos": [
+            316,
+            128
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "F14",
+          "pos": [
+            316,
+            139
+          ],
+          "direction": "input"
+        },
+        "A": {
+          "pin": "F12",
+          "pos": [
+            316,
+            149
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "ENC2",
+      "comment": "ENC2",
+      "default": "",
+      "pins": {
+        "Z": {
+          "pin": "G14",
+          "pos": [
+            345,
+            128
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "G12",
+          "pos": [
+            344,
+            139
+          ],
+          "direction": "input"
+        },
+        "A": {
+          "pin": "H12",
+          "pos": [
+            345,
+            149
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "ENC3",
+      "comment": "ENC3",
+      "default": "",
+      "pins": {
+        "Z": {
+          "pin": "H11",
+          "pos": [
+            369,
+            128
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "L14",
+          "pos": [
+            369,
+            139
+          ],
+          "direction": "input"
+        },
+        "A": {
+          "pin": "K12",
+          "pos": [
+            369,
+            149
+          ],
+          "direction": "input"
+        }
+      }
+    }
+  ]
+}

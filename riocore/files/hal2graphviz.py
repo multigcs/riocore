@@ -4,8 +4,8 @@
 
 import argparse
 import os.path
-import graphviz
 
+import graphviz
 
 LINUXCNC_SIGNALS = {
     "inout": {"joint.0.index-enable": {"help": "Joint", "type": bool}, "spindle.0.index-enable": {"help": "", "type": bool}},
@@ -334,7 +334,7 @@ if not args.ini:
 gAll = graphviz.Digraph("G", format="svg")
 gAll.attr(rankdir="LR")
 base_dir = os.path.dirname(args.ini)
-ini_data = open(args.ini, "r").read()
+ini_data = open(args.ini).read()
 
 signals = {}
 components = {}
@@ -373,13 +373,11 @@ def load_halfile(basepath, filepath):
     if not args.quiet:
         print(f"loading {basepath}/{filepath}")
 
-    halfile_data = open(os.path.join(basepath, filepath), "r").read()
-    for line in halfile_data.split("\n"):
-        line = line.strip()
-
+    halfile_data = open(os.path.join(basepath, filepath)).read()
+    for line_raw in halfile_data.split("\n"):
+        line = line_raw.strip()
         if line.startswith("source "):
             load_halfile(basepath, line.split()[-1])
-
         elif line.startswith("loadrt "):
             comp_name = line.split()[1]
             for part in line.split()[2:]:
@@ -440,17 +438,15 @@ def load_halfile(basepath, filepath):
                         print(f"WARNING: {signalname}: wrong direction-marker: {part}")
                     signals[signalname]["targets"].append(part)
 
+                elif not signals[signalname]["source"]:
+                    signals[signalname]["source"] = part
+                elif not signals[signalname]["targets"]:
+                    # swapping IN/OUT
+                    signals[signalname]["targets"].append(signals[signalname]["source"])
+                    signals[signalname]["source"] = part
                 else:
-                    if not signals[signalname]["source"]:
-                        signals[signalname]["source"] = part
-                    else:
-                        if not signals[signalname]["targets"]:
-                            # swapping IN/OUT
-                            signals[signalname]["targets"].append(signals[signalname]["source"])
-                            signals[signalname]["source"] = part
-                        else:
-                            print("ERROR: double input", signalname, part, signals[signalname]["source"], signals[signalname]["targets"])
-                            signals[signalname]["targets"].append(part)
+                    print("ERROR: double input", signalname, part, signals[signalname]["source"], signals[signalname]["targets"])
+                    signals[signalname]["targets"].append(part)
 
 
 section = None
@@ -464,9 +460,7 @@ for line in ini_data.split("\n"):
             name, value = line.split("=", 1)
             name = name.strip()
             value = value.strip()
-            if name == "HALFILE":
-                load_halfile(base_dir, value)
-            elif name == "POSTGUI_HALFILE":
+            if name == "HALFILE" or name == "POSTGUI_HALFILE":
                 load_halfile(base_dir, value)
 
 
@@ -541,9 +535,9 @@ for group_name, pins in groups.items():
         title = f"{group_name}\\n--{comp}--"
         color = "lightgray"
 
-    for setp, value in setps.items():
-        if setp.startswith(group_name):
-            setp = setp.split(".")[-1]
+    for setp_raw, value in setps.items():
+        if setp_raw.startswith(group_name):
+            setp = setp_raw.split(".")[-1]
             if not cgroup:
                 pin_str = f"<{setp}>{setp}={value}"
             else:

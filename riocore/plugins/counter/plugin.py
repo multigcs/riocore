@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "pulse counter input"
         self.DESCRIPTION = "to counting digital pulses, supporting up,down and reset signals"
         self.KEYWORDS = "counter pulse"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["counter.v"]
         self.PINDEFAULTS = {

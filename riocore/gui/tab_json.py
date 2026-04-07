@@ -1,5 +1,5 @@
-import json
 import difflib
+import json
 
 from PyQt5.QtGui import QColor, QTextCursor
 from PyQt5.QtWidgets import (

@@ -1,6 +1,6 @@
 
 module spi_prog
-    #(parameter BUFFER_SIZE=64, parameter MSGID=32'h74697277)
+    #(parameter BUFFER_SIZE_RX=64, parameter BUFFER_SIZE_TX=64, parameter MSGID=32'h74697277)
      (
          input clk,
          input mosi,
@@ -13,8 +13,8 @@ module spi_prog
          input eeprom_miso,
          output reg eeprom_sclk = 1,
          output reg eeprom_sel = 1,
-         input [BUFFER_SIZE-1:0] tx_data,
-         output [BUFFER_SIZE-1:0] rx_data,
+         input [BUFFER_SIZE_TX-1:0] tx_data,
+         output [BUFFER_SIZE_RX-1:0] rx_data,
          output reg sync = 0
          //output [15:0] counter
      );
@@ -27,9 +27,9 @@ module spi_prog
     wire SSEL_startmessage = (SSELr[2:1]==2'b10);  // message starts at falling edge
     wire SSEL_endmessage = (SSELr[2:1]==2'b01);  // message stops at rising edge
     reg[15:0] bitcnt;
-    reg[BUFFER_SIZE-1:0] byte_data_received;
-    reg[BUFFER_SIZE-1:0] byte_data_receive;
-    reg[BUFFER_SIZE-1:0] byte_data_sent;
+    reg[BUFFER_SIZE_RX-1:0] byte_data_received;
+    reg[BUFFER_SIZE_RX-1:0] byte_data_receive;
+    reg[BUFFER_SIZE_TX-1:0] byte_data_sent;
     assign rx_data = byte_data_received;
 
     reg prog_active = 0;
@@ -47,14 +47,14 @@ module spi_prog
         end else if (~prog) begin
             if(SCK_risingedge) begin
                 bitcnt <= bitcnt + 16'd1;
-                byte_data_receive <= {byte_data_receive[BUFFER_SIZE-2:0], mosi};
+                byte_data_receive <= {byte_data_receive[BUFFER_SIZE_RX-2:0], mosi};
             end
         end
     end
     always @(posedge clk) begin
         sync <= 0;
         if (SSEL_endmessage) begin
-            if (byte_data_receive[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
+            if (byte_data_receive[BUFFER_SIZE_RX-1:BUFFER_SIZE_RX-32] == MSGID) begin
                 byte_data_received <= byte_data_receive;
                 sync <= 1;
             end
@@ -69,7 +69,7 @@ module spi_prog
                     if(bitcnt==16'd0)
                         byte_data_sent <= 0;  // after that, we send 0s
                     else
-                        byte_data_sent <= {byte_data_sent[BUFFER_SIZE-2:0], 1'b0};
+                        byte_data_sent <= {byte_data_sent[BUFFER_SIZE_TX-2:0], 1'b0};
                 end
             end
         end
@@ -81,7 +81,7 @@ module spi_prog
             eeprom_sclk <= sclk;
             eeprom_sel <= sel;
         end else begin
-            miso <= byte_data_sent[BUFFER_SIZE-1];
+            miso <= byte_data_sent[BUFFER_SIZE_TX-1];
         end
     end
 endmodule

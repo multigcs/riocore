@@ -1,0 +1,21 @@
+<?xml version="1" encoding="UTF-8"?>
+<!DOCTYPE gowin-fpga-project>
+<Project>
+    <Template>FPGA</Template>
+    <Version>5</Version>
+    <Device name="GW1NR-9C" pn="GW1NR-LV9QN88PC6/I5">gw1nr9c-004</Device>
+    <FileList>
+        <File path="globals.v" type="file.verilog" enable="1"/>
+        <File path="w5500.v" type="file.verilog" enable="1"/>
+        <File path="ws2812.v" type="file.verilog" enable="1"/>
+        <File path="wled.v" type="file.verilog" enable="1"/>
+        <File path="stepdir.v" type="file.verilog" enable="1"/>
+        <File path="debouncer.v" type="file.verilog" enable="1"/>
+        <File path="toggle.v" type="file.verilog" enable="1"/>
+        <File path="pwmmod.v" type="file.verilog" enable="1"/>
+        <File path="oneshot.v" type="file.verilog" enable="1"/>
+        <File path="delay.v" type="file.verilog" enable="1"/>
+        <File path="rio.v" type="file.verilog" enable="1"/>
+    <File path="pins.cst" type="file.cst" enable="1"/>
+    </FileList>
+</Project>

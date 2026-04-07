@@ -37,25 +37,30 @@ jitter measured with a EPM240 as 40bit Shiftreg:
 
         """
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["shiftreg.v"]
         self.PINDEFAULTS = {
             "out": {
                 "direction": "output",
                 "description": "output data (DS on 74HC595)",
                 "optional": True,
+                "pos": (185, 260),
             },
             "in": {
                 "direction": "input",
                 "description": "input data (SER_OUT on 74HC165)",
                 "optional": True,
+                "pos": (159, 260),
             },
             "sclk": {
                 "direction": "output",
                 "description": "input data (CLK on 74HC165/ CH_CP/SRCLK on 74HC595)",
+                "pos": (114, 260),
             },
             "load": {
                 "direction": "output",
                 "description": "input data (SH/LD on 74HC165/ ST_CP/RCLK on 74HC595)",
+                "pos": (137, 260),
             },
         }
         self.TYPE = "expansion"
@@ -75,12 +80,50 @@ jitter measured with a EPM240 as 40bit Shiftreg:
                 "description": "number of bits (IO's)",
             },
         }
+
+        self.IMAGE_SHOW = True
+        self.IMAGE = "inout8.png"
+
         self.BITS_IN = 0
         self.BITS_OUT = 0
         if "in" in self.plugin_setup.get("pins", {}):
             self.BITS_IN = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
+            if self.BITS_IN > 8:
+                self.IMAGE_SHOW = False
+            px = 12
+            py = 54
+            for bit in range(self.BITS_IN):
+                self.PINDEFAULTS[f"INPUT:{bit}"] = {"direction": "input", "type": ["FPGA"], "edge": "source", "pos": (px, py)}
+                py += 23
         if "out" in self.plugin_setup.get("pins", {}):
             self.BITS_OUT = int(self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"]))
+            if self.BITS_OUT > 8:
+                self.IMAGE_SHOW = False
+            px = 367
+            py = 54 + 7 * 23
+            for bit in range(self.BITS_OUT):
+                self.PINDEFAULTS[f"OUTPUT:{bit}"] = {"direction": "output", "type": ["FPGA"], "edge": "source", "pos": (px, py)}
+                py -= 23
+
+    @classmethod
+    def update_prefixes(cls, parent, instances):
+        fnum = 0
+        for instance in instances:
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                instance.hal_prefix = instance.instances_name
+                plugin_instance = connected_pin["instance"]
+                # plugin_instance.PREFIX = f"{instance.master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
+                plugin_instance.PREFIX = f"{instance.master}.{plugin_instance.instances_name}"
+                fnum += 1
+
+    def update_pins(self, parent):
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            psetup = connected_pin["setup"]
+            pin = connected_pin["pin"]
+            if pin in self.PINDEFAULTS:
+                direction, bit = pin.split(":")
+                psetup["pin"] = f"{self.instances_name.upper()}_{direction}[{bit}]"
+            connected_pin["instance"].master = self.master
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -97,7 +140,6 @@ jitter measured with a EPM240 as 40bit Shiftreg:
         if "in" not in self.plugin_setup.get("pins", {}):
             del instance_arguments["data_in"]
         if "out" not in self.plugin_setup.get("pins", {}):
-            print("del out")
             del instance_arguments["data_out"]
 
         return instances

@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "controling digital poti for analog outputs"
         self.KEYWORDS = "analog dac poti"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["udpoti.v"]
         self.PINDEFAULTS = {
             "updown": {

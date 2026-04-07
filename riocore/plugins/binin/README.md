@@ -6,14 +6,8 @@
 
 reads binary values
 
-Keywords: binary bin2dec
-
-```mermaid
-graph LR;
-    FPGA-Pin0-->Bin2Dec;
-    FPGA-Pin1-->Bin2Dec;
-    Bin2Dec-->Hal-Value;
-```
+* Keywords: binary bin2dec
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -36,6 +30,12 @@ graph LR;
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### bits:
 number of inputs
 
@@ -44,12 +44,6 @@ number of inputs
  * max: 32
  * default: 4
  * unit: bits
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -67,89 +61,3 @@ name of this plugin instance
  * size: 8 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "binin",
-    "pins": {
-        "bin0": {
-            "pin": "0"
-        },
-        "bin1": {
-            "pin": "1"
-        },
-        "bin2": {
-            "pin": "2"
-        },
-        "bin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "binin",
-    "bits": 4,
-    "name": "",
-    "pins": {
-        "bin0": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "bin1": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin2": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin3": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "inputs",
-                "type": "meter"
-            }
-        }
-    }
-}
-```

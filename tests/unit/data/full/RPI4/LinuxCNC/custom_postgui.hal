@@ -1,0 +1,25 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_pyvcp_halui_mdi-command-00       <= pyvcp.halui.mdi-command-00
+net sig_pyvcp_halui_mdi-command-01       <= pyvcp.halui.mdi-command-01
+net sig_pyvcp_halui_mdi-command-02       <= pyvcp.halui.mdi-command-02
+net sig_pyvcp_halui_mdi-command-03       <= pyvcp.halui.mdi-command-03
+net sig_pyvcp_hal_gpio_GPIO24-out        <= pyvcp.hal_gpio.GPIO24-out
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_hal_gpio_GPIO13-in               => pyvcp.probe-input
+net sig_hal_gpio_GPIO25-in               => pyvcp.hal_gpio.GPIO25-in
+net sig_hal_gpio_SPI_CE0_N-in            => pyvcp.hal_gpio.SPI_CE0_N-in
+net sig_hal_gpio_SPI_CE1_N-in            => pyvcp.hal_gpio.SPI_CE1_N-in
+net sig_hal_gpio_GPIO12-in               => pyvcp.hal_gpio.GPIO12-in
+net sig_hal_gpio_GPIO13-in               => pyvcp.hal_gpio.GPIO13-in
+net sig_halui_machine_is-on              => pyvcp.hal_gpio.GPIO26-out
+net sig_spindle_0_speed-out              => pyvcp.pwmgen.0.value
+net sig_spindle_0_on                     => pyvcp.pwmgen.0.enable
+
+#################################################################################
+# setp
+#################################################################################
+

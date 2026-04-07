@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "Analog input via tlc549 ADC"
         self.KEYWORDS = "analog adc"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["tlc549c.v"]
         self.PINDEFAULTS = {
             "miso": {
@@ -47,10 +48,6 @@ class Plugin(PluginBase):
         divider = self.system_setup["speed"] // 1000000 // 2
         instance_parameter["DIVIDER"] = divider
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        value = value * 3.3 / 255.0
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         return """

@@ -60,13 +60,13 @@ and do not, take any responsibility for such compliance
 * [cnc-aus-holz (de)](https://www.cnc-aus-holz.at/)
 
 ## Boards <a name = "boards"></a>
-list of all boards: [BOARDS](riocore/boards/README.md)
+list of all boards: [BOARDS](riocore/plugins/fpga/BOARDS.md)
 
 ## Plugins/Drivers <a name = "plugins"></a>
 list of all plugins: [PLUGINS](riocore/plugins/README.md)
 
 ## supported Toolchains <a name = "toolchains"></a>
-list of all  toolchains: [TOOLCHAINS](riocore/generator/toolchains/README.md)
+list of all  toolchains: [TOOLCHAINS](riocore/plugins/fpga/generator/toolchains/README.md)
 
 ## Getting Started <a name = "getting_started"></a>
 
@@ -118,9 +118,9 @@ Using a TangNano9k or other board supported by the open-cad-suite? Check out the
 
 ## Usage <a name="usage"></a>
 
-you can edit your configuration file by hand (text-editor) or using the setup tool (rio-setup):
+you can edit your configuration file by hand (text-editor) or using the config tool (rio-flow):
 ```
-bin/rio-setup my_config.json
+bin/rio-flow  riocore/configs/Tangbob/config.json
 ```
 
 ![basic setup](./doc/images/basic_setup.png)
@@ -262,16 +262,10 @@ riocore
 ├── doc ················ documentation
 ├── dockerfiles ········ files to run the docker container
 ├┬─ ricore ············· main directory 
-|├── boards ············ board configurations
-|├── chipdata ·········· pin-information about the different FPGAs
 |├── configs ··········· some demo configurations
 |├── gui ··············· widgets and functions for the gui tools
 |├── files ············· helper scripts and files
-|├┬── generator ········ the generators for the GateWare and LinuxCNC configuration
-||├── addons ··········· generator addons for LinuxCNC (like joystick/mpg/...)
-||├── pins ············· the different pin generators, used by the toolchains
-||├── toolchains ······· location of the different toolchain generators
-|├── modules ··········· break out board and external modules configuration
+|├── generator ········ the generator for the LinuxCNC configuration
 |├── plugins ··········· location of the plugins
 ├── tests ·············· unit tests
 ```
@@ -282,6 +276,7 @@ Output
 ├┬─ BOARD_NAME ········· for each board
 |├── Gateware ·········· Gateware-Files for the FPGA
 |├── LinuxCNC ·········· LinuxCNC configuration (hal/ini/component)
+|├── PYLIB ············· C and Python lib with testgui.py
 |├── MQTT ·············· MQTT-Bridge
 |├── ROS ··············· ROS-Bridge
 |├── Simulator ········· Simulator-Sources

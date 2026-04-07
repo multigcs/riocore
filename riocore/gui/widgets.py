@@ -1,23 +1,28 @@
-import os
 import json
-import riocore
+import os
 
 from PyQt5 import QtGui, QtSvg
-from PyQt5.QtCore import QRect, Qt, QSize, pyqtSignal
-from PyQt5.QtGui import QStandardItem, QPixmap
+from PyQt5.QtCore import QRect, QRectF, QSize, QSortFilterProxyModel, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap, QStandardItem
 from PyQt5.QtWidgets import (
-    QVBoxLayout,
-    QFileDialog,
-    QDialogButtonBox,
-    QDialog,
-    QPushButton,
-    QLabel,
     QCheckBox,
     QComboBox,
+    QCompleter,
+    QDialog,
+    QDialogButtonBox,
     QDoubleSpinBox,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
     QLineEdit,
+    QPushButton,
     QSpinBox,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
+
+import riocore
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -107,9 +112,8 @@ class MyQLabel(QLabel):
         if delta.y() < 0:
             if self.scale > 0.1:
                 self.scale -= 0.1
-        else:
-            if self.scale < 10.0:
-                self.scale += 0.1
+        elif self.scale < 10.0:
+            self.scale += 0.1
         self.load(None)
 
     def load(self, png_data):
@@ -179,7 +183,7 @@ class MyStandardItem(QStandardItem):
 
 
 class edit_float(QDoubleSpinBox):
-    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None, decimals=None):
+    def __init__(self, win, obj, key, vmin=None, vmax=None, cb=None, help_text=None, default=None, decimals=None, need_enter=False):
         super().__init__()
         self.win = win
         self.cb = cb
@@ -193,10 +197,10 @@ class edit_float(QDoubleSpinBox):
             decimals = 5
         self.setDecimals(decimals)
         steps = 1.0
-        if decimals > 1:
-            for dn in range(decimals - 1):
-                steps /= 10.0
-            self.setSingleStep(steps)
+        # if decimals > 1:
+        #    for dn in range(decimals - 1):
+        #        steps /= 10.0
+        self.setSingleStep(steps)
         if vmin:
             self.setMinimum(vmin)
         else:
@@ -209,9 +213,20 @@ class edit_float(QDoubleSpinBox):
             self.setValue(float(obj[key]))
         elif default is not None:
             self.setValue(float(default))
-        self.valueChanged.connect(self.change)
+        if need_enter is not True:
+            self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.setValue(float(self.obj[self.key]))
+        elif self.default is not None:
+            self.setValue(float(self.default))
+        self.no_update = False
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
@@ -228,6 +243,9 @@ class edit_float(QDoubleSpinBox):
             self.cb(self.value())
         else:
             self.win.display()
+
+    def get(self):
+        return self.value()
 
 
 class edit_int(QSpinBox):
@@ -241,11 +259,11 @@ class edit_int(QSpinBox):
         self.no_update = False
         if help_text:
             self.setToolTip(help_text)
-        if vmin:
+        if vmin is not None:
             self.setMinimum(vmin)
         else:
             self.setMinimum(-99999999)
-        if vmax:
+        if vmax is not None:
             self.setMaximum(vmax)
         else:
             self.setMaximum(99999999)
@@ -256,6 +274,16 @@ class edit_int(QSpinBox):
         self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.setValue(int(self.obj[self.key]))
+        elif self.default is not None:
+            self.setValue(int(self.default))
+        self.no_update = False
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
@@ -272,6 +300,9 @@ class edit_int(QSpinBox):
             self.cb(self.value())
         else:
             self.win.display()
+
+    def get(self):
+        return self.value()
 
 
 class edit_avgfilter(QSpinBox):
@@ -301,6 +332,15 @@ class edit_avgfilter(QSpinBox):
         self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            if self.obj[self.key]:
+                self.setValue(self.obj[self.key][0].get("depth", 0))
+        self.no_update = False
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
@@ -337,11 +377,14 @@ class edit_avgfilter(QSpinBox):
         else:
             self.win.display()
 
+    def get(self):
+        return self.value()
+
 
 class edit_text(QLineEdit):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
         super().__init__()
-        self.setMaxLength(50)
+        # self.setMaxLength(150)
         self.win = win
         self.cb = cb
         self.obj = obj
@@ -356,9 +399,15 @@ class edit_text(QLineEdit):
             self.setText(str(default))
         self.textChanged.connect(self.change)
 
-    # def mousePressEvent(self, QMouseEvent):
-    #    print("###")
-    #    self.clicked.emit()
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.setText(str(self.obj[self.key]))
+        elif self.default is not None:
+            self.setText(str(self.default))
+        self.no_update = False
 
     def change(self):
         if self.no_update:
@@ -371,6 +420,120 @@ class edit_text(QLineEdit):
             self.cb(self.text())
         else:
             self.win.display()
+
+    def get(self):
+        return self.text()
+
+
+class edit_bits(QWidget):
+    def __init__(self, win, obj, key, bitwidth=8, cb=None, help_text=None, default=None):
+        super().__init__()
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.bitwidth = bitwidth
+        self.no_update = False
+        if help_text:
+            self.setToolTip(help_text)
+
+        if key in obj:
+            self.value = int(obj[key])
+        elif default is not None:
+            self.value = int(default)
+
+        blayout = QHBoxLayout()
+        self.setLayout(blayout)
+        self.bits = {}
+        for bit in reversed(range(self.bitwidth)):
+            vlayout = QVBoxLayout()
+            vwidget = QWidget()
+            vwidget.setLayout(vlayout)
+            bcheck = QCheckBox()
+            bcheck.setStyleSheet(STYLESHEET_CHECKBOX)
+            bcheck.setChecked(self.value & (1 << bit))
+            self.bits[bit] = bcheck
+            vlayout.addWidget(QLabel(f"{bit}"), stretch=0)
+            vlayout.addWidget(bcheck, stretch=0)
+            blayout.addWidget(vwidget, stretch=0)
+            bcheck.stateChanged.connect(self.change)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.value = int(self.obj[self.key])
+        elif self.default is not None:
+            self.value = int(self.default)
+        for bit in reversed(range(self.bitwidth)):
+            self.bits[bit].setChecked(self.value & (1 << bit))
+        self.no_update = False
+
+    def change(self):
+        if self.no_update:
+            return
+        self.value = 0
+        for bit in reversed(range(self.bitwidth)):
+            if self.bits[bit].isChecked():
+                self.value |= 1 << bit
+        if self.value != self.default:
+            self.obj[self.key] = self.value
+        elif self.key in self.obj:
+            del self.obj[self.key]
+        if self.cb:
+            self.cb(self.value)
+        else:
+            self.win.display()
+
+    def get(self):
+        return self.value
+
+
+class edit_multiline(QTextEdit):
+    def __init__(self, win, obj, key, cb=None, help_text=None, default=None, mul=0):
+        super().__init__()
+        self.setFont(QFont("Monospace"))
+        self.setLineWrapMode(QTextEdit.NoWrap)
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.no_update = False
+        if help_text:
+            self.setToolTip(help_text)
+        if key in obj:
+            self.setText(str(obj[key]))
+        elif default is not None:
+            self.setText(str(default))
+        self.textChanged.connect(self.change)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.setText(str(self.obj[self.key]))
+        elif self.default is not None:
+            self.setText(str(self.default))
+        self.no_update = False
+
+    def change(self):
+        if self.no_update:
+            return
+        if self.toPlainText() != self.default:
+            self.obj[self.key] = self.toPlainText()
+        elif self.key in self.obj:
+            del self.obj[self.key]
+        if self.cb:
+            self.cb(self.toPlainText())
+        else:
+            self.win.display()
+
+    def get(self):
+        return self.toPlainText()
 
 
 class edit_file(QLineEdit):
@@ -423,6 +586,9 @@ class edit_file(QLineEdit):
         else:
             self.win.display()
 
+    def get(self):
+        return self.text()
+
 
 class edit_bool(QCheckBox):
     def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
@@ -442,6 +608,16 @@ class edit_bool(QCheckBox):
             self.setChecked(default)
         self.stateChanged.connect(self.change)
 
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            self.setChecked(self.obj[self.key])
+        elif self.default is not None:
+            self.setChecked(self.default)
+        self.no_update = False
+
     def change(self):
         if self.no_update:
             return
@@ -454,6 +630,9 @@ class edit_bool(QCheckBox):
         else:
             self.win.display()
 
+    def get(self):
+        return self.isChecked()
+
 
 class edit_combobox(QComboBox):
     def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
@@ -464,43 +643,84 @@ class edit_combobox(QComboBox):
         self.key = key
         self.default = default
         self.no_update = False
-        options = options.copy()
-        options_clean = []
-        for opt in options:
+        self.options = options.copy()
+        self.options_clean = []
+        for opt in self.options:
             if opt:
-                options_clean.append(opt.split("|")[0])
+                self.options_clean.append(opt.split("|")[0])
             else:
-                options_clean.append(opt)
+                self.options_clean.append(opt)
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
-            if str(obj[key]) not in options_clean:
-                options.append(str(obj[key]))
-                options_clean.append(str(obj[key]))
+            if str(obj[key]) not in self.options_clean:
+                self.options.append(str(obj[key]))
+                self.options_clean.append(str(obj[key]))
         else:
-            options.append("")
-            options_clean.append("")
-        for option in options:
+            self.options.append("")
+            self.options_clean.append("")
+        for option in self.options:
             self.addItem(option)
+
         self.setEditable(True)
+        self.setInsertPolicy(QComboBox.NoInsert)
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+        self.completer = QCompleter(self.pFilterModel, self)
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
         if key in obj:
-            if str(obj[key]) in options_clean:
-                self.setCurrentIndex(options_clean.index(str(obj[key])))
+            if str(obj[key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(obj[key])))
             else:
                 print(f"ERROR: {obj[key]} is not a option")
         elif default is not None:
-            if default in options_clean:
-                self.setCurrentIndex(options_clean.index(default))
+            if str(default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(default)))
             else:
                 print(f"ERROR: {default} is not a option")
         else:
-            self.setCurrentIndex(options_clean.index(""))
+            self.setCurrentIndex(self.options_clean.index(""))
         if need_enter:
             self.currentIndexChanged.connect(self.change)
             self.textActivated.connect(self.change)
         else:
             self.editTextChanged.connect(self.change)
         self.setFocusPolicy(Qt.StrongFocus)
+
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.change()
+        else:
+            QComboBox.keyPressEvent(self, event)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            if str(self.obj[self.key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.obj[self.key])))
+            else:
+                print(f"ERROR: {self.obj[self.key]} is not a option")
+        elif self.default is not None:
+            if str(self.default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.default)))
+            else:
+                print(f"ERROR: {self.default} is not a option")
+        else:
+            self.setCurrentIndex(self.options_clean.index(""))
+        self.no_update = False
 
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
@@ -518,6 +738,131 @@ class edit_combobox(QComboBox):
             self.cb(new_value)
         else:
             self.win.display()
+
+    def get(self):
+        return self.currentText().split("|")[0]
+
+
+class edit_imgselect(QComboBox):
+    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
+        super().__init__()
+        self.setStyleSheet("QComboBox { min-height: 60px; padding: 10px;}")
+        self.setIconSize(QSize(60, 60))
+
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.no_update = False
+        self.options = options.copy()
+        self.options_clean = []
+        for opt in self.options:
+            if opt:
+                self.options_clean.append(opt.split("|")[0])
+            else:
+                self.options_clean.append(opt)
+        if help_text:
+            self.setToolTip(help_text)
+        if key in obj:
+            if str(obj[key]) not in self.options_clean:
+                self.options.append(str(obj[key]))
+                self.options_clean.append(str(obj[key]))
+        else:
+            self.options.append("")
+            self.options_clean.append("")
+
+        for option in self.options:
+            if image := self.get_image(option):
+                icon = QIcon(image)
+                self.addItem(icon, option)
+            else:
+                self.addItem(option)
+
+        self.setEditable(True)
+        self.setInsertPolicy(QComboBox.NoInsert)
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+        self.completer = QCompleter(self.pFilterModel, self)
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
+        if key in obj:
+            if str(obj[key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(obj[key])))
+            else:
+                print(f"ERROR: {obj[key]} is not a option")
+        elif default is not None:
+            if str(default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(default)))
+            else:
+                print(f"ERROR: {default} is not a option")
+        else:
+            self.setCurrentIndex(self.options_clean.index(""))
+        if need_enter:
+            self.currentIndexChanged.connect(self.change)
+            self.textActivated.connect(self.change)
+        else:
+            self.editTextChanged.connect(self.change)
+        self.setFocusPolicy(Qt.StrongFocus)
+
+    def get_image(self, name):
+        if image := riocore.PluginImages.images.get(name, {}).get("image"):
+            return os.path.join(riocore_path, "files", "images", image)
+        return None
+
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return:
+            self.change()
+        else:
+            QComboBox.keyPressEvent(self, event)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        if self.key in self.obj:
+            if str(self.obj[self.key]) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.obj[self.key])))
+            else:
+                print(f"ERROR: {self.obj[self.key]} is not a option")
+        elif self.default is not None:
+            if str(self.default) in self.options_clean:
+                self.setCurrentIndex(self.options_clean.index(str(self.default)))
+            else:
+                print(f"ERROR: {self.default} is not a option")
+        else:
+            self.setCurrentIndex(self.options_clean.index(""))
+        self.no_update = False
+
+    def wheelEvent(self, *args, **kwargs):
+        if self.hasFocus():
+            return QComboBox.wheelEvent(self, *args, **kwargs)
+
+    def change(self):
+        if self.no_update:
+            return
+        new_value = self.currentText().split("|")[0]
+        if new_value != self.default:
+            self.obj[str(self.key)] = new_value
+        elif str(self.key) in self.obj:
+            del self.obj[str(self.key)]
+        if self.cb:
+            self.cb(new_value)
+        else:
+            self.win.display()
+
+    def get(self):
+        return self.currentText().split("|")[0]
 
 
 class modifier_selector(QComboBox):
@@ -555,6 +900,9 @@ class modifier_selector(QComboBox):
         else:
             self.pin_setup["modifier"][self.modifier_id]["type"] = selected
         self.win.display()
+
+    def get(self):
+        return self.currentText()
 
 
 class ImageMap(QLabel):
@@ -776,3 +1124,87 @@ class PinButton(QPushButton):
     def unmark(self):
         if self.parent and self.bgcolor:
             self.setStyleSheet(f"background-color: {self.bgcolor}; font-size:12px;")
+
+
+class JointImage(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.jdata = {}
+        self.joint_setup = {}
+        self.width = 400
+        self.height = 80
+        self.setFixedWidth(self.width)
+        self.setFixedHeight(self.height)
+
+    def update_joint(self, jdata, joint_setup):
+        self.jdata = jdata
+        self.joint_setup = joint_setup
+        self.update()
+
+    def paintEvent(self, event):
+        jmin = self.joint_setup.get("MIN_LIMIT", self.jdata.get("MIN_LIMIT", 0.0))
+        jmax = self.joint_setup.get("MAX_LIMIT", self.jdata.get("MAX_LIMIT", 99999.0))
+        jhome_offset = self.joint_setup.get("HOME_OFFSET", self.jdata.get("HOME_OFFSET", 0.0))
+        jsearch = self.joint_setup.get("HOME_SEARCH_VEL", self.jdata.get("HOME_SEARCH_VEL", 10.0))
+        jhome = self.joint_setup.get("HOME", self.jdata.get("HOME", 0.0))
+
+        joint_size = jmax - jmin
+        if joint_size == 0:
+            return
+
+        border = 20
+        scale = (self.width - border * 2) / joint_size
+
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setFont(QFont("Arial", 10))
+        painter.setBrush(QBrush(Qt.white))
+        painter.setPen(QPen(Qt.gray, 1))
+        painter.drawRect(QRect(0, 0, self.width - 1, self.height - 1))
+
+        if jhome < jmin or jhome > jmax:
+            painter.setPen(QPen(Qt.red, 3))
+        else:
+            painter.setPen(QPen(Qt.black, 3))
+
+        joint_len = int(joint_size * scale)
+        pos_min = 0
+        pos_max = joint_len
+        pos_hsw = int((jhome_offset - jmin) * scale)
+        pos_home = int((jhome - jmin) * scale)
+
+        l1 = 10
+        l2 = 25
+        l3 = 40
+        l4 = 55
+        l5 = 70
+
+        painter.drawLine(border + pos_min, l4, border + pos_max, l4)
+        painter.drawLine(border + pos_min, l4, border + pos_min, l4 + 10)
+        painter.drawLine(border + pos_max, l4, border + pos_max, l4 + 10)
+        painter.drawLine(border + pos_hsw, l4 - 10, border + pos_hsw, l4)
+        painter.drawLine(border + pos_home, l4 - 10, border + pos_home, l4)
+
+        if jsearch < 0.0:
+            pos_sve = int(((jmax - jhome_offset) / 2 + jhome_offset) * scale)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve + 10, l3)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve, l3 - 5)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve, l3 + 5)
+        else:
+            pos_sve = int(((jhome_offset - jmin) / 2) * scale)
+            painter.drawLine(border + pos_sve - 10, l3, border + pos_sve + 10, l3)
+            painter.drawLine(border + pos_sve, l3 - 5, border + pos_sve + 10, l3)
+            painter.drawLine(border + pos_sve, l3 + 5, border + pos_sve + 10, l3)
+
+        painter.drawText(QRectF(border + pos_min - border, l5 - 7, border * 2, 14), Qt.AlignCenter, "MIN")
+        painter.drawText(QRectF(border + pos_max - border, l5 - 7, border * 2, 14), Qt.AlignCenter, "MAX")
+
+        painter.setPen(QPen(Qt.black, 3))
+        if jhome < jmin or jhome > jmax:
+            painter.setPen(QPen(Qt.red, 3))
+        painter.drawText(QRectF(border + pos_home - border, l1 - 7, border * 2, 14), Qt.AlignCenter, "H")
+
+        painter.setPen(QPen(Qt.black, 3))
+        if jhome_offset < jmin or jhome_offset > jmax:
+            painter.setPen(QPen(QColor.fromRgb(200, 140, 0), 3))
+        painter.drawText(QRectF(border + pos_hsw - border, l2 - 7, border * 2, 14), Qt.AlignCenter, "SW")

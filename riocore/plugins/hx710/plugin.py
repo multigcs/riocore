@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "24bit adc (HX710B)"
         self.KEYWORDS = "adc analog"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["hx710.v"]
         self.PINDEFAULTS = {
             "miso": {
@@ -64,16 +65,6 @@ class Plugin(PluginBase):
         divider = self.system_setup["speed"] // 1000000 // 2
         instance_parameter["DIVIDER"] = divider
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if value & (1 << 23):
-            value = value - 16777216
-        scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])
-        zero = self.plugin_setup.get("zero", self.OPTIONS["zero"]["default"])
-        value -= zero
-        value *= scale
-        print(value)
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         scale = self.plugin_setup.get("scale", self.OPTIONS["scale"]["default"])

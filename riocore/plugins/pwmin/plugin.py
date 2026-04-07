@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "measuring pulse len"
         self.KEYWORDS = "pulse digital"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["pwmin.v"]
         self.PINDEFAULTS = {
             "pwm": {
@@ -57,12 +58,6 @@ class Plugin(PluginBase):
         freq_min = int(self.plugin_setup.get("freq_min", self.OPTIONS["freq_min"]["default"]))
         instance_parameter["RESET_CNT"] = self.system_setup["speed"] // freq_min
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "width":
-            if value != 0:
-                value = 1000 / (self.system_setup["speed"] / value)
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "width":

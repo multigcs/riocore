@@ -1,3 +1,4 @@
+from riocore import PluginImages
 from riocore.plugins import PluginBase
 
 
@@ -8,6 +9,8 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to control motor drivers via step/dir pin's and an optional enable pin"
         self.KEYWORDS = "stepper servo joint"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
+        self.IMAGES = PluginImages.stepdir
         self.VERILOGS = ["stepdir.v"]
         self.TYPE = "joint"
         self.PINDEFAULTS = {
@@ -88,17 +91,42 @@ class Plugin(PluginBase):
         instance_parameter["DIR_DELAY"] = int(self.system_setup["speed"] * dir_delay / 1000000)
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "velocity":
-            if value != 0:
-                value = self.system_setup["speed"] / value / 2
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "velocity":
             return """
-            if (value != 0) {
-                value = OSC_CLOCK / value / 2;
-            }
+    if (value != 0) {
+        value = OSC_CLOCK / value / 2;
+    }
             """
         return ""
+
+    def hal(self, parent):
+        if "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+            pid_num = joint_n
+            signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
+            prefix = signal_prefix
+            cmd_halname = f"{prefix}.velocity"
+            feedback_halname = f"{prefix}.position"
+            enable_halname = f"{prefix}.enable"
+            scale_halname = f"{prefix}.velocity-scale"
+            feedback_scale_halname = f"{prefix}.position-scale"
+
+            if joint_data.get("feedback_halname"):
+                feedback_halname = joint_data["feedback_halname"]
+                feedback_scale_halname = joint_data["feedback_scale_halname"]
+
+            parent.halg.joint_add(
+                parent,
+                axis_name,
+                joint_n,
+                "velocity",
+                cmd_halname,
+                feedback_halname=feedback_halname,
+                scale_halname=scale_halname,
+                feedback_scale_halname=feedback_scale_halname,
+                enable_halname=enable_halname,
+                pid_num=pid_num,
+            )

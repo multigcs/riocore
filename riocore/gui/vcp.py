@@ -1,24 +1,23 @@
-from PyQt5.QtCore import Qt
+import math
+
+from PyQt5.QtCore import QPointF, QRectF, Qt
+from PyQt5.QtGui import QFont, QPainter, QPainterPath, QPen, QPolygonF
 from PyQt5.QtWidgets import (
-    QDial,
-    QProgressBar,
-    QDoubleSpinBox,
-    QSlider,
-    QRadioButton,
-    QGroupBox,
     QCheckBox,
+    QDial,
     QDialog,
+    QDoubleSpinBox,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
+    QProgressBar,
     QPushButton,
+    QRadioButton,
+    QSlider,
     QTabWidget,
     QVBoxLayout,
     QWidget,
 )
-
-from PyQt5.QtGui import QPainter, QPen, QPolygonF, QPainterPath, QFont
-from PyQt5.QtCore import QPointF, QRectF
-import math
 
 try:
     from lxml import etree

@@ -1,46 +1,56 @@
 import copy
 import importlib
 import os
+import textwrap
+import webbrowser
+
 from functools import partial
-
-import riocore
-from riocore import halpins
-
-from riocore.gui.widgets import (
-    MyStandardItem,
-)
 
 from PyQt5 import QtSvg
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import (
-    QHeaderView,
-    QGroupBox,
-    QLineEdit,
     QDialog,
     QDialogButtonBox,
+    QGroupBox,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
+    QLineEdit,
     QPushButton,
     QScrollArea,
+    QTabWidget,
     QTableWidget,
     QTableWidgetItem,
-    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
+import riocore
+
+from riocore import halpins
+
 riocore_path = os.path.dirname(riocore.__file__)
+
+autoreload = True
 
 
 class GuiPlugins:
     def __init__(self, parent):
         self.parent = parent
+        self.options_tab = None
+        self.pins_tab = None
+        self.joint_tab = None
+        self.signals_tab = None
+        self.main_options = {}
 
-    def edit_plugin_pins(self, plugin_instance, plugin_config, pin_selected=None):
+    def edit_plugin_pins(self, pin_selected=None, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
-            pass
-            # print("#update", arg, plugin_config)
+            if cb:
+                cb(arg)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -55,6 +65,10 @@ class GuiPlugins:
 
         for pin_name, pin_defaults in plugin_instance.PINDEFAULTS.items():
             if pin_selected is not None and pin_name != pin_selected:
+                continue
+            if pin_defaults.get("edge") == "source":
+                continue
+            if pin_defaults.get("pintype") in {"PASSTHROUGH"}:
                 continue
 
             if pin_name not in plugin_config["pins"]:
@@ -97,53 +111,55 @@ class GuiPlugins:
             else:
                 pin_cols.addWidget(QLabel(""), stretch=4)
 
-            # Modifiers
-            if "modifier" not in pin_config:
-                pin_config["modifier"] = []
-            modifier_list = pin_config["modifier"]
+            if "fpga" in plugin_instance.NEEDS:
+                # Modifiers
+                if "modifier" not in pin_config:
+                    pin_config["modifier"] = []
+                modifier_list = pin_config["modifier"]
 
-            pin_cols = QHBoxLayout()
-            pin_rows.addLayout(pin_cols)
-            mod_label = QLabel("Modifiers:")
-            mod_label.setToolTip("list of pin-modifiers")
-            pin_cols.addWidget(mod_label)
-            mod_cols = QHBoxLayout()
-            pin_cols.addLayout(mod_cols)
-            add_button = QPushButton("+")
-            add_button.setToolTip("add an pin-modifiers")
-            add_button.clicked.connect(partial(self.parent.gui_modifiers.modifier_list_add, mod_cols, modifier_list))
-            add_button.setFixedWidth(20)
-            pin_cols.addWidget(add_button)
-            pin_cols.addStretch()
-            self.parent.gui_modifiers.modifier_list_update(mod_cols, modifier_list)
+                pin_cols = QHBoxLayout()
+                pin_rows.addLayout(pin_cols)
+                mod_label = QLabel("Modifiers:")
+                mod_label.setToolTip("list of pin-modifiers")
+                pin_cols.addWidget(mod_label)
+                mod_cols = QHBoxLayout()
+                pin_cols.addLayout(mod_cols)
+                add_button = QPushButton("+")
+                add_button.setToolTip("add an pin-modifiers")
+                add_button.clicked.connect(partial(self.parent.gui_modifiers.modifier_list_add, mod_cols, modifier_list))
+                add_button.setFixedWidth(20)
+                pin_cols.addWidget(add_button)
+                pin_cols.addStretch()
+                self.parent.gui_modifiers.modifier_list_update(mod_cols, modifier_list)
 
-            # IO-Standart
-            pin_cols = QHBoxLayout()
-            pin_rows.addLayout(pin_cols)
-            tooltip = "FPGA level IO config / optional / better do not use :)"
-            io_label = QLabel("IO-Standart:")
-            io_label.setToolTip(tooltip)
-            pin_cols.addWidget(io_label, stretch=1)
+                # IO-Standart
+                pin_cols = QHBoxLayout()
+                pin_rows.addLayout(pin_cols)
+                tooltip = "FPGA level IO config / optional / better do not use :)"
+                io_label = QLabel("IO-Standart:")
+                io_label.setToolTip(tooltip)
+                pin_cols.addWidget(io_label, stretch=1)
 
-            pin_cols.addWidget(
-                self.parent.edit_item(
-                    pin_config, "iostandard", {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip}, cb=update
-                ),
-                stretch=3,
-            )
-            if direction == "output":
-                label = QLabel("Slew:")
-                label.setToolTip(tooltip)
-                pin_cols.addWidget(label, stretch=1)
-                pin_cols.addWidget(self.parent.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW", "help_text": tooltip}, cb=update), stretch=3)
-                label = QLabel("Drive:")
-                label.setToolTip(tooltip)
-                pin_cols.addWidget(label, stretch=1)
                 pin_cols.addWidget(
-                    self.parent.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3
+                    self.parent.edit_item(
+                        pin_config,
+                        "iostandard",
+                        {"type": "select", "options": ["LVTTL", "LVCMOS33", "LVCMOS25", "LVCMOS18", "LVCMOS15", "LVCMOS12"], "default": "LVTTL", "help_text": tooltip},
+                        cb=update,
+                    ),
+                    stretch=3,
                 )
-            else:
-                pin_cols.addWidget(QLabel(""), stretch=8)
+                if direction == "output":
+                    label = QLabel("Slew:")
+                    label.setToolTip(tooltip)
+                    pin_cols.addWidget(label, stretch=1)
+                    pin_cols.addWidget(self.parent.edit_item(pin_config, "slew", {"type": "select", "options": ["SLOW", "FAST"], "default": "SLOW", "help_text": tooltip}, cb=update), stretch=3)
+                    label = QLabel("Drive:")
+                    label.setToolTip(tooltip)
+                    pin_cols.addWidget(label, stretch=1)
+                    pin_cols.addWidget(self.parent.edit_item(pin_config, "drive", {"type": "select", "options": ["2", "4", "8", "12", "16", "24"], "default": "4", "help_text": tooltip}, cb=update), stretch=3)
+                else:
+                    pin_cols.addWidget(QLabel(""), stretch=8)
 
             frame.setLayout(pin_rows)
             pins.addWidget(frame)
@@ -160,10 +176,31 @@ class GuiPlugins:
 
         return pins_tab
 
-    def edit_plugin_joints(self, plugin_instance, plugin_config):
+    def edit_plugin_joints(self, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
+            scale = plugin_config.get("joint", {}).get("scale", 320.0)
+            max_velocity = plugin_config.get("joint", {}).get("max_velocity", 40.0)
+            max_acceleration = plugin_config.get("joint", {}).get("max_acceleration", 500.0)
+            text = []
+            max_freq = abs(max_velocity * scale)
+            if max_freq > 1500:
+                text.append(f"Max-Frequency: {max_freq / 1000:0.2f} kHz")
+            else:
+                text.append(f"Max-Frequency: {max_freq:0.2f} Hz")
+            if max_acceleration != 0.0:
+                t_to_max = max_velocity / max_acceleration
+                text.append(f"Time to max speed: {t_to_max:0.4f} s")
+                d_to_max = 0.5 * max_acceleration * t_to_max * t_to_max
+                text.append(f"Distance to max speed: {d_to_max:0.4f} units")
+            self.genral_info_label.setText("\n".join(text))
+
             if hasattr(self.parent, "draw_joint_home"):
                 svgWidget.load(self.parent.draw_joint_home(joints_setup, joint_options))
+            if cb:
+                cb(arg)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -174,8 +211,8 @@ class GuiPlugins:
 
         joint_options = copy.deepcopy(halpins.JOINT_OPTIONS)
 
-        for key, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
-            key = key.lower()
+        for key_raw, value in riocore.generator.LinuxCNC.LinuxCNC.JOINT_DEFAULTS.items():
+            key = key_raw.lower()
             if key == "scale_out":
                 key = "scale"
             if key in joint_options:
@@ -205,21 +242,27 @@ class GuiPlugins:
             option_row = QHBoxLayout()
             option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
-            option_row.addWidget(option_label, stretch=1)
-
+            option_row.addWidget(option_label, stretch=3)
             if option == "feedback":
                 options = [""]
-                for plugin_instance in self.parent.plugins.plugin_instances:
+                if hasattr(self.parent, "list_plugin_instances"):
+                    instances = self.parent.list_plugin_instances()
+                else:
+                    instances = self.parent.plugins.plugin_instances
+                for plugin_instance in instances:
                     for signal_name, signal_config in plugin_instance.signals().items():
                         if signal_name == "position":
                             options.append(f"{plugin_instance.title}:{signal_name}")
-                option_setup = {"type": "select", "options": options, "default": ""}
-                option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
+                option_widget = self.parent.edit_item(joints_setup, option, {"type": "select", "options": options, "default": ""}, cb=update, help_text=tootltip)
             else:
                 option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
-
             option_row.addWidget(option_widget, stretch=3)
+            option_row.addWidget(QLabel(option_setup.get("unit", "")), stretch=1)
             general_layout.addLayout(option_row)
+
+        general_layout.addStretch()
+        self.genral_info_label = QLabel("---")
+        general_layout.addWidget(self.genral_info_label)
 
         general_tab = QWidget()
         general_layout.addStretch()
@@ -237,11 +280,13 @@ class GuiPlugins:
             option_row = QHBoxLayout()
             option_label = QLabel(option.replace("_", "-").title())
             option_label.setToolTip(tootltip)
-            option_row.addWidget(option_label, stretch=1)
+            option_row.addWidget(option_label, stretch=3)
             if option == "home_sequence":
-                option_setup = {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}
-            option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
+                option_widget = self.parent.edit_item(joints_setup, option, {"default": "auto", "type": "select", "options": ["auto"] + [str(n) for n in range(-9, 9)]}, cb=update, help_text=tootltip)
+            else:
+                option_widget = self.parent.edit_item(joints_setup, option, option_setup, cb=update, help_text=tootltip)
             option_row.addWidget(option_widget, stretch=3)
+            option_row.addWidget(QLabel(option_setup.get("unit", "")), stretch=1)
             homing_layout.addLayout(option_row)
 
         svgWidget = QtSvg.QSvgWidget()
@@ -276,10 +321,13 @@ class GuiPlugins:
 
         return joint_tabs
 
-    def edit_plugin_signals(self, plugin_instance, plugin_config, signal_selected=None):
+    def edit_plugin_signals(self, signal_selected=None, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
         def update(arg):
-            pass
-            # print("#update", arg, plugin_config)
+            if cb:
+                cb(arg)
 
         def toggleGroup(ctrl):
             state = ctrl.isChecked()
@@ -302,6 +350,8 @@ class GuiPlugins:
 
         for signal_name, signal_defaults in plugin_instance.SIGNALS.items():
             if signal_selected is not None and signal_name != signal_selected:
+                continue
+            if signal_defaults.get("gpio") is True:
                 continue
 
             # signal_table.setRowCount(row_n + 1)
@@ -347,11 +397,6 @@ class GuiPlugins:
 
             signal_cols.addWidget(QLabel(f"Dir: {signal_direction}"), stretch=1)
 
-            if signal_multiplexed:
-                signal_cols.addWidget(QLabel("Multiplexed: YES"), stretch=1)
-            else:
-                signal_cols.addWidget(QLabel("Multiplexed: NO"), stretch=1)
-
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
             signal_cols.addWidget(QLabel("Net:"), stretch=1)
@@ -363,6 +408,12 @@ class GuiPlugins:
             signal_cols.addWidget(QLabel("Function:"), stretch=1)
             signal_setup["function"] = {"type": "select", "options": options_func}
             signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "function", signal_setup["function"], cb=update), stretch=5)
+
+            signal_cols = QHBoxLayout()
+            signal_rows.addLayout(signal_cols)
+            signal_cols.addWidget(QLabel("Multiplexed:"), stretch=1)
+            signal_setup["multiplexed"] = {"type": bool, "default": signal_multiplexed, "help_text": "multiplexed signal"}
+            signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "multiplexed", signal_setup["multiplexed"], cb=update), stretch=5)
 
             if signal_direction == "output":
                 signal_cols.addWidget(QLabel("setp:"), stretch=1)
@@ -378,21 +429,22 @@ class GuiPlugins:
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
 
-            if "source" not in signal_defaults and not signal_defaults.get("bool"):
-                signal_cols.addWidget(QLabel("Scale"), stretch=1)
-                signal_setup["scale"] = {"type": float, "default": 1.0}
-                signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "scale", signal_setup["scale"], cb=update), stretch=4)
+            if "fpga" in plugin_instance.NEEDS or "mcu" in plugin_instance.NEEDS:
+                if "source" not in signal_defaults and not signal_defaults.get("bool"):
+                    signal_cols.addWidget(QLabel("Scale"), stretch=1)
+                    signal_setup["scale"] = {"type": float, "default": 1.0}
+                    signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "scale", signal_setup["scale"], cb=update), stretch=4)
 
-                signal_cols.addWidget(QLabel("Offset"), stretch=1)
-                signal_setup["offset"] = {"type": float, "default": 0.0}
-                signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
+                    signal_cols.addWidget(QLabel("Offset"), stretch=1)
+                    signal_setup["offset"] = {"type": float, "default": 0.0}
+                    signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "offset", signal_setup["offset"], cb=update), stretch=5)
 
-            if not signal_defaults.get("bool") and signal_direction == "input":
-                signal_cols = QHBoxLayout()
-                signal_rows.addLayout(signal_cols)
-                signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
-                signal_setup["filters"] = {"type": "avgfilter", "default": 0}
-                signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
+                if not signal_defaults.get("bool") and signal_direction == "input":
+                    signal_cols = QHBoxLayout()
+                    signal_rows.addLayout(signal_cols)
+                    signal_cols.addWidget(QLabel("AVG-Filter"), stretch=1)
+                    signal_setup["filters"] = {"type": "avgfilter", "default": 0}
+                    signal_cols.addWidget(self.parent.edit_item(signals_setup[signal_name], "filters", signal_setup["filters"], cb=update), stretch=5)
 
             display_frame = QGroupBox()
             display_frame.setTitle("Display")
@@ -426,11 +478,10 @@ class GuiPlugins:
                     type_options = ["none", "led", "rectled"]
                 else:
                     type_options = ["none", "number", "bar", "meter"]
+            elif signal_defaults.get("bool"):
+                type_options = ["none", "checkbutton", "button"]
             else:
-                if signal_defaults.get("bool"):
-                    type_options = ["none", "checkbutton", "button"]
-                else:
-                    type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
+                type_options = ["none", "scale", "spinbox", "dial", "jogwheel"]
             display_setup = {
                 "title": {"type": str},
                 "section": {"type": str},
@@ -462,10 +513,23 @@ class GuiPlugins:
         signals_tab.setWidget(signals_widget)
         return signals_tab
 
-    def edit_plugin_options(self, plugin_instance, plugin_config):
-        def update(arg):
+    def edit_plugin_options(self, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
+        def update(do_reload, arg):
+            if do_reload:
+                self.plugin_instance.setup()
+
+                self.reopen = True
+                self.dialog.close()
+                return
+
             plugin_instance.update_title()
-            iname_label.setText(plugin_instance.title)
+            title_label.setText(plugin_instance.title)
+            iname_label.setText(plugin_instance.instances_name)
+            if cb:
+                cb(arg)
 
         myFont = QFont()
         myFont.setBold(True)
@@ -479,35 +543,55 @@ class GuiPlugins:
         label.setFont(myFont)
         options.addWidget(label)
 
+        title_row = QHBoxLayout()
+        title_row.addWidget(QLabel("Title"), stretch=1)
+        title_label = QLabel(plugin_instance.title)
+        title_row.addWidget(title_label, stretch=3)
+        options.addLayout(title_row)
+
         iname_row = QHBoxLayout()
         iname_row.addWidget(QLabel("Instance-Name"), stretch=1)
-        iname_label = QLabel(plugin_instance.title)
+        iname_label = QLabel(plugin_instance.instances_name)
         iname_row.addWidget(iname_label, stretch=3)
         options.addLayout(iname_row)
 
+        self.main_options = {}
         for option_name, option_defaults in plugin_instance.OPTIONS.items():
             title = option_name.title()
+            experimental = option_defaults.get("experimental", False)
+            if experimental is True:
+                continue
             unit = option_defaults.get("unit")
             if unit:
                 title = f"{title} ({unit})"
             help_text = option_defaults.get("description", title)
+            do_reload = option_defaults.get("reload", False)
             option_row = QHBoxLayout()
             options.addLayout(option_row)
             option_label = QLabel(title)
             option_label.setToolTip(help_text)
-            option_row.addWidget(option_label, stretch=1)
-            option_row.addWidget(self.parent.edit_item(plugin_config, option_name, option_defaults, cb=update), stretch=3)
+            option_row.addWidget(option_label, stretch=3)
+            ucb = partial(update, do_reload)
+            self.main_options[option_name] = self.parent.edit_item(plugin_config, option_name, option_defaults, cb=ucb)
+            option_row.addWidget(self.main_options[option_name], stretch=3)
+            option_row.addWidget(QLabel(option_defaults.get("unit", "")), stretch=1)
 
-        if plugin_instance.PLUGIN_CONFIG:
-            button_config = QPushButton("config")
-            cb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_config.clicked.connect(cb)
-            button_config.setMaximumSize(button_config.sizeHint())
-            options.addWidget(button_config)
+        if plugin_instance.PLUGIN_CONFIGS:
+            for name in plugin_instance.PLUGIN_CONFIGS:
+                button_config = QPushButton(name)
+                bcb = partial(self.config_plugin, plugin_instance, name)
+                button_config.clicked.connect(bcb)
+                button_config.setMaximumSize(button_config.sizeHint())
+                options.addWidget(button_config)
 
         descriptiontext = plugin_instance.DESCRIPTION
-        label = QLabel(f"{descriptiontext}\n")
+        label = QLabel(f"{textwrap.fill(descriptiontext, 50)}\n")
         options.addWidget(label)
+
+        if plugin_instance.URL:
+            urlbtn = QPushButton(plugin_instance.URL)
+            urlbtn.clicked.connect(partial(webbrowser.open, plugin_instance.URL))
+            options.addWidget(urlbtn)
 
         options_widget = QWidget()
         options.addStretch()
@@ -520,122 +604,182 @@ class GuiPlugins:
         options_tab.setWidget(options_widget)
         return options_tab
 
-    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None):
-        plugin_config = plugin_instance.plugin_setup
-        plugin_config_backup = copy.deepcopy(plugin_config)
+    def reload(self, is_new=False, nopins=False, signal_selected=None, pin_selected=None, cb=None):
+        def cleanLayout(layout):
+            if isinstance(layout, QWidget):
+                for child in layout.children():
+                    if child.layout():
+                        cleanLayout(child.layout())
+                    child.deleteLater()
+                layout.deleteLater()
+                return
 
-        dialog = QDialog()
-        dialog.is_removed = False
-        dialog.setWindowTitle(f"edit plugin {plugin_instance.NAME}")
+            for widget_no in range(layout.count()):
+                if layout.itemAt(widget_no) and layout.itemAt(widget_no).widget():
+                    layout.itemAt(widget_no).widget().deleteLater()
+                elif layout.itemAt(widget_no) and layout.itemAt(widget_no).layout():
+                    cleanLayout(layout.itemAt(widget_no).layout())
+                    layout.itemAt(widget_no).layout().deleteLater()
+
+        if self.pins_tab is not None:
+            cleanLayout(self.pins_tab)
+            self.pins_tab = None
+
+        if self.joint_tab is not None:
+            cleanLayout(self.joint_tab)
+            self.joint_tab = None
+
+        if self.signals_tab is not None:
+            cleanLayout(self.signals_tab)
+            self.signals_tab = None
+
+        target_pins = False
+        for pin_name, pin_defaults in self.plugin_instance.PINDEFAULTS.items():
+            if pin_selected is not None and pin_name != pin_selected:
+                continue
+            if pin_defaults.get("edge") == "source":
+                continue
+            target_pins = True
+        if not target_pins:
+            nopins = True
+
+        if not nopins and self.plugin_instance.PINDEFAULTS:
+            self.pins_tab = self.edit_plugin_pins(pin_selected=pin_selected, cb=cb)
+            if signal_selected is None:
+                self.tab_widget.addTab(self.pins_tab, "Pins")
+                if is_new:
+                    self.tab_widget.setCurrentWidget(self.pins_tab)
+
+        if self.plugin_instance.TYPE == "joint" and self.plugin_config.get("is_joint", False):
+            self.joint_tab = self.edit_plugin_joints(cb=cb)
+            if pin_selected is None:
+                self.tab_widget.addTab(self.joint_tab, "Joint")
+
+        if self.plugin_instance.TYPE != "interface":
+            if self.plugin_instance.SIGNALS:
+                self.signals_tab = self.edit_plugin_signals(signal_selected=signal_selected, cb=cb)
+                if pin_selected is None:
+                    self.tab_widget.addTab(self.signals_tab, "Signals")
+                    if signal_selected is not None:
+                        self.tab_widget.setCurrentWidget(self.signals_tab)
+
+    def update_image(self):
+        image_path = self.plugin_instance.image_path()
+        if image_path and os.path.isfile(image_path):
+            pixmap = QPixmap(image_path).scaled(400, 500, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.ilabel.setPixmap(pixmap)
+        else:
+            self.ilabel.clear()
+
+    def edit_plugin(self, plugin_instance, widget, is_new=False, nopins=False, signal_selected=None, pin_selected=None, cb=None):
+        self.pins_tab = None
+        self.joint_tab = None
+        self.signals_tab = None
+        self.reopen = False
+
+        self.plugin_instance = plugin_instance
+        plugin_config = plugin_instance.plugin_setup
+        self.plugin_config = plugin_config
+        self.plugin_config_backup = copy.deepcopy(plugin_config)
+
+        def update(arg):
+            if cb:
+                cb(arg)
+            if autoreload:
+                self.plugin_instance.setup()
+                self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
+            self.update_image()
+
+        self.dialog = QDialog()
+        self.dialog.setMinimumWidth(800)
+        self.dialog.setMinimumHeight(600)
+
+        self.dialog.is_removed = False
+        self.dialog.setWindowTitle(f"edit plugin {self.plugin_instance.NAME}")
         if hasattr(self.parent, "STYLESHEET"):
-            dialog.setStyleSheet(self.parent.STYLESHEET)
+            self.dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog_buttonBox = QDialogButtonBox(QDialogButtonBox.Cancel | QDialogButtonBox.Ok)
-        dialog_buttonBox.accepted.connect(dialog.accept)
-        dialog_buttonBox.rejected.connect(dialog.reject)
+        dialog_buttonBox.accepted.connect(self.dialog.accept)
+        dialog_buttonBox.rejected.connect(self.dialog.reject)
 
         if not nopins:
             remove_button = QPushButton(self.parent.tr("Remove"))
-            remove_button.clicked.connect(partial(self.del_plugin, plugin_instance, dialog=dialog))
+            remove_button.clicked.connect(partial(self.del_plugin, self.plugin_instance, dialog=self.dialog))
             dialog_buttonBox.addButton(remove_button, QDialogButtonBox.ActionRole)
 
-        tab_widget = QTabWidget()
+        self.tab_widget = QTabWidget()
         if hasattr(self.parent, "STYLESHEET_TABBAR"):
-            tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
+            self.tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
-        if is_new and plugin_instance.TYPE == "joint":
-            if "position" in plugin_instance.SIGNALS:
-                plugin_config["is_joint"] = True
+        if is_new and self.plugin_instance.TYPE == "joint":
+            if "position" in self.plugin_instance.SIGNALS:
+                self.plugin_config["is_joint"] = True
 
-        options_tab = self.edit_plugin_options(plugin_instance, plugin_config)
+        self.options_tab = self.edit_plugin_options(cb=update)
         if signal_selected is None and pin_selected is None:
-            tab_widget.addTab(options_tab, "Plugin")
+            self.tab_widget.addTab(self.options_tab, "Plugin")
 
-        if not nopins:
-            pins_tab = self.edit_plugin_pins(plugin_instance, plugin_config, pin_selected=pin_selected)
-            if signal_selected is None:
-                tab_widget.addTab(pins_tab, "Pins")
-                if is_new:
-                    tab_widget.setCurrentWidget(pins_tab)
-
-        if plugin_instance.TYPE == "joint" and plugin_config.get("is_joint", False):
-            joint_tab = self.edit_plugin_joints(plugin_instance, plugin_config)
-            if pin_selected is None:
-                tab_widget.addTab(joint_tab, "Joint")
-        if plugin_instance.TYPE != "interface":
-            if plugin_instance.SIGNALS:
-                signals_tab = self.edit_plugin_signals(plugin_instance, plugin_config, signal_selected=signal_selected)
-                if pin_selected is None:
-                    tab_widget.addTab(signals_tab, "Signals")
-                    if signal_selected is not None:
-                        tab_widget.setCurrentWidget(signals_tab)
+        self.reload(is_new=is_new, nopins=nopins, signal_selected=signal_selected, pin_selected=pin_selected, cb=cb)
 
         right_layout = QVBoxLayout()
-        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
-        image_path = os.path.join(plugin_path, "image.png")
-        if os.path.isfile(image_path):
-            ilabel = QLabel()
-            pixmap = QPixmap(image_path)
-            ilabel.setPixmap(pixmap)
-            right_layout.addWidget(ilabel)
-            right_layout.addStretch()
+        self.ilabel = QLabel()
+        self.update_image()
+        right_layout.addWidget(self.ilabel)
+        right_layout.addStretch()
 
         hlayout = QHBoxLayout()
-        hlayout.addWidget(tab_widget)
+        hlayout.addWidget(self.tab_widget)
         hlayout.addLayout(right_layout)
 
         dialog_layout = QVBoxLayout()
         dialog_layout.addLayout(hlayout)
         dialog_layout.addWidget(dialog_buttonBox)
-        dialog.setLayout(dialog_layout)
+        self.dialog.setLayout(dialog_layout)
 
-        if dialog.exec():
+        if self.dialog.exec():
             if hasattr(self.parent, "config_load"):
                 self.parent.config_load()
                 # self.parent.display()
-            return
-        if not dialog.is_removed:
-            for key in list(plugin_config.keys()):
-                if key not in plugin_config_backup:
-                    del plugin_config[key]
-            for key in plugin_config_backup:
-                plugin_config[key] = plugin_config_backup[key]
+            return False
 
-    def config_plugin(self, plugin_instance, plugin_id, widget=None):
-        if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, "config.py")):
+        if self.reopen:
+            return True
+
+        if not self.dialog.is_removed:
+            for key in list(self.plugin_config.keys()):
+                if key not in self.plugin_config_backup:
+                    del self.plugin_config[key]
+            for key in self.plugin_config_backup:
+                self.plugin_config[key] = self.plugin_config_backup[key]
+
+    def options_update(self):
+        for key, value in self.main_options.items():
+            value.update()
+
+    def config_plugin(self, plugin_instance, name, widget=None):
+        command = plugin_instance.PLUGIN_CONFIGS[name]
+        if os.path.isfile(os.path.join(riocore_path, "plugins", plugin_instance.NAME, command)):
             plugin_config = importlib.import_module(".config", f"riocore.plugins.{plugin_instance.NAME}")
             if hasattr(self.parent, "STYLESHEET"):
-                config_box = plugin_config.config(plugin_instance, styleSheet=self.parent.STYLESHEET)
+                config_box = plugin_config.config(plugin_instance, styleSheet=self.parent.STYLESHEET, parent=self.parent)
             else:
-                config_box = plugin_config.config(plugin_instance)
+                config_box = plugin_config.config(plugin_instance, parent=self.parent)
             config_box.run()
+            self.options_update()
+            self.plugin_instance.setup()
+            self.reload()
         if hasattr(self.parent, "config_load"):
             self.parent.config_load()
             # self.parent.load_tree()
             # self.parent.display()
 
     def add_plugin(self, pin_id, slot_name=None):
-        boardcfg = self.parent.config.get("boardcfg")
-        toolchain = self.parent.board.get("toolchain")
-        family = self.parent.board.get("family")
         plugin_needs = {}
         plugin_list = self.parent.plugins.list()
         plugin_infos = {}
         for plugin in plugin_list:
             plugins = riocore.Plugins()
             plugins.load_plugins({"plugins": [{"type": plugin["name"]}]})
-
-            limit_boards = plugins.plugin_instances[0].LIMITATIONS.get("boards")
-            if limit_boards and boardcfg not in limit_boards:
-                continue
-
-            limit_toolchains = plugins.plugin_instances[0].LIMITATIONS.get("toolchains")
-            if limit_toolchains and toolchain not in limit_toolchains:
-                continue
-
-            limit_family = plugins.plugin_instances[0].LIMITATIONS.get("family")
-            if limit_family and family not in limit_family:
-                continue
-
             plugin_needs[plugin["name"]] = {
                 "inputs": 0,
                 "outputs": 0,
@@ -643,6 +787,8 @@ class GuiPlugins:
                 "opt_inputs": 0,
                 "opt_outputs": 0,
                 "opt_inouts": 0,
+                "opt_alls": 0,
+                "alls": 0,
             }
             for pin_name, pin_defaults in plugins.plugin_instances[0].PINDEFAULTS.items():
                 direction = pin_defaults["direction"]
@@ -679,7 +825,7 @@ class GuiPlugins:
                             "inouts": 0,
                             "alls": 0,
                         }
-                        for _pin_id, pin in slot["pins"].items():
+                        for pin in slot["pins"].values():
                             if isinstance(pin, dict):
                                 direction = pin.get("direction") or "all"
                                 slot_has[f"{direction}s"] += 1
@@ -724,6 +870,9 @@ class GuiPlugins:
             dialog_buttonBox.addButton(slot_button, QDialogButtonBox.ActionRole)
 
         dialog.setLayout(dialog.layout)
+
+        def plugin_enter(idx=0):
+            dialog.accept()
 
         def show_plugin_info(idx):
             if not plugin_table.item(idx, 1):
@@ -790,8 +939,12 @@ class GuiPlugins:
         plugin_table.setHorizontalHeaderItem(1, QTableWidgetItem("Name"))
         plugin_table.setRowCount(len(possible_plugins))
         for row, plugin_name in enumerate(possible_plugins):
-            plugin_table.setItem(row, 0, QTableWidgetItem(""))
-            plugin_table.setItem(row, 1, QTableWidgetItem(plugin_name))
+            item = QTableWidgetItem("")
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            plugin_table.setItem(row, 0, item)
+            item = QTableWidgetItem(plugin_name)
+            item.setFlags(Qt.ItemFlag.ItemIsEnabled)
+            plugin_table.setItem(row, 1, item)
             plugin_path = os.path.join(riocore_path, "plugins", plugin_name)
             image_path = os.path.join(plugin_path, "image.png")
             if os.path.isfile(image_path):
@@ -804,7 +957,7 @@ class GuiPlugins:
 
         plugin_table.setFixedWidth(200)
         plugin_table.cellClicked.connect(show_plugin_info)
-        plugin_table.currentCellChanged.connect(show_plugin_info)
+        plugin_table.doubleClicked.connect(plugin_enter)
         header = plugin_table.horizontalHeader()
         header.setSectionResizeMode(0, QHeaderView.ResizeToContents)
         header.setSectionResizeMode(1, QHeaderView.Stretch)
@@ -981,10 +1134,6 @@ class GuiPlugins:
 
                 if hasattr(self.parent, "insert_plugin"):
                     self.parent.insert_plugin(plugin_instance)
-                elif hasattr(self.parent, "tree_plugins"):
-                    self.tree_add_plugin(self.parent.tree_plugins, plugin_instance, expand=True)
-                    self.parent.display()
-                    self.edit_plugin(plugin_instance, None, is_new=True)
 
             return dialog.selected
 
@@ -998,71 +1147,6 @@ class GuiPlugins:
             self.parent.config_load()
             # self.display()
 
-    def tree_add_plugin(self, parent, plugin_instance, nopins=False, expand=False):
-        name = plugin_instance.plugin_setup.get("name")
-        if name:
-            title = f"{name} ({plugin_instance.NAME})"
-        else:
-            title = f"{plugin_instance.title} ({plugin_instance.NAME})"
-        help_text = plugin_instance.INFO
-
-        plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
-        image_path = os.path.join(plugin_path, "image.png")
-
-        iconItem = MyStandardItem("", help_text=help_text)
-        aitem = MyStandardItem()
-        parent.appendRow(
-            [
-                iconItem,
-                aitem,
-            ]
-        )
-
-        buttons_layout = QHBoxLayout()
-        buttons_layout.setContentsMargins(0, 0, 0, 0)
-        buttons_widget = QWidget()
-        buttons_widget.setLayout(buttons_layout)
-
-        title_layout = QHBoxLayout()
-        title_layout.setContentsMargins(0, 0, 0, 0)
-        title_widget = QWidget()
-        title_widget.setLayout(title_layout)
-
-        ilabel = QLabel()
-        ilabel.setFixedSize(24, 24)
-        if os.path.isfile(image_path):
-            pixmap = QPixmap(image_path)
-            ilabel.setPixmap(pixmap)
-            ilabel.setScaledContents(True)
-
-        title_layout.addWidget(ilabel)
-        title_layout.addWidget(QLabel(title))
-        self.parent.treeview.setIndexWidget(iconItem.index(), title_widget)
-
-        # buttons_layout.addWidget(ilabel)
-
-        button_edit = QPushButton("edit")
-        cb = partial(self.edit_plugin, plugin_instance, nopins=nopins)
-        button_edit.clicked.connect(cb)
-        button_edit.setMaximumSize(button_edit.sizeHint())
-        buttons_layout.addWidget(button_edit)
-
-        if not nopins:
-            button_delete = QPushButton("delete")
-            cb = partial(self.del_plugin, plugin_instance)
-            button_delete.clicked.connect(cb)
-            button_delete.setMaximumSize(button_delete.sizeHint())
-            buttons_layout.addWidget(button_delete)
-
-        if plugin_instance.PLUGIN_CONFIG:
-            button_config = QPushButton("config")
-            cb = partial(self.config_plugin, plugin_instance, plugin_instance.plugin_id)
-            button_config.clicked.connect(cb)
-            button_config.setMaximumSize(button_config.sizeHint())
-            buttons_layout.addWidget(button_config)
-        buttons_layout.addStretch()
-        self.parent.treeview.setIndexWidget(aitem.index(), buttons_widget)
-
 
 def md2label(text):
     hlist = False
@@ -1072,7 +1156,7 @@ def md2label(text):
     for line in text.split("\n"):
         if not formated and not line.strip():
             continue
-        elif not formated:
+        if not formated:
             formated.append("<html>\n")
 
         if line.startswith("#"):
@@ -1091,11 +1175,11 @@ def md2label(text):
                 table_format = cols
                 continue
             formated.append(" <tr>")
-            for col_n, col in enumerate(cols):
+            for col_n, col_raw in enumerate(cols):
+                col = col_raw.strip()
                 if not table:
-                    formated.append(f"<th>{col.strip()}</th>")
+                    formated.append(f"<th>{col}</th>")
                 else:
-                    col = col.strip()
                     if col and col[0] == "[" and col[-1] == ")" and "](" in col:
                         col = col.split("]")[0][1:]
                     if table_format[col_n].strip() == ":---:":

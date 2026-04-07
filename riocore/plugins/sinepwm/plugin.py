@@ -10,6 +10,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "generates sine waves (multi phase support)"
         self.KEYWORDS = "sine wave pwm bldc stepper"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["sinepwm.v"]
         self.OPTIONS = {
             "pwmfreq": {
@@ -101,12 +102,6 @@ class Plugin(PluginBase):
             del new_instances[inst]["predefines"]
 
         return new_instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "freq":
-            if value != 0:
-                value = int(self.system_setup["speed"] / value / 30)
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "freq":

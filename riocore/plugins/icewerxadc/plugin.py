@@ -16,6 +16,7 @@ should work also with the iceFUN board
         """
         self.KEYWORDS = "analog adc voltage ampere"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
+        self.NEEDS = ["fpga", "icewerx"]
         self.LIMITATIONS = {
             "boards": ["iceWerx-iCE40-HX8K", "OctoBot"],
         }
@@ -84,10 +85,6 @@ should work also with the iceFUN board
         instance_parameter = instance["parameter"]
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        value = value / 310.3030303030303
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         return """

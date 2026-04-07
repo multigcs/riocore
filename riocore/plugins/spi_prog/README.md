@@ -4,9 +4,10 @@
 
 **spi interface for host comunication and flash programming**
 
-for direct connections to Raspberry-PI - supporting flash programming
+for direct connections to Raspberry-PI - supporting flash programming - spartan6 only at the moment
 
-Keywords: interface spi raspberry rpi flash mesa
+* Keywords: interface spi raspberry rpi flash mesa
+* NEEDS: mesa
 
 ## Pins:
 *FPGA-pins*
@@ -61,6 +62,21 @@ name of this plugin instance
  * type: str
  * default: 
 
+### spitype:
+SPI-Type
+
+ * type: select
+ * default: rpi4
+ * options: rpi4, rpi5, generic
+
+### cs:
+Chip-Select pin on the Host-Side CS0/CS1
+
+ * type: int
+ * min: 0
+ * max: 1
+ * default: 0
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -69,148 +85,6 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "spi_prog",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "miso": {
-            "pin": "1"
-        },
-        "sclk": {
-            "pin": "2"
-        },
-        "sel": {
-            "pin": "3"
-        },
-        "prog": {
-            "pin": "4"
-        },
-        "reboot": {
-            "pin": "5"
-        },
-        "eeprom_mosi": {
-            "pin": "6"
-        },
-        "eeprom_miso": {
-            "pin": "7"
-        },
-        "eeprom_sclk": {
-            "pin": "8"
-        },
-        "eeprom_sel": {
-            "pin": "9"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "spi_prog",
-    "name": "",
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "miso": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "prog": {
-            "pin": "4",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "reboot": {
-            "pin": "5",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "eeprom_mosi": {
-            "pin": "6",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "eeprom_miso": {
-            "pin": "7",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "eeprom_sclk": {
-            "pin": "8",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "eeprom_sel": {
-            "pin": "9",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [spi_prog.v](spi_prog.v)

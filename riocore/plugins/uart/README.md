@@ -6,7 +6,8 @@
 
 simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
 
-Keywords: serial uart interface
+* Keywords: serial uart interface
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -23,9 +24,20 @@ Keywords: serial uart interface
  * direction: output
  * optional: True
 
+### SAT:
+
+ * direction: output
+ * optional: True
+
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### baud:
 serial baud rate
 
@@ -35,17 +47,36 @@ serial baud rate
  * default: 1000000
  * unit: bit/s
 
+### uart:
+serial device (if connected to host)
+
+ * type: str
+ * default: /dev/ttyUSB0
+
 ### csum:
 activate checksums
 
  * type: bool
+ * default: True
+
+### async:
+async
+
+ * type: bool
  * default: False
 
-### name:
-name of this plugin instance
+### frame:
+frame size
 
- * type: str
- * default: 
+ * type: select
+ * default: full
+ * options: full, no_timestamp, no_header, minimum
+
+### debug:
+always response
+
+ * type: bool
+ * default: False
 
 
 ## Signals:
@@ -55,61 +86,6 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "uart",
-    "pins": {
-        "rx": {
-            "pin": "0"
-        },
-        "tx": {
-            "pin": "1"
-        },
-        "tx_enable": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "uart",
-    "baud": 1000000,
-    "csum": false,
-    "name": "",
-    "pins": {
-        "rx": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "tx": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "tx_enable": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [uart.v](uart.v)

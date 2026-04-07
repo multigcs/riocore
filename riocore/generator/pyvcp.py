@@ -19,8 +19,7 @@ class pyvcp:
         self.parent = self.parent.getparent()
 
     def xml(self):
-        formated = etree.tostring(self.root, pretty_print=True).decode()
-        return formated
+        return etree.tostring(self.root, pretty_print=True).decode()
 
     def save(self, configuration_path):
         xml_filename = os.path.join(configuration_path, "rio-gui.xml")
@@ -88,7 +87,7 @@ class pyvcp:
     def draw_frame_end(self):
         self.parent = self.parent.getparent()
 
-    def draw_title(self, title, size=15):
+    def draw_title(self, title, size=15, no_expand=False):
         e_label = etree.Element("label")
         e_text = etree.Element("text")
         e_text.text = f'"{title:10s}"'
@@ -99,11 +98,21 @@ class pyvcp:
         e_font = etree.Element("font")
         e_font.text = '("Helvetica",9)'
         e_label.append(e_font)
-        if size >= 0:
+        if size >= 0 and not no_expand:
             e_width = etree.Element("width")
             e_width.text = str(size)
             e_label.append(e_width)
         self.parent.append(e_label)
+
+    def draw_scale_u32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"conv({guipin[0:-2]}-i, s32, u32)"
+
+    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        if "resolution" not in setup:
+            setup["resolution"] = 1
+        guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"{guipin[0:-2]}-i"
 
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         title = setup.get("title", name)
@@ -118,12 +127,14 @@ class pyvcp:
         e_halpin = etree.Element("halpin")
         e_halpin.text = f'"{halpin}"'
         e_scale.append(e_halpin)
-        e_min = etree.Element("min_")
-        e_min.text = str(int(display_min))
-        e_scale.append(e_min)
-        e_max = etree.Element("max_")
-        e_max.text = str(int(display_max))
-        e_scale.append(e_max)
+        if display_min is not None:
+            e_min = etree.Element("min_")
+            e_min.text = str(int(display_min))
+            e_scale.append(e_min)
+        if display_max is not None:
+            e_max = etree.Element("max_")
+            e_max.text = str(int(display_max))
+            e_scale.append(e_max)
         e_resolution = etree.Element("resolution")
         e_resolution.text = str(resolution)
         e_scale.append(e_resolution)
@@ -373,6 +384,8 @@ class pyvcp:
         display_unit = setup.get("unit")
         display_format = setup.get("format", "05d")
 
+        bar_height = setup.get("height")
+
         if display_unit and len(display_format) < 5:
             display_format = f"{display_format} {display_unit}"
 
@@ -385,9 +398,16 @@ class pyvcp:
         e_halpin = etree.Element("halpin")
         e_halpin.text = f'"{halpin}"'
         e_bar.append(e_halpin)
+
+        if bar_height:
+            e_bar_height = etree.Element("bar_height")
+            e_bar_height.text = str(int(bar_height))
+            e_bar.append(e_bar_height)
+
         e_min = etree.Element("min_")
         e_min.text = str(int(display_min))
         e_bar.append(e_min)
+
         e_max = etree.Element("max_")
         e_max.text = str(int(display_max))
         e_bar.append(e_max)
@@ -460,6 +480,7 @@ class pyvcp:
 
     def draw_checkbutton(self, name, halpin, setup={}):
         title = setup.get("title", name)
+        display_initval = setup.get("initval", 0)
         self.draw_hbox_begin()
         self.draw_title(title)
         e_checkbutton = etree.Element("checkbutton")
@@ -470,6 +491,9 @@ class pyvcp:
         e_anchor = etree.Element("anchor")
         e_anchor.text = '"e"'
         e_checkbutton.append(e_anchor)
+        e_initval = etree.Element("initval")
+        e_initval.text = str(int(display_initval))
+        e_checkbutton.append(e_initval)
         e_width = etree.Element("width")
         e_width.text = "13"
         e_checkbutton.append(e_width)

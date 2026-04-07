@@ -1,0 +1,553 @@
+import glob
+import os
+import shutil
+import stat
+import sys
+
+from .base import generator_base
+from .cclient import cclient
+
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+
+
+class simulator(generator_base):
+    def __init__(self, project, instance):
+        self.project = project
+        self.instance = instance
+        self.prefix = instance.hal_prefix
+        self.webots_home = os.path.join("/", "usr", "local", "webots")
+        self.webots = False
+        self.glsim = False
+        project.config["riocore_path"] = riocore_path
+
+        self.joints = 0
+        for axis_name, axis_config in self.project.axis_dict.items():
+            self.joints += len(axis_config["joints"])
+        if self.joints < 3:
+            return
+
+        if self.project.config["output_path"]:
+            self.simulator_path = os.path.join(self.project.config["output_path"], "Simulator", self.instance.instances_name)
+            os.makedirs(self.simulator_path, exist_ok=True)
+        else:
+            return
+
+        self.generator()
+
+    def generator(self):
+        self.cclient = cclient(self.project, self.instance, self.simulator_path)
+        self.config = self.project.config.copy()
+        jdata = self.config["jdata"]
+        linuxcnc_config = jdata.get("linuxcnc", {})
+        machinetype = linuxcnc_config.get("machinetype", "mill")
+
+        if machinetype in {"melfa"} and os.path.isdir(self.webots_home):
+            self.webots = True
+            self.glsim = True
+            source = os.path.join(riocore_path, "plugins", "fpga", "generator", "glsim", f"webots-{machinetype}.c")
+            target = os.path.join(self.simulator_path, "glsim.c")
+            shutil.copy(source, target)
+        elif machinetype in {"mill", "corexy", "melfa"}:
+            if machinetype in {"melfa"}:
+                self.glsim = False
+            else:
+                self.glsim = True
+            source = os.path.join(riocore_path, "plugins", "fpga", "generator", "glsim", f"{machinetype}.c")
+            target = os.path.join(self.simulator_path, "glsim.c")
+            shutil.copy(source, target)
+
+        self.expansion_pins = []
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
+            for pin in plugin_instance.expansion_outputs():
+                self.expansion_pins.append(pin)
+            for pin in plugin_instance.expansion_inputs():
+                self.expansion_pins.append(pin)
+
+        self.virtual_pins = []
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
+            for pin_name, pin_config in plugin_instance.pins().items():
+                if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):
+                    pinname = pin_config["pin"]
+                    if pinname not in self.virtual_pins:
+                        self.virtual_pins.append(pinname)
+
+        use_timestamp = True
+        use_header = True
+        if self.instance.frame in {"no_timestamp", "minimum"}:
+            use_timestamp = False
+        if self.instance.frame in {"no_header", "minimum"}:
+            use_header = False
+
+        header_size = 0
+        if use_header:
+            header_size = 32
+
+        timestamp_size = 0
+        if self.instance.fmaster is None and use_timestamp:
+            # this is the FPGA Master (connected to the PC)
+            timestamp_size = 32
+
+        sym_io = False
+        if self.instance.protocol == "SPI":
+            # input and output frames with has same size
+            sym_io = True
+
+        self.calc_buffersize(self.project, timestamp_size=timestamp_size, header_size=header_size, sym_io=sym_io)
+        self.cclient.riocore_h()
+        self.cclient.riocore_c()
+
+        # copy modbus simulator
+        source = os.path.join(riocore_path, "plugins", "fpga", "generator", "modbus.c")
+        target = os.path.join(self.simulator_path, "modbus.c")
+        shutil.copy(source, target)
+
+        source = os.path.join(riocore_path, "plugins", "fpga", "generator", "crc16.c")
+        target = os.path.join(self.simulator_path, "crc16.c")
+        shutil.copy(source, target)
+
+        self.interface_c()
+        self.simulation_c()
+        self.simulation_h()
+        self.main_c()
+        self.makefile()
+        self.startscript()
+
+    def startscript(self):
+        output = ["#!/bin/sh"]
+        output.append("")
+        output.append("set -e")
+        output.append("set -x")
+        output.append("")
+        output.append('DIRNAME=`dirname "$0"`')
+        output.append("")
+        if self.webots:
+            # output.append(f"export WEBOTS_HOME={self.webots_home}")
+            # output.append(f"export LD_LIBRARY_PATH={self.webots_home}/lib/controller/")
+            output.append("")
+        output.append("(")
+        output.append('    cd "$DIRNAME/"')
+        output.append("    make simulator_run")
+        output.append(")")
+        output.append("")
+        output.append("")
+        os.makedirs(self.simulator_path, exist_ok=True)
+        target = os.path.join(self.simulator_path, "start.sh")
+        open(target, "w").write("\n".join(output))
+        os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
+    def interface_c(self):
+        protocol = self.instance.protocol
+        if protocol == "UDP":
+            for ppath in glob.glob(os.path.join(riocore_path, "plugins", "fpga", "generator", "interfaces", "*", "*.c")):
+                if protocol == ppath.split(os.sep)[-2]:
+                    rdata = open(ppath).read()
+                    rdata = rdata.replace("rtapi_print", "printf")
+                    rdata = rdata.replace("strerror(errno)", '"error"')
+                    rdata = rdata.replace("errno", "1")
+
+                    idata = "\n"
+                    idata += "#include <string.h>\n"
+                    idata += "#include <stdio.h>\n"
+                    idata += "#include <unistd.h>\n"
+                    idata += "#include <time.h>\n"
+                    idata += "\n"
+                    idata += "struct timespec ns_timestamp;\n"
+                    idata += "\n"
+                    idata += "long rtapi_get_time() {\n"
+                    idata += "    clock_gettime(CLOCK_MONOTONIC, &ns_timestamp);\n"
+                    idata += "    return (double)ns_timestamp.tv_sec * 1000000000 + ns_timestamp.tv_nsec;\n"
+                    idata += "}\n"
+                    idata += "\n"
+                    idata += "void rtapi_delay(int ns) {\n"
+                    idata += "    usleep(ns / 1000);\n"
+                    idata += "}\n"
+                    idata += "\n"
+                    idata += rdata
+                    open(os.path.join(self.simulator_path, "interface.c"), "w").write(idata)
+
+    def simulation_h(self):
+        self.joints = 0
+        for axis_name, axis_config in self.project.axis_dict.items():
+            self.joints += len(axis_config["joints"])
+
+        output = []
+        output.append("#include <stdint.h>")
+        output.append("")
+        output.append(f"#define NUM_JOINTS {self.joints}")
+        output.append(f"#define NUM_HOMESWS {self.homes}")
+        output.append(f"#define NUM_BITOUTS {self.bitouts}")
+        output.append(f"#define NUM_BITINS {self.bitins}")
+        output.append("")
+        output.append("// Virtual size (in mm / scale = steps/mm)")
+
+        axis_limits = {}
+        for axis, data in self.project.axis_dict.items():
+            scale = "100.0"
+            for joint in data["joints"]:
+                scale = f"joint_scales[{joint['num']}]"
+                axis_limits[axis] = joint["MAX_LIMIT"]
+                break
+            output.append(f"#define VIRT_SCALE_{axis}  {scale}")
+
+        output.append(f"#define VIRT_WIDTH    {axis_limits['X']}")
+        output.append(f"#define VIRT_HEIGHT   {axis_limits['Y']}")
+        output.append(f"#define VIRT_DEPTH    {axis_limits['Z']}")
+        output.append("")
+        output.append("extern uint8_t sim_running;")
+        output.append("")
+        output.append("extern volatile int32_t joint_position[NUM_JOINTS];")
+        output.append("extern volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append("extern volatile float home_offset[NUM_JOINTS];")
+        output.append("extern volatile float home_search_vel[NUM_JOINTS];")
+        output.append("extern volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("extern volatile int32_t bitin_stat[NUM_BITINS];")
+        output.append("extern char bitin_name[NUM_BITINS][1024];")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            output.append(f"#define NUM_JOINTS_{axis} {len(data['joints'])}")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            output.append(f"#define NUM_JOINTS_{axis} {len(data['joints'])}")
+            output.append(f"extern int {axis.lower()}_joints[NUM_JOINTS_{axis}];")
+        output.append("")
+        output.append("extern float joint_scales[NUM_JOINTS];")
+        output.append("")
+        output.append("void* simThread(void* vargp);")
+        open(os.path.join(self.simulator_path, "simulator.h"), "w").write("\n".join(output))
+
+    def simulation_c(self):
+        output = []
+        output.append("#include <stdio.h>")
+        output.append("#include <stdint.h>")
+        output.append("#include <stdbool.h>")
+        output.append("#include <string.h>")
+        output.append("#include <simulator.h>")
+        output.append("#include <riocore.h>")
+        output.append("")
+        output.append("#include <fcntl.h>")
+        output.append("#include <errno.h>")
+        output.append("#include <termios.h>")
+        output.append("#include <unistd.h>")
+        output.append("")
+        output.append("void modbus_init();")
+        output.append("uint16_t crc16_update(uint16_t crc, uint8_t a);")
+        output.append("int modbus(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame);")
+        output.append("")
+
+        output.append("uint8_t sim_running = 1;")
+        output.append("")
+        output.append("float joint_scales[NUM_JOINTS] = {")
+        for axis, data in self.project.axis_dict.items():
+            for joint in data["joints"]:
+                output.append(f"   {joint['SCALE_OUT']},")
+        output.append("};")
+        output.append("")
+
+        protocol = self.instance.protocol
+        output.append("int udp_init(const char *dstAddress, int dstPort, int srcPort);")
+        output.append("void udp_tx(uint8_t *txBuffer, uint16_t size);")
+        output.append("int udp_rx(uint8_t *rxBuffer, uint16_t size);")
+        output.append("void udp_exit();")
+        output.append("")
+
+        home_offsets = []
+        home_search_vels = []
+        for axis, data in self.project.axis_dict.items():
+            for joint in data["joints"]:
+                jn = joint["num"]
+                home_offset = joint["HOME_OFFSET"]
+                home_search_vel = joint["HOME_SEARCH_VEL"]
+                home_offsets.append(str(home_offset))
+                home_search_vels.append(str(home_search_vel))
+                output.append("")
+
+        bitin_names = []
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            if data_config["direction"] == "input":
+                if data_name == "bit":
+                    bitin_names.append(f'"{plugin_instance.title}-{data_name}"')
+
+        output.append("volatile int32_t joint_position[NUM_JOINTS];")
+        output.append("volatile int32_t home_switch[NUM_HOMESWS];")
+        output.append(f"volatile float home_offset[NUM_JOINTS] = {{{', '.join(home_offsets)}}};")
+        output.append(f"volatile float home_search_vel[NUM_JOINTS] = {{{', '.join(home_search_vels)}}};")
+        output.append("volatile int32_t bitout_stat[NUM_BITOUTS];")
+        output.append("volatile int32_t bitin_stat[NUM_BITINS];")
+        output.append(f"char bitin_name[NUM_BITINS][1024] = {{{', '.join(bitin_names)}}};")
+        output.append("")
+
+        for axis, data in self.project.axis_dict.items():
+            joints = list(data.get("joints", {}))
+            output.append(f"int {axis.lower()}_joints[NUM_JOINTS_{axis}] = {{{', '.join([str(j['num']) for j in joints])}}};")
+        output.append("")
+
+        output.append("int interface_init() {")
+        if protocol == "UART":
+            output.append("    uart_init();")
+        elif protocol.startswith("SPI"):
+            output.append("    spi_init();")
+        elif protocol == "UDP":
+            output.append('    udp_init("0.0.0.0", DST_PORT, SRC_PORT);')
+        else:
+            print("ERROR: unsupported interface")
+            sys.exit(1)
+        output.append("}")
+        output.append("")
+
+        output.append("void interface_exit(void) {")
+        if protocol == "UART":
+            output.append("    uart_exit();")
+        elif protocol.startswith("SPI"):
+            output.append("    spi_exit();")
+        elif protocol == "UDP":
+            output.append("    udp_exit();")
+        output.append("}")
+        output.append("")
+
+        hal2instances = {}
+        hal2varnames = {}
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+            hal2varnames[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = data_config["variable"]
+
+        # for plugin_instance, data_name, data_config in self.get_signal_data():
+        #    hal2instances[f"rio.{plugin_instance.signal_prefix}.{data_name}"] = plugin_instance
+        #    key = f"rio.{plugin_instance.signal_prefix}.{data_name}"
+        #    if key not in hal2varnames:
+        #        hal2varnames[key] = data_config["varname"]
+
+        output.append("void simulation(void) {")
+        output.append("    float newpos = 0.0;")
+        for axis_name, axis_config in self.project.axis_dict.items():
+            joints = axis_config["joints"]
+            for joint_setup in joints:
+                joint = joint_setup["num"]
+                position_mode = joint_setup.get("position_mode", "velocity")
+                feedback_var = None
+                if position_mode == "velocity":
+                    plugin_instance = joint_setup["instance"]
+                    interface_data = plugin_instance.interface_data()
+                    enable_var = interface_data.get("enable", {}).get("variable", "1")
+                    if "velocity" in interface_data and "position" in interface_data:
+                        velocity_var = interface_data["velocity"]["variable"]
+                        feedback_var = interface_data["position"]["variable"]
+                        output.append(f"    if ({enable_var} == 1 && {velocity_var} != 0) {{")
+                        output.append(f"        newpos = ((float)CLOCK_SPEED / (float){velocity_var} / 2.0) / 1000.0 * {joint_setup['SCALE_OUT']} / {joint_setup['SCALE_IN']};")
+                        output.append("        if ((int32_t)newpos == 0 && newpos > 0.0) {")
+                        output.append("            newpos = 1.0;")
+                        output.append("        } else if ((int32_t)newpos == 0 && newpos < 0.0) {")
+                        output.append("            newpos = -1.0;")
+                        output.append("        }")
+                        output.append('        printf(" # %f \\n", newpos);')
+                        output.append(f"        {feedback_var} += (int32_t)newpos;")
+                        output.append("    }")
+                if feedback_var:
+                    output.append(f"    joint_position[{joint}] = {feedback_var};")
+
+        output.append("")
+        home_n = 0
+        bitout_n = 0
+        bitin_n = 0
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            multiplexed = data_config.get("multiplexed", False)
+            expansion = data_config.get("expansion", False)
+            if multiplexed or expansion:
+                continue
+            interface_data = plugin_instance.interface_data()
+            signal_config = plugin_instance.signals().get(data_name, {})
+            userconfig = signal_config.get("userconfig", {})
+            net = userconfig.get("net")
+            if data_config["direction"] == "input":
+                if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                    jn = net.split(".")[1]
+                    if "bit" not in interface_data:
+                        continue
+                    var = interface_data["bit"]["variable"]
+
+                    output.append(f"    // simulate homing for joint {jn}")
+                    output.append(f"    static float last_position_{jn} = 0;")
+                    output.append(f"    float offset_{jn} = home_offset[{jn}];")
+                    output.append(f"    float diff_{jn} = joint_position[{jn}] - last_position_{jn};")
+                    output.append(f"    if (home_search_vel[{jn}] > 0) {{")
+                    # output.append(f"        if (diff_{jn} > 0) {{")
+                    # output.append(f"            offset_{jn} += 0.5;")
+                    # output.append("        }")
+                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) > offset_{jn}) {{")
+                    output.append(f"            bitin_stat[{bitin_n}] = 1;")
+                    output.append("        } else {")
+                    output.append(f"            bitin_stat[{bitin_n}] = 0;")
+                    output.append("        }")
+                    output.append("    } else {")
+                    # output.append(f"        if (diff_{jn} > 0) {{")
+                    # output.append(f"            offset_{jn} -= 0.5;")
+                    # output.append("        }")
+                    output.append(f"        if ((joint_position[{jn}] / joint_scales[{jn}]) < offset_{jn}) {{")
+                    output.append(f"            bitin_stat[{bitin_n}] = 1;")
+                    output.append("        } else {")
+                    output.append(f"            bitin_stat[{bitin_n}] = 0;")
+                    output.append("        }")
+                    output.append("    }")
+                    output.append(f"    last_position_{jn} = joint_position[{jn}];")
+                    output.append(f"    home_switch[{home_n}] = {var};")
+                    output.append("")
+                    home_n += 1
+                if data_name == "bit":
+                    var = interface_data["bit"]["variable"]
+                    output.append(f"    {var} = bitin_stat[{bitin_n}];")
+                    output.append(f'    strcpy(bitin_name[{bitin_n}], "{plugin_instance.title}-{data_name}");')
+                    bitin_n += 1
+            if data_config["direction"] == "output":
+                if data_name == "bit":
+                    var = interface_data["bit"]["variable"]
+                    output.append(f"    bitout_stat[{bitout_n}] = {var};")
+                    bitout_n += 1
+
+        self.homes = home_n
+        self.bitouts = bitout_n
+        self.bitins = bitin_n
+
+        output.append("")
+        output.append('    printf("\\n\\n");')
+        output.append("")
+
+        modbus_n = 0
+        modbus_rx = {}
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "input":
+                if plugin_instance.NAME == "modbus":
+                    modbus_rx[modbus_n] = variable_name
+                    modbus_n += 1
+
+        modbus_n = 0
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "output":
+                if plugin_instance.TYPE != "frameio":
+                    output.append(f'    printf("> {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+                elif plugin_instance.NAME == "modbus":
+                    output.append(f"    static uint8_t frame{modbus_n}_id_last = 255;")
+                    output.append(f"    static uint8_t frame{modbus_n}_rx[{size // 8}];")
+                    output.append(f"    uint8_t frame{modbus_n}_id = {variable_name}[0];")
+                    output.append(f"    uint8_t frame{modbus_n}_len = {variable_name}[1];")
+                    output.append(f"    if (frame{modbus_n}_id_last != frame{modbus_n}_id && frame{modbus_n}_len > 0) {{")
+                    output.append(f'        printf("> {plugin_instance.instances_name}.{data_name} (seq%i) ", frame{modbus_n}_id);')
+                    output.append(f"        for (int i = 0; i < frame{modbus_n}_len; i++) {{")
+                    output.append(f'            printf("%i ", {variable_name}[i + 2]);')
+                    output.append("        }")
+                    output.append('        printf("\\n");')
+                    output.append(f"        int len_rx = modbus({modbus_n}, {variable_name} + 2, frame{modbus_n}_len, frame{modbus_n}_rx);")
+                    output.append("        if (len_rx > 0) {")
+                    output.append("            for (int cn = 0; cn < len_rx; cn++) {")
+                    output.append(f"                {modbus_rx[modbus_n]}[len_rx - cn + 2] = frame0_rx[cn];")
+                    output.append("            }")
+                    output.append(f"            {modbus_rx[modbus_n]}[0]++;")
+                    output.append(f"            {modbus_rx[modbus_n]}[1]++;")
+                    output.append(f"            {modbus_rx[modbus_n]}[2] = len_rx;")
+                    output.append("        }")
+                    output.append("    }")
+                    output.append(f"    frame{modbus_n}_id_last = frame{modbus_n}_id;")
+                    output.append("")
+                    modbus_n += 1
+
+        output.append('    printf("\\n");')
+        for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
+            variable_name = data_config["variable"]
+            if data_config["direction"] == "input":
+                if plugin_instance.TYPE != "frameio":
+                    output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} %i\\n", {variable_name});')
+                elif plugin_instance.NAME == "modbus":
+                    output.append(f'    printf("< {plugin_instance.instances_name}.{data_name} ");')
+                    output.append(f"    for (int i = 0; i < {size // 8}; i++) {{")
+                    output.append(f'        printf("%i ", {variable_name}[i]);')
+                    output.append("    }")
+                    output.append('    printf("\\n");')
+        output.append("}")
+        output.append("")
+
+        output.append("void* simThread(void* vargp) {")
+        output.append("    uint16_t ret = 0;")
+        output.append("")
+        output.append("    interface_init(0, NULL);")
+        output.append("")
+        output.append("    modbus_init();")
+        output.append("")
+        output.append("    while (sim_running) {")
+        output.append("        ret = udp_rx(rxBuffer, BUFFER_SIZE_RX);")
+        output.append("        if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 0x74 && rxBuffer[1] == 0x69 && rxBuffer[2] == 0x72 && rxBuffer[3] == 0x77) {")
+        output.append("            read_rxbuffer(rxBuffer);")
+        output.append("            write_txbuffer(txBuffer);")
+        output.append("            udp_tx(txBuffer, BUFFER_SIZE_TX);")
+        output.append("")
+        output.append("            simulation();")
+        output.append("        }")
+        output.append("    }")
+        output.append("    return NULL;")
+        output.append("}")
+        output.append("")
+        open(os.path.join(self.simulator_path, "simulator.c"), "w").write("\n".join(output))
+
+    def main_c(self):
+        output = []
+        output.append("#include <pthread.h>")
+        output.append("#include <simulator.h>")
+        output.append("")
+        output.append("int glsim_run(int argc, char** argv);")
+        output.append("")
+        output.append("int main(int argc, char** argv) {")
+        output.append("    pthread_t thread_id;")
+        output.append("    pthread_create(&thread_id, NULL, simThread, NULL);")
+        output.append("")
+        if self.glsim:
+            output.append("    glsim_run(argc, argv);")
+        else:
+            output.append("    while(1) {}")
+
+        output.append("    sim_running = 0;")
+        output.append("    pthread_join(thread_id, NULL);")
+        output.append("    return 0;")
+        output.append("}")
+        output.append("")
+        open(os.path.join(self.simulator_path, "main.c"), "w").write("\n".join(output))
+
+    def makefile(self):
+        output = []
+        gcc_options = ""
+
+        if self.webots:
+            output.append("")
+            output.append(f"WEBOTS_HOME ?= {self.webots_home}")
+            output.append("LD_LIBRARY_PATH ?= $(WEBOTS_HOME)/lib/controller/")
+            output.append("")
+            gcc_options = "-I$(WEBOTS_HOME)/include/controller/c/ -L$(WEBOTS_HOME)/lib/controller/ -lController"
+
+        output.append("")
+        output.append("all: simulator")
+        output.append("")
+        output.append("clean:")
+        output.append("	rm -f simulator")
+        output.append("")
+        if self.glsim:
+            output.append("simulator: main.c simulator.c glsim.c riocore.c interface.c")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c glsim.c riocore.c crc16.c modbus.c interface.c {gcc_options} -lm -lGL -lGLU -lglut")
+        else:
+            output.append("simulator: main.c simulator.c riocore.c interface.c")
+            output.append(f"	gcc -o simulator -Os -I. main.c simulator.c riocore.c modbus.c interface.c {gcc_options} -lm")
+        output.append("")
+        output.append("simulator_run: simulator")
+        if self.webots:
+            output.append("	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH) WEBOTS_HOME=$(WEBOTS_HOME) ./simulator")
+        else:
+            output.append("	./simulator")
+        output.append("")
+        open(os.path.join(self.simulator_path, "Makefile"), "w").write("\n".join(output))

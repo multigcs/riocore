@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.9.5
+
+### Warning
+* breaking changes, please open your config in rio-flow to fix/convert some stuff
+
+### Gui
+* new graphical config-gui: rio-flow
+* removing old rio-setup
+
+### Genaral
+* move all stuff into plugins (boards/modules/breakouts)
+* replacing modbus -> mbus/mbus_device/mbus_hy
+* replacing i2cbus -> i2c/i2c_device
+* better simulation
+* test-tool is now based on the hal-component c-code
+
+
 ## v0.9.4
 
 ### Gui and Generator

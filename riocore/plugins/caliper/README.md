@@ -13,6 +13,8 @@ and also some without output
 
 both on the image are working
 
+* NEEDS: fpga
+
 ## Pins:
 *FPGA-pins*
 ### data:
@@ -60,72 +62,6 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "caliper",
-    "pins": {
-        "data": {
-            "pin": "0"
-        },
-        "clock": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "caliper",
-    "name": "",
-    "pins": {
-        "data": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        },
-        "clock": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                },
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "position": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "position",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "mode": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "mode",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [caliper.v](caliper.v)

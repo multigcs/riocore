@@ -26,7 +26,8 @@ Motor-Setup:
     }
 ```
 
-Keywords: joint brushless
+* Keywords: joint brushless
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -65,6 +66,25 @@ Keywords: joint brushless
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: True
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
+
 ### frequency:
 PWM frequency
 
@@ -116,24 +136,6 @@ encoder resolution
  * max: 100000
  * default: 4096
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
 
 
 ## Signals:
@@ -191,154 +193,6 @@ configure as joint
  * direction: output
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "bldc",
-    "pins": {
-        "u_p": {
-            "pin": "0"
-        },
-        "v_p": {
-            "pin": "1"
-        },
-        "w_p": {
-            "pin": "2"
-        },
-        "u_n": {
-            "pin": "3"
-        },
-        "v_n": {
-            "pin": "4"
-        },
-        "w_n": {
-            "pin": "5"
-        },
-        "en": {
-            "pin": "6"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "bldc",
-    "frequency": 50000,
-    "halsensor": "",
-    "poles": 4,
-    "sine_len": 6,
-    "sine_res": 12,
-    "feedback_res": 4096,
-    "name": "",
-    "axis": "",
-    "is_joint": false,
-    "pins": {
-        "u_p": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "v_p": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "w_p": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "u_n": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "v_n": {
-            "pin": "4",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "w_n": {
-            "pin": "5",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "en": {
-            "pin": "6",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "velocity": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "velocity",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "offset": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "offset",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "mode": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "mode",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [bldc.v](bldc.v)

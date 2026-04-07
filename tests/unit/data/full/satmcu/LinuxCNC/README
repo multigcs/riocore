@@ -1,0 +1,17 @@
+RIO - satmcu
+
+Description: Tangoboard with TangNano9K and pico mpg
+Protocol: SPI
+Configuration: tests/unit/data/full/satmcu.json
+
+Plugins:
+  fpga (1x)
+  bitin (8x)
+  stepdir (3x)
+  w5500 (1x)
+  pwmout (1x)
+  bitout (2x)
+  mcuio (20x)
+  satuart (1x)
+  satmcu (1x)
+

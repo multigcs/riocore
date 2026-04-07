@@ -1,0 +1,658 @@
+{
+    "name": "Virtual",
+    "description": "Virtual-Signals with Axis and GladeVCP",
+    "protocol": "UDP",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                -760.0,
+                490.0
+            ],
+            "rotate": 0,
+            "sub": {
+                "w5500": {
+                    "ip": "192.168.11.194"
+                }
+            },
+            "simulation": true
+        },
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "breakout0",
+            "pos": [
+                -220.0,
+                450.0
+            ],
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "board0:RIGHT:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "board0:RIGHT:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "board0:RIGHT:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "board0:RIGHT:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "board0:RIGHT:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "board0:RIGHT:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "board0:RIGHT:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "board0:RIGHT:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "board0:RIGHT:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "board0:RIGHT:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "board0:RIGHT:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "board0:RIGHT:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "board0:RIGHT:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "board0:RIGHT:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "board0:RIGHT:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "board0:RIGHT:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "board0:RIGHT:P17"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                260.0,
+                830.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:X:step"
+                },
+                "dir": {
+                    "pin": "breakout0:X:dir"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                260.0,
+                560.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:Y:step"
+                },
+                "dir": {
+                    "pin": "breakout0:Y:dir"
+                }
+            },
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                260.0,
+                290.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:Z:step"
+                },
+                "dir": {
+                    "pin": "breakout0:Z:dir"
+                }
+            },
+            "name": ""
+        },
+        {
+            "type": "signal",
+            "name": "Float1",
+            "dir": "input",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "float",
+                        "type": "scale",
+                        "min": -100.0,
+                        "max": 100.0,
+                        "initval": 0.0
+                    }
+                }
+            },
+            "uid": "signal0",
+            "pos": [
+                540.0,
+                1380.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float2",
+            "dir": "input",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "float",
+                        "type": "scale",
+                        "min": -100.0,
+                        "max": 100.0,
+                        "initval": 0.0
+                    }
+                }
+            },
+            "uid": "signal1",
+            "pos": [
+                540.0,
+                1320.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Limited",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "limit(riov.Float1.value, -50, 50)",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal2",
+            "pos": [
+                540.0,
+                1260.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Deadzone",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "deadzone(riov.Float1.value, 0, 50)",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal3",
+            "pos": [
+                540.0,
+                1200.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "abs-Float1",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "abs(riov.Float1.value)",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": 0.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal4",
+            "pos": [
+                540.0,
+                1140.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1+Float2",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value + riov.Float2.value",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -200.0,
+                        "max": 200.0
+                    }
+                }
+            },
+            "uid": "signal5",
+            "pos": [
+                540.0,
+                1080.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Float2",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value - riov.Float2.value",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -200.0,
+                        "max": 200.0
+                    }
+                }
+            },
+            "uid": "signal6",
+            "pos": [
+                540.0,
+                1020.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1*Float2",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value * riov.Float2.value",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -10000.0,
+                        "max": 10000.0
+                    }
+                }
+            },
+            "uid": "signal7",
+            "pos": [
+                540.0,
+                960.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1/5",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value / 5",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -20.0,
+                        "max": 20.0
+                    }
+                }
+            },
+            "uid": "signal8",
+            "pos": [
+                540.0,
+                900.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Min",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "min(riov.Float1.value, riov.Reset.value)",
+                    "display": {
+                        "section": "float",
+                        "group": "MinMax",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal9",
+            "pos": [
+                540.0,
+                840.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Max",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "max(riov.Float1.value, riov.Reset.value)",
+                    "display": {
+                        "section": "float",
+                        "group": "MinMax",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal10",
+            "pos": [
+                540.0,
+                780.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Reset",
+            "dir": "input",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "float",
+                        "group": "MinMax"
+                    }
+                }
+            },
+            "uid": "signal11",
+            "pos": [
+                540.0,
+                720.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1<Float2",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value < riov.Float2.value",
+                    "display": {
+                        "section": "float",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal12",
+            "pos": [
+                540.0,
+                660.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1>Float2",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value > riov.Float2.value",
+                    "display": {
+                        "section": "float",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal13",
+            "pos": [
+                540.0,
+                600.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "-20-gt-Float1-lt-20",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value <> -20,20",
+                    "display": {
+                        "section": "float",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal14",
+            "pos": [
+                540.0,
+                540.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1",
+            "dir": "input",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "bool"
+                    }
+                }
+            },
+            "uid": "signal15",
+            "pos": [
+                540.0,
+                480.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool2",
+            "dir": "input",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "bool"
+                    }
+                }
+            },
+            "uid": "signal16",
+            "pos": [
+                540.0,
+                420.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-inv",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "!riov.Bool1.value",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal17",
+            "pos": [
+                540.0,
+                360.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-and-Bool2",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "riov.Bool1.value AND riov.Bool2.value",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal18",
+            "pos": [
+                540.0,
+                300.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-or-Bool2",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "riov.Bool1.value OR riov.Bool2.value",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal19",
+            "pos": [
+                540.0,
+                240.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-toggle",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "toggle(riov.Bool1.value)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal20",
+            "pos": [
+                540.0,
+                180.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-delay",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "delay(riov.Bool1.value, 1, 1)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal21",
+            "pos": [
+                540.0,
+                120.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-oneshot",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "oneshot(riov.Bool1.value, 0.3, 1, 1)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal22",
+            "pos": [
+                540.0,
+                60.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Mux",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "mux2(riov.Bool1.value, -50, 50)",
+                    "display": {
+                        "section": "bool",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal23",
+            "pos": [
+                540.0,
+                0.0
+            ]
+        }
+    ],
+    "linuxcnc": {
+        "_debug_info": true,
+        "simulation": true,
+        "gui": "axis",
+        "vcp_type": "pyvcp"
+    },
+    "flow": {
+        "view": {
+            "scale": 0.36,
+            "pos": [
+                -350,
+                -25
+            ]
+        }
+    }
+}

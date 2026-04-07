@@ -1,0 +1,473 @@
+{
+  "name": "EBAZ4205",
+  "description": "EBAZ4205 - WIP",
+  "url": "https://github.com/xjtuecho/EBAZ4205",
+  "size": [100, 97],
+  "toolchain": "vivado",
+  "family": "XC7",
+  "type": "xc7z010clg400-1",
+  "package": "csg324",
+  "armcore": true,
+  "clock": {
+    "speed": "150000000"
+  },
+  "slots": [
+    {
+      "name": "OPTO",
+      "pins": {
+        "1": {
+          "comment": "J3_SPEED",
+          "pin": "V13",
+          "pos": [
+            256,
+            50
+          ],
+          "direction": "input"
+        },
+        "2": {
+          "comment": "J3_PWM",
+          "pin": "U12",
+          "pos": [
+            256,
+            60
+          ],
+          "direction": "output"
+        },
+        "3": {
+          "comment": "J5_SPEED",
+          "pin": "V15",
+          "pos": [
+            306,
+            50
+          ],
+          "direction": "input"
+        },
+        "4": {
+          "comment": "J5_PWM",
+          "pin": "V12",
+          "pos": [
+            306,
+            60
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "DATA1",
+      "pins": {
+        "20": {
+          "pin": "K17",
+          "rotate": true,
+          "pos": [
+            195,
+            315
+          ],
+          "direction": "all"
+        },
+        "19": {
+          "pin": "F19",
+          "rotate": true,
+          "pos": [
+            195,
+            297
+          ],
+          "direction": "all"
+        },
+        "18": {
+          "pin": "E19",
+          "rotate": true,
+          "pos": [
+            202,
+            315
+          ],
+          "direction": "all"
+        },
+        "17": {
+          "pin": "F20",
+          "rotate": true,
+          "pos": [
+            202,
+            297
+          ],
+          "direction": "all"
+        },
+        "16": {
+          "pin": "D19",
+          "rotate": true,
+          "pos": [
+            210,
+            315
+          ],
+          "direction": "all"
+        },
+        "15": {
+          "pin": "H18",
+          "rotate": true,
+          "pos": [
+            210,
+            297
+          ],
+          "direction": "all"
+        },
+        "14": {
+          "pin": "D18",
+          "rotate": true,
+          "pos": [
+            217,
+            315
+          ],
+          "direction": "all"
+        },
+        "13": {
+          "pin": "D20",
+          "rotate": true,
+          "pos": [
+            217,
+            297
+          ],
+          "direction": "all"
+        },
+        "11": {
+          "pin": "H17",
+          "rotate": true,
+          "pos": [
+            225,
+            297
+          ],
+          "direction": "all"
+        },
+        "9": {
+          "pin": "C20",
+          "rotate": true,
+          "pos": [
+            232,
+            297
+          ],
+          "direction": "all"
+        },
+        "8": {
+          "pin": "B20",
+          "rotate": true,
+          "pos": [
+            240,
+            315
+          ],
+          "direction": "all"
+        },
+        "7": {
+          "pin": "B19",
+          "rotate": true,
+          "pos": [
+            240,
+            297
+          ],
+          "direction": "all"
+        },
+        "6": {
+          "pin": "H16",
+          "rotate": true,
+          "pos": [
+            247,
+            315
+          ],
+          "direction": "all"
+        },
+        "5": {
+          "pin": "A20",
+          "rotate": true,
+          "pos": [
+            247,
+            297
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "DATA2",
+      "pins": {
+        "20": {
+          "pin": "L17",
+          "rotate": true,
+          "pos": [
+            110,
+            315
+          ],
+          "direction": "all"
+        },
+        "19": {
+          "pin": "M20",
+          "rotate": true,
+          "pos": [
+            110,
+            297
+          ],
+          "direction": "all"
+        },
+        "18": {
+          "pin": "L20",
+          "rotate": true,
+          "pos": [
+            117,
+            315
+          ],
+          "direction": "all"
+        },
+        "17": {
+          "pin": "M18",
+          "rotate": true,
+          "pos": [
+            117,
+            297
+          ],
+          "direction": "all"
+        },
+        "16": {
+          "pin": "L19",
+          "rotate": true,
+          "pos": [
+            125,
+            315
+          ],
+          "direction": "all"
+        },
+        "15": {
+          "pin": "L16",
+          "rotate": true,
+          "pos": [
+            125,
+            297
+          ],
+          "direction": "all"
+        },
+        "14": {
+          "pin": "J20",
+          "rotate": true,
+          "pos": [
+            132,
+            315
+          ],
+          "direction": "all"
+        },
+        "13": {
+          "pin": "K19",
+          "rotate": true,
+          "pos": [
+            132,
+            297
+          ],
+          "direction": "all"
+        },
+        "11": {
+          "pin": "K18",
+          "rotate": true,
+          "pos": [
+            140,
+            297
+          ],
+          "direction": "all"
+        },
+        "9": {
+          "pin": "J19",
+          "rotate": true,
+          "pos": [
+            147,
+            297
+          ],
+          "direction": "all"
+        },
+        "8": {
+          "pin": "H20",
+          "rotate": true,
+          "pos": [
+            155,
+            315
+          ],
+          "direction": "all"
+        },
+        "7": {
+          "pin": "G19",
+          "rotate": true,
+          "pos": [
+            155,
+            297
+          ],
+          "direction": "all"
+        },
+        "6": {
+          "pin": "J18",
+          "rotate": true,
+          "pos": [
+            162,
+            315
+          ],
+          "direction": "all"
+        },
+        "5": {
+          "pin": "G20",
+          "rotate": true,
+          "pos": [
+            162,
+            297
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "DATA3",
+      "pins": {
+        "20": {
+          "pin": "U19",
+          "rotate": true,
+          "pos": [
+            22,
+            315
+          ],
+          "direction": "all"
+        },
+        "19": {
+          "pin": "V20",
+          "rotate": true,
+          "pos": [
+            22,
+            297
+          ],
+          "direction": "all"
+        },
+        "18": {
+          "pin": "T19",
+          "rotate": true,
+          "pos": [
+            30,
+            315
+          ],
+          "direction": "all"
+        },
+        "17": {
+          "pin": "U20",
+          "rotate": true,
+          "pos": [
+            30,
+            297
+          ],
+          "direction": "all"
+        },
+        "16": {
+          "pin": "T20",
+          "rotate": true,
+          "pos": [
+            37,
+            315
+          ],
+          "direction": "all"
+        },
+        "15": {
+          "pin": "P19",
+          "rotate": true,
+          "pos": [
+            37,
+            297
+          ],
+          "direction": "all"
+        },
+        "14": {
+          "pin": "R19",
+          "rotate": true,
+          "pos": [
+            45,
+            315
+          ],
+          "direction": "all"
+        },
+        "13": {
+          "pin": "R18",
+          "rotate": true,
+          "pos": [
+            45,
+            297
+          ],
+          "direction": "all"
+        },
+        "11": {
+          "pin": "P20",
+          "rotate": true,
+          "pos": [
+            52,
+            297
+          ],
+          "direction": "all"
+        },
+        "9": {
+          "pin": "N17",
+          "rotate": true,
+          "pos": [
+            60,
+            297
+          ],
+          "direction": "all"
+        },
+        "8": {
+          "pin": "M17",
+          "rotate": true,
+          "pos": [
+            67,
+            315
+          ],
+          "direction": "all"
+        },
+        "7": {
+          "pin": "P18",
+          "rotate": true,
+          "pos": [
+            67,
+            297
+          ],
+          "direction": "all"
+        },
+        "6": {
+          "pin": "N20",
+          "rotate": true,
+          "pos": [
+            75,
+            315
+          ],
+          "direction": "all"
+        },
+        "5": {
+          "pin": "M19",
+          "rotate": true,
+          "pos": [
+            75,
+            297
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "LED",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "G": {
+          "pin": "W13",
+          "pos": [
+            91,
+            13
+          ],
+          "direction": "output"
+        },
+        "R": {
+          "pin": "W14",
+          "pos": [
+            91,
+            23
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "comment": "Energie-Meter - you have to change serial setup (Parity: even -> none)",
+  "address": 16,
+  "timeout": 200,
+  "delay": 160,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [30, 340], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [50, 340], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
+  },
+  "commands": {
+    "voltage": {
+        "type": 4,
+        "register": 0,
+        "datatype": "float",
+        "values": 1,
+        "scale": 1.0,
+        "unit": "V",
+        "error_values": "",
+        "format": "0.1f"
+    },
+    "current": {
+        "type": 4,
+        "register": 8,
+        "datatype": "float",
+        "values": 1,
+        "scale": 1.0,
+        "unit": "A",
+        "error_values": "",
+        "format": "0.2f"
+    },
+    "power": {
+        "type": 4,
+        "register": 18,
+        "datatype": "float",
+        "values": 1,
+        "scale": 1.0,
+        "unit": "W",
+        "error_values": "",
+        "format": "0.1f"
+    },
+    "power_factor": {
+        "type": 4,
+        "register": 42,
+        "datatype": "float",
+        "values": 1,
+        "scale": 1.0,
+        "unit": "Cos",
+        "error_values": "",
+        "format": "0.2f"
+    },
+    "freq": {
+        "type": 4,
+        "register": 54,
+        "datatype": "float",
+        "values": 1,
+        "scale": 1.0,
+        "unit": "Hz",
+        "error_values": "",
+        "format": "0.1f"
+    },
+    "power_total": {
+        "type": 4,
+        "register": 256,
+        "datatype": "float",
+        "values": 1,
+        "scale": 1.0,
+        "unit": "kWh",
+        "error_values": "",
+        "format": "0.1f"
+    }
+  }
+}

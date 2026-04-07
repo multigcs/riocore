@@ -13,6 +13,7 @@ graph LR;
     Bin2Dec-->Hal-Value;
         """
         self.KEYWORDS = "binary bin2dec"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.PINDEFAULTS = {}
 

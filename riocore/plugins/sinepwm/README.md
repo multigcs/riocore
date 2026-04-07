@@ -6,7 +6,8 @@
 
 generates sine waves (multi phase support)
 
-Keywords: sine wave pwm bldc stepper
+* Keywords: sine wave pwm bldc stepper
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -22,6 +23,12 @@ Keywords: sine wave pwm bldc stepper
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### pwmfreq:
 pwm frequency
 
@@ -48,12 +55,6 @@ number of output phases
  * max: 10
  * default: 1
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -84,72 +85,6 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "sinepwm",
-    "pins": {
-        "en": {
-            "pin": "0"
-        },
-        "out0": {
-            "pin": "1"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "sinepwm",
-    "pwmfreq": 25000,
-    "start": 0,
-    "phases": 1,
-    "name": "",
-    "pins": {
-        "en": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "out0": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "freq": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "freq",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [sinepwm.v](sinepwm.v)

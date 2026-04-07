@@ -6,7 +6,8 @@
 
 set and reset an output pin
 
-Keywords: sr-flipflop
+* Keywords: sr-flipflop
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -17,18 +18,18 @@ Keywords: sr-flipflop
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### default:
 default value after startup
 
  * type: bool
  * default: 0
  * unit: 
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -56,61 +57,6 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "flipflop_out",
-    "pins": {
-        "outbit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "flipflop_out",
-    "default": 0,
-    "name": "",
-    "pins": {
-        "outbit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "setbit": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "setbit",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "reset": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "reset",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [flipflop_out.v](flipflop_out.v)

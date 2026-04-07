@@ -1,0 +1,22 @@
+{
+  "comment": "7ch temperature sensor",
+  "address": 18,
+  "timeout": 160,
+  "delay": 60,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [15, 110], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [15, 130], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
+  },
+  "commands": {
+    "temp": {
+        "type": 3,
+        "register": 0,
+        "values": 4,
+        "scale": 0.1,
+        "error_values": "",
+        "datatype": "int",
+        "unit": "°C",
+        "format": "0.1f"
+    }
+  }
+}

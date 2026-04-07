@@ -1,0 +1,1140 @@
+{
+    "name": "satmcu",
+    "description": "Tangoboard with TangNano9K and pico mpg",
+    "protocol": "SPI",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "Tangoboard",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                -410.0,
+                30.0
+            ],
+            "rotate": 0
+        },
+        {
+            "type": "bitin",
+            "name": "home-x",
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN4:BIT",
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -271.0,
+                                370.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                -270.0,
+                430.0
+            ],
+            "image": "proximity",
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "name": "home-y",
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN5:BIT",
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -210.99999999999997,
+                                370.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            },
+            "uid": "bitin1",
+            "pos": [
+                -200.0,
+                430.0
+            ],
+            "image": "proximity",
+            "rotate": 90
+        },
+        {
+            "type": "bitin",
+            "name": "home-z",
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN6:BIT",
+                    "pull": "up",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                -160.99999999999994,
+                                370.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            },
+            "uid": "bitin2",
+            "pos": [
+                -130.0,
+                430.0
+            ],
+            "image": "proximity",
+            "rotate": 90
+        },
+        {
+            "type": "stepdir",
+            "scale": -800,
+            "pins": {
+                "step": {
+                    "pin": "board0:JOINT1:STEP"
+                },
+                "dir": {
+                    "pin": "board0:JOINT1:DIR"
+                },
+                "en": {
+                    "pin": "board0:JOINT1:EN"
+                }
+            },
+            "is_joint": true,
+            "uid": "stepdir0",
+            "pos": [
+                -606.0,
+                -239.99999999999994
+            ],
+            "image": "servo42",
+            "rotate": 90,
+            "joint": {
+                "scale": 1000.0,
+                "max_velocity": 150.0,
+                "min_ferror": 0.1,
+                "ferror": 4.0,
+                "home_sequence": "2",
+                "min_limit": 0.0,
+                "max_limit": 490.0,
+                "max_acceleration": 1500.0,
+                "home_final_vel": 50.0,
+                "home_offset": 80.0
+            },
+            "pulse_len": 1.0
+        },
+        {
+            "type": "stepdir",
+            "scale": -800,
+            "pins": {
+                "step": {
+                    "pin": "board0:JOINT2:STEP"
+                },
+                "dir": {
+                    "pin": "board0:JOINT2:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "stepdir1",
+            "pos": [
+                -406.0,
+                -239.99999999999997
+            ],
+            "image": "servo42",
+            "rotate": 90,
+            "joint": {
+                "scale": -2000.0,
+                "max_velocity": 150.0,
+                "min_ferror": 0.1,
+                "ferror": 4.0,
+                "home_sequence": "2",
+                "min_limit": 0.0,
+                "max_limit": 320.0,
+                "max_acceleration": 1500.0,
+                "home_offset": 20.0,
+                "home_final_vel": 50.0
+            },
+            "pulse_len": 1.0
+        },
+        {
+            "type": "stepdir",
+            "scale": -1600,
+            "pins": {
+                "step": {
+                    "pin": "board0:JOINT3:STEP"
+                },
+                "dir": {
+                    "pin": "board0:JOINT3:DIR"
+                }
+            },
+            "is_joint": true,
+            "uid": "stepdir2",
+            "pos": [
+                -206.0,
+                -239.99999999999997
+            ],
+            "image": "servo42",
+            "rotate": 90,
+            "joint": {
+                "max_velocity": 150.0,
+                "scale": 2000.0,
+                "ferror": 4.0,
+                "min_ferror": 0.1,
+                "home_sequence": "1",
+                "home_offset": -15.0,
+                "min_limit": -100.0,
+                "max_limit": 0.0,
+                "home_final_vel": 50.0
+            },
+            "pulse_len": 1.0
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "image": "w5500",
+            "pos": [
+                0.0,
+                30.0
+            ],
+            "pins": {
+                "mosi": {
+                    "pin": "board0:SPI:MOSI"
+                },
+                "miso": {
+                    "pin": "board0:SPI:MISO"
+                },
+                "sclk": {
+                    "pin": "board0:SPI:SCLK"
+                },
+                "sel": {
+                    "pin": "board0:SPI:SEL"
+                }
+            },
+            "rotate": 90,
+            "ip": "192.168.11.201",
+            "gw": "192.168.11.1",
+            "async": true
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "opto",
+            "pos": [
+                -480.0,
+                400.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN1:BIT",
+                    "pull": "up"
+                }
+            },
+            "rotate": 90,
+            "name": "alarm_x",
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.emc-enable-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin4",
+            "image": "opto",
+            "pos": [
+                -430.0,
+                400.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN2:BIT",
+                    "pull": "up"
+                }
+            },
+            "name": "alarm_y",
+            "rotate": 90,
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.emc-enable-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin5",
+            "image": "opto",
+            "pos": [
+                -380.0,
+                400.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN3:BIT",
+                    "pull": "up"
+                }
+            },
+            "name": "alarm_z",
+            "rotate": 90,
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.emc-enable-in"
+                }
+            }
+        },
+        {
+            "type": "pwmout",
+            "uid": "pwmout0",
+            "image": "spindle500w",
+            "pos": [
+                19.99999999999997,
+                -340.0
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "board0:AUX:PWM"
+                }
+            },
+            "rotate": -90,
+            "frequency": 1000,
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out",
+                    "scale": 0.00412
+                },
+                "enable": {
+                    "setp": "1",
+                    "net": "1"
+                }
+            },
+            "bitwidth": "16"
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "image": "led",
+            "pos": [
+                125.99999999999997,
+                -140.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:AUX:DIR"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.forward"
+                }
+            },
+            "name": "forward",
+            "rotate": -90
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "image": "led",
+            "pos": [
+                165.99999999999997,
+                -140.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:AUX:EN"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.reverse"
+                }
+            },
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin6",
+            "image": "probe",
+            "pos": [
+                190.0,
+                500.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN7:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                50.0,
+                                570.0
+                            ]
+                        }
+                    ],
+                    "pull": "up"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input"
+                }
+            },
+            "name": "touch"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin7",
+            "image": "estop",
+            "pos": [
+                160.0,
+                320.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:IN8:BIT",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                40.0,
+                                390.0
+                            ]
+                        }
+                    ],
+                    "pull": "up"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.emc-enable-in"
+                }
+            },
+            "name": "estop-sw"
+        },
+        {
+            "type": "mcuio",
+            "node_type": "encoder",
+            "uid": "feed",
+            "pos": [
+                1000.0,
+                290.0
+            ],
+            "pins": {
+                "a": {
+                    "pin": "satmcu0:IO:14"
+                },
+                "b": {
+                    "pin": "satmcu0:IO:15"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90,
+            "name": "enc1",
+            "signals": {
+                "position": {
+                    "net": "halui.feed-override.counts",
+                    "multiplexed": true
+                }
+            }
+        },
+        {
+            "type": "satuart",
+            "uid": "satuart0",
+            "pos": [
+                540.0,
+                130.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PMOD1:P10"
+                },
+                "tx": {
+                    "pin": "board0:PMOD1:P9"
+                }
+            },
+            "subboard": "fpga1",
+            "baud": 1000000,
+            "signals": {
+                "timeout": {
+                    "net": "!iocontrol.0.emc-enable-in"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "encoder",
+            "uid": "spindle",
+            "pos": [
+                730.0,
+                290.0
+            ],
+            "name": "enc3",
+            "pins": {
+                "a": {
+                    "pin": "satmcu0:IO:2"
+                },
+                "b": {
+                    "pin": "satmcu0:IO:3"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90,
+            "signals": {
+                "position": {
+                    "net": "halui.spindle.0.override.counts",
+                    "multiplexed": true
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "encoder",
+            "uid": "rapid",
+            "pos": [
+                820.0,
+                290.0
+            ],
+            "name": "enc2",
+            "pins": {
+                "b": {
+                    "pin": "satmcu0:IO:4"
+                },
+                "a": {
+                    "pin": "satmcu0:IO:5"
+                }
+            },
+            "image": "encoder",
+            "rotate": -90,
+            "signals": {
+                "position": {
+                    "net": "halui.rapid-override.counts",
+                    "multiplexed": true
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "encoder",
+            "uid": "jogwheel",
+            "pos": [
+                910.0,
+                290.0
+            ],
+            "name": "mpg-jog",
+            "image": "encoder",
+            "rotate": -90,
+            "pins": {
+                "a": {
+                    "pin": "satmcu0:IO:12"
+                },
+                "b": {
+                    "pin": "satmcu0:IO:13"
+                }
+            },
+            "signals": {
+                "position": {
+                    "function": "jog.wheel",
+                    "multiplexed": true
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:16",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                1120.0,
+                                330.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "mpgestop",
+            "pos": [
+                1150.0,
+                90.0
+            ],
+            "image": "estop",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "net": "iocontrol.0.emc-enable-in"
+                }
+            }
+        },
+        {
+            "type": "satmcu",
+            "uid": "satmcu0",
+            "pos": [
+                770.0,
+                120.0
+            ],
+            "board": "pico",
+            "rotate": -90,
+            "pins": {
+                "SAT": {
+                    "pin": "satuart0:SAT:OUT"
+                }
+            },
+            "node_type": "pico"
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:11",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                1020.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "scale0",
+            "pos": [
+                940.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.scale0"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "output",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:10",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                940.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "ledscale0",
+            "pos": [
+                930.0,
+                -270.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.scaled0"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:9",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                860.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "scale1",
+            "pos": [
+                880.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.scale1"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:7",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                740.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "scale2",
+            "pos": [
+                820.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.scale2"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:18",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                1140.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "selectx",
+            "pos": [
+                1000.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.select-x"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:20",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                1060.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "selecty",
+            "pos": [
+                970.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.select-y"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "output",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:8",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                820.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "ledscale1",
+            "pos": [
+                900.0,
+                -270.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.scaled1"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "output",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:6",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                660.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "ledscale2",
+            "pos": [
+                840.0,
+                -270.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.scaled2"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "output",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:19",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                1100.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "selectedx",
+            "pos": [
+                990.0,
+                -270.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.selected-x"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "output",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:21",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                980.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "selectedy",
+            "pos": [
+                960.0,
+                -270.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.selected-y"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "output",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:27",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                700.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "selectedz",
+            "pos": [
+                870.0,
+                -270.0
+            ],
+            "image": "led",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.selected-z"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:26",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                780.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "selectz",
+            "pos": [
+                850.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": "jog.select-z"
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:17",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                1180.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "lbutton",
+            "pos": [
+                1030.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": ""
+                },
+                "bit_short": {
+                    "net": "halui.spindle.0.stop"
+                },
+                "bit_long1": {
+                    "net": "halui.spindle.0.start"
+                }
+            },
+            "longpress": "ON"
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:22",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                900.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "cbutton",
+            "pos": [
+                910.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": ""
+                }
+            }
+        },
+        {
+            "type": "mcuio",
+            "node_type": "input",
+            "pins": {
+                "bit": {
+                    "pin": "satmcu0:IO:28",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                620.0,
+                                -80.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "uid": "rbutton",
+            "pos": [
+                790.0,
+                -180.0
+            ],
+            "image": "smdbutton",
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "function": ""
+                }
+            },
+            "longpress": "ON"
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 0.9686192468619247,
+            "pos": [
+                -611.0,
+                -477.5805439330544
+            ]
+        },
+        "board": {
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "MAX_LINEAR_VELOCITY": 240.0
+            },
+            "TRAJ": {
+                "MAX_LINEAR_VELOCITY": 240.0,
+                "MAX_LINEAR_JERK": 5000.0,
+                "DEFAULT_LINEAR_JERK": 5000.0
+            }
+        },
+        "qtdragon": {
+            "CUSTOM_FORM_ENTRIES": {
+                "Use camera": false,
+                "Camera X": 10,
+                "Camera Y": 10
+            }
+        },
+        "probe": {
+            "probe_feetrate_down": 50,
+            "probe_feetrate_up": 10,
+            "probe_max_down": 20,
+            "probe_max_up": 2,
+            "probe_height": 24.1,
+            "probe_move_up": 10,
+            "tool_touchplate": true
+        },
+        "net": [
+            {
+                "source": "0.01",
+                "target": "halui.feed-override.scale"
+            },
+            {
+                "source": "0.01",
+                "target": "halui.rapid-override.scale"
+            },
+            {
+                "source": "0.01",
+                "target": "halui.spindle.0.override.scale"
+            }
+        ],
+        "gui": "qtdragon_hd"
+    }
+}

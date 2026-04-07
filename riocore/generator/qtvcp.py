@@ -227,7 +227,7 @@ class qtvcp:
         self.cfgxml_data.append("      </layout>")
         self.cfgxml_data.append("     </item>")
 
-    def draw_title(self, title):
+    def draw_title(self, title, no_expand=False):
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')
         self.add_property("text", title, ptype="string")
@@ -266,9 +266,16 @@ QLabel {{
         """)
         return f"{self.prefix}.{halpin}"
 
+    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+        if "resolution" not in setup:
+            setup["resolution"] = 1
+        self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
+        return f"{self.prefix}.{halpin}-s"
+
     def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
+        display_initval = setup.get("initval", 0)
         title = setup.get("title", name)
         self.draw_hbox_begin()
         self.draw_title(title)
@@ -276,6 +283,7 @@ QLabel {{
         self.cfgxml_data.append(f'     <widget class="Slider" name="{halpin}">')
         self.add_property("minimum", int(display_min))
         self.add_property("maximum", int(display_max))
+        self.add_property("value", int(display_initval))
         self.add_property("orientation", "Qt::Horizontal", ptype="enum")
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
@@ -371,6 +379,12 @@ QLabel {{
         self.cfgxml_data.append("        <verstretch>0</verstretch>")
         self.cfgxml_data.append("       </sizepolicy>")
         self.cfgxml_data.append("      </property>")
+        self.cfgxml_data.append('      <property name="minimumSize">')
+        self.cfgxml_data.append("       <size>")
+        self.cfgxml_data.append("        <width>0</width>")
+        self.cfgxml_data.append("        <height>20</height>")
+        self.cfgxml_data.append("       </size>")
+        self.cfgxml_data.append("      </property>")
         if display_format:
             self.cfgxml_data.append('      <property name="textTemplate" stdset="0">')
             self.cfgxml_data.append(f"       <string>%{display_format}</string>")
@@ -379,7 +393,7 @@ QLabel {{
         self.cfgxml_data.append("                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>")
         self.cfgxml_data.append("                 </property>")
         self.cfgxml_data.append('      <property name="styleSheet">')
-        self.cfgxml_data.append('       <string notr="true">font: 20pt &quot;Lato Heavy&quot;;</string>')
+        self.cfgxml_data.append('       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>')
         self.cfgxml_data.append("      </property>")
         for ptype in ("s32", "u32", "float", "bin"):
             self.cfgxml_data.append(f'      <property name="{ptype}_pin_type" stdset="0">')
@@ -394,6 +408,7 @@ QLabel {{
         return f"{self.prefix}.{halpin}"
 
     def draw_checkbutton(self, name, halpin, setup={}):
+        display_initval = "true" if setup.get("initval", 0) else "false"
         title = setup.get("title", name)
         self.draw_hbox_begin()
         self.draw_title(title)
@@ -426,7 +441,7 @@ QLabel {{
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>false</bool>
+             <bool>{display_initval}</bool>
             </property>
            </widget>
           </item>
@@ -466,7 +481,7 @@ QLabel {{
         self.cfgxml_data.append('        <property name="minimumSize">')
         self.cfgxml_data.append("         <size>")
         self.cfgxml_data.append("          <width>32</width>")
-        self.cfgxml_data.append("          <height>32</height>")
+        self.cfgxml_data.append("          <height>40</height>")
         self.cfgxml_data.append("         </size>")
         self.cfgxml_data.append("        </property>")
         self.cfgxml_data.append('        <property name="color">')

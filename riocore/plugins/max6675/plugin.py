@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to measurement very high temperatures of up to 1250 degrees Celsius"
         self.KEYWORDS = "analog adc"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["max6675.v"]
         self.PINDEFAULTS = {
             "miso": {
@@ -51,10 +52,6 @@ class Plugin(PluginBase):
         # instance_parameter["DIVIDER"] = divider
         # instance_parameter["DIVIDER"] = self.plugin_setup.get("divider", "1000")
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        value = value * 0.25
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         return """

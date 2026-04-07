@@ -11,13 +11,8 @@ Usage-Examples:
 * or delayed signals for generating sequences (modifier: debounce with hight delay)
 * make short signals visible (modifier: oneshot -> LED)
 
-Keywords: pin bit copy
-
-```mermaid
-graph LR;
-    Origin-Bit-->Origin-Modifiers-Pipeline-->Origin-Pin;
-    Origin-Bit-->BitCopy-Modifiers-Pipeline-->BitCopy-Pin;
-```
+* Keywords: pin bit copy
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -28,17 +23,17 @@ graph LR;
 
 ## Options:
 *user-options*
-### origin:
-Origin Bit/Pin
-
- * type: vpins
- * default: ERROR
-
 ### name:
 name of this plugin instance
 
  * type: str
  * default: 
+
+### origin:
+Origin Bit/Pin
+
+ * type: vpins
+ * default: ERROR
 
 
 ## Signals:
@@ -48,35 +43,3 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "bitcopy",
-    "pins": {
-        "bit": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "bitcopy",
-    "origin": "ERROR",
-    "name": "",
-    "pins": {
-        "bit": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```

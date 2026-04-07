@@ -6,7 +6,8 @@
 
 to measurement digital frequencies
 
-Keywords: frequency
+* Keywords: frequency
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -17,6 +18,18 @@ Keywords: frequency
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### image:
+hardware type
+
+ * type: imgselect
+ * default: generic
+
 ### freq_min:
 minimum measured frequency (for faster updates)
 
@@ -34,12 +47,6 @@ maximum measured frequency (for filtering)
  * max: 10000000
  * default: 1000000
  * unit: Hz
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -68,60 +75,6 @@ name of this plugin instance
  * size: 1 bit
  * direction: input
 
-
-## Basic-Example:
-```
-{
-    "type": "freqin",
-    "pins": {
-        "freq": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "freqin",
-    "freq_min": 10,
-    "freq_max": 1000000,
-    "name": "",
-    "pins": {
-        "freq": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "debounce"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "frequency": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "frequency",
-                "section": "inputs",
-                "type": "meter"
-            }
-        },
-        "valid": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "valid",
-                "section": "inputs",
-                "type": "led"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [freqin.v](freqin.v)

@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to messure distance via cheap ultra-sonic sensors (like filling level of bigger water tanks)"
         self.KEYWORDS = "distance ultrasonic level oil water"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["sonar.v"]
         self.PINDEFAULTS = {
             "trigger": {
@@ -35,11 +36,6 @@ class Plugin(PluginBase):
                 "description": "distance between sensor and object",
             },
         }
-
-    def convert(self, signal_name, signal_setup, value):
-        if value != 0:
-            value = 1000 / self.system_setup["speed"] / 20 * value * 343.2
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         return """

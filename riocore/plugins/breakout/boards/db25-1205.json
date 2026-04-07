@@ -1,0 +1,262 @@
+{
+  "comment": "db25 opto-board",
+  "needs": [
+    "db25"
+  ],
+  "main": {
+    "P1": {
+      "pos": [
+        10,
+        127
+      ]
+    },
+    "P2": {
+      "pos": [
+        10,
+        137
+      ]
+    },
+    "P3": {
+      "pos": [
+        10,
+        146
+      ]
+    },
+    "P4": {
+      "pos": [
+        10,
+        156
+      ]
+    },
+    "P5": {
+      "pos": [
+        10,
+        165
+      ]
+    },
+    "P6": {
+      "pos": [
+        10,
+        175
+      ]
+    },
+    "P7": {
+      "pos": [
+        10,
+        184
+      ]
+    },
+    "P8": {
+      "pos": [
+        10,
+        194
+      ]
+    },
+    "P9": {
+      "pos": [
+        10,
+        203
+      ]
+    },
+    "P10": {
+      "pos": [
+        10,
+        213
+      ]
+    },
+    "P11": {
+      "pos": [
+        10,
+        222
+      ]
+    },
+    "P12": {
+      "pos": [
+        10,
+        232
+      ]
+    },
+    "P13": {
+      "pos": [
+        10,
+        241
+      ]
+    },
+    "P14": {
+      "pos": [
+        20,
+        127
+      ]
+    },
+    "P15": {
+      "pos": [
+        20,
+        137
+      ]
+    },
+    "P16": {
+      "pos": [
+        20,
+        146
+      ]
+    },
+    "P17": {
+      "pos": [
+        20,
+        156
+      ]
+    }
+  },
+  "slots": [
+    {
+      "name": "IN",
+      "comment": "",
+      "default": "bitin",
+      "pins": {
+        "in0": {
+          "pin": "P13",
+          "pos": [
+            174,
+            378
+          ],
+          "direction": "input"
+        },
+        "in1": {
+          "pin": "P12",
+          "pos": [
+            197,
+            378
+          ],
+          "direction": "input"
+        },
+        "in2": {
+          "pin": "P11",
+          "pos": [
+            219,
+            378
+          ],
+          "direction": "input"
+        },
+        "in3": {
+          "pin": "P10",
+          "pos": [
+            242,
+            378
+          ],
+          "direction": "input"
+        },
+        "in4": {
+          "pin": "P15",
+          "pos": [
+            264,
+            378
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "OUT",
+      "comment": "",
+      "default": "bitout",
+      "pins": {
+        "P2": {
+          "pin": "P2",
+          "pos": [
+            345,
+            49
+          ],
+          "direction": "output"
+        },
+        "P3": {
+          "pin": "P3",
+          "pos": [
+            345,
+            72
+          ],
+          "direction": "output"
+        },
+        "P4": {
+          "pin": "P4",
+          "pos": [
+            345,
+            95
+          ],
+          "direction": "output"
+        },
+        "P5": {
+          "pin": "P5",
+          "pos": [
+            345,
+            118
+          ],
+          "direction": "output"
+        },
+        "P6": {
+          "pin": "P6",
+          "pos": [
+            345,
+            141
+          ],
+          "direction": "output"
+        },
+        "P7": {
+          "pin": "P7",
+          "pos": [
+            345,
+            164
+          ],
+          "direction": "output"
+        },
+        "P8": {
+          "pin": "P8",
+          "pos": [
+            345,
+            187
+          ],
+          "direction": "output"
+        },
+        "P9": {
+          "pin": "P9",
+          "pos": [
+            345,
+            210
+          ],
+          "direction": "output"
+        },
+        "P14": {
+          "pin": "P14",
+          "pos": [
+            345,
+            233
+          ],
+          "direction": "output"
+        },
+        "P1": {
+          "pin": "P1",
+          "pos": [
+            345,
+            256
+          ],
+          "direction": "output"
+        },
+        "P16": {
+          "pin": "P16",
+          "pos": [
+            345,
+            279
+          ],
+          "direction": "output"
+        },
+        "P17": {
+          "pin": "P17",
+          "pos": [
+            345,
+            302
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
+}

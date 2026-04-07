@@ -5,12 +5,12 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "quadencoderz"
         self.INFO = "quadencoder with index pin"
-        self.DESCRIPTION = (
-            "usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE"
-        )
+        self.DESCRIPTION = "usable as spindle-encoder for rigid tapping and thread cutting.  It is critical that your position-scale and QUAD_TYPE match, see the details in the description for QUAD_TYPE"
         self.KEYWORDS = "feedback encoder rotary linear glassscale  index"
         self.ORIGIN = "https://www.fpga4fun.com/QuadratureDecoder.html"
         self.VERILOGS = ["quadencoderz.v"]
+        self.NEEDS = ["fpga"]
+        self.IMAGES = ["encoder", "encoder_optical"]
         self.PINDEFAULTS = {
             "a": {
                 "direction": "input",
@@ -42,6 +42,10 @@ class Plugin(PluginBase):
                 "size": 32,
                 "direction": "input",
             },
+            "cntreset": {
+                "size": 1,
+                "direction": "output",
+            },
         }
         self.OPTIONS = {
             "quad_type": {
@@ -49,7 +53,9 @@ class Plugin(PluginBase):
                 "type": int,
                 "min": 0,
                 "max": 4,
-                "description": "The count from the encoder will be bitshifted by the value of QUAD_TYPE.  Use 0 for 4x mode.  The position-scale should match.  For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.",
+                "description": """The count from the encoder will be bitshifted by the value of QUAD_TYPE.
+Use 0 for 4x mode.  The position-scale should match.
+For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your scale should be set to 2400.""",
             },
             "rps_sum": {
                 "default": 10,
@@ -87,6 +93,11 @@ class Plugin(PluginBase):
                 "direction": "input",
                 "bool": True,
             },
+            "cntreset": {
+                "direction": "output",
+                "bool": True,
+                "description": "set counter to zero on index in hardware",
+            },
             "position": {
                 "is_index_position": True,
                 "direction": "input",
@@ -119,25 +130,3 @@ class Plugin(PluginBase):
         quad_type = self.plugin_setup.get("quad_type", self.OPTIONS["quad_type"]["default"])
         instance_parameter["QUAD_TYPE"] = quad_type
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "position":
-            scale = self.plugin_setup.get("signals", {}).get(signal_name, {}).get("scale", 1.0)
-
-            # calc rps/rpm
-            if self.duration > 0:
-                diff = value - self.last_pos
-                rps = diff / self.duration / scale
-                self.SIGNALS["rps"]["value"] = rps
-                self.SIGNALS["rpm"]["value"] = rps * 60
-            self.last_pos = value
-
-            vmin = self.plugin_setup.get("min")
-            vmax = self.plugin_setup.get("max")
-            if vmin is not None and value < vmin:
-                value = vmin
-            if vmax is not None and value > vmax:
-                value = vmax
-            if scale is not None:
-                value *= scale
-        return value

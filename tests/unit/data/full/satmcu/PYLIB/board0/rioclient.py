@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+#
+#
+
+import sys
+import time
+from rio import RioWrapper
+
+def set_values(rio):
+    rio.data_set("SIGOUT_BOARD0_STEPDIR0_VELOCITY", 0.0)
+    rio.data_set("SIGOUT_BOARD0_STEPDIR0_ENABLE", 0)
+    rio.data_set("SIGOUT_BOARD0_STEPDIR1_VELOCITY", 0.0)
+    rio.data_set("SIGOUT_BOARD0_STEPDIR1_ENABLE", 0)
+    rio.data_set("SIGOUT_BOARD0_STEPDIR2_VELOCITY", 0.0)
+    rio.data_set("SIGOUT_BOARD0_STEPDIR2_ENABLE", 0)
+    rio.data_set("SIGOUT_BOARD0_PWMOUT0_DTY", 0.0)
+    rio.data_set("SIGOUT_BOARD0_PWMOUT0_ENABLE", 0)
+    rio.data_set("SIGOUT_BOARD0_BITOUT0_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_BITOUT1_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT", 0)
+    rio.data_set("SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT", 0)
+
+def print_values(rio):
+    for name, config in rio.data_info().items():
+        if config["direction"] == "input":
+            print(f'{config["halname"]} = {rio.data_get(name)}')
+    print("")
+
+rio = RioWrapper(sys.argv)
+
+while True:
+    set_values(rio)
+    rio.rio_readwrite()
+    print_values(rio)
+    time.sleep(0.1)

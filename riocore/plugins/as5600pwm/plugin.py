@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "scale: 4096"
         self.KEYWORDS = "absolute encoder with pwm output"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["as5600pwm.v"]
         self.PINDEFAULTS = {
             "pwm": {
@@ -51,21 +52,6 @@ class Plugin(PluginBase):
         instance_parameter = instance["parameter"]
         instance_parameter["DIVIDER"] = int(self.system_setup["speed"] / (self.scale - 128 - 128) / 32)
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "angle":
-            new = value
-            diff = new - self.last
-            if diff < -2048:
-                self.revs += 1
-            elif diff > 2048:
-                self.revs -= 1
-            self.SIGNALS["position"]["value"] = (self.revs * self.scale) + new
-            self.last = new
-
-            return value * 360 / self.scale
-
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "angle":

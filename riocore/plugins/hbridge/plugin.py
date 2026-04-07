@@ -7,6 +7,7 @@ class Plugin(PluginBase):
         self.INFO = "hbridge output"
         self.DESCRIPTION = "to control DC-Motors"
         self.KEYWORDS = "joint dcservo"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.VERILOGS = ["hbridge.v"]
         self.TYPE = "joint"
@@ -83,13 +84,6 @@ class Plugin(PluginBase):
         divider = self.system_setup["speed"] // freq
         instance_parameter["DIVIDER"] = divider
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "dty":
-            freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
-            vmax = int(signal_setup.get("userconfig", {}).get("max", self.SIGNALS["dty"]["max"]))
-            value = int((value) * (self.system_setup["speed"] / freq) / (vmax))
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "dty":

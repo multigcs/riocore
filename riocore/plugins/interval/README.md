@@ -10,6 +10,8 @@
 
 to control things like lubric pumps
 
+* NEEDS: fpga
+
 ## Pins:
 *FPGA-pins*
 ### out:
@@ -68,69 +70,6 @@ name of this plugin instance
  * direction: output
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "interval",
-    "pins": {
-        "out": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "interval",
-    "name": "",
-    "pins": {
-        "out": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "ontime": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "ontime",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "interval": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "interval",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [interval.v](interval.v)

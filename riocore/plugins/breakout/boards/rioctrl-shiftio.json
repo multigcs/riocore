@@ -1,0 +1,419 @@
+{
+  "comment": "rioctrl-shiftio",
+  "needs": [
+    "rioctrl"
+  ],
+  "main": {
+    "S0": {
+      "pos": [
+        10,
+        255
+      ]
+    },
+    "S1": {
+      "pos": [
+        10,
+        240
+      ]
+    },
+    "S2": {
+      "pos": [
+        10,
+        225
+      ]
+    },
+    "S3": {
+      "pos": [
+        10,
+        210
+      ]
+    },
+    "S4": {
+      "pos": [
+        10,
+        195
+      ]
+    },
+    "S5": {
+      "pos": [
+        10,
+        180
+      ]
+    },
+    "S6": {
+      "pos": [
+        20,
+        255
+      ]
+    },
+    "S7": {
+      "pos": [
+        20,
+        240
+      ]
+    },
+    "S8": {
+      "pos": [
+        20,
+        225
+      ]
+    },
+    "S9": {
+      "pos": [
+        20,
+        210
+      ]
+    },
+    "S10": {
+      "pos": [
+        20,
+        195
+      ]
+    },
+    "S11": {
+      "pos": [
+        20,
+        180
+      ]
+    }
+  },
+  "plugins": [
+    {
+      "type": "shiftreg",
+      "uid": "shiftin",
+      "bits": 16,
+      "rpos": false,
+      "pins": {
+        "sclk": {
+          "pin": "INT:S0"
+        },
+        "load": {
+          "pin": "INT:S1"
+        },
+        "in": {
+          "pin": "INT:S2"
+        }
+      }
+    },
+    {
+      "type": "shiftreg",
+      "uid": "shiftout",
+      "bits": 16,
+      "rpos": false,
+      "pins": {
+        "sclk": {
+          "pin": "INT:S3"
+        },
+        "load": {
+          "pin": "INT:S4"
+        },
+        "out": {
+          "pin": "INT:S5"
+        }
+      }
+    }
+  ],
+  "slots": [
+    {
+      "name": "INT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "S0": {
+          "pin": "S0",
+          "direction": "all"
+        },
+        "S1": {
+          "pin": "S1",
+          "direction": "all"
+        },
+        "S2": {
+          "pin": "S2",
+          "direction": "all"
+        },
+        "S3": {
+          "pin": "S3",
+          "direction": "all"
+        },
+        "S4": {
+          "pin": "S4",
+          "direction": "all"
+        },
+        "S5": {
+          "pin": "S5",
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "IN",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "I0": {
+          "pin": "shiftin:INPUT:0",
+          "pos": [
+            37,
+            46
+          ],
+          "direction": "input"
+        },
+        "I2": {
+          "pin": "shiftin:INPUT:2",
+          "pos": [
+            37,
+            66
+          ],
+          "direction": "input"
+        },
+        "I4": {
+          "pin": "shiftin:INPUT:4",
+          "pos": [
+            37,
+            86
+          ],
+          "direction": "input"
+        },
+        "I6": {
+          "pin": "shiftin:INPUT:6",
+          "pos": [
+            37,
+            106
+          ],
+          "direction": "input"
+        },
+        "I1": {
+          "pin": "shiftin:INPUT:1",
+          "pos": [
+            62,
+            46
+          ],
+          "direction": "input"
+        },
+        "I3": {
+          "pin": "shiftin:INPUT:3",
+          "pos": [
+            62,
+            66
+          ],
+          "direction": "input"
+        },
+        "I5": {
+          "pin": "shiftin:INPUT:5",
+          "pos": [
+            62,
+            86
+          ],
+          "direction": "input"
+        },
+        "I7": {
+          "pin": "shiftin:INPUT:7",
+          "pos": [
+            62,
+            106
+          ],
+          "direction": "input"
+        },
+        "I8": {
+          "pin": "shiftin:INPUT:8",
+          "pos": [
+            37,
+            143
+          ],
+          "direction": "input"
+        },
+        "I10": {
+          "pin": "shiftin:INPUT:10",
+          "pos": [
+            37,
+            163
+          ],
+          "direction": "input"
+        },
+        "I12": {
+          "pin": "shiftin:INPUT:12",
+          "pos": [
+            37,
+            183
+          ],
+          "direction": "input"
+        },
+        "I14": {
+          "pin": "shiftin:INPUT:14",
+          "pos": [
+            37,
+            203
+          ],
+          "direction": "input"
+        },
+        "I9": {
+          "pin": "shiftin:INPUT:9",
+          "pos": [
+            62,
+            143
+          ],
+          "direction": "input"
+        },
+        "I11": {
+          "pin": "shiftin:INPUT:11",
+          "pos": [
+            62,
+            163
+          ],
+          "direction": "input"
+        },
+        "I13": {
+          "pin": "shiftin:INPUT:13",
+          "pos": [
+            62,
+            183
+          ],
+          "direction": "input"
+        },
+        "I15": {
+          "pin": "shiftin:INPUT:15",
+          "pos": [
+            62,
+            203
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "OUT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "O0": {
+          "pin": "shiftout:OUTPUT:0",
+          "pos": [
+            37,
+            239
+          ],
+          "direction": "output"
+        },
+        "O2": {
+          "pin": "shiftout:OUTPUT:2",
+          "pos": [
+            37,
+            259
+          ],
+          "direction": "output"
+        },
+        "O4": {
+          "pin": "shiftout:OUTPUT:4",
+          "pos": [
+            37,
+            279
+          ],
+          "direction": "output"
+        },
+        "O6": {
+          "pin": "shiftout:OUTPUT:5",
+          "pos": [
+            37,
+            299
+          ],
+          "direction": "output"
+        },
+        "O1": {
+          "pin": "shiftout:OUTPUT:1",
+          "pos": [
+            62,
+            239
+          ],
+          "direction": "output"
+        },
+        "O3": {
+          "pin": "shiftout:OUTPUT:3",
+          "pos": [
+            62,
+            259
+          ],
+          "direction": "output"
+        },
+        "O5": {
+          "pin": "shiftout:OUTPUT:5",
+          "pos": [
+            62,
+            279
+          ],
+          "direction": "output"
+        },
+        "O7": {
+          "pin": "shiftout:OUTPUT:7",
+          "pos": [
+            62,
+            299
+          ],
+          "direction": "output"
+        },
+        "O8": {
+          "pin": "shiftout:OUTPUT:8",
+          "pos": [
+            37,
+            334
+          ],
+          "direction": "output"
+        },
+        "O10": {
+          "pin": "shiftout:OUTPUT:10",
+          "pos": [
+            37,
+            354
+          ],
+          "direction": "output"
+        },
+        "O12": {
+          "pin": "shiftout:OUTPUT:12",
+          "pos": [
+            37,
+            374
+          ],
+          "direction": "output"
+        },
+        "O14": {
+          "pin": "shiftout:OUTPUT:14",
+          "pos": [
+            37,
+            394
+          ],
+          "direction": "output"
+        },
+        "O9": {
+          "pin": "shiftout:OUTPUT:9",
+          "pos": [
+            62,
+            334
+          ],
+          "direction": "output"
+        },
+        "O11": {
+          "pin": "shiftout:OUTPUT:11",
+          "pos": [
+            62,
+            354
+          ],
+          "direction": "output"
+        },
+        "O13": {
+          "pin": "shiftout:OUTPUT:13",
+          "pos": [
+            62,
+            374
+          ],
+          "direction": "output"
+        },
+        "O15": {
+          "pin": "shiftout:OUTPUT:15",
+          "pos": [
+            62,
+            394
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
+}

@@ -6,7 +6,8 @@
 
 Analog-Output via spi digital poti
 
-Keywords: analog poti dac
+* Keywords: analog poti dac
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -47,71 +48,6 @@ name of this plugin instance
  * size: 8 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "spipoti",
-    "pins": {
-        "mosi": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "sel": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "spipoti",
-    "name": "",
-    "pins": {
-        "mosi": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sel": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [spipoti.v](spipoti.v)

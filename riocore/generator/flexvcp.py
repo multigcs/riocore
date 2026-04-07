@@ -1,5 +1,6 @@
-from lxml import etree
 import os
+
+from lxml import etree
 
 
 class flexvcp:
@@ -170,7 +171,7 @@ class flexvcp:
         self.cfgxml_data.append("              </item>")
         return f"{self.prefix}.{halpin}"
 
-    def draw_title(self, title):
+    def draw_title(self, title, no_expand=False):
         title = title.replace("<", "&lt;").replace(">", "&gt;")
         self.cfgxml_data.append("    <item>")
         self.cfgxml_data.append('     <widget class="QLabel">')

@@ -6,13 +6,13 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	ruff format bin/rio* riocore/ riocore/gui/flexgui/flexgui
+	ruff format bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins
 
 check:
-	ruff check bin/rio-* riocore/ riocore/gui/flexgui/flexgui
+	ruff check bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins
 
 check_fix:
-	ruff check --fix bin/rio-* riocore/ riocore/gui/flexgui/flexgui
+	ruff check --fix bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/
@@ -21,7 +21,7 @@ verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
 
 readmes:
-	PYTHONPATH=. bin/rio-plugininfo -g
+	PYTHONPATH=. riocore/files/plugininfo.py -g
 	PYTHONPATH=. riocore/files/update_boards_and_toolchains_readme.py
 
 dist:
@@ -34,18 +34,18 @@ pypi: clean dist
 	git push origin ${VERSION}
 
 exifclean:
-	exiftool -all= riocore/boards/*/*.png
-	rm -rf riocore/boards/*/*.png_original
-	exiftool -all= riocore/configs/*/*.png
-	rm -rf riocore/configs/*/*.png_original
+	#exiftool -all= riocore/configs/*/*.png
+	#rm -rf riocore/configs/*/*.png_original
 	exiftool -all= riocore/plugins/*/*.png
 	rm -rf riocore/plugins/*/*.png_original
 	exiftool -all= riocore/modules/*/*.png
 	rm -rf riocore/modules/*/*.png_original
-	exiftool -all= riocore/plugins/i2cbus/devices/*/*.png
-	rm -rf riocore/plugins/i2cbus/devices/*/*.png_original
-	exiftool -all= riocore/plugins/modbus/images/*.png
-	rm -rf riocore/plugins/modbus/images/*.png_original
+	exiftool -all= riocore/plugins/*/boards/*.png
+	rm -rf riocore/plugins/*/boards/*.png_original
+	exiftool -all= riocore/files/images/*.png
+	rm -rf riocore/files/images/*.png_original
+	exiftool -all= riocore/files/*.png
+	rm -rf riocore/files/*.png_original
 
 pyvenv: clean dist
 	python3 -m venv pyvenv

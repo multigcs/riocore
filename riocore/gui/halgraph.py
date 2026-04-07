@@ -2,8 +2,9 @@
 #
 #
 
-import sys
 import os.path
+import sys
+
 import graphviz
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
@@ -38,7 +39,7 @@ class HalGraph:
             self.gAll.attr(rankdir="LR")
             # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
-            ini_data = open(ini_file, "r").read()
+            ini_data = open(ini_file).read()
 
             self.signals = {}
             self.components = {}
@@ -57,9 +58,7 @@ class HalGraph:
                         name, value = line.split("=", 1)
                         name = name.strip()
                         value = value.strip()
-                        if name == "HALFILE":
-                            self.load_halfile(base_dir, value)
-                        elif name == "POSTGUI_HALFILE":
+                        if name == "HALFILE" or name == "POSTGUI_HALFILE":
                             self.load_halfile(base_dir, value)
             groups = {}
             for signal_name, parts in self.signals.items():
@@ -67,6 +66,9 @@ class HalGraph:
                 source_value = parts.get("source_value", "")
                 source_group = ".".join(source_parts[:-1])
                 source_pin = source_parts[-1]
+                if source_group.startswith("halui.") or "vcp." in source_group or "qtdragon" in source_group:
+                    source_group = ".".join(source_parts[0:1])
+                    source_pin = ".".join(source_parts[1:])
 
                 if not source_group:
                     source_group = source_pin
@@ -89,6 +91,9 @@ class HalGraph:
                     target_parts = target.split(".")
                     target_group = ".".join(target_parts[:-1])
                     target_pin = target_parts[-1]
+                    if target_group.startswith("halui.") or "vcp." in target_group or "qtdragon" in target_group:
+                        target_group = ".".join(target_parts[0:1])
+                        target_pin = ".".join(target_parts[1:])
                     target_name = f"{target_group}:{target_pin}"
 
                     if not target_group:
@@ -108,7 +113,7 @@ class HalGraph:
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel)
                     elif target.startswith("pyvcp"):
                         self.gAll.edge(source_name, target_name, label=elabel)
-                    elif source.startswith("rio.") or source.startswith("lcec.0.rio."):
+                    elif source.startswith(("rio.", "lcec.0.rio.")):
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel)
                     else:
                         self.gAll.edge(source_name, target_name, label=elabel)
@@ -131,9 +136,9 @@ class HalGraph:
                     title = f"{group_name}\\n--{comp}--"
                     color = "lightgray"
 
-                for setp, value in self.setps.items():
-                    if setp.startswith(group_name):
-                        setp = setp.split(".")[-1]
+                for setp_raw, value in self.setps.items():
+                    if setp_raw.startswith(group_name):
+                        setp = setp_raw.split(".")[-1]
                         if html:
                             pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
                         else:
@@ -141,6 +146,7 @@ class HalGraph:
                         pin_strs.append(pin_str)
 
                 if html:
+                    title = title.replace("\\n", "<br/>")
                     label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td  bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
                 else:
                     label = f"{title} | {'|'.join(pin_strs)} "
@@ -182,8 +188,7 @@ class HalGraph:
         except Exception as error:
             if clustering:
                 return self.png(ini_file, clustering=False)
-            else:
-                print(f"ERROR(HAL_GRAPH): {error}")
+            print(f"ERROR(HAL_GRAPH): {error}")
         return None
 
     def load_halfile(self, basepath, filepath):
@@ -215,9 +220,9 @@ class HalGraph:
         # if not args.quiet:
         #    print(f"loading {basepath}/{filepath}")
 
-        halfile_data = open(os.path.join(basepath, filepath), "r").read()
-        for line in halfile_data.split("\n"):
-            line = line.strip()
+        halfile_data = open(os.path.join(basepath, filepath)).read()
+        for line_raw in halfile_data.split("\n"):
+            line = line_raw.strip()
 
             if line.startswith("source "):
                 self.load_halfile(basepath, line.split()[-1])
@@ -281,16 +286,14 @@ class HalGraph:
                         if (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) and next_dir == "output":
                             print(f"WARNING: {signalname}: wrong direction-marker: {part}")
                         self.signals[signalname]["targets"].append(part)
+                    elif not self.signals[signalname]["source"]:
+                        self.signals[signalname]["source"] = part
+                    elif not self.signals[signalname]["targets"]:
+                        # swapping IN/OUT
+                        self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
+                        self.signals[signalname]["source"] = part
                     else:
-                        if not self.signals[signalname]["source"]:
-                            self.signals[signalname]["source"] = part
-                        else:
-                            if not self.signals[signalname]["targets"]:
-                                # swapping IN/OUT
-                                self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
-                                self.signals[signalname]["source"] = part
-                            else:
-                                print("ERROR: double input", signalname, part, self.signals[signalname]["source"])
+                        print("ERROR: double input", signalname, part, self.signals[signalname]["source"])
 
 
 if __name__ == "__main__":

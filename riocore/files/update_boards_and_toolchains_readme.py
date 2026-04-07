@@ -3,129 +3,89 @@
 #
 
 import glob
-import os
-import json
 import importlib
 import inspect
-from riocore.modifiers import Modifiers
+import json
+import os
 
+from riocore.modifiers import Modifiers
 
 examples = {}
 for cpath in sorted(glob.glob(os.path.join("riocore", "configs", "*", "config.json"))):
-    cjdata = open(cpath, "r").read()
+    cjdata = open(cpath).read()
     cdata = json.loads(cjdata)
-    boardcfg = cdata.get("boardcfg")
-    if boardcfg not in examples:
-        examples[boardcfg] = []
-    examples[boardcfg].append(cpath)
 
+print("# FPGA-Boards")
+output = []
+output.append("# BOARDS")
+output.append("| Name | Family | Type | Clock | Toolchain | Description | Image |")
+output.append("| --- | --- | --- | --- | --- | --- | --- |")
+for bpath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "boards", "*.json"))):
+    bdata = json.loads(open(bpath).read())
+    name = bdata.get("name", "?")
+    family = bdata.get("family", "")
+    ftype = bdata.get("type", "")
+    url = bdata.get("url", "")
+    speed = int(bdata.get("clock", {}).get("speed", "0")) / 1000000
+    toolchain = bdata.get("toolchain", "?")
+    toolchains = bdata.get("toolchains", [])
+    for tc in toolchains:
+        if tc != toolchain:
+            toolchain += f" ({tc})"
+    description = bdata.get("description", "").replace("\n", "<BR/>")
+    bimg = ""
+    img = ""
+    imgfile = bpath.replace(".json", ".png")
+    if os.path.isfile(imgfile):
+        img = f'<img width="300" src="boards/{name}.png">'
+        bimg = f'<img align="right" width="400" src="{name}.png">'
+    output.append(f"| [{name}](boards/{name}.md) | {family} | {ftype} | {speed:0.2f}Mhz | {toolchain} | {description} | {img} |")
 
-print("# BOARDS")
-index = []
+    boutput = []
+    boutput.append(f"# {name}")
+    boutput.append(bimg)
+    boutput.append("")
+    boutput.append(description)
+    boutput.append("")
+    boutput.append("")
+    boutput.append("| Name | Value |")
+    boutput.append("| --- | --- |")
+    boutput.append(f"| Family | {family} |")
+    boutput.append(f"| Type | {ftype} |")
+    boutput.append(f"| Clock | {speed} |")
+    boutput.append(f"| Toolchain | {toolchain} |")
+    boutput.append(f"| URL | [link]({url}) |")
+    boutput.append("")
 
-index.append("# BOARDS")
-index.append("| Name | Info | FPGA | Toolchains | Image |")
-index.append("| --- | --- | --- |  --- | :---: |")
+    boutput.append("## Slots")
+    for slot in bdata.get("slots", []):
+        boutput.append(f"### {slot['name']}")
+        boutput.append(f"{slot.get('comment', '')}")
+        boutput.append("")
+        boutput.append("| Name | Pin | Direction |")
+        boutput.append("| --- | --- | --- |")
+        for pin_name, pin_data in slot.get("pins", {}).items():
+            boutput.append(f"| {pin_name} | {pin_data['pin']} | {pin_data.get('direction', '')} |")
+        boutput.append("")
+    boutput.append("")
+    boutput.append("")
 
-for board in sorted(glob.glob(os.path.join("riocore", "boards", "*"))):
-    board_path = os.path.join(board, "board.json")
-    if not os.path.isfile(board_path):
-        continue
+    mdfile = bpath.replace(".json", ".md")
+    open(mdfile, "w").write("\n".join(boutput))
 
-    print(board_path)
-
-    name = board.split(os.sep)[-1]
-
-    jdata = open(board_path, "r").read()
-    data = json.loads(jdata)
-
-    readme = []
-
-    readme.append(f"# {name}")
-    description = ""
-    if "description" in data:
-        description = data["description"]
-        readme.append(f"**{description}**")
-    readme.append("")
-
-    if "comment" in data:
-        comment = data["comment"]
-        readme.append(comment)
-        readme.append("")
-
-    if "url" in data:
-        readme.append(f"* URL: [{data['url']}]({data['url']})")
-
-    for key in ("toolchain", "family", "type", "package", "flashcmd"):
-        if key in data:
-            if key == "toolchain":
-                if "toolchains" in data:
-                    toolchains = []
-                    for toolchain in data["toolchains"]:
-                        if toolchain == data[key]:
-                            continue
-                        toolchains.append(f"[{toolchain}](../../generator/toolchains/{toolchain}/README.md)")
-                    readme.append(f"* {key.title()}: [{data[key]}](../../generator/toolchains/{data[key]}/README.md) ({', '.join(toolchains)})")
-                else:
-                    readme.append(f"* {key.title()}: [{data[key]}](../../generator/toolchains/{data[key]}/README.md)")
-            else:
-                readme.append(f"* {key.title()}: {data[key]}")
-
-    if "clock" in data:
-        speed_mhz = float(data["clock"]["speed"]) / 1000000
-        if "osc" in data["clock"]:
-            osc_mhz = float(data["clock"]["osc"]) / 1000000
-            readme.append(f"* Clock: {osc_mhz:0.3f}Mhz -> PLL -> {speed_mhz:0.3f}Mhz (Pin:{data['clock'].get('pin')})")
-        else:
-            readme.append(f"* Clock: {speed_mhz:0.3f}Mhz (Pin:{data['clock'].get('pin')})")
-
-    example_links = []
-    for example in examples.get(name, []):
-        example_name = example.split(os.sep)[-2]
-        example_json = example.split(os.sep)[-1]
-        example_links.append(f"[{example_name}](../../configs/{example_name})")
-
-    if example_links:
-        readme.append(f"* Example-Configs: {', '.join(example_links)}")
-
-    readme.append("")
-
-    fpga_type = data.get("type", "")
-    fpga_family = data.get("family", "")
-
-    toolchains = []
-    if "toolchains" in data:
-        for toolchain in data["toolchains"]:
-            toolchains.append(f"[{toolchain}](../generator/toolchains/{toolchain}/README.md)")
-    else:
-        toolchain = data.get("toolchain", "")
-        toolchains.append(f"[{toolchain}](../generator/toolchains/{toolchain}/README.md)")
-
-    if os.path.isfile(os.path.join(board, "board.png")):
-        readme.append("![board.png](board.png)")
-        readme.append("")
-        index.append(f'| [{name}]({name}/README.md) | {description} | {fpga_family} / {fpga_type} | {", ".join(toolchains)} | <img src="{name}/board.png" height="48"> |')
-    else:
-        index.append(f"| [{name}]({name}/README.md) | {description} | {fpga_family} / {fpga_type} | {', '.join(toolchains)} | |")
-
-    readme.append("")
-
-    open(f"{board}/README.md", "w").write("\n".join(readme))
-
-index.append("")
-open("riocore/boards/README.md", "w").write("\n".join(index))
+output.append("")
+open("riocore/plugins/fpga/BOARDS.md", "w").write("\n".join(output))
 
 print("# TOOLCHAINS")
 output = []
 output.append("# TOOLCHAINS")
 output.append("| Name | Info |")
 output.append("| --- | --- |")
-
-for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains", "*", "toolchain.py"))):
+for ppath in sorted(glob.glob(os.path.join("riocore", "plugins", "fpga", "generator", "toolchains", "*", "toolchain.py"))):
     toolchain_name = os.path.basename(os.path.dirname(ppath))
-    print(toolchain_name)
-    toolchain = importlib.import_module(".toolchain", f"riocore.generator.toolchains.{toolchain_name}")
-    info = toolchain.Toolchain.info(None)
+    # print(toolchain_name)
+    toolchain = importlib.import_module(".toolchain", f"riocore.plugins.fpga.generator.toolchains.{toolchain_name}")
+    info = toolchain.Toolchain.info()
     if info:
         url = info.get("url", "")
         infotext = info.get("info", "")
@@ -155,13 +115,10 @@ for ppath in sorted(glob.glob(os.path.join("riocore", "generator", "toolchains",
             toutput.append("")
 
         toutput.append("")
-        open(os.path.join("riocore", "generator", "toolchains", toolchain_name, "README.md"), "w").write("\n".join(toutput))
-
+        open(os.path.join("riocore", "plugins", "fpga", "generator", "toolchains", toolchain_name, "README.md"), "w").write("\n".join(toutput))
 
 output.append("")
-
-
-open("riocore/generator/toolchains/README.md", "w").write("\n".join(output))
+open("riocore/plugins/fpga/generator/toolchains/README.md", "w").write("\n".join(output))
 
 
 print("# MODIFIERS")
@@ -180,16 +137,19 @@ output.append("")
 
 
 for name, data in Modifiers().info().items():
-    print(name, data)
+    # print(name, data)
     info = data.get("info", "")
     title = data.get("title", name.title())
     options = data.get("options")
     output.append(f"## {title}")
+
+    if os.path.isfile(f"doc/images/mod_{name}.png"):
+        output.append(f'<img align="right" width="300" src="images/mod_{name}.png">')
+
     output.append(info)
     output.append("")
     if options:
         output.append("**Options:**")
-
         output.append("| Name | Type | Default | Info |")
         output.append("| --- | --- | --- | --- |")
         for key, option in options.items():
@@ -199,7 +159,7 @@ for name, data in Modifiers().info().items():
             oinfo = option.get("help_text", "")
             if inspect.isclass(otype):
                 otype = otype.__name__
-            output.append(f"| {title} | {str(otype)} | {default} | {oinfo} |")
+            output.append(f"| {title} | {otype!s} | {default} | {oinfo} |")
         output.append("")
 
 output.append("")

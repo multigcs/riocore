@@ -1,0 +1,414 @@
+{
+  "platform": "raspberrypi",
+  "board": "pico",
+  "sserial": "Serial1",
+  "led": "25",
+  "tx": "0",
+  "rx": "1",
+  "options": {
+    "upload_port": {
+      "default": "/dev/ttyACM0",
+      "type": "str",
+      "description": "debug-port"
+    },
+    "serial": {
+      "default": "Serial1",
+      "type": "select",
+      "options": ["Serial", "Serial1"],
+      "description": "mcu serial port (Serial == USB)"
+    }
+  },
+  "plugins": [
+    {
+      "type": "mcuio",
+      "node_type": "adc",
+      "uid": "fb",
+      "image": "dot_g",
+      "rpos": [
+        250.0,
+        120.0
+      ],
+      "pins": {
+        "adc": {
+          "pin": "IO:29",
+          "modifier": []
+        }
+      },
+      "rotate": 90,
+      "signals": {
+        "value": {
+          "display": {
+            "title": "speed-fb",
+            "section": "status",
+            "max": 24000.0,
+            "type": "bar",
+            "min": 1e-05
+          },
+          "scale": 0.033,
+          "filters": [
+            {
+              "type": "avg",
+              "depth": 500
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "mcuio",
+      "node_type": "output",
+      "uid": "ffd",
+      "image": "dot_g",
+      "rpos": [
+        122.0,
+        65.0
+      ],
+      "pins": {
+        "bit": {
+          "pin": "IO:3",
+          "modifier": []
+        }
+      }
+    },
+    {
+      "type": "mcuio",
+      "node_type": "rgbled",
+      "uid": "mcuio0",
+      "image": "wled1",
+      "rpos": [
+        230,
+        190
+      ],
+      "pins": {
+        "data": {
+          "pin": "RGB:DATA",
+          "modifier": []
+        }
+      }
+    },
+    {
+      "type": "mcuio",
+      "node_type": "input",
+      "uid": "fault",
+      "image": "dot_r",
+      "rpos": [
+        92.0,
+        65.0
+      ],
+      "pins": {
+        "bit": {
+          "pin": "IO:5",
+          "modifier": []
+        }
+      }
+    },
+    {
+      "type": "mcuio",
+      "node_type": "output",
+      "uid": "rew",
+      "image": "dot_y",
+      "rpos": [
+        152.0,
+        65.0
+      ],
+      "pins": {
+        "bit": {
+          "pin": "IO:4",
+          "modifier": []
+        }
+      }
+    },
+    {
+      "type": "mcuio",
+      "node_type": "dac",
+      "uid": "speed",
+      "image": "dot_b",
+      "rpos": [
+        165.0,
+        290.0
+      ],
+      "pins": {
+        "dac": {
+          "pin": "IO:2",
+          "modifier": [
+            {
+              "type": "invert",
+              "visable": false
+            }
+          ]
+        }
+      },
+      "signals": {
+        "value": {
+          "scale": 0.17,
+          "display": {
+            "max": 24000.0,
+            "section": "status",
+            "title": "Speed"
+          }
+        }
+      }
+    }
+  ],
+    "slots": [
+    {
+      "name": "RGB",
+      "comment": "IO-Pins",
+      "pins": {
+        "DATA": {
+          "pin": "16",
+          "comment": "RGB-LED",
+          "direction": "all",
+          "_pos": [
+            40,
+            75
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        }
+      }
+    },
+    {
+      "name": "IO",
+      "comment": "IO-Pins",
+      "pins": {
+
+        "29": {
+          "pin": "29",
+          "direction": "all",
+          "_pos": [
+            5,
+            46
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO", "ADC"
+          ]
+        },
+        "28": {
+          "pin": "28",
+          "direction": "all",
+          "_pos": [
+            5,
+            57
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO", "ADC"
+          ]
+        },
+        "27": {
+          "pin": "27",
+          "direction": "all",
+          "_pos": [
+            5,
+            69
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO", "ADC"
+          ]
+        },
+        "26": {
+          "pin": "26",
+          "direction": "all",
+          "_pos": [
+            5,
+            80
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO", "ADC"
+          ]
+        },
+        "15": {
+          "pin": "15",
+          "direction": "all",
+          "_pos": [
+            5,
+            91
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "14": {
+          "pin": "14",
+          "direction": "all",
+          "_pos": [
+            5,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+
+        "2": {
+          "pin": "2",
+          "direction": "all",
+          "_pos": [
+            75,
+            35
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+
+
+        "3": {
+          "pin": "3",
+          "direction": "all",
+          "_pos": [
+            75,
+            46
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "4": {
+          "pin": "4",
+          "direction": "all",
+          "_pos": [
+            75,
+            57
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "5": {
+          "pin": "5",
+          "direction": "all",
+          "_pos": [
+            75,
+            69
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "6": {
+          "pin": "6",
+          "direction": "all",
+          "_pos": [
+            75,
+            80
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "7": {
+          "pin": "7",
+          "direction": "all",
+          "_pos": [
+            75,
+            91
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "8": {
+          "pin": "8",
+          "direction": "all",
+          "_pos": [
+            75,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+
+
+
+        "9": {
+          "pin": "9",
+          "direction": "all",
+          "_pos": [
+            64,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "10": {
+          "pin": "10",
+          "direction": "all",
+          "_pos": [
+            53,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "11": {
+          "pin": "11",
+          "direction": "all",
+          "_pos": [
+            41,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "12": {
+          "pin": "12",
+          "direction": "all",
+          "_pos": [
+            29,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        },
+        "13": {
+          "pin": "13",
+          "direction": "all",
+          "_pos": [
+            17,
+            103
+          ],
+          "edge": "source",
+          "type": [
+            "MCUIO"
+          ]
+        }
+      }
+    }
+  ],
+  "pins": {
+    "SAT": {
+        "direction": "output",
+        "pin": "",
+        "pos": [20, 20],
+        "edge": "target",
+        "type": ["SATCON"],
+        "optional": true,
+        "bus": true
+    }
+  }
+}

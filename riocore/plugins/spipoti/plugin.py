@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "Analog-Output via spi digital poti"
         self.KEYWORDS = "analog poti dac"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["spipoti.v"]
         self.PINDEFAULTS = {
             "mosi": {

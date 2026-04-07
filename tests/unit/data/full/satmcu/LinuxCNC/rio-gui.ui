@@ -1,0 +1,2043 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>412</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+
+    <item>
+     <widget class="QTabWidget" name="tabWidget_setup">
+      <widget class="QWidget" name="tab_Status">
+       <attribute name="title">
+        <string>Status</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layout_stat">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+
+              <item>
+               <widget class="PushButton" name="halui.mdi-command-00">
+                <property name="text">
+                 <string>X</string>
+                </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>54</height>
+                  </size>
+                 </property>
+                <property name="styleSheet">
+                 <string notr="true">
+QLabel {
+    color: rgb(235, 235, 235);
+}
+                 </string>
+                </property>
+               </widget>
+              </item>
+        
+
+              <item>
+               <widget class="PushButton" name="halui.mdi-command-01">
+                <property name="text">
+                 <string>Y</string>
+                </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>54</height>
+                  </size>
+                 </property>
+                <property name="styleSheet">
+                 <string notr="true">
+QLabel {
+    color: rgb(235, 235, 235);
+}
+                 </string>
+                </property>
+               </widget>
+              </item>
+        
+
+              <item>
+               <widget class="PushButton" name="halui.mdi-command-02">
+                <property name="text">
+                 <string>Z</string>
+                </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>54</height>
+                  </size>
+                 </property>
+                <property name="styleSheet">
+                 <string notr="true">
+QLabel {
+    color: rgb(235, 235, 235);
+}
+                 </string>
+                </property>
+               </widget>
+              </item>
+        
+      </layout>
+     </item>
+
+      </layout>
+     </widget>
+    </item>
+        
+
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+
+              <item>
+               <widget class="PushButton" name="halui.mdi-command-03">
+                <property name="text">
+                 <string>TOUCH-Z</string>
+                </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>70</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>54</height>
+                  </size>
+                 </property>
+                <property name="styleSheet">
+                 <string notr="true">
+QLabel {
+    color: rgb(235, 235, 235);
+}
+                 </string>
+                </property>
+               </widget>
+              </item>
+        
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string></string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="probe-input">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+
+      </layout>
+     </widget>
+    </item>
+        
+      </layout>
+     </item>
+
+      </layout>
+     </widget>
+    </item>
+        
+
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>X (j0)</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string></string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin0.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>Y (j1)</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string></string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin1.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>Z (j2)</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string></string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin2.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+
+      </layout>
+     </widget>
+    </item>
+        
+
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>alarm_x-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin3.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>alarm_y-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin4.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>alarm_z-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin5.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>estop-sw-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin7.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>satuart0-timeout</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.satuart0.timeout">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>0</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>mpgestop-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.mpgestop.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>0</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+
+      </layout>
+     </widget>
+    </item>
+        
+           <item>
+            <widget class="QWidget" native="true"/>
+           </item>
+      </layout>
+     </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="tab_Inputs">
+       <attribute name="title">
+        <string>Inputs</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layout_stat">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>touch-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitin6.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>enc1-position</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HALLabel" name="board0.satmcu0.feed.pos">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="textTemplate" stdset="0">
+       <string>%0.2f</string>
+      </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+      <property name="styleSheet">
+       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>
+      </property>
+      <property name="s32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="u32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="float_pin_type" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="bin_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>enc3-position</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HALLabel" name="board0.satmcu0.spl.pos">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="textTemplate" stdset="0">
+       <string>%0.2f</string>
+      </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+      <property name="styleSheet">
+       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>
+      </property>
+      <property name="s32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="u32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="float_pin_type" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="bin_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>enc2-position</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HALLabel" name="brd0.satmcu0.rapid.pos">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="textTemplate" stdset="0">
+       <string>%0.2f</string>
+      </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+      <property name="styleSheet">
+       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>
+      </property>
+      <property name="s32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="u32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="float_pin_type" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="bin_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>lbutton-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.lbutton.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>lbutton-bit_short</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.lbutton.bit_st">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>lbutton-bit_long1</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.lbtn.bit_lg1">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>lbutton-bit_long2</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.lbtn.bit_lg2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>cbutton-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.cbutton.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>rbutton-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.rbutton.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>rbutton-bit_short</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.rbutton.bit_st">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>rbutton-bit_long1</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.rbtn.bit_lg1">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>rbutton-bit_long2</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="brd0.sm0.rbtn.bit_lg2">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+           <item>
+            <widget class="QWidget" native="true"/>
+           </item>
+      </layout>
+     </item>
+        </layout>
+      </widget>
+      <widget class="QWidget" name="tab_Outputs">
+       <attribute name="title">
+        <string>Outputs</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="layout_stat">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>pwmout0-dty</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HALLabel" name="board0.pwmout0.dty">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="textTemplate" stdset="0">
+       <string>%0.2f</string>
+      </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+      <property name="styleSheet">
+       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>
+      </property>
+      <property name="s32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="u32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="float_pin_type" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="bin_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>forward-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitout0.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>bitout1-bit</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="board0.bitout1.bit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+           <item>
+            <widget class="QWidget" native="true"/>
+           </item>
+      </layout>
+     </item>
+        </layout>
+      </widget>
+     </widget>
+    </item>
+
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>350</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Gauge</class>
+   <extends>QWidget</extends>
+   <header>qtvcp.widgets.round_gauge</header>
+  </customwidget>
+  <customwidget>
+   <class>CheckBox</class>
+   <extends>QCheckBox</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>IndicatedPushButton</class>
+   <extends>QPushButton</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>PushButton</class>
+   <extends>IndicatedPushButton</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+  <customwidget>
+   <class>LED</class>
+   <extends>QWidget</extends>
+   <header>qtvcp.widgets.led_widget</header>
+  </customwidget>
+  <customwidget>
+   <class>HALLabel</class>
+   <extends>QLabel</extends>
+   <header>qtvcp.widgets.hal_label</header>
+  </customwidget>
+  <customwidget>
+   <class>ScreenOptions</class>
+   <extends>QWidget</extends>
+   <header>qtvcp.widgets.screen_options</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>qtvcp.widgets.simple_widgets</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <slots>
+  <slot>applyClicked()</slot>
+  <slot>updateCombo()</slot>
+ </slots>
+</ui>

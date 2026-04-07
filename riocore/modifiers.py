@@ -12,14 +12,14 @@ class Modifiers:
                 "title": "Debounce",
                 "info": "to filter noisy signals",
                 "options": {
-                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
+                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms", "units": "ms"},
                 },
             },
             "delay": {
                 "title": "Delay",
                 "info": "to delay signal edges",
                 "options": {
-                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms"},
+                    "delay": {"title": "Delay", "type": float, "default": 2.5, "help_text": "Delay in ms", "units": "ms"},
                     "rising_edge": {"title": "Rising-Edge", "type": bool, "default": True, "help_text": "do delay on rising edge"},
                     "falling_edge": {"title": "Falling-Edge", "type": bool, "default": False, "help_text": "do delay on falling edge"},
                 },
@@ -28,15 +28,15 @@ class Modifiers:
                 "title": "PWM",
                 "info": "pwm generator",
                 "options": {
-                    "frequency": {"title": "Frequency", "type": int, "default": 1, "help_text": "PWM Frequency"},
-                    "dty": {"title": "DTY", "type": int, "default": 50, "help_text": "PWM Duty Cycle"},
+                    "frequency": {"title": "Frequency", "type": int, "default": 1, "help_text": "PWM Frequency", "units": "Hz"},
+                    "dty": {"title": "DTY", "type": int, "default": 50, "help_text": "PWM Duty Cycle", "units": "%"},
                 },
             },
             "oneshot": {
                 "title": "Oneshot",
                 "info": "creates a variable-length output pulse when the input changes state",
                 "options": {
-                    "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms"},
+                    "pulselen": {"title": "PulseLen", "type": float, "default": 1.0, "help_text": "pulse len in ms", "units": "ms"},
                     "retrigger": {"title": "Retrigger", "type": bool, "default": False, "help_text": "retrigger the time pulse"},
                     "hold": {"title": "Hold", "type": bool, "default": False, "help_text": "hold the puls while input is set"},
                     "edge": {"title": "Edge", "type": "select", "options": ["RISING", "FALLING", "BOTH"], "default": "RISING", "help_text": "edge to trigger"},
@@ -65,8 +65,7 @@ class Modifiers:
             },
             "predefines": [f"wire {pin_varname}_DEBOUNCED;"],
         }
-        pin_varname = f"{pin_varname}_DEBOUNCED"
-        return pin_varname
+        return f"{pin_varname}_DEBOUNCED"
 
     def pin_modifier_delay(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         delay = modifier.get("delay", 2.5)
@@ -83,8 +82,7 @@ class Modifiers:
             },
             "predefines": [f"wire {pin_varname}_DELAYED;"],
         }
-        pin_varname = f"{pin_varname}_DELAYED"
-        return pin_varname
+        return f"{pin_varname}_DELAYED"
 
     def pin_modifier_toggle(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"toggle{modifier_num}_{self.instances_name}_{pin_name}"] = {
@@ -96,8 +94,7 @@ class Modifiers:
             },
             "predefines": [f"wire {pin_varname}_TOGGLED;"],
         }
-        pin_varname = f"{pin_varname}_TOGGLED"
-        return pin_varname
+        return f"{pin_varname}_TOGGLED"
 
     def pin_modifier_invert(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         instances[f"invert{modifier_num}_{self.instances_name}_{pin_name}"] = {
@@ -106,8 +103,7 @@ class Modifiers:
                 f"assign {pin_varname}_INVERTED = ~{pin_varname};",
             ],
         }
-        pin_varname = f"{pin_varname}_INVERTED"
-        return pin_varname
+        return f"{pin_varname}_INVERTED"
 
     def pin_modifier_onerror(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         invert = modifier.get("invert", False)
@@ -120,8 +116,7 @@ class Modifiers:
                 f"assign {pin_varname}_ONERROR = {pin_varname} & {invert_char}ERROR;",
             ],
         }
-        pin_varname = f"{pin_varname}_ONERROR"
-        return pin_varname
+        return f"{pin_varname}_ONERROR"
 
     def pin_modifier_oneshot(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         edges = ["RISING", "FALLING", "BOTH"]
@@ -133,14 +128,16 @@ class Modifiers:
         instances[f"oneshot{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "oneshot",
             "parameter": {"PULSE_LEN": pulselen_divider, "RETRIGGER": retrigger, "HOLD": hold, "EDGE": edge},
+            "predefines": [
+                f"wire {pin_varname}_ONESHOT;",
+            ],
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,
                 "dout": f"{pin_varname}_ONESHOT",
             },
         }
-        pin_varname = f"{pin_varname}_ONESHOT"
-        return pin_varname
+        return f"{pin_varname}_ONESHOT"
 
     def pin_modifier_pwm(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         frequency = modifier.get("frequency", 1)
@@ -150,14 +147,16 @@ class Modifiers:
         instances[f"pwm{modifier_num}_{self.instances_name}_{pin_name}"] = {
             "module": "pwmmod",
             "parameter": {"DIVIDER_FREQ": frequency_divider, "DIVIDER_DTY": dty_divider},
+            "predefines": [
+                f"wire {pin_varname}_PWM;",
+            ],
             "arguments": {
                 "clk": "sysclk",
                 "din": pin_varname,
                 "dout": f"{pin_varname}_PWM",
             },
         }
-        pin_varname = f"{pin_varname}_PWM"
-        return pin_varname
+        return f"{pin_varname}_PWM"
 
     def pin_modifier_list(self, direction=None):
         modifiers = []

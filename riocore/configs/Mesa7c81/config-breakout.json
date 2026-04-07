@@ -1,35 +1,12 @@
 {
     "name": "Mesa7c81",
-    "boardcfg": "Mesa7c81",
-    "breakouts": [
-        {
-            "slot": "A",
-            "breakout": "china-bob5x",
-            "name": "bob1",
-            "pos": [
-                650.0,
-                150.0
-            ],
-            "rotate": 0
-        },
-        {
-            "slot": "C",
-            "breakout": "china-bob5x",
-            "name": "bob2",
-            "pos": [
-                650.0,
-                720.0
-            ],
-            "rotate": 0
-        }
-    ],
     "flow": {
         "view": {
             "pos": [
-                47,
-                30
+                -120,
+                81
             ],
-            "scale": 0.54
+            "scale": 1.18
         },
         "board": {
             "pos": [
@@ -75,37 +52,177 @@
     },
     "plugins": [
         {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "bob2",
+            "pos": [
+                650.0,
+                720.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "board0:C:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "board0:C:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "board0:C:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "board0:C:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "board0:C:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "board0:C:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "board0:C:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "board0:C:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "board0:C:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "board0:C:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "board0:C:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "board0:C:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "board0:C:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "board0:C:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "board0:C:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "board0:C:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "board0:C:P17"
+                }
+            }
+        },
+        {
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "bob1",
+            "pos": [
+                650.0,
+                150.0
+            ],
+            "rotate": 0,
+            "pins": {
+                "SLOT:P1": {
+                    "pin": "board0:A:P1"
+                },
+                "SLOT:P2": {
+                    "pin": "board0:A:P2"
+                },
+                "SLOT:P3": {
+                    "pin": "board0:A:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "board0:A:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "board0:A:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "board0:A:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "board0:A:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "board0:A:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "board0:A:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "board0:A:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "board0:A:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "board0:A:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "board0:A:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "board0:A:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "board0:A:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "board0:A:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "board0:A:P17"
+                }
+            }
+        },
+        {
+            "type": "fpga",
+            "node_type": "Mesa7c81",
+            "toolchain": "ise",
+            "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+            "protocol": "SPI",
+            "uid": "board0",
+            "pos": [
+                160.0,
+                480.0
+            ],
+            "rotate": 90,
+            "simulation": true
+        },
+        {
             "type": "spi_prog",
             "pins": {
                 "mosi": {
-                    "pin": "SPI:MOSI"
+                    "pin": "board0:SPI:MOSI"
                 },
                 "miso": {
-                    "pin": "SPI:MISO"
+                    "pin": "board0:SPI:MISO"
                 },
                 "sclk": {
-                    "pin": "SPI:SCLK"
+                    "pin": "board0:SPI:SCLK"
                 },
                 "sel": {
-                    "pin": "SPI:SEL"
+                    "pin": "board0:SPI:SEL"
                 },
                 "prog": {
-                    "pin": "RPI:GPIO25"
+                    "pin": "board0:RPI:GPIO25"
                 },
                 "reboot": {
-                    "pin": "EEPROM:REBOOT"
+                    "pin": "board0:EEPROM:REBOOT"
                 },
                 "eeprom_mosi": {
-                    "pin": "EEPROM:MOSI"
+                    "pin": "board0:EEPROM:MOSI"
                 },
                 "eeprom_miso": {
-                    "pin": "EEPROM:MISO"
+                    "pin": "board0:EEPROM:MISO"
                 },
                 "eeprom_sclk": {
-                    "pin": "EEPROM:SCLK"
+                    "pin": "board0:EEPROM:SCLK"
                 },
                 "eeprom_sel": {
-                    "pin": "EEPROM:SEL"
+                    "pin": "board0:EEPROM:SEL"
                 }
             },
             "uid": "spi0",
@@ -118,7 +235,7 @@
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:L0",
+                    "pin": "board0:LED:L0",
                     "modifier": [
                         {
                             "type": "onerror",

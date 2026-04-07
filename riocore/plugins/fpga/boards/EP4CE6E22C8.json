@@ -1,0 +1,774 @@
+{
+  "name": "EP4CE6E22C8",
+  "description": "EP4CE6E22C8 devboard",
+  "comment": "cheap devboard from china but low LE count and can not write to flash via openFPGALoader",
+  "url": "https://de.aliexpress.com/item/1005009306876743.html",
+  "size": [88, 51],
+  "toolchain": "quartus",
+  "family": "Cyclone IV E",
+  "type": "EP4CE6E22C8",
+  "package": "",
+  "clock": {
+    "osc": "50000000",
+    "speed": "100000000",
+    "pin": "PIN_24"
+  },
+  "slots": [
+    {
+      "name": "TOP",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P0": {
+          "pin": "PIN_144",
+          "rotate": true,
+          "pos": [
+            140,
+            7
+          ],
+          "direction": "all"
+        },
+        "P1": {
+          "pin": "PIN_142",
+          "rotate": true,
+          "pos": [
+            151,
+            7
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "PIN_138",
+          "rotate": true,
+          "pos": [
+            162,
+            7
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "PIN_136",
+          "rotate": true,
+          "pos": [
+            173,
+            7
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "PIN_133",
+          "rotate": true,
+          "pos": [
+            184,
+            7
+          ],
+          "direction": "all"
+        },
+        "P5": {
+          "pin": "PIN_129",
+          "rotate": true,
+          "pos": [
+            195,
+            7
+          ],
+          "direction": "all"
+        },
+        "P6": {
+          "pin": "PIN_127",
+          "rotate": true,
+          "pos": [
+            206,
+            7
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "PIN_125",
+          "rotate": true,
+          "pos": [
+            217,
+            7
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "PIN_121",
+          "rotate": true,
+          "pos": [
+            228,
+            7
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "PIN_119",
+          "rotate": true,
+          "pos": [
+            239,
+            7
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "PIN_113",
+          "rotate": true,
+          "pos": [
+            250,
+            7
+          ],
+          "direction": "all"
+        },
+        "P11": {
+          "pin": "PIN_111",
+          "rotate": true,
+          "pos": [
+            261,
+            7
+          ],
+          "direction": "all"
+        },
+        "P12": {
+          "pin": "PIN_143",
+          "rotate": true,
+          "pos": [
+            140,
+            18
+          ],
+          "direction": "all"
+        },
+        "P13": {
+          "pin": "PIN_141",
+          "rotate": true,
+          "pos": [
+            151,
+            18
+          ],
+          "direction": "all"
+        },
+        "P14": {
+          "pin": "PIN_137",
+          "rotate": true,
+          "pos": [
+            162,
+            18
+          ],
+          "direction": "all"
+        },
+        "P15": {
+          "pin": "PIN_135",
+          "rotate": true,
+          "pos": [
+            173,
+            18
+          ],
+          "direction": "all"
+        },
+        "P16": {
+          "pin": "PIN_132",
+          "rotate": true,
+          "pos": [
+            184,
+            18
+          ],
+          "direction": "all"
+        },
+        "P17": {
+          "pin": "PIN_128",
+          "rotate": true,
+          "pos": [
+            195,
+            18
+          ],
+          "direction": "all"
+        },
+        "P18": {
+          "pin": "PIN_126",
+          "rotate": true,
+          "pos": [
+            206,
+            18
+          ],
+          "direction": "all"
+        },
+        "P19": {
+          "pin": "PIN_124",
+          "rotate": true,
+          "pos": [
+            217,
+            18
+          ],
+          "direction": "all"
+        },
+        "P20": {
+          "pin": "PIN_120",
+          "rotate": true,
+          "pos": [
+            228,
+            18
+          ],
+          "direction": "all"
+        },
+        "P21": {
+          "pin": "PIN_115",
+          "rotate": true,
+          "pos": [
+            239,
+            18
+          ],
+          "direction": "all"
+        },
+        "P22": {
+          "pin": "PIN_112",
+          "rotate": true,
+          "pos": [
+            250,
+            18
+          ],
+          "direction": "all"
+        },
+        "P23": {
+          "pin": "PIN_110",
+          "rotate": true,
+          "pos": [
+            261,
+            18
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "BOTTOM",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P0": {
+          "pin": "PIN_38",
+          "rotate": true,
+          "pos": [
+            140,
+            201
+          ],
+          "direction": "all"
+        },
+        "P1": {
+          "pin": "PIN_42",
+          "rotate": true,
+          "pos": [
+            151,
+            201
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "PIN_44",
+          "rotate": true,
+          "pos": [
+            162,
+            201
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "PIN_49",
+          "rotate": true,
+          "pos": [
+            173,
+            201
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "PIN_51",
+          "rotate": true,
+          "pos": [
+            184,
+            201
+          ],
+          "direction": "all"
+        },
+        "P5": {
+          "pin": "PIN_53",
+          "rotate": true,
+          "pos": [
+            195,
+            201
+          ],
+          "direction": "all"
+        },
+        "P6": {
+          "pin": "PIN_55",
+          "rotate": true,
+          "pos": [
+            206,
+            201
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "PIN_59",
+          "rotate": true,
+          "pos": [
+            217,
+            201
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "PIN_64",
+          "rotate": true,
+          "pos": [
+            228,
+            201
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "PIN_66",
+          "rotate": true,
+          "pos": [
+            239,
+            201
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "PIN_68",
+          "rotate": true,
+          "pos": [
+            250,
+            201
+          ],
+          "direction": "all"
+        },
+        "P11": {
+          "pin": "PIN_70",
+          "rotate": true,
+          "pos": [
+            261,
+            201
+          ],
+          "direction": "all"
+        },
+        "P12": {
+          "pin": "PIN_72",
+          "rotate": true,
+          "pos": [
+            272,
+            201
+          ],
+          "direction": "all"
+        },
+        "P13": {
+          "pin": "PIN_39",
+          "rotate": true,
+          "pos": [
+            140,
+            212
+          ],
+          "direction": "all"
+        },
+        "P14": {
+          "pin": "PIN_43",
+          "rotate": true,
+          "pos": [
+            151,
+            212
+          ],
+          "direction": "all"
+        },
+        "P15": {
+          "pin": "PIN_46",
+          "rotate": true,
+          "pos": [
+            162,
+            212
+          ],
+          "direction": "all"
+        },
+        "P16": {
+          "pin": "PIN_50",
+          "rotate": true,
+          "pos": [
+            173,
+            212
+          ],
+          "direction": "all"
+        },
+        "P17": {
+          "pin": "PIN_52",
+          "rotate": true,
+          "pos": [
+            184,
+            212
+          ],
+          "direction": "all"
+        },
+        "P18": {
+          "pin": "PIN_54",
+          "rotate": true,
+          "pos": [
+            195,
+            212
+          ],
+          "direction": "all"
+        },
+        "P19": {
+          "pin": "PIN_58",
+          "rotate": true,
+          "pos": [
+            206,
+            212
+          ],
+          "direction": "all"
+        },
+        "P20": {
+          "pin": "PIN_60",
+          "rotate": true,
+          "pos": [
+            217,
+            212
+          ],
+          "direction": "all"
+        },
+        "P21": {
+          "pin": "PIN_65",
+          "rotate": true,
+          "pos": [
+            228,
+            212
+          ],
+          "direction": "all"
+        },
+        "P22": {
+          "pin": "PIN_67",
+          "rotate": true,
+          "pos": [
+            239,
+            212
+          ],
+          "direction": "all"
+        },
+        "P23": {
+          "pin": "PIN_69",
+          "rotate": true,
+          "pos": [
+            250,
+            212
+          ],
+          "direction": "all"
+        },
+        "P24": {
+          "pin": "PIN_71",
+          "rotate": true,
+          "pos": [
+            261,
+            212
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "RIGHT",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "P0": {
+          "pin": "PIN_106",
+          "rotate": true,
+          "pos": [
+            338,
+            47
+          ],
+          "direction": "all"
+        },
+        "P1": {
+          "pin": "PIN_104",
+          "rotate": true,
+          "pos": [
+            338,
+            58
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "PIN_101",
+          "rotate": true,
+          "pos": [
+            338,
+            69
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "PIN_99",
+          "rotate": true,
+          "pos": [
+            338,
+            80
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "PIN_86",
+          "rotate": true,
+          "pos": [
+            338,
+            91
+          ],
+          "direction": "all"
+        },
+        "P5": {
+          "pin": "PIN_83",
+          "rotate": true,
+          "pos": [
+            338,
+            102
+          ],
+          "direction": "all"
+        },
+        "P6": {
+          "pin": "PIN_28",
+          "rotate": true,
+          "pos": [
+            338,
+            113
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "PIN_31",
+          "rotate": true,
+          "pos": [
+            338,
+            124
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "PIN_33",
+          "rotate": true,
+          "pos": [
+            338,
+            135
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "PIN_105",
+          "rotate": true,
+          "pos": [
+            327,
+            47
+          ],
+          "direction": "all"
+        },
+        "P11": {
+          "pin": "PIN_103",
+          "rotate": true,
+          "pos": [
+            327,
+            58
+          ],
+          "direction": "all"
+        },
+        "P12": {
+          "pin": "PIN_100",
+          "rotate": true,
+          "pos": [
+            327,
+            69
+          ],
+          "direction": "all"
+        },
+        "P13": {
+          "pin": "PIN_98",
+          "rotate": true,
+          "pos": [
+            327,
+            80
+          ],
+          "direction": "all"
+        },
+        "P14": {
+          "pin": "PIN_85",
+          "rotate": true,
+          "pos": [
+            327,
+            91
+          ],
+          "direction": "all"
+        },
+        "P15": {
+          "pin": "PIN_77",
+          "rotate": true,
+          "pos": [
+            327,
+            102
+          ],
+          "direction": "all"
+        },
+        "P16": {
+          "pin": "PIN_76",
+          "rotate": true,
+          "pos": [
+            327,
+            113
+          ],
+          "direction": "all"
+        },
+        "P17": {
+          "pin": "PIN_30",
+          "rotate": true,
+          "pos": [
+            327,
+            124
+          ],
+          "direction": "all"
+        },
+        "P18": {
+          "pin": "PIN_32",
+          "rotate": true,
+          "pos": [
+            327,
+            135
+          ],
+          "direction": "all"
+        },
+        "P19": {
+          "pin": "PIN_34",
+          "rotate": true,
+          "pos": [
+            327,
+            146
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "LED",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "D1": {
+          "pin": "PIN_1",
+          "rotate": true,
+          "pos": [
+            127,
+            61
+          ],
+          "direction": "output"
+        },
+        "D2": {
+          "pin": "PIN_2",
+          "rotate": true,
+          "pos": [
+            127,
+            71
+          ],
+          "direction": "output"
+        },
+        "D3": {
+          "pin": "PIN_3",
+          "rotate": true,
+          "pos": [
+            127,
+            81
+          ],
+          "direction": "output"
+        },
+        "D4": {
+          "pin": "PIN_7",
+          "rotate": true,
+          "pos": [
+            127,
+            91
+          ],
+          "direction": "output"
+        },
+        "D5": {
+          "pin": "PIN_11",
+          "rotate": true,
+          "pos": [
+            127,
+            101
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "BTN",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "B1": {
+          "pin": "114",
+          "pos": [
+            359,
+            32
+          ],
+          "direction": "input"
+        },
+        "B2": {
+          "pin": "89",
+          "pos": [
+            359,
+            79
+          ],
+          "direction": "input"
+        },
+        "B3": {
+          "pin": "88",
+          "comment": "RESET",
+          "pos": [
+            360,
+            108
+          ],
+          "direction": "input"
+        },
+        "B4": {
+          "pin": "80",
+          "pos": [
+            359,
+            137
+          ],
+          "direction": "input"
+        },
+        "B5": {
+          "pin": "73",
+          "pos": [
+            359,
+            184
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "UART",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "RX": {
+          "pin": "23",
+          "pos": [
+            109,
+            50
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "10",
+          "pos": [
+            120,
+            50
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
+}

@@ -6,7 +6,10 @@
 
 to control AC/DC-Motors or for analog outputs
 
-Keywords: joint dcservo acservo 10v 5v dac analog
+ PWM-Resolution: >= 11bit at 10000Hz and 24Mhz FPGA-Clock
+
+* Keywords: joint dcservo acservo 10v 5v dac analog
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -27,6 +30,31 @@ Keywords: joint dcservo acservo 10v 5v dac analog
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: False
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
+
+### image:
+hardware type
+
+ * type: imgselect
+ * default: generic
+
 ### frequency:
 PWM frequency
 
@@ -36,23 +64,13 @@ PWM frequency
  * default: 10000
  * unit: Hz
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
-### axis:
-axis name (X,Y,Z,...)
+### bitwidth:
+bit-width on the interface frequency
 
  * type: select
- * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
+ * default: 32
+ * unit: bits
+ * options: 32, 24, 16
 
 
 ## Signals:
@@ -83,83 +101,6 @@ configure as joint
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "pwmout",
-    "pins": {
-        "pwm": {
-            "pin": "0"
-        },
-        "dir": {
-            "pin": "1"
-        },
-        "en": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "pwmout",
-    "frequency": 10000,
-    "name": "",
-    "axis": "",
-    "is_joint": false,
-    "pins": {
-        "pwm": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "dir": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "en": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "dty": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "dty",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [pwmout.v](pwmout.v)

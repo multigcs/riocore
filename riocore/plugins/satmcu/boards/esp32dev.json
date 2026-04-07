@@ -1,0 +1,292 @@
+{
+  "platform": "espressif32",
+  "board": "esp32dev",
+  "multithread": true,
+  "sserial": "Serial2",
+  "rx": "18",
+  "tx": "19",
+  "options": {
+    "upload_port": {
+      "default": "/dev/ttyUSB0",
+      "type": "str",
+      "description": "upload-port"
+    }
+  },
+  "pins": {
+    "SAT": {
+        "direction": "output",
+        "pin": "",
+        "pos": [20, 20],
+        "edge": "target",
+        "type": ["SATCON"],
+        "optional": true,
+        "bus": true
+    },
+    "IO:0": {
+      "pin": "0",
+      "comment": "boot pin",
+      "direction": "input",
+      "pos": [
+        97,
+        214
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:36": {
+      "pin": "36",
+      "direction": "all",
+      "pos": [
+        5,
+        37
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:39": {
+      "pin": "39",
+      "direction": "all",
+      "pos": [
+        5,
+        48
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:34": {
+      "pin": "34",
+      "direction": "all",
+      "pos": [
+        5,
+        59
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:35": {
+      "pin": "35",
+      "direction": "all",
+      "pos": [
+        5,
+        71
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:32": {
+      "pin": "32",
+      "direction": "all",
+      "pos": [
+        5,
+        82
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:33": {
+      "pin": "33",
+      "direction": "all",
+      "pos": [
+        5,
+        94
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:25": {
+      "pin": "25",
+      "direction": "all",
+      "pos": [
+        5,
+        105
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:26": {
+      "pin": "26",
+      "direction": "all",
+      "pos": [
+        5,
+        117
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:27": {
+      "pin": "27",
+      "direction": "all",
+      "pos": [
+        5,
+        128
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:14": {
+      "pin": "14",
+      "direction": "all",
+      "pos": [
+        5,
+        140
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:12": {
+      "pin": "12",
+      "direction": "all",
+      "pos": [
+        5,
+        151
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:13": {
+      "pin": "13",
+      "direction": "all",
+      "pos": [
+        5,
+        163
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:23": {
+      "pin": "23",
+      "direction": "all",
+      "pos": [
+        117,
+        25
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:22": {
+      "pin": "22",
+      "direction": "all",
+      "pos": [
+        117,
+        36
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:21": {
+      "pin": "21",
+      "direction": "all",
+      "pos": [
+        117,
+        71
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:5": {
+      "pin": "5",
+      "direction": "all",
+      "pos": [
+        117,
+        105
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:17": {
+      "pin": "17",
+      "direction": "all",
+      "pos": [
+        117,
+        117
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:16": {
+      "pin": "16",
+      "direction": "all",
+      "pos": [
+        117,
+        129
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:4": {
+      "pin": "4",
+      "direction": "all",
+      "pos": [
+        117,
+        140
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:2": {
+      "pin": "2",
+      "comment": "Onboard-LED",
+      "direction": "all",
+      "pos": [
+        117,
+        151
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    },
+    "IO:15": {
+      "pin": "15",
+      "direction": "all",
+      "pos": [
+        117,
+        163
+      ],
+      "edge": "source",
+      "type": [
+        "MCUIO"
+      ]
+    }
+  }
+}

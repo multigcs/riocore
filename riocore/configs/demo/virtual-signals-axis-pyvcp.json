@@ -1,441 +1,717 @@
 {
-    "name": "Tangbob",
-    "boardcfg": "Tangbob",
+    "name": "Virtual",
     "description": "Virtual-Signals with Axis and GladeVCP",
     "protocol": "UDP",
     "plugins": [
         {
-            "type": "w5500",
-            "pins": {
-                "mosi": {
-                    "pin": "SPI:MOSI"
+            "type": "fpga",
+            "node_type": "Tangbob",
+            "toolchain": "gowin",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                -760.0,
+                490.0
+            ],
+            "rotate": 0,
+            "sub": {
+                "w5500": {
+                    "ip": "192.168.11.194"
                 },
-                "miso": {
-                    "pin": "SPI:MISO"
-                },
-                "sclk": {
-                    "pin": "SPI:SCLK"
-                },
-                "sel": {
-                    "pin": "SPI:SEL"
+                "board0_w5500": {
+                    "ip": "192.168.11.194"
                 }
             },
-            "uid": "w55000"
+            "simulation": true
         },
         {
-            "type": "wled",
+            "type": "breakout",
+            "node_type": "china-bob5x",
+            "uid": "breakout0",
+            "pos": [
+                -220.0,
+                450.0
+            ],
             "pins": {
-                "data": {
-                    "pin": "WLED:DATA"
-                }
-            },
-            "signals": {
-                "0_green": {
-                    "net": "(!halui.mode.is-auto and !axisui.error) or halui.program.is-paused"
+                "SLOT:P1": {
+                    "pin": "board0:RIGHT:P1"
                 },
-                "0_red": {
-                    "net": "axisui.error"
+                "SLOT:P2": {
+                    "pin": "board0:RIGHT:P2"
                 },
-                "0_blue": {
-                    "net": "halui.mode.is-auto"
+                "SLOT:P3": {
+                    "pin": "board0:RIGHT:P3"
+                },
+                "SLOT:P4": {
+                    "pin": "board0:RIGHT:P4"
+                },
+                "SLOT:P5": {
+                    "pin": "board0:RIGHT:P5"
+                },
+                "SLOT:P6": {
+                    "pin": "board0:RIGHT:P6"
+                },
+                "SLOT:P7": {
+                    "pin": "board0:RIGHT:P7"
+                },
+                "SLOT:P8": {
+                    "pin": "board0:RIGHT:P8"
+                },
+                "SLOT:P9": {
+                    "pin": "board0:RIGHT:P9"
+                },
+                "SLOT:P10": {
+                    "pin": "board0:RIGHT:P10"
+                },
+                "SLOT:P11": {
+                    "pin": "board0:RIGHT:P11"
+                },
+                "SLOT:P12": {
+                    "pin": "board0:RIGHT:P12"
+                },
+                "SLOT:P13": {
+                    "pin": "board0:RIGHT:P13"
+                },
+                "SLOT:P14": {
+                    "pin": "board0:RIGHT:P14"
+                },
+                "SLOT:P15": {
+                    "pin": "board0:RIGHT:P15"
+                },
+                "SLOT:P16": {
+                    "pin": "board0:RIGHT:P16"
+                },
+                "SLOT:P17": {
+                    "pin": "board0:RIGHT:P17"
                 }
-            },
-            "uid": "wled0"
+            }
         },
         {
-            "type": "blink",
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                260.0,
+                830.0
+            ],
             "pins": {
-                "led": {
-                    "pin": "10"
+                "step": {
+                    "pin": "breakout0:X:step"
+                },
+                "dir": {
+                    "pin": "breakout0:X:dir"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                260.0,
+                560.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:Y:step"
+                },
+                "dir": {
+                    "pin": "breakout0:Y:dir"
                 }
             },
-            "uid": "blink0"
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "image": "stepper",
+            "pos": [
+                260.0,
+                290.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "breakout0:Z:step"
+                },
+                "dir": {
+                    "pin": "breakout0:Z:dir"
+                }
+            },
+            "name": ""
         },
         {
             "type": "signal",
-            "uid": "signal0",
+            "name": "Float1",
+            "dir": "input",
             "signals": {
                 "value": {
                     "display": {
-                        "section": "Status",
+                        "section": "float",
                         "type": "scale",
-                        "min": 0.0,
-                        "max": 100.0,
-                        "initval": 50.0
-                    }
-                }
-            },
-            "name": "Virt-Float-In1"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "net": "riov.Virt-Float-In1.value <= 50",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": "<= 50"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Under_Equal"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "net": "riov.Virt-Float-In1.value >= 50",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": ">= 50"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Over_Equal"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "net": "riov.Virt-Float-In1.value < 50",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": "< 50"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Under"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "net": "riov.Virt-Float-In1.value > 50",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": "> 50"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Over"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "net": "riov.Virt-Float-In1.value <> 40,60",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": "between 40-60"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Inside"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "net": "!(riov.Virt-Float-In1.value <> 40,60)",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": "outside 40-60"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Outside"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "_net": "riov.Virt-Float-In1.value >= sig_riov_Virt-Float-In2_value",
-                    "net": "riov.Virt-Float-In1.value >= riov.Virt-Float-In2.value",
-                    "display": {
-                        "section": "Status",
-                        "color": "green",
-                        "off_color": "red",
-                        "title": "In1 >= In2"
-                    }
-                }
-            },
-            "vtype": "bool",
-            "dir": "output",
-            "name": "Val1_Over_Val2"
-        },
-        {
-            "type": "signal",
-            "uid": "signal0",
-            "signals": {
-                "value": {
-                    "display": {
-                        "section": "Status",
-                        "type": "scale",
-                        "min": 0.0,
+                        "min": -100.0,
                         "max": 100.0,
                         "initval": 0.0
                     }
                 }
             },
-            "name": "Virt-Float-In2"
+            "uid": "signal0",
+            "pos": [
+                540.0,
+                1380.0
+            ]
         },
         {
             "type": "signal",
-            "uid": "signal1",
+            "name": "Float2",
+            "dir": "input",
             "signals": {
                 "value": {
                     "display": {
-                        "section": "status",
-                        "type": "bar",
-                        "min": 0.0,
-                        "max": 100.0
-                    },
-                    "net": "riov.Virt-Float-In1.value"
+                        "section": "float",
+                        "type": "scale",
+                        "min": -100.0,
+                        "max": 100.0,
+                        "initval": 0.0
+                    }
                 }
             },
-            "dir": "output",
-            "name": "Float-Out1"
+            "uid": "signal1",
+            "pos": [
+                540.0,
+                1320.0
+            ]
         },
         {
             "type": "signal",
-            "uid": "signal1",
+            "name": "Float1-Limited",
+            "dir": "output",
             "signals": {
                 "value": {
+                    "net": "limit(riov.Float1.value, -50, 50)",
                     "display": {
-                        "section": "status",
+                        "section": "float",
                         "type": "bar",
-                        "min": 0.0,
+                        "height": 15,
+                        "min": -100.0,
                         "max": 100.0
-                    },
-                    "net": "limit(riov.Virt-Float-In1.value, 25.0, 75.0)"
+                    }
                 }
             },
-            "dir": "output",
-            "name": "Limit"
+            "uid": "signal2",
+            "pos": [
+                540.0,
+                1260.0
+            ]
         },
         {
             "type": "signal",
-            "uid": "signal1",
+            "name": "Float1-Deadzone",
+            "dir": "output",
             "signals": {
                 "value": {
+                    "net": "deadzone(riov.Float1.value, 0, 50)",
                     "display": {
-                        "section": "status",
+                        "section": "float",
                         "type": "bar",
-                        "min": 0.0,
+                        "height": 15,
+                        "min": -100.0,
                         "max": 100.0
-                    },
-                    "net": "deadzone(riov.Virt-Float-In1.value, 50.0, 10.0)"
+                    }
                 }
             },
-            "dir": "output",
-            "name": "Deadzone"
+            "uid": "signal3",
+            "pos": [
+                540.0,
+                1200.0
+            ]
         },
         {
             "type": "signal",
+            "name": "abs-Float1",
+            "dir": "output",
             "signals": {
                 "value": {
+                    "net": "abs(riov.Float1.value)",
                     "display": {
-                        "section": "status",
-                        "title": "1 + 2",
-                        "type": "meter",
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
                         "min": 0.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal4",
+            "pos": [
+                540.0,
+                1140.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1+Float2",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value + riov.Float2.value",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -200.0,
                         "max": 200.0
-                    },
-                    "net": "riov.Virt-Float-In1.value + riov.Virt-Float-In2.value"
-                }
-            },
-            "dir": "output",
-            "name": "Virt-Float-Out2"
-        },
-        {
-            "type": "signal",
-            "signals": {
-                "value": {
-                    "display": {
-                        "section": "status",
-                        "type": "checkbutton"
                     }
                 }
             },
-            "vtype": "bool",
-            "name": "Virt-Bool-In1"
+            "uid": "signal5",
+            "pos": [
+                540.0,
+                1080.0
+            ]
         },
         {
             "type": "signal",
+            "name": "Float1-Float2",
+            "dir": "output",
             "signals": {
                 "value": {
+                    "net": "riov.Float1.value - riov.Float2.value",
                     "display": {
-                        "section": "status",
-                        "type": "checkbutton"
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -200.0,
+                        "max": 200.0
                     }
                 }
             },
-            "vtype": "bool",
-            "name": "Virt-Bool-In2"
+            "uid": "signal6",
+            "pos": [
+                540.0,
+                1020.0
+            ]
         },
         {
             "type": "signal",
+            "name": "Float1*Float2",
+            "dir": "output",
             "signals": {
                 "value": {
+                    "net": "riov.Float1.value * riov.Float2.value",
                     "display": {
-                        "section": "status",
-                        "type": "checkbutton"
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -10000.0,
+                        "max": 10000.0
                     }
                 }
             },
-            "vtype": "bool",
-            "name": "Virt-Bool-In3"
+            "uid": "signal7",
+            "pos": [
+                540.0,
+                960.0
+            ]
         },
         {
             "type": "signal",
-            "uid": "signal3",
+            "name": "Float1/5",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value / 5",
+                    "display": {
+                        "section": "float",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -20.0,
+                        "max": 20.0
+                    }
+                }
+            },
+            "uid": "signal8",
+            "pos": [
+                540.0,
+                900.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Min",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "min(riov.Float1.value, riov.Reset.value)",
+                    "display": {
+                        "section": "float",
+                        "group": "MinMax",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal9",
+            "pos": [
+                540.0,
+                840.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1-Max",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "max(riov.Float1.value, riov.Reset.value)",
+                    "display": {
+                        "section": "float",
+                        "group": "MinMax",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal10",
+            "pos": [
+                540.0,
+                780.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Reset",
+            "dir": "input",
+            "vtype": "bool",
             "signals": {
                 "value": {
                     "display": {
-                        "section": "status",
+                        "section": "float",
+                        "group": "MinMax"
+                    }
+                }
+            },
+            "uid": "signal11",
+            "pos": [
+                540.0,
+                720.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Float1<Float2",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "riov.Float1.value < riov.Float2.value",
+                    "display": {
+                        "section": "float",
                         "type": "led"
-                    },
-                    "net": "riov.Virt-Bool-In1.value"
+                    }
                 }
             },
-            "dir": "output",
-            "vtype": "bool",
-            "name": "Virt-Bool-Out1"
+            "uid": "signal12",
+            "pos": [
+                540.0,
+                660.0
+            ]
         },
         {
             "type": "signal",
-            "uid": "signal3",
+            "name": "Float1>Float2",
+            "dir": "output",
+            "vtype": "bool",
             "signals": {
                 "value": {
+                    "net": "riov.Float1.value > riov.Float2.value",
                     "display": {
-                        "title": "Invert 1",
-                        "section": "status",
+                        "section": "float",
                         "type": "led"
-                    },
-                    "net": "!riov.Virt-Bool-In1.value"
+                    }
                 }
             },
-            "dir": "output",
-            "vtype": "bool",
-            "name": "Virt-Bool-Out2"
+            "uid": "signal13",
+            "pos": [
+                540.0,
+                600.0
+            ]
         },
         {
             "type": "signal",
+            "name": "-20-gt-Float1-lt-20",
+            "dir": "output",
+            "vtype": "bool",
             "signals": {
                 "value": {
+                    "net": "riov.Float1.value <> -20,20",
                     "display": {
-                        "title": "1 AND 2",
-                        "section": "status",
+                        "section": "float",
                         "type": "led"
-                    },
-                    "net": "riov.Virt-Bool-In1.value AND riov.Virt-Bool-In2.value"
+                    }
                 }
             },
-            "dir": "output",
-            "vtype": "bool",
-            "name": "Virt-Bool-Out3"
+            "uid": "signal14",
+            "pos": [
+                540.0,
+                540.0
+            ]
         },
         {
             "type": "signal",
+            "name": "Bool1",
+            "dir": "input",
+            "vtype": "bool",
             "signals": {
                 "value": {
                     "display": {
-                        "title": "1 OR 2",
-                        "section": "status",
+                        "section": "bool"
+                    }
+                }
+            },
+            "uid": "signal15",
+            "pos": [
+                540.0,
+                480.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool2",
+            "dir": "input",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "display": {
+                        "section": "bool"
+                    }
+                }
+            },
+            "uid": "signal16",
+            "pos": [
+                540.0,
+                420.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-inv",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "!riov.Bool1.value",
+                    "display": {
+                        "section": "bool",
                         "type": "led"
-                    },
-                    "net": "riov.Virt-Bool-In1.value OR riov.Virt-Bool-In2.value"
+                    }
                 }
             },
-            "dir": "output",
-            "vtype": "bool",
-            "name": "Virt-Bool-Out4"
+            "uid": "signal17",
+            "pos": [
+                540.0,
+                360.0
+            ]
         },
         {
             "type": "signal",
+            "name": "Bool1-and-Bool2",
+            "dir": "output",
+            "vtype": "bool",
             "signals": {
                 "value": {
+                    "net": "riov.Bool1.value AND riov.Bool2.value",
                     "display": {
-                        "title": "(1 AND 2) OR 3",
-                        "section": "status",
+                        "section": "bool",
                         "type": "led"
-                    },
-                    "net": "(riov.Virt-Bool-In1.value AND riov.Virt-Bool-In2.value) OR riov.Virt-Bool-In3.value"
+                    }
                 }
             },
-            "dir": "output",
-            "vtype": "bool",
-            "name": "Virt-Bool-Out5"
+            "uid": "signal18",
+            "pos": [
+                540.0,
+                300.0
+            ]
         },
         {
             "type": "signal",
+            "name": "Bool1-or-Bool2",
+            "dir": "output",
+            "vtype": "bool",
             "signals": {
                 "value": {
+                    "net": "riov.Bool1.value OR riov.Bool2.value",
                     "display": {
-                        "title": "Delayed",
-                        "section": "status",
-                        "estop": true,
+                        "section": "bool",
                         "type": "led"
-                    },
-                    "net": "delay(riov.Virt-Bool-In1.value, 0.5, 1)"
+                    }
                 }
             },
-            "dir": "output",
-            "vtype": "bool",
-            "name": "Virt-Bool-Delayed"
+            "uid": "signal19",
+            "pos": [
+                540.0,
+                240.0
+            ]
         },
         {
             "type": "signal",
+            "name": "Bool1-toggle",
+            "dir": "output",
+            "vtype": "bool",
             "signals": {
                 "value": {
+                    "net": "toggle(riov.Bool1.value)",
                     "display": {
-                        "title": "Converted",
-                        "section": "status"
-                    },
-                    "net": "conv(riov.Virt-Bool-In1.value, bit, float)"
+                        "section": "bool",
+                        "type": "led"
+                    }
                 }
             },
-            "dir": "output",
-            "name": "Virt-Float-Conv"
-        }
-    ],
-    "modules": [
+            "uid": "signal20",
+            "pos": [
+                540.0,
+                180.0
+            ]
+        },
         {
-            "slot": "LEFT",
-            "module": "china-bob5x"
+            "type": "signal",
+            "name": "Bool1-delay",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "delay(riov.Bool1.value, 1, 1)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal21",
+            "pos": [
+                540.0,
+                120.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-oneshot",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "oneshot(riov.Bool1.value, 0.3, 1, 1)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "uid": "signal22",
+            "pos": [
+                540.0,
+                60.0
+            ]
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-oneshot-up",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "oneshot(riov.Bool1.value, 0.3, 1, 0)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "pos": [
+                540.0,
+                60.0
+            ],
+            "uid": "signal23"
+        },
+        {
+            "type": "signal",
+            "name": "Bool1-oneshot-down",
+            "dir": "output",
+            "vtype": "bool",
+            "signals": {
+                "value": {
+                    "net": "oneshot(riov.Bool1.value, 0.3, 0, 1)",
+                    "display": {
+                        "section": "bool",
+                        "type": "led"
+                    }
+                }
+            },
+            "pos": [
+                540.0,
+                60.0
+            ],
+            "uid": "signal24"
+        },
+        {
+            "type": "signal",
+            "name": "Mux",
+            "dir": "output",
+            "signals": {
+                "value": {
+                    "net": "mux2(riov.Bool1.value, -50, 50)",
+                    "display": {
+                        "section": "bool",
+                        "type": "bar",
+                        "height": 15,
+                        "min": -100.0,
+                        "max": 100.0
+                    }
+                }
+            },
+            "uid": "signal23",
+            "pos": [
+                540.0,
+                0.0
+            ]
         }
     ],
     "linuxcnc": {
-        "debug_info": true,
+        "_debug_info": true,
         "simulation": true,
         "gui": "axis",
         "vcp_type": "pyvcp",
-        "net": [
-            {"source": "delay(riov.Virt-Bool-In1.value, -0.5, 1)", "target": "iocontrol.0.emc-enable-in"}
-        ]
+        "_net": [
+            {
+                "source": "oneshot(riov.Bool1-toggle.value, 1, 1, 0)",
+                "target": "MDI_COMMAND|_p1: G1 X0 Y10 F1000"
+            },
+            {
+                "source": "oneshot(riov.Bool1-toggle.value, 1, 0, 1)",
+                "target": "MDI_COMMAND|_p2: G1 X10 Y0 F1000"
+            }
+        ],
+        "_ini": {
+            "HALUI": {
+                "MDI_COMMAND|on": "G1 X0 Y10 F1000",
+                "MDI_COMMAND|off": "G1 X10 Y1 F1000"
+            }
+        }
+    },
+    "flow": {
+        "view": {
+            "scale": 0.8454545454545455,
+            "pos": [
+                -984.9090909090909,
+                -25.0
+            ]
+        }
     }
 }

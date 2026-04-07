@@ -8,45 +8,59 @@ JOINT_OPTIONS = {
     },
     "ferror": {
         "type": float,
+        "unit": "units",
     },
     "min_ferror": {
         "type": float,
+        "unit": "units",
     },
     "min_limit": {
         "type": float,
+        "unit": "units",
     },
     "max_limit": {
         "type": float,
+        "unit": "units",
     },
     "max_velocity": {
         "type": float,
+        "unit": "units/s",
     },
     "max_acceleration": {
         "type": float,
+        "unit": "units/s^2",
     },
     "stepgen_maxaccel": {
         "type": float,
+        "unit": "units/s^2",
     },
     "feedback": {
         "type": str,
     },
     "home_sequence": {
-        "type": int,
+        "type": "select",
+        "options": ["auto"] + [str(n) for n in range(-9, 9)],
+        "default": "auto",
     },
     "home": {
         "type": float,
+        "unit": "units",
     },
     "home_offset": {
         "type": float,
+        "unit": "units",
     },
     "home_search_vel": {
         "type": float,
+        "unit": "units/s",
     },
     "home_latch_vel": {
         "type": float,
+        "unit": "units/s",
     },
     "home_final_vel": {
         "type": float,
+        "unit": "units/s",
     },
     "home_ignore_limits": {
         "type": "select",
@@ -1061,10 +1075,10 @@ INI_HELPTEXT = {
         "FF1": "The 1^st^ order feed forward gain.",
         "FF2": "The 2^nd^ order feed forward gain.",
         "MAX_OUTPUT": "The maximum value for the output of the PID compensation that is written to the motor amplifier, in volts.",
-        "INPUT_SCALE": "in Sample configs",
-        "ENCODER_SCALE": "in PnCconf built configs",
-        "SCALE": "in Sample configs",
-        "STEP_SCALE": "in PnCconf built configs",
+        "INPUT_SCALE": "steps / unit",
+        "ENCODER_SCALE": "steps / unit",
+        "SCALE": "steps / unit (steps/rev * microsteps / pitch",
+        "STEP_SCALE": "steps / unit (steps/rev * microsteps / pitch",
         "STEPGEN_MAXACCEL": " Acceleration limit for the step generator.",
         "STEPGEN_MAXVEL": "Older configuration files have a velocity limit for the step generator as well.",
         "FEEDBACK": "the feedback signal for this joint (plugin_name[:signal_name]) - closed loop",

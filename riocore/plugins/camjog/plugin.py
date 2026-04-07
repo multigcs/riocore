@@ -1,0 +1,113 @@
+from riocore.plugins import PluginBase
+
+
+class Plugin(PluginBase):
+    def setup(self):
+        self.NAME = "camjog"
+        self.INFO = "gui component to jog via camera image"
+        self.DESCRIPTION = ""
+        self.KEYWORDS = "jog gui robot"
+        self.TYPE = "base"
+        self.IMAGE_SHOW = True
+        self.NEEDS = []
+        self.IMAGE = ""
+        self.ORIGIN = ""
+        self.SIGNALS = {}
+        self.PINDEFAULTS = {}
+        self.FILES = ["camjog.py"]
+        self.OPTIONS = {
+            "device": {
+                "type": str,
+                "default": "/dev/video0",
+            },
+            "width": {
+                "type": int,
+                "default": 640,
+            },
+            "height": {
+                "type": int,
+                "default": 480,
+            },
+            "scale": {
+                "type": float,
+                "default": 1.0,
+            },
+            "tabname": {
+                "type": str,
+                "default": "camjog",
+            },
+            "external": {
+                "type": bool,
+                "default": False,
+            },
+        }
+        self.camjog_num = 0
+
+    @classmethod
+    def component_loader(cls, instances):
+        devices = []
+        for cnum, instance in enumerate(instances):
+            camjog_device = instance.plugin_setup.get("device", instance.option_default("device"))
+            if camjog_device not in devices:
+                devices.append(camjog_device)
+            else:
+                print(f"ERROR: camjog: device allready in use: {camjog_device}")
+            instance.camjog_num = cnum
+
+    def cmd_args(self):
+        external = self.plugin_setup.get("external", self.option_default("external"))
+        camjog_device = self.plugin_setup.get("device", self.option_default("device"))
+        width = self.plugin_setup.get("width", self.option_default("width"))
+        height = self.plugin_setup.get("height", self.option_default("height"))
+        scale = self.plugin_setup.get("scale", self.option_default("scale"))
+        cmd_args = [f"loadusr -Wn camjog{self.camjog_num} ./camjog.py"]
+        cmd_args.append(f"--name camjog{self.camjog_num}")
+        if not external:
+            cmd_args.append("--xid {XID}")
+        if camjog_device.startswith("/dev/video"):
+            cmd_args.append(f"--video {camjog_device[-1]}")
+        elif camjog_device.startswith("rtsp://"):
+            cmd_args.append(f"--camera {camjog_device}")
+        elif len(camjog_device) <= 2:
+            cmd_args.append(f"--video {camjog_device}")
+        else:
+            cmd_args.append(f"--camera {camjog_device[-1]}")
+        cmd_args.append(f"--width {width}")
+        cmd_args.append(f"--height {height}")
+        cmd_args.append(f"--scale {scale}")
+        return " ".join(cmd_args)
+
+    def ini(self, parent, ini_setup):
+        external = self.plugin_setup.get("external", self.option_default("external"))
+        if not external:
+            tabname = self.plugin_setup.get("tabname", self.option_default("tabname"))
+            ini_setup["DISPLAY"][f"EMBED_TAB_NAME|CAMJOG{self.camjog_num}"] = tabname
+            if parent.gui_tablocation:
+                ini_setup["DISPLAY"][f"EMBED_TAB_LOCATION|CAMJOG{self.camjog_num}"] = parent.gui_tablocation
+            ini_setup["DISPLAY"][f"EMBED_TAB_COMMAND|CAMJOG{self.camjog_num}"] = f"halcmd {self.cmd_args()}"
+
+    def hal(self, parent):
+        parent.halg.postgui_components_add(f"camjog{self.camjog_num}")
+        external = self.plugin_setup.get("external", self.option_default("external"))
+        if external:
+            parent.halg.fmt_add(f"{self.cmd_args()}")
+        for axis_name, axis_config in parent.project.axis_dict.items():
+            if axis_name not in {"X", "Y"}:
+                continue
+            joints = axis_config["joints"]
+            axis_lower = axis_name.lower()
+            parent.halg.net_add(f"camjog{self.camjog_num}.axis.{axis_lower}.jog-counts", f"axis.{axis_lower}.jog-counts")
+            if axis_lower == "y":
+                parent.halg.setp_add(f"camjog{self.camjog_num}.axis.{axis_lower}.cal", -0.1)
+            else:
+                parent.halg.setp_add(f"camjog{self.camjog_num}.axis.{axis_lower}.cal", 0.1)
+            parent.halg.setp_add(f"camjog{self.camjog_num}.axis.{axis_lower}.jog-scale", 0.15)
+            parent.halg.setp_add(f"axis.{axis_lower}.jog-vel-mode", 0)
+            parent.halg.setp_add(f"axis.{axis_lower}.jog-enable", 1)
+            parent.halg.setp_add(f"axis.{axis_lower}.jog-scale", 0.15)
+            for joint_setup in joints:
+                joint = joint_setup["num"]
+                parent.halg.net_add(f"camjog{self.camjog_num}.axis.{axis_lower}.jog-counts", f"joint.{joint}.jog-counts")
+                parent.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
+                parent.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                parent.halg.setp_add(f"joint.{joint}.jog-scale", 0.15)

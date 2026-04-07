@@ -6,6 +6,7 @@ DEVICE="$1" # "MAX 10"
 IN_MHZ="$2" # 50
 OUT_MHZ="$3" # 100
 FILE="$4" # PLL.v
+BINPATH="$5"
 
 if test "$FILE" = ""
 then
@@ -61,7 +62,12 @@ cat <<EOF  > "$FILE"
 // Retrieval info: GEN_FILE: TYPE_NORMAL $BASENAME_bb.v FALSE
 EOF
 
-qmegawiz -silent $FILE
+if test -x "$BINPATH"
+then
+    $BINPATH/qmegawiz -silent $FILE
+else
+    qmegawiz -silent $FILE
+fi
 echo "..done"
 
 OUTPUT=`grep EFF_OUTPUT_FREQ_VALUE0 "$FILE" | cut -d'"' -f2`

@@ -1,0 +1,921 @@
+{
+  "name": "Mesa7c80",
+  "description": "Mesa7c80 over SPI - untested, i have no hardware",
+  "comment": "The bitstream can be written via SPI, but you should have a USB Blaster handy so that you can flash via JTAG in an emergency.\n\nIt is also possible to operate this board with a W5500 via Ethernet, but flashing is then only possible via JTAG.\n\nSmartserial is not supported by RIO, but the 2 ports can be used for Modbus.",
+  "url": "https://eusurplus.com/index.php?route=product/product&product_id=131",
+  "toolchain": "ise",
+  "family": "xc6",
+  "type": "xc6slx9-2tqg144",
+  "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+  "package": "tqg144",
+  "provides": [
+    "db25"
+  ],
+  "clock": {
+    "osc": "50000000",
+    "speed": "100000000",
+    "pin": "P50",
+    "startup": "CClk"
+  },
+  "plugins": [
+    {
+      "type": "bitinsel",
+      "uid": "_bitinsel0",
+      "pos": [
+        530.0,
+        360.0
+      ],
+      "bits": 5,
+      "pins": {
+        "addr0": {
+          "pin": "P117"
+        },
+        "addr1": {
+          "pin": "P116"
+        },
+        "addr2": {
+          "pin": "P115"
+        },
+        "addr3": {
+          "pin": "P118"
+        },
+        "addr4": {
+          "pin": "P119"
+        },
+        "bit_in": {
+          "pin": "P120"
+        }
+      }
+    }
+  ],
+  "slots": [
+    {
+      "name": "SPI",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "MOSI": {
+          "pin": "P16",
+          "pos": [
+            234,
+            307
+          ],
+          "direction": "all"
+        },
+        "MISO": {
+          "pin": "P15",
+          "pos": [
+            224,
+            307
+          ],
+          "direction": "all"
+        },
+        "SCLK": {
+          "pin": "P14",
+          "pos": [
+            215,
+            307
+          ],
+          "direction": "all"
+        },
+        "SEL": {
+          "pin": "P132",
+          "pos": [
+            215,
+            317
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "RPI",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "GPIO14": {
+          "pin": "P29",
+          "pos": [
+            291,
+            317
+          ],
+          "direction": "all"
+        },
+        "GPIO15": {
+          "pin": "P27",
+          "pos": [
+            281,
+            317
+          ],
+          "direction": "all"
+        },
+        "GPIO18": {
+          "pin": "P24",
+          "pos": [
+            272,
+            317
+          ],
+          "direction": "all"
+        },
+        "GPIO23": {
+          "pin": "P21",
+          "pos": [
+            253,
+            317
+          ],
+          "direction": "all"
+        },
+        "GPIO24": {
+          "pin": "P17",
+          "pos": [
+            243,
+            317
+          ],
+          "direction": "all"
+        },
+        "GPIO25": {
+          "pin": "P12",
+          "pos": [
+            224,
+            317
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "EEPROM",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "REBOOT": {
+          "pin": "P67",
+          "pos": [
+            287,
+            232
+          ],
+          "direction": "output"
+        },
+        "MOSI": {
+          "pin": "P64",
+          "pos": [
+            302,
+            232
+          ],
+          "direction": "output"
+        },
+        "MISO": {
+          "pin": "P65",
+          "pos": [
+            312,
+            232
+          ],
+          "direction": "input"
+        },
+        "SCLK": {
+          "pin": "P70",
+          "pos": [
+            322,
+            232
+          ],
+          "direction": "output"
+        },
+        "SEL": {
+          "pin": "P38",
+          "pos": [
+            332,
+            232
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "LED",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "L0": {
+          "pin": "P143",
+          "pos": [
+            57,
+            351
+          ],
+          "direction": "output"
+        },
+        "L1": {
+          "pin": "P142",
+          "pos": [
+            67,
+            351
+          ],
+          "direction": "output"
+        },
+        "L2": {
+          "pin": "P141",
+          "pos": [
+            77,
+            351
+          ],
+          "direction": "output"
+        },
+        "L3": {
+          "pin": "P140",
+          "pos": [
+            87,
+            351
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "TB7",
+      "comment": "Stepdir0",
+      "default": "",
+      "pins": {
+        "STEP": {
+          "pin": "P139",
+          "pos": [
+            37,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO0"
+        },
+        "DIR": {
+          "pin": "P138",
+          "pos": [
+            67,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO1"
+        }
+      }
+    },
+    {
+      "name": "TB8",
+      "comment": "Stepdir1",
+      "default": "",
+      "pins": {
+        "STEP": {
+          "pin": "P137",
+          "pos": [
+            135,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO2"
+        },
+        "DIR": {
+          "pin": "P134",
+          "pos": [
+            165,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO3"
+        }
+      }
+    },
+    {
+      "name": "TB9",
+      "comment": "Stepdir2",
+      "default": "",
+      "pins": {
+        "STEP": {
+          "pin": "P34",
+          "pos": [
+            234,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO4"
+        },
+        "DIR": {
+          "pin": "P35",
+          "pos": [
+            264,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO5"
+        }
+      }
+    },
+    {
+      "name": "TB10",
+      "comment": "Stepdir3",
+      "default": "",
+      "pins": {
+        "STEP": {
+          "pin": "P40",
+          "pos": [
+            333,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO6"
+        },
+        "DIR": {
+          "pin": "P41",
+          "pos": [
+            363,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO7"
+        }
+      }
+    },
+    {
+      "name": "TB11",
+      "comment": "Stepdir4",
+      "default": "",
+      "pins": {
+        "STEP": {
+          "pin": "P43",
+          "pos": [
+            420,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO8"
+        },
+        "DIR": {
+          "pin": "P44",
+          "pos": [
+            450,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO9"
+        }
+      }
+    },
+    {
+      "name": "TB12",
+      "comment": "Stepdir5",
+      "default": "",
+      "pins": {
+        "STEP": {
+          "pin": "P45",
+          "pos": [
+            518,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO10"
+        },
+        "DIR": {
+          "pin": "P46",
+          "pos": [
+            548,
+            406
+          ],
+          "direction": "output",
+          "comment": "IO11"
+        }
+      }
+    },
+    {
+      "name": "TB13",
+      "comment": "Outputs 0-3",
+      "default": "",
+      "pins": {
+        "OUT0": {
+          "pin": "P47",
+          "pos": [
+            599,
+            407
+          ],
+          "direction": "output",
+          "comment": "IO28"
+        },
+        "OUT1": {
+          "pin": "P48",
+          "pos": [
+            629,
+            407
+          ],
+          "direction": "output",
+          "comment": "IO29"
+        },
+        "OUT2": {
+          "pin": "P51",
+          "pos": [
+            659,
+            407
+          ],
+          "direction": "output",
+          "comment": "IO30"
+        },
+        "OUT3": {
+          "pin": "P55",
+          "pos": [
+            689,
+            407
+          ],
+          "direction": "output",
+          "comment": "IO31"
+        }
+      }
+    },
+    {
+      "name": "TB14",
+      "comment": "Outputs 4-7",
+      "default": "",
+      "pins": {
+        "OUT4": {
+          "pin": "P56",
+          "pos": [
+            727,
+            405
+          ],
+          "direction": "output",
+          "comment": "IO32"
+        },
+        "OUT5": {
+          "pin": "P57",
+          "pos": [
+            757,
+            405
+          ],
+          "direction": "output",
+          "comment": "IO33"
+        },
+        "OUT6": {
+          "pin": "P58",
+          "pos": [
+            787,
+            405
+          ],
+          "direction": "output",
+          "comment": "IO34"
+        },
+        "OUT7": {
+          "pin": "P59",
+          "pos": [
+            817,
+            405
+          ],
+          "direction": "output",
+          "comment": "IO35"
+        }
+      }
+    },
+    {
+      "name": "TB1",
+      "comment": "Inputs 0-23",
+      "default": "",
+      "pins": {
+        "IN23": {
+          "pin": "_BITINSEL0_INPUT[23]",
+          "pos": [
+            9,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN22": {
+          "pin": "_BITINSEL0_INPUT[22]",
+          "pos": [
+            24,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN21": {
+          "pin": "_BITINSEL0_INPUT[21]",
+          "pos": [
+            39,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN20": {
+          "pin": "_BITINSEL0_INPUT[20]",
+          "pos": [
+            54,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN19": {
+          "pin": "_BITINSEL0_INPUT[19]",
+          "pos": [
+            69,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN18": {
+          "pin": "_BITINSEL0_INPUT[18]",
+          "pos": [
+            84,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN17": {
+          "pin": "_BITINSEL0_INPUT[17]",
+          "pos": [
+            99,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN16": {
+          "pin": "_BITINSEL0_INPUT[16]",
+          "pos": [
+            114,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN15": {
+          "pin": "_BITINSEL0_INPUT[15]",
+          "pos": [
+            129,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN14": {
+          "pin": "_BITINSEL0_INPUT[14]",
+          "pos": [
+            144,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN13": {
+          "pin": "_BITINSEL0_INPUT[13]",
+          "pos": [
+            159,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN12": {
+          "pin": "_BITINSEL0_INPUT[12]",
+          "pos": [
+            174,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN11": {
+          "pin": "_BITINSEL0_INPUT[11]",
+          "pos": [
+            189,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN10": {
+          "pin": "_BITINSEL0_INPUT[10]",
+          "pos": [
+            204,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN9": {
+          "pin": "_BITINSEL0_INPUT[9]",
+          "pos": [
+            219,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN8": {
+          "pin": "_BITINSEL0_INPUT[8]",
+          "pos": [
+            234,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN7": {
+          "pin": "_BITINSEL0_INPUT[7]",
+          "pos": [
+            249,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN6": {
+          "pin": "_BITINSEL0_INPUT[6]",
+          "pos": [
+            264,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN5": {
+          "pin": "_BITINSEL0_INPUT[5]",
+          "pos": [
+            279,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN4": {
+          "pin": "_BITINSEL0_INPUT[4]",
+          "pos": [
+            294,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN3": {
+          "pin": "_BITINSEL0_INPUT[3]",
+          "pos": [
+            309,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN2": {
+          "pin": "_BITINSEL0_INPUT[2]",
+          "pos": [
+            324,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN1": {
+          "pin": "_BITINSEL0_INPUT[1]",
+          "pos": [
+            339,
+            16
+          ],
+          "direction": "input"
+        },
+        "IN0": {
+          "pin": "_BITINSEL0_INPUT[0]",
+          "pos": [
+            354,
+            16
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "MODBUS",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "RX": {
+          "pin": "P114",
+          "pos": [
+            468,
+            30
+          ],
+          "direction": "input",
+          "comment": "IO12"
+        },
+        "TX": {
+          "pin": "P112",
+          "pos": [
+            483,
+            30
+          ],
+          "direction": "output",
+          "comment": "IO13"
+        },
+        "TX_EN": {
+          "pin": "P111",
+          "pos": [
+            498,
+            30
+          ],
+          "direction": "output",
+          "comment": "IO14"
+        }
+      }
+    },
+    {
+      "name": "TP1",
+      "comment": "Expansion",
+      "default": "",
+      "pins": {
+        "P1": {
+          "pin": "P97",
+          "pos": [
+            809,
+            147
+          ],
+          "direction": "all",
+          "comment": "IO37"
+        },
+        "P2": {
+          "pin": "P94",
+          "pos": [
+            809,
+            158
+          ],
+          "direction": "all",
+          "comment": "IO39"
+        },
+        "P3": {
+          "pin": "P92",
+          "pos": [
+            809,
+            169
+          ],
+          "direction": "all",
+          "comment": "IO41"
+        },
+        "P4": {
+          "pin": "P87",
+          "pos": [
+            809,
+            180
+          ],
+          "direction": "all",
+          "comment": "IO43"
+        },
+        "P5": {
+          "pin": "P84",
+          "pos": [
+            809,
+            191
+          ],
+          "direction": "all",
+          "comment": "IO45"
+        },
+        "P6": {
+          "pin": "P83",
+          "pos": [
+            809,
+            202
+          ],
+          "direction": "all",
+          "comment": "IO46"
+        },
+        "P7": {
+          "pin": "P82",
+          "pos": [
+            809,
+            213
+          ],
+          "direction": "all",
+          "comment": "IO47"
+        },
+        "P8": {
+          "pin": "P81",
+          "pos": [
+            809,
+            224
+          ],
+          "direction": "all",
+          "comment": "IO48"
+        },
+        "P9": {
+          "pin": "P80",
+          "pos": [
+            809,
+            235
+          ],
+          "direction": "all",
+          "comment": "IO49"
+        },
+        "P10": {
+          "pin": "P79",
+          "pos": [
+            809,
+            246
+          ],
+          "direction": "all",
+          "comment": "IO50"
+        },
+        "P11": {
+          "pin": "P78",
+          "pos": [
+            809,
+            257
+          ],
+          "direction": "all",
+          "comment": "IO51"
+        },
+        "P12": {
+          "pin": "P66",
+          "pos": [
+            809,
+            268
+          ],
+          "direction": "all",
+          "comment": "IO52"
+        },
+        "P13": {
+          "pin": "P62",
+          "pos": [
+            809,
+            279
+          ],
+          "direction": "all",
+          "comment": "IO53"
+        },
+        "P14": {
+          "pin": "P95",
+          "pos": [
+            820,
+            147
+          ],
+          "direction": "all",
+          "comment": "IO38"
+        },
+        "P15": {
+          "pin": "P93",
+          "pos": [
+            820,
+            158
+          ],
+          "direction": "all",
+          "comment": "IO40"
+        },
+        "P16": {
+          "pin": "P88",
+          "pos": [
+            820,
+            169
+          ],
+          "direction": "all",
+          "comment": "IO42"
+        },
+        "P17": {
+          "pin": "P85",
+          "pos": [
+            820,
+            180
+          ],
+          "direction": "all",
+          "comment": "IO44"
+        }
+      }
+    },
+    {
+      "name": "TB4",
+      "comment": "Encoder",
+      "default": "",
+      "pins": {
+        "Z": {
+          "pin": "P102",
+          "pos": [
+            552,
+            16
+          ],
+          "direction": "input",
+          "comment": "IO17"
+        },
+        "B": {
+          "pin": "P104",
+          "pos": [
+            597,
+            16
+          ],
+          "direction": "input",
+          "comment": "IO16"
+        },
+        "A": {
+          "pin": "P105",
+          "pos": [
+            640,
+            16
+          ],
+          "direction": "input",
+          "comment": "IO15"
+        }
+      }
+    },
+    {
+      "name": "TB5",
+      "comment": "Spindle",
+      "default": "",
+      "pins": {
+        "PWM": {
+          "pin": "P101",
+          "pos": [
+            789,
+            16
+          ],
+          "direction": "output",
+          "comment": "IO18"
+        },
+        "ENABLE": {
+          "pin": "P100",
+          "comment": "IO19",
+          "pos": [
+            729,
+            16
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
+}

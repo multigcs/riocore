@@ -1,0 +1,218 @@
+{
+  "comment": "rioctrl-quadenc4",
+  "needs": [
+    "rioctrl"
+  ],
+  "main": {
+    "S0": {
+      "pin": "T13",
+      "pos": [
+        10,
+        255
+      ]
+    },
+    "S1": {
+      "pin": "T14",
+      "pos": [
+        10,
+        240
+      ]
+    },
+    "S2": {
+      "pin": "T15",
+      "pos": [
+        10,
+        225
+      ]
+    },
+    "S3": {
+      "pin": "P13",
+      "pos": [
+        10,
+        210
+      ]
+    },
+    "S4": {
+      "pin": "R16",
+      "pos": [
+        10,
+        195
+      ]
+    },
+    "S5": {
+      "pin": "P15",
+      "pos": [
+        10,
+        180
+      ]
+    },
+    "S6": {
+      "pin": "R13",
+      "pos": [
+        20,
+        255
+      ]
+    },
+    "S7": {
+      "pin": "R14",
+      "pos": [
+        20,
+        240
+      ]
+    },
+    "S8": {
+      "pin": "R15",
+      "pos": [
+        20,
+        225
+      ]
+    },
+    "S9": {
+      "pin": "P14",
+      "pos": [
+        20,
+        210
+      ]
+    },
+    "S10": {
+      "pin": "P16",
+      "pos": [
+        20,
+        195
+      ]
+    },
+    "S11": {
+      "pin": "N16",
+      "pos": [
+        20,
+        180
+      ]
+    }
+  },
+  "slots": [
+    {
+      "name": "ENC0",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "A": {
+          "pin": "S2",
+          "pos": [
+            37,
+            46
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "S1",
+          "pos": [
+            37,
+            66
+          ],
+          "direction": "input"
+        },
+        "Z": {
+          "pin": "S0",
+          "pos": [
+            37,
+            86
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "ENC1",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "A": {
+          "pin": "S5",
+          "pos": [
+            37,
+            141
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "S4",
+          "pos": [
+            37,
+            161
+          ],
+          "direction": "input"
+        },
+        "Z": {
+          "pin": "S3",
+          "pos": [
+            37,
+            181
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "ENC2",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "A": {
+          "pin": "S8",
+          "pos": [
+            37,
+            239
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "S7",
+          "pos": [
+            37,
+            259
+          ],
+          "direction": "input"
+        },
+        "Z": {
+          "pin": "S6",
+          "pos": [
+            37,
+            279
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "ENC3",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "A": {
+          "pin": "S11",
+          "pos": [
+            37,
+            336
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "S10",
+          "pos": [
+            37,
+            356
+          ],
+          "direction": "input"
+        },
+        "Z": {
+          "pin": "S9",
+          "pos": [
+            37,
+            376
+          ],
+          "direction": "input"
+        }
+      }
+    }
+  ]
+}

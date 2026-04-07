@@ -3,7 +3,7 @@
 # installer script for LinuxCNC-RIO
 #
 
-if ! lsb_release -c | grep -s -q "bookworm"
+if ! lsb_release -c | grep -s -q "bookworm\|trixie"
 then
 	echo "ONLY FOR DEBIAN BOOKWORK"
 	exit 1
@@ -46,15 +46,7 @@ else
 fi
 if ! which linuxcnc >/dev/null
 then
-	echo "	linuxcnc \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
-	echo "	halcompile \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
-else
-	if ! test -e /usr/lib/linuxcnc/modules/rio.so
-	then
-		echo "	halcompile \"install rio component loader \" ON \\" >> ${TEMPFILE}2
-	else
-		echo "	halcompile \"install rio component loader \" OFF \\" >> ${TEMPFILE}2
-	fi
+	echo "	linuxcnc \"install linuxcnc packages \" OFF \\" >> ${TEMPFILE}2
 fi
 if ! test -d riocore/toolchains/oss-cad-suite && ! which nextpnr-himbaechel >/dev/null
 then
@@ -71,7 +63,13 @@ then
 		echo "	gowin \"install Gowin Toolchain\" OFF \\" >> ${TEMPFILE}2
 	fi
 fi
-echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
+if ! grep -s -q "autologin-user" /usr/share/lightdm/lightdm.conf.d/01_debian.conf
+then
+    echo "	autologin \"autologin/no screensaver\" ON \\" >> ${TEMPFILE}2
+fi
+
+echo "	ethercat \"install ethercat master\" OFF \\" >> ${TEMPFILE}2
+# echo "	pico-dev \"install pico dev enviroment\" OFF \\" >> ${TEMPFILE}2
 echo "	probe_basic \"install Probe-Basic GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	turbonc \"install TurBoNC GUI\" OFF \\" >> ${TEMPFILE}2
 echo "	2> $TEMPFILE" >> ${TEMPFILE}2
@@ -144,6 +142,7 @@ then
 			mkdir -p riocore/toolchains/gowin
 			cd riocore/toolchains/gowin || doexit 1
 			wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_linux.tar.gz" || doexit 1
+			# wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.11.03_Education_Linux.tar.gz" || doexit 1
 			tar xzvpf Gowin_V1.9.10.03_Education_linux.tar.gz || doexit 1
 			rm -rf Gowin_V1.9.10.03_Education_linux.tar.gz
 		)
@@ -152,6 +151,27 @@ then
 	fi
 	TC_GOWIN="$PWD/riocore/toolchains/gowin/IDE"
 fi
+
+if grep -s -q '"pico-dev"' in $TEMPFILE
+then
+	sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi unzip cmake unzip
+    if ! test -d riocore/toolchains/pico-sdk
+    then
+		echo "installing pico-sdk"
+        (
+            mkdir -p riocore/toolchains/
+            cd riocore/toolchains/ || doexit 1
+            git clone https://github.com/raspberrypi/pico-sdk
+            cd pico-sdk
+            git submodule update --init
+        )
+    else
+        echo "pico-sdk already installed"
+    fi
+    TC_PICO="$PWD/riocore/toolchains/pico-sdk"
+    export PICO_SDK_PATH=$PWD/riocore/toolchains/pico-sdk/
+fi
+
 
 if test -e riocore/riocore && test "$TC_ICESTORM$TC_GOWIN" != ""
 then
@@ -167,7 +187,8 @@ then
     "diamond": "",
     "vivado": "",
     "quartus": "",
-    "ise": ""
+    "ise": "",
+    "pico": "$TC_PICO"
 }
 EOF
 fi
@@ -198,17 +219,41 @@ EOF
 #
 #
 
-xset -dpms
+#xrandr --output HDMI-1 --mode 1920x1080
+#xrandr --output HDMI-2 --mode 1920x1080
+
 xset s off
 xset s noblank
+xset s noexpose
+xset -dpms
+
+#xfce4-terminal -e sh Output/Tangoboard/LinuxCNC/start.sh &
+
+#while sleep 1
+#do
+#    # apt-get install x11vnc
+#    x11vnc
+#done
 
 EOF
 		sudo chmod 755 /usr/local/bin/startup.sh
-		xset -dpms
 		xset s off
 		xset s noblank
+		xset s noexpose
+		xset -dpms
 
 		mkdir -p ~/.config/autostart/
+
+		cat <<EOF > ~/.config/autostart/light-locker.desktop
+[Desktop Entry]
+Hidden=true
+EOF
+
+		cat <<EOF > ~/.config/autostart/xfce4-power-manager.desktop
+[Desktop Entry]
+Hidden=true
+EOF
+
 		cat <<EOF > ~/.config/autostart/startup.desktop
 [Desktop Entry]
 Name=startup.sh
@@ -236,13 +281,13 @@ EOF
 EOF
 
 	mkdir -p ~/.local/share/applications/
-	cat <<EOF > ~/.local/share/applications/rio-setup.desktop
+	cat <<EOF > ~/.local/share/applications/rio-flow.desktop
 [Desktop Entry]
 Version=1.0
-Name=RIO-Setup
-Comment=RIO-Setup tool
+Name=RIO-Flow
+Comment=RIO-Flow tool
 Type=Application
-Exec=xfce4-terminal -e "bash -c 'cd $TARGETDIR/riocore; ./bin/rio-setup'"
+Exec=xfce4-terminal -e "bash -c 'cd $TARGETDIR/riocore; ./bin/rio-flow'"
 Icon=linuxcncicon
 X-GNOME-DocPath=
 Terminal=false
@@ -254,13 +299,33 @@ EOF
 
 fi
 
+if grep -s -q '"ethercat"' in $TEMPFILE
+then
+	sudo apt-get install -y ethercat-master ethercat-dkms linuxcnc-ethercat
+	# cat <<EOF > /etc/ethercat.conf 
+	# MASTER0_DEVICE="00:e0:4c:69:65:9f"
+	# DEVICE_MODULES="generic"
+	# UPDOWN_INTERFACES=""
+	# EOF
+	# sudo systemctl stop ethercat.service
+	# sudo systemctl enable ethercat.service
+	# sudo systemctl start ethercat.service
+	(
+		cd /tmp/
+		git clone https://github.com/dbraun1981/hal-cia402
+		cd hal-cia402/
+		sudo halcompile --install cia402.comp
+	)
+fi
+
+
 if grep -s -q '"turbonc"' in $TEMPFILE
 then
 	echo 'deb [arch=$SYSTEM2] https://repository.qtpyvcp.com/apt stable main' | sudo tee /etc/apt/sources.list.d/kcjengr.list
 	curl -sS https://repository.qtpyvcp.com/repo/kcjengr.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/kcjengr.gpg > /dev/null
 	gpg --keyserver keys.openpgp.org --recv-key 2DEC041F290DF85A
 	sudo apt update
-	sudo apt install -f python3-qtpyvcp python3-turbonc
+	sudo apt install -y python3-qtpyvcp python3-turbonc
 fi
 
 if grep -s -q '"probe_basic"' in $TEMPFILE
@@ -304,14 +369,15 @@ echo ""
 echo "# command examples:"
 echo ""
 echo "  cd $TARGETDIR/riocore/"
+echo "  git checkout dev"
 echo ""
 echo "  # create new setup:"
-echo "    bin/rio-setup riocore/configs/Tangbob/config.json"
+echo "    bin/rio-flow riocore/configs/Tangbob/config.json"
 echo ""
 echo "  # generate, build and flash the Tangbob config"
 echo "    bin/rio-generator -b -f riocore/configs/Tangbob/config.json"
 echo ""
-if ! which linuxcnc >/dev/null
+if which linuxcnc >/dev/null
 then
 	echo "  # generate and start linuxcnc for the Tangbob config"
 	echo "    bin/rio-generator -s riocore/configs/Tangbob/config.json"

@@ -8,8 +8,11 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "to control rc-servos, usable as joint or as variable/analog output in LinuxCNC"
         self.KEYWORDS = "joint rcservo"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
+        self.IMAGES = ["rcservo"]
         self.VERILOGS = ["rcservo.v"]
         self.TYPE = "joint"
+        self.JOINT_MODE = "position"
         self.PINDEFAULTS = {
             "pwm": {
                 "direction": "output",
@@ -61,11 +64,6 @@ class Plugin(PluginBase):
         instance_parameter["DIVIDER"] = divider
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "position":
-            value = int((value + 300) * self.system_setup["speed"] / 200000)
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "position":
             return """
@@ -100,6 +98,27 @@ class Plugin(PluginBase):
 
     def firmware_loop(self):
         output = []
-        for pin_name, pin_config in self.pins().items():
+        for pin_name in self.pins():
             output.append(f"    servo_{self.instances_name}.write(value_{pin_name});")
         return "\n".join(output)
+
+    def hal(self, parent):
+        if "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+
+            for key in ("dirsetup", "dirhold", "steplen", "stepspace", "maxaccel"):
+                value = f"STEPGEN_{key.upper()}"
+                parent.halg.setp_add(f"{self.PREFIX}.{key}", f"[JOINT_{joint_n}]{value}")
+
+            cmd_halname = f"{self.PREFIX}.position-cmd"
+            feedback_halname = f"{self.PREFIX}.position-cmd"
+            enable_halname = f"{self.PREFIX}.enable"
+            scale_halname = f"{self.PREFIX}.position-scale"
+
+            for name, psetup in self.plugin_setup.get("pins", {}).items():
+                pin = psetup["pin"]
+                parent.halg.net_add(f"{self.PREFIX}.{name}", pin, f"j{joint_n}{name}-pin")
+
+            parent.halg.joint_add(parent, axis_name, joint_n, "position", cmd_halname, feedback_halname=feedback_halname, scale_halname=scale_halname, enable_halname=enable_halname)

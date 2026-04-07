@@ -1,4 +1,5 @@
 import os
+import sys
 
 from riocore.checksums import crc8, crc16
 from riocore.plugins import PluginBase
@@ -12,6 +13,8 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "uart bridge to send and receive custom frames via uart port"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.EXPERIMENTAL = True
+        self.NEEDS = ["fpga"]
+        self.PROVIDES = ["uart", "interface"]
         self.VERILOGS = ["uartbridge.v", "uart_baud.v", "uart_rx.v", "uart_tx.v"]
         self.PINDEFAULTS = {
             "tx": {
@@ -63,7 +66,6 @@ class Plugin(PluginBase):
         }
         self.SIGNALS = {}
         self.TYPE = "frameio"
-        self.DYNAMIC_SIGNALS = True
         self.TIMEOUT = 1000.0
         self.DELAY = 0.0
 
@@ -173,18 +175,18 @@ class Plugin(PluginBase):
 
         if rx_buffersize < self.rx_buffersize:
             print(f"ERROR: {self.NAME}: rx_buffersize too small: {rx_buffersize} < {self.rx_buffersize}")
-            exit(1)
+            sys.exit(1)
         if tx_buffersize < self.tx_buffersize:
             print(f"ERROR: {self.NAME}: tx_buffersize too small: {tx_buffersize} < {self.tx_buffersize}")
-            exit(1)
+            sys.exit(1)
 
         if (rx_buffersize % 8) != 0:
             print(f"ERROR: {self.NAME}: rx_buffersize must be a multiple of 8: {rx_buffersize}")
-            exit(1)
+            sys.exit(1)
 
         if (tx_buffersize % 8) != 0:
             print(f"ERROR: {self.NAME}: tx_buffersize must be a multiple of 8: {tx_buffersize}")
-            exit(1)
+            sys.exit(1)
 
         self.INTERFACE = {
             "rxdata": {
@@ -251,28 +253,28 @@ class Plugin(PluginBase):
                             signal_bfmt = signal_setup["signal_bfmt"]
                             bytesize = signal_size // 8
                             if signal_bfmt == "lsb":
-                                for byte in range(0, bytesize):
+                                for byte in range(bytesize):
                                     byte_value = frame_data_csum.pop(0)
                                     csum.update(byte_value)
                             else:
-                                for byte in range(0, signal_size // 8):
+                                for byte in range(signal_size // 8):
                                     byte_value = frame_data_csum.pop(0)
                                     csum.update(byte_value)
 
             if frame_check:
                 for signal_name, signal_setup in self.signals().items():
                     if signal_setup["direction"] == "input":
-                        if signal_name != "rx_csum" and signal_name != "tx_csum":
+                        if signal_name not in {"rx_csum", "tx_csum"}:
                             value = 0
                             signal_size = signal_setup["signal_size"]
                             signal_bfmt = signal_setup["signal_bfmt"]
                             bytesize = signal_size // 8
                             if signal_bfmt == "lsb":
-                                for byte in range(0, bytesize):
+                                for byte in range(bytesize):
                                     byte_value = frame_data.pop(0)
                                     value += byte_value << (8 * byte)
                             else:
-                                for byte in range(0, signal_size // 8):
+                                for byte in range(signal_size // 8):
                                     byte_value = frame_data.pop(0)
                                     value += byte_value << (8 * (bytesize - byte - 1))
                             signal_setup["value"] = value
@@ -305,11 +307,11 @@ class Plugin(PluginBase):
                 signal_bfmt = signal_setup["signal_bfmt"]
                 bytesize = signal_size // 8
                 if signal_bfmt == "lsb":
-                    for byte in range(0, bytesize):
+                    for byte in range(bytesize):
                         byte_value = (value >> (8 * byte)) & 0xFF
                         frame_data.append(byte_value)
                 else:
-                    for byte in range(0, signal_size // 8):
+                    for byte in range(signal_size // 8):
                         byte_value = (value >> (8 * (bytesize - byte - 1))) & 0xFF
                         frame_data.append(byte_value)
 
@@ -356,7 +358,7 @@ class Plugin(PluginBase):
         output.append("typedef struct rx_data_t {")
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "output":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f"    uint{signal_size}_t {signal_name};")
         output.append("    uint8_t csum;")
@@ -365,7 +367,7 @@ class Plugin(PluginBase):
         output.append("typedef struct tx_data_t {")
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "input":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f"    uint{signal_size}_t {signal_name};")
         output.append("    uint8_t csum;")
@@ -405,7 +407,7 @@ class Plugin(PluginBase):
         line_n = 0
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "output":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f'        sprintf(tmp_str, "{signal_name:10} %9d", rx_frame.data.{signal_name});')
                     output.append(f"        lcd.setCursor(0, {line_n});")
@@ -422,7 +424,7 @@ class Plugin(PluginBase):
         value_n = 0
         for signal_name, signal_setup in self.signals().items():
             if signal_setup["direction"] == "input":
-                if signal_name != "rx_csum" and signal_name != "tx_csum":
+                if signal_name not in {"rx_csum", "tx_csum"}:
                     signal_size = signal_setup["signal_size"]
                     output.append(f"    tx_frame.data.{signal_name} = {value_n + 1};")
                     value_n += 1

@@ -3,7 +3,7 @@
 # wget https://raw.githubusercontent.com/LinuxCNC/linuxcnc/v2.9.2/docs/src/config/ini-config.adoc
 #
 
-data = open("ini-config.adoc", "r").read()
+data = open("ini-config.adoc").read()
 
 
 help_text = {

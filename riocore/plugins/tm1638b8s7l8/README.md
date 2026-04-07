@@ -4,9 +4,10 @@
 
 **7segment display with buttons**
 
-with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)
+with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO) / works with 3.3V
 
-Keywords: display info status keyboard buttons
+* Keywords: display info status keyboard buttons
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -28,17 +29,17 @@ Data-Pin (DIO)
 
 ## Options:
 *user-options*
-### speed:
-Data-clock
-
- * type: int
- * default: 1000000
-
 ### name:
 name of this plugin instance
 
  * type: str
  * default: 
+
+### speed:
+Data-clock
+
+ * type: int
+ * default: 1000000
 
 
 ## Signals:
@@ -240,7 +241,7 @@ first 2 digits (0 -> 99)
 
 ### number1:
 
- * size: 24 bit
+ * size: 32 bit
  * direction: output
  * multiplexed: True
 
@@ -250,227 +251,6 @@ first 2 digits (0 -> 99)
  * direction: output
  * multiplexed: True
 
-
-## Basic-Example:
-```
-{
-    "type": "tm1638b8s7l8",
-    "pins": {
-        "sel": {
-            "pin": "0"
-        },
-        "sclk": {
-            "pin": "1"
-        },
-        "data": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "tm1638b8s7l8",
-    "speed": 1000000,
-    "name": "",
-    "pins": {
-        "sel": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "sclk": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "data": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "sw0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw0",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw1",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw2",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw3",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw4": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw4",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw5": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw5",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw6": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw6",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "sw7": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "sw7",
-                "section": "inputs",
-                "type": "led"
-            }
-        },
-        "led0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led0",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led1",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led2",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led3": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led3",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led4": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led4",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led5": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led5",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led6": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led6",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "led7": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "led7",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "number1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "number1",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "number2": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "number2",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [tm1638b8s7l8.v](tm1638b8s7l8.v)

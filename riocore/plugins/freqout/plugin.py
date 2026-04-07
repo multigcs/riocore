@@ -7,7 +7,9 @@ class Plugin(PluginBase):
         self.INFO = "frequency output"
         self.DESCRIPTION = "to output variable frequency signals"
         self.KEYWORDS = "frequency"
+        self.IMAGES = ["led", "smdled"]
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["freqout.v"]
         self.PINDEFAULTS = {
             "freq": {
@@ -38,11 +40,6 @@ class Plugin(PluginBase):
         instance_arguments = instance["arguments"]
         instance_arguments["disabled"] = "ERROR"
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if value != 0:
-            value = self.system_setup["speed"] / value
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         return """

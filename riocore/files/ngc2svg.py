@@ -7,7 +7,7 @@ import math
 import os
 import re
 
-COMMAND = re.compile("(?P<line>\d+) N\.* (?P<type>[A-Z_]+)\((?P<coords>.*)\)")
+COMMAND = re.compile(r"(?P<line>\d+) N\.* (?P<type>[A-Z_]+)\((?P<coords>.*)\)")
 
 
 parser = argparse.ArgumentParser()
@@ -18,7 +18,7 @@ args = parser.parse_args()
 filename = args.ngc
 
 if filename:
-    content = open(filename, "r").read()
+    content = open(filename).read()
 else:
     exit(1)
 
@@ -65,19 +65,6 @@ height += border * 2
 
 
 def draw_line(x1, y1, z1, x2, y2, z2, color):
-    """
-    i_x1 = (x1 - z1) / math.sqrt(2)
-    i_y1 = (x1 + 2 * y1 + z1) / math.sqrt(6)
-
-    i_x2 = (x2 - z2) / math.sqrt(2)
-    i_y2 = (x2 + 2 * y2 + z2) / math.sqrt(6)
-
-    x1 = i_x1
-    y1 = i_y1
-    x2 = i_x2
-    y2 = i_y2
-    """
-
     svg_out.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" style="stroke:{color};stroke-width:0.5" />')
 
 

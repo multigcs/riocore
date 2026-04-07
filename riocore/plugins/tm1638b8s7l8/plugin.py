@@ -5,8 +5,11 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "tm1638b8s7l8"
         self.INFO = "7segment display with buttons"
-        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO)"
+        self.DESCRIPTION = "with this plugin, you can use cheap TM1638 boards with LED's/Switches and 7segment displays as control interface for LinuxCNC (JOG/DRO) / works with 3.3V"
         self.KEYWORDS = "display info status keyboard buttons"
+        self.NEEDS = ["fpga"]
+        self.IMAGE_SHOW = True
+        self.IMAGE = "image.png"
         self.ORIGIN = ""
         self.VERILOGS = ["tm1638b8s7l8.v"]
         self.PINDEFAULTS = {
@@ -14,18 +17,21 @@ class Plugin(PluginBase):
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "pos": (11, 150),
                 "description": "Select-Pin (STB)",
             },
             "sclk": {
                 "direction": "output",
                 "invert": False,
                 "pull": None,
+                "pos": (11, 161),
                 "description": "Clock-Pin (CLK)",
             },
             "data": {
                 "direction": "inout",
                 "invert": False,
                 "pull": None,
+                "pos": (11, 172),
                 "description": "Data-Pin (DIO)",
             },
         }
@@ -111,7 +117,7 @@ class Plugin(PluginBase):
                 "multiplexed": True,
             },
             "number1": {
-                "size": 24,
+                "size": 32,
                 "direction": "output",
                 "multiplexed": True,
             },
@@ -221,11 +227,6 @@ class Plugin(PluginBase):
         divider = self.system_setup["speed"] // speed // 5
         instance_parameter["DIVIDER"] = divider
         return instances
-
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "number1":
-            value = value * 10.0
-        return value
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "number1":

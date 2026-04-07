@@ -1,10 +1,10 @@
-import shutil
 import json
 import os
+import shutil
 
 import riocore
-from riocore.gui import halgraph
 
+from riocore.gui import halgraph
 
 riocore_path = os.path.dirname(riocore.__file__)
 
@@ -17,13 +17,14 @@ class documentation:
 
         self.iface_in = []
         self.iface_out = []
-        output_pos = self.project.buffer_size
+        # output_pos = self.project.buffer_size
 
         size = 32
         self.iface_out.append(["RX_HEADER", size])
         self.iface_in.append(["TX_HEADER", size])
         self.iface_in.append(["TIMESTAMP", size])
 
+        """
         if self.project.multiplexed_input:
             variable_name = "MULTIPLEXED_INPUT_VALUE"
             size = self.project.multiplexed_input_size
@@ -35,13 +36,13 @@ class documentation:
         if self.project.multiplexed_output:
             variable_name = "MULTIPLEXED_OUTPUT_VALUE"
             size = self.project.multiplexed_output_size
-            for bit_num in range(0, size, 8):
-                output_pos -= 8
+            #for bit_num in range(0, size, 8):
+            #    output_pos -= 8
             self.iface_out.append([variable_name, size])
             variable_name = "MULTIPLEXED_OUTPUT_ID"
             size = 8
-            for bit_num in range(0, size, 8):
-                output_pos -= 8
+            #for bit_num in range(0, size, 8):
+            #    output_pos -= 8
             self.iface_out.append([variable_name, size])
 
         for size, plugin_instance, data_name, data_config in self.project.get_interface_data():
@@ -56,18 +57,24 @@ class documentation:
             elif data_config["direction"] == "output":
                 if not data_config.get("expansion"):
                     if size >= 8:
-                        for bit_num in range(0, size, 8):
-                            output_pos -= 8
+                        #for bit_num in range(0, size, 8):
+                        #    output_pos -= 8
+                        pass
                     elif size > 1:
-                        output_pos -= size
+                        #output_pos -= size
+                        pass
                     else:
-                        output_pos -= 1
+                        #output_pos -= 1
+                        pass
                     self.iface_out.append([variable_name, size, hal_name])
+        """
 
         self.halgraph_png()
-        self.interface_md()
         self.config_md()
+        self.axis_md()
         self.pins_md()
+        self.signals_md()
+        self.json_md()
         self.linuxcnc_md()
         self.readme_md()
         self.index_html()
@@ -83,74 +90,215 @@ class documentation:
         except Exception as error:
             print(f"WARING: failed to write halgraph.png: {error}")
 
+    def axis_md(self):
+        output = ["# Axis/Joints"]
+        output.append("## Overview")
+        output.append("| Axis | Joint | Plugin | Home-Seq. | Setup |")
+        output.append("| --- | --- | --- | --- | --- |")
+        for axis_name, axis_config in self.project.axis_dict.items():
+            for joint_setup in axis_config["joints"]:
+                joint = joint_setup["num"]
+                plugin_instance = joint_setup["instance"]
+                link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
+                plugin = plugin_instance.instances_name
+                home_seq = joint_setup["HOME_SEQUENCE"]
+                setup = []
+                for key in ("mode", "homeswitch", "TYPE", "MIN_LIMIT", "MAX_LIMIT", "MAX_VELOCITY", "MAX_ACCELERATION", "SCALE_OUT", "SCALE_IN"):
+                    value = joint_setup.get(key)
+                    if value is None:
+                        continue
+                    if key in {"instance", "homeswitch"}:
+                        value = value.instances_name
+                    setup.append(f"{key.replace('_', '-').title()}: {value}")
+                output.append(f"| {axis_name} | {joint} | {plugin} ({link}) | {home_seq} | {'<br>'.join(setup)} |")
+
+        output.append("")
+        open(os.path.join(self.doc_path, "AXIS.md"), "w").write("\n".join(output))
+
     def config_md(self):
         output = [f"# {self.project.config['name']}"]
         jdata = self.project.config["jdata"]
-        boardcfg = jdata.get("boardcfg", "")
-        board_link = f"[{boardcfg}](https://github.com/multigcs/riocore/blob/main/riocore/boards/{boardcfg}/README.md)"
 
-        img_path = os.path.join(riocore_path, "boards", boardcfg, "board.png")
-        if os.path.exists(img_path):
-            target = os.path.join(self.doc_path, "board.png")
-            shutil.copy(img_path, target)
-            image = '<img align="right" height="320" src="board.png">'
+        flow_path = os.path.join(self.doc_path, "flow.png")
+        if os.path.exists(flow_path):
+            image = '<img align="right" height="320" src="flow.png">'
             output.append(image)
 
         output.append(jdata.get("description", ""))
         output.append("")
-        output.append(f"* Board: {board_link}")
-        output.append(f"* Config-Path: {self.project.config['json_file']}")
+        if self.project.config["json_file"]:
+            output.append(f"* Config-Path: {self.project.config['json_file']}")
         output.append(f"* Output-Path: {self.project.config['output_path']}")
-        output.append(f"* Toolchain: {self.project.config['toolchain']}")
-        output.append(f"* Protocol: {jdata.get('protocol', '')}")
-
         output.append("")
 
-        output.append("## Axis/Joints")
-        output.append("| Axis | Joint | Plugin | Home-Seq. |")
-        output.append("| --- | --- | --- | --- |")
-        for axis_name, axis_config in self.project.axis_dict.items():
-            joints = axis_config["joints"]
-            for joint, joint_setup in joints.items():
-                plugin_instance = joint_setup["plugin_instance"]
-                link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
-                plugin = plugin_instance.instances_name
-                home_seq = joint_setup["HOME_SEQUENCE"]
-                output.append(f"| {axis_name} | {joint} | {plugin} ({link}) | {home_seq} | ")
-        output.append("")
-
-        plugin_infos = {}
+        self.board_infos = {}
+        self.plugin_infos = {}
         for plugin_instance in self.project.plugin_instances:
-            link = f"[{plugin_instance.NAME}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
             info = plugin_instance.INFO
-            if plugin_instance.NAME not in plugin_infos:
-                image = "-"
-                img_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "image.png")
-                if os.path.exists(img_path):
-                    target = os.path.join(self.doc_path, f"{plugin_instance.NAME}.png")
-                    shutil.copy(img_path, target)
-                    image = f'<img src="{plugin_instance.NAME}.png" height="48">'
-                plugin_infos[plugin_instance.NAME] = {
+            instances_name = plugin_instance.instances_name
+            instances_type = plugin_instance.NAME
+            node_type = plugin_instance.plugin_setup.get("node_type", "").replace("/", "_")
+            if node_type:
+                instances_name = f"{instances_name}({node_type})"
+            if node_type:
+                instances_type = f"{instances_type}_{node_type}"
+            link = f"[{instances_type}](https://github.com/multigcs/riocore/blob/main/riocore/plugins/{plugin_instance.NAME}/README.md)"
+            image = "-"
+            image_path = plugin_instance.image_path()
+            if image_path and os.path.exists(image_path):
+                target = os.path.join(self.doc_path, f"{instances_type}.png")
+                shutil.copy(image_path, target)
+            if plugin_instance.BUILDER:
+                options = {}
+                for key, setup in plugin_instance.OPTIONS.items():
+                    if key not in {"name"}:
+                        value = plugin_instance.plugin_setup.get("key", setup.get("default"))
+                        description = setup.get("description")
+                        if unit := setup.get("unit"):
+                            value = f"{value} {unit}"
+                        options[key] = (value, description)
+                options["commands"] = (", ".join(plugin_instance.BUILDER), "make commands")
+                self.board_infos[instances_type] = {
+                    "type": plugin_instance.NAME,
                     "info": info,
-                    "instances": [],
                     "link": link,
-                    "image": image,
+                    "image": f"{instances_type}.png",
+                    "options": options,
                 }
-            plugin_infos[plugin_instance.NAME]["instances"].append(plugin_instance.instances_name)
+            else:
+                instances = self.plugin_infos.get(instances_type, {}).get("instances", [])
+                instances.append(instances_name)
+
+                signals = []
+                for signal_name, signal_setup in plugin_instance.plugin_setup.get("signals", {}).items():
+                    if signal_name in plugin_instance.SIGNALS:
+                        direction = plugin_instance.SIGNALS[signal_name].get("direction")
+                        netset = signal_setup.get("net", signal_setup.get("setp"))
+                        if not netset:
+                            continue
+                        arrow = "<=>"
+                        if direction == "input":
+                            arrow = "=>"
+                        elif direction == "output":
+                            arrow = "<="
+                        signals.append(f"{signal_name} {arrow} {netset}")
+
+                self.plugin_infos[instances_type] = {
+                    "info": info,
+                    "instances": instances,
+                    "signals": signals,
+                    "link": link,
+                    "image": f'<img src="{instances_type}.png" height="48">',
+                }
+
+        if self.board_infos:
+            output.append("## Boards")
+            for name, board in self.board_infos.items():
+                output.append(f"### {name} ({board['type']})")
+                output.append(f"Description: {board['info']}")
+                output.append("")
+                output.append(f'<img align="right" height="200" src="{board["image"]}">')
+                output.append("")
+                output.append("| Name | Value | Description |")
+                output.append("| --- | --- | --- |")
+                for key, data in board["options"].items():
+                    output.append(f"| {key.replace('_', '-').title()} | {data[0]} | {data[1]} |")
+                output.append("")
 
         output.append("## Plugins")
-        output.append("| Type | Info | Instance | Image |")
-        output.append("| --- | --- | --- | --- |")
-        for name, plugin in plugin_infos.items():
-            output.append(f"| {plugin['link']} | {plugin['info']} | {', '.join(plugin['instances'])} | {plugin['image']} |")
-        output.append("")
-
-        output.append("## JSON-Config")
-        output.append("```")
-        output.append(json.dumps(jdata, indent=4))
-        output.append("```")
+        output.append("| Type | Number | Info | Instance | Signals | Image |")
+        output.append("| --- | --- | --- | --- | --- | --- |")
+        for name, plugin in self.plugin_infos.items():
+            output.append(f"| {plugin['link']} | {len(plugin['instances'])}x | {plugin['info']} | {', '.join(plugin['instances'])} | {'<br/>'.join(plugin['signals'])} | {plugin['image']} |")
         output.append("")
         open(os.path.join(self.doc_path, "CONFIG.md"), "w").write("\n".join(output))
+
+    def struct_clean(self, data):
+        # removing empty lists and dicts
+        for key in list(data):
+            if isinstance(data[key], list):
+                for pn, part in enumerate(data[key]):
+                    if isinstance(part, dict):
+                        if not part:
+                            riocore.log(f"DEL1 {key} {pn} {data[key][pn]}")
+                            del data[key][pn]
+                        else:
+                            self.struct_clean(data[key][pn])
+                if not data[key]:
+                    del data[key]
+            elif isinstance(data[key], dict):
+                self.struct_clean(data[key])
+                if not data[key]:
+                    del data[key]
+            elif data[key] is None or key in {"instance", "homeswitch"}:
+                del data[key]
+
+    def json_md(self):
+        jdata = self.project.config["jdata"]
+        self.struct_clean(jdata)
+        output = ["# JSON-Config"]
+        output.append("```")
+        if "jdata_str" in self.project.config:
+            output.append(self.project.config["jdata_str"])
+        else:
+            output.append(json.dumps(jdata, indent=4))
+        output.append("```")
+        output.append("")
+        open(os.path.join(self.doc_path, "JSON.md"), "w").write("\n".join(output))
+
+    def signals_md(self):
+        plugin_names = {}
+        for plugin_instance in self.project.plugin_instances:
+            plugin_names[plugin_instance.instances_name] = plugin_instance
+
+        output = ["# Signals"]
+        output.append("| Plugin | ID | Name | Dir | Hal-Pin | Type | Description |")
+        output.append("| --- | --- | --- | --- | --- | --- | --- |")
+
+        last_plugin = ""
+        last_type = ""
+        for plugin_type in self.plugin_infos:
+            for instances_name in sorted(plugin_names):
+                plugin_instance = plugin_names[instances_name]
+                if plugin_type != plugin_instance.NAME:
+                    continue
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    userconfig = signal_config.get("userconfig") or {}
+                    halname = signal_config.get("halname") or ""
+                    direction = signal_config.get("direction")
+                    description = signal_config.get("description") or ""
+                    net = userconfig.get("net") or ""
+                    setp = userconfig.get("setp")
+                    arrow = "<-"
+                    stype = ""
+                    pname = ""
+                    ptype = ""
+                    if direction == "input":
+                        arrow = "->"
+                    stype = ""
+                    if net:
+                        stype = "net"
+                    elif setp:
+                        arrow = "<-"
+                        stype = "setp"
+                        net = setp
+                    else:
+                        net = ""
+                    if not net:
+                        continue
+
+                    if last_type != plugin_instance.NAME:
+                        ptype = plugin_instance.NAME
+                    if instances_name != last_plugin:
+                        pname = instances_name
+
+                    output.append(f"| {ptype} | {pname} | {halname} | {arrow} | {net} | {stype} | {description} |")
+
+                    last_plugin = instances_name
+                    last_type = plugin_instance.NAME
+
+        output.append("")
+        open(os.path.join(self.doc_path, "SIGNALS.md"), "w").write("\n".join(output))
 
     def pins_md(self):
         self.linked_pins = []
@@ -158,7 +306,11 @@ class documentation:
         self.expansion_pins = []
         self.pinmapping = {}
         self.pinmapping_rev = {}
+
         for plugin_instance in self.project.plugin_instances:
+            for pin_name, pin_config in plugin_instance.PINDEFAULTS.items():
+                if "pin" in pin_config:
+                    self.pinmapping[f"{plugin_instance.instances_name}:{pin_name}"] = pin_config["pin"]
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
                     pinname = pin_config["pin"]
@@ -169,51 +321,61 @@ class documentation:
             for pin in plugin_instance.expansion_inputs():
                 self.expansion_pins.append(pin)
 
-        self.slots = self.project.config["board_data"].get("slots", []) + self.project.config["jdata"].get("slots", [])
-        for slot in self.slots:
-            slot_name = slot.get("name")
-            slot_pins = slot.get("pins", {})
-            for pin_name, pin in slot_pins.items():
-                if isinstance(pin, dict):
-                    pin = pin["pin"]
-                pin_id = f"{slot_name}:{pin_name}"
-                self.pinmapping[pin_id] = pin
-                self.pinmapping_rev[pin] = pin_id
-
         output = ["# Pins"]
-        output.append("| Plugin | Name | FPGA | Alias |")
-        output.append("| --- | --- | --- | --- |")
+        output.append("| Plugin | ID | Name | Board | Pin | Alias |")
+        output.append("| --- | --- | --- | --- | --- | --- |")
+
+        plugin_names = {}
+        for plugin_instance in self.project.plugin_instances:
+            plugin_names[plugin_instance.instances_name] = plugin_instance
 
         last_plugin = ""
-        for plugin_instance in self.project.plugin_instances:
-            # self.project.config["pinlists"][plugin_instance.instances_name] = {}
-            for pin_name, pin_config in plugin_instance.pins().items():
-                row = []
-                if plugin_instance.instances_name != last_plugin:
-                    row.append(plugin_instance.instances_name)
-                else:
-                    row.append("")
-                row.append(pin_name)
+        last_type = ""
+        for plugin_type in self.plugin_infos:
+            for instances_name in sorted(plugin_names):
+                plugin_instance = plugin_names[instances_name]
+                if plugin_type != plugin_instance.NAME:
+                    continue
+                for pin_name, pin_config in plugin_instance.pins().items():
+                    row = []
+                    pname = ""
+                    ptype = ""
 
-                if "pin" not in pin_config:
-                    row.append("-")
-                elif pin_config["pin"] in self.expansion_pins:
-                    row.append(pin_config["pin"])
-                elif pin_config["pin"] in self.virtual_pins:
-                    row.append(f"VIRT: {self.virtual_pins[pin_config['pin']]}")
-                elif pin_config["varname"] in self.linked_pins:
-                    row.append(f"LINKED:: {self.linked_pins[pin_config['pin']]}")
-                else:
-                    pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"]) or ""
-                    row.append(pin_real)
+                    if last_type != plugin_instance.NAME:
+                        ptype = plugin_instance.NAME
+                    if instances_name != last_plugin:
+                        pname = instances_name
 
-                if "pin" in pin_config and pin_config.get("pin") and pin_real != pin_config["pin"]:
-                    row.append(pin_config["pin"])
-                else:
-                    row.append("")
-                output.append(f"| {' | '.join(row)} |")
-                last_plugin = plugin_instance.instances_name
+                    row.append(ptype)
+                    row.append(pname)
+                    row.append(pin_name)
 
+                    if hasattr(plugin_instance, "master") and plugin_instance.master:
+                        row.append(plugin_instance.master)
+                    else:
+                        row.append("---")
+
+                    if "pin" not in pin_config:
+                        row.append("-")
+                    elif pin_config["pin"] in self.expansion_pins:
+                        row.append(pin_config["pin"])
+                    elif pin_config["pin"] in self.virtual_pins:
+                        row.append(f"VIRT: {self.virtual_pins[pin_config['pin']]}")
+                    elif pin_config["varname"] in self.linked_pins:
+                        row.append(f"LINKED:: {self.linked_pins[pin_config['pin']]}")
+                    else:
+                        pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"]) or ""
+                        row.append(pin_real)
+
+                    if "pin" in pin_config and pin_config.get("pin") and pin_real != pin_config["pin"]:
+                        row.append(pin_config["pin"])
+                    else:
+                        row.append("")
+                    output.append(f"| {' | '.join(row)} |")
+                    last_plugin = plugin_instance.instances_name
+                    last_type = plugin_instance.NAME
+
+        output.append("")
         open(os.path.join(self.doc_path, "PINS.md"), "w").write("\n".join(output))
 
     def interface_md(self):
@@ -294,19 +456,22 @@ body {font-family: Arial;}
         output.append("</header>")
         output.append("<body>")
 
-        sections = ("CONFIG", "PINS", "INTERFACE", "LINUXCNC")
-
+        sections = ("CONFIG", "AXIS", "PINS", "SIGNALS", "INTERFACE", "LINUXCNC", "JSON")
         output.append('<div class="tab">')
         for section in sections:
-            output.append(f'  <button class="tablinks" onclick="openSection(event, \'{section}\')">{section}</button>')
+            md_path = os.path.join(self.doc_path, f"{section}.md")
+            if os.path.exists(md_path):
+                output.append(f'  <button class="tablinks" onclick="openSection(event, \'{section}\')">{section}</button>')
         output.append("</div>")
 
         for section in sections:
-            output.append(f'<div id="{section}" class="tabcontent">')
-            output.append("<github-md>")
-            output.append(open(os.path.join(self.doc_path, f"{section}.md"), "r").read())
-            output.append("</github-md>")
-            output.append("</div>")
+            md_path = os.path.join(self.doc_path, f"{section}.md")
+            if os.path.exists(md_path):
+                output.append(f'<div id="{section}" class="tabcontent">')
+                output.append("<github-md>")
+                output.append(open(md_path).read())
+                output.append("</github-md>")
+                output.append("</div>")
         output.append("</body>")
 
         output.append("""<script>
@@ -333,6 +498,7 @@ openSection(event, \'CONFIG\');
         output = [""]
         output.append("## Table of Contents")
         output.append("- [Config](./CONFIG.md)")
+        output.append("- [Axis/Joints](./AXIS.md)")
         output.append("- [Pins](./PINS.md)")
         output.append("- [Interface](./INTERFACE.md)")
         output.append("- [LinuxCNC](./LINUXCNC.md)")

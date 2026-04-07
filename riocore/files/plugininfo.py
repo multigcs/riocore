@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+#
+#
+
+import argparse
+import os
+import sys
+
+if os.path.isfile(os.path.join("riocore", "__init__.py")):
+    sys.path.insert(0, os.getcwd())
+elif os.path.isfile(os.path.join(os.path.dirname(os.path.dirname(__file__)), "riocore", "__init__.py")):
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
+import riocore
+
+riocore_path = os.path.dirname(riocore.__file__)
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--list", "-l", help="list all plugins", default=False, action="store_true")
+parser.add_argument("--generate", "-g", help="generate readme files for all plugins", default=False, action="store_true")
+parser.add_argument("plugin", help="plugin", nargs="?", type=str, default=None)
+args = parser.parse_args()
+
+if args.list:
+    plugins = riocore.Plugins()
+    for plugin in plugins.list():
+        plugins.load_plugins({"plugins": [{"type": plugin["name"]}]})
+
+    print("Interfaces:")
+    print()
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "interface":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print()
+
+    print("Expansions:")
+    print()
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "expansion":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print()
+
+    print("Joints:")
+    print()
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "joint":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print()
+
+    print("IO:")
+    print()
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE == "io":
+            print(f"  {plugin_instance.NAME:20s} {plugin_instance.INFO}")
+    print()
+
+elif args.generate:
+    plugins = riocore.Plugins()
+    for plugin in plugins.list():
+        filename = os.path.join("riocore", "plugins", plugin["name"], "README.md")
+        print(filename)
+        text = plugins.info(plugin["name"])
+        open(filename, "w").write(text)
+
+    filename = "riocore/plugins/README.md"
+    print(filename)
+    text = []
+
+    text.append("# PLUGINS")
+    text.append("")
+    text.append("| Type | Name | Info | Image | Comment |")
+    text.append("| --- | :---: | --- | :---: | :---: |")
+
+    for title_raw, ptype in {
+        "Interfaces": "interface",
+        "Joints": "joint",
+        "IO": "io",
+        "FrameIO": "frameio",
+        "Expansions": "expansion",
+        "Misc": "base",
+    }.items():
+        # text.append(f"## {title}:")
+        # text.append("")
+        title = title_raw
+        for plugin_instance in plugins.plugin_instances:
+            if ptype == plugin_instance.TYPE:
+                image = ""
+                plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
+                image_path = os.path.join(plugin_path, "image.png")
+                if os.path.isfile(image_path):
+                    image = f'<img src="{plugin_instance.NAME}/image.png" height="48">'
+                comments = ""
+                if plugin_instance.EXPERIMENTAL:
+                    comments += "Experimental "
+
+                text.append(f"| {title} | [{plugin_instance.NAME}]({plugin_instance.NAME}/README.md) | {plugin_instance.INFO} | {image} | {comments} |")
+                title = ""
+
+    text.append("")
+
+    open(filename, "w").write("\n".join(text))
+
+
+elif args.plugin:
+    plugins = riocore.Plugins()
+    print(plugins.info(args.plugin))

@@ -1,0 +1,12 @@
+RIO - RPI4
+
+Configuration: tests/unit/data/full/RPI4.json
+
+Plugins:
+  breakout (2x)
+  stepgen (3x)
+  gpioout (2x)
+  gpioin (5x)
+  pwmgen (1x)
+  rpigpio (1x)
+

@@ -6,14 +6,8 @@
 
 outputs binary values
 
-Keywords: binary dec2bin r2r-dac
-
-```mermaid
-graph LR;
-    Hal-Value-->Dec2Bin;
-    Dec2Bin-->FPGA-Pin0;
-    Dec2Bin-->FPGA-Pin1;
-```
+* Keywords: binary dec2bin r2r-dac
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -36,6 +30,12 @@ graph LR;
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### bits:
 number of inputs
 
@@ -44,12 +44,6 @@ number of inputs
  * max: 32
  * default: 4
  * unit: bits
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -67,80 +61,3 @@ name of this plugin instance
  * size: 8 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "binout",
-    "pins": {
-        "bin0": {
-            "pin": "0"
-        },
-        "bin1": {
-            "pin": "1"
-        },
-        "bin2": {
-            "pin": "2"
-        },
-        "bin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "binout",
-    "bits": 4,
-    "name": "",
-    "pins": {
-        "bin0": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin1": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin2": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "bin3": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "value": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "value",
-                "section": "outputs",
-                "type": "scale"
-            }
-        }
-    }
-}
-```

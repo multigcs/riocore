@@ -1,50 +1,75 @@
+import os
 import time
+
+import riocore
 
 from riocore.modifiers import Modifiers
 
+riocore_path = os.path.dirname(riocore.__file__)
+
 
 class PluginBase:
-    expansions = []
-
-    def __init__(self, plugin_id, plugin_setup, system_setup=None, subfix=None):
-        self.PINDEFAULTS = {}
-        self.INTERFACE = {}
-        self.SIGNALS = {}
-        self.TIMING_CONSTRAINTS = {}
-        self.DYNAMIC_SIGNALS = False
-        self.VERILOGS = []
-        self.VERILOGS_DATA = {}
-        self.NAME = ""
-        self.TYPE = "io"
-        self.INFO = ""
-        self.EXPERIMENTAL = False
-        self.DESCRIPTION = ""
-        self.URL = ""
-        if subfix:
-            self.SUBFIX = subfix
-        else:
-            self.SUBFIX = ""
-        self.GRAPH = ""
-        self.KEYWORDS = ""
-        self.ORIGIN = ""
-        self.GATEWARE_SUPPORT = True
-        self.SYNC = None
-        self.ERROR = None
-        self.OPTIONS = {}
-        self.PASSTHROUGH = {}
-        self.PLUGIN_CONFIG = False
-        self.LIMITATIONS = {}
+    def __init__(self, plugin_id, plugin_setup, system_setup=None):
+        self.plugin_setup = plugin_setup
         self.system_setup = system_setup
         self.plugin_id = plugin_id
+        self.title = ""
         self.duration = 0
         self.timestamp = 0
-        self.plugin_setup = plugin_setup
+        self.master = None  # the direct connected board or this plugin (plugin -> master-board)
+        self.gmaster = None  # the gateware master (verilog code for this plugin runs on gmaster / master -> gmaster / for interface variables)
+        self.fmaster = None  # this fpga is the connection to the PC (sub-board -> fmaster-fpga -> PC / for the linuxcnc-component)
+        self.protocol = None  # the protocol of the connected interface (UDB/UART/SPI/..)
+        self.interface_instance = None  # the instance of the connected interface
+        self.PINDEFAULTS = {}  # the hardware pins
+        self.INTERFACE = {}  # interface variables
+        self.SIGNALS = {}  # hal signals of this plugin
+        self.SUB_OF = None  # master of this sub plugin
+        self.PREFIX = ""  # used for hal and interface names
+        self.NEEDS = []  # needs by the plugin (to filter plugin list)
+        self.PROVIDES = []  # provides by the plugin (to filter plugin list)
+        self.MASTER_PROVIDES = []  # to check if we need firmware or gateware for this plugin (.PROVIDES of the master)
+        self.GENERATOR_GROUP = ""  # using same class function / combining prefixes and hal components ofer multiple instances
+        self.BASETHREAD = False  # this plugin needs EMCMOT/BASE_PERIOD
+        self.TIMING_CONSTRAINTS = {}  # used by some plugin to set FPGA CONSTRAINTS for some pins
+        self.VERILOGS = []  # list of verilog files used by this plugin
+        self.VERILOGS_DATA = {}  # generated verilog files used by this plugin
+        self.FILES = []  # other files used by this plugin (like hal-components)
+        self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio, sub_interface (internal use) / MISC: io, base, host (only for the docs)
+        self.JOINT_MODE = "velocity"  # psition/velocity
+        self.JOINT_OPTIONS = []  # extra joint options (ini/hal)
+        self.JOINT_DEFAULTS = {}  # default joint values
+        self.SUB_PLUGINS = []  # sub plugins (a plugin/breakout/board can have sub-plugins)
+        self.OPTIONS = {}  # sonfig options for this plugin
+        self.PASSTHROUGH = {}
+        self.PLUGIN_CONFIGS = {}  # external config guis (plugin wizard)
+        self.LIMITATIONS = {}  # limitations for this plugin (fpga board / family)
+        self.NAME = ""  # optional name of the plugin
+        self.INFO = ""  # plugin info (short one liner)
+        self.DESCRIPTION = ""  # plugin description
+        self.URL = ""  # external url of the plugin/board/chip/...
+        self.GRAPH = ""  # mermaid graph (for documentation / readme)
+        self.EXPERIMENTAL = False  # mark this plugin as experimental / untested
+        self.KEYWORDS = ""  # plugin keywords for better search
+        self.ORIGIN = ""  # code based on this source
+        self.IMAGE = ""  # image to show in flow gui
+        self.IMAGES = []  # list of selectable images
+        self.IMAGE_SHOW = False  # show plugin as image in flow gui
+        self.BUILDER = []  # make commands for this plugin (if needed)
+        self.BUILDER_PATH = ""  # path to the generated plugin sources (if needed)
+        self.SUBBOARD = None
+        self.SUB_OPTIONS = {}
 
         if "uid" not in self.plugin_setup:
-            self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"
+            if node_type := self.plugin_setup.get("node_type"):
+                self.plugin_setup["uid"] = f"{node_type}{self.plugin_id}"
+            else:
+                self.plugin_setup["uid"] = f"{plugin_setup.get('type')}{self.plugin_id}"
         self.instances_name = self.plugin_setup["uid"]
 
         self.setup()
+        if not self.GENERATOR_GROUP:
+            self.GENERATOR_GROUP = self.NAME
 
         # update INTERFACE by user-signal-config
         for interface_name, interface_data in self.INTERFACE.items():
@@ -66,39 +91,89 @@ class PluginBase:
             self.frame_tx = None
             self.frame_tx_overwride = None
 
+        NEW_OPTIONS = {}
         if "name" not in self.OPTIONS:
-            self.OPTIONS["name"] = {
+            NEW_OPTIONS["name"] = {
                 "type": str,
                 "description": "name of this plugin instance",
                 "default": "",
             }
 
         if self.TYPE == "joint":
+            default = True
+            if "pwm" in self.NAME:
+                default = False
+
+            if "is_joint" not in self.OPTIONS:
+                NEW_OPTIONS["is_joint"] = {
+                    "type": bool,
+                    "default": default,
+                    "description": "configure as joint",
+                }
             if "axis" not in self.OPTIONS:
-                self.OPTIONS["axis"] = {
+                NEW_OPTIONS["axis"] = {
                     "type": "select",
                     "description": "axis name (X,Y,Z,...)",
                     "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
                 }
-            if "is_joint" not in self.OPTIONS:
-                self.OPTIONS["is_joint"] = {
-                    "type": bool,
-                    "default": False,
-                    "description": "configure as joint",
-                }
+
+        if self.IMAGES:
+            NEW_OPTIONS["image"] = {
+                "default": "generic",
+                "type": "imgselect",
+                "options": ["generic", *self.IMAGES],
+                "description": "hardware type",
+            }
+            self.image_update()
+
+        # add new options at top of dict
+        if NEW_OPTIONS:
+            NEW_OPTIONS.update(self.OPTIONS)
+            self.OPTIONS = NEW_OPTIONS
 
         self.update_title()
-
         self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
-
         if self.TYPE == "expansion":
-            expansion_id = len(self.expansions)
-            ename = (self.plugin_setup.get("name") or f"EXPANSION{expansion_id}").replace(" ", "_")
-            self.expansion_prefix = ename.upper()
-            self.expansions.append(self.expansion_prefix)
+            self.expansion_prefix = self.instances_name.upper()
 
     def cfg_info(self):
         return ""
+
+    def image_update(self):
+        if self.IMAGES:
+            image = self.plugin_setup.get("image", self.option_default("image"))
+            self.plugin_images = riocore.PluginImages()
+            if image and not image.endswith(".png"):
+                image_setup = self.plugin_images.get(image)
+                if image_setup:
+                    self.IMAGE_SHOW = True
+                    self.IMAGE = os.path.join(riocore_path, "files", "images", image_setup["image"])
+                    pins_max = len(image_setup.get("pins", []))
+                    signals_max = len(image_setup.get("signals", []))
+                    for pn, pin in enumerate(self.PINDEFAULTS):
+                        if pn < pins_max:
+                            self.PINDEFAULTS[pin]["pos"] = image_setup["pins"][pn]
+                    for pn, pin in enumerate(self.SIGNALS):
+                        if pn < signals_max:
+                            self.SIGNALS[pin]["pos"] = image_setup["signals"][pn]
+                elif image != "generic":
+                    riocore.log(f"ERROR: image-config not found for: ({image})")
+            elif image:
+                self.IMAGE_SHOW = True
+                self.IMAGE = image
+            else:
+                self.IMAGE_SHOW = False
+                self.IMAGE = ""
+
+    def image_path(self):
+        self.image_update()
+        plugin_path = os.path.join(riocore_path, "plugins", self.NAME)
+        image_path = os.path.join(plugin_path, "image.png")
+        if self.IMAGE_SHOW and self.IMAGE and os.path.isfile(os.path.join(plugin_path, self.IMAGE)):
+            image_path = os.path.join(plugin_path, self.IMAGE)
+        if os.path.isfile(image_path):
+            return image_path
+        return None
 
     def signed(self, n, byte_count):
         return int.from_bytes(n.to_bytes(byte_count, "little", signed=False), "little", signed=True)
@@ -147,7 +222,7 @@ class PluginBase:
                     data = [0] * (self.plugin_setup.get("tx_buffersize", self.OPTIONS["tx_buffersize"]["default"]) // 8)
                     for n, val in enumerate(txdata):
                         data[n] = val
-                    self.frame = bytes([self.txframe_id, frame_len] + data)
+                    self.frame = bytes([self.txframe_id, frame_len, *data])
 
             self.INTERFACE["txdata"]["value"] = self.frame
         else:
@@ -190,30 +265,33 @@ class PluginBase:
         pins = {}
         for pin_name, pin_config in self.PINDEFAULTS.items():
             if "pin" in self.plugin_setup and "pins" not in self.plugin_setup:
-                print(f"WARNING: old style pin config found ({self.instances_name})")
+                riocore.log(f"WARNING: old style pin config found ({self.instances_name})")
                 self.plugin_setup["pins"] = {pin_name: {"pin": self.plugin_setup["pin"]}}
 
             if "pins" not in self.plugin_setup:
-                # print(f"WARNING: no pins found in config ({self.instances_name})")
+                # riocore.log(f"WARNING: no pins found in config ({self.instances_name})")
                 continue
 
-            if pin_name.upper() in self.plugin_setup["pins"]:
-                print(f"WARNING: please use lowercase for pinnames: {pin_name} ({self.instances_name})")
-                self.plugin_setup["pins"][pin_name] = self.plugin_setup["pins"][pin_name.upper()]
+            if pin_config.get("edge") == "source":
+                continue
+
+            # if pin_name.upper() in self.plugin_setup["pins"]:
+            #    riocore.log(f"WARNING: please use lowercase for pinnames: {pin_name} ({self.instances_name})")
+            #    self.plugin_setup["pins"][pin_name] = self.plugin_setup["pins"][pin_name.upper()]
 
             if pin_name in self.plugin_setup["pins"]:
                 pins[pin_name] = pin_config.copy()
                 for pincfg in pins[pin_name]:
                     if isinstance(self.plugin_setup["pins"][pin_name], str):
-                        print(f"WARNING: please use dict for the pin setup: {self.plugin_setup['pins'][pin_name]}")
+                        riocore.log(f"WARNING: please use dict for the pin setup: {self.plugin_setup['pins'][pin_name]}")
                         self.plugin_setup["pins"][pin_name] = {"pin": self.plugin_setup["pins"][pin_name]}
-                        print(f"WARNING: -> {self.plugin_setup['pins'][pin_name]}")
-                        print("")
+                        riocore.log(f"WARNING: -> {self.plugin_setup['pins'][pin_name]}")
+                        riocore.log("")
                 pins[pin_name].update(self.plugin_setup["pins"][pin_name])
                 direction = pin_config["direction"].upper().replace("PUT", "")
                 pins[pin_name]["varname"] = f"PIN{direction}_{self.instances_name}_{pin_name}".upper()
             elif pin_config.get("optional") is not True:
-                print(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
+                riocore.log(f"ERROR: MISSING PIN CONFIGURATION for '{pin_name}' ({self.NAME})")
                 # exit(1)
             elif pin_config["direction"] != "output":
                 pins[pin_name] = pin_config.copy()
@@ -233,13 +311,18 @@ class PluginBase:
             for key in setup:
                 if key in self.plugin_setup:
                     setup[key] = self.plugin_setup[key]
-            signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+            signal_prefix = (self.PREFIX or self.title or self.instances_name).replace(" ", "_").replace("<", "-lt-").replace(">", "-gt-")
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix
             signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
             signals[name]["plugin_instance"] = self
-            signals[name]["halname"] = halname
+            gpio_pin = self.plugin_setup.get("pins", {}).get(name, {}).get("pin")
+
+            if self.NAME in {"gpioout", "gpioin"} and gpio_pin and not self.gmaster:
+                signals[name]["halname"] = gpio_pin
+            else:
+                signals[name]["halname"] = halname
             signals[name]["varname"] = f"SIG{direction_short}_{halname.replace('.', '_').replace('-', '_').upper()}"
             signals[name]["userconfig"] = self.plugin_setup.get("signals", {}).get(name, {})
             net = self.plugin_setup.get("net")
@@ -265,17 +348,17 @@ class PluginBase:
             if multiplexed is not None:
                 data[name]["multiplexed"] = multiplexed
 
-            data[name]["variable"] = f"VAR{direction}{size}_{self.SUBFIX}{self.instances_name}_{name}".upper()
+            data[name]["variable"] = f"VAR{direction}{size}_{self.instances_name}_{name}".upper()
         return data
 
     def expansion_outputs(self):
         expansion_pins = []
         if self.TYPE == "expansion":
             bits = self.BITS_OUT
-            for num in range(0, bits):
+            for num in range(bits):
                 expansion_pins.append(f"{self.expansion_prefix}_OUTPUT[{num}]")
         else:
-            for data_name, data_config in self.interface_data().items():
+            for data_config in self.interface_data().values():
                 direction = data_config["direction"]
                 if data_config.get("expansion") and direction == "output":
                     variable = data_config["variable"]
@@ -283,7 +366,7 @@ class PluginBase:
                     if bits == 1:
                         expansion_pins.append(f"{variable}")
                     else:
-                        for num in range(0, bits):
+                        for num in range(bits):
                             expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
@@ -291,10 +374,10 @@ class PluginBase:
         expansion_pins = []
         if self.TYPE == "expansion":
             bits = self.BITS_IN
-            for num in range(0, bits):
+            for num in range(bits):
                 expansion_pins.append(f"{self.expansion_prefix}_INPUT[{num}]")
         else:
-            for data_name, data_config in self.interface_data().items():
+            for data_config in self.interface_data().values():
                 direction = data_config["direction"]
                 if data_config.get("expansion") and direction == "input":
                     variable = data_config["variable"]
@@ -302,7 +385,7 @@ class PluginBase:
                     if bits == 1:
                         expansion_pins.append(f"{variable}")
                     else:
-                        for num in range(0, bits):
+                        for num in range(bits):
                             expansion_pins.append(f"{variable}[{num}]")
         return expansion_pins
 
@@ -317,7 +400,7 @@ class PluginBase:
                 default = self.plugin_setup.get("default", 0)
                 defines.append(f"reg [{bits_out - 1}:0] {self.expansion_prefix}_OUTPUT = {default};")
 
-        for data_name, data_config in self.interface_data().items():
+        for data_config in self.interface_data().values():
             if data_config.get("expansion"):
                 direction = data_config["direction"]
                 variable = data_config["variable"]
@@ -333,7 +416,9 @@ class PluginBase:
                     else:
                         defines.append(f"reg [{size - 1}:0] {variable} = {size}'d{default};")
                 else:
-                    defines.append(f"wire [{size - 1}:0] {variable};")
+                    wire = f"wire [{size - 1}:0] {variable};"
+                    if wire not in defines:
+                        defines.append(wire)
 
         return defines
 
@@ -343,7 +428,9 @@ class PluginBase:
         modifier_list = pin_config.get("modifier", [])
         pin_varname_org = pin_varname
         if direction == "output":
-            instance_predefines.append(f"wire {pin_varname_org}_RAW;")
+            wire = f"wire {pin_varname_org}_RAW;"
+            if wire not in instance_predefines:
+                instance_predefines.append(wire)
             pin_varname = f"{pin_varname_org}_RAW"
         for modifier_num, modifier in enumerate(modifier_list):
             if modifier:
@@ -352,6 +439,9 @@ class PluginBase:
                 if modifier_function:
                     pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname, modifier, self.system_setup)
         if direction == "output":
+            wire = f"wire {pin_varname};"
+            # if wire not in instance_predefines:
+            #    instance_predefines.append(wire)
             instances[f"{self.instances_name}_{pin_name}_RAW"] = {
                 "predefines": [
                     f"assign {pin_varname_org} = {pin_varname};",
@@ -366,11 +456,12 @@ class PluginBase:
         instance_predefines = instance["predefines"]
         instance_arguments = instance["arguments"]
         pin_varname = None
-
         if direct is False:
             instance_arguments["clk"] = "sysclk"
         for pin_name, pin_config in self.pins().items():
             pin_varname = pin_config["varname"]
+            if pin_config.get("bus"):
+                continue
             if "pin" in pin_config:
                 pin_varname = self.gateware_pin_modifiers(instances, instance, pin_name, pin_config, pin_varname)
                 instance_arguments[pin_name] = pin_varname
@@ -378,7 +469,9 @@ class PluginBase:
                 instance_arguments[pin_name] = pin_config.get("default", "1'd0")
             else:
                 instance_arguments[pin_name] = pin_varname
-                instance_predefines.append(f"wire {pin_varname};")
+                wire = f"wire {pin_varname};"
+                if wire not in instance_predefines:
+                    instance_predefines.append(wire)
 
         if direct is False:
             for interface_name, interface_setup in self.interface_data().items():
@@ -389,11 +482,6 @@ class PluginBase:
                     instance_arguments[interface_name] = f"{interface_setup['variable']} | ERROR"
                 else:
                     instance_arguments[interface_name] = interface_setup["variable"]
-
-        if self.SYNC is True:
-            instance_arguments["sync"] = "INTERFACE_SYNC"
-        elif self.SYNC is False:
-            instance_arguments["sync"] = "0"
 
         if self.PASSTHROUGH:
             for name in self.PASSTHROUGH:
@@ -419,86 +507,10 @@ class PluginBase:
         return instances
 
     def gateware_instances(self):
-        instances = self.gateware_instances_base()
-        return instances
+        return self.gateware_instances_base()
 
     def option_default(self, name, default=None):
         return self.OPTIONS.get(name, {}).get("default", default)
-
-    def basic_config(self):
-        basic_config = {
-            "type": self.NAME,
-            "pins": {},
-        }
-        pn = 0
-        for pin_name, pin_setup in self.PINDEFAULTS.items():
-            default = pin_setup.get("default")
-            if default is not None:
-                basic_config["pins"][pin_name] = {"pin": f"{default}"}
-            else:
-                basic_config["pins"][pin_name] = {"pin": f"{pn}"}
-            pn += 1
-        return basic_config
-
-    def full_config(self):
-        full_config = {
-            "type": self.NAME,
-        }
-
-        for option_name, option_setup in self.OPTIONS.items():
-            default = ""
-            if option_setup["type"] is int:
-                default = 0
-            elif option_setup["type"] is float:
-                default = 0.0
-            elif option_setup["type"] is bool:
-                default = False
-            full_config[option_name] = option_setup.get("default", default)
-
-        pn = 0
-        full_config["pins"] = {}
-        for pin_name, pin_setup in self.PINDEFAULTS.items():
-            default = pin_setup.get("default")
-            if default is not None:
-                full_config["pins"][pin_name] = {"pin": f"{default}", "modifiers": []}
-            else:
-                full_config["pins"][pin_name] = {"pin": f"{pn}", "modifiers": []}
-            if pin_setup["direction"] == "input":
-                full_config["pins"][pin_name]["modifiers"].append({"type": "debounce"})
-                if pn > 0:
-                    full_config["pins"][pin_name]["modifiers"].append({"type": "invert"})
-            else:
-                full_config["pins"][pin_name]["modifiers"].append({"type": "invert"})
-            pn += 1
-
-        full_config["signals"] = {}
-        for signal_name, signal_setup in self.SIGNALS.items():
-            full_config["signals"][signal_name] = {
-                "net": "xxx.yyy.zzz",
-                "function": "rio.xxx",
-            }
-            if signal_setup.get("bool", False) is False:
-                full_config["signals"][signal_name]["scale"] = 100.0
-                full_config["signals"][signal_name]["offset"] = 0.0
-
-            full_config["signals"][signal_name]["display"] = {
-                "title": signal_name,
-                "section": "status",
-                "type": "meter",
-            }
-
-            if signal_setup["direction"] == "input":
-                full_config["signals"][signal_name]["display"]["section"] = "inputs"
-                if signal_setup.get("bool", False) is True:
-                    full_config["signals"][signal_name]["display"]["type"] = "led"
-            elif signal_setup["direction"] == "output":
-                full_config["signals"][signal_name]["display"]["section"] = "outputs"
-                if signal_setup.get("bool", False) is True:
-                    full_config["signals"][signal_name]["display"]["type"] = "checkbox"
-                else:
-                    full_config["signals"][signal_name]["display"]["type"] = "scale"
-
-        return full_config
 
     def show_pins(self):
         output = []
@@ -549,42 +561,40 @@ class PluginBase:
             output.append(f" * default: {option_setup.get('default')}")
             if unit is not None:
                 output.append(f" * unit: {unit}")
+            if vtype == "select":
+                output.append(f" * options: {', '.join(option_setup['options'])}")
 
             output.append("")
         return "\n".join(output)
 
     def show_signals(self):
         output = []
-        if self.DYNAMIC_SIGNALS:
-            output.append("the signals of this plugin are user configurable")
+        for signal_name, signal_setup in self.SIGNALS.items():
+            isbool = signal_setup.get("bool", False)
+            direction = signal_setup.get("direction")
+            description = signal_setup.get("description")
+            vmin = signal_setup.get("min")
+            vmax = signal_setup.get("max")
+            unit = signal_setup.get("unit")
+            output.append(f"### {signal_name}:")
+            if description:
+                output.append(description)
             output.append("")
-        else:
-            for signal_name, signal_setup in self.SIGNALS.items():
-                isbool = signal_setup.get("bool", False)
-                direction = signal_setup.get("direction")
-                description = signal_setup.get("description")
-                vmin = signal_setup.get("min")
-                vmax = signal_setup.get("max")
-                unit = signal_setup.get("unit")
-                output.append(f"### {signal_name}:")
-                if description:
-                    output.append(description)
-                output.append("")
 
-                if isbool:
-                    output.append(" * type: bit")
-                else:
-                    output.append(" * type: float")
-                output.append(f" * direction: {direction}")
-                if vmin is not None:
-                    output.append(f" * min: {vmin}")
-                if vmax is not None:
-                    output.append(f" * max: {vmax}")
+            if isbool:
+                output.append(" * type: bit")
+            else:
+                output.append(" * type: float")
+            output.append(f" * direction: {direction}")
+            if vmin is not None:
+                output.append(f" * min: {vmin}")
+            if vmax is not None:
+                output.append(f" * max: {vmax}")
 
-                if unit is not None:
-                    output.append(f" * unit: {unit}")
+            if unit is not None:
+                output.append(f" * unit: {unit}")
 
-                output.append("")
+            output.append("")
 
         return "\n".join(output)
 
@@ -608,3 +618,9 @@ class PluginBase:
 
             output.append("")
         return "\n".join(output)
+
+    def clog2(self, x):
+        if x <= 0:
+            err = "clog2: domain error"
+            raise ValueError(err)
+        return (x - 1).bit_length()

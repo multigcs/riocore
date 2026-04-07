@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "riodrive is a fork of odrive (v3.6)"
         self.URL = "https://github.com/multigcs/riodrive"
         self.KEYWORDS = "canbus odrive bldc brushless servo"
+        self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
         self.TYPE = "joint"
@@ -27,12 +28,7 @@ class Plugin(PluginBase):
                 "min": 100,
                 "max": 10000,
                 "unit": "Hz",
-                "description": "update interval / normaly it should be 1khz, but with sync=true, this is a good default",
-            },
-            "sync": {
-                "default": True,
-                "type": bool,
-                "description": "in sync with interface (eg UDP)",
+                "description": "update interval",
             },
             "error": {
                 "default": True,
@@ -175,8 +171,6 @@ class Plugin(PluginBase):
                 "bool": True,
             },
         }
-        self.SYNC = self.plugin_setup.get("sync", self.OPTIONS["sync"]["default"])
-        self.ERROR = self.plugin_setup.get("error", self.OPTIONS["error"]["default"])
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
@@ -188,16 +182,9 @@ class Plugin(PluginBase):
         instance_parameter["IDIVIDER"] = self.system_setup["speed"] // interval
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "power":
-            value = value / 10.0
-        elif signal_name == "temp":
-            value = value / 2.0
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "power":
             return "value = value / 10.0;"
-        elif signal_name == "temp":
+        if signal_name == "temp":
             return "value = value / 2.0;"
         return ""

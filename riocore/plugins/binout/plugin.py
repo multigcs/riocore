@@ -14,6 +14,7 @@ graph LR;
         """
         self.KEYWORDS = "binary dec2bin r2r-dac"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.PINDEFAULTS = {}
 
         self.OPTIONS = {

@@ -1,0 +1,39 @@
+{
+  "comment": "4x Digital In / 2x Digital Out (Relais)",
+  "url": "",
+  "address": 27,
+  "timeout": 200,
+  "delay": 60,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [140, 340], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [155, 340], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"},
+    "do:0": {"direction": "output", "edge": "source", "pos": [142, 30], "type": ["GPIO"]},
+    "do:1": {"direction": "output", "edge": "source", "pos": [78, 30], "type": ["GPIO"]},
+    "di:0": {"direction": "input", "edge": "source", "pos": [147, 306], "type": ["GPIO"]},
+    "di:1": {"direction": "input", "edge": "source", "pos": [131, 306], "type": ["GPIO"]},
+    "di:2": {"direction": "input", "edge": "source", "pos": [114, 306], "type": ["GPIO"]},
+    "di:3": {"direction": "input", "edge": "source", "pos": [97, 306], "type": ["GPIO"]}
+  },
+  "commands": {
+    "do": {
+        "type": 15,
+        "register": 0,
+        "datatype": "bool",
+        "values": 2,
+        "scale": 1.0,
+        "unit": "",
+        "error_values": "",
+        "format": "0.1f"
+    },
+    "di": {
+        "type": 2,
+        "register": 0,
+        "datatype": "bool",
+        "values": 4,
+        "scale": 1.0,
+        "unit": "",
+        "error_values": "",
+        "format": "0.1f"
+    }
+  }
+}

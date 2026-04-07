@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = """encodes binary values"""
         self.KEYWORDS = "binary multiplexer"
         self.ORIGIN = ""
+        self.NEEDS = ["fpga"]
         self.PINDEFAULTS = {}
         self.INTERFACE = {}
         self.SIGNALS = {}

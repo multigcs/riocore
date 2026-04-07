@@ -1,0 +1,783 @@
+{
+    "name": "ECP5-256",
+    "comment": "Lattice ECP5 devboard",
+    "description": "Lattice ECP5 devboard",
+    "url": "https://de.aliexpress.com/item/1005008834546994.html?spm=a2g0o.order_list.order_list_main.34.2c0618029pMjxL&gatewayAdapt=glo2deu",
+    "size": [80, 50],
+    "toolchain": "icestorm",
+    "family": "ecp5",
+    "type": "25k",
+    "flashcmd": "openFPGALoader -v -c usb-blaster rio.bit -f",
+    "package": "CABGA256",
+    "provides": [
+        "pmod",
+        "pmod2"
+    ],
+    "clock": {
+        "osc": "24000000",
+        "speed": "100000000",
+        "pin": "K16"
+    },
+    "slots": [
+
+        {
+            "name": "JTAG",
+            "comment": "JTAG-Port",
+            "pins": {
+                "TCK": {
+                    "pin": "TCK",
+                    "pos": [
+                        321,
+                        61
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "TMS": {
+                    "pin": "TMS",
+                    "pos": [
+                        321,
+                        72
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "TDI": {
+                    "pin": "TDI",
+                    "pos": [
+                        321,
+                        83
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "TDO": {
+                    "pin": "TDO",
+                    "pos": [
+                        321,
+                        94
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "RST": {
+                    "pin": "RST",
+                    "pos": [
+                        321,
+                        105
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+
+
+
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        332,
+                        61
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        332,
+                        72
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "3V3": {
+                    "pin": "3V3",
+                    "pos": [
+                        332,
+                        83
+                    ],
+                    "direction": "all",
+                    "marker": true
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "pos": [
+                        332,
+                        105
+                    ],
+                    "direction": "all",
+                    "marker": true
+                }
+            }
+        },
+        {
+            "name": "UART",
+            "comment": "USB",
+            "pins": {
+                "RX": {
+                    "pin": "A7",
+                    "pos": [
+                        20,
+                        98
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "A8",
+                    "pos": [
+                        20,
+                        111
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "BUTTON",
+            "comment": "",
+            "pins": {
+                "S1": {
+                    "pin": "C4",
+                    "pos": [
+                        50,
+                        143
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "I2C",
+            "comment": "EEPROM",
+            "pins": {
+                "S1": {
+                    "pin": "A2",
+                    "pos": [
+                        122,
+                        130
+                    ],
+                    "direction": "input"
+                },
+                "S2": {
+                    "pin": "A3",
+                    "pos": [
+                        122,
+                        142
+                    ],
+                    "direction": "input"
+                }
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "L4": {
+                    "pin": "C14",
+                    "pos": [
+                        74,
+                        10
+                    ],
+                    "direction": "output"
+                },
+                "L3": {
+                    "pin": "D14",
+                    "pos": [
+                        89,
+                        10
+                    ],
+                    "direction": "output"
+                },
+                "L2": {
+                    "pin": "E14",
+                    "pos": [
+                        104,
+                        10
+                    ],
+                    "direction": "output"
+                },
+                "L1": {
+                    "pin": "E15",
+                    "pos": [
+                        119,
+                        10
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "P1",
+            "comment": "",
+            "pins": {
+                "3V3_1": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+                "3V3_3": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_4": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        183
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_4": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        194
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+
+                "P5": {
+                    "pin": "R1",
+                    "pos": [
+                        281,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "P1",
+                    "pos": [
+                        281,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "P2",
+                    "pos": [
+                        270,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "N1",
+                    "pos": [
+                        270,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "M2",
+                    "pos": [
+                        259,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "M1",
+                    "pos": [
+                        259,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "L2",
+                    "pos": [
+                        248,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "L1",
+                    "pos": [
+                        248,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "K2",
+                    "pos": [
+                        237,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "K1",
+                    "pos": [
+                        237,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "J2",
+                    "pos": [
+                        226,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "J1",
+                    "pos": [
+                        226,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "G2",
+                    "pos": [
+                        215,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P18": {
+                    "pin": "F1",
+                    "pos": [
+                        215,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P19": {
+                    "pin": "E1",
+                    "pos": [
+                        204,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P20": {
+                    "pin": "F2",
+                    "pos": [
+                        204,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P21": {
+                    "pin": "E2",
+                    "pos": [
+                        193,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P22": {
+                    "pin": "D1",
+                    "pos": [
+                        193,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P23": {
+                    "pin": "C2",
+                    "pos": [
+                        182,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P24": {
+                    "pin": "C1",
+                    "pos": [
+                        182,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P25": {
+                    "pin": "B2",
+                    "pos": [
+                        171,
+                        183
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P26": {
+                    "pin": "B1",
+                    "pos": [
+                        171,
+                        194
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "P2",
+            "comment": "",
+            "pins": {
+                "3V3_1": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "pos": [
+                        303,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "pos": [
+                        292,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+                "3V3_3": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "3V3_4": {
+                    "pin": "3V3",
+                    "pos": [
+                        149,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        13
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+                "GND_4": {
+                    "pin": "GND",
+                    "pos": [
+                        160,
+                        24
+                    ],
+                    "rotate": true,
+                    "marker": true,
+                    "direction": "none"
+                },
+
+                "P26": {
+                    "pin": "T14",
+                    "pos": [
+                        281,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P25": {
+                    "pin": "R14",
+                    "pos": [
+                        281,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P24": {
+                    "pin": "T15",
+                    "pos": [
+                        270,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P23": {
+                    "pin": "R15",
+                    "pos": [
+                        270,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P22": {
+                    "pin": "P13",
+                    "pos": [
+                        259,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P21": {
+                    "pin": "P14",
+                    "pos": [
+                        259,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P20": {
+                    "pin": "R16",
+                    "pos": [
+                        248,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P19": {
+                    "pin": "P15",
+                    "pos": [
+                        248,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P18": {
+                    "pin": "P16",
+                    "pos": [
+                        237,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P17": {
+                    "pin": "N14",
+                    "pos": [
+                        237,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P16": {
+                    "pin": "M16",
+                    "pos": [
+                        226,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P15": {
+                    "pin": "N16",
+                    "pos": [
+                        226,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P14": {
+                    "pin": "L16",
+                    "pos": [
+                        215,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P13": {
+                    "pin": "M15",
+                    "pos": [
+                        215,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P12": {
+                    "pin": "K15",
+                    "pos": [
+                        204,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P11": {
+                    "pin": "L15",
+                    "pos": [
+                        204,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P10": {
+                    "pin": "J15",
+                    "pos": [
+                        193,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P9": {
+                    "pin": "J16",
+                    "pos": [
+                        193,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P8": {
+                    "pin": "G15",
+                    "pos": [
+                        182,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P7": {
+                    "pin": "G16",
+                    "pos": [
+                        182,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P6": {
+                    "pin": "F15",
+                    "pos": [
+                        171,
+                        13
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                },
+                "P5": {
+                    "pin": "F16",
+                    "pos": [
+                        171,
+                        24
+                    ],
+                    "rotate": true,
+                    "direction": "all"
+                }
+            }
+        }
+    ]
+}

@@ -3,15 +3,19 @@
 module max7219
     #(
         parameter DIVIDER = 22,
-        parameter BRIGHTNESS = 8'h04
+        parameter BRIGHTNESS = 8'h04,
+        parameter DISPLAYS = 2,
+        parameter DOT_POS = 2
      )
      (
          input clk,
          output reg mosi = 0,
          output reg sclk = 0,
          output reg sel = 1,
-         input wire signed [23:0] value
+         input wire [(24 * DISPLAYS)-1:0] values
      );
+
+    reg signed [23:0] value = 0;
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     localparam INIT_DECODEMODE_NONE = {8'h09, 8'h00};
@@ -28,22 +32,23 @@ module max7219
     reg next_clk = 0;
 
     reg [7:0] initcnt = 0;
-    reg [15:0] cmddata = 0;
+    reg [16 * DISPLAYS-1:0] cmddata = 0;
 
+    reg [3:0] display_n = 0;
     reg [3:0] val = 0;
-    reg [3:0] num = 3;
+    reg [3:0] digit_num = 3;
     wire [6:0] digit;
     reg [7:0] digit_pos = 0;
     wire [23:0] bcd;
     reg [23:0] numberAbs = 0;
     reg [3:0] prefix = 4'hb;
 
-    bin2bcd bin2bcd1 (
+    max7_bin2bcd bin2bcd1 (
         .bin (numberAbs),
         .bcd (bcd)
     );
 
-    seven_segments sg0 (
+    max7_seven_segments sg0 (
         .clk(mclk),
         .binary(val),
         .display(digit)
@@ -52,28 +57,14 @@ module max7219
     wire [3:0] nums [0:7];
     assign nums[7] = 4'hb;
     assign nums[6] = prefix;
-    assign nums[5] = int100000[3:0];
-    assign nums[4] = int10000[3:0];
-    assign nums[3] = int1000[3:0];
-    assign nums[2] = int100[3:0];
-    assign nums[1] = int10[3:0];
-    assign nums[0] = int1[3:0];
+    assign nums[5] = bcd[23:20];
+    assign nums[4] = bcd[19:16];
+    assign nums[3] = bcd[15:12];
+    assign nums[2] = bcd[11:8];
+    assign nums[1] = bcd[7:4];
+    assign nums[0] = bcd[3:0];
 
-    wire [7:0] int1;
-    wire [7:0] int10;
-    wire [7:0] int100;
-    wire [7:0] int1000;
-    wire [7:0] int10000;
-    wire [7:0] int100000;
-    assign int1 = 8'd48 + {4'd0, bcd[3:0]};
-    assign int10 = 8'd48 + {4'd0, bcd[7:4]};
-    assign int100 = 8'd48 + {4'd0, bcd[11:8]};
-    assign int1000 = 8'd48 + {4'd0, bcd[15:12]};
-    assign int10000 = 8'd48 + {4'd0, bcd[19:16]};
-    assign int100000 = 8'd48 + {4'd0, bcd[23:20]};
-
-    always @(posedge clk) begin
-
+    always @(value) begin
         if (value < 0) begin
             numberAbs <= -value;
             prefix <= 4'ha;
@@ -81,7 +72,9 @@ module max7219
             numberAbs <= value;
             prefix <= 4'hb;
         end
+    end
 
+    always @(posedge clk) begin
         if (counter == 0) begin
             counter <= DIVIDER;
             mclk <= ~mclk;
@@ -89,81 +82,80 @@ module max7219
             counter <= counter - 1;
         end
     end
+
     always @(posedge mclk) begin
         if (state == 0) begin
-            sclk = 0;
-            sel = 0;
-            data_pos = 0;
-            state = 1;
-            next_clk = 0;
+            sclk <= 0;
+            sel <= 0;
+            data_pos <= 0;
+            state <= 1;
+            next_clk <= 0;
+            value <= values[24 + 24 * display_n - 1-:24];
         end else if (state == 1) begin
             if (next_clk == 1) begin
-                next_clk = 0;
-                sclk = 1;
-            end else if (data_pos < 16) begin
-                sclk = 0;
-                mosi = cmddata[15 - data_pos];
-                next_clk = 1;
-                data_pos = data_pos + 1;
+                next_clk <= 0;
+                sclk <= 1;
+            end else if (data_pos < 16 * DISPLAYS) begin
+                sclk <= 0;
+                mosi <= cmddata[16 * DISPLAYS - 1 - data_pos];
+                next_clk <= 1;
+                data_pos <= data_pos + 1;
             end else begin
-                state = 2;
-                mosi = 0;
-                sclk = 0;
+                state <= 2;
+                mosi <= 0;
+                sclk <= 0;
             end
         end else if (state == 2) begin
-            sel = 1;
-            state = state + 1;
-            val <= nums[num];
+            sel <= 1;
+            state <= state + 1;
+            val <= nums[digit_num];
         end else if (state == 3) begin
-
-
             case(initcnt)
                 0: begin
-                    cmddata <= INIT_DECODEMODE_NONE;
+                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_DECODEMODE_NONE;
                     initcnt <= initcnt + 1;
                 end
                 1: begin
-                    cmddata <= INIT_INTENSE;
+                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_INTENSE;
                     initcnt <= initcnt + 1;
                 end
                 2: begin
-                    cmddata <= INIT_SCANLIMIT;
+                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_SCANLIMIT;
                     initcnt <= initcnt + 1;
                 end
                 3: begin
-                    cmddata <= INIT_SD_NORMALOP;
+                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_SD_NORMALOP;
                     initcnt <= initcnt + 1;
                 end
-
                 4: begin
-                    if (num < 8) begin
-                        if (num == 2) begin
-                            cmddata <= {num + 4'd1, 1'd1, digit};
+                    if (digit_num < 8) begin
+                        if (digit_num == DOT_POS) begin
+                            cmddata[16 + display_n * 16 - 1-:16] <= {digit_num + 4'd1, 1'd1, digit};
                         end else begin
-                            cmddata <= {num + 4'd1, 1'd0, digit};
+                            cmddata[16 + display_n * 16 - 1-:16] <= {digit_num + 4'd1, 1'd0, digit};
                         end
-                        num <= num + 1;
+                        digit_num <= digit_num + 1;
                     end else begin
-                        num <= 0;
+                        initcnt <= 0;
+                        digit_num <= 0;
+                        if (display_n < DISPLAYS - 1) begin
+                            display_n <= display_n + 1;
+                        end else begin
+                            display_n <= 0;
+                        end
                     end
-                
                 end
             endcase
-
-
-
-            state = 0;
+            state <= 0;
         end
     end
 endmodule
 
-
-module seven_segments (
+module max7_seven_segments (
         input wire clk,
         input wire [3:0] binary,
         output reg [6:0] display
     );
-
     /*
             6
 
@@ -175,7 +167,6 @@ module seven_segments (
 
             3
     */
-
     always @(binary) begin
         case (binary)
             4'h0: display = 7'b1111110;
@@ -188,7 +179,6 @@ module seven_segments (
             4'h7: display = 7'b1110000;
             4'h8: display = 7'b1111111;
             4'h9: display = 7'b1111011;
-
             4'ha: display = 7'b0000001;
             4'hb: display = 7'b0000000;
             4'hc: display = 7'b1001110;
@@ -198,12 +188,9 @@ module seven_segments (
             default: display = 7'b0000000;
         endcase
     end
-
 endmodule
 
-
-
-module bin2bcd(
+module max7_bin2bcd(
         input [19:0] bin,
         output reg [23:0] bcd
     );
@@ -217,7 +204,6 @@ module bin2bcd(
             if (bcd[15:12] >= 5) bcd[15:12] = bcd[15:12] + 4'd3;
             if (bcd[19:16] >= 5) bcd[19:16] = bcd[19:16] + 4'd3;
             if (bcd[23:20] >= 5) bcd[23:20] = bcd[23:20] + 4'd3;
-
             bcd = {bcd[22:0], bin[19 - i]};
         end
     end

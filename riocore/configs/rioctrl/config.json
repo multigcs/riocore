@@ -1,72 +1,455 @@
 {
     "name": "rioctrl",
-    "boardcfg": "rioctrl",
-    "flashcmd": "openFPGALoader -c dirtyJtag --write-flash --unprotect-flash rio.bit",
+    "flashcmd": "sudo /opt/oss-cad-suite/bin//openFPGALoader -c dirtyJtag --write-flash --unprotect-flash rio.bit",
     "plugins": [
         {
-            "type": "blink",
-            "pins": {
-                "led": {
-                    "pin": "LED:ERR",
-                    "modifier": [
-                        {
-                            "type": "onerror",
-                            "invert": true
-                        }
-                    ]
+            "type": "fpga",
+            "node_type": "rioctrl",
+            "toolchain": "icestorm",
+            "flashcmd": "",
+            "protocol": "UDP",
+            "uid": "board0",
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0,
+            "sub": {
+                "board0_w5500": {
+                    "gw": "192.168.11.1",
+                    "ip": "192.168.11.194"
                 }
             },
-            "frequency": 1.0
+            "chip_type": "25k"
         },
         {
             "type": "blink",
             "pins": {
                 "led": {
-                    "pin": "LED:OK",
+                    "pin": "board0:LED:ERR",
                     "modifier": [
                         {
                             "type": "onerror",
-                            "invert": false
+                            "invert": true,
+                            "pos": [
+                                60.0,
+                                700.0
+                            ]
                         }
                     ]
                 }
             },
-            "frequency": 2.0
+            "frequency": 10.0,
+            "uid": "blink0",
+            "pos": [
+                190.0,
+                680.0
+            ]
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "board0:LED:OK",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": false,
+                            "pos": [
+                                60.0,
+                                780.0
+                            ]
+                        }
+                    ]
+                }
+            },
+            "uid": "blink1",
+            "pos": [
+                190.0,
+                760.0
+            ]
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir0",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pos": [
+                500.0,
+                -320.0
+            ],
+            "joint": {
+                "pid_p": 320.0,
+                "pid_i": 100.0,
+                "pid_d": 1.0,
+                "scale": 2000.0,
+                "max_velocity": 200.0
+            },
+            "pulse_len": 1.0,
+            "pins": {
+                "step": {
+                    "pin": "breakout2:JOINT0:STEP"
+                },
+                "dir": {
+                    "pin": "breakout2:JOINT0:DIR"
+                },
+                "en": {
+                    "pin": "breakout2:JOINT0:EN"
+                }
+            },
+            "image": "stepper",
+            "rotate": -90
+        },
+        {
+            "name": "joint-1",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir1",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pos": [
+                -40.0,
+                -320.0
+            ],
+            "pulse_len": 1.0,
+            "pins": {
+                "step": {
+                    "pin": "breakout2:JOINT2:STEP"
+                },
+                "dir": {
+                    "pin": "breakout2:JOINT2:DIR"
+                },
+                "en": {
+                    "pin": "breakout2:JOINT2:EN"
+                }
+            },
+            "image": "stepper",
+            "rotate": -90
+        },
+        {
+            "name": "joint-2",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir2",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pos": [
+                230.0,
+                -320.0
+            ],
+            "pulse_len": 1.0,
+            "pins": {
+                "step": {
+                    "pin": "breakout2:JOINT1:STEP"
+                },
+                "dir": {
+                    "pin": "breakout2:JOINT1:DIR"
+                },
+                "en": {
+                    "pin": "breakout2:JOINT1:EN"
+                }
+            },
+            "image": "stepper",
+            "rotate": -90
+        },
+        {
+            "name": "joint-3",
+            "type": "stepdir",
+            "is_joint": true,
+            "uid": "stepdir3",
+            "signals": {
+                "velocity": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "position": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                },
+                "enable": {
+                    "net": "",
+                    "function": "",
+                    "setp": ""
+                }
+            },
+            "pos": [
+                -310.0,
+                -320.0
+            ],
+            "pulse_len": 1.0,
+            "pins": {
+                "step": {
+                    "pin": "breakout2:JOINT3:STEP"
+                },
+                "dir": {
+                    "pin": "breakout2:JOINT3:DIR"
+                },
+                "en": {
+                    "pin": "breakout2:JOINT3:EN"
+                }
+            },
+            "image": "stepper",
+            "rotate": -90
         },
         {
             "type": "bitout",
-            "name": "SlotEN",
+            "uid": "bitout0",
+            "pos": [
+                -100.0,
+                350.0
+            ],
             "pins": {
                 "bit": {
-                    "pin": "SlotControl:EN"
+                    "pin": "board0:SlotControl:EN"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "halui.machine.is-on"
                 }
             }
         },
         {
-            "type": "w5500",
+            "type": "breakout",
+            "node_type": "rioctrl-shiftio",
+            "uid": "breakout0",
+            "pos": [
+                550.0,
+                220.0
+            ],
             "pins": {
-                "mosi": {
-                    "pin": "SPI:MOSI"
+                "SLOT:S0": {
+                    "pin": "board0:SC:S0"
                 },
-                "miso": {
-                    "pin": "SPI:MISO"
+                "SLOT:S1": {
+                    "pin": "board0:SC:S1"
                 },
-                "sclk": {
-                    "pin": "SPI:SCLK"
+                "SLOT:S2": {
+                    "pin": "board0:SC:S2"
                 },
-                "sel": {
-                    "pin": "SPI:SEL"
+                "SLOT:S3": {
+                    "pin": "board0:SC:S3"
                 },
-                "rst": {
-                    "pin": "SPI:RST"
+                "SLOT:S4": {
+                    "pin": "board0:SC:S4"
                 },
-                "int": {
-                    "pin": "SPI:INT"
+                "SLOT:S5": {
+                    "pin": "board0:SC:S5"
+                },
+                "SLOT:S6": {
+                    "pin": "board0:SC:S6"
+                },
+                "SLOT:S7": {
+                    "pin": "board0:SC:S7"
+                },
+                "SLOT:S8": {
+                    "pin": "board0:SC:S8"
+                },
+                "SLOT:S9": {
+                    "pin": "board0:SC:S9"
+                },
+                "SLOT:S10": {
+                    "pin": "board0:SC:S10"
+                },
+                "SLOT:S11": {
+                    "pin": "board0:SC:S11"
                 }
             },
-            "gw": "192.168.66.1",
-            "ip": "192.168.66.49"
+            "sub": {
+                "breakout0_shiftreg0": {
+                    "pos": [
+                        30.0,
+                        30.0
+                    ],
+                    "bits": 16
+                },
+                "breakout0_shiftin": {
+                    "bits": 16
+                },
+                "breakout0_shiftout": {
+                    "bits": 16
+                }
+            }
+        },
+        {
+            "type": "breakout",
+            "node_type": "rioctrl-stepdir",
+            "uid": "breakout2",
+            "pos": [
+                410.0,
+                220.0
+            ],
+            "pins": {
+                "SLOT:S0": {
+                    "pin": "board0:SB:S0"
+                },
+                "SLOT:S1": {
+                    "pin": "board0:SB:S1"
+                },
+                "SLOT:S2": {
+                    "pin": "board0:SB:S2"
+                },
+                "SLOT:S3": {
+                    "pin": "board0:SB:S3"
+                },
+                "SLOT:S4": {
+                    "pin": "board0:SB:S4"
+                },
+                "SLOT:S5": {
+                    "pin": "board0:SB:S5"
+                },
+                "SLOT:S6": {
+                    "pin": "board0:SB:S6"
+                },
+                "SLOT:S7": {
+                    "pin": "board0:SB:S7"
+                },
+                "SLOT:S8": {
+                    "pin": "board0:SB:S8"
+                },
+                "SLOT:S9": {
+                    "pin": "board0:SB:S9"
+                },
+                "SLOT:S10": {
+                    "pin": "board0:SB:S10"
+                },
+                "SLOT:S11": {
+                    "pin": "board0:SB:S11"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:IN:I0"
+                }
+            },
+            "uid": "bitin0",
+            "pos": [
+                730.0,
+                40.0
+            ],
+            "image": "proximity"
+        },
+        {
+            "type": "bitin",
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:IN:I1"
+                }
+            },
+            "uid": "bitin1",
+            "pos": [
+                730.0,
+                110.0
+            ],
+            "image": "proximity"
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "image": "relay",
+            "pos": [
+                710.0,
+                660.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:OUT:O0"
+                }
+            }
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout2",
+            "image": "relay",
+            "pos": [
+                710.0,
+                810.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "breakout0:OUT:O1"
+                }
+            },
+            "name": ""
         }
     ],
-    "protocol": "UDP"
+    "protocol": "UDP",
+    "flow": {
+        "view": {
+            "scale": 1.12,
+            "pos": [
+                311,
+                317
+            ]
+        },
+        "board": {
+            "pos": [
+                120.0,
+                220.0
+            ],
+            "rotate": 0
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "MAX_LINEAR_VELOCITY": 300.0
+            },
+            "TRAJ": {
+                "MAX_LINEAR_VELOCITY": 300.0
+            }
+        }
+    }
 }

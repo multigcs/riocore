@@ -1,0 +1,12 @@
+RIO - Parport
+
+Configuration: tests/unit/data/full/Parport.json
+
+Plugins:
+  breakout (1x)
+  pwmgen (1x)
+  stepgen (3x)
+  gpioout (2x)
+  gpioin (5x)
+  parport (1x)
+

@@ -6,7 +6,8 @@
 
 encodes binary values
 
-Keywords: binary multiplexer
+* Keywords: binary multiplexer
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -29,6 +30,12 @@ Keywords: binary multiplexer
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### bits:
 number of inputs
 
@@ -37,12 +44,6 @@ number of inputs
  * max: 32
  * default: 2
  * unit: bits
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
 
 
 ## Signals:
@@ -70,87 +71,3 @@ name of this plugin instance
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "mux",
-    "pins": {
-        "pin0": {
-            "pin": "0"
-        },
-        "pin1": {
-            "pin": "1"
-        },
-        "pin2": {
-            "pin": "2"
-        },
-        "pin3": {
-            "pin": "3"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "mux",
-    "bits": 2,
-    "name": "",
-    "pins": {
-        "pin0": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "pin1": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "pin2": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "pin3": {
-            "pin": "3",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "bit0": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit0",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        },
-        "bit1": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "bit1",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```

@@ -6,7 +6,8 @@
 
 to control DC-Motors
 
-Keywords: joint dcservo
+* Keywords: joint dcservo
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -26,6 +27,25 @@ Keywords: joint dcservo
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
+### is_joint:
+configure as joint
+
+ * type: bool
+ * default: True
+
+### axis:
+axis name (X,Y,Z,...)
+
+ * type: select
+ * default: None
+ * options: X, Y, Z, A, B, C, U, V, W
+
 ### frequency:
 PWM frequency
 
@@ -34,24 +54,6 @@ PWM frequency
  * max: 1000000
  * default: 10000
  * unit: Hz
-
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
-### axis:
-axis name (X,Y,Z,...)
-
- * type: select
- * default: None
-
-### is_joint:
-configure as joint
-
- * type: bool
- * default: False
 
 
 ## Signals:
@@ -82,83 +84,6 @@ configure as joint
  * size: 1 bit
  * direction: output
 
-
-## Basic-Example:
-```
-{
-    "type": "hbridge",
-    "pins": {
-        "out1": {
-            "pin": "0"
-        },
-        "out2": {
-            "pin": "1"
-        },
-        "en": {
-            "pin": "2"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "hbridge",
-    "frequency": 10000,
-    "name": "",
-    "axis": "",
-    "is_joint": false,
-    "pins": {
-        "out1": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "out2": {
-            "pin": "1",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        },
-        "en": {
-            "pin": "2",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {
-        "dty": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "scale": 100.0,
-            "offset": 0.0,
-            "display": {
-                "title": "dty",
-                "section": "outputs",
-                "type": "scale"
-            }
-        },
-        "enable": {
-            "net": "xxx.yyy.zzz",
-            "function": "rio.xxx",
-            "display": {
-                "title": "enable",
-                "section": "outputs",
-                "type": "checkbox"
-            }
-        }
-    }
-}
-```
 
 ## Verilogs:
  * [hbridge.v](hbridge.v)

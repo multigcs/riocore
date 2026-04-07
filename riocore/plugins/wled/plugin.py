@@ -7,7 +7,9 @@ class Plugin(PluginBase):
         self.INFO = "ws2812b interface"
         self.DESCRIPTION = "simple ws2812b led driver / you can only turn on/off each color (R/G/B) of each led"
         self.KEYWORDS = "led rgb status info"
+        self.IMAGES = ["wled"]
         self.ORIGIN = "https://github.com/mattvenn/ws2812-core"
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["ws2812.v", "wled.v"]
         self.PINDEFAULTS = {
             "data": {
@@ -30,6 +32,8 @@ class Plugin(PluginBase):
                 "description": "LED brighness",
             },
         }
+        self.SIGNALS = {}
+        self.INTERFACE = {}
         num_leds = self.plugin_setup.get("leds", 1)
         for led in range(num_leds):
             for color in ("green", "blue", "red"):
@@ -41,6 +45,11 @@ class Plugin(PluginBase):
                     "direction": "output",
                     "bool": True,
                 }
+
+        image = self.plugin_setup.get("image")
+        if image == "wled1.png":
+            self.IMAGE = image
+            self.IMAGE_SHOW = True
 
     def cfg_info(self):
         num_leds = self.plugin_setup.get("leds", 1)

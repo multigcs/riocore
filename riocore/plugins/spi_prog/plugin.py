@@ -5,9 +5,10 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "spi_prog"
         self.INFO = "spi interface for host comunication and flash programming"
-        self.DESCRIPTION = "for direct connections to Raspberry-PI - supporting flash programming"
+        self.DESCRIPTION = "for direct connections to Raspberry-PI - supporting flash programming - spartan6 only at the moment"
         self.KEYWORDS = "interface spi raspberry rpi flash mesa"
         self.ORIGIN = "https://www.fpga4fun.com/SPI2.html"
+        self.NEEDS = ["mesa"]
         self.VERILOGS = ["spi_prog.v"]
         self.PINDEFAULTS = {
             "mosi": {
@@ -64,6 +65,29 @@ class Plugin(PluginBase):
             },
         }
         self.TYPE = "interface"
+        self.HOST_INTERFACE = "SPI"
+        self.OPTIONS = {
+            "spitype": {
+                "default": "rpi4",
+                "type": "select",
+                "options": ["rpi4", "rpi5", "generic"],
+                "description": "SPI-Type",
+            },
+            "cs": {
+                "default": 0,
+                "type": int,
+                "min": 0,
+                "max": 1,
+                "description": "Chip-Select pin on the Host-Side CS0/CS1",
+            },
+        }
+        spitype = self.plugin_setup.get("spitype", self.option_default("spitype", 0))
+        if spitype == "rpi5":
+            self.HOST_INTERFACE = "SPI_RPI5"
+        elif spitype == "generic":
+            self.HOST_INTERFACE = "SPI_GENERIC"
+        else:
+            self.HOST_INTERFACE = "SPI"
         if self.system_setup and "speed" in self.system_setup:
             self.TIMING_CONSTRAINTS = {
                 "PININ:sclk": (self.system_setup["speed"] / 4),
@@ -73,6 +97,7 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
+        instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         instance_parameter["MSGID"] = "32'h74697277"
         return instances

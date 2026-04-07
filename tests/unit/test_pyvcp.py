@@ -144,6 +144,7 @@ def test_pyvcp():
           <checkbutton>
             <halpin>"hal_check1"</halpin>
             <anchor>"e"</anchor>
+            <initval>0</initval>
             <width>13</width>
           </checkbutton>
         </hbox>
@@ -160,6 +161,7 @@ def test_pyvcp():
           <checkbutton>
             <halpin>"hal_check2"</halpin>
             <anchor>"e"</anchor>
+            <initval>0</initval>
             <width>13</width>
           </checkbutton>
         </hbox>
@@ -284,6 +286,7 @@ def test_pyvcp():
         <checkbutton>
           <halpin>"halpin11"</halpin>
           <anchor>"e"</anchor>
+          <initval>0</initval>
           <width>13</width>
         </checkbutton>
       </hbox>

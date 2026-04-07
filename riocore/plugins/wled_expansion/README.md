@@ -6,7 +6,8 @@
 
 simple ws2812b led driver / same as the wled plugin but integrated as an expansion to combinate with other plugins
 
-Keywords: expansion led rgb status info
+* Keywords: expansion led rgb status info
+* NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
@@ -17,6 +18,12 @@ Keywords: expansion led rgb status info
 
 ## Options:
 *user-options*
+### name:
+name of this plugin instance
+
+ * type: str
+ * default: 
+
 ### leds:
 number of LED's
 
@@ -33,12 +40,6 @@ LED brighness
  * max: 255
  * default: 127
 
-### name:
-name of this plugin instance
-
- * type: str
- * default: 
-
 
 ## Signals:
 *signals/pins in LinuxCNC*
@@ -47,39 +48,6 @@ name of this plugin instance
 ## Interfaces:
 *transport layer*
 
-
-## Basic-Example:
-```
-{
-    "type": "wled",
-    "pins": {
-        "data": {
-            "pin": "0"
-        }
-    }
-}
-```
-
-## Full-Example:
-```
-{
-    "type": "wled",
-    "leds": 1,
-    "level": 127,
-    "name": "",
-    "pins": {
-        "data": {
-            "pin": "0",
-            "modifiers": [
-                {
-                    "type": "invert"
-                }
-            ]
-        }
-    },
-    "signals": {}
-}
-```
 
 ## Verilogs:
  * [ws2812.v](ws2812.v)

@@ -1,0 +1,647 @@
+<html>
+  <head>
+    <title>RIO MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  </head>
+  <style>
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+}
+
+.item {
+    background-color: #f4f4f4;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+
+  </style>
+  <body>
+    <div class="container">
+        <div class="item">
+    <B>bitin0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin0/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin1/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin2/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir0</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="board0/board0/stepdir0/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir0/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('board0/board0/stepdir0/velocity').value = 0;" id="board0/board0/stepdir0/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="board0/board0/stepdir0/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/stepdir0/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir1</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="board0/board0/stepdir1/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir1/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('board0/board0/stepdir1/velocity').value = 0;" id="board0/board0/stepdir1/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="board0/board0/stepdir1/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/stepdir1/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>stepdir2</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
+        <td><b id="board0/board0/stepdir2/velocity_fb">0</b></td>
+        <td>Hz</td>
+        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir2/velocity" value="0" /></td>
+        <td><button onclick="document.getElementById('board0/board0/stepdir2/velocity').value = 0;" id="board0/board0/stepdir2/velocity_zero" type="button">0</button></td>
+      </tr>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
+        <td><b id="board0/board0/stepdir2/position">0</b></td>
+        <td>steps</td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/stepdir2/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin3</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin3/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin4</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin4/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin5</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin5/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>pwmout0</B>
+    <table>
+      <tr>
+        <td>dty</td>
+        <td><b id="board0/board0/pwmout0/dty_fb">0</b></td>
+        <td>%</td>
+        <td><input type="range" min="0" max="100" id="board0/board0/pwmout0/dty" value="0" /></td>
+      </tr>
+      <tr>
+        <td>enable</td>
+        <td><input type="checkbox" id="board0/board0/pwmout0/enable" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitout0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/bitout0/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitout1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/bitout1/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin6</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin6/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>bitin7</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/bitin7/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>feed</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
+        <td><b id="board0/board0/satmcu0/feed/position">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>satuart0</B>
+    <table>
+      <tr>
+        <td>timeout</td>
+        <td><b id="board0/board0/satuart0/timeout">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>spindle</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
+        <td><b id="board0/board0/satmcu0/spindle/position">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>rapid</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
+        <td><b id="board0/board0/satmcu0/rapid/position">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>jogwheel</B>
+    <table>
+      <tr>
+        <td><div class="tooltip">position<span class="tooltiptext">position feedback in steps</span></div>:</td>
+        <td><b id="board0/board0/satmcu0/jogwheel/position">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>mpgestop</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/mpgestop/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>scale0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/scale0/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>ledscale0</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/ledscale0/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>scale1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/scale1/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>scale2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/scale2/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>selectx</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/selectx/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>selecty</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/selecty/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>ledscale1</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/ledscale1/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>ledscale2</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/ledscale2/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>selectedx</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/selectedx/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>selectedy</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/selectedy/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>selectedz</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><input type="checkbox" id="board0/board0/satmcu0/selectedz/bit" /></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>selectz</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/selectz/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>lbutton</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_short</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit_short">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long1</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit_long1">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long2</td>
+        <td><b id="board0/board0/satmcu0/lbutton/bit_long2">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>cbutton</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/cbutton/bit">0</b></td>
+      </tr>
+    </table>
+        </div>
+        <div class="item">
+    <B>rbutton</B>
+    <table>
+      <tr>
+        <td>bit</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_short</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit_short">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long1</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit_long1">0</b></td>
+      </tr>
+      <tr>
+        <td>bit_long2</td>
+        <td><b id="board0/board0/satmcu0/rbutton/bit_long2">0</b></td>
+      </tr>
+    </table>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var clientID = "ID-" + Math.round(Math.random() * 1000);
+        var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
+
+        document.getElementById("board0/board0/stepdir0/velocity").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir0/velocity").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir0/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("board0/board0/stepdir0/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir0/enable").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir1/velocity").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir1/velocity").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir1/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("board0/board0/stepdir1/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir1/enable").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir2/velocity").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir2/velocity").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/stepdir2/velocity_zero").addEventListener("click", publish, false);
+        document.getElementById("board0/board0/stepdir2/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/stepdir2/enable").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/pwmout0/dty").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/pwmout0/dty").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/pwmout0/enable").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/pwmout0/enable").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/bitout0/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/bitout0/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/bitout1/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/bitout1/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/satmcu0/ledscale0/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/satmcu0/ledscale0/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/satmcu0/ledscale1/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/satmcu0/ledscale1/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/satmcu0/ledscale2/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/satmcu0/ledscale2/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/satmcu0/selectedx/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/satmcu0/selectedx/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/satmcu0/selectedy/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/satmcu0/selectedy/bit").addEventListener("input", publish, false);
+        document.getElementById("board0/board0/satmcu0/selectedz/bit").addEventListener("change", publish, false);
+        document.getElementById("board0/board0/satmcu0/selectedz/bit").addEventListener("input", publish, false);
+        client.connect({onSuccess:onConnect});
+        client.onMessageArrived = onMessage;
+
+        function onConnect() {
+            console.log("connected");
+            client.subscribe("board0/board0/bitin0/bit");
+            client.subscribe("board0/board0/bitin1/bit");
+            client.subscribe("board0/board0/bitin2/bit");
+            client.subscribe("board0/board0/stepdir0/position");
+            client.subscribe("board0/board0/stepdir1/position");
+            client.subscribe("board0/board0/stepdir2/position");
+            client.subscribe("board0/board0/bitin3/bit");
+            client.subscribe("board0/board0/bitin4/bit");
+            client.subscribe("board0/board0/bitin5/bit");
+            client.subscribe("board0/board0/bitin6/bit");
+            client.subscribe("board0/board0/bitin7/bit");
+            client.subscribe("board0/board0/satmcu0/feed/position");
+            client.subscribe("board0/board0/satuart0/timeout");
+            client.subscribe("board0/board0/satmcu0/spindle/position");
+            client.subscribe("board0/board0/satmcu0/rapid/position");
+            client.subscribe("board0/board0/satmcu0/jogwheel/position");
+            client.subscribe("board0/board0/satmcu0/mpgestop/bit");
+            client.subscribe("board0/board0/satmcu0/scale0/bit");
+            client.subscribe("board0/board0/satmcu0/scale1/bit");
+            client.subscribe("board0/board0/satmcu0/scale2/bit");
+            client.subscribe("board0/board0/satmcu0/selectx/bit");
+            client.subscribe("board0/board0/satmcu0/selecty/bit");
+            client.subscribe("board0/board0/satmcu0/selectz/bit");
+            client.subscribe("board0/board0/satmcu0/lbutton/bit");
+            client.subscribe("board0/board0/satmcu0/lbutton/bit_short");
+            client.subscribe("board0/board0/satmcu0/lbutton/bit_long1");
+            client.subscribe("board0/board0/satmcu0/lbutton/bit_long2");
+            client.subscribe("board0/board0/satmcu0/cbutton/bit");
+            client.subscribe("board0/board0/satmcu0/rbutton/bit");
+            client.subscribe("board0/board0/satmcu0/rbutton/bit_short");
+            client.subscribe("board0/board0/satmcu0/rbutton/bit_long1");
+            client.subscribe("board0/board0/satmcu0/rbutton/bit_long2");
+            console.log("connected");
+        }
+
+
+        function publish() {
+            var topic = this.attributes.id.value.replace("_zero", "");
+            element = document.getElementById(topic);
+            var value = "0";
+            if (element.attributes.type.value == "checkbox") {
+                if (element.checked) {
+                    value = "1";
+                }
+            } else {
+                value = element.value;
+            }
+            console.log("publish", topic, value);
+
+            fb_element = document.getElementById(topic + "_fb");
+            if (fb_element) {
+                fb_element.innerHTML = value;
+            }
+
+
+            var message = new Paho.MQTT.Message(value);
+            message.destinationName = topic;
+            client.send(message);
+        }
+
+        function onMessage(message) {
+            // console.log("msg", message.destinationName, message.payloadString);
+            if (message.destinationName == "board0/board0/bitin0/bit") {
+                document.getElementById("board0/board0/bitin0/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin1/bit") {
+                document.getElementById("board0/board0/bitin1/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin2/bit") {
+                document.getElementById("board0/board0/bitin2/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/stepdir0/position") {
+                document.getElementById("board0/board0/stepdir0/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/stepdir1/position") {
+                document.getElementById("board0/board0/stepdir1/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/stepdir2/position") {
+                document.getElementById("board0/board0/stepdir2/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin3/bit") {
+                document.getElementById("board0/board0/bitin3/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin4/bit") {
+                document.getElementById("board0/board0/bitin4/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin5/bit") {
+                document.getElementById("board0/board0/bitin5/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin6/bit") {
+                document.getElementById("board0/board0/bitin6/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/bitin7/bit") {
+                document.getElementById("board0/board0/bitin7/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/feed/position") {
+                document.getElementById("board0/board0/satmcu0/feed/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satuart0/timeout") {
+                document.getElementById("board0/board0/satuart0/timeout").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/spindle/position") {
+                document.getElementById("board0/board0/satmcu0/spindle/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/rapid/position") {
+                document.getElementById("board0/board0/satmcu0/rapid/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/jogwheel/position") {
+                document.getElementById("board0/board0/satmcu0/jogwheel/position").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/mpgestop/bit") {
+                document.getElementById("board0/board0/satmcu0/mpgestop/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/scale0/bit") {
+                document.getElementById("board0/board0/satmcu0/scale0/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/scale1/bit") {
+                document.getElementById("board0/board0/satmcu0/scale1/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/scale2/bit") {
+                document.getElementById("board0/board0/satmcu0/scale2/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/selectx/bit") {
+                document.getElementById("board0/board0/satmcu0/selectx/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/selecty/bit") {
+                document.getElementById("board0/board0/satmcu0/selecty/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/selectz/bit") {
+                document.getElementById("board0/board0/satmcu0/selectz/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/lbutton/bit") {
+                document.getElementById("board0/board0/satmcu0/lbutton/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/lbutton/bit_short") {
+                document.getElementById("board0/board0/satmcu0/lbutton/bit_short").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/lbutton/bit_long1") {
+                document.getElementById("board0/board0/satmcu0/lbutton/bit_long1").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/lbutton/bit_long2") {
+                document.getElementById("board0/board0/satmcu0/lbutton/bit_long2").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/cbutton/bit") {
+                document.getElementById("board0/board0/satmcu0/cbutton/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/rbutton/bit") {
+                document.getElementById("board0/board0/satmcu0/rbutton/bit").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/rbutton/bit_short") {
+                document.getElementById("board0/board0/satmcu0/rbutton/bit_short").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/rbutton/bit_long1") {
+                document.getElementById("board0/board0/satmcu0/rbutton/bit_long1").innerHTML = message.payloadString;
+            }
+            if (message.destinationName == "board0/board0/satmcu0/rbutton/bit_long2") {
+                document.getElementById("board0/board0/satmcu0/rbutton/bit_long2").innerHTML = message.payloadString;
+            }
+        }
+
+    </script>
+  </body>
+</html>

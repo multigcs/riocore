@@ -7,9 +7,14 @@ class Plugin(PluginBase):
         self.INFO = "udp interface for host comunication"
         self.DESCRIPTION = "w5500 driver for the interface communication over UDP"
         self.KEYWORDS = "ethernet network udp interface"
+        self.IMAGES = ["w5500", "w5500mini"]
         self.ORIGIN = "https://github.com/harout/concurrent-data-capture"
         self.TYPE = "interface"
+        self.NEEDS = ["fpga"]
+        self.PROVIDES = ["udp", "interface"]
+        self.HOST_INTERFACE = "UDP"
         self.VERILOGS = ["w5500.v"]
+
         self.PINDEFAULTS = {
             "mosi": {
                 "direction": "output",
@@ -73,6 +78,18 @@ class Plugin(PluginBase):
                 "type": int,
                 "description": "SPI clock",
             },
+            "async": {
+                "default": False,
+                "type": bool,
+                "description": "async",
+                "experimental": True,
+            },
+            "frame": {
+                "default": "full",
+                "type": "select",
+                "options": ["full", "no_timestamp", "no_header", "minimum"],
+                "description": "frame size",
+            },
         }
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
@@ -106,7 +123,8 @@ class Plugin(PluginBase):
         instance_parameter["NET_MASK"] = f"{{8'd{maskl[0]}, 8'd{maskl[1]}, 8'd{maskl[2]}, 8'd{maskl[3]}}}"
         instance_parameter["GW_ADDR"] = f"{{8'd{gwl[0]}, 8'd{gwl[1]}, 8'd{gwl[2]}, 8'd{gwl[3]}}}"
         instance_parameter["PORT"] = port
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
+        instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         instance_parameter["MSGID"] = "32'h74697277"
 
         divider = self.system_setup["speed"] // speed // 5

@@ -1,0 +1,348 @@
+{
+    "name": "ICEBreakerV1.0e",
+    "description": "Small and low cost FPGA educational and development board",
+    "url": "https://github.com/icebreaker-fpga/icebreaker",
+    "pinimage": "board.png",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "up5k",
+    "package": "sg48",
+    "provides": [
+        "pmod",
+        "pmod2"
+    ],
+    "_flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+    "clock": {
+        "osc": 12000000,
+        "speed": 30000000,
+        "pin": "35",
+        "internal": [
+            "48000000",
+            "24000000",
+            "12000000",
+            "6000000"
+        ]
+    },
+    "slots": [
+        {
+            "name": "UART",
+            "comment": "USB UART",
+            "pins": {
+                "RX": {
+                    "pin": "6",
+                    "pos": [
+                        85,
+                        18
+                    ],
+                    "direction": "input"
+                },
+                "TX": {
+                    "pin": "9",
+                    "pos": [
+                        101,
+                        18
+                    ],
+                    "direction": "output"
+                }
+            }
+        },
+        {
+            "name": "LED",
+            "comment": "LED",
+            "pins": {
+                "R": {
+                    "pin": "11",
+                    "pos": [
+                        47,
+                        48
+                    ]
+                },
+                "G": {
+                    "pin": "37",
+                    "pos": [
+                        59,
+                        48
+                    ]
+                }
+            }
+        },
+        {
+            "name": "BUTTON",
+            "comment": "BUTTON",
+            "pins": {
+                "1": {
+                    "pin": "10",
+                    "pos": [
+                        51,
+                        19
+                    ]
+                }
+            }
+        },
+        {
+            "name": "RGB",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "GRN": {
+                    "pin": "40",
+                    "pos": [
+                        11,
+                        74
+                    ],
+                    "direction": "all"
+                },
+                "RED": {
+                    "pin": "39",
+                    "pos": [
+                        35,
+                        74
+                    ],
+                    "direction": "all"
+                },
+                "BLU": {
+                    "pin": "41",
+                    "pos": [
+                        11,
+                        86
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "SPI",
+            "comment": "SPI",
+            "default": "spi",
+            "pins": {
+                "SCLK": {
+                    "pin": "15",
+                    "pos": [
+                        11,
+                        150
+                    ],
+                    "direction": "all"
+                },
+                "MISO": {
+                    "pin": "17",
+                    "pos": [
+                        11,
+                        162
+                    ],
+                    "direction": "all"
+                },
+                "MOSI": {
+                    "pin": "14",
+                    "pos": [
+                        11,
+                        174
+                    ],
+                    "direction": "all"
+                },
+                "SEL": {
+                    "pin": "12",
+                    "pos": [
+                        11,
+                        186
+                    ],
+                    "direction": "all"
+                },
+                "IO3": {
+                    "pin": "13",
+                    "pos": [
+                        11,
+                        197
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PMOD1A",
+            "comment": "PMOD 1A",
+            "pins": {
+                "P1": {
+                    "pin": "4",
+                    "pos": [
+                        162,
+                        50
+                    ]
+                },
+                "P2": {
+                    "pin": "2",
+                    "pos": [
+                        162,
+                        62
+                    ]
+                },
+                "P3": {
+                    "pin": "47",
+                    "pos": [
+                        162,
+                        73
+                    ]
+                },
+                "P4": {
+                    "pin": "45",
+                    "pos": [
+                        162,
+                        85
+                    ]
+                },
+                "P7": {
+                    "pin": "3",
+                    "pos": [
+                        175,
+                        50
+                    ]
+                },
+                "P8": {
+                    "pin": "48",
+                    "pos": [
+                        175,
+                        62
+                    ]
+                },
+                "P9": {
+                    "pin": "46",
+                    "pos": [
+                        175,
+                        73
+                    ]
+                },
+                "P10": {
+                    "pin": "44",
+                    "pos": [
+                        175,
+                        85
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PMOD1B",
+            "comment": "PMOD 1B",
+            "pins": {
+                "P1": {
+                    "pin": "43",
+                    "pos": [
+                        162,
+                        162
+                    ]
+                },
+                "P2": {
+                    "pin": "38",
+                    "pos": [
+                        162,
+                        174
+                    ]
+                },
+                "P3": {
+                    "pin": "34",
+                    "pos": [
+                        162,
+                        186
+                    ]
+                },
+                "P4": {
+                    "pin": "31",
+                    "pos": [
+                        162,
+                        198
+                    ]
+                },
+                "P7": {
+                    "pin": "42",
+                    "pos": [
+                        175,
+                        162
+                    ]
+                },
+                "P8": {
+                    "pin": "36",
+                    "pos": [
+                        175,
+                        174
+                    ]
+                },
+                "P9": {
+                    "pin": "32",
+                    "pos": [
+                        175,
+                        186
+                    ]
+                },
+                "P10": {
+                    "pin": "28",
+                    "pos": [
+                        175,
+                        198
+                    ]
+                }
+            }
+        },
+        {
+            "name": "PMOD2",
+            "comment": "PMOD2",
+            "default": "",
+            "pins": {
+                "P1": {
+                    "pin": "27",
+                    "pos": [
+                        125,
+                        236
+                    ]
+                },
+                "P2": {
+                    "pin": "25",
+                    "pos": [
+                        112,
+                        236
+                    ]
+                },
+                "P3": {
+                    "pin": "21",
+                    "pos": [
+                        99,
+                        236
+                    ]
+                },
+                "P4": {
+                    "pin": "19",
+                    "pos": [
+                        86,
+                        236
+                    ]
+                },
+                "P7": {
+                    "pin": "26",
+                    "pos": [
+                        125,
+                        249
+                    ]
+                },
+                "P8": {
+                    "pin": "23",
+                    "pos": [
+                        112,
+                        249
+                    ]
+                },
+                "P9": {
+                    "pin": "20",
+                    "pos": [
+                        99,
+                        249
+                    ]
+                },
+                "P10": {
+                    "pin": "18",
+                    "pos": [
+                        86,
+                        249
+                    ]
+                }
+            }
+        }
+    ]
+}

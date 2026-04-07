@@ -8,6 +8,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = "simple ws2812b driver with variable input to build led-bars"
         self.KEYWORDS = "led rgb status info"
         self.ORIGIN = "https://github.com/mattvenn/ws2812-core"
+        self.NEEDS = ["fpga"]
         self.VERILOGS = ["ws2812.v", "wled_bar.v"]
         self.PINDEFAULTS = {
             "data": {
@@ -56,27 +57,12 @@ class Plugin(PluginBase):
         instance_parameter["CLK_MHZ"] = self.system_setup["speed"] // 1000000
         return instances
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name == "value":
-            num_leds = self.plugin_setup.get("leds", 12)
-            vmin = self.plugin_setup.get("min", 0)
-            vmax = self.plugin_setup.get("max", num_leds)
-            scale = self.plugin_setup.get("scale", 1.0)
-            if scale is not None:
-                value *= scale
-            if value < vmin:
-                value = vmin
-            if value > vmax:
-                value = vmax
-        return value
-
     def convert_c(self, signal_name, signal_setup):
         if signal_name == "value":
             num_leds = self.plugin_setup.get("leds", 12)
             vmin = self.plugin_setup.get("min", 0)
             vmax = self.plugin_setup.get("max", num_leds)
             scale = self.plugin_setup.get("scale", 1.0)
-            print("scale", scale, signal_setup)
             return f"""
             value *= {scale};
             if (value < {vmin}) {{

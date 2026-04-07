@@ -1,0 +1,41 @@
+#################################################################################
+# networks
+#################################################################################
+net tool-changed                         <= hal_manualtoolchange.changed
+net sig_qtdragon_rio-gui_halui_mdi-command-00 <= qtdragon.rio-gui.halui.mdi-command-00
+net sig_qtdragon_rio-gui_halui_mdi-command-01 <= qtdragon.rio-gui.halui.mdi-command-01
+net sig_qtdragon_rio-gui_halui_mdi-command-02 <= qtdragon.rio-gui.halui.mdi-command-02
+net sig_qtdragon_rio-gui_halui_mdi-command-03 <= qtdragon.rio-gui.halui.mdi-command-03
+net tool-prep-number                     => hal_manualtoolchange.number
+net tool-change                          => hal_manualtoolchange.change
+net sig_board0_bitin6_bit                => qtdragon.rio-gui.probe-input
+net sig_board0_bitin0_bit                => qtdragon.rio-gui.board0.bitin0.bit
+net sig_board0_bitin1_bit                => qtdragon.rio-gui.board0.bitin1.bit
+net sig_board0_bitin2_bit                => qtdragon.rio-gui.board0.bitin2.bit
+net sig_board0_bitin3_bit                => qtdragon.rio-gui.board0.bitin3.bit
+net sig_board0_bitin4_bit                => qtdragon.rio-gui.board0.bitin4.bit
+net sig_board0_bitin5_bit                => qtdragon.rio-gui.board0.bitin5.bit
+net sig_board0_bitin7_bit                => qtdragon.rio-gui.board0.bitin7.bit
+net sig_board0_satuart0_timeout          => qtdragon.rio-gui.board0.satuart0.timeout
+net sig_board0_satmcu0_mpgestop_bit      => qtdragon.rio-gui.brd0.sm0.mpgestop.bit
+net sig_board0_bitin6_bit                => qtdragon.rio-gui.board0.bitin6.bit
+net sig_board0_satmcu0_feed_position     => qtdragon.rio-gui.board0.satmcu0.feed.pos
+net sig_board0_satmcu0_spindle_position  => qtdragon.rio-gui.board0.satmcu0.spl.pos
+net sig_board0_satmcu0_rapid_position    => qtdragon.rio-gui.brd0.satmcu0.rapid.pos
+net sig_board0_satmcu0_lbutton_bit       => qtdragon.rio-gui.brd0.sm0.lbutton.bit
+net sig_board0_satmcu0_lbutton_bit_short => qtdragon.rio-gui.brd0.sm0.lbutton.bit_st
+net sig_board0_satmcu0_lbutton_bit_long1 => qtdragon.rio-gui.brd0.sm0.lbtn.bit_lg1
+net sig_board0_satmcu0_lbutton_bit_long2 => qtdragon.rio-gui.brd0.sm0.lbtn.bit_lg2
+net sig_board0_satmcu0_cbutton_bit       => qtdragon.rio-gui.brd0.sm0.cbutton.bit
+net sig_board0_satmcu0_rbutton_bit       => qtdragon.rio-gui.brd0.sm0.rbutton.bit
+net sig_board0_satmcu0_rbutton_bit_short => qtdragon.rio-gui.brd0.sm0.rbutton.bit_st
+net sig_board0_satmcu0_rbutton_bit_long1 => qtdragon.rio-gui.brd0.sm0.rbtn.bit_lg1
+net sig_board0_satmcu0_rbutton_bit_long2 => qtdragon.rio-gui.brd0.sm0.rbtn.bit_lg2
+net sig_spindle_0_speed-out              => qtdragon.rio-gui.board0.pwmout0.dty
+net sig_spindle_0_forward                => qtdragon.rio-gui.board0.bitout0.bit
+net sig_spindle_0_reverse                => qtdragon.rio-gui.board0.bitout1.bit
+
+#################################################################################
+# setp
+#################################################################################
+
