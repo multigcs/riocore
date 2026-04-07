@@ -13,7 +13,7 @@ class Plugin(PluginBase):
         self.DESCRIPTION = ""
         self.PINDEFAULTS = {}
         board_list = []
-        for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
+        for jboard in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json"))):
             board_list.append(os.path.basename(jboard).replace(".json", ""))
         self.OPTIONS = {
             "node_type": {

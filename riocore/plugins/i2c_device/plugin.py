@@ -25,7 +25,7 @@ class Plugin(PluginBase):
         self.NEEDS = ["i2c"]
         self.TYPE = "base"
         board_list = []
-        for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.py")):
+        for jboard in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.py"))):
             board_list.append(os.path.basename(jboard).replace(".py", ""))
 
         self.OPTIONS.update(

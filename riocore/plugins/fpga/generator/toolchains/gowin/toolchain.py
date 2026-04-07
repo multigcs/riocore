@@ -93,7 +93,7 @@ rm -rf Gowin_V*_Education_linux.tar.gz
         makefile_data.append(f"DEVICE   := {ftype}")
         makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
         makefile_data.append(f"VERILOGS := {verilogs}")
-        makefile_data.append(f"QT_QPA_PLATFORM := minimal")
+        makefile_data.append("QT_QPA_PLATFORM := minimal")
         makefile_data.append("")
         makefile_data.append("all: clean build load")
         makefile_data.append("")

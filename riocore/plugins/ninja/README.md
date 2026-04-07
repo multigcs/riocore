@@ -149,7 +149,7 @@ board type
 
  * type: select
  * default: w5500-evb-pico
- * options: w5500-evb-pico, w5500-evb-pico-parport
+ * options: w5500-evb-pico-parport, w5500-evb-pico
 
 ### mac:
 MAC-Address

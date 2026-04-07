@@ -40,7 +40,7 @@ class Plugin(PluginBase):
         if node_type == "board":
             self.PROVIDES = ["ninja", "gpio", "base", "db25"]
             board_list = []
-            for jboard in glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json")):
+            for jboard in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.json"))):
                 board_list.append(os.path.basename(jboard).replace(".json", ""))
             self.OPTIONS.update(
                 {

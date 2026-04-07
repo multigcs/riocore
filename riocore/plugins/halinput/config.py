@@ -158,7 +158,7 @@ class config:
 
     def wiz_joypad(self):
         devices = []
-        for device_path in glob.glob("/dev/input/event*"):
+        for device_path in sorted(glob.glob("/dev/input/event*")):
             name = device_get_name(device_path)
             if name:
                 devices.append(name)
