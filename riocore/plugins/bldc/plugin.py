@@ -187,7 +187,6 @@ Motor-Setup:
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-
         feedback_divider = self.feedback_res / self.poles / self.sine_len
         instance_parameter["FEEDBACK_DIVIDER"] = int(feedback_divider)
 
@@ -204,6 +203,38 @@ Motor-Setup:
         instance_parameter["SINE_RES_BITS"] = self.SINE_RES_BITS
 
         # internal feedback
-        instance["arguments"]["feedback"] = self.plugin_setup.get("halsensor", self.OPTIONS["halsensor"]["default"])
+        sensor = self.plugin_setup.get("halsensor", self.OPTIONS["halsensor"]["default"])
+        instance["arguments"]["feedback"] = sensor
 
         return instances
+
+    def hal(self, parent):
+        if "joint_data" in self.plugin_setup:
+            joint_data = self.plugin_setup["joint_data"]
+            axis_name = joint_data["axis"]
+            joint_n = joint_data["num"]
+            pid_num = joint_n
+            signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
+            prefix = signal_prefix
+            cmd_halname = f"{prefix}.velocity"
+            feedback_halname = f"{prefix}.position"
+            enable_halname = f"{prefix}.enable"
+            scale_halname = f"{prefix}.velocity-scale"
+            feedback_scale_halname = f"{prefix}.position-scale"
+
+            if joint_data.get("feedback_halname"):
+                feedback_halname = joint_data["feedback_halname"]
+                feedback_scale_halname = joint_data["feedback_scale_halname"]
+
+            parent.halg.joint_add(
+                parent,
+                axis_name,
+                joint_n,
+                "velocity",
+                cmd_halname,
+                feedback_halname=feedback_halname,
+                scale_halname=scale_halname,
+                feedback_scale_halname=feedback_scale_halname,
+                enable_halname=enable_halname,
+                pid_num=pid_num,
+            )

@@ -56,7 +56,7 @@ class Plugin(PluginBase):
             self.SIGNALS = {
                 "revs": {
                     "direction": "input",
-                    "format": "d",
+                    "format": "0.3f",
                 },
                 "angle": {
                     "direction": "input",
@@ -184,15 +184,16 @@ B+  SD-  FG
                 },
                 "angle": {
                     "direction": "input",
-                    "format": "d",
+                    "format": "0.3f",
                 },
                 "position": {
                     "direction": "input",
-                    "format": "d",
+                    "format": "0.3f",
                 },
                 "revs": {
                     "direction": "input",
-                    "format": "d",
+                    "format": "0.3f",
+                    "interface": "angle",
                 },
                 "csum": {
                     "direction": "input",
@@ -493,6 +494,7 @@ on TangNano9k:
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        instance["module"] = self.VERILOGS[0].replace(".v", "")
         if node_type == "rioencoder" or node_type == "panasonic" or node_type == "stepperonline" or node_type == "t3d":
             instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         elif node_type == "yaskawa":
@@ -542,5 +544,34 @@ on TangNano9k:
 
         // calc angle (0-360°)
         value = value * 360 / {self._scale};
+                """
+
+        if node_type == "panasonic":
+            if signal_name == "angle":
+                return f"""
+    value = value * 360.0 / 65536.0 + 360.0;
+    if (value >= 360.0) {{
+        value -= 360.0;
+    }}
+                """
+            if signal_name == "position":
+                return f"""
+    static float revs = 0;
+    static float last_position = 60000;
+    int32_t position_diff = 0;
+    position_diff = value - last_position;
+    if (position_diff > 65000) {{
+        revs--;
+    }} else if (position_diff < -65000) {{
+        revs++;
+    }}
+    last_position = value;
+    value += revs * 131072;
+                """
+            if signal_name == "revs":
+                varname_pos = self.SIGNALS["position"]["varname"]
+
+                return f"""
+    value = *data->{varname_pos} / 131072;
                 """
         return ""

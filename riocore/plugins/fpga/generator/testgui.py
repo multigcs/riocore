@@ -345,6 +345,7 @@ class WinForm(QWidget):
                             self.widgets[wid].setChecked(value)
                         elif hasattr(self.widgets[wid], "setText"):
                             if vformat := self.data_info[variable].get("signal_config", {}).get("format"):
+                                vformat = {"d": "0.0f"}.get(vformat, vformat)
                                 value = f"{{:{vformat}}}".format(value)
                             self.widgets[wid].setText(str(value))
 

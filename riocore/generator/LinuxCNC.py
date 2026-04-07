@@ -2317,9 +2317,10 @@ if __name__ == "__main__":
                     halname = signal_config["halname"]
                     userconfig = signal_config.get("userconfig", {})
                     setp = userconfig.get("setp")
-                    rprefix = "rio"
+                    # rprefix = "rio"
                     if setp:
-                        self.halg.setp_add(f"{rprefix}.{halname}", setp)
+                        # self.halg.setp_add(f"{rprefix}.{halname}", setp)
+                        self.halg.setp_add(f"{halname}", setp)
             else:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     halname = signal_config["halname"]

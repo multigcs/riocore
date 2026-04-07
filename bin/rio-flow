@@ -1969,6 +1969,15 @@ class Window(QMainWindow):
                 riocore.log("INFO: rename uartsub into satuart")
                 plugin["type"] = "satuart"
 
+        # upgrade: rename *_abs to abs_encoder
+        for plugin in list(self.config.get("plugins", [])):
+            if plugin["type"].endswith("_abs") or plugin["type"] == "rioencoder":
+                ptype = plugin["type"].split("_")[0]
+                ntype = ptype.split("_")[0]
+                riocore.log(f"INFO: rename {ptype} into abs_encoder ({ntype})")
+                plugin["node_type"] = ntype
+                plugin["type"] = "abs_encoder"
+
         # upgrade: modbus -> mbus + mbus_device
         for pn, plugin in enumerate(list(self.config.get("plugins", []))):
             if plugin["type"] == "modbus":
