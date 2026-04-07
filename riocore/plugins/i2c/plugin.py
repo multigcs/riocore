@@ -58,6 +58,9 @@ class Plugin(PluginBase):
                     continue
                 instance.device_instances.append(plugin_instance)
 
+            if not instance.device_instances:
+                continue
+
             verilog_data = []
             verilog_data = []
             verilog_data.append("")
@@ -269,10 +272,11 @@ class Plugin(PluginBase):
                 verilog_data.append("                end")
                 verilog_data.append("")
 
-            verilog_data.append("            end else begin")
-            verilog_data.append("                do_init <= 0;")
-            verilog_data.append("                device_n <= 0;")
-            verilog_data.append("            end")
+            if instance.device_instances:
+                verilog_data.append("            end else begin")
+                verilog_data.append("                do_init <= 0;")
+                verilog_data.append("                device_n <= 0;")
+                verilog_data.append("            end")
             verilog_data.append("        end")
             verilog_data.append("    end")
             verilog_data.append("")
@@ -322,6 +326,8 @@ class Plugin(PluginBase):
             instance.VERILOGS_DATA = {f"i2cbus_{instance.instances_name}.v": "\n".join(verilog_data)}
 
     def gateware_instances(self):
+        if not self.device_instances:
+            return None
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance["module"] = f"i2cbus_{self.instances_name}"
