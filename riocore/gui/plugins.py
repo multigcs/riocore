@@ -429,7 +429,7 @@ class GuiPlugins:
             signal_cols = QHBoxLayout()
             signal_rows.addLayout(signal_cols)
 
-            if "fpga" in plugin_instance.NEEDS or "mcu" in plugin_instance.NEEDS:
+            if "fpga" in plugin_instance.NEEDS or "mcu" in plugin_instance.NEEDS or "i2c" in plugin_instance.NEEDS:
                 if "source" not in signal_defaults and not signal_defaults.get("bool"):
                     signal_cols.addWidget(QLabel("Scale"), stretch=1)
                     signal_setup["scale"] = {"type": float, "default": 1.0}
