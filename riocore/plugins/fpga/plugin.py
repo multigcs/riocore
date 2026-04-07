@@ -2,6 +2,7 @@ import copy
 import glob
 import json
 import os
+import platform
 
 import riocore
 
@@ -55,13 +56,17 @@ class Plugin(PluginBase):
         self.jdata = json.loads(open(board_file).read())
         self.PROVIDES += self.jdata.get("provides", [])
 
-        if self.jdata.get("toolchains"):
+        if toolchains := self.jdata.get("toolchains"):
+            if "gowin" in toolchains and platform.machine() != "x86_64":
+                toolchains.remove("gowin")
+                if self.jdata.get("toolchain") == "gowin":
+                    self.jdata["toolchain"] = "icestorm"
             self.OPTIONS.update(
                 {
                     "toolchain": {
-                        "default": self.jdata.get("toolchain"),
+                        "default": self.jdata.get("toolchain", toolchains[0]),
                         "type": "select",
-                        "options": self.jdata["toolchains"],
+                        "options": toolchains,
                         "description": "used toolchain",
                     }
                 }

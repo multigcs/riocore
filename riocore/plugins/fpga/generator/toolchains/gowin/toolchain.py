@@ -24,14 +24,14 @@ class Toolchain:
             "install": """```### on Intel/AMD systems
 mkdir -p /opt/gowin
 cd /opt/gowin
-wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.9.03_Education_linux.tar.gz"
-tar xzvpf Gowin_V1.9.9.03_Education_linux.tar.gz
-rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
+wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.11.03_Education_Linux.tar.gz"
+tar xzvpf Gowin_V*_Education_linux.tar.gz
+rm -rf Gowin_V*_Education_linux.tar.gz
 ```
 
 ```
 # win: https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_x64_win.zip
-# lin: https://cdn.gowinsemi.com.cn/Gowin_V1.9.10.03_Education_linux.tar.gz
+# lin: https://cdn.gowinsemi.com.cn/Gowin_V1.9.11.03_Education_Linux.tar.gz
 
 ```
 
@@ -93,6 +93,7 @@ rm -rf Gowin_V1.9.9.03_Education_linux.tar.gz
         makefile_data.append(f"DEVICE   := {ftype}")
         makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
         makefile_data.append(f"VERILOGS := {verilogs}")
+        makefile_data.append(f"QT_QPA_PLATFORM := minimal")
         makefile_data.append("")
         makefile_data.append("all: clean build load")
         makefile_data.append("")
