@@ -6,8 +6,6 @@
         {
             "type": "fpga",
             "node_type": "TangNano9K",
-            "toolchain": "gowin",
-            "flashcmd": "",
             "protocol": "UART",
             "uid": "board0",
             "pos": [
