@@ -31,6 +31,7 @@ gpio modes:
         self.SIGNALS = {}
         gpio_mode = self.plugin_setup.get("mode", self.option_default("mode"))
         if gpio_mode in {"rpi5", "pi_gpio"}:
+            self.IMAGE = "rpi5.png"
             self.PINDEFAULTS = {
                 "GPIO:P3": {"pin": f"{self.instances_name}:GPIO2", "pos": [264, 53.0], "direction": "all", "edge": "source", "type": "GPIO"},
                 "GPIO:P5": {"pin": f"{self.instances_name}:GPIO3", "pos": [264, 66.0], "direction": "all", "edge": "source", "type": "GPIO"},
@@ -60,6 +61,7 @@ gpio modes:
                 "GPIO:P40": {"pin": f"{self.instances_name}:GPIO21", "pos": [276, 281.0], "direction": "all", "edge": "source", "type": "GPIO"},
             }
         elif gpio_mode == "rpi4":
+            self.IMAGE = "rpi4.png"
             self.PINDEFAULTS = {
                 "GPIO:P3": {"pin": f"{self.instances_name}:SDA1", "pos": [264, 53.0], "direction": "all", "edge": "source", "type": "GPIO"},
                 "GPIO:P5": {"pin": f"{self.instances_name}:SCL1", "pos": [264, 66.0], "direction": "all", "edge": "source", "type": "GPIO"},
