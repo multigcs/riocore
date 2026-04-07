@@ -795,7 +795,8 @@ class GuiPlugins:
                 key = f"{direction}s"
                 if pin_defaults.get("optional", False):
                     key = f"opt_{key}"
-                plugin_needs[plugin["name"]][key] += 1
+                if key in plugin_needs[plugin["name"]]:
+                    plugin_needs[plugin["name"]][key] += 1
             infotext = plugins.plugin_instances[0].INFO
             if plugins.plugin_instances[0].EXPERIMENTAL:
                 infotext += "\n --- EXPERIMENTAL ---"
