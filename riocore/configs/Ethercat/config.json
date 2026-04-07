@@ -1,0 +1,143 @@
+{
+    "name": "Ethercat",
+    "plugins": [
+        {
+            "type": "ethercat",
+            "node_type": "Master",
+            "uid": "ethercat0",
+            "pos": [
+                -240.0,
+                -20.0
+            ]
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ethercat1",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                20.0,
+                -30.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat0:BUS:out"
+                }
+            }
+        },
+        {
+            "type": "ethercat",
+            "node_type": "ek1100",
+            "uid": "ethercat2",
+            "pos": [
+                990.0,
+                20.0
+            ],
+            "modules": "el1008 el1008 el2008 el2008 el4002",
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat4:BUS:out"
+                }
+            },
+            "sub": {
+                "ethercat2-0": {
+                    "node_type": "el1008"
+                },
+                "ethercat2-1": {
+                    "node_type": "el1008"
+                },
+                "ethercat2-2": {
+                    "node_type": "el2008"
+                },
+                "ethercat2-3": {
+                    "node_type": "el2008"
+                },
+                "ethercat2-4": {
+                    "node_type": "el4002"
+                }
+            }
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ethercat3",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                330.0,
+                -30.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat1:BUS:out"
+                }
+            },
+            "name": ""
+        },
+        {
+            "type": "ethercat",
+            "node_type": "Servo/Stepper",
+            "uid": "ethercat4",
+            "is_joint": true,
+            "image": "ethercatservo",
+            "pos": [
+                640.0,
+                -30.0
+            ],
+            "pins": {
+                "BUS:in": {
+                    "pin": "ethercat3:BUS:out"
+                }
+            },
+            "name": ""
+        },
+        {
+            "type": "gpioin",
+            "uid": "gpioin0",
+            "image": "proximity",
+            "pos": [
+                1410.0,
+                310.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-0:IN:I0"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "motion.probe-input"
+                }
+            }
+        },
+        {
+            "type": "gpioout",
+            "uid": "gpioout0",
+            "image": "relay",
+            "pos": [
+                1470.0,
+                410.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "ethercat2-2:OUT:O0"
+                }
+            },
+            "signals": {
+                "bit": {
+                    "net": "spindle.0.on"
+                }
+            }
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 0.89,
+            "pos": [
+                -261,
+                -224
+            ]
+        }
+    }
+}
