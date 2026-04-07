@@ -1,9 +1,14 @@
 # Changelog
 
 ## v0.9.5
+
+### Warning
+* breaking changes, please open your config in rio-flow to fix/convert some stuff
+
 ### Gui
 * new graphical config-gui: rio-flow
 * removing old rio-setup
+
 ### Genaral
 * move all stuff into plugins (boards/modules/breakouts)
 * replacing modbus -> mbus/mbus_device/mbus_hy
