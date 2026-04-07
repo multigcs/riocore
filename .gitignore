@@ -173,7 +173,7 @@ riocore/toolchains.json
 *-test.json
 
 riocore/configs/*/tmp-*.json
-#riocore/configs/*/*.json
+riocore/configs/*/*.json
 
 greybox_tmp/
 MISC
