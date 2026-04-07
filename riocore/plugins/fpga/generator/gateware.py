@@ -348,7 +348,7 @@ class gateware(generator_base):
         output = []
         input_variables_list = []
         if use_header:
-            input_variables_list.append("header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24]")
+            input_variables_list.append("HEADER_TX[7:0], HEADER_TX[15:8], HEADER_TX[23:16], HEADER_TX[31:24]")
         if self.instance.fmaster is None and use_timestamp:
             input_variables_list.append("timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24]")
         output_variables_list = []
@@ -622,11 +622,12 @@ class gateware(generator_base):
         output.append("    wire [BUFFER_SIZE_RX-1:0] rx_data;")
         output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
         output.append("")
-        output.append("    reg signed [31:0] header_tx = 32'h64617461;")
+        output.append("    localparam HEADER_TX = 32'h64617461;")
+        output.append("")
         if use_timestamp:
-            output.append("    reg [31:0] timestamp = 0;")
+            output.append("    reg [31:0] timestamp = 32'd0;")
             output.append("    always @(posedge sysclk) begin")
-            output.append("        timestamp <= timestamp + 1'd1;")
+            output.append("        timestamp <= timestamp + 32'd1;")
             output.append("    end")
             output.append("")
 
