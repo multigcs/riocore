@@ -100,10 +100,11 @@ module rio (
     wire [BUFFER_SIZE_RX-1:0] rx_data;
     wire [BUFFER_SIZE_TX-1:0] tx_data;
 
-    reg signed [31:0] header_tx = 32'h64617461;
-    reg [31:0] timestamp = 0;
+    localparam HEADER_TX = 32'h64617461;
+
+    reg [31:0] timestamp = 32'd0;
     always @(posedge sysclk) begin
-        timestamp <= timestamp + 1'd1;
+        timestamp <= timestamp + 32'd1;
     end
 
     reg [31:0] MULTIPLEXED_INPUT_VALUE = 0;
@@ -173,7 +174,7 @@ module rio (
 
     // MASTER_FPGA -> PC IN (219 + FILL = 224)
     assign tx_data = {
-        header_tx[7:0], header_tx[15:8], header_tx[23:16], header_tx[31:24],
+        HEADER_TX[7:0], HEADER_TX[15:8], HEADER_TX[23:16], HEADER_TX[31:24],
         timestamp[7:0], timestamp[15:8], timestamp[23:16], timestamp[31:24],
         MULTIPLEXED_INPUT_VALUE[7:0], MULTIPLEXED_INPUT_VALUE[15:8], MULTIPLEXED_INPUT_VALUE[23:16], MULTIPLEXED_INPUT_VALUE[31:24],
         MULTIPLEXED_INPUT_ID[7:0],
