@@ -47,38 +47,28 @@ For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your
                 "description": "number of collected values before calculate the rps value",
             },
         }
-
-        self.rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
         self.SIGNALS = {
             "position": {
                 "direction": "input",
-                # "targets": {
-                #    "rps": rps_calculation,
-                #    "rpm": "value_rpm = value_rps * 60.0;",
-                # },
                 "description": "position feedback in steps",
             },
             "rps": {
                 "direction": "input",
-                # "source": "position",
                 "description": "calculates revolutions per second",
             },
             "rpm": {
                 "direction": "input",
-                # "source": "position",
                 "description": "calculates revolutions per minute",
             },
         }
-
-        self.last_pos = 0
+        self.rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
 
     def gateware_instances(self):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        quad_type = self.plugin_setup.get("quad_type", 2)
+        quad_type = self.plugin_setup.get("quad_type", self.OPTIONS["quad_type"]["default"])
         instance_parameter["QUAD_TYPE"] = quad_type
-
         return instances
 
     def convert_c(self, signal_name, signal_setup):
