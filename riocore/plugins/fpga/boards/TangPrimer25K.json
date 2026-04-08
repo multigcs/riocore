@@ -2,7 +2,10 @@
   "name": "TangPrimer25K",
   "description": "TangPrimer25K-Devboard on Dev-Board",
   "url": "https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html",
-  "size": [64, 40],
+  "size": [
+    64,
+    40
+  ],
   "board": "TangPrimer25K",
   "type": "GW5A-LV25MG121NC1/I0",
   "family": "GW5A-25A",
@@ -101,7 +104,7 @@
           "pin": "J5",
           "pos": [
             32,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -109,7 +112,7 @@
           "pin": "H7",
           "pos": [
             46,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -117,7 +120,7 @@
           "pin": "G8",
           "pos": [
             61,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -125,7 +128,7 @@
           "pin": "G5",
           "pos": [
             74,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -176,7 +179,7 @@
           "pin": "K5",
           "pos": [
             150,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -184,7 +187,7 @@
           "pin": "L11",
           "pos": [
             165,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -192,7 +195,7 @@
           "pin": "E10",
           "pos": [
             179,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -200,7 +203,7 @@
           "pin": "A10",
           "pos": [
             192,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -223,7 +226,7 @@
         "P2": {
           "pin": "E11",
           "pos": [
-            176,
+            179,
             138
           ],
           "direction": "all"
@@ -251,7 +254,7 @@
           "pin": "C10",
           "pos": [
             269,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -259,7 +262,7 @@
           "pin": "B10",
           "pos": [
             283,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -267,7 +270,7 @@
           "pin": "D10",
           "pos": [
             298,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -275,7 +278,7 @@
           "pin": "G10",
           "pos": [
             311,
-            148
+            150
           ],
           "direction": "all"
         },
@@ -309,6 +312,374 @@
             311,
             138
           ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "EXP",
+      "comment": "expansion port",
+      "pins": {
+        "P1": {
+          "pin": "K2",
+          "pos": [
+            37,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "K1",
+          "pos": [
+            37,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "L1",
+          "pos": [
+            50,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "L2",
+          "pos": [
+            50,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P5": {
+          "pin": "K4",
+          "pos": [
+            63,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P6": {
+          "pin": "J4",
+          "pos": [
+            63,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "G1",
+          "pos": [
+            76,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "G2",
+          "pos": [
+            76,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "L3",
+          "pos": [
+            89,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "L4",
+          "pos": [
+            89,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P11": {
+          "pin": "5V",
+          "pos": [
+            102,
+            21
+          ],
+          "marker": true,
+          "comment": "",
+          "direction": "all"
+        },
+        "P12": {
+          "pin": "GND",
+          "pos": [
+            102,
+            10
+          ],
+          "marker": true,
+          "comment": "",
+          "direction": "all"
+        },
+        "P13": {
+          "pin": "C2",
+          "pos": [
+            115,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P14": {
+          "pin": "B2",
+          "pos": [
+            115,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P15": {
+          "pin": "F1",
+          "pos": [
+            128,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P16": {
+          "pin": "F2",
+          "pos": [
+            128,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P17": {
+          "pin": "A1",
+          "pos": [
+            141,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P18": {
+          "pin": "E1",
+          "pos": [
+            141,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P19": {
+          "pin": "D1",
+          "pos": [
+            154,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P20": {
+          "pin": "E3",
+          "pos": [
+            154,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P21": {
+          "pin": "J2",
+          "pos": [
+            167,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P22": {
+          "pin": "J1",
+          "pos": [
+            167,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P23": {
+          "pin": "H4",
+          "pos": [
+            180,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P24": {
+          "pin": "G4",
+          "pos": [
+            180,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P25": {
+          "pin": "H2",
+          "pos": [
+            193,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P26": {
+          "pin": "H1",
+          "pos": [
+            193,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P27": {
+          "pin": "J7",
+          "pos": [
+            206,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P28": {
+          "pin": "K7",
+          "pos": [
+            206,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P29": {
+          "pin": "L8",
+          "pos": [
+            219,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P30": {
+          "pin": "L7",
+          "pos": [
+            219,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P31": {
+          "pin": "K10",
+          "pos": [
+            232,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P32": {
+          "pin": "L10",
+          "pos": [
+            232,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P33": {
+          "pin": "K9",
+          "pos": [
+            245,
+            21
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P34": {
+          "pin": "L9",
+          "pos": [
+            245,
+            10
+          ],
+          "comment": "",
+          "direction": "all"
+        },
+        "P35": {
+          "pin": "K8",
+          "pos": [
+            258,
+            21
+          ],
+          "comment": "GCLK0_C",
+          "direction": "all"
+        },
+        "P36": {
+          "pin": "J8",
+          "pos": [
+            258,
+            10
+          ],
+          "comment": "GCLK0_T",
+          "direction": "all"
+        },
+        "P37": {
+          "pin": "F6",
+          "pos": [
+            271,
+            21
+          ],
+          "comment": "GCLK1_C",
+          "direction": "all"
+        },
+        "P38": {
+          "pin": "F7",
+          "pos": [
+            271,
+            10
+          ],
+          "comment": "GCLK1_T",
+          "direction": "all"
+        },
+        "P39": {
+          "pin": "J10",
+          "pos": [
+            284,
+            21
+          ],
+          "comment": "GCLK15_C",
+          "direction": "all"
+        },
+        "P40": {
+          "pin": "J11",
+          "pos": [
+            284,
+            10
+          ],
+          "comment": "GCLK15_T",
           "direction": "all"
         }
       }
