@@ -548,23 +548,23 @@ on TangNano9k:
 
         if node_type == "panasonic":
             if signal_name == "angle":
-                return f"""
+                return """
     value = value * 360.0 / 65536.0 + 360.0;
-    if (value >= 360.0) {{
+    if (value >= 360.0) {
         value -= 360.0;
-    }}
+    }
                 """
             if signal_name == "position":
-                return f"""
+                return """
     static float revs = 0;
     static float last_position = 60000;
     int32_t position_diff = 0;
     position_diff = value - last_position;
-    if (position_diff > 65000) {{
+    if (position_diff > 65000) {
         revs--;
-    }} else if (position_diff < -65000) {{
+    } else if (position_diff < -65000) {
         revs++;
-    }}
+    }
     last_position = value;
     value += revs * 131072;
                 """

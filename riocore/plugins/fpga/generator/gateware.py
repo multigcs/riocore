@@ -827,13 +827,17 @@ class gateware(generator_base):
             output.append("    end")
 
         varmapping = {}
+        varmapping_fallback = {}
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal, signal_config in plugin_instance.SIGNALS.items():
                 if signal in plugin_instance.INTERFACE:
                     iface = plugin_instance.INTERFACE[signal]
-                    varmapping[f"{signal_config['signal_prefix']}:{signal}"] = iface["variable"]
+                    key = f"{signal_config['signal_prefix']}:{signal}"
+                    varmapping[key] = iface["variable"]
+                    fkey = key.replace(f"{plugin_instance.master}.", "")
+                    varmapping_fallback[fkey] = iface["variable"]
 
         sub_configs = []
         for plugin_instance in self.parent.project.plugin_instances:
@@ -896,12 +900,15 @@ class gateware(generator_base):
                             output_last.append(f"    {instance_module} {instance_name} (")
                         arguments_list = []
                         for argument_name, argument_value in instance_arguments.items():
-                            if ":" in argument_value:
-                                if argument_value in varmapping:
-                                    argument_value[argument_name] = varmapping[argument_value]
+                            value = argument_value
+                            if ":" in value:
+                                if value in varmapping:
+                                    value = varmapping[value]
+                                elif value in varmapping_fallback:
+                                    value = varmapping_fallback[value]
                                 else:
-                                    riocore.log(f"ERROR: no mapping found: {argument_value}")
-                            arguments_list.append(f".{argument_name}({argument_value})")
+                                    riocore.log(f"ERROR: no mapping found: {value}")
+                            arguments_list.append(f".{argument_name}({value})")
 
                         arguments_string = ",\n        ".join(arguments_list)
                         output_last.append(f"        {arguments_string}")

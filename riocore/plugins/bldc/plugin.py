@@ -43,7 +43,8 @@ Motor-Setup:
             },
             "halsensor": {
                 "default": "",
-                "type": str,
+                "type": "sigselect",
+                "filter": "angle",
                 "unit": "",
                 "description": "encoder instance",
             },

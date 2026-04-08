@@ -2890,6 +2890,15 @@ class Window(QMainWindow):
         if help_text is None:
             help_text = var_setup.get("help_text", var_setup.get("description"))
 
+        if var_setup["type"] == "sigselect":
+            options = [""]
+            sfilter = var_setup.get("filter", "position")
+            instances = self.list_plugin_instances()
+            for plugin_instance in instances:
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_name.endswith(sfilter):
+                        options.append(f"{plugin_instance.title}:{signal_name}")
+            return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default="", need_enter=need_enter)
         if var_setup["type"] == "imgselect":
             return edit_imgselect(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
         if var_setup["type"] == "select":
