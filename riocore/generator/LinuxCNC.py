@@ -800,7 +800,8 @@ class LinuxCNC:
                 output.append(f"# {plugin_instance.instances_name}")
                 if position_mode == "velocity":
                     pid_setup = self.PID_DEFAULTS.copy()
-                    pid_setup["DEADBAND"] = round(1 / abs(joint_config["SCALE_OUT"]) * 2, 4)
+                    scale = joint_config.get("SCALE_IN", joint_config["SCALE_OUT"])
+                    pid_setup["DEADBAND"] = round(1 / abs(scale) * 2, 4)
                     for key, value_raw in pid_setup.items():
                         value = joint_config.get(f"PID_{key.upper()}") or value_raw
                         output.append(f"{key:18s} = {value}")
