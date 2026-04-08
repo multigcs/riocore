@@ -26,20 +26,30 @@ class Plugin(PluginBase):
                 "max": 8,
                 "description": "number rows",
             },
+            "sendkeys": {
+                "default": False,
+                "type": bool,
+                "description": "using sendkeys hal-component",
+            },
+            "mapping": {
+                "default": "2, 5, 8, 27, 3, 6, 9, 11, 4, 7, 10, 43, 30, 48, 46, 32",
+                "type": str,
+                "description": "keycodes",
+            },
         }
-        cols = self.plugin_setup.get("cols", 4)
-        rows = self.plugin_setup.get("rows", 4)
+        cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
+        rows = self.plugin_setup.get("rows", self.OPTIONS["rows"]["default"])
         self.PINDEFAULTS = {}
         for col in range(cols):
             self.PINDEFAULTS[f"col{col}"] = {
                 "direction": "output",
-                "pos": (185 - cols * 11 + col * 11, 395),
+                "pos": (190 + col * 11, 395),
             }
         for row in range(rows):
             self.PINDEFAULTS[f"row{row}"] = {
                 "direction": "input",
                 "pull": "up",
-                "pos": (190 + row * 11, 395),
+                "pos": (185 - rows * 11 + row * 11, 395),
             }
         self.INTERFACE = {
             "value": {
@@ -51,16 +61,21 @@ class Plugin(PluginBase):
             "value": {
                 "direction": "input",
             },
+            "scancode": {
+                "direction": "input",
+                "hal_type": "u32",
+                "interface": "value",
+            },
         }
 
     def gateware_instances(self):
-        cols = self.plugin_setup.get("cols", 4)
-        rows = self.plugin_setup.get("rows", 4)
+        cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
+        rows = self.plugin_setup.get("rows", self.OPTIONS["rows"]["default"])
         cols_list = []
         rows_list = []
-        for col in range(cols):
+        for col in range(cols - 1, -1, -1):
             cols_list.append(f"PINOUT_{self.instances_name.upper()}_COL{col}")
-        for row in range(rows):
+        for row in range(rows - 1, -1, -1):
             rows_list.append(f"PININ_{self.instances_name.upper()}_ROW{row}")
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
@@ -77,3 +92,43 @@ class Plugin(PluginBase):
         instance["arguments"]["cols"] = f"{{{', '.join(cols_list)}}}"
         instance["arguments"]["rows"] = f"{{{', '.join(rows_list)}}}"
         return instances
+
+    def convert_c(self, signal_name, signal_setup):
+        if signal_name == "scancode":
+            return """
+    static uint32_t last_value = 0;
+    static uint32_t scancode = 0;
+    if (value != last_value) {
+        if (value == 0) {
+            // printf("## up %i \\n", last_value - 1);
+            scancode = 0x80 | last_value - 1;
+        } else {
+            // printf("## down %i \\n", value - 1);
+            scancode = 0xC0 | value - 1;
+        }
+    }
+    last_value = value;
+    value = scancode;
+            """
+        return ""
+
+    def hal(self, parent):
+        sendkeys = self.plugin_setup.get("sendkeys", self.OPTIONS["sendkeys"]["default"])
+        if not sendkeys:
+            return
+        signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
+        cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
+        rows = self.plugin_setup.get("rows", self.OPTIONS["rows"]["default"])
+        mapping = self.plugin_setup.get("mapping", self.OPTIONS["mapping"]["default"]).replace(",", "").split()
+        keys = cols * rows
+        parent.halg.fmt_add(f"loadusr -W sendkeys config={keys}")
+        parent.halg.net_add(f"{signal_prefix}.scancode", "sendkeys.0.keycode", "scancode")
+        for key_n in range(keys):
+            if key_n < len(mapping):
+                parent.halg.setp_add(f"sendkeys.0.scan-event-{key_n:02d}", mapping[key_n])
+        parent.halg.setp_add("sendkeys.0.init", 1)
+
+    def start_sh(self, parent):
+        sendkeys = self.plugin_setup.get("sendkeys", self.OPTIONS["sendkeys"]["default"])
+        if sendkeys:
+            return "sudo modprobe uinput\nsudo chmod 0666 /dev/uinput\n"

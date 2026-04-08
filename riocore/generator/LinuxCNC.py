@@ -305,8 +305,10 @@ class LinuxCNC:
             if hasattr(plugin_instance, "start_sh"):
                 if plugin_instance.fmaster:
                     continue
-                output.append(f"### {plugin_instance.NAME} ({plugin_instance.instances_name}) ###")
-                output.append(plugin_instance.start_sh(self))
+                script = plugin_instance.start_sh(self)
+                if script:
+                    output.append(f"### {plugin_instance.NAME} ({plugin_instance.instances_name}) ###")
+                    output.append(script)
 
         if self.gui_type == "qtvcp":
             # we need sudo to copy the vcp stuff to qtvcp-panels
