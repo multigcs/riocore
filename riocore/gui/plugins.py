@@ -251,7 +251,7 @@ class GuiPlugins:
                     instances = self.parent.plugins.plugin_instances
                 for plugin_instance in instances:
                     for signal_name, signal_config in plugin_instance.signals().items():
-                        if signal_name == "position":
+                        if signal_name.endswith("position"):
                             options.append(f"{plugin_instance.title}:{signal_name}")
                 option_widget = self.parent.edit_item(joints_setup, option, {"type": "select", "options": options, "default": ""}, cb=update, help_text=tootltip)
             else:
