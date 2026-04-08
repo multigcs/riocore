@@ -97,7 +97,7 @@ PWM frequency
 ### halsensor:
 encoder instance
 
- * type: str
+ * type: sigselect
  * default: 
  * unit: 
 
