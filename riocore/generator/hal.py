@@ -728,21 +728,24 @@ class hal_generator:
             postgui_data.append("# setp")
             postgui_data.append("#################################################################################")
 
-            for pin in sorted(self.setps):
-                value = self.setps[pin]
-                if "[JOINT_" in str(value):
-                    continue
+            for mode in (0, 1):
+                for pin in sorted(self.setps):
+                    if (mode == 0 and pin.endswith(".init")) or (mode == 1 and not pin.endswith(".init")):
+                        continue
+                    value = self.setps[pin]
+                    if "[JOINT_" in str(value):
+                        continue
 
-                signal = self.outputs2signals.get(pin) or self.inputs2signals.get(pin)
-                if not signal:
-                    component = pin.split(".", 1)[0]
-                    if component in self.POSTGUI_COMPONENTS:
-                        hal_data.append(f"# setp {pin:36s}   {value:6} (in postgui)")
-                        postgui_data.append(f"setp {pin:36s}   {value}")
+                    signal = self.outputs2signals.get(pin) or self.inputs2signals.get(pin)
+                    if not signal:
+                        component = pin.split(".", 1)[0]
+                        if component in self.POSTGUI_COMPONENTS:
+                            hal_data.append(f"# setp {pin:36s}   {value:6} (in postgui)")
+                            postgui_data.append(f"setp {pin:36s}   {value}")
+                        else:
+                            hal_data.append(f"setp {pin:36s}   {value}")
                     else:
-                        hal_data.append(f"setp {pin:36s}   {value}")
-                else:
-                    hal_data.append(f"# setp {pin:36s}   {value:6} (already linked to {', '.join(signal.get('signals', [signal.get('signal', '?')]))})")
+                        hal_data.append(f"# setp {pin:36s}   {value:6} (already linked to {', '.join(signal.get('signals', [signal.get('signal', '?')]))})")
 
             hal_data.append("")
             postgui_data.append("")

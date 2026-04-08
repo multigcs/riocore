@@ -184,6 +184,7 @@ class pylib(cbase):
                 elif virtual:
                     continue
                 if not boolean:
+                    vtype = vtype.replace("_t", "")
                     output.append(f'      ("{varname}", ctypes.POINTER(ctypes.c_{vtype})),')
                     if not signal_source and not signal_config.get("helper", False):
                         if direction == "input" and hal_type == "float":

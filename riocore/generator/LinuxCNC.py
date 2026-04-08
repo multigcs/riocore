@@ -1625,6 +1625,11 @@ if __name__ == "__main__":
             boolean = signal_config.get("bool")
             u32 = signal_config.get("u32")
             s32 = signal_config.get("s32")
+            hal_type = signal_config.get("hal_type")
+            if hal_type == "u32":
+                u32 = True
+            elif hal_type == "s32":
+                s32 = True
             virtual = signal_config.get("virtual")
             mapping = signal_config.get("mapping")
             setp = userconfig.get("setp")

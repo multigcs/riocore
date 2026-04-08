@@ -336,7 +336,12 @@ class cbase:
                                     source = variable_name.split()[-1].strip("*")
 
                                     if not boolean:
-                                        output.append(f"    float value = data->{source};")
+                                        if hal_type == "u32":
+                                            output.append(f"    uint32_t value = data->{source};")
+                                        elif hal_type == "s32":
+                                            output.append(f"    int32_t value = data->{source};")
+                                        else:
+                                            output.append(f"    float value = data->{source};")
                                     else:
                                         output.append(f"    bool value = data->{source};")
 
@@ -842,12 +847,12 @@ class cbase:
                 if virtual:
                     continue
                 if not boolean:
-                    if not signal_source and not signal_config.get("helper", False) and not virtual:
+                    if not signal_source and not signal_config.get("helper", False) and not virtual and hal_type == "float":
                         output.append(self.vinit(f"{varname}_SCALE", "float", f"{halname}-scale", "output"))
                         output.append(f"    *data->{varname}_SCALE = 1.0;")
                         output.append(self.vinit(f"{varname}_OFFSET", "float", f"{halname}-offset", "output"))
                         output.append(f"    *data->{varname}_OFFSET = 0.0;")
-                    output.append(self.vinit(varname, "float", halname, direction))
+                    output.append(self.vinit(varname, hal_type, halname, direction))
                     output.append(f"    *data->{varname} = 0;")
                     if direction == "input" and hal_type == "float" and not signal_source and not signal_config.get("helper", False):
                         output.append(self.vinit(f"{varname}_ABS", "float", f"{halname}-abs", direction))
