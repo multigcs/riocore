@@ -107,8 +107,8 @@ class WinForm(QWidget):
             self.setStyleSheet(STYLESHEET_TOUCH)
 
         self.setWindowTitle("RIO - TestGui")
-        self.setMinimumWidth(400)
-        self.setMinimumHeight(400)
+        self.setMinimumWidth(800)
+        self.setMinimumHeight(600)
         self.listFile = QListWidget()
         layout = QGridLayout()
         self.setLayout(layout)
@@ -307,7 +307,7 @@ class WinForm(QWidget):
                     if wid not in self.widgets:
                         continue
                     direction = self.data_info[variable].get("direction")
-                    if direction == "output":
+                    if direction in {"output", "inout"}:
                         if self.data_info[variable].get("type") == "bool":
                             if args.blink:
                                 if self.blink_stat == bnum:
@@ -339,7 +339,7 @@ class WinForm(QWidget):
                     if wid not in self.widgets:
                         continue
                     direction = self.data_info[variable].get("direction")
-                    if direction == "input":
+                    if direction in {"input", "inout"}:
                         value = self.rio.data_get(variable)
                         if self.data_info[variable].get("type") == "bool":
                             self.widgets[wid].setChecked(value)
