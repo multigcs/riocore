@@ -38,7 +38,7 @@ class Plugin(PluginBase):
         for row in range(rows):
             self.PINDEFAULTS[f"row{row}"] = {
                 "direction": "input",
-                "pull": "UP",
+                "pull": "up",
                 "pos": (190 + row * 11, 395),
             }
         self.INTERFACE = {
