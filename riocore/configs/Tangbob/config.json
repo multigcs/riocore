@@ -279,9 +279,6 @@
             "simulation": false,
             "protocol": "UDP",
             "sub": {
-                "fpga0_w5500": {
-                    "ip": "192.168.11.194"
-                },
                 "fpga0_wled": {
                     "signals": {
                         "0_green": {
