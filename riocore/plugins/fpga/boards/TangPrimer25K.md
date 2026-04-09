@@ -79,4 +79,50 @@ UART2USB
 | P2 | D11 | all |
 | P1 | G11 | all |
 
+### EXP
+expansion port
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| P1 | K2 | all |
+| P2 | K1 | all |
+| P3 | L1 | all |
+| P4 | L2 | all |
+| P5 | K4 | all |
+| P6 | J4 | all |
+| P7 | G1 | all |
+| P8 | G2 | all |
+| P9 | L3 | all |
+| P10 | L4 | all |
+| P11 | 5V | all |
+| P12 | GND | all |
+| P13 | C2 | all |
+| P14 | B2 | all |
+| P15 | F1 | all |
+| P16 | F2 | all |
+| P17 | A1 | all |
+| P18 | E1 | all |
+| P19 | D1 | all |
+| P20 | E3 | all |
+| P21 | J2 | all |
+| P22 | J1 | all |
+| P23 | H4 | all |
+| P24 | G4 | all |
+| P25 | H2 | all |
+| P26 | H1 | all |
+| P27 | J7 | all |
+| P28 | K7 | all |
+| P29 | L8 | all |
+| P30 | L7 | all |
+| P31 | K10 | all |
+| P32 | L10 | all |
+| P33 | K9 | all |
+| P34 | L9 | all |
+| P35 | K8 | all |
+| P36 | J8 | all |
+| P37 | F6 | all |
+| P38 | F7 | all |
+| P39 | J10 | all |
+| P40 | J11 | all |
+
 

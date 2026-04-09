@@ -49,6 +49,8 @@ class Plugin(PluginBase):
             board_lib = importlib.import_module(f".{board}", "riocore.plugins.i2c_device.boards")
             if hasattr(board_lib, "i2c_device"):
                 board_instance = board_lib.i2c_device(self)
+                board_instance.instances_name = self.instances_name
+                board_instance.master = self.master
                 self.PINDEFAULTS = board_instance.PINDEFAULTS
                 self.INTERFACE = board_instance.INTERFACE
                 self.SIGNALS = board_instance.SIGNALS
@@ -57,6 +59,10 @@ class Plugin(PluginBase):
                 self.options = board_instance.options
                 if hasattr(board_instance, "convert_c"):
                     self.convert_c = board_instance.convert_c
+                if hasattr(board_instance, "update_prefixes"):
+                    self.update_prefixes = board_instance.update_prefixes
+                if hasattr(board_instance, "update_pins"):
+                    self.update_pins = board_instance.update_pins
                 for signal_name, signal_data in self.SIGNALS.items():
                     if "interface" not in signal_data:
                         signal_data["interface"] = signal_name

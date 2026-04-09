@@ -14,15 +14,18 @@ usable as spindle-encoder for rigid tapping and thread cutting.  It is critical 
 ### a:
 
  * direction: input
+ * pull: up
 
 ### b:
 
  * direction: input
+ * pull: up
 
 ### z:
 index pin
 
  * direction: input
+ * pull: up
 
 
 ## Options:

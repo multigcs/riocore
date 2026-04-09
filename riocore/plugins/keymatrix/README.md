@@ -30,22 +30,22 @@ input for matrix keyboards
 ### row0:
 
  * direction: input
- * pull: UP
+ * pull: up
 
 ### row1:
 
  * direction: input
- * pull: UP
+ * pull: up
 
 ### row2:
 
  * direction: input
- * pull: UP
+ * pull: up
 
 ### row3:
 
  * direction: input
- * pull: UP
+ * pull: up
 
 
 ## Options:
@@ -72,10 +72,27 @@ number rows
  * max: 8
  * default: 4
 
+### sendkeys:
+using sendkeys hal-component
+
+ * type: bool
+ * default: False
+
+### mapping:
+keycodes
+
+ * type: str
+ * default: 2, 5, 8, 27, 3, 6, 9, 11, 4, 7, 10, 43, 30, 48, 46, 32
+
 
 ## Signals:
 *signals/pins in LinuxCNC*
 ### value:
+
+ * type: float
+ * direction: input
+
+### scancode:
 
  * type: float
  * direction: input

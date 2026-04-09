@@ -40,6 +40,7 @@ class i2c_device:
         self.bitvar = setup.get("bitvar", self.options["config"]["bitvar"]["default"])
         self.inputs = setup.get("inputs", self.options["config"]["inputs"]["default"])
         self.outputs = setup.get("outputs", self.options["config"]["outputs"]["default"])
+        expansion = setup.get("expansion", self.options["config"]["expansion"]["default"])
         self.INTERFACE = {}
         self.SIGNALS = {}
         setup_data_in = []
@@ -115,15 +116,21 @@ class i2c_device:
         self.PINDEFAULTS = {
             "I2C": {"direction": "output", "edge": "target", "pos": [10, 35], "type": ["I2C"], "bus": True},
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [200, 35], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
-            "IO:P7": {"direction": "all", "edge": "source", "pos": [53, 7], "type": ["GPIO"]},
-            "IO:P6": {"direction": "all", "edge": "source", "pos": [64, 7], "type": ["GPIO"]},
-            "IO:P5": {"direction": "all", "edge": "source", "pos": [75, 7], "type": ["GPIO"]},
-            "IO:P4": {"direction": "all", "edge": "source", "pos": [86, 7], "type": ["GPIO"]},
-            "IO:P3": {"direction": "all", "edge": "source", "pos": [97, 7], "type": ["GPIO"]},
-            "IO:P2": {"direction": "all", "edge": "source", "pos": [108, 7], "type": ["GPIO"]},
-            "IO:P1": {"direction": "all", "edge": "source", "pos": [119, 7], "type": ["GPIO"]},
-            "IO:P0": {"direction": "all", "edge": "source", "pos": [130, 7], "type": ["GPIO"]},
         }
+        if expansion:
+            # TODO: direction / expansion mappping
+            self.PINDEFAULTS.update(
+                {
+                    "IO:P7": {"direction": "all", "edge": "source", "pos": [53, 7], "type": ["FPGA"]},
+                    "IO:P6": {"direction": "all", "edge": "source", "pos": [64, 7], "type": ["FPGA"]},
+                    "IO:P5": {"direction": "all", "edge": "source", "pos": [75, 7], "type": ["FPGA"]},
+                    "IO:P4": {"direction": "all", "edge": "source", "pos": [86, 7], "type": ["FPGA"]},
+                    "IO:P3": {"direction": "all", "edge": "source", "pos": [97, 7], "type": ["FPGA"]},
+                    "IO:P2": {"direction": "all", "edge": "source", "pos": [108, 7], "type": ["FPGA"]},
+                    "IO:P1": {"direction": "all", "edge": "source", "pos": [119, 7], "type": ["FPGA"]},
+                    "IO:P0": {"direction": "all", "edge": "source", "pos": [130, 7], "type": ["FPGA"]},
+                }
+            )
         self.PARAMS = {}
         self.INITS = []
         self.STEPS = [
