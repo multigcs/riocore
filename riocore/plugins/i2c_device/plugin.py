@@ -63,6 +63,8 @@ class Plugin(PluginBase):
                     self.update_prefixes = board_instance.update_prefixes
                 if hasattr(board_instance, "update_pins"):
                     self.update_pins = board_instance.update_pins
+                if hasattr(board_instance, "paint_overlay"):
+                    self.paint_overlay = board_instance.paint_overlay
                 for signal_name, signal_data in self.SIGNALS.items():
                     if "interface" not in signal_data:
                         signal_data["interface"] = signal_name

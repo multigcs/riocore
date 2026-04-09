@@ -1,3 +1,6 @@
+from PyQt5.QtCore import Qt
+
+
 class i2c_device:
     options = {
         "info": "8bit io-expander",
@@ -40,6 +43,7 @@ class i2c_device:
         self.bitvar = setup.get("bitvar", self.options["config"]["bitvar"]["default"])
         self.inputs = setup.get("inputs", self.options["config"]["inputs"]["default"])
         self.outputs = setup.get("outputs", self.options["config"]["outputs"]["default"])
+        self.address = setup.get("address", "0x20")
         expansion = setup.get("expansion", self.options["config"]["expansion"]["default"])
         self.INTERFACE = {}
         self.SIGNALS = {}
@@ -118,19 +122,14 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [200, 35], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
         if expansion:
-            # TODO: direction / expansion mappping
-            self.PINDEFAULTS.update(
-                {
-                    "IO:P7": {"direction": "all", "edge": "source", "pos": [53, 7], "type": ["FPGA"]},
-                    "IO:P6": {"direction": "all", "edge": "source", "pos": [64, 7], "type": ["FPGA"]},
-                    "IO:P5": {"direction": "all", "edge": "source", "pos": [75, 7], "type": ["FPGA"]},
-                    "IO:P4": {"direction": "all", "edge": "source", "pos": [86, 7], "type": ["FPGA"]},
-                    "IO:P3": {"direction": "all", "edge": "source", "pos": [97, 7], "type": ["FPGA"]},
-                    "IO:P2": {"direction": "all", "edge": "source", "pos": [108, 7], "type": ["FPGA"]},
-                    "IO:P1": {"direction": "all", "edge": "source", "pos": [119, 7], "type": ["FPGA"]},
-                    "IO:P0": {"direction": "all", "edge": "source", "pos": [130, 7], "type": ["FPGA"]},
-                }
-            )
+            for bit in range(8):
+                if (1 << bit) & self.outputs and (1 << bit) & self.inputs:
+                    self.PINDEFAULTS[f"IO:P{bit}"] = {"direction": "all", "edge": "source", "pos": [int(130 - bit * 11), 7], "type": ["FPGA"]}
+                elif (1 << bit) & self.outputs:
+                    self.PINDEFAULTS[f"IO:P{bit}"] = {"direction": "output", "edge": "source", "pos": [int(130 - bit * 11), 7], "type": ["FPGA"]}
+                elif (1 << bit) & self.inputs:
+                    self.PINDEFAULTS[f"IO:P{bit}"] = {"direction": "input", "edge": "source", "pos": [int(130 - bit * 11), 7], "type": ["FPGA"]}
+
         self.PARAMS = {}
         self.INITS = []
         self.STEPS = [
@@ -150,3 +149,13 @@ class i2c_device:
                     "data_in": setup_data_in,
                 }
             )
+
+    def paint_overlay(self, painter):
+        address = int(self.address.split("x")[-1]) - 20
+        painter.setPen(Qt.GlobalColor.black)
+        painter.setBrush(Qt.GlobalColor.yellow)
+        for bit in range(3):
+            if (1 << bit) & address:
+                painter.drawRect(118, 53 - bit * 11, 22, 10)
+            else:
+                painter.drawRect(129, 53 - bit * 11, 22, 10)
