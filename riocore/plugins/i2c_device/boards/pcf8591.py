@@ -8,6 +8,7 @@ class i2c_device:
     def __init__(self, parent, system_setup=None):
         self.system_setup = system_setup or {}
         self.name = parent.instances_name
+        self.address = parent.plugin_setup.get("address", "0x48")
         self.INTERFACE = {
             f"{self.name}_dac": {
                 "size": 8,

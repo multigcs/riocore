@@ -151,7 +151,7 @@ class i2c_device:
             )
 
     def paint_overlay(self, painter):
-        address = int(self.address.split("x")[-1]) - 20
+        address = int(self.address, 16) - 0x20
         painter.setPen(Qt.GlobalColor.black)
         painter.setBrush(Qt.GlobalColor.yellow)
         for bit in range(3):
