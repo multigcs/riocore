@@ -1885,8 +1885,10 @@ if __name__ == "__main__":
                     gui_gen.draw_frame_begin("Debug-Info")
                     gui_gen.draw_vbox_begin()
 
-                    pname = gui_gen.draw_number_s32("Servothread-Time", "servothreadtime")
-                    self.halg.net_add("servo-thread.time", pname)
+                    # pname = gui_gen.draw_number_s32("Servothread-Time", "servothreadtime", setup={"unit": "ns"})
+                    # self.halg.net_add("servo-thread.time", pname)
+                    pname = gui_gen.draw_number("Servothread-Time", "servothreadtime", setup={"unit": "ms", "format": "01.4f"})
+                    self.halg.net_add("(float(servo-thread.time) / 1000000.0)", pname)
 
                     for axis_name, axis_config in self.project.axis_dict.items():
                         joints = axis_config["joints"]
