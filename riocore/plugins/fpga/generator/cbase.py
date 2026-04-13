@@ -62,6 +62,8 @@ class cbase:
                         output.append("")
                         output.append("        /*** get plugin vars ***/")
                         for signal_name, signal_config in plugin_instance.signals().items():
+                            if signal_config.get("expansion") is True:
+                                continue
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
@@ -80,6 +82,8 @@ class cbase:
                         output.append("        /*** update plugin vars ***/")
                         output.append("")
                         for signal_name, signal_config in plugin_instance.signals().items():
+                            if signal_config.get("expansion") is True:
+                                continue
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
@@ -102,6 +106,8 @@ class cbase:
                     else:
                         output.append(f"void convert_{variable_name.lower()}(data_t *data) {{")
                         for signal_name, signal_config in plugin_instance.signals().items():
+                            if signal_config.get("expansion") is True:
+                                continue
                             varname = signal_config["varname"]
                             interface = signal_config.get("interface")
                             var_prefix = signal_config["var_prefix"]
@@ -184,6 +190,8 @@ class cbase:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 if signal_name == "position":
                     varname = signal_config["varname"]
                     position_mapping[plugin_instance.instances_name] = varname
@@ -214,6 +222,8 @@ class cbase:
                         output.append("")
                         output.append("    /*** get plugin vars ***/")
                         for signal_name, signal_config in plugin_instance.signals().items():
+                            if signal_config.get("expansion") is True:
+                                continue
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
@@ -235,6 +245,8 @@ class cbase:
 
                         output.append("    /*** update plugin vars ***/")
                         for signal_name, signal_config in plugin_instance.signals().items():
+                            if signal_config.get("expansion") is True:
+                                continue
                             varname = signal_config["varname"]
                             direction = signal_config["direction"]
                             boolean = signal_config.get("bool")
@@ -247,6 +259,8 @@ class cbase:
                         output.append("")
             else:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
@@ -513,6 +527,8 @@ class cbase:
                 for signal_name, signal_config in plugin_instance.signals().items():
                     if signal_config.get("no_convert") is True:
                         continue
+                    if signal_config.get("expansion") is True:
+                        continue
                     varname = signal_config["varname"]
                     signal_source = signal_config.get("source")
                     signal_targets = signal_config.get("targets", {})
@@ -739,6 +755,8 @@ class cbase:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 varname = signal_config["varname"]
                 var_prefix = signal_config["var_prefix"]
                 direction = signal_config["direction"]
@@ -836,6 +854,8 @@ class cbase:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 varname = signal_config["varname"]

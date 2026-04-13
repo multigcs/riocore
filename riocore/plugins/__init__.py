@@ -318,7 +318,6 @@ class PluginBase:
             signals[name]["var_prefix"] = signal_prefix.replace(".", "_").replace("-", "_").upper()
             signals[name]["plugin_instance"] = self
             gpio_pin = self.plugin_setup.get("pins", {}).get(name, {}).get("pin")
-
             if self.NAME in {"gpioout", "gpioin"} and gpio_pin and not self.gmaster:
                 signals[name]["halname"] = gpio_pin
             else:
@@ -330,6 +329,7 @@ class PluginBase:
             if len(self.SIGNALS) > 1 and net:
                 netname = f"{net}.{name}"
             signals[name]["netname"] = signals[name]["userconfig"].get("net", netname)
+            signals[name]["expansion"] = self.plugin_setup.get("expansion", False)
         return signals
 
     def interface_data(self):

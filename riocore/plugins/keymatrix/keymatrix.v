@@ -11,30 +11,27 @@ module keymatrix
     localparam ROW_BITS = clog2(ROWS + 1);
     localparam COL_BITS = clog2(COLS + 1);
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
-    reg [DIVIDER_BITS:0]counter;
+    reg [DIVIDER_BITS - 1:0] delay;
 
-    reg scan_clk;
-    always @(posedge clk) begin
-        if (counter == 0) begin
-            counter <= DIVIDER;
-            scan_clk <= ~scan_clk;
-        end else begin
-            counter <= counter - 1;
-        end
-    end
-
-    reg set = 0;
+    reg [1:0] step = 0;
     reg [ROW_BITS - 1:0] row = 0;
     reg [COL_BITS - 1:0] col = 0;
     reg [VALUE_BITS - 1:0] read = 0;
-    always @ (posedge scan_clk) begin
-        set <= ~set;
-        if (set == 1) begin
+    always @ (posedge clk) begin
+        if (step == 0) begin
             if (col == 0 && row == 0) begin
                 value <= read;
                 read <= 0;
             end
             cols <= ~(1<<col);
+            step <= 1;
+        end else if (step == 1) begin
+            if (delay == 0) begin
+                delay <= DIVIDER;
+                step <= 2;
+            end else begin
+                delay <= delay - 1;
+            end
         end else begin
             if (rows[row] == 0) begin
                 read <= row + 1 + col * 4;
@@ -49,6 +46,7 @@ module keymatrix
                     row <= 0;
                 end
             end
+            step <= 0;
         end
     end
 

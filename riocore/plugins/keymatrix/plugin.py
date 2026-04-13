@@ -80,7 +80,7 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        divider = self.system_setup["speed"] // 1000 // 2
+        divider = self.system_setup["speed"] // 100
         instance_parameter["DIVIDER"] = divider
         instance_parameter["ROWS"] = rows
         instance_parameter["COLS"] = cols

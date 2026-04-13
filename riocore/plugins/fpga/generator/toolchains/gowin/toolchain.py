@@ -25,8 +25,8 @@ class Toolchain:
 mkdir -p /opt/gowin
 cd /opt/gowin
 wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.11.03_Education_Linux.tar.gz"
-tar xzvpf Gowin_V*_Education_linux.tar.gz
-rm -rf Gowin_V*_Education_linux.tar.gz
+tar xzvpf Gowin_V*_Education_Linux.tar.gz
+rm -rf Gowin_V*_Education_Linux.tar.gz
 ```
 
 ```
@@ -122,12 +122,13 @@ rm -rf Gowin_V*_Education_linux.tar.gz
                     "use_mspi_as_gpio",
                     "use_done_as_gpio",
                     "use_ready_as_gpio",
-                    "use_reconfign_as_gpio",
                     "use_i2c_as_gpio",
                 ],
             )
             if family in {"GW5A-25A", "GW5A-25B"}:
                 set_options.append("use_cpu_as_gpio")
+            else:
+                set_options.append("use_reconfign_as_gpio")
 
             for set_option in set_options:
                 makefile_data.append(f"	@echo set_option -{set_option} 1 >> $(PROJECT).tcl")
@@ -163,12 +164,13 @@ rm -rf Gowin_V*_Education_linux.tar.gz
                     "use_mspi_as_gpio",
                     "use_done_as_gpio",
                     "use_ready_as_gpio",
-                    "use_reconfign_as_gpio",
                     "use_i2c_as_gpio",
                 ],
             )
             if family in {"GW5A-25A", "GW5A-25B"}:
                 set_options.append("use_cpu_as_gpio")
+            else:
+                set_options.append("use_reconfign_as_gpio")
 
             for set_option in set_options:
                 makefile_data.append(f'	@echo "set_option -{set_option} 1" >> $(PROJECT).tcl')
@@ -211,12 +213,13 @@ rm -rf Gowin_V*_Education_linux.tar.gz
                     "use_mspi_as_gpio",
                     "use_done_as_gpio",
                     "use_ready_as_gpio",
-                    "use_reconfign_as_gpio",
                     "use_i2c_as_gpio",
                 ],
             )
             if family in {"GW5A-25A", "GW5A-25B"}:
                 set_options.append("use_cpu_as_gpio")
+            else:
+                set_options.append("use_reconfign_as_gpio")
 
             for set_option in set_options:
                 tcl_data.append(f"set_option -{set_option} 1")

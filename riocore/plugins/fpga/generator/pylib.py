@@ -166,6 +166,8 @@ class pylib(cbase):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 varname = signal_config["varname"]
                 # var_prefix = signal_config["var_prefix"]
                 direction = signal_config["direction"]
@@ -271,6 +273,8 @@ class pylib(cbase):
             output.append(f'                "is_joint": {is_joint},')
             output.append('                "variables": [')
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 varname = signal_config["varname"]
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
@@ -301,6 +305,8 @@ class pylib(cbase):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 userconfig = signal_config.get("userconfig", {})
                 varname = signal_config["varname"]
                 halname = signal_config["halname"]
@@ -380,6 +386,8 @@ class pylib(cbase):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 # halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 direction = signal_config["direction"]
@@ -400,6 +408,8 @@ class pylib(cbase):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 # halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 direction = signal_config["direction"]
@@ -446,6 +456,8 @@ class pylib(cbase):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 varname = signal_config["varname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")

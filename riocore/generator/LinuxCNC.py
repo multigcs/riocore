@@ -1108,6 +1108,8 @@ o<{oword}> endsub
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     halname = signal_config["halname"]
                     netname = signal_config["netname"]
                     userconfig = signal_config.get("userconfig")
@@ -1125,6 +1127,8 @@ o<{oword}> endsub
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     halname = signal_config["halname"]
                     netname = signal_config["netname"]
                     virtual = signal_config.get("virtual")
@@ -1596,6 +1600,8 @@ if __name__ == "__main__":
             for signal_name, signal_config in plugin_instance.signals().items():
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
                     continue
+                if signal_config.get("expansion") is True:
+                    continue
                 userconfig = signal_config.get("userconfig", {})
                 displayconfig = userconfig.get("display", signal_config.get("display", {}))
                 section = displayconfig.get("section", "").lower()
@@ -1608,6 +1614,8 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "velocity", "position-cmd", "enable", "dty"}:
+                    continue
+                if signal_config.get("expansion") is True:
                     continue
                 halname = signal_config["halname"]
                 prefix = ".".join(halname.split(".")[:-1])
@@ -1786,6 +1794,8 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:
+                    continue
+                if signal_config.get("expansion") is True:
                     continue
                 vcp_add(signal_config, widgets)
 
@@ -2089,6 +2099,8 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     halname = signal_config["halname"]
                     netname = signal_config["netname"]
                     direction = signal_config["direction"]
@@ -2163,6 +2175,8 @@ if __name__ == "__main__":
                 if plugin_instance.NAME != "modbus":
                     continue
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     if signal_name.endswith("_error_count"):
                         self.halg.net_add(f"{signal_config['halname']}-s32", "qtdragon.spindle-modbus-errors")
                     elif signal_name.endswith("_ampere"):
@@ -2192,6 +2206,8 @@ if __name__ == "__main__":
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 userconfig = signal_config.get("userconfig", {})
                 mqtt = userconfig.get("mqtt")
@@ -2322,6 +2338,8 @@ if __name__ == "__main__":
             if plugin_instance.plugin_setup.get("is_joint", False) is True:
                 # only setp for joints, other handled by plugin_instance.hal()
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     halname = signal_config["halname"]
                     userconfig = signal_config.get("userconfig", {})
                     setp = userconfig.get("setp")
@@ -2331,6 +2349,8 @@ if __name__ == "__main__":
                         self.halg.setp_add(f"{halname}", setp)
             else:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     halname = signal_config["halname"]
                     netname = signal_config["netname"]
                     userconfig = signal_config.get("userconfig", {})
@@ -2433,6 +2453,8 @@ if __name__ == "__main__":
         for plugin_instance in project.plugin_instances:
             if plugin_instance.plugin_setup.get("is_joint", False) is False:
                 for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("expansion") is True:
+                        continue
                     userconfig = signal_config.get("userconfig")
                     net = userconfig.get("net")
                     if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
@@ -2514,6 +2536,8 @@ if __name__ == "__main__":
                         for sub_instance in project.plugin_instances:
                             if sub_instance.title == fb_plugin_name:
                                 for sub_signal_name, sub_signal_config in sub_instance.signals().items():
+                                    if signal_config.get("expansion") is True:
+                                        continue
                                     if fb_signal_name != sub_signal_name:
                                         continue
                                     sub_direction = sub_signal_config["direction"]
