@@ -128,7 +128,7 @@ module rio (
     assign PINOUT_BOARD0_W5500_SEL = PINOUT_BOARD0_W5500_SEL_RAW;
     w5500 #(
         .MAC_ADDR({8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C}),
-        .IP_ADDR({8'd192, 8'd168, 8'd11, 8'd194}),
+        .IP_ADDR({8'd192, 8'd168, 8'd10, 8'd194}),
         .NET_MASK({8'd255, 8'd255, 8'd255, 8'd0}),
         .GW_ADDR({8'd192, 8'd168, 8'd10, 8'd1}),
         .PORT(2390),

@@ -58,44 +58,44 @@ class i2c_device:
         self.INTERFACE = {}
         self.SIGNALS = {}
         for channel in range(self.channels):
-            self.INTERFACE[f"{self.name}_ch{channel}"] = {
+            self.INTERFACE[f"ch{channel}"] = {
                 "size": 16,
                 "direction": "output",
                 "multiplexed": True,
             }
             if self.units == "ms":
-                self.SIGNALS[f"{self.name}_ch{channel}"] = {
+                self.SIGNALS[f"ch{channel}"] = {
                     "direction": "output",
                     "min": 0,
                     "max": 1 * 1000 // self.frequency,
                     "unit": "ms",
                 }
             elif self.units == "rc %":
-                self.SIGNALS[f"{self.name}_ch{channel}"] = {
+                self.SIGNALS[f"ch{channel}"] = {
                     "direction": "output",
                     "min": 0,
                     "max": 100,
                     "unit": "%",
                 }
             elif self.units == "rc arc":
-                self.SIGNALS[f"{self.name}_ch{channel}"] = {
+                self.SIGNALS[f"ch{channel}"] = {
                     "direction": "output",
                     "min": 0,
                     "max": 180,
                     "unit": "degrees",
                 }
             else:
-                self.SIGNALS[f"{self.name}_ch{channel}"] = {
+                self.SIGNALS[f"ch{channel}"] = {
                     "direction": "output",
                     "min": 0,
                     "max": 100,
                     "unit": "%",
                 }
-        self.INTERFACE[f"{self.name}_valid"] = {
+        self.INTERFACE["valid"] = {
             "size": 1,
             "direction": "input",
         }
-        self.SIGNALS[f"{self.name}_valid"] = {
+        self.SIGNALS["valid"] = {
             "direction": "input",
             "bool": True,
         }
@@ -182,21 +182,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [270, 50], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-        if self.units == "ms":
-            value = self.frequency * 4095 * value // 1000
-        elif self.units == "rc %":
-            value = self.frequency * 4095 * (1 / 100 * value + 1.0) // 1000
-        elif self.units == "rc arc":
-            value = self.frequency * 4095 * (1 / 180 * value + 1.0) // 1000
-        else:
-            value = value * 4095 // 100
-        return value
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         if self.units:
             return f"""

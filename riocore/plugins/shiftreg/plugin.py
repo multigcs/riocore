@@ -112,7 +112,6 @@ jitter measured with a EPM240 as 40bit Shiftreg:
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 instance.hal_prefix = instance.instances_name
                 plugin_instance = connected_pin["instance"]
-                # plugin_instance.PREFIX = f"{instance.master}.{instance.hal_prefix}.{plugin_instance.instances_name}"
                 plugin_instance.PREFIX = f"{instance.master}.{plugin_instance.instances_name}"
                 fnum += 1
 

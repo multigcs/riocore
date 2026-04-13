@@ -74,14 +74,14 @@ class Plugin(PluginBase):
                     size = iface["size"]
                     if direction == "input":
                         if size == 1:
-                            verilog_data.append(f"        output reg {iname} = 0,")
+                            verilog_data.append(f"        output reg {device_instance.instances_name}_{iname} = 0,")
                         else:
-                            verilog_data.append(f"        output reg [{size - 1}:0] {iname} = 0,")
+                            verilog_data.append(f"        output reg [{size - 1}:0] {device_instance.instances_name}_{iname} = 0,")
                     elif direction == "output":
                         if size == 1:
-                            verilog_data.append(f"        input wire {iname},")
+                            verilog_data.append(f"        input wire {device_instance.instances_name}_{iname},")
                         else:
-                            verilog_data.append(f"        input wire [{size - 1}:0] {iname},")
+                            verilog_data.append(f"        input wire [{size - 1}:0] {device_instance.instances_name}_{iname},")
             verilog_data.append("        inout sda,")
             verilog_data.append("        output scl")
             verilog_data.append("    );")
@@ -262,7 +262,7 @@ class Plugin(PluginBase):
                     verilog_data.append("")
                     verilog_data.append("                end else if (do_init) begin")
                 else:
-                    verilog_data.append("                if (do_init) begin")
+                    verilog_data.append(f"                {next_if}if (do_init) begin")
 
                 verilog_data.append(f"                    // init steps for {name}")
                 verilog_data += instance.add_steps(device_instance, device_instance.INITS)[1]
@@ -337,7 +337,7 @@ class Plugin(PluginBase):
         instance_arguments = instance["arguments"]
         for device_instance in self.device_instances:
             for key, ifaces in device_instance.INTERFACE.items():
-                instance_arguments[key] = ifaces["variable"]
+                instance_arguments[f"{device_instance.instances_name}_{key}"] = ifaces["variable"]
         return instances
 
     def add_steps(self, plugin_instance, steps):
@@ -348,8 +348,8 @@ class Plugin(PluginBase):
         for iname, iface in plugin_instance.INTERFACE.items():
             direction = iface["direction"]
             size = iface["size"]
-            if direction == "input" and iname.endswith("_valid"):
-                dev_valid = iname
+            if direction == "input" and iname == "valid":
+                dev_valid = f"{plugin_instance.instances_name}_{iname}"
 
         devname = f"DEVICE_{name.replace(' ', '').upper()}"
         check_timeout = False

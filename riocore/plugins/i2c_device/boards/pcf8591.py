@@ -108,13 +108,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [155, 30], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-        return value
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         return """
         value = value;

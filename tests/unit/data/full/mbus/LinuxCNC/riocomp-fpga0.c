@@ -338,14 +338,14 @@ typedef struct {
     hal_bit_t   *SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID;
     hal_bit_t   *SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID_not;
     hal_float_t *SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS;
-    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP;
-    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS;
-    hal_s32_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32;
-    hal_u32_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS;
-    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE;
-    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET;
-    hal_bit_t   *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID;
-    hal_bit_t   *SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not;
+    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_TEMP;
+    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_TEMP_ABS;
+    hal_s32_t *SIGIN_FPGA0_I2C_LM75_0_TEMP_S32;
+    hal_u32_t *SIGIN_FPGA0_I2C_LM75_0_TEMP_U32_ABS;
+    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_TEMP_SCALE;
+    hal_float_t *SIGIN_FPGA0_I2C_LM75_0_TEMP_OFFSET;
+    hal_bit_t   *SIGIN_FPGA0_I2C_LM75_0_VALID;
+    hal_bit_t   *SIGIN_FPGA0_I2C_LM75_0_VALID_not;
     // raw variables
     uint8_t VARIN128_MBMASTER0_RXDATA[16];
     uint8_t VAROUT128_MBMASTER0_TXDATA[16];
@@ -355,7 +355,7 @@ typedef struct {
     int32_t VARIN32_STEPDIR1_POSITION;
     int32_t VAROUT32_STEPDIR2_VELOCITY;
     int32_t VARIN32_STEPDIR2_POSITION;
-    int16_t VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP;
+    int16_t VARIN16_I2C_LM75_0_TEMP;
     bool VAROUT1_FPGA0_WLED_0_GREEN;
     bool VAROUT1_FPGA0_WLED_0_BLUE;
     bool VAROUT1_FPGA0_WLED_0_RED;
@@ -371,7 +371,7 @@ typedef struct {
     bool VARIN1_BITIN0_BIT;
     bool VARIN1_BITIN1_BIT;
     bool VARIN1_BITIN2_BIT;
-    bool VARIN1_I2C_LM75_0_I2C_LM75_0_VALID;
+    bool VARIN1_I2C_LM75_0_VALID;
 } data_t;
 static data_t *data;
 
@@ -385,7 +385,7 @@ data_t *register_signals(void) {
     data->VARIN32_STEPDIR1_POSITION = 0;
     data->VAROUT32_STEPDIR2_VELOCITY = 0;
     data->VARIN32_STEPDIR2_POSITION = 0;
-    data->VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP = 0;
+    data->VARIN16_I2C_LM75_0_TEMP = 0;
     data->VAROUT1_FPGA0_WLED_0_GREEN = 0;
     data->VAROUT1_FPGA0_WLED_0_BLUE = 0;
     data->VAROUT1_FPGA0_WLED_0_RED = 0;
@@ -401,7 +401,7 @@ data_t *register_signals(void) {
     data->VARIN1_BITIN0_BIT = 0;
     data->VARIN1_BITIN1_BIT = 0;
     data->VARIN1_BITIN2_BIT = 0;
-    data->VARIN1_I2C_LM75_0_I2C_LM75_0_VALID = 0;
+    data->VARIN1_I2C_LM75_0_VALID = 0;
 
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_error), comp_id, "fpga0.sys-error")) != 0) error_handler(retval);
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "fpga0.sys-status")) != 0) error_handler(retval);
@@ -971,22 +971,22 @@ data_t *register_signals(void) {
     *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID_not = 1 - *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID;
     if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS), comp_id, "fpga0.mbus_device0.power_total_errors")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS = 0;
-    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_temp-scale")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE = 1.0;
-    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_temp-offset")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET = 0.0;
-    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_temp")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP = 0;
-    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_temp-abs")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS = 0;
-    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_temp-s32")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32 = 0;
-    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_temp-u32-abs")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS = 0;
-    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_valid")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID = 0;
-    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not), comp_id, "fpga0.i2c_lm75_0.i2c_lm75_0_valid-not")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID;
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP_SCALE), comp_id, "fpga0.i2c_lm75_0.temp-scale")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_SCALE = 1.0;
+    if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP_OFFSET), comp_id, "fpga0.i2c_lm75_0.temp-offset")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_OFFSET = 0.0;
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP), comp_id, "fpga0.i2c_lm75_0.temp")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP = 0;
+    if ((retval = hal_pin_float_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP_ABS), comp_id, "fpga0.i2c_lm75_0.temp-abs")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_ABS = 0;
+    if ((retval = hal_pin_s32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP_S32), comp_id, "fpga0.i2c_lm75_0.temp-s32")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_S32 = 0;
+    if ((retval = hal_pin_u32_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP_U32_ABS), comp_id, "fpga0.i2c_lm75_0.temp-u32-abs")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_U32_ABS = 0;
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_VALID), comp_id, "fpga0.i2c_lm75_0.valid")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_VALID = 0;
+    if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_VALID_not), comp_id, "fpga0.i2c_lm75_0.valid-not")) != 0) error_handler(retval);
+    *data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2C_LM75_0_VALID;
     return data;
 }
 
@@ -3170,25 +3170,25 @@ void convert_frame_mbmaster0_input(data_t *data) {
     /**************************/
 }
 
-void convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_temp(data_t *data) {
-    float value = data->VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP;
-    float offset = *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_OFFSET;
-    float scale = *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_SCALE;
+void convert_sigin_fpga0_i2c_lm75_0_temp(data_t *data) {
+    float value = data->VARIN16_I2C_LM75_0_TEMP;
+    float offset = *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_OFFSET;
+    float scale = *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_SCALE;
     // -- calc --
     value = value / 256.0;
     // ----------
     value = value + offset;
     value = value / scale;
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_ABS = fabs(value);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_S32 = value;
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP_U32_ABS = fabs(value);
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP = value;
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_ABS = fabs(value);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_S32 = value;
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP_U32_ABS = fabs(value);
+    *data->SIGIN_FPGA0_I2C_LM75_0_TEMP = value;
 }
 
-void convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_valid(data_t *data) {
-    bool value = data->VARIN1_I2C_LM75_0_I2C_LM75_0_VALID;
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID = value;
-    *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID_not = 1 - value;
+void convert_sigin_fpga0_i2c_lm75_0_valid(data_t *data) {
+    bool value = data->VARIN1_I2C_LM75_0_VALID;
+    *data->SIGIN_FPGA0_I2C_LM75_0_VALID = value;
+    *data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = 1 - value;
 }
 
 
@@ -3223,8 +3223,8 @@ void convert_inputs(void) {
     convert_sigin_fpga0_bitin1_bit(data);
     convert_sigin_fpga0_bitin2_bit(data);
     convert_frame_mbmaster0_input(data);
-    convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_temp(data);
-    convert_sigin_fpga0_i2c_lm75_0_i2c_lm75_0_valid(data);
+    convert_sigin_fpga0_i2c_lm75_0_temp(data);
+    convert_sigin_fpga0_i2c_lm75_0_valid(data);
 }
 
 // Generated by component_buffer()
@@ -3273,10 +3273,10 @@ void read_rxbuffer(uint8_t *rxBuffer) {
     data->VARIN1_BITIN2_BIT = (rxBuffer[39] & (1<<5));  // 6
     // FILL: 5
     if (data->MULTIPLEXER_INPUT_ID == 0) {;
-        memcpy(&data->VARIN16_I2C_LM75_0_I2C_LM75_0_TEMP, &data->MULTIPLEXER_INPUT_VALUE, 2);
+        memcpy(&data->VARIN16_I2C_LM75_0_TEMP, &data->MULTIPLEXER_INPUT_VALUE, 2);
     }
     if (data->MULTIPLEXER_INPUT_ID == 1) {;
-        memcpy(&data->VARIN1_I2C_LM75_0_I2C_LM75_0_VALID, &data->MULTIPLEXER_INPUT_VALUE, 1);
+        memcpy(&data->VARIN1_I2C_LM75_0_VALID, &data->MULTIPLEXER_INPUT_VALUE, 1);
     }
 }
 

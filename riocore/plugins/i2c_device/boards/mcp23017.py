@@ -112,30 +112,30 @@ class i2c_device:
                     inverts[bank].append("1'd0")
             for bit in range(8):
                 if (1 << bit) & self.directions[bank]:
-                    self.INTERFACE[f"{self.name}_{bank}{bit}out"] = {
+                    self.INTERFACE[f"{bank}{bit}out"] = {
                         "size": 1,
                         "direction": "output",
                     }
-                    self.SIGNALS[f"{self.name}_{bank}{bit}out"] = {
+                    self.SIGNALS[f"{bank}{bit}out"] = {
                         "direction": "output",
                         "bool": True,
                     }
             for bit in range(8):
                 if not (1 << bit) & self.directions[bank]:
-                    self.INTERFACE[f"{self.name}_{bank}{bit}in"] = {
+                    self.INTERFACE[f"{bank}{bit}in"] = {
                         "size": 1,
                         "direction": "input",
                     }
-                    self.SIGNALS[f"{self.name}_{bank}{bit}in"] = {
+                    self.SIGNALS[f"{bank}{bit}in"] = {
                         "direction": "input",
                         "bool": True,
                     }
 
-        self.INTERFACE[f"{self.name}_valid"] = {
+        self.INTERFACE["valid"] = {
             "size": 1,
             "direction": "input",
         }
-        self.SIGNALS[f"{self.name}_valid"] = {
+        self.SIGNALS["valid"] = {
             "direction": "input",
             "bool": True,
         }

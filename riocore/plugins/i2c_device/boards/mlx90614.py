@@ -15,34 +15,34 @@ class i2c_device:
         self.system_setup = system_setup or {}
         self.name = parent.instances_name
         self.INTERFACE = {
-            f"{self.name}_ambiente": {
+            "ambiente": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_object": {
+            "object": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
                 "multiplexed": True,
             },
         }
         self.SIGNALS = {
-            f"{self.name}_object": {
+            "object": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "°C",
             },
-            f"{self.name}_ambiente": {
+            "ambiente": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "°C",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -113,13 +113,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [65, 40], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-        return value * 0.02 - 273.15
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         return """
         value = value * 0.02 - 273.15;

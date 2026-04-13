@@ -23,7 +23,6 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {}
         self.OPTIONS = {}
         self.NEEDS = ["i2c"]
-        self.TYPE = "base"
         board_list = []
         for jboard in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "boards", "*.py"))):
             board_list.append(os.path.basename(jboard).replace(".py", ""))
@@ -57,6 +56,8 @@ class Plugin(PluginBase):
                 self.INITS = board_instance.INITS
                 self.STEPS = board_instance.STEPS
                 self.options = board_instance.options
+                if hasattr(board_instance, "default"):
+                    self.plugin_setup["default"] = board_instance.default
                 if hasattr(board_instance, "convert_c"):
                     self.convert_c = board_instance.convert_c
                 if hasattr(board_instance, "update_prefixes"):
@@ -94,6 +95,22 @@ class Plugin(PluginBase):
                     self.DESCRIPTION = board_instance.options["description"]
         elif board != "":
             riocore.log(f"ERROR: modbus: boardfile not found: {board_file}")
+
+    def update_pins(self, parent):
+        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+            psetup = connected_pin["setup"]
+            pin = connected_pin["pin"]
+            if pin in self.PINDEFAULTS:
+                direction, bit = pin.split(":")
+                if self.plugin_setup.get("expansion") is True:
+                    bit = bit.lstrip("P")
+                    if connected_pin["direction"] == "input":
+                        psetup["pin"] = f"VARIN8_{self.instances_name.upper()}_IN[{bit}]"
+                    else:
+                        psetup["pin"] = f"VAROUT8_{self.instances_name.upper()}_OUT[{bit}]"
+                else:
+                    psetup["pin"] = f"VAROUT8_{self.instances_name.upper()}_{direction}[{bit}]"
+            connected_pin["instance"].master = self.master
 
     def gateware_instances(self):
         return None

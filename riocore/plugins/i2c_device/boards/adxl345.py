@@ -88,58 +88,58 @@ class i2c_device:
         self.offset_y = setup.get("offset_y", self.options["config"]["offset_y"]["default"])
         self.offset_z = setup.get("offset_z", self.options["config"]["offset_z"]["default"])
         self.INTERFACE = {
-            f"{self.name}_x": {
+            "x": {
                 "size": 16,
                 "signed": True,
                 "direction": "input",
             },
-            f"{self.name}_y": {
+            "y": {
                 "size": 16,
                 "signed": True,
                 "direction": "input",
             },
-            f"{self.name}_z": {
+            "z": {
                 "size": 16,
                 "signed": True,
                 "direction": "input",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
-            f"{self.name}_x": {
+            "x": {
                 "direction": "input",
                 "format": "0.3f",
                 "offset": self.offset_x,
                 "units": self.units,
             },
-            f"{self.name}_y": {
+            "y": {
                 "direction": "input",
                 "format": "0.3f",
                 "offset": self.offset_y,
                 "units": self.units,
             },
-            f"{self.name}_z": {
+            "z": {
                 "direction": "input",
                 "format": "0.3f",
                 "offset": self.offset_z,
                 "units": self.units,
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
         }
         if self.units == "deg":
-            self.SIGNALS[f"{self.name}_x"]["unit"] = "°"
-            self.SIGNALS[f"{self.name}_y"]["unit"] = "°"
-            self.SIGNALS[f"{self.name}_z"]["unit"] = "g"
+            self.SIGNALS["x"]["unit"] = "°"
+            self.SIGNALS["y"]["unit"] = "°"
+            self.SIGNALS["z"]["unit"] = "g"
         elif self.units == "gforce":
-            self.SIGNALS[f"{self.name}_x"]["unit"] = "g"
-            self.SIGNALS[f"{self.name}_y"]["unit"] = "g"
-            self.SIGNALS[f"{self.name}_z"]["unit"] = "g"
+            self.SIGNALS["x"]["unit"] = "g"
+            self.SIGNALS["y"]["unit"] = "g"
+            self.SIGNALS["z"]["unit"] = "g"
 
         self.PARAMS = {}
         self.INITS = [
@@ -194,7 +194,7 @@ class i2c_device:
         }
 
     def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return value
         units = signal_setup["units"]
         # unsigned -> signed
@@ -213,7 +213,7 @@ class i2c_device:
         return value
 
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         return """
         value = value;

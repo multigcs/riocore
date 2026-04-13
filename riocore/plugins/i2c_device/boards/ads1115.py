@@ -1,6 +1,3 @@
-import math
-
-
 class i2c_device:
     sensor_options = ["volt", "ntc", "pressure", "5A", "20A", "30A"]
     sensor_setups = {
@@ -73,20 +70,20 @@ class i2c_device:
         self.SIGNALS = {}
         for channel in range(self.channels):
             sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
-            self.INTERFACE[f"{self.name}_adc{channel}"] = {
+            self.INTERFACE[f"adc{channel}"] = {
                 "size": 16,
                 "direction": "input",
             }
-            self.SIGNALS[f"{self.name}_adc{channel}"] = {
+            self.SIGNALS[f"adc{channel}"] = {
                 "direction": "input",
                 "format": self.sensor_setups.get(sensor, ["", "0.3f"])[1],
                 "unit": self.sensor_setups.get(sensor, ["", ""])[0],
             }
-        self.INTERFACE[f"{self.name}_valid"] = {
+        self.INTERFACE["valid"] = {
             "size": 1,
             "direction": "input",
         }
-        self.SIGNALS[f"{self.name}_valid"] = {
+        self.SIGNALS["valid"] = {
             "direction": "input",
             "bool": True,
         }
@@ -149,40 +146,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [70, 60], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-
-        channel = signal_name[-1]
-        sensor = self.setup.get(f"sensor{channel}", self.options["config"][f"sensor{channel}"]["default"])
-        value = value >> 3
-        value /= 1000.0
-
-        if sensor == "ntc":
-            Rt = 10.0 * value / (self.reference - value)
-            if Rt == 0.0:
-                value = -999.0
-            else:
-                tempK = 1.0 / (math.log(Rt / 10.0) / 3950.0 + 1.0 / (273.15 + 25.0))
-                tempC = tempK - 273.15
-                value = tempC
-        elif sensor == "pressure":
-            value -= 0.56
-            value *= 2.57
-        elif sensor == "5A":
-            value -= self.reference / 2.0
-            value *= 5.0 / (self.reference / 2.0)
-        elif sensor == "20A":
-            value -= self.reference / 2.0
-            value *= 20.0 / (self.reference / 2.0)
-        elif sensor == "30A":
-            value -= self.reference / 2.0
-            value *= 30.0 / (self.reference / 2.0)
-
-        return value
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
 
         channel = signal_name[-1]

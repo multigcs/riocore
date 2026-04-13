@@ -766,13 +766,13 @@ body {
     <B>i2c_lm75_0</B>
     <table>
       <tr>
-        <td>i2c_lm75_0_temp</td>
-        <td><b id="fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_temp">0</b></td>
+        <td>temp</td>
+        <td><b id="fpga0/fpga0/i2c_lm75_0/temp">0</b></td>
         <td>°C</td>
       </tr>
       <tr>
-        <td>i2c_lm75_0_valid</td>
-        <td><b id="fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_valid">0</b></td>
+        <td>valid</td>
+        <td><b id="fpga0/fpga0/i2c_lm75_0/valid">0</b></td>
       </tr>
     </table>
         </div>
@@ -1004,8 +1004,8 @@ body {
             client.subscribe("fpga0/fpga0/mbus_device0/power_total_0");
             client.subscribe("fpga0/fpga0/mbus_device0/power_total_valid");
             client.subscribe("fpga0/fpga0/mbus_device0/power_total_errors");
-            client.subscribe("fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_temp");
-            client.subscribe("fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_valid");
+            client.subscribe("fpga0/fpga0/i2c_lm75_0/temp");
+            client.subscribe("fpga0/fpga0/i2c_lm75_0/valid");
             console.log("connected");
         }
 
@@ -1270,11 +1270,11 @@ body {
             if (message.destinationName == "fpga0/fpga0/mbus_device0/power_total_errors") {
                 document.getElementById("fpga0/fpga0/mbus_device0/power_total_errors").innerHTML = message.payloadString;
             }
-            if (message.destinationName == "fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_temp") {
-                document.getElementById("fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_temp").innerHTML = message.payloadString;
+            if (message.destinationName == "fpga0/fpga0/i2c_lm75_0/temp") {
+                document.getElementById("fpga0/fpga0/i2c_lm75_0/temp").innerHTML = message.payloadString;
             }
-            if (message.destinationName == "fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_valid") {
-                document.getElementById("fpga0/fpga0/i2c_lm75_0/i2c_lm75_0_valid").innerHTML = message.payloadString;
+            if (message.destinationName == "fpga0/fpga0/i2c_lm75_0/valid") {
+                document.getElementById("fpga0/fpga0/i2c_lm75_0/valid").innerHTML = message.payloadString;
             }
         }
 

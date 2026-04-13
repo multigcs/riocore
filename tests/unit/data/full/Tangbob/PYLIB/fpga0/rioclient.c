@@ -30,8 +30,8 @@ int print_values(void) {
     printf("SIGIN_FPGA0_BITIN0_BIT: %i\n", *data->SIGIN_FPGA0_BITIN0_BIT);
     printf("SIGIN_FPGA0_BITIN1_BIT: %i\n", *data->SIGIN_FPGA0_BITIN1_BIT);
     printf("SIGIN_FPGA0_BITIN2_BIT: %i\n", *data->SIGIN_FPGA0_BITIN2_BIT);
-    printf("SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP: %f\n", *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_TEMP);
-    printf("SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID: %i\n", *data->SIGIN_FPGA0_I2C_LM75_0_I2C_LM75_0_VALID);
+    printf("SIGIN_FPGA0_I2C_LM75_0_TEMP: %f\n", *data->SIGIN_FPGA0_I2C_LM75_0_TEMP);
+    printf("SIGIN_FPGA0_I2C_LM75_0_VALID: %i\n", *data->SIGIN_FPGA0_I2C_LM75_0_VALID);
     printf("\n");
 }
 

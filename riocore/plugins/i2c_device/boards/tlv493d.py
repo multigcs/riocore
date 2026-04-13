@@ -9,44 +9,44 @@ class i2c_device:
         self.system_setup = system_setup or {}
         self.name = parent.instances_name
         self.INTERFACE = {
-            f"{self.name}_x": {
+            "x": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_y": {
+            "y": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_z": {
+            "z": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
                 "multiplexed": True,
             },
         }
         self.SIGNALS = {
-            f"{self.name}_x": {
+            "x": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_y": {
+            "y": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_z": {
+            "z": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -83,25 +83,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [70, 70], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-
-        if value > 2047:
-            value = value - 4096
-
-        if self.offsets_cnt > 0:
-            self.offsets_cnt -= 1
-        elif signal_name not in self.offsets:
-            self.offsets[signal_name] = value
-            print("", signal_name, value)
-        else:
-            value -= self.offsets[signal_name]
-
-        return value
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         return """
         value = value;

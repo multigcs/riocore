@@ -14,33 +14,33 @@ class i2c_device:
         self.revs = 0
         self.name = parent.instances_name
         self.INTERFACE = {
-            f"{self.name}_angle": {
+            "angle": {
                 "size": 16,
                 "direction": "input",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
-            f"{self.name}_position": {
+            "position": {
                 "direction": "input",
                 "format": "0.1f",
             },
-            f"{self.name}_rps": {
+            "rps": {
                 "direction": "input",
                 "format": "0.2f",
             },
-            f"{self.name}_rpm": {
+            "rpm": {
                 "direction": "input",
                 "format": "0.2f",
             },
-            f"{self.name}_angle": {
+            "angle": {
                 "direction": "input",
                 "format": "0.1f",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -100,7 +100,7 @@ class i2c_device:
             elif diff > 2048:
                 self.revs -= 1
                 diff -= 4096
-            self.SIGNALS[f"{self.name}_position"]["value"] = (self.revs * 4096) + new
+            self.SIGNALS["position"]["value"] = (self.revs * 4096) + new
             self.last = new
 
             # calc rps/rpm
@@ -108,8 +108,8 @@ class i2c_device:
             timer_diff = timer_new - self.timer_last
             rps = diff / timer_diff / 4096
             self.timer_last = timer_new
-            self.SIGNALS[f"{self.name}_rps"]["value"] = rps
-            self.SIGNALS[f"{self.name}_rpm"]["value"] = rps * 60
+            self.SIGNALS["rps"]["value"] = rps
+            self.SIGNALS["rpm"]["value"] = rps * 60
 
             # calc angle
             return value * 360 / 4096
@@ -117,9 +117,9 @@ class i2c_device:
 
     def convert_c(self, signal_name, signal_setup):
         if signal_name.endswith("_angle"):
-            varname = self.SIGNALS[f"{self.name}_position"]["varname"]
-            varname_rps = self.SIGNALS[f"{self.name}_rps"]["varname"]
-            varname_rpm = self.SIGNALS[f"{self.name}_rpm"]["varname"]
+            varname = self.SIGNALS["position"]["varname"]
+            varname_rps = self.SIGNALS["rps"]["varname"]
+            varname_rpm = self.SIGNALS["rpm"]["varname"]
             return f"""
 
     static float revs = 0;

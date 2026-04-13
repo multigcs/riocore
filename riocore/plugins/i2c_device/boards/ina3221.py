@@ -9,74 +9,74 @@ class i2c_device:
         self.system_setup = system_setup or {}
         self.name = parent.instances_name
         self.INTERFACE = {
-            f"{self.name}_current1": {
+            "current1": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_voltage1": {
+            "voltage1": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_current2": {
+            "current2": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_voltage2": {
+            "voltage2": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_current3": {
+            "current3": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_voltage3": {
+            "voltage3": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
                 "multiplexed": True,
             },
         }
         self.SIGNALS = {
-            f"{self.name}_current1": {
+            "current1": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "mA",
             },
-            f"{self.name}_voltage1": {
+            "voltage1": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "V",
             },
-            f"{self.name}_current2": {
+            "current2": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "mA",
             },
-            f"{self.name}_voltage2": {
+            "voltage2": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "V",
             },
-            f"{self.name}_current3": {
+            "current3": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "mA",
             },
-            f"{self.name}_voltage3": {
+            "voltage3": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "V",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -170,26 +170,7 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [100, 10], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-        if signal_name.endswith("_current1"):
-            return value / 20
-        if signal_name.endswith("_voltage1"):
-            return value / 1000
-        if signal_name.endswith("_current2"):
-            return value / 20
-        if signal_name.endswith("_voltage2"):
-            return value / 1000
-        if signal_name.endswith("_current3"):
-            return value / 20
-        if signal_name.endswith("_voltage3"):
-            return value / 1000
-        return value
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
-            return "value = value / 1000;"
         if signal_name.endswith("_current1"):
             return "value = value / 20;"
         if signal_name.endswith("_voltage1"):

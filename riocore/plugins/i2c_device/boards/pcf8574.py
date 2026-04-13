@@ -48,7 +48,9 @@ class i2c_device:
         self.INTERFACE = {}
         self.SIGNALS = {}
         setup_data_in = []
-        setup_value = ""
+        setup_value = None
+        if expansion is True:
+            self.default = 255
         if self.bitvar:
             # write single bits into data_out byte
             bitlist = []
@@ -67,55 +69,55 @@ class i2c_device:
 
             for bit in range(8):
                 if (1 << bit) & self.inputs:
-                    self.INTERFACE[f"{self.name}_in{bit}"] = {
+                    self.INTERFACE[f"in{bit}"] = {
                         "size": 1,
                         "direction": "input",
                     }
-                    self.SIGNALS[f"{self.name}_in{bit}"] = {
+                    self.SIGNALS[f"in{bit}"] = {
                         "direction": "input",
                         "bool": True,
-                        "interface": f"{self.name}_in{bit}",
+                        "interface": f"in{bit}",
                     }
 
                 if (1 << bit) & self.outputs:
-                    self.INTERFACE[f"{self.name}_out{bit}"] = {
+                    self.INTERFACE[f"out{bit}"] = {
                         "size": 1,
                         "direction": "output",
                     }
-                    self.SIGNALS[f"{self.name}_out{bit}"] = {
+                    self.SIGNALS[f"out{bit}"] = {
                         "direction": "output",
                         "bool": True,
-                        "interface": f"{self.name}_out{bit}",
+                        "interface": f"out{bit}",
                     }
         else:
-            self.INTERFACE[f"{self.name}_in"] = {
+            self.INTERFACE["in"] = {
                 "size": 8,
                 "direction": "input",
             }
-            self.INTERFACE[f"{self.name}_out"] = {
+            self.INTERFACE["out"] = {
                 "size": 8,
                 "direction": "output",
             }
-            self.SIGNALS[f"{self.name}_in"] = {
+            self.SIGNALS["in"] = {
                 "direction": "input",
                 "min": 0,
                 "max": 255,
-                "interface": f"{self.name}_in",
+                "interface": "in",
             }
-            self.SIGNALS[f"{self.name}_out"] = {
+            self.SIGNALS["out"] = {
                 "direction": "output",
                 "min": 0,
                 "max": 255,
-                "interface": f"{self.name}_out",
+                "interface": "out",
             }
-        self.INTERFACE[f"{self.name}_valid"] = {
+        self.INTERFACE["valid"] = {
             "size": 1,
             "direction": "input",
         }
-        self.SIGNALS[f"{self.name}_valid"] = {
+        self.SIGNALS["valid"] = {
             "direction": "input",
             "bool": True,
-            "interface": f"{self.name}_valid",
+            "interface": "valid",
         }
         self.PINDEFAULTS = {
             "I2C": {"direction": "output", "edge": "target", "pos": [10, 35], "type": ["I2C"], "bus": True},

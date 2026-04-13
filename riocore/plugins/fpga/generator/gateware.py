@@ -58,6 +58,7 @@ class gateware(generator_base):
             plugin_instance.post_setup(self.parent.project)
 
         self.parent.expansion_pins = []
+
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue

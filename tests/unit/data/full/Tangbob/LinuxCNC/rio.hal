@@ -50,8 +50,8 @@ net sig_pyvcp_fpga0_fpga0_wled_0_blue    => fpga0.fpga0_wled.0_blue
 net sig_pyvcp_fpga0_fpga0_wled_0_green   => fpga0.fpga0_wled.0_green
 net sig_pyvcp_fpga0_fpga0_wled_0_red     => fpga0.fpga0_wled.0_red
 
-net sig_fpga0_i2c_lm75_0_i2c_lm75_0_temp <= fpga0.i2c_lm75_0.i2c_lm75_0_temp
-net sig_fpga0_i2c_lm75_0_i2c_lm75_0_valid <= fpga0.i2c_lm75_0.i2c_lm75_0_valid
+net sig_fpga0_i2c_lm75_0_temp            <= fpga0.i2c_lm75_0.temp
+net sig_fpga0_i2c_lm75_0_valid           <= fpga0.i2c_lm75_0.valid
 
 net user-enable-out                      => fpga0.sys-enable
 net user-request-enable                  => fpga0.sys-enable-request

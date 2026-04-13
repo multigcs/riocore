@@ -26,13 +26,8 @@ class i2c_device:
             "I2C:OUT7": {"direction": "output", "edge": "source", "pos": [91, 18], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C", "busid": 7},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-        return value / 256.0
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         return """
         value = value / 256.0;

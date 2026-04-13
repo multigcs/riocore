@@ -22,7 +22,7 @@
 #define BUFFER_SIZE_RX 20
 #define BUFFER_SIZE_TX 17
 #define OSC_CLOCK 27000000
-#define UDP_IP "192.168.11.194"
+#define UDP_IP "192.168.10.194"
 #define SRC_PORT 2391
 #define DST_PORT 2390
 

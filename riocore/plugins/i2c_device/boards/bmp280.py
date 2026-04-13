@@ -35,34 +35,34 @@ class i2c_device:
         self.system_setup = system_setup or {}
         self.name = parent.instances_name
         self.INTERFACE = {
-            f"{self.name}_rawp": {
+            "rawp": {
                 "size": 32,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_rawt": {
+            "rawt": {
                 "size": 32,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
                 "multiplexed": True,
             },
         }
         self.SIGNALS = {
-            f"{self.name}_rawp": {
+            "rawp": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "hPa",
             },
-            f"{self.name}_rawt": {
+            "rawt": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "°C",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -89,12 +89,12 @@ class i2c_device:
         self.INITS = []
 
         for name, register in init_regs.items():
-            self.INTERFACE[f"{self.name}_{name}"] = {
+            self.INTERFACE[f"{name}"] = {
                 "size": 32,
                 "direction": "input",
                 "multiplexed": True,
             }
-            self.SIGNALS[f"{self.name}_{name}"] = {
+            self.SIGNALS[f"{name}"] = {
                 "direction": "input",
                 "format": "0.1f",
                 "helper": True,
@@ -141,7 +141,7 @@ class i2c_device:
         }
 
     def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return value
 
         if signal_name.endswith("_rawt"):
@@ -187,7 +187,7 @@ class i2c_device:
         return value
 
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         return """
         value = value;

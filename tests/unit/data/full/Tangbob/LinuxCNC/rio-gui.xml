@@ -114,13 +114,13 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"i2c_lm75_0-i2c_lm75_0_temp"</text>
+          <text>"i2c_lm75_0-temp"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
           <width>15</width>
         </label>
         <number>
-          <halpin>"fpga0.i2c_lm75_0.i2c_lm75_0_temp"</halpin>
+          <halpin>"fpga0.i2c_lm75_0.temp"</halpin>
           <font>("Helvetica",14)</font>
           <format>"0.1f"</format>
           <anchor>"e"</anchor>
@@ -137,13 +137,13 @@
         <boxfill fill="both"/>
         <boxanchor anchor="e"/>
         <label>
-          <text>"i2c_lm75_0-i2c_lm75_0_valid"</text>
+          <text>"i2c_lm75_0-valid"</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
           <width>30</width>
         </label>
         <led>
-          <halpin>"fpga0.i2c_lm75_0.i2c_lm75_0_valid"</halpin>
+          <halpin>"fpga0.i2c_lm75_0.valid"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>

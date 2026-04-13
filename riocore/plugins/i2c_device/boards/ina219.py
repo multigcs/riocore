@@ -24,33 +24,33 @@ class i2c_device:
         self.name = parent.instances_name
         setup = parent.plugin_setup
         self.INTERFACE = {
-            f"{self.name}_current": {
+            "current": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_voltage": {
+            "voltage": {
                 "size": 16,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
             },
         }
         self.SIGNALS = {
-            f"{self.name}_current": {
+            "current": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "mA",
             },
-            f"{self.name}_voltage": {
+            "voltage": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "V",
             },
-            f"{self.name}_valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -120,15 +120,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [100, 10], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_valid"):
-            return value
-        if signal_name.endswith("_voltage"):
-            return value / 2000
-        return value * 1000 / 8192
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_valid"):
+        if signal_name == "valid":
             return ""
         if signal_name.endswith("_voltage"):
             return """
