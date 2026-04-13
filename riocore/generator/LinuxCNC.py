@@ -1,6 +1,5 @@
 import copy
 import glob
-import importlib
 import json
 import os
 import shutil
@@ -261,12 +260,7 @@ class LinuxCNC:
         if num_pids:
             num_pids = num_joints  # TODO
         self.num_pids = num_pids
-
-        self.addons = {}
         self.gpionames = []
-        for addon_path in glob.glob(os.path.join(riocore_path, "generator", "addons", "*", "linuxcnc.py")):
-            addon_name = addon_path.split(os.sep)[-2]
-            self.addons[addon_name] = importlib.import_module(".linuxcnc", f"riocore.generator.addons.{addon_name}")
 
     def cfglink(self):
         try:
@@ -358,9 +352,6 @@ class LinuxCNC:
         self.hal()
         self.riof()
         self.misc()
-        for addon_name, addon in self.addons.items():
-            if hasattr(addon, "generator"):
-                addon.generator(self)
         self.ini()
         os.makedirs(self.configuration_path, exist_ok=True)
 
@@ -705,10 +696,6 @@ class LinuxCNC:
                 ini_setup[section] = {}
             for key, value in section_options.items():
                 ini_setup[section][key] = value
-
-        for addon_name, addon in self.addons.items():
-            if hasattr(addon, "ini"):
-                addon.ini(self, ini_setup)
 
         for plugin_instance in self.project.plugin_instances:
             if hasattr(plugin_instance, "ini"):
@@ -2326,12 +2313,6 @@ if __name__ == "__main__":
         for plugin_instance in self.project.plugin_instances:
             if hasattr(plugin_instance, "hal"):
                 plugin_instance.hal(self)
-
-        # TODO: can be removed if all addons moved to plugins
-        # generate special hal entries for each addon
-        for addon_name, addon in self.addons.items():
-            if hasattr(addon, "hal"):
-                addon.hal(self)
 
         # adding all configured setp and net pins/signals
         for plugin_instance in self.project.plugin_instances:

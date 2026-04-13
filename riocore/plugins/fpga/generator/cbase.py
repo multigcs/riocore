@@ -490,6 +490,13 @@ class cbase:
                                         if convert_c and "last_raw_value" in convert_c:
                                             output.append("")
                                             output.append("    last_raw_value = raw_value;")
+                                elif interface == "calc":
+                                    convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
+                                    if convert_c:
+                                        output.append("    // -- calc --")
+                                        output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                                        output.append("    // ----------")
+
                             output.append("}")
                             output.append("")
         output.append("")

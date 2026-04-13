@@ -30,7 +30,6 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "angle": {
                 "direction": "input",
-                "unit": "ms",
                 "format": "0.4f",
             },
             "position": {

@@ -56,6 +56,7 @@ class Plugin(PluginBase):
                 self.INITS = board_instance.INITS
                 self.STEPS = board_instance.STEPS
                 self.options = board_instance.options
+                self.speed = 100000
                 if hasattr(board_instance, "default"):
                     self.plugin_setup["default"] = board_instance.default
                 if hasattr(board_instance, "convert_c"):
@@ -66,6 +67,8 @@ class Plugin(PluginBase):
                     self.update_pins = board_instance.update_pins
                 if hasattr(board_instance, "paint_overlay"):
                     self.paint_overlay = board_instance.paint_overlay
+                if hasattr(board_instance, "speed"):
+                    self.speed = board_instance.speed
                 for signal_name, signal_data in self.SIGNALS.items():
                     if "interface" not in signal_data:
                         signal_data["interface"] = signal_name
@@ -81,8 +84,8 @@ class Plugin(PluginBase):
                             "type": int,
                             "description": "bus speed",
                             "min": 1000,
-                            "max": 1000000,
-                            "default": 100000,
+                            "max": 2000000,
+                            "default": self.speed,
                             "unit": "Hz",
                         },
                     }

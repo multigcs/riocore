@@ -26,6 +26,14 @@ class Plugin(PluginBase):
                 "max": 8,
                 "description": "number rows",
             },
+            "delay": {
+                "default": 1.0,
+                "type": float,
+                "unit": "ms",
+                "min": 0.0,
+                "max": 100.0,
+                "description": "delay between scans",
+            },
             "sendkeys": {
                 "default": False,
                 "type": bool,
@@ -35,6 +43,11 @@ class Plugin(PluginBase):
                 "default": "2, 5, 8, 27, 3, 6, 9, 11, 4, 7, 10, 43, 30, 48, 46, 32",
                 "type": str,
                 "description": "keycodes",
+            },
+            "bitout": {
+                "default": False,
+                "type": bool,
+                "description": "generate single bit signals",
             },
         }
         cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
@@ -67,8 +80,18 @@ class Plugin(PluginBase):
                 "interface": "value",
             },
         }
+        bitout = self.plugin_setup.get("bitout", self.OPTIONS["bitout"]["default"])
+        if bitout:
+            for bit in range(cols * rows):
+                self.SIGNALS[f"key{bit}"] = {
+                    "direction": "input",
+                    "bool": True,
+                    "interface": "calc",
+                }
+        self.keysnum = None
 
     def gateware_instances(self):
+        delay = self.plugin_setup.get("delay", self.OPTIONS["delay"]["default"])
         cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
         rows = self.plugin_setup.get("rows", self.OPTIONS["rows"]["default"])
         cols_list = []
@@ -80,7 +103,7 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        divider = self.system_setup["speed"] // 100
+        divider = int(self.system_setup["speed"] / 1000 / delay)
         instance_parameter["DIVIDER"] = divider
         instance_parameter["ROWS"] = rows
         instance_parameter["COLS"] = cols
@@ -110,23 +133,49 @@ class Plugin(PluginBase):
     last_value = value;
     value = scancode;
             """
+        if signal_name.startswith("key"):
+            bit = int(signal_name[3:])
+            signal_prefix = (self.PREFIX or self.title or self.instances_name).replace(" ", "_").replace("<", "-lt-").replace(">", "-gt-").replace(".", "_")
+            return f"""
+    if (data->VARIN8_{self.instances_name.upper()}_VALUE == {bit + 1}) {{
+        *data->SIGIN_{signal_prefix.upper()}_KEY{bit} = 1;
+    }} else {{
+        *data->SIGIN_{signal_prefix.upper()}_KEY{bit} = 0;
+    }}
+    *data->SIGIN_{signal_prefix.upper()}_KEY{bit}_not = 1 - *data->SIGIN_{signal_prefix.upper()}_KEY{bit};
+            """
+        return ""
+
+    @classmethod
+    def component_loader(cls, instances):
+        keys_list = []
+        compnum = 0
+        for instance in instances:
+            sendkeys = instance.plugin_setup.get("sendkeys", instance.OPTIONS["sendkeys"]["default"])
+            if sendkeys:
+                cols = instance.plugin_setup.get("cols", instance.OPTIONS["cols"]["default"])
+                rows = instance.plugin_setup.get("rows", instance.OPTIONS["rows"]["default"])
+                keys_list.append(str(cols * rows))
+                instance.keysnum = compnum
+                compnum += 1
+        if keys_list:
+            return f"loadusr -W sendkeys config={','.join(keys_list)}"
         return ""
 
     def hal(self, parent):
         sendkeys = self.plugin_setup.get("sendkeys", self.OPTIONS["sendkeys"]["default"])
-        if not sendkeys:
+        if not sendkeys or self.keysnum is None:
             return
         signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_")
         cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
         rows = self.plugin_setup.get("rows", self.OPTIONS["rows"]["default"])
         mapping = self.plugin_setup.get("mapping", self.OPTIONS["mapping"]["default"]).replace(",", "").split()
         keys = cols * rows
-        parent.halg.fmt_add(f"loadusr -W sendkeys config={keys}")
-        parent.halg.net_add(f"{signal_prefix}.scancode", "sendkeys.0.keycode", "scancode")
+        parent.halg.net_add(f"{signal_prefix}.scancode", f"sendkeys.{self.keysnum}.keycode", f"scancode{self.keysnum}")
         for key_n in range(keys):
             if key_n < len(mapping):
-                parent.halg.setp_add(f"sendkeys.0.scan-event-{key_n:02d}", mapping[key_n])
-        parent.halg.setp_add("sendkeys.0.init", 1)
+                parent.halg.setp_add(f"sendkeys.{self.keysnum}.scan-event-{key_n:02d}", mapping[key_n])
+        parent.halg.setp_add(f"sendkeys.{self.keysnum}.init", 1)
 
     def start_sh(self, parent):
         sendkeys = self.plugin_setup.get("sendkeys", self.OPTIONS["sendkeys"]["default"])

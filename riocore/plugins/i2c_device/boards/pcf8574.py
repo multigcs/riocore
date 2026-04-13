@@ -40,6 +40,7 @@ class i2c_device:
         self.system_setup = system_setup or {}
         self.name = parent.instances_name
         setup = parent.plugin_setup
+        self.speed = 400000
         self.bitvar = setup.get("bitvar", self.options["config"]["bitvar"]["default"])
         self.inputs = setup.get("inputs", self.options["config"]["inputs"]["default"])
         self.outputs = setup.get("outputs", self.options["config"]["outputs"]["default"])
@@ -151,6 +152,14 @@ class i2c_device:
                     "data_in": setup_data_in,
                 }
             )
+
+    @classmethod
+    def update_prefixes(cls, parent, instances):
+        for instance in instances:
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
+                plugin_instance = connected_pin["instance"]
+                if not plugin_instance.PREFIX.startswith(instance.PREFIX):
+                    plugin_instance.PREFIX = f"{instance.PREFIX}.{plugin_instance.instances_name}"
 
     def paint_overlay(self, painter):
         address = int(self.address, 16) - 0x20
