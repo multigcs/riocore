@@ -50,6 +50,17 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
                 if new_speed != self.config["speed"]:
                     print(f"WARNING: achieved PLL frequency is: {new_speed}")
                     self.config["speed"] = new_speed
+        elif self.config["family"] == "GW5A-25A":
+            result = subprocess.check_output(
+                f"python3 {os.path.join(self.riocore_path, 'files', 'gowin-pll.py')} -d 'GW5A-25A C1/I0' -f \"{os.path.join(self.gateware_path, 'pll.v')}\" -i {float(clock_in) / 1000000} -o {float(clock_out) / 1000000}",
+                shell=True,
+            )
+            achieved = re.findall(r"Achieved output frequency:\s*(\d*\.\d*)\s*MHz", result.decode())
+            if achieved:
+                new_speed = int(float(achieved[0]) * 1000000)
+                if new_speed != self.config["speed"]:
+                    print(f"WARNING: achieved PLL frequency is: {new_speed}")
+                    self.config["speed"] = new_speed
         else:
             print(f"WARNING: can not generate pll for this platform: set speed to: {clock_in} Hz")
             self.config["speed"] = clock_in
@@ -254,6 +265,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
         for key, value in self.config["timing_constraints"].items():
             speed_ns = 1000000000 / int(value)
             sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key} [get_ports {{{key}}}]")
+
         sdc_data.append("")
         open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))
 

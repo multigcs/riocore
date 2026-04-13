@@ -161,6 +161,16 @@ device_limits = {
         "clkout_min": 2.5,
         "clkout_max": 480,
     },
+    "GW5A-25A C1/I0": {
+        "comment": "not working yet",
+        "pll_name": "PLLA",
+        "pfd_min": 19,
+        "pfd_max": 81.25,
+        "vco_min": 650,
+        "vco_max": 1300,
+        "clkout_min": 19,
+        "clkout_max": 800,
+    },
 }
 
 if args.list_devices:
@@ -178,7 +188,11 @@ setup = {}
 FCLKIN = args.input_freq_mhz
 min_diff = FCLKIN
 
-for IDIV_SEL in range(64):
+IDIV_SEL_MIN = 0
+if limits["pll_name"] == "PLLA":
+    IDIV_SEL_MIN = 1
+
+for IDIV_SEL in range(IDIV_SEL_MIN, 64):
     for FBDIV_SEL in range(64):
         for ODIV_SEL in [2, 4, 8, 16, 32, 48, 64, 80, 96, 112, 128]:
             PFD = FCLKIN / (IDIV_SEL + 1)
@@ -204,11 +218,51 @@ for IDIV_SEL in range(64):
                 }
 
 if setup:
-    extra_options = ""
-    if limits["pll_name"] == "PLLVR":
-        extra_options = ".VREN(1'b1),"
+    if limits["pll_name"] == "PLLA":
+        pll_v = f"""/**
+ * PLL configuration
+ *
+ * This Verilog module was generated automatically
+ * using the gowin-pll tool.
+ * Use at your own risk.
+ *
+ * Target-Device:                {args.device}
+ * Given input frequency:        {args.input_freq_mhz:0.3f} MHz
+ * Requested output frequency:   {args.output_freq_mhz:0.3f} MHz
+ * Achieved output frequency:    {setup["CLKOUT"]:0.3f} MHz
+ */
 
-    pll_v = f"""/**
+module {args.module_name}(
+        input  clock_in,
+        output clock_out,
+        output locked
+    );
+
+    {limits["pll_name"]} #(
+        .FCLKIN("{args.input_freq_mhz}"),
+        .IDIV_SEL({setup["IDIV_SEL"]}), // -> PFD = {setup["PFD"]} MHz (range: {limits["pfd_min"]}-{limits["pfd_max"]} MHz)
+        .FBDIV_SEL({setup["FBDIV_SEL"]}), // -> CLKOUT = {setup["CLKOUT"]} MHz (range: {limits["vco_min"]}-{limits["clkout_max"]} MHz)
+        .MDIV_SEL(8),
+        .MDIV_FRAC_SEL(0),
+        .ODIV0_FRAC_SEL(0),
+        .CLKOUT0_EN("TRUE"),
+        .ODIV0_SEL({setup["ODIV_SEL"]}) // -> VCO = {setup["VCO"]} MHz (range: {limits["clkout_max"]}-{limits["vco_max"]} MHz)
+    ) pll (
+        .RESET(1'b0),
+        .CLKFB(1'b0),
+        .CLKIN(clock_in), // {args.input_freq_mhz} MHz
+        .CLKOUT0(clock_out), // {setup["CLKOUT"]} MHz
+        .LOCK(locked)
+    );
+
+endmodule
+
+"""
+    else:
+        extra_options = ""
+        if limits["pll_name"] == "PLLVR":
+            extra_options = ".VREN(1'b1),"
+        pll_v = f"""/**
  * PLL configuration
  *
  * This Verilog module was generated automatically
