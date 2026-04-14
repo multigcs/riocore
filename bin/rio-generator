@@ -152,6 +152,9 @@ if args.config:
                     for element in plugin_instance.BUILDER:
                         if element in ["clean", "build"]:
                             arguments.append(element)
+                    if not arguments:
+                        print(f"WARNING: build cmd 'clean/build' not found for '{plugin_instance.instances_name}'")
+                        continue
                     cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
                     print()
                     print("running:")
@@ -172,6 +175,9 @@ if args.config:
                     for element in plugin_instance.BUILDER:
                         if element in ["load"]:
                             arguments.append(element)
+                    if not arguments:
+                        print(f"WARNING: build cmd 'load' not found for '{plugin_instance.instances_name}'")
+                        continue
                     cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
                     print()
                     print("running:")
@@ -186,12 +192,15 @@ if args.config:
         if args.ram:
             for plugin_instance in project.plugin_instances:
                 if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
-                    arguments = []
                     if args.instances and args.instances != plugin_instance.instances_name:
                         continue
+                    arguments = []
                     for element in plugin_instance.BUILDER:
                         if element in ["sload"]:
                             arguments.append(element)
+                    if not arguments:
+                        print(f"WARNING: build cmd 'sload' not found for '{plugin_instance.instances_name}'")
+                        continue
                     cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
                     print()
                     print("running:")

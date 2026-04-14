@@ -6,13 +6,12 @@
         {
             "type": "fpga",
             "node_type": "TangNano9K",
-            "protocol": "UART",
             "uid": "board0",
             "pos": [
                 330.0,
-                170.0
+                210.0
             ],
-            "rotate": 90
+            "rotate": 0
         },
         {
             "type": "uart",
@@ -25,10 +24,11 @@
                 }
             },
             "baud": 1000000,
+            "async": true,
             "uid": "uart0",
             "pos": [
-                670.0,
-                40.0
+                50.0,
+                110.0
             ],
             "uart": "/dev/ttyUSB1"
         },
@@ -37,63 +37,115 @@
             "uid": "pwmout0",
             "image": "spindle500w",
             "pos": [
-                710.0,
-                310.0
+                450.0,
+                -240.0
             ],
             "pins": {
                 "pwm": {
-                    "pin": "board0:LED:L1"
+                    "pin": "board0:LED:L1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                440.0,
+                                100.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
                 },
                 "dir": {
-                    "pin": "board0:LED:L2"
+                    "pin": "board0:LED:L2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                470.0,
+                                100.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
                 },
                 "en": {
-                    "pin": "board0:LED:L3"
+                    "pin": "board0:LED:L3",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                500.0,
+                                100.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "rotate": -90,
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out"
+                },
+                "enable": {
+                    "net": "spindle.0.on"
                 }
             }
         },
         {
             "type": "bitin",
-            "uid": "bitin0",
-            "image": "proximity",
-            "pos": [
-                470.0,
-                -80.0
-            ],
-            "pins": {
-                "bit": {
-                    "pin": "board0:SW:S1"
-                }
-            },
-            "rotate": -90
-        },
-        {
-            "type": "bitin",
             "uid": "bitin1",
-            "image": "proximity",
+            "image": "smdbutton",
             "pos": [
-                320.0,
-                -80.0
+                60.0,
+                410.0
             ],
             "pins": {
                 "bit": {
-                    "pin": "board0:SW:S2"
+                    "pin": "board0:SW:S2",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                120.0,
+                                410.0
+                            ],
+                            "rotate": 180
+                        }
+                    ]
                 }
             },
             "name": "",
-            "rotate": -90
+            "rotate": 180
         },
         {
             "type": "bitout",
             "uid": "bitout0",
-            "image": "relay",
+            "image": "smdled_r",
             "pos": [
-                60.0,
-                170.0
+                70.0,
+                280.0
             ],
             "pins": {
                 "bit": {
-                    "pin": "board0:LED:L4"
+                    "pin": "board0:LED:L4",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                120.0,
+                                270.0
+                            ],
+                            "rotate": 180
+                        },
+                        {
+                            "type": "pwm",
+                            "pos": [
+                                230.0,
+                                270.0
+                            ],
+                            "rotate": 180
+                        }
+                    ]
                 }
             },
             "rotate": 180
@@ -101,14 +153,34 @@
         {
             "type": "bitout",
             "uid": "bitout1",
-            "image": "relay",
+            "image": "smdled_r",
             "pos": [
-                60.0,
-                316.0
+                70.0,
+                320.0
             ],
             "pins": {
                 "bit": {
-                    "pin": "board0:LED:L5"
+                    "pin": "board0:LED:L5",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                120.0,
+                                310.0
+                            ],
+                            "rotate": 180
+                        },
+                        {
+                            "type": "pwm",
+                            "pos": [
+                                230.0,
+                                310.0
+                            ],
+                            "dty": 90,
+                            "frequency": 5,
+                            "rotate": 180
+                        }
+                    ]
                 }
             },
             "rotate": 180,
@@ -117,27 +189,194 @@
         {
             "type": "bitout",
             "uid": "bitout2",
-            "image": "relay",
+            "image": "smdled_r",
             "pos": [
-                60.0,
-                462.0
+                70.0,
+                360.0
             ],
             "pins": {
                 "bit": {
-                    "pin": "board0:LED:L6"
+                    "pin": "board0:LED:L6",
+                    "modifier": [
+                        {
+                            "type": "onerror",
+                            "invert": true,
+                            "pos": [
+                                120.0,
+                                350.0
+                            ],
+                            "rotate": 180
+                        }
+                    ]
                 }
             },
             "rotate": 180,
             "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "servo42",
+            "pos": [
+                720.0,
+                550.0
+            ],
+            "pins": {
+                "en": {
+                    "pin": "board0:PIN:69"
+                },
+                "dir": {
+                    "pin": "board0:PIN:68"
+                },
+                "step": {
+                    "pin": "board0:PIN:57"
+                }
+            },
+            "rotate": -90,
+            "axis": "X"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "image": "servo42",
+            "pos": [
+                510.0,
+                550.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "board0:PIN:56"
+                },
+                "step": {
+                    "pin": "board0:PIN:55"
+                }
+            },
+            "rotate": -90,
+            "name": "",
+            "axis": "Y"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "image": "servo42",
+            "pos": [
+                310.0,
+                560.0
+            ],
+            "pins": {
+                "dir": {
+                    "pin": "board0:PIN:54"
+                },
+                "step": {
+                    "pin": "board0:PIN:53"
+                }
+            },
+            "rotate": -90,
+            "name": "",
+            "axis": "Z"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "proximity",
+            "pos": [
+                730.0,
+                -120.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:32",
+                    "pull": "up"
+                }
+            },
+            "rotate": -90,
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "proximity",
+            "pos": [
+                660.0,
+                -120.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:31",
+                    "pull": "up"
+                }
+            },
+            "rotate": -90,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin4",
+            "image": "proximity",
+            "pos": [
+                590.0,
+                -120.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:49",
+                    "pull": "up"
+                }
+            },
+            "rotate": -90,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "smdbutton",
+            "pos": [
+                280.0,
+                70.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:SW:S1",
+                    "modifier": [
+                        {
+                            "type": "invert",
+                            "pos": [
+                                290.0,
+                                150.0
+                            ],
+                            "rotate": -90
+                        }
+                    ]
+                }
+            },
+            "name": "",
+            "rotate": 180
         }
     ],
     "toolchain": "icestorm",
     "flow": {
         "view": {
-            "scale": 0.88,
+            "scale": 0.93,
             "pos": [
-                301,
-                380
+                -5,
+                -39
             ]
         },
         "board": {
@@ -147,5 +386,8 @@
             ],
             "rotate": 90
         }
+    },
+    "linuxcnc": {
+        "debug_info": true
     }
 }

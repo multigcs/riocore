@@ -28,7 +28,7 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = False
         self.PROVIDES = ["fpga", "base"]
-        self.BUILDER = ["clean", "build", "load", "all"]
+        self.BUILDER = ["clean", "build", "load", "sload", "all"]
         self.URL = ""
         self.frame = "full"
         board_list = []
