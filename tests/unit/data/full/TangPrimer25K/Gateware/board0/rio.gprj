@@ -6,6 +6,7 @@
     <Device name="GW5A-25A" pn="GW5A-LV25MG121NC1/I0">gw5a25b-003</Device>
     <FileList>
         <File path="globals.v" type="file.verilog" enable="1"/>
+        <File path="pll.v" type="file.verilog" enable="1"/>
         <File path="blink.v" type="file.verilog" enable="1"/>
         <File path="stepdir.v" type="file.verilog" enable="1"/>
         <File path="w5500.v" type="file.verilog" enable="1"/>

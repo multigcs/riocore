@@ -95,14 +95,26 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
 
         pins_generator.Pins(self.config).generate(path)
 
+        speed_hz = int(self.config["clock"].get("osc") or self.config["clock"]["speed"])
         prepack_data = []
-        for key, value in self.config["timing_constraints"].items():
-            prepack_data.append(f'ctx.addClock("{key}", {int(value) / 1000000})')
-
-        for key, value in self.config["timing_constraints_instance"].items():
-            prepack_data.append(f'ctx.addClock("{key}", {int(value) / 1000000})')
+        prepack_data.append("# Sysclock")
+        prepack_data.append(f'ctx.addClock("sysclk_in", {int(speed_hz) / 1000000})')
+        if speed_hz != int(self.config["clock"]["speed"]):
+            speed_hz = int(self.config["clock"]["speed"])
+            prepack_data.append(f'ctx.addClock("sysclk", {int(speed_hz) / 1000000})')
 
         prepack_data.append("")
+        if self.config["timing_constraints"]:
+            prepack_data.append("# Pins")
+            for key, value in self.config["timing_constraints"].items():
+                prepack_data.append(f'ctx.addClock("{key}", {int(value) / 1000000})')
+            prepack_data.append("")
+        if self.config["timing_constraints_instance"]:
+            prepack_data.append("# Nets")
+            for key, value in self.config["timing_constraints_instance"].items():
+                prepack_data.append(f'ctx.addClock("{key}", {int(value) / 1000000})')
+            prepack_data.append("")
+
         open(os.path.join(path, "prepack.py"), "w").write("\n".join(prepack_data))
 
         if family in {"gowin", "himbaechel"}:

@@ -190,20 +190,23 @@ min_diff = FCLKIN
 
 IDIV_SEL_MIN = 0
 if limits["pll_name"] == "PLLA":
-    IDIV_SEL_MIN = 1
+    IDIV_SEL = 1
+    FBDIV_SEL = 1
+    MDIV = 1
+    for MDIV in range(1, 128):
+        for ODIV_SEL in range(1, 128):
+            # PFD = FCLKIN / (IDIV_SEL + 1)
+            # if not (limits["pfd_min"] < PFD < limits["pfd_max"]):
+            #    continue
 
-for IDIV_SEL in range(IDIV_SEL_MIN, 64):
-    for FBDIV_SEL in range(64):
-        for ODIV_SEL in [2, 4, 8, 16, 32, 48, 64, 80, 96, 112, 128]:
-            PFD = FCLKIN / (IDIV_SEL + 1)
-            if not (limits["pfd_min"] < PFD < limits["pfd_max"]):
-                continue
-            CLKOUT = FCLKIN * (FBDIV_SEL + 1) / (IDIV_SEL + 1)
-            if not (limits["clkout_min"] < CLKOUT < limits["clkout_max"]):
-                continue
-            VCO = (FCLKIN * (FBDIV_SEL + 1) * ODIV_SEL) / (IDIV_SEL + 1)
+            VCO = (FCLKIN / IDIV_SEL) * FBDIV_SEL * MDIV
             if not (limits["vco_min"] < VCO < limits["vco_max"]):
                 continue
+
+            CLKOUT = VCO / ODIV_SEL
+            if not (limits["clkout_min"] < CLKOUT < limits["clkout_max"]):
+                continue
+
             diff = abs(args.output_freq_mhz - CLKOUT)
             if diff < min_diff:
                 min_diff = diff
@@ -211,11 +214,36 @@ for IDIV_SEL in range(IDIV_SEL_MIN, 64):
                     "IDIV_SEL": IDIV_SEL,
                     "FBDIV_SEL": FBDIV_SEL,
                     "ODIV_SEL": ODIV_SEL,
-                    "PFD": PFD,
+                    "MDIV": MDIV,
                     "CLKOUT": CLKOUT,
                     "VCO": VCO,
                     "ERROR": diff,
                 }
+else:
+    for IDIV_SEL in range(64):
+        for FBDIV_SEL in range(64):
+            for ODIV_SEL in [2, 4, 8, 16, 32, 48, 64, 80, 96, 112, 128]:
+                PFD = FCLKIN / (IDIV_SEL + 1)
+                if not (limits["pfd_min"] < PFD < limits["pfd_max"]):
+                    continue
+                CLKOUT = FCLKIN * (FBDIV_SEL + 1) / (IDIV_SEL + 1)
+                if not (limits["clkout_min"] < CLKOUT < limits["clkout_max"]):
+                    continue
+                VCO = (FCLKIN * (FBDIV_SEL + 1) * ODIV_SEL) / (IDIV_SEL + 1)
+                if not (limits["vco_min"] < VCO < limits["vco_max"]):
+                    continue
+                diff = abs(args.output_freq_mhz - CLKOUT)
+                if diff < min_diff:
+                    min_diff = diff
+                    setup = {
+                        "IDIV_SEL": IDIV_SEL,
+                        "FBDIV_SEL": FBDIV_SEL,
+                        "ODIV_SEL": ODIV_SEL,
+                        "PFD": PFD,
+                        "CLKOUT": CLKOUT,
+                        "VCO": VCO,
+                        "ERROR": diff,
+                    }
 
 if setup:
     if limits["pll_name"] == "PLLA":
@@ -230,17 +258,6 @@ if setup:
  * Given input frequency:        {args.input_freq_mhz:0.3f} MHz
  * Requested output frequency:   {args.output_freq_mhz:0.3f} MHz
  * Achieved output frequency:    {setup["CLKOUT"]:0.3f} MHz
-
- * Fvco = (Fclkin/IDIV) * FBDIV * MDIV
- *        (50/1) * 1 * 14 = 700
- * CLKOUT = Fvco / ODIV0_SEL
- *          700 / 7
- * for 50 -> 100
- *   FCLKIN = "50";
- *   IDIV_SEL = 1;
- *   FBDIV_SEL = 1;
- *   ODIV0_SEL = 7;
- *   MDIV_SEL = 14;
  */
 
 module {args.module_name}(
@@ -288,12 +305,13 @@ module {args.module_name}(
         .MDAINC(gw_gnd),
         .MDWDI({{gw_gnd,gw_gnd,gw_gnd,gw_gnd,gw_gnd,gw_gnd,gw_gnd,gw_gnd}})
     );
-
-    defparam PLLA_inst.FCLKIN = "50";
-    defparam PLLA_inst.IDIV_SEL = 1;
-    defparam PLLA_inst.FBDIV_SEL = 1;
+    defparam PLLA_inst.FCLKIN = "{FCLKIN}";
+    defparam PLLA_inst.IDIV_SEL = {setup["IDIV_SEL"]};
+    defparam PLLA_inst.FBDIV_SEL = {setup["FBDIV_SEL"]};
     defparam PLLA_inst.CLKFB_SEL = "INTERNAL";
-    defparam PLLA_inst.ODIV0_SEL = 7;
+    defparam PLLA_inst.MDIV_SEL = {setup["MDIV"]};
+    defparam PLLA_inst.MDIV_FRAC_SEL = 0;
+    defparam PLLA_inst.ODIV0_SEL = {setup["ODIV_SEL"]};
     defparam PLLA_inst.ODIV0_FRAC_SEL = 0;
     defparam PLLA_inst.ODIV1_SEL = 8;
     defparam PLLA_inst.ODIV2_SEL = 8;
@@ -301,8 +319,6 @@ module {args.module_name}(
     defparam PLLA_inst.ODIV4_SEL = 8;
     defparam PLLA_inst.ODIV5_SEL = 8;
     defparam PLLA_inst.ODIV6_SEL = 8;
-    defparam PLLA_inst.MDIV_SEL = 14;
-    defparam PLLA_inst.MDIV_FRAC_SEL = 0;
     defparam PLLA_inst.CLKOUT0_EN = "TRUE";
     defparam PLLA_inst.CLKOUT1_EN = "FALSE";
     defparam PLLA_inst.CLKOUT2_EN = "FALSE";

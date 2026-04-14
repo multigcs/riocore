@@ -166,7 +166,9 @@ class gateware(generator_base):
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             for key, value in plugin_instance.timing_constraints().items():
-                if ":" in key:
+                if key[0] == ":":
+                    self.jdata["timing_constraints_instance"][key[1:]] = value
+                elif ":" in key:
                     pre, post = key.split(":")
                     pname = f"{pre}_{plugin_instance.instances_name}_{post}".upper()
                     self.jdata["timing_constraints"][pname] = value

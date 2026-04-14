@@ -93,8 +93,7 @@ class Plugin(PluginBase):
         }
         speed = self.plugin_setup.get("speed", self.option_default("speed"))
         self.TIMING_CONSTRAINTS = {
-            "mclk": speed,
-            # f"PINOUT:SCLK": speed,
+            "PINOUT:SCLK": speed,
         }
 
     def cfg_info(self):

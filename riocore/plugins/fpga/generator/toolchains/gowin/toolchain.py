@@ -265,14 +265,28 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
             open(os.path.join(path, "flash.bat"), "w").write("\n".join(flash_data))
 
         # generating timing constraints (.sdc)
-        speed_ns = 1000000000 / self.config["speed"]
-        sdc_data = [f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk_in [get_ports {{sysclk_in}}]"]
+        speed_hz = int(self.config["clock"].get("osc") or self.config["clock"]["speed"])
+        speed_ns = 1000000000 / speed_hz
+        sdc_data = []
+        sdc_data.append("// Sysclock")
+        sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk_in [get_ports {{sysclk_in}}]")
+        if speed_hz != int(self.config["clock"]["speed"]):
+            speed_ns = 1000000000 / int(self.config["clock"]["speed"])
+            sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk [get_nets {{sysclk}}]")
         sdc_data.append("")
-        for key, value in self.config["timing_constraints"].items():
-            speed_ns = 1000000000 / int(value)
-            sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key} [get_ports {{{key}}}]")
+        if self.config["timing_constraints"]:
+            sdc_data.append("// Pins")
+            for key, value in self.config["timing_constraints"].items():
+                speed_ns = 1000000000 / int(value)
+                sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key} [get_ports {{{key}}}]")
+            sdc_data.append("")
+        if self.config["timing_constraints_instance"]:
+            sdc_data.append("// Nets")
+            for key, value in self.config["timing_constraints_instance"].items():
+                speed_ns = 1000000000 / int(value)
+                # create_clock -period 100.000 -waveform {0.000 0.00} -name i2c [get_nets {i2c0/i2cinst0/clk_bus}]
+                sdc_data.append(f"// create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key.replace('.', '_')} [get_nets {{{key.replace('.', '/')}}}]")
 
-        sdc_data.append("")
         open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))
 
         # generating project file for the gowin toolchain

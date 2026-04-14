@@ -40,6 +40,10 @@ class Plugin(PluginBase):
         }
         self.MAX_BITS = 16
         self.MAX_DIN = 48
+        self.TIMING_CONSTRAINTS = {
+            "PINOUT:scl": 1000000,
+            "PININOUT:sda": 1000000,
+        }
 
     @classmethod
     def update_prefixes(cls, parent, instances):

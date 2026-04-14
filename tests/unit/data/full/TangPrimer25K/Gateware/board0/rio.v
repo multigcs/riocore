@@ -6,7 +6,7 @@
     Family    : GW5A-25A
     Type      : GW5A-LV25MG121NC1/I0
     Package   : PG256
-    Clock     : 50.0 Mhz
+    Clock     : 100.0 Mhz
 
     PINOUT_BLINK0_LED -> E8 
     PINOUT_BITOUT0_BIT -> D7 
@@ -57,12 +57,13 @@ module rio (
     assign ERROR = (INTERFACE_TIMEOUT);
 
     wire sysclk;
-    assign sysclk = sysclk_in;
+    wire locked;
+    pll mypll(sysclk_in, sysclk, locked);
 
     reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};
     wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);
 
-    parameter TIMEOUT = 5000000;
+    parameter TIMEOUT = 10000000;
     localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);
     reg [TIMEOUT_BITS-1:0] timeout_counter = 0;
 
@@ -133,7 +134,7 @@ module rio (
     assign PINOUT_BLINK0_LED_RAW_ONERROR = PINOUT_BLINK0_LED_RAW & ERROR;
     assign PINOUT_BLINK0_LED = PINOUT_BLINK0_LED_RAW_ONERROR;
     blink #(
-        .DIVIDER(25000000)
+        .DIVIDER(50000000)
     ) blink0 (
         .clk(sysclk),
         .led(PINOUT_BLINK0_LED_RAW)
@@ -158,8 +159,8 @@ module rio (
     assign PINOUT_STEPDIR0_DIR = PINOUT_STEPDIR0_DIR_RAW;
     assign PINOUT_STEPDIR0_EN = PINOUT_STEPDIR0_EN_RAW;
     stepdir #(
-        .PULSE_LEN(200),
-        .DIR_DELAY(35)
+        .PULSE_LEN(400),
+        .DIR_DELAY(70)
     ) stepdir0 (
         .clk(sysclk),
         .step(PINOUT_STEPDIR0_STEP_RAW),
@@ -177,8 +178,8 @@ module rio (
     assign PINOUT_STEPDIR1_STEP = PINOUT_STEPDIR1_STEP_RAW;
     assign PINOUT_STEPDIR1_DIR = PINOUT_STEPDIR1_DIR_RAW;
     stepdir #(
-        .PULSE_LEN(200),
-        .DIR_DELAY(35)
+        .PULSE_LEN(400),
+        .DIR_DELAY(70)
     ) stepdir1 (
         .clk(sysclk),
         .step(PINOUT_STEPDIR1_STEP_RAW),
@@ -196,8 +197,8 @@ module rio (
     assign PINOUT_STEPDIR2_STEP = PINOUT_STEPDIR2_STEP_RAW;
     assign PINOUT_STEPDIR2_DIR = PINOUT_STEPDIR2_DIR_RAW;
     stepdir #(
-        .PULSE_LEN(200),
-        .DIR_DELAY(35)
+        .PULSE_LEN(400),
+        .DIR_DELAY(70)
     ) stepdir2 (
         .clk(sysclk),
         .step(PINOUT_STEPDIR2_STEP_RAW),
@@ -225,7 +226,7 @@ module rio (
         .BUFFER_SIZE_RX(BUFFER_SIZE_RX),
         .BUFFER_SIZE_TX(BUFFER_SIZE_TX),
         .MSGID(32'h74697277),
-        .DIVIDER(1)
+        .DIVIDER(2)
     ) w55000 (
         .clk(sysclk),
         .mosi(PINOUT_W55000_MOSI_RAW),
