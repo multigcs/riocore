@@ -201,6 +201,10 @@ class LinuxCNC:
         "jogwheel": "jw",
         "quadencoder": "qenc",
         "i2c_device": "idev",
+        "TangPrimer": "tp",
+        "TangNano": "tn",
+        "power": "pwr",
+        "factor": "fct",
     }
 
     def __init__(self, project):

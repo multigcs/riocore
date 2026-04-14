@@ -20,7 +20,8 @@
     "toolchain": "gowin",
     "package": "PG256",
     "clock": {
-        "speed": "50000000",
+        "osc": "50000000",
+        "speed": "100000000",
         "pin": "E2"
     },
     "slots": [

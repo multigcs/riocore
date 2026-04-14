@@ -188,7 +188,13 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
             makefile_data.append('	@echo "run all" >> $(PROJECT).tcl')
             makefile_data.append("")
             makefile_data.append("impl/pnr/project.fs: $(PROJECT).tcl")
-            makefile_data.append("	QT_QPA_PLATFORM=minimal gw_sh $(PROJECT).tcl")
+            if self.toolchain_path:
+                if not self.toolchain_path.endswith("bin"):
+                    makefile_data.append(f"	LD_LIBRARY_PATH={self.toolchain_path}/lib gw_sh $(PROJECT).tcl")
+                else:
+                    makefile_data.append(f"	LD_LIBRARY_PATH={self.toolchain_path}/../lib gw_sh $(PROJECT).tcl")
+            else:
+                makefile_data.append("	QT_QPA_PLATFORM=minimal gw_sh $(PROJECT).tcl")
             makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
             makefile_data.append('	@grep -A 34 "3. Resource Usage Summary" impl/pnr/project.rpt.txt')
             makefile_data.append("")
