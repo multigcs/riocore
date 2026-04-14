@@ -557,7 +557,8 @@ static void max7219_display(int32_t *values) {
             pin = self.plugin_setup["pins"]["out"]["pin"]
             output = []
             output.append("#include <Servo.h>")
-            output.append(f"Servo {variable_name}_SERVO;")
+            output.append(f"#define {name}_PIN_OUT {pin}")
+            output.append(f"Servo {name}_SERVO;")
             return "\n".join(output)
         if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
             pin = self.plugin_setup["pins"]["data"]["pin"]
@@ -585,7 +586,7 @@ static void max7219_display(int32_t *values) {
         if self.node_type == "adc":
             return f"    pinMode({name}_PIN_ADC, INPUT);"
         if self.node_type == "rcservo":
-            return f"    myservo.attach({name}_PIN_OUT);"
+            return f"    {name}_SERVO.attach({name}_PIN_OUT);"
         if self.node_type == "max7219" and variable_name.endswith("0"):
             output = []
             output.append("    max7219_init();")
@@ -646,7 +647,7 @@ static void max7219_display(int32_t *values) {
         if self.node_type == "mcp4725":
             return f"    MCP.setValue({variable_name});"
         if self.node_type == "rcservo":
-            return f"    {variable_name}_SERVO.write({variable_name});"
+            return f"    {name}_SERVO.write({variable_name});"
         if self.node_type == "rgbled" and variable_name.endswith("_LEVEL"):
             name = self.instances_name.upper()
             leds = self.plugin_setup.get("leds", self.option_default("leds"))
@@ -664,6 +665,8 @@ static void max7219_display(int32_t *values) {
         return ""
 
     def firmware_libs(self):
+        if self.node_type == "rcservo":
+            return ["https://github.com/arduino-libraries/Servo"]
         if self.node_type == "encoder":
             return ["https://github.com/LennartHennigs/ESPRotary"]
         if self.node_type == "rgbled":

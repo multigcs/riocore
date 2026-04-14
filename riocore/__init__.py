@@ -570,7 +570,7 @@ class PluginImages:
         "servo42": {"image": "servo42.png", "pins": [(186, 117), (186, 130), (186, 105)], "signals": [(80, 120), (80, 135), (80, 150)]},
         "servo": {"image": "servo.png", "pins": [(45, 135), (45, 145), (45, 155)], "signals": [(45, 170), (45, 180), (45, 195)]},
         "clstepper": {"image": "clstepper.png", "pins": [(160, 35), (180, 40), (200, 45)], "signals": [(45, 170), (45, 180), (45, 195)]},
-        "rcservo": {"image": "rcservo.png", "pins": [(45, 237)], "signals": [(45, 170), (45, 180)]},
+        "rcservo": {"image": "rcservo.png", "pins": [(36, 13)], "signals": [(45, 170), (45, 180)]},
         "stepstick": {"image": "stepstick.png", "pins": [(70, 17), (70, 5), (70, 93)], "signals": [(35, 5), (35, 17), (35, 27)]},
         "ethercatservo": {"image": "ethercat-servo.png", "pins": [(45, 135), (85, 135)], "signals": [(80, 120), (80, 135), (80, 150)]},
         "flow": {"image": "flow.png", "pins": [(50, 50)], "signals": [(87, 10), (87, 25)]},
