@@ -4,7 +4,7 @@
 
 **uart interface for host cominucation**
 
-simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing
+simple uart interface
 
 * Keywords: serial uart interface
 * NEEDS: fpga
@@ -20,6 +20,7 @@ simple uart interface, not usable for realtime stuff in LinuxCNC / only for test
  * direction: output
 
 ### tx_enable:
+for RS485 mode
 
  * direction: output
  * optional: True

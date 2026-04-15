@@ -1,6 +1,6 @@
 {
   "name": "EPM240",
-  "description": "minimal EPM240 board",
+  "description": "EPM240 board - very limited - only for simple satellites with digital IO's",
   "url": "",
   "size": [
     62,
