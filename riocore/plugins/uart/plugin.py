@@ -5,7 +5,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "uart"
         self.INFO = "uart interface for host cominucation"
-        self.DESCRIPTION = "simple uart interface, not usable for realtime stuff in LinuxCNC / only for testing"
+        self.DESCRIPTION = "simple uart interface"
         self.KEYWORDS = "serial uart interface"
         self.ORIGIN = "https://github.com/ChandulaNethmal/Implemet-a-UART-link-on-FPGA-with-verilog/tree/master"
         self.NEEDS = ["fpga"]

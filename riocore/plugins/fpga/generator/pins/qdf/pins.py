@@ -8,7 +8,9 @@ class Pins:
     def generate(self, path):
         family = self.config.get("family")
         data = [""]
-        if family != "Cyclone II":
+        if family == "MAX II":
+            data.append('set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"')
+        elif family != "Cyclone II":
             data.append('set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.0-V LVTTL"')
         data.append("set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0")
         data.append("set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85")
@@ -25,7 +27,7 @@ class Pins:
                     print('WARNING: please change your pin-config to : "pull": "up"')
                     data.append(f"set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to {pin_config['varname']}")
 
-                if family != "Cyclone II":
+                if family not in {"Cyclone II", "MAX II"}:
                     default = "3.3-V LVTTL"
                     if pin_config["varname"] == "sysclk_in":
                         default = "3.0-V LVTTL"

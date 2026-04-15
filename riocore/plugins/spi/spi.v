@@ -38,7 +38,10 @@ module spi
     always @(posedge clk) begin
         sync <= 0;
         if (SSEL_endmessage) begin
-            if (byte_data_receive[BUFFER_SIZE_RX-1:BUFFER_SIZE_RX-32] == MSGID) begin
+            if (MSGID == 0) begin
+                byte_data_received <= byte_data_receive;
+                sync <= 1;
+            end else if (byte_data_receive[BUFFER_SIZE_RX-1:BUFFER_SIZE_RX-32] == MSGID) begin
                 byte_data_received <= byte_data_receive;
                 sync <= 1;
             end

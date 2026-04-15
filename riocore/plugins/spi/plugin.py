@@ -66,10 +66,14 @@ class Plugin(PluginBase):
             self.HOST_INTERFACE = "SPI"
 
     def gateware_instances(self):
+        frame = self.plugin_setup.get("frame", self.OPTIONS["frame"]["default"])
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
         instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
-        instance_parameter["MSGID"] = "32'h74697277"
+        if frame in {"no_header", "minimum"}:
+            instance_parameter["MSGID"] = "0"
+        else:
+            instance_parameter["MSGID"] = "32'h74697277"
         return instances

@@ -26,7 +26,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "99",
+          "pin": "PIN_99",
           "pos": [
             9,
             9
@@ -38,7 +38,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "97",
+          "pin": "PIN_97",
           "pos": [
             20,
             9
@@ -50,7 +50,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "95",
+          "pin": "PIN_95",
           "pos": [
             31,
             9
@@ -62,7 +62,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "91",
+          "pin": "PIN_91",
           "pos": [
             42,
             9
@@ -74,7 +74,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "89",
+          "pin": "PIN_89",
           "pos": [
             53,
             9
@@ -86,7 +86,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "87",
+          "pin": "PIN_87",
           "pos": [
             64,
             9
@@ -98,7 +98,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "85",
+          "pin": "PIN_85",
           "pos": [
             75,
             9
@@ -110,7 +110,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "83",
+          "pin": "PIN_83",
           "pos": [
             86,
             9
@@ -122,7 +122,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "81",
+          "pin": "PIN_81",
           "pos": [
             97,
             9
@@ -134,7 +134,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "77",
+          "pin": "PIN_77",
           "pos": [
             108,
             9
@@ -146,7 +146,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "100",
+          "pin": "PIN_100",
           "pos": [
             9,
             20
@@ -158,7 +158,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "98",
+          "pin": "PIN_98",
           "pos": [
             20,
             20
@@ -170,7 +170,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "96",
+          "pin": "PIN_96",
           "pos": [
             31,
             20
@@ -182,7 +182,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "92",
+          "pin": "PIN_92",
           "pos": [
             42,
             20
@@ -194,7 +194,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "90",
+          "pin": "PIN_90",
           "pos": [
             53,
             20
@@ -206,7 +206,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "88",
+          "pin": "PIN_88",
           "pos": [
             64,
             20
@@ -218,7 +218,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "86",
+          "pin": "PIN_86",
           "pos": [
             75,
             20
@@ -230,7 +230,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "84",
+          "pin": "PIN_84",
           "pos": [
             86,
             20
@@ -242,7 +242,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "82",
+          "pin": "PIN_82",
           "pos": [
             97,
             20
@@ -254,7 +254,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "78",
+          "pin": "PIN_78",
           "pos": [
             108,
             20
@@ -273,7 +273,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "33",
+          "pin": "PIN_33",
           "pos": [
             194,
             199
@@ -285,7 +285,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "35",
+          "pin": "PIN_35",
           "pos": [
             205,
             199
@@ -297,7 +297,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "37",
+          "pin": "PIN_37",
           "pos": [
             216,
             199
@@ -309,7 +309,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "39",
+          "pin": "PIN_39",
           "pos": [
             227,
             199
@@ -321,7 +321,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "41",
+          "pin": "PIN_41",
           "pos": [
             238,
             199
@@ -333,7 +333,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "43",
+          "pin": "PIN_43",
           "pos": [
             249,
             199
@@ -345,7 +345,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "47",
+          "pin": "PIN_47",
           "pos": [
             260,
             199
@@ -357,7 +357,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "49",
+          "pin": "PIN_49",
           "pos": [
             271,
             199
@@ -369,7 +369,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "51",
+          "pin": "PIN_51",
           "pos": [
             282,
             199
@@ -381,7 +381,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "53",
+          "pin": "PIN_53",
           "pos": [
             293,
             199
@@ -393,7 +393,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "30",
+          "pin": "PIN_30",
           "pos": [
             194,
             210
@@ -405,7 +405,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "34",
+          "pin": "PIN_34",
           "pos": [
             205,
             210
@@ -417,7 +417,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "36",
+          "pin": "PIN_36",
           "pos": [
             216,
             210
@@ -429,7 +429,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "38",
+          "pin": "PIN_38",
           "pos": [
             227,
             210
@@ -441,7 +441,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "40",
+          "pin": "PIN_40",
           "pos": [
             238,
             210
@@ -453,7 +453,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "42",
+          "pin": "PIN_42",
           "pos": [
             249,
             210
@@ -465,7 +465,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "44",
+          "pin": "PIN_44",
           "pos": [
             260,
             210
@@ -477,7 +477,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "48",
+          "pin": "PIN_48",
           "pos": [
             271,
             210
@@ -489,7 +489,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "50",
+          "pin": "PIN_50",
           "pos": [
             282,
             210
@@ -501,7 +501,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "52",
+          "pin": "PIN_52",
           "pos": [
             293,
             210
@@ -520,7 +520,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "1",
+          "pin": "PIN_1",
           "pos": [
             9,
             199
@@ -532,7 +532,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "3",
+          "pin": "PIN_3",
           "pos": [
             20,
             199
@@ -544,7 +544,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "5",
+          "pin": "PIN_5",
           "pos": [
             31,
             199
@@ -556,7 +556,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "7",
+          "pin": "PIN_7",
           "pos": [
             42,
             199
@@ -568,7 +568,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "15",
+          "pin": "PIN_15",
           "pos": [
             53,
             199
@@ -580,7 +580,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "17",
+          "pin": "PIN_17",
           "pos": [
             64,
             199
@@ -592,7 +592,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "19",
+          "pin": "PIN_19",
           "pos": [
             75,
             199
@@ -617,7 +617,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "26",
+          "pin": "PIN_26",
           "pos": [
             97,
             199
@@ -629,7 +629,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "28",
+          "pin": "PIN_28",
           "pos": [
             108,
             199
@@ -641,7 +641,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "2",
+          "pin": "PIN_2",
           "pos": [
             9,
             210
@@ -653,7 +653,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "4",
+          "pin": "PIN_4",
           "pos": [
             20,
             210
@@ -665,7 +665,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "6",
+          "pin": "PIN_6",
           "pos": [
             31,
             210
@@ -677,7 +677,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "8",
+          "pin": "PIN_8",
           "pos": [
             42,
             210
@@ -689,7 +689,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "16",
+          "pin": "PIN_16",
           "pos": [
             53,
             210
@@ -701,7 +701,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "18",
+          "pin": "PIN_18",
           "pos": [
             64,
             210
@@ -713,7 +713,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "20",
+          "pin": "PIN_20",
           "pos": [
             75,
             210
@@ -725,7 +725,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "21",
+          "pin": "PIN_21",
           "pos": [
             86,
             210
@@ -737,7 +737,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "27",
+          "pin": "PIN_27",
           "pos": [
             97,
             210
@@ -749,7 +749,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "29",
+          "pin": "PIN_29",
           "pos": [
             108,
             210
@@ -768,7 +768,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "75",
+          "pin": "PIN_75",
           "pos": [
             194,
             9
@@ -780,7 +780,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "73",
+          "pin": "PIN_73",
           "pos": [
             205,
             9
@@ -792,7 +792,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "71",
+          "pin": "PIN_71",
           "pos": [
             216,
             9
@@ -804,7 +804,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "69",
+          "pin": "PIN_69",
           "pos": [
             227,
             9
@@ -816,7 +816,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "67",
+          "pin": "PIN_67",
           "pos": [
             238,
             9
@@ -828,7 +828,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "61",
+          "pin": "PIN_61",
           "pos": [
             249,
             9
@@ -840,7 +840,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "57",
+          "pin": "PIN_57",
           "pos": [
             260,
             9
@@ -852,7 +852,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "55",
+          "pin": "PIN_55",
           "pos": [
             271,
             9
@@ -877,7 +877,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "54",
+          "pin": "PIN_54",
           "pos": [
             293,
             9
@@ -889,7 +889,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "76",
+          "pin": "PIN_76",
           "pos": [
             194,
             20
@@ -901,7 +901,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "74",
+          "pin": "PIN_74",
           "pos": [
             205,
             20
@@ -913,7 +913,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "72",
+          "pin": "PIN_72",
           "pos": [
             216,
             20
@@ -925,7 +925,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "70",
+          "pin": "PIN_70",
           "pos": [
             227,
             20
@@ -937,7 +937,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "68",
+          "pin": "PIN_68",
           "pos": [
             238,
             20
@@ -949,7 +949,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "66",
+          "pin": "PIN_66",
           "pos": [
             249,
             20
@@ -961,7 +961,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "58",
+          "pin": "PIN_58",
           "pos": [
             260,
             20
@@ -973,7 +973,7 @@
             "FPGA"
           ],
           "edge": "source",
-          "pin": "56",
+          "pin": "PIN_56",
           "pos": [
             271,
             20
