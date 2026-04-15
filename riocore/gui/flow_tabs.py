@@ -1157,8 +1157,6 @@ class TabPins:
         for item in self.parent.scene.items():
             if "PluginNode" not in str(type(item)):
                 continue
-            if "PluginNode" not in str(type(item)):
-                continue
             plugin_instance = item.plugin_instance
             plugin_config = plugin_instance.plugin_setup
             pins_config = plugin_config.get("pins", {})
@@ -1170,22 +1168,20 @@ class TabPins:
                     continue
                 if pin_defaults.get("edge") != "source":
                     continue
-                source_pins.append(f"{plugin_instance.instances_name.upper()}:{pin}")
+                source_pins.append(f"{plugin_instance.instances_name}:{pin}")
 
         for item in self.parent.scene.items():
             if "PluginNode" not in str(type(item)):
                 continue
-            if "PluginNode" not in str(type(item)):
-                continue
-
             plugin_instance = item.plugin_instance
-            plugin_config = plugin_instance.plugin_setup
-            pins_config = plugin_config.get("pins", {})
+            if "pins" not in plugin_instance.plugin_setup:
+                plugin_instance.plugin_setup["pins"] = {}
+            pins_config = plugin_instance.plugin_setup["pins"]
             for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
-                pin_config = pins_config.get(pin, {})
+                if pin not in pins_config:
+                    pins_config[pin] = {}
+                pin_config = pins_config[pin]
                 if pin_defaults.get("marker", False) is True:
-                    continue
-                if pin_defaults.get("visible", True) is False:
                     continue
                 if pin_defaults.get("edge") != "target":
                     continue
@@ -1219,24 +1215,30 @@ class TabPins:
                     ]
                 )
 
-                widget = QPushButton(item.plugin_instance.instances_name)
+                widget = QPushButton(f"  {item.plugin_instance.instances_name}  ")
                 widget.clicked.connect(partial(self.edit, item))
                 self.treeview.setIndexWidget(fitem.index(), widget)
 
-                widget = self.parent.edit_item(pin_config, "pin", {"type": "select", "options": source_pins, "default": "", "help_text": "pull mode"}, cb=self.cfgupdate)
+                if pin_defaults.get("visible", True) is True:
+                    widget = self.parent.edit_item(pin_config, "pin", {"type": "select", "options": source_pins, "default": "", "help_text": "connected pin"}, cb=self.cfgupdate)
+                else:
+                    widget = QLabel(str(pin_config.get("pin", "")))
                 self.treeview.setIndexWidget(aitem.index(), widget)
-                if pin_defaults.get("direction", "") == "input":
+
+                if pin_defaults.get("direction", "") == "input" and "FPGA" in pin_defaults.get("type", []):
                     widget = self.parent.edit_item(pin_config, "pull", {"type": "radio", "options": ["", "up", "down"], "default": "", "default_text": "no", "help_text": "pull mode"}, cb=self.cfgupdate)
-                    self.treeview.setIndexWidget(bitem.index(), widget)
+                else:
+                    widget = QLabel(str(pin_config.get("pull", "")))
+                self.treeview.setIndexWidget(bitem.index(), widget)
 
                 widget = QCheckBox()
                 widget.setChecked(bool(inverted))
                 widget.stateChanged.connect(partial(self.invert, item.plugin_instance, pin))
                 self.treeview.setIndexWidget(citem.index(), widget)
-
-                widget = QLineEdit(f"{debounce:0.3f} ms")
-                widget.editingFinished.connect(partial(self.debounce, item.plugin_instance, pin, widget))
-                self.treeview.setIndexWidget(ditem.index(), widget)
+                if "FPGA" in pin_defaults.get("type", []):
+                    widget = QLineEdit(f"{debounce:0.3f} ms")
+                    widget.editingFinished.connect(partial(self.debounce, item.plugin_instance, pin, widget))
+                    self.treeview.setIndexWidget(ditem.index(), widget)
 
         self.treeview.header().resizeSections(3)
         self.treeview.expandAll()
@@ -1251,8 +1253,7 @@ class TabPins:
         if self.update_flag:
             return
         self.update_flag = True
-        plugin_config = plugin_instance.plugin_setup
-        pin_config = plugin_config.get("pins", {}).get(pin, {})
+        pin_config = plugin_instance.plugin_setup.get("pins", {}).get(pin, {})
         delay = 0.0
 
         try:
@@ -1282,8 +1283,7 @@ class TabPins:
         if self.update_flag:
             return
         self.update_flag = True
-        plugin_config = plugin_instance.plugin_setup
-        pin_config = plugin_config.get("pins", {}).get(pin, {})
+        pin_config = plugin_instance.plugin_setup.get("pins", {}).get(pin, {})
         inverted = 0
         for modifier in pin_config.get("modifier", []):
             if modifier["type"] == "invert":
@@ -1306,12 +1306,13 @@ class TabPins:
         self.filter_text = text
         self.update(full=True)
 
-    def cfgupdate(self, config=None, full=False):
+    def cfgupdate(self, value=None):
         if self.update_flag:
             return
         self.update_flag = True
         self.parent.cfg_check()
-        self.update(self.config)
+        self.parent.redraw()
+        # self.update()
         self.update_flag = False
 
     def update(self, config=None, full=False):

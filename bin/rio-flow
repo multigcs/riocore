@@ -2231,8 +2231,8 @@ class Window(QMainWindow):
                             plugin_setup["pins"][port]["modifier"] = list(reversed(modifiers))
                         else:
                             plugin_setup["pins"][port]["modifier"] = list(modifiers)
-                    elif plugin_setup.get("pins") and port in plugin_setup["pins"]:
-                        del plugin_setup["pins"][port]
+                    # elif plugin_setup.get("pins") and port in plugin_setup["pins"]:
+                    #    del plugin_setup["pins"][port]
         self.cfg_check()
 
     def display(self):

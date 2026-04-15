@@ -800,11 +800,13 @@ class edit_combobox(QComboBox):
     def change(self):
         if self.no_update:
             return
-        new_value = self.currentText().split("|")[0]
+        new_value = self.get()
         if new_value != self.default:
             self.obj[str(self.key)] = new_value
         elif str(self.key) in self.obj:
             del self.obj[str(self.key)]
+        else:
+            print("ERR")
         if self.cb:
             self.cb(new_value)
         else:
