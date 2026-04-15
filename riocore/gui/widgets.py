@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QLineEdit,
     QPushButton,
+    QRadioButton,
     QSpinBox,
     QTextEdit,
     QVBoxLayout,
@@ -632,6 +633,73 @@ class edit_bool(QCheckBox):
 
     def get(self):
         return self.isChecked()
+
+
+class edit_radio(QWidget):
+    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
+        super().__init__()
+        self.win = win
+        self.cb = cb
+        self.obj = obj
+        self.key = key
+        self.default = default
+        self.no_update = False
+        self.options = options.copy()
+        self.options_clean = []
+        self.boxes = []
+
+        blayout = QHBoxLayout()
+        blayout.setSpacing(0)
+        blayout.setContentsMargins(10, 0, 0, 0)
+        self.setLayout(blayout)
+        for opt in self.options:
+            bcheck = QRadioButton(opt)
+            blayout.addWidget(bcheck)
+            if key in obj:
+                if str(obj[key]) == opt:
+                    bcheck.setChecked(True)
+            elif default is not None:
+                if str(default) == opt:
+                    bcheck.setChecked(True)
+            bcheck.toggled.connect(self.change)
+            self.boxes.append(bcheck)
+
+    def update(self, obj=None):
+        if obj is not None:
+            self.obj = obj
+        self.no_update = True
+        for bn, opt in enumerate(self.options):
+            if self.key in self.obj:
+                if str(obj[self.key]) == opt:
+                    self.boxes[bn].setChecked(True)
+            elif self.default is not None:
+                if str(self.default) == opt:
+                    self.boxes[bn].setChecked(True)
+
+        self.no_update = False
+
+    def change(self):
+        if self.no_update:
+            return
+        new_value = self.get()
+        if new_value is None:
+            return
+        if new_value != self.default:
+            self.obj[str(self.key)] = new_value
+        elif str(self.key) in self.obj:
+            del self.obj[str(self.key)]
+        if self.cb:
+            self.cb(new_value)
+        else:
+            self.win.display()
+
+    def get(self):
+        value = None
+        for bn, opt in enumerate(self.options):
+            if not self.boxes[bn].isChecked():
+                continue
+            value = opt
+        return value
 
 
 class edit_combobox(QComboBox):

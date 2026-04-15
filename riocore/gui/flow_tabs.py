@@ -124,10 +124,10 @@ class TabBuilder:
                     else:
                         running = True
         if running:
-            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(255, 0, 0))
+            self.parent.tabwidget.tabBar().setTabTextColor(5, QColor(255, 0, 0))
             self.block = True
         else:
-            self.parent.tabwidget.tabBar().setTabTextColor(4, QColor(0, 0, 0))
+            self.parent.tabwidget.tabBar().setTabTextColor(5, QColor(0, 0, 0))
             self.block = False
 
     def generator_run(self, options=None):
@@ -1112,6 +1112,135 @@ class TabJson:
         if self.diff_only.isChecked() and not self.found_diffs:
             self.jsondiff.insertPlainText("--- NO CHANGES ---\n")
         self.jsonupdate = False
+
+
+class TabPins:
+    def __init__(self, parent):
+        self.parent = parent
+        self.config = parent.config
+        self.update_flag = False
+        self.filter_text = ""
+
+        self.tab_linuxcnc = QWidget()
+        self.layout_linuxcnc = QVBoxLayout()
+        self.tab_linuxcnc.setLayout(self.layout_linuxcnc)
+
+        self.tab_pins = QWidget()
+        self.layout_pins = QVBoxLayout()
+        self.tab_pins.setLayout(self.layout_pins)
+
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(self.tab_pins, "Pins")
+
+        self.treeview = QTreeView()
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Comment"])
+        self.treeview.setModel(self.model)
+        self.treeview.header().setStretchLastSection(True)
+        hbox_search = QHBoxLayout()
+        self.filter_entry = QLineEdit("")
+        self.filter_entry.textChanged.connect(self.filter)
+        hbox_search.addWidget(QLabel("Filter"))
+        hbox_search.addWidget(self.filter_entry)
+        self.layout_pins.addLayout(hbox_search)
+        self.layout_pins.addWidget(self.treeview)
+
+        self.update()
+
+    def load_tree(self, parent_tree, full=False):
+        tree_lcncini = parent_tree
+        tree_lcncini.removeRows(0, tree_lcncini.rowCount())
+
+        source_pins = []
+        for item in self.parent.scene.items():
+            if "PluginNode" not in str(type(item)):
+                continue
+            if "PluginNode" not in str(type(item)):
+                continue
+            plugin_instance = item.plugin_instance
+            plugin_config = plugin_instance.plugin_setup
+            pins_config = plugin_config.get("pins", {})
+            for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                pin_config = pins_config.get(pin)
+                if pin_defaults.get("marker", False) is True:
+                    continue
+                if pin_defaults.get("visible", True) is False:
+                    continue
+                if pin_defaults.get("edge") != "source":
+                    continue
+                source_pins.append(f"{plugin_instance.instances_name.upper()}:{pin}")
+
+        for item in self.parent.scene.items():
+            if "PluginNode" not in str(type(item)):
+                continue
+            if "PluginNode" not in str(type(item)):
+                continue
+
+            plugin_instance = item.plugin_instance
+            plugin_config = plugin_instance.plugin_setup
+            pins_config = plugin_config.get("pins", {})
+            for pin, pin_defaults in plugin_instance.PINDEFAULTS.items():
+                pin_config = pins_config.get(pin, {})
+                if pin_defaults.get("marker", False) is True:
+                    continue
+                if pin_defaults.get("visible", True) is False:
+                    continue
+                if pin_defaults.get("edge") != "target":
+                    continue
+                if self.filter_text and (self.filter_text not in item.plugin_instance.instances_name) and (self.filter_text not in pin):
+                    continue
+
+                aitem = MyStandardItem()
+                bitem = MyStandardItem()
+                tree_lcncini.appendRow(
+                    [
+                        MyStandardItem(item.plugin_instance.instances_name),
+                        MyStandardItem(pin),
+                        MyStandardItem(str(pin_defaults.get("direction", ""))),
+                        aitem,
+                        bitem,
+                        MyStandardItem(pin_defaults.get("comment", pin_defaults.get("description", ""))),
+                    ]
+                )
+                widget = self.parent.edit_item(pin_config, "pin", {"type": "select", "options": source_pins, "default": "", "help_text": "pull mode"}, cb=self.cfgupdate)
+                self.treeview.setIndexWidget(aitem.index(), widget)
+                if pin_defaults.get("direction", "") == "input":
+                    widget = self.parent.edit_item(pin_config, "pull", {"type": "radio", "options": ["", "up", "down"], "default": "", "help_text": "pull mode"}, cb=self.cfgupdate)
+                    self.treeview.setIndexWidget(bitem.index(), widget)
+
+        self.treeview.header().resizeSections(3)
+        self.treeview.expandAll()
+
+    def filter(self, text):
+        self.filter_text = text
+        self.update(full=True)
+
+    def cfgupdate(self, config=None, full=False):
+        if self.update_flag:
+            return
+        self.update_flag = True
+        self.parent.cfg_check()
+        self.update(self.config)
+        self.update_flag = False
+
+    def update(self, config=None, full=False):
+        if self.update_flag:
+            return
+        self.update_flag = True
+        self.load_tree(self.model, full)
+        self.update_flag = False
+
+    def table_updated(self):
+        if self.update_flag:
+            return
+
+    def updated(self, tmp=None):
+        self.parent.redraw()
+        self.parent.cfg_check()
+        self.update(self.config)
+
+    def widget(self):
+        return self.tab_widget
 
 
 class TabOptions:

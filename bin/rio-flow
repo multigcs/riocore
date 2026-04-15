@@ -52,6 +52,7 @@ from riocore.gui.flow_tabs import (
     TabDrawing,
     TabJson,
     TabOptions,
+    TabPins,
 )
 from riocore.gui.loader import ConfigLoader
 from riocore.gui.modifiers import GuiModifiers
@@ -66,6 +67,7 @@ from riocore.gui.widgets import (
     edit_imgselect,
     edit_int,
     edit_multiline,
+    edit_radio,
     edit_text,
 )
 
@@ -1454,6 +1456,7 @@ class Window(QMainWindow):
         self.jsontab = TabJson(self)
         self.optionstab = TabOptions(self)
         self.axistab = TabAxis(self)
+        self.pinstab = TabPins(self)
         self.buildertab = TabBuilder(self)
 
         self.tabwidget = QTabWidget()
@@ -1461,6 +1464,7 @@ class Window(QMainWindow):
         self.tabwidget.addTab(self.drawingtab.widget(), "Drawing")
         self.tabwidget.addTab(self.axistab.widget(), "Axis/Joints")
         self.tabwidget.addTab(self.optionstab.widget(), "LinuxCNC")
+        self.tabwidget.addTab(self.pinstab.widget(), "Pins")
         self.tabwidget.addTab(self.jsontab.widget(), "Json")
         self.tabwidget.addTab(self.buildertab.widget(), "Builder")
 
@@ -2009,9 +2013,9 @@ class Window(QMainWindow):
     def cfg_check(self):
         self.jsontab.update(flow=True)
         if self.jsontab.found_diffs:
-            self.tabwidget.tabBar().setTabTextColor(3, QColor(255, 0, 0))
+            self.tabwidget.tabBar().setTabTextColor(4, QColor(255, 0, 0))
             return False
-        self.tabwidget.tabBar().setTabTextColor(3, QColor(0, 0, 0))
+        self.tabwidget.tabBar().setTabTextColor(4, QColor(0, 0, 0))
         return True
 
     def select_all(self):
@@ -2457,6 +2461,7 @@ class Window(QMainWindow):
         self.axistab.update(self.config)
         self.optionstab.update(self.config)
         self.buildertab.update()
+        self.pinstab.update()
 
     def list_plugin_instances(self):
         instances = []
@@ -2903,6 +2908,8 @@ class Window(QMainWindow):
             return edit_imgselect(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
         if var_setup["type"] == "select":
             return edit_combobox(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
+        if var_setup["type"] == "radio":
+            return edit_radio(self, obj, key, var_setup.get("options", []), cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
         if var_setup["type"] == "multiline":
             return edit_multiline(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"), mul=111)
         if var_setup["type"] is int:

@@ -20,7 +20,7 @@ class Plugin(PluginBase):
             "tx_enable": {
                 "direction": "output",
                 "optional": True,
-                "descruption": "for RS485 mode",
+                "description": "for RS485 mode",
             },
             "SAT": {
                 "direction": "output",
