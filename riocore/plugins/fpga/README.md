@@ -19,6 +19,7 @@ fpga
 | ECP5-256 | <img height="48" src="boards/ECP5-256.png"> |
 | EP2C5T144 | <img height="48" src="boards/EP2C5T144.png"> |
 | EP4CE6E22C8 | <img height="48" src="boards/EP4CE6E22C8.png"> |
+| EPM240 | <img height="48" src="boards/EPM240.png"> |
 | ICEBreakerV1.0e | <img height="48" src="boards/ICEBreakerV1.0e.png"> |
 | ICESugarNano | <img height="48" src="boards/ICESugarNano.png"> |
 | ICESugarPro | <img height="48" src="boards/ICESugarPro.png"> |
@@ -57,7 +58,7 @@ board type
 
  * type: select
  * default: 
- * options: Altera10M08Eval, Basys2, CYC1000, Colorlight5A-75B-v8.0, Colorlight5A-75E, Colorlight_i5-v7_0, EBAZ4205, ECP5-256, EP2C5T144, EP4CE6E22C8, ICEBreakerV1.0e, ICESugarNano, ICESugarPro, IceShield, LX9MicroBoard, Mesa7c80, Mesa7c81, MotoMan, Numato-Spartan6, OctoBot, Olimex-ICE40HX8K-EVB, TangNano1K, TangNano20K, TangNano4K, TangNano9K, TangPrimer20K, TangPrimer25K, Tangbob, Tangoboard, rioctrl
+ * options: Altera10M08Eval, Basys2, CYC1000, Colorlight5A-75B-v8.0, Colorlight5A-75E, Colorlight_i5-v7_0, EBAZ4205, ECP5-256, EP2C5T144, EP4CE6E22C8, EPM240, ICEBreakerV1.0e, ICESugarNano, ICESugarPro, IceShield, LX9MicroBoard, Mesa7c80, Mesa7c81, MotoMan, Numato-Spartan6, OctoBot, Olimex-ICE40HX8K-EVB, TangNano1K, TangNano20K, TangNano4K, TangNano9K, TangPrimer20K, TangPrimer25K, Tangbob, Tangoboard, rioctrl
 
 ### simulation:
 simulation mode

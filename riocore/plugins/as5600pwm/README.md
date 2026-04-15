@@ -31,7 +31,6 @@ name of this plugin instance
 
  * type: float
  * direction: input
- * unit: ms
 
 ### position:
 

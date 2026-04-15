@@ -10,8 +10,8 @@
 mkdir -p /opt/gowin
 cd /opt/gowin
 wget "https://cdn.gowinsemi.com.cn/Gowin_V1.9.11.03_Education_Linux.tar.gz"
-tar xzvpf Gowin_V*_Education_linux.tar.gz
-rm -rf Gowin_V*_Education_linux.tar.gz
+tar xzvpf Gowin_V*_Education_Linux.tar.gz
+rm -rf Gowin_V*_Education_Linux.tar.gz
 ```
 
 ```

@@ -1,0 +1,1011 @@
+{
+  "name": "EPM240",
+  "description": "minimal EPM240 board",
+  "url": "",
+  "size": [
+    62,
+    25
+  ],
+  "toolchain": "quartus",
+  "family": "MAX II",
+  "type": "EPM240T100C5",
+  "package": "",
+  "clock": {
+    "speed": "50000000",
+    "pin": "PIN_12"
+  },
+  "slots": [
+    {
+      "name": "P4",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "99": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "99",
+          "pos": [
+            9,
+            9
+          ]
+        },
+        "97": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "97",
+          "pos": [
+            20,
+            9
+          ]
+        },
+        "95": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "95",
+          "pos": [
+            31,
+            9
+          ]
+        },
+        "91": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "91",
+          "pos": [
+            42,
+            9
+          ]
+        },
+        "89": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "89",
+          "pos": [
+            53,
+            9
+          ]
+        },
+        "87": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "87",
+          "pos": [
+            64,
+            9
+          ]
+        },
+        "85": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "85",
+          "pos": [
+            75,
+            9
+          ]
+        },
+        "83": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "83",
+          "pos": [
+            86,
+            9
+          ]
+        },
+        "81": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "81",
+          "pos": [
+            97,
+            9
+          ]
+        },
+        "77": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "77",
+          "pos": [
+            108,
+            9
+          ]
+        },
+        "100": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "100",
+          "pos": [
+            9,
+            20
+          ]
+        },
+        "98": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "98",
+          "pos": [
+            20,
+            20
+          ]
+        },
+        "96": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "96",
+          "pos": [
+            31,
+            20
+          ]
+        },
+        "92": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "92",
+          "pos": [
+            42,
+            20
+          ]
+        },
+        "90": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "90",
+          "pos": [
+            53,
+            20
+          ]
+        },
+        "88": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "88",
+          "pos": [
+            64,
+            20
+          ]
+        },
+        "86": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "86",
+          "pos": [
+            75,
+            20
+          ]
+        },
+        "84": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "84",
+          "pos": [
+            86,
+            20
+          ]
+        },
+        "82": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "82",
+          "pos": [
+            97,
+            20
+          ]
+        },
+        "78": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "78",
+          "pos": [
+            108,
+            20
+          ]
+        }
+      }
+    },
+    {
+      "name": "P2",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "33": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "33",
+          "pos": [
+            194,
+            199
+          ]
+        },
+        "35": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "35",
+          "pos": [
+            205,
+            199
+          ]
+        },
+        "37": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "37",
+          "pos": [
+            216,
+            199
+          ]
+        },
+        "39": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "39",
+          "pos": [
+            227,
+            199
+          ]
+        },
+        "41": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "41",
+          "pos": [
+            238,
+            199
+          ]
+        },
+        "43": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "43",
+          "pos": [
+            249,
+            199
+          ]
+        },
+        "47": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "47",
+          "pos": [
+            260,
+            199
+          ]
+        },
+        "49": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "49",
+          "pos": [
+            271,
+            199
+          ]
+        },
+        "51": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "51",
+          "pos": [
+            282,
+            199
+          ]
+        },
+        "53": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "53",
+          "pos": [
+            293,
+            199
+          ]
+        },
+        "30": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "30",
+          "pos": [
+            194,
+            210
+          ]
+        },
+        "34": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "34",
+          "pos": [
+            205,
+            210
+          ]
+        },
+        "36": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "36",
+          "pos": [
+            216,
+            210
+          ]
+        },
+        "38": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "38",
+          "pos": [
+            227,
+            210
+          ]
+        },
+        "40": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "40",
+          "pos": [
+            238,
+            210
+          ]
+        },
+        "42": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "42",
+          "pos": [
+            249,
+            210
+          ]
+        },
+        "44": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "44",
+          "pos": [
+            260,
+            210
+          ]
+        },
+        "48": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "48",
+          "pos": [
+            271,
+            210
+          ]
+        },
+        "50": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "50",
+          "pos": [
+            282,
+            210
+          ]
+        },
+        "52": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "52",
+          "pos": [
+            293,
+            210
+          ]
+        }
+      }
+    },
+    {
+      "name": "P3",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "1": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "1",
+          "pos": [
+            9,
+            199
+          ]
+        },
+        "3": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "3",
+          "pos": [
+            20,
+            199
+          ]
+        },
+        "5": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "5",
+          "pos": [
+            31,
+            199
+          ]
+        },
+        "7": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "7",
+          "pos": [
+            42,
+            199
+          ]
+        },
+        "15": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "15",
+          "pos": [
+            53,
+            199
+          ]
+        },
+        "17": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "17",
+          "pos": [
+            64,
+            199
+          ]
+        },
+        "19": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "19",
+          "pos": [
+            75,
+            199
+          ]
+        },
+        "GND": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "GND",
+          "pos": [
+            86,
+            199
+          ],
+          "marker": true
+        },
+        "26": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "26",
+          "pos": [
+            97,
+            199
+          ]
+        },
+        "28": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "28",
+          "pos": [
+            108,
+            199
+          ]
+        },
+        "2": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "2",
+          "pos": [
+            9,
+            210
+          ]
+        },
+        "4": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "4",
+          "pos": [
+            20,
+            210
+          ]
+        },
+        "6": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "6",
+          "pos": [
+            31,
+            210
+          ]
+        },
+        "8": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "8",
+          "pos": [
+            42,
+            210
+          ]
+        },
+        "16": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "16",
+          "pos": [
+            53,
+            210
+          ]
+        },
+        "18": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "18",
+          "pos": [
+            64,
+            210
+          ]
+        },
+        "20": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "20",
+          "pos": [
+            75,
+            210
+          ]
+        },
+        "21": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "21",
+          "pos": [
+            86,
+            210
+          ]
+        },
+        "27": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "27",
+          "pos": [
+            97,
+            210
+          ]
+        },
+        "29": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "29",
+          "pos": [
+            108,
+            210
+          ]
+        }
+      }
+    },
+    {
+      "name": "P1",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "75": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "75",
+          "pos": [
+            194,
+            9
+          ]
+        },
+        "73": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "73",
+          "pos": [
+            205,
+            9
+          ]
+        },
+        "71": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "71",
+          "pos": [
+            216,
+            9
+          ]
+        },
+        "69": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "69",
+          "pos": [
+            227,
+            9
+          ]
+        },
+        "67": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "67",
+          "pos": [
+            238,
+            9
+          ]
+        },
+        "61": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "61",
+          "pos": [
+            249,
+            9
+          ]
+        },
+        "57": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "57",
+          "pos": [
+            260,
+            9
+          ]
+        },
+        "55": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "55",
+          "pos": [
+            271,
+            9
+          ]
+        },
+        "GND": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "GND",
+          "pos": [
+            282,
+            9
+          ],
+          "marker": true
+        },
+        "54": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "54",
+          "pos": [
+            293,
+            9
+          ]
+        },
+        "76": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "76",
+          "pos": [
+            194,
+            20
+          ]
+        },
+        "74": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "74",
+          "pos": [
+            205,
+            20
+          ]
+        },
+        "72": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "72",
+          "pos": [
+            216,
+            20
+          ]
+        },
+        "70": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "70",
+          "pos": [
+            227,
+            20
+          ]
+        },
+        "68": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "68",
+          "pos": [
+            238,
+            20
+          ]
+        },
+        "66": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "66",
+          "pos": [
+            249,
+            20
+          ]
+        },
+        "58": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "58",
+          "pos": [
+            260,
+            20
+          ]
+        },
+        "56": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "56",
+          "pos": [
+            271,
+            20
+          ]
+        },
+        "5V": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "5V",
+          "pos": [
+            282,
+            20
+          ],
+          "marker": true
+        },
+        "3V3": {
+          "direction": "all",
+          "type": [
+            "FPGA"
+          ],
+          "edge": "source",
+          "pin": "3V3",
+          "pos": [
+            293,
+            20
+          ],
+          "marker": true
+        }
+      }
+    }
+  ]
+}

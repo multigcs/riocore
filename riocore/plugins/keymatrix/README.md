@@ -72,6 +72,15 @@ number rows
  * max: 8
  * default: 4
 
+### delay:
+delay between scans
+
+ * type: float
+ * min: 0.0
+ * max: 100.0
+ * default: 1.0
+ * unit: ms
+
 ### sendkeys:
 using sendkeys hal-component
 
@@ -83,6 +92,12 @@ keycodes
 
  * type: str
  * default: 2, 5, 8, 27, 3, 6, 9, 11, 4, 7, 10, 43, 30, 48, 46, 32
+
+### bitout:
+generate single bit signals
+
+ * type: bool
+ * default: False
 
 
 ## Signals:

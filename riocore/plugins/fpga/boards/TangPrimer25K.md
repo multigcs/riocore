@@ -8,7 +8,7 @@ TangPrimer25K-Devboard on Dev-Board
 | --- | --- |
 | Family | GW5A-25A |
 | Type | GW5A-LV25MG121NC1/I0 |
-| Clock | 50.0 |
+| Clock | 100.0 |
 | Toolchain | gowin (icestorm) |
 | URL | [link](https://wiki.sipeed.com/hardware/en/tang/tang-primer-25k/primer-25k.html) |
 
@@ -42,6 +42,10 @@ UART2USB
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| 3V3_1 | 3V3 |  |
+| 3V3_2 | 3V3 |  |
+| GND_1 | GND |  |
+| GND_2 | GND |  |
 | P10 | J5 | all |
 | P9 | H7 | all |
 | P8 | G8 | all |
@@ -56,6 +60,10 @@ UART2USB
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| 3V3_1 | 3V3 |  |
+| 3V3_2 | 3V3 |  |
+| GND_1 | GND |  |
+| GND_2 | GND |  |
 | P10 | K5 | all |
 | P9 | L11 | all |
 | P8 | E10 | all |
@@ -70,6 +78,10 @@ UART2USB
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| 3V3_1 | 3V3 |  |
+| 3V3_2 | 3V3 |  |
+| GND_1 | GND |  |
+| GND_2 | GND |  |
 | P10 | C10 | all |
 | P9 | B10 | all |
 | P8 | D10 | all |

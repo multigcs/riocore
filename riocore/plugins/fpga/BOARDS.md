@@ -11,6 +11,7 @@
 | [ECP5-256](boards/ECP5-256.md) | ecp5 | 25k | 100.00Mhz | icestorm | Lattice ECP5 devboard | <img width="300" src="boards/ECP5-256.png"> |
 | [EP2C5T144](boards/EP2C5T144.md) | Cyclone II | EP2C5T144C8 | 50.00Mhz | quartus | EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1) | <img width="300" src="boards/EP2C5T144.png"> |
 | [EP4CE6E22C8](boards/EP4CE6E22C8.md) | Cyclone IV E | EP4CE6E22C8 | 100.00Mhz | quartus | EP4CE6E22C8 devboard | <img width="300" src="boards/EP4CE6E22C8.png"> |
+| [EPM240](boards/EPM240.md) | MAX II | EPM240T100C5 | 50.00Mhz | quartus | minimal EPM240 board | <img width="300" src="boards/EPM240.png"> |
 | [ICEBreakerV1.0e](boards/ICEBreakerV1.0e.md) | ice40 | up5k | 30.00Mhz | icestorm | Small and low cost FPGA educational and development board | <img width="300" src="boards/ICEBreakerV1.0e.png"> |
 | [ICESugarNano](boards/ICESugarNano.md) | ice40 | lp1k | 12.00Mhz | icestorm | ICESugarNano - usable as sat only | <img width="300" src="boards/ICESugarNano.png"> |
 | [ICESugarPro](boards/ICESugarPro.md) | ecp5 | 25k | 25.00Mhz | icestorm | Lattice ECP5 on SODIMM-200P board | <img width="300" src="boards/ICESugarPro.png"> |
@@ -27,7 +28,7 @@
 | [TangNano4K](boards/TangNano4K.md) | GW1NSR-4C | GW1NSR-LV4CQN48PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano4K - cheap Devboard | <img width="300" src="boards/TangNano4K.png"> |
 | [TangNano9K](boards/TangNano9K.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/TangNano9K.png"> |
 | [TangPrimer20K](boards/TangPrimer20K.md) | GW2A-18C | GW2A-LV18PG256C8/I7 | 27.00Mhz | gowin (icestorm) | TangPrimer20K-Devboard on Dock ext-board | <img width="300" src="boards/TangPrimer20K.png"> |
-| [TangPrimer25K](boards/TangPrimer25K.md) | GW5A-25A | GW5A-LV25MG121NC1/I0 | 50.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img width="300" src="boards/TangPrimer25K.png"> |
+| [TangPrimer25K](boards/TangPrimer25K.md) | GW5A-25A | GW5A-LV25MG121NC1/I0 | 100.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img width="300" src="boards/TangPrimer25K.png"> |
 | [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
 | [Tangoboard](boards/Tangoboard.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | based on TangNano9k | <img width="300" src="boards/Tangoboard.png"> |
 | [rioctrl](boards/rioctrl.md) | ecp5 | 12k | 100.00Mhz | icestorm | rioctrl- a modular hardware for riocore | <img width="300" src="boards/rioctrl.png"> |
