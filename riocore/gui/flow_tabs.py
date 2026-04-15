@@ -1136,7 +1136,7 @@ class TabPins:
         self.treeview = QTreeView()
         self.treeview.setSelectionMode(QAbstractItemView.NoSelection)
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Comment"])
+        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Inverted", "Comment"])
         self.treeview.setModel(self.model)
         self.treeview.header().setStretchLastSection(True)
         hbox_search = QHBoxLayout()
@@ -1192,8 +1192,15 @@ class TabPins:
                 if self.filter_text and (self.filter_text not in item.plugin_instance.instances_name) and (self.filter_text not in pin):
                     continue
 
+                inverted = 0
+                if pin_config.get("modifier"):
+                    for modifier in pin_config.get("modifier", []):
+                        if modifier["type"] == "invert":
+                            inverted = 1 - inverted
+
                 aitem = MyStandardItem()
                 bitem = MyStandardItem()
+                citem = MyStandardItem()
                 tree_lcncini.appendRow(
                     [
                         MyStandardItem(item.plugin_instance.instances_name),
@@ -1201,6 +1208,7 @@ class TabPins:
                         MyStandardItem(str(pin_defaults.get("direction", ""))),
                         aitem,
                         bitem,
+                        citem,
                         MyStandardItem(pin_defaults.get("comment", pin_defaults.get("description", ""))),
                     ]
                 )
@@ -1209,9 +1217,37 @@ class TabPins:
                 if pin_defaults.get("direction", "") == "input":
                     widget = self.parent.edit_item(pin_config, "pull", {"type": "radio", "options": ["", "up", "down"], "default": "", "default_text": "no", "help_text": "pull mode"}, cb=self.cfgupdate)
                     self.treeview.setIndexWidget(bitem.index(), widget)
+                widget = QCheckBox()
+                widget.setChecked(bool(inverted))
+                widget.stateChanged.connect(partial(self.invert, item.plugin_instance, pin))
+                self.treeview.setIndexWidget(citem.index(), widget)
 
         self.treeview.header().resizeSections(3)
         self.treeview.expandAll()
+
+    def invert(self, plugin_instance, pin):
+        if self.update_flag:
+            return
+        self.update_flag = True
+        plugin_config = plugin_instance.plugin_setup
+        pin_config = plugin_config.get("pins", {}).get(pin, {})
+        inverted = 0
+        for modifier in pin_config.get("modifier", []):
+            if modifier["type"] == "invert":
+                inverted = 1 - inverted
+        if inverted:
+            for mn, modifier in enumerate(pin_config.get("modifier", [])):
+                if modifier["type"] == "invert":
+                    pin_config["modifier"].pop(mn)
+                    break
+        else:
+            if "modifier" not in pin_config:
+                pin_config["modifier"] = []
+            pin_config["modifier"].append({"type": "invert"})
+        self.parent.cfg_check()
+        self.update(self.config)
+        self.parent.redraw()
+        self.update_flag = False
 
     def filter(self, text):
         self.filter_text = text
