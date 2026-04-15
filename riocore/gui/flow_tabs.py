@@ -1136,9 +1136,10 @@ class TabPins:
         self.treeview = QTreeView()
         self.treeview.setSelectionMode(QAbstractItemView.NoSelection)
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Inverted", "Comment"])
+        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Inverted", "Debounce", "Comment"])
         self.treeview.setModel(self.model)
         self.treeview.header().setStretchLastSection(True)
+
         hbox_search = QHBoxLayout()
         self.filter_entry = QLineEdit("")
         self.filter_entry.textChanged.connect(self.filter)
@@ -1147,9 +1148,8 @@ class TabPins:
         self.layout_pins.addLayout(hbox_search)
         self.layout_pins.addWidget(self.treeview)
 
-        self.update()
-
     def load_tree(self, parent_tree, full=False):
+        scroll_pos = self.treeview.verticalScrollBar().value()
         tree_lcncini = parent_tree
         tree_lcncini.removeRows(0, tree_lcncini.rowCount())
 
@@ -1193,37 +1193,90 @@ class TabPins:
                     continue
 
                 inverted = 0
+                debounce = 0
                 if pin_config.get("modifier"):
                     for modifier in pin_config.get("modifier", []):
                         if modifier["type"] == "invert":
                             inverted = 1 - inverted
+                        elif modifier["type"] == "debounce":
+                            debounce = modifier.get("delay", 2.5)
 
+                fitem = MyStandardItem()
                 aitem = MyStandardItem()
                 bitem = MyStandardItem()
                 citem = MyStandardItem()
+                ditem = MyStandardItem()
                 tree_lcncini.appendRow(
                     [
-                        MyStandardItem(item.plugin_instance.instances_name),
+                        fitem,
                         MyStandardItem(pin),
                         MyStandardItem(str(pin_defaults.get("direction", ""))),
                         aitem,
                         bitem,
                         citem,
+                        ditem,
                         MyStandardItem(pin_defaults.get("comment", pin_defaults.get("description", ""))),
                     ]
                 )
+
+                widget = QPushButton(item.plugin_instance.instances_name)
+                widget.clicked.connect(partial(self.edit, item))
+                self.treeview.setIndexWidget(fitem.index(), widget)
+
                 widget = self.parent.edit_item(pin_config, "pin", {"type": "select", "options": source_pins, "default": "", "help_text": "pull mode"}, cb=self.cfgupdate)
                 self.treeview.setIndexWidget(aitem.index(), widget)
                 if pin_defaults.get("direction", "") == "input":
                     widget = self.parent.edit_item(pin_config, "pull", {"type": "radio", "options": ["", "up", "down"], "default": "", "default_text": "no", "help_text": "pull mode"}, cb=self.cfgupdate)
                     self.treeview.setIndexWidget(bitem.index(), widget)
+
                 widget = QCheckBox()
                 widget.setChecked(bool(inverted))
                 widget.stateChanged.connect(partial(self.invert, item.plugin_instance, pin))
                 self.treeview.setIndexWidget(citem.index(), widget)
 
+                widget = QLineEdit(f"{debounce:0.3f} ms")
+                widget.editingFinished.connect(partial(self.debounce, item.plugin_instance, pin, widget))
+                self.treeview.setIndexWidget(ditem.index(), widget)
+
         self.treeview.header().resizeSections(3)
         self.treeview.expandAll()
+        self.treeview.verticalScrollBar().setSliderPosition(scroll_pos)
+
+    def edit(self, item):
+        self.parent.gui_plugins.edit_plugin(item.plugin_instance, None)
+        self.parent.cfg_check()
+        self.parent.redraw()
+
+    def debounce(self, plugin_instance, pin, widget):
+        if self.update_flag:
+            return
+        self.update_flag = True
+        plugin_config = plugin_instance.plugin_setup
+        pin_config = plugin_config.get("pins", {}).get(pin, {})
+        delay = 0.0
+
+        try:
+            delay = float(widget.text().strip(" ms") or "0")
+            found = False
+            for mn, modifier in enumerate(pin_config.get("modifier", [])):
+                if modifier["type"] == "debounce":
+                    found = True
+                    if delay == 0.0:
+                        pin_config["modifier"].pop(mn)
+                        break
+                    modifier["delay"] = delay
+            if not found and delay != 0.0:
+                if "modifier" not in pin_config:
+                    pin_config["modifier"] = []
+                pin_config["modifier"].append({"type": "debounce", "delay": delay})
+        except Exception:
+            pass
+
+        widget.setText(f"{delay:0.3f} ms")
+        self.parent.cfg_check()
+        self.update(self.config)
+        self.parent.redraw()
+        self.update_flag = False
 
     def invert(self, plugin_instance, pin):
         if self.update_flag:
