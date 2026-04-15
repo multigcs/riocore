@@ -636,7 +636,7 @@ class edit_bool(QCheckBox):
 
 
 class edit_radio(QWidget):
-    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, need_enter=False):
+    def __init__(self, win, obj, key, options, cb=None, help_text=None, default=None, default_text=None, need_enter=False):
         super().__init__()
         self.win = win
         self.cb = cb
@@ -653,7 +653,10 @@ class edit_radio(QWidget):
         blayout.setContentsMargins(10, 0, 0, 0)
         self.setLayout(blayout)
         for opt in self.options:
-            bcheck = QRadioButton(opt)
+            text = opt
+            if opt == default and default_text:
+                text = default_text
+            bcheck = QRadioButton(text)
             blayout.addWidget(bcheck)
             if key in obj:
                 if str(obj[key]) == opt:

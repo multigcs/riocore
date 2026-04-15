@@ -9,6 +9,7 @@ from functools import partial
 from PyQt5.QtCore import QMimeData, QSortFilterProxyModel, QTimer, Qt
 from PyQt5.QtGui import QColor, QDrag, QPixmap, QStandardItemModel, QTextCursor
 from PyQt5.QtWidgets import (
+    QAbstractItemView,
     QCheckBox,
     QComboBox,
     QCompleter,
@@ -1133,6 +1134,7 @@ class TabPins:
         self.tab_widget.addTab(self.tab_pins, "Pins")
 
         self.treeview = QTreeView()
+        self.treeview.setSelectionMode(QAbstractItemView.NoSelection)
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Comment"])
         self.treeview.setModel(self.model)
@@ -1205,7 +1207,7 @@ class TabPins:
                 widget = self.parent.edit_item(pin_config, "pin", {"type": "select", "options": source_pins, "default": "", "help_text": "pull mode"}, cb=self.cfgupdate)
                 self.treeview.setIndexWidget(aitem.index(), widget)
                 if pin_defaults.get("direction", "") == "input":
-                    widget = self.parent.edit_item(pin_config, "pull", {"type": "radio", "options": ["", "up", "down"], "default": "", "help_text": "pull mode"}, cb=self.cfgupdate)
+                    widget = self.parent.edit_item(pin_config, "pull", {"type": "radio", "options": ["", "up", "down"], "default": "", "default_text": "no", "help_text": "pull mode"}, cb=self.cfgupdate)
                     self.treeview.setIndexWidget(bitem.index(), widget)
 
         self.treeview.header().resizeSections(3)
