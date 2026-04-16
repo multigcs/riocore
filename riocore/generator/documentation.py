@@ -323,8 +323,8 @@ class documentation:
                 self.expansion_pins.append(pin)
 
         output = ["# Pins"]
-        output.append("| Plugin | ID | Name | Board | Pin | Alias |")
-        output.append("| --- | --- | --- | --- | --- | --- |")
+        output.append("| Plugin | ID | Name | Board | Pin | Pull | Modifiers |")
+        output.append("| --- | --- | --- | --- | --- | --- | --- |")
 
         plugin_names = {}
         for plugin_instance in self.project.plugin_instances:
@@ -368,10 +368,13 @@ class documentation:
                         pin_real = self.pinmapping.get(pin_config["pin"], pin_config["pin"]) or ""
                         row.append(pin_real)
 
-                    if "pin" in pin_config and pin_config.get("pin") and pin_real != pin_config["pin"]:
-                        row.append(pin_config["pin"])
-                    else:
-                        row.append("")
+                    row.append(pin_config.get("pull") or "")
+
+                    modifier_chain = []
+                    for modifier in pin_config.get("modifier", []):
+                        modifier_chain.append(modifier["type"])
+                    row.append("->".join(modifier_chain))
+
                     output.append(f"| {' | '.join(row)} |")
                     last_plugin = plugin_instance.instances_name
                     last_type = plugin_instance.NAME

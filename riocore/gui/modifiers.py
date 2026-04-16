@@ -42,8 +42,8 @@ class GuiModifiers:
 
         def remove_modifier():
             modifier_list.pop(dialog.modifier_id)
-            if parent_layout:
-                self.modifier_list_update(parent_layout, modifier_list)
+            # if parent_layout:
+            # self.modifier_list_update(parent_layout, modifier_list)
             dialog.close()
 
         def move_left():
@@ -52,8 +52,8 @@ class GuiModifiers:
                 for modifier in modifier_list:
                     positions.append(modifier.get("pos"))
                 modifier_list[dialog.modifier_id - 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id - 1]
-                if parent_layout:
-                    self.modifier_list_update(parent_layout, modifier_list)
+                # if parent_layout:
+                #   self.modifier_list_update(parent_layout, modifier_list)
                 dialog.modifier_id -= 1
                 for pn, position in enumerate(positions):
                     modifier_list[pn]["pos"] = position
@@ -67,8 +67,8 @@ class GuiModifiers:
                 for modifier in modifier_list:
                     positions.append(modifier.get("pos"))
                 modifier_list[dialog.modifier_id + 1], modifier_list[dialog.modifier_id] = modifier_list[dialog.modifier_id], modifier_list[dialog.modifier_id + 1]
-                if parent_layout:
-                    self.modifier_list_update(parent_layout, modifier_list)
+                # if parent_layout:
+                #   self.modifier_list_update(parent_layout, modifier_list)
                 dialog.modifier_id += 1
                 for pn, position in enumerate(positions):
                     modifier_list[pn]["pos"] = position
@@ -122,6 +122,8 @@ class GuiModifiers:
 
         if dialog.exec():
             modifier_list[dialog.modifier_id] = modifier_config
+            if parent_layout:
+                self.modifier_list_update(parent_layout, modifier_list)
 
     def modifier_list_add(self, parent_layout=None, modifier_list=None):
         modifiers = Modifiers()

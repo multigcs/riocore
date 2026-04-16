@@ -1136,7 +1136,7 @@ class TabPins:
         self.treeview = QTreeView()
         self.treeview.setSelectionMode(QAbstractItemView.NoSelection)
         self.model = QStandardItemModel()
-        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Inverted", "Debounce", "Comment"])
+        self.model.setHorizontalHeaderLabels(["Instance", "Name", "Direction", "Pin", "Pull", "Inverted", "Debounce", "Modifiers", "Comment"])
         self.treeview.setModel(self.model)
         self.treeview.header().setStretchLastSection(True)
 
@@ -1202,6 +1202,7 @@ class TabPins:
                 bitem = MyStandardItem()
                 citem = MyStandardItem()
                 ditem = MyStandardItem()
+                moditem = MyStandardItem()
                 tree_lcncini.appendRow(
                     [
                         fitem,
@@ -1211,6 +1212,7 @@ class TabPins:
                         bitem,
                         citem,
                         ditem,
+                        moditem,
                         MyStandardItem(pin_defaults.get("comment", pin_defaults.get("description", ""))),
                     ]
                 )
@@ -1240,6 +1242,23 @@ class TabPins:
                     widget.editingFinished.connect(partial(self.debounce, item.plugin_instance, pin, widget))
                     self.treeview.setIndexWidget(ditem.index(), widget)
 
+                widget = QWidget()
+                hbox = QHBoxLayout()
+                widget.setLayout(hbox)
+                mod_cols = QHBoxLayout()
+                hbox.addLayout(mod_cols)
+                if "modifier" not in pin_config:
+                    pin_config["modifier"] = []
+                modifier_list = pin_config["modifier"]
+                add_button = QPushButton("+")
+                add_button.setToolTip("add an pin-modifiers")
+                add_button.clicked.connect(partial(self.parent.gui_modifiers.modifier_list_add, mod_cols, modifier_list))
+                add_button.setFixedWidth(20)
+                hbox.addWidget(add_button)
+                hbox.addStretch()
+                self.parent.gui_modifiers.modifier_list_update(mod_cols, modifier_list)
+                self.treeview.setIndexWidget(moditem.index(), widget)
+
         self.treeview.header().resizeSections(3)
         self.treeview.expandAll()
         self.treeview.verticalScrollBar().setSliderPosition(scroll_pos)
@@ -1250,9 +1269,6 @@ class TabPins:
         self.parent.redraw()
 
     def debounce(self, plugin_instance, pin, widget):
-        if self.update_flag:
-            return
-        self.update_flag = True
         pin_config = plugin_instance.plugin_setup.get("pins", {}).get(pin, {})
         delay = 0.0
 
@@ -1277,12 +1293,8 @@ class TabPins:
         self.parent.cfg_check()
         self.update(self.config)
         self.parent.redraw()
-        self.update_flag = False
 
     def invert(self, plugin_instance, pin):
-        if self.update_flag:
-            return
-        self.update_flag = True
         pin_config = plugin_instance.plugin_setup.get("pins", {}).get(pin, {})
         inverted = 0
         for modifier in pin_config.get("modifier", []):
@@ -1300,7 +1312,6 @@ class TabPins:
         self.parent.cfg_check()
         self.update(self.config)
         self.parent.redraw()
-        self.update_flag = False
 
     def filter(self, text):
         self.filter_text = text
