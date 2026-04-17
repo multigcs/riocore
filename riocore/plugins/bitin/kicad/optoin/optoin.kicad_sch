@@ -22,12 +22,13 @@
 				)
 			)
 			(property "Value" "691305130003"
-				(at -4.95 -3.01 0)
+				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify right bottom)
+					(justify bottom)
+					(hide yes)
 				)
 			)
 			(property "Footprint" "691305130003:691305130003"
@@ -109,16 +110,6 @@
 				)
 			)
 			(property "IR-UL" "12A"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(justify bottom)
-					(hide yes)
-				)
-			)
-			(property "VALUE" "691305130003"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1438,7 +1429,7 @@
 			)
 		)
 	)
-	(hierarchical_label "IN"
+	(hierarchical_label "bit"
 		(shape input)
 		(at 115.57 95.25 180)
 		(effects

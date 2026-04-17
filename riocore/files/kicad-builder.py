@@ -93,7 +93,7 @@ pcb_data_new.append("""(kicad_pcb
 for name, settings in setup.items():
     settings["spins"] = {}
     settings["sheets"] = {}
-    for num in range(settings["num"]):
+    for num in range(len(settings["instances"])):
         suuid = str(uuid.uuid4())
         settings["sheets"][num] = suuid
 
@@ -173,6 +173,10 @@ for name, settings in setup.items():
     sub_board_data_old = open(kicad_pcb, "r").read()
 
     position_x = 14
+
+    num = 0
+    for iname, idata in settings["instances"].items():
+        num += 1
 
     for num, suuid in settings["sheets"].items():
         section = ""
@@ -387,14 +391,17 @@ if not lib_symbols:
 pos_x = 261.38
 pos_y = 15
 width = 20
+
+pin_conn = []
+
 for name, settings in setup.items():
     if settings.get("main"):
         continue
 
-    for num in range(settings["num"]):
+    num = 0
+    for iname, idata in settings["instances"].items():
         sheetname = f"{name}{num}"
         suuid = settings["sheets"][num]
-
         height = (len(settings["spins"]) + 2) * 1.27
 
         sch_data_new.append(f"""	(sheet
@@ -437,6 +444,34 @@ for name, settings in setup.items():
         for pin_name, direction in settings["spins"].items():
             pin_y += 1.27
             puuid = str(uuid.uuid4())
+
+            conpuuid = str(uuid.uuid4())
+
+            connected_pin = idata.get("pins", {}).get(pin_name)
+            print("##", iname, pin_name, connected_pin, puuid)
+            pin_conn.append(f"""	(global_label "{connected_pin}"
+		(shape input)
+		(at {pin_x} {pin_y} 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "{conpuuid}")
+		(property "Intersheetrefs" "${{INTERSHEET_REFS}}"
+			(at {pin_x - 4.75} {pin_y} 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)""")
+
             sch_data_new.append(f"""		(pin "{pin_name}" {direction}
 			(at {pin_x} {pin_y} 180)
 			(uuid "{puuid}")
@@ -457,7 +492,10 @@ for name, settings in setup.items():
 		)
 	)""")
         pos_y += height + 2.54 + 1.27
+        num += 1
 
+
+sch_data_new += pin_conn
 
 sch_data_new.append("""	(sheet_instances
 		(path "/"

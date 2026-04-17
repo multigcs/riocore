@@ -82,7 +82,7 @@
 	(net 2 "Net-(R85-Pad1)")
 	(net 3 "F_GND")
 	(net 4 "gnd")
-	(net 5 "/IN")
+	(net 5 "/bit")
 	(net 6 "F_12V")
 	(net 7 "Net-(J1-Pad2)")
 	(net 8 "Net-(D1-A)")
@@ -114,7 +114,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -268,7 +268,7 @@
 			(size 1.125 1.75)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.222222)
-			(net 5 "/IN")
+			(net 5 "/bit")
 			(pintype "passive")
 			(uuid "106e2fe8-26a1-4236-a2ea-e547abe8f5aa")
 		)
@@ -313,7 +313,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -512,7 +512,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -690,7 +690,7 @@
 			(size 0.975 1.4)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 5 "/IN")
+			(net 5 "/bit")
 			(pinfunction "K")
 			(pintype "passive")
 			(uuid "ca022ebe-e7ff-4461-bc9c-3087fefaad6a")
@@ -1214,7 +1214,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1608,7 +1608,7 @@
 			(size 2 1.78)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.140449)
-			(net 5 "/IN")
+			(net 5 "/bit")
 			(pintype "passive")
 			(uuid "d7ad63ca-4ed6-4000-9127-434844015d7e")
 		)
