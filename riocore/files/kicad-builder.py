@@ -444,11 +444,9 @@ for name, settings in setup.items():
         for pin_name, direction in settings["spins"].items():
             pin_y += 1.27
             puuid = str(uuid.uuid4())
-
             conpuuid = str(uuid.uuid4())
-
             connected_pin = idata.get("pins", {}).get(pin_name)
-            print("##", iname, pin_name, connected_pin, puuid)
+            # print("##", iname, pin_name, connected_pin, puuid)
             pin_conn.append(f"""	(global_label "{connected_pin}"
 		(shape input)
 		(at {pin_x} {pin_y} 180)
