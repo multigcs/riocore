@@ -59,6 +59,8 @@ class PluginBase:
         self.BUILDER_PATH = ""  # path to the generated plugin sources (if needed)
         self.SUBBOARD = None
         self.SUB_OPTIONS = {}
+        self.KICAD = None
+        self.KICAD_FOLDER = "kicad"
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -68,6 +70,13 @@ class PluginBase:
         self.instances_name = self.plugin_setup["uid"]
 
         self.setup()
+
+        self.PLUGIN_PATH = os.path.join(riocore_path, "plugins", self.NAME)
+
+        kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
+        if os.path.isdir(kicad_path):
+            self.KICAD = kicad_path
+
         if not self.GENERATOR_GROUP:
             self.GENERATOR_GROUP = self.NAME
 

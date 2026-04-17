@@ -55,6 +55,7 @@ class Plugin(PluginBase):
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
         self.jdata = json.loads(open(board_file).read())
         self.PROVIDES += self.jdata.get("provides", [])
+        self.KICAD_FOLDER = os.path.join("kicad", node_type)
 
         if toolchains := self.jdata.get("toolchains"):
             if "gowin" in toolchains and platform.machine() != "x86_64":

@@ -8,6 +8,7 @@ import sys
 import traceback
 
 from riocore.generator.documentation import documentation
+from riocore.generator.kicad import kicad
 
 from .generator.LinuxCNC import LinuxCNC
 
@@ -523,6 +524,7 @@ class Project:
     def generator(self, preview=False):
         self.generator_linuxcnc.generator(preview=preview)
         documentation(self)
+        kicad(self)
 
         if self.config["json_file"]:
             target = os.path.join(self.config["output_path"], ".config.json")

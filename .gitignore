@@ -182,3 +182,8 @@ TODO.txt
 
 # Mac Nonsense
 .DS_Store
+
+# kicad
+*.zip
+fp-info-cache
+*-backups
