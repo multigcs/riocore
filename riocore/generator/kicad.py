@@ -29,6 +29,8 @@ class kicad:
                 setup[kname] = {"num": 0}
             setup[kname]["path"] = kicad_path
             setup[kname]["num"] += 1
+            if plugin_instance.gmaster is None:
+                setup[kname]["main"] = True
 
         # print("##", json.dumps(setup, indent=4))
         open(os.path.join(self.kicad_path, "setup.json"), "w").write(json.dumps(setup, indent=4))
