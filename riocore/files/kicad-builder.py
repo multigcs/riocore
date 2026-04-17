@@ -1,10 +1,35 @@
 import json
+import os
 import sys
 import uuid
 
 setup = json.loads(open(sys.argv[1], "r").read())
 
 rootid = str(uuid.uuid4())
+
+
+positions = {}
+
+kicad_sch_prev = ""
+kicad_pcb_prev = ""
+if os.path.isfile("rioboard.kicad_sch"):
+    kicad_sch_prev = open("rioboard.kicad_sch", "r").read()
+if os.path.isfile("rioboard.kicad_pcb"):
+    kicad_pcb_prev = open("rioboard.kicad_pcb", "r").read()
+    # kicad_pcb_prev = open("rioboard.kicad_pcb_bak", "r").read()
+
+    data = {}
+    for line in kicad_pcb_prev.split("\n"):
+        # positions
+        if line.startswith("		(uuid "):
+            data["uuid"] = line.split('"')[1]
+        elif line.startswith(("		(at ", "		(start ", "		(end ")):
+            ptype = line.split()[0].strip("(")
+            data[ptype] = line.strip()
+        elif line.startswith("	)"):
+            if "uuid" in data:
+                positions[data["uuid"]] = data
+            data = {}
 
 
 pcb_data_new = []
@@ -93,10 +118,21 @@ pcb_data_new.append("""(kicad_pcb
 for name, settings in setup.items():
     settings["spins"] = {}
     settings["sheets"] = {}
-    for num in range(len(settings["instances"])):
-        suuid = str(uuid.uuid4())
-        settings["sheets"][num] = suuid
+    settings["old_sch"] = open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read()
+    settings["old_pcb"] = open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read()
 
+    suuid_prefix = None
+    for line in settings["old_sch"].split("\n"):
+        if "uuid" in line:
+            suuid_prefix = line.split('"')[1][:-3]
+            break
+    if suuid_prefix is None:
+        print("ERROR")
+        exit(1)
+
+    for num in range(len(settings["instances"])):
+        suuid = f"{suuid_prefix}{num:03d}"
+        settings["sheets"][num] = suuid
 
 # check dimensions and netnames
 netnames = []
@@ -160,7 +196,7 @@ for netnum, netname in enumerate(netnames, 1):
 
 # place/copy parts
 pcb_data_new2 = []
-position_x = 14
+position_x = 300
 position_y = 14
 enum = 0
 ref = None
@@ -172,7 +208,7 @@ for name, settings in setup.items():
     kicad_pcb = f"{settings['path']}/{name}/{name}.kicad_pcb"
     sub_board_data_old = open(kicad_pcb, "r").read()
 
-    position_x = 14
+    position_x = 300
 
     num = 0
     for iname, idata in settings["instances"].items():
@@ -180,10 +216,13 @@ for name, settings in setup.items():
 
     for num, suuid in settings["sheets"].items():
         section = ""
+        section_lines = []
         indent = ""
         reference = ""
         groupids = []
         enum += 1
+        uuid_prefix = None
+        # print("-- sheet --")
         for line in sub_board_data_old.split("\n"):
             sline = line.strip()
 
@@ -193,84 +232,108 @@ for name, settings in setup.items():
             fline = sline.split()[0].strip("(")
             if fline in {"sheetname"}:
                 splitted = line.split('"')
-                splitted[1] = f"/{name}{num}"
+                sheet_name = f"/{name}{num}"
+                splitted[1] = sheet_name
                 pcb_data_new2.append('"'.join(splitted))
                 continue
 
             if fline in {"footprint", "segment", "gr_rect", "via"}:
                 pcb_data_new2.append(line)
                 section = fline
+                section_lines = []
                 indent = line.split("(")[0]
                 reference = ""
 
             elif line == f"{indent})" and section:
+                uuid_prefix = None
+
+                for section_line in section_lines:
+                    sline = section_line.strip()
+                    if sline.startswith("(uuid "):
+                        uuid_prefix = sline.split('"')[1][:-3]
+
+                for section_line in section_lines:
+                    sline = section_line.strip()
+                    if section_line.startswith(("		(at ", "		(start ", "		(end ")):
+                        uline = section_line.split(" ")
+                        puuid = f"{uuid_prefix}{num:03d}"
+                        ptype = section_line.split()[0].strip("(")
+                        if uuid_prefix and puuid in positions and ptype in positions[puuid]:
+                            # recover position
+                            pcb_data_new2.append(f"		{positions[puuid][ptype]}")
+                        else:
+                            pos_x = position_x + float(uline[1]) - settings["start_x"]
+                            pos_y = position_y + float(uline[2].strip(")")) - settings["start_y"]
+                            uline[1] = str(pos_x)
+                            if uline[2][-1] == ")":
+                                uline[2] = str(pos_y) + ")"
+                            else:
+                                uline[2] = str(pos_y)
+                            pcb_data_new2.append(" ".join(uline))
+
+                    elif sline.startswith("(uuid "):
+                        uuid_prefix = sline.split('"')[1][:-3]
+                        puuid = f"{uuid_prefix}{num:03d}"
+                        groupids.append(puuid)
+                        uline = section_line.split('"')
+                        uline[1] = puuid
+                        pcb_data_new2.append('"'.join(uline))
+
+                    elif sline.startswith('(property "Reference" '):
+                        uline = section_line.split('"')
+                        reference = uline[3]
+                        fc = reference.strip("0123456789")
+                        if fc not in partnumbers:
+                            partnumbers[fc] = 0
+                        partnumbers[fc] += 1
+                        reference_new = f"{fc}{partnumbers[fc]}"
+                        # print(reference_new)
+                        uline[3] = reference_new
+
+                        pcb_data_new2.append('"'.join(uline))
+
+                    elif sline.startswith("(path"):
+                        sheet_uuid = sline.split('"')[1].split("/")[1]
+                        cspit = sline.split('"')[1].split("/")
+                        if len(cspit) == 2:
+                            cuuid = cspit[1]
+                        else:
+                            cuuid = cspit[2]
+                        refs[cuuid] = reference_new
+                        refs[cuuid + suuid] = reference_new
+
+                        if settings.get("main"):
+                            pcb_data_new2.append(f'		(path "/{cuuid}")')
+                        else:
+                            pcb_data_new2.append(f'		(path "/{suuid}/{cuuid}")')
+
+                    elif sline.startswith("(net"):
+                        if '"' in section_line:
+                            netname = section_line.split('"')[1]
+                            netnum = netnames.index(netname) + 1
+                            pcb_data_new2.append(f'			(net {netnum} "{netname}")')
+                        else:
+                            pcb_data_new2.append(section_line)
+                    else:
+                        pcb_data_new2.append(section_line)
+
                 pcb_data_new2.append(line)
                 section = ""
+                section_lines = []
                 indent = ""
                 reference = ""
 
             elif section:
-                if line.startswith(("		(at ", "		(start ", "		(end ")):
-                    uline = line.split(" ")
-                    pos_x = position_x + float(uline[1]) - settings["start_x"]
-                    pos_y = position_y + float(uline[2].strip(")")) - settings["start_y"]
-                    uline[1] = str(pos_x)
-                    if uline[2][-1] == ")":
-                        uline[2] = str(pos_y) + ")"
-                    else:
-                        uline[2] = str(pos_y)
-                    pcb_data_new2.append(" ".join(uline))
-
-                elif sline.startswith("(uuid "):
-                    puuid = str(uuid.uuid4())
-                    groupids.append(puuid)
-                    uline = line.split('"')
-                    uline[1] = puuid
-                    pcb_data_new2.append('"'.join(uline))
-
-                elif sline.startswith('(property "Reference" '):
-                    uline = line.split('"')
-                    reference = uline[3]
-                    fc = reference.strip("0123456789")
-                    if fc not in partnumbers:
-                        partnumbers[fc] = 0
-                    partnumbers[fc] += 1
-                    reference_new = f"{fc}{partnumbers[fc]}"
-                    # print(reference_new)
-                    uline[3] = reference_new
-
-                    pcb_data_new2.append('"'.join(uline))
-
-                elif sline.startswith("(path"):
-                    sheet_uuid = sline.split('"')[1].split("/")[1]
-                    cspit = sline.split('"')[1].split("/")
-                    if len(cspit) == 2:
-                        cuuid = cspit[1]
-                    else:
-                        cuuid = cspit[2]
-                    refs[cuuid] = reference_new
-                    refs[cuuid + suuid] = reference_new
-
-                    if settings.get("main"):
-                        pcb_data_new2.append(f'		(path "/{cuuid}")')
-                    else:
-                        pcb_data_new2.append(f'		(path "/{suuid}/{cuuid}")')
-
-                elif sline.startswith("(net"):
-                    if '"' in line:
-                        netname = line.split('"')[1]
-                        netnum = netnames.index(netname) + 1
-                        pcb_data_new2.append(f'			(net {netnum} "{netname}")')
-                    else:
-                        pcb_data_new2.append(line)
-                else:
-                    pcb_data_new2.append(line)
+                section_lines.append(line)
 
         position_x += settings["width"]
 
         # print(name, groupids)
         if groupids:
-            guuid = str(uuid.uuid4())
+            suuid_prefix = suuid[:-3]
+            # guuid = str(uuid.uuid4())
+            guuid = f"{suuid}{num + 900:03d}"
+            # print(guuid)
             pcb_data_new2.append(f"""	(group ""
 		(uuid "{guuid}")
 		(members "{'" "'.join(groupids)}"

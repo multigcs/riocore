@@ -350,7 +350,7 @@
 			)
 		)
 	)
-	(hierarchical_label "spi_miso"
+	(hierarchical_label "miso"
 		(shape input)
 		(at 130.81 92.71 180)
 		(effects
@@ -361,7 +361,7 @@
 		)
 		(uuid "57cce419-cf12-4d4d-acb5-62da112f4bab")
 	)
-	(hierarchical_label "spi_sclk"
+	(hierarchical_label "sclk"
 		(shape input)
 		(at 162.56 97.79 0)
 		(effects
@@ -372,7 +372,7 @@
 		)
 		(uuid "57d8ea0d-e8e6-4e3e-ae40-267a2727fd1c")
 	)
-	(hierarchical_label "spi_cs"
+	(hierarchical_label "sel"
 		(shape input)
 		(at 162.56 95.25 0)
 		(effects
@@ -383,7 +383,7 @@
 		)
 		(uuid "898ca5b7-c769-4051-950a-8ffe4be6f469")
 	)
-	(hierarchical_label "spi_mosi"
+	(hierarchical_label "mosi"
 		(shape input)
 		(at 162.56 100.33 0)
 		(effects
