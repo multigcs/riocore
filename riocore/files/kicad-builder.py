@@ -1,39 +1,101 @@
+import ast
+import copy
 import json
-import os
 import sys
 import uuid
 
-setup = json.loads(open(sys.argv[1], "r").read())
 
+def loads(sdata):
+    ref = []
+    inside_q = 0
+    inside_key = 0
+    skey = {"str": ""}
+    keys = []
+
+    def add_ch(ch):
+        ch = ch.replace('\\"', '\\\\"')
+        if inside_key:
+            if not inside_q and ch == " ":
+                keys.append(skey["str"] + "'")
+                skey["str"] = "'"
+            else:
+                skey["str"] += ch
+        else:
+            ref.append(ch)
+
+    for ch in sdata:
+        if ch in {"\n", "\t"}:
+            continue
+        if ch == '"':
+            add_ch(ch)
+            inside_q = 1 - inside_q
+        elif inside_q:
+            if ch == "'":
+                add_ch("\\")
+            add_ch(ch)
+        elif ch == "(" and not inside_q:
+            if inside_key:
+                inside_key = 0
+                if skey["str"].strip("'"):
+                    keys.append(skey["str"] + "'")
+                add_ch(",".join(keys))
+                add_ch(",")
+
+            add_ch("[")
+            inside_key = 1
+            skey["str"] = "'"
+            keys = []
+        elif ch == ")" and not inside_q:
+            if inside_key:
+                inside_key = 0
+                if skey["str"].strip("'"):
+                    keys.append(skey["str"] + "'")
+                add_ch(",".join(keys))
+            add_ch("],")
+        elif inside_key and False:
+            if ch == "\n":
+                inside_key = 0
+                if skey["str"].strip("'"):
+                    keys.append(skey["str"] + "'")
+                add_ch(",".join(keys))
+                add_ch(",")
+            add_ch(ch)
+        else:
+            add_ch(ch)
+    # print("".join(ref))
+    lists = ast.literal_eval("".join(ref))
+    if lists:
+        # print(json.dumps(lists[0], indent=4))
+        return lists[0]
+
+
+def dumps(lists):
+    def lp(entry, result, prefix=""):
+        if isinstance(entry, list):
+            # bad hack for better debug-diffs
+            if len(result) > 3 and "xy" in result[-4]:
+                result.append(f" ({entry[0]}")
+            else:
+                result.append(f"\n{prefix}({entry[0]}")
+            for part in entry[1:]:
+                lp(part, result, prefix=f"{prefix}\t")
+            if result[-1][-1] == ")":
+                result.append(f"\n{prefix})")
+            else:
+                result.append(")")
+        else:
+            result.append(f" {entry.strip()}")
+
+    result = []
+    lp(lists, result)
+    return "".join(result).strip()
+
+
+setup = json.loads(open(sys.argv[1], "r").read())
 rootid = str(uuid.uuid4())
 
 
-positions = {}
-
-kicad_sch_prev = ""
-kicad_pcb_prev = ""
-if os.path.isfile("rioboard.kicad_sch"):
-    kicad_sch_prev = open("rioboard.kicad_sch", "r").read()
-if os.path.isfile("rioboard.kicad_pcb"):
-    kicad_pcb_prev = open("rioboard.kicad_pcb", "r").read()
-    # kicad_pcb_prev = open("rioboard.kicad_pcb_bak", "r").read()
-
-    data = {}
-    for line in kicad_pcb_prev.split("\n"):
-        # positions
-        if line.startswith("		(uuid "):
-            data["uuid"] = line.split('"')[1]
-        elif line.startswith(("		(at ", "		(start ", "		(end ")):
-            ptype = line.split()[0].strip("(")
-            data[ptype] = line.strip()
-        elif line.startswith("	)"):
-            if "uuid" in data:
-                positions[data["uuid"]] = data
-            data = {}
-
-
-pcb_data_new = []
-pcb_data_new.append("""(kicad_pcb
+template_pcb_str = """(kicad_pcb
 	(version 20241229)
 	(generator "pcbnew")
 	(generator_version "9.0")
@@ -111,20 +173,25 @@ pcb_data_new.append("""(kicad_pcb
 			(scaleselection 1)
 			(outputdirectory "")
 		)
-	)""")
+	)
+)
+"""
+
+pcb_new = loads(template_pcb_str)
+# print(json.dumps(pcb_new, indent=4))
 
 
 # predefine
 for name, settings in setup.items():
     settings["spins"] = {}
     settings["sheets"] = {}
-    settings["old_sch"] = open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read()
-    settings["old_pcb"] = open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read()
+    settings["old_sch"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
+    settings["old_pcb"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
 
     suuid_prefix = None
-    for line in settings["old_sch"].split("\n"):
-        if "uuid" in line:
-            suuid_prefix = line.split('"')[1][:-3]
+    for entry in settings["old_sch"]:
+        if entry[0] == "uuid":
+            suuid_prefix = entry[1].strip('"')[:-3]
             break
     if suuid_prefix is None:
         print("ERROR")
@@ -134,13 +201,9 @@ for name, settings in setup.items():
         suuid = f"{suuid_prefix}{num:03d}"
         settings["sheets"][num] = suuid
 
-# check dimensions and netnames
+
 netnames = []
 for name, settings in setup.items():
-    kicad_pcb = f"{settings['path']}/{name}/{name}.kicad_pcb"
-
-    sub_board_data_old = open(kicad_pcb, "r").read()
-
     settings["start_x"] = 100000
     settings["start_y"] = 100000
     settings["end_x"] = 0
@@ -152,309 +215,213 @@ for name, settings in setup.items():
         section = ""
         indent = ""
         reference = ""
+        for entry in settings["old_pcb"]:
+            if entry[0] in {"segment", "gr_rect", "via"}:
+                for sentry in entry[1:]:
+                    if sentry[0] == "start":
+                        settings["start_x"] = min(settings["start_x"], float(sentry[1]))
+                        settings["start_y"] = min(settings["start_y"], float(sentry[2]))
+                    elif sentry[0] == "end":
+                        settings["end_x"] = max(settings["end_x"], float(sentry[1]))
+                        settings["end_y"] = max(settings["end_y"], float(sentry[2]))
 
-        for line in sub_board_data_old.split("\n"):
-            sline = line.strip()
-            if not sline:
-                continue
-
-            fline = sline.split()[0].strip("(")
-            if fline in {"footprint", "segment", "gr_rect", "via"}:
-                section = fline
-                indent = line.split("(")[0]
-                reference = ""
-
-            elif line == f"{indent})" and section:
-                section = ""
-                indent = ""
-                reference = ""
-
-            elif section:
-                if sline.startswith("(net"):
-                    if '"' in line:
-                        netname = line.split('"')[1]
-                        if netname not in netnames:
-                            netnames.append(netname)
-
-                elif line.startswith(("		(start ", "		(end ")):
-                    if line.startswith("		(start "):
-                        settings["start_x"] = min(settings["start_x"], float(line.split()[1]))
-                        settings["start_y"] = min(settings["start_y"], float(line.split()[2].strip(")")))
-                    else:
-                        settings["end_x"] = max(settings["end_x"], float(line.split()[1]))
-                        settings["end_y"] = max(settings["end_y"], float(line.split()[2].strip(")")))
-
+            elif entry[0] == "footprint":
+                for sentry in entry[1:]:
+                    for ssentry in sentry[1:]:
+                        if ssentry[0] == "net":
+                            netname = ssentry[2].strip('"')
+                            if netname and netname not in netnames:
+                                netnames.append(netname)
     settings["width"] = settings["end_x"] - settings["start_x"]
     settings["height"] = settings["end_y"] - settings["start_y"]
 
+# print(netnames)
 
-# list netnames
-pcb_data_new.append("""	(net 0 "")""")
+# add all netnames to new pcb
+pcb_new.append(["net", "0", '""'])
 for netnum, netname in enumerate(netnames, 1):
-    pcb_data_new.append(f"""	(net {netnum} "{netname}")""")
+    pcb_new.append(["net", f"{netnum}", f'"{netname}"'])
 
 
 # place/copy parts
-pcb_data_new2 = []
-position_x = 300
 position_y = 14
 enum = 0
 ref = None
-
 refs = {}
 partnumbers = {}
 
 for name, settings in setup.items():
-    kicad_pcb = f"{settings['path']}/{name}/{name}.kicad_pcb"
-    sub_board_data_old = open(kicad_pcb, "r").read()
-
+    settings["ref_mapping"] = {}
     position_x = 300
-
-    num = 0
-    for iname, idata in settings["instances"].items():
-        num += 1
-
     for num, suuid in settings["sheets"].items():
-        section = ""
-        section_lines = []
-        indent = ""
-        reference = ""
+        settings["ref_mapping"][num] = {}
+
         groupids = []
-        enum += 1
-        uuid_prefix = None
-        # print("-- sheet --")
-        for line in sub_board_data_old.split("\n"):
-            sline = line.strip()
-
-            if not sline:
-                continue
-
-            fline = sline.split()[0].strip("(")
-            if fline in {"sheetname"}:
-                splitted = line.split('"')
-                sheet_name = f"/{name}{num}"
-                splitted[1] = sheet_name
-                pcb_data_new2.append('"'.join(splitted))
-                continue
-
-            if fline in {"footprint", "segment", "gr_rect", "via"}:
-                pcb_data_new2.append(line)
-                section = fline
-                section_lines = []
-                indent = line.split("(")[0]
-                reference = ""
-
-            elif line == f"{indent})" and section:
+        # print(num, suuid)
+        for entry in copy.deepcopy(settings["old_pcb"]):
+            if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
+                # print(" ", entry[0])
+                # get uuid
                 uuid_prefix = None
+                for sentry in entry[1:]:
+                    if sentry[0] == "uuid":
+                        uuid_prefix = sentry[1].strip('"')[:-3]
+                puuid = f"{uuid_prefix}{num:03d}"
+                groupids.append(puuid)
 
-                for section_line in section_lines:
-                    sline = section_line.strip()
-                    if sline.startswith("(uuid "):
-                        uuid_prefix = sline.split('"')[1][:-3]
-
-                for section_line in section_lines:
-                    sline = section_line.strip()
-                    if section_line.startswith(("		(at ", "		(start ", "		(end ")):
-                        uline = section_line.split(" ")
-                        puuid = f"{uuid_prefix}{num:03d}"
-                        ptype = section_line.split()[0].strip("(")
-                        if uuid_prefix and puuid in positions and ptype in positions[puuid]:
-                            # recover position
-                            pcb_data_new2.append(f"		{positions[puuid][ptype]}")
-                        else:
-                            pos_x = position_x + float(uline[1]) - settings["start_x"]
-                            pos_y = position_y + float(uline[2].strip(")")) - settings["start_y"]
-                            uline[1] = str(pos_x)
-                            if uline[2][-1] == ")":
-                                uline[2] = str(pos_y) + ")"
-                            else:
-                                uline[2] = str(pos_y)
-                            pcb_data_new2.append(" ".join(uline))
-
-                    elif sline.startswith("(uuid "):
-                        uuid_prefix = sline.split('"')[1][:-3]
-                        puuid = f"{uuid_prefix}{num:03d}"
-                        groupids.append(puuid)
-                        uline = section_line.split('"')
-                        uline[1] = puuid
-                        pcb_data_new2.append('"'.join(uline))
-
-                    elif sline.startswith('(property "Reference" '):
-                        uline = section_line.split('"')
-                        reference = uline[3]
-                        fc = reference.strip("0123456789")
-                        if fc not in partnumbers:
-                            partnumbers[fc] = 0
-                        partnumbers[fc] += 1
-                        reference_new = f"{fc}{partnumbers[fc]}"
-                        # print(reference_new)
-                        uline[3] = reference_new
-
-                        pcb_data_new2.append('"'.join(uline))
-
-                    elif sline.startswith("(path"):
-                        sheet_uuid = sline.split('"')[1].split("/")[1]
-                        cspit = sline.split('"')[1].split("/")
-                        if len(cspit) == 2:
-                            cuuid = cspit[1]
-                        else:
-                            cuuid = cspit[2]
-                        refs[cuuid] = reference_new
-                        refs[cuuid + suuid] = reference_new
-
+                for sentry in entry[1:]:
+                    if sentry[0] == "uuid":
+                        # update uuid
+                        sentry[1] = f'"{puuid}"'
+                    elif sentry[0] in {"at", "start", "end"}:
+                        # update pos
+                        pos_x_org = float(sentry[1].strip('"'))
+                        pos_y_org = float(sentry[2].strip('"'))
+                        pos_x_new = position_x + pos_x_org - settings["start_x"]
+                        pos_y_new = position_y + pos_y_org - settings["start_y"]
+                        sentry[1] = f"{pos_x_new}"
+                        sentry[2] = f"{pos_y_new}"
+                    elif sentry[0] == "property":
+                        if sentry[1].strip('"') == "Reference":
+                            # update Reference
+                            reference = sentry[2].strip('"')
+                            fc = reference.strip("0123456789")
+                            if fc not in partnumbers:
+                                partnumbers[fc] = 0
+                            partnumbers[fc] += 1
+                            reference_new = f"{fc}{partnumbers[fc]}"
+                            settings["ref_mapping"][num][reference] = reference_new
+                            sentry[2] = f'"{reference_new}"'
+                    elif sentry[0] == "sheetname":
+                        # update sheetname
+                        sheetname_old = sentry[1].strip('"')
+                        sheetname_new = f"/{name}{num}"
+                        sentry[1] = f'"{sheetname_new}"'
+                    elif sentry[0] == "path":
+                        # update path
+                        cuuid = sentry[1].strip('"').split("/")[-1]
                         if settings.get("main"):
-                            pcb_data_new2.append(f'		(path "/{cuuid}")')
+                            sentry[1] = f'"/{cuuid}"'
                         else:
-                            pcb_data_new2.append(f'		(path "/{suuid}/{cuuid}")')
+                            sentry[1] = f'"/{suuid}/{cuuid}"'
+                        # refs[cuuid] = reference_new
+                        # refs[cuuid + suuid] = reference_new
+                    # elif sentry[0] == "net":
+                    #    # TODO: if missing netname in entry (add mapping per sheet)
+                    #    print("##", sentry)
+                    #    netname = section_line.split('"')[1]
+                    #    netnum = netnames.index(netname) + 1
+                    if entry[0] != "footprint":
+                        continue
+                    for ssentry in sentry[1:]:
+                        # update net numbers
+                        if ssentry[0] == "net":
+                            # TODO: uniq or rename Net-* per sheet / or by Referenz ?
+                            if len(ssentry) == 3:
+                                netname = ssentry[2].strip('"')
+                                if netname in netnames:
+                                    netnum = netnames.index(netname) + 1
+                                    # print(ssentry, netnum, netname)
+                                    ssentry[1] = f"{netnum}"
+                                else:
+                                    print(ssentry)
+                        elif ssentry[0] == "uuid":
+                            # update sub uuid
+                            sub_uuid_prefix = ssentry[1].strip('"')[:-3]
+                            sub_uuid = f"{sub_uuid_prefix}{num:03d}"
+                            # print(sub_uuid_prefix, sub_uuid)
+                            groupids.append(sub_uuid)
+                            ssentry[1] = f'"{sub_uuid}"'
 
-                    elif sline.startswith("(net"):
-                        if '"' in section_line:
-                            netname = section_line.split('"')[1]
-                            netnum = netnames.index(netname) + 1
-                            pcb_data_new2.append(f'			(net {netnum} "{netname}")')
-                        else:
-                            pcb_data_new2.append(section_line)
-                    else:
-                        pcb_data_new2.append(section_line)
-
-                pcb_data_new2.append(line)
-                section = ""
-                section_lines = []
-                indent = ""
-                reference = ""
-
-            elif section:
-                section_lines.append(line)
+                pcb_new.append(entry)
 
         position_x += settings["width"]
 
         # print(name, groupids)
         if groupids:
             suuid_prefix = suuid[:-3]
-            # guuid = str(uuid.uuid4())
             guuid = f"{suuid}{num + 900:03d}"
-            # print(guuid)
-            pcb_data_new2.append(f"""	(group ""
-		(uuid "{guuid}")
-		(members "{'" "'.join(groupids)}"
-		)
-	)""")
-
+            group = ["group", '""', ["uuid", f'"{guuid}"'], ["members"]]
+            for groupid in groupids:
+                group[-1].append(f'"{groupid}"')
+            pcb_new.append(group)
     position_y += settings["height"]
+pcb_new.append(["embedded_fonts", "no"])
 
-pcb_data_new += pcb_data_new2
+open("rioboard.kicad_pcb", "w").write(dumps(pcb_new))
 
 
-sch_data_new = []
-sch_data_new.append(f"""(kicad_sch
+template_sch_str = f"""(kicad_sch
 	(version 20250114)
 	(generator "eeschema")
 	(generator_version "9.0")
 	(uuid "{rootid}")
-	(paper "A4")""")
+	(paper "A4")
+)
+"""
+
+sch_new = loads(template_sch_str)
 
 
 lib_symbols = False
-enum = 1
 for name, settings in setup.items():
-    kicad_sch = f"{settings['path']}/{name}/{name}.kicad_sch"
-    section = ""
-    indent = ""
-    reference = ""
-    last_uuid = ""
-    enum += 1
-    sub_schema_data_old = open(kicad_sch, "r").read()
     settings["schema_data"] = []
-    for line in sub_schema_data_old.split("\n"):
-        sline = line.strip()
+    for entry in copy.deepcopy(settings["old_sch"]):
+        if entry[0] in {"lib_symbols", "global_label", "symbol"}:
+            lib_symbols = True
+            if settings.get("main"):
+                sch_new.append(entry)
 
-        if sline == "(symbol":
-            last_uuid = ""
-        elif sline.startswith("(uuid ") and not last_uuid:
-            last_uuid = sline.split('"')[1]
-
-        elif sline.startswith("(hierarchical_label "):
-            pin_name = sline.split('"')[1]
+        elif entry[0] == "hierarchical_label":
+            pin_name = entry[1].strip('"')
             settings["spins"][pin_name] = "input"
 
-        if line == "	(instances":
-            section = "instances"
-            indent = line.split("(")[0]
-            reference = ""
-
-        elif line == "	(lib_symbols" and settings.get("main"):
-            section = "lib_symbols"
-            indent = line.split("(")[0]
-            reference = ""
-            sch_data_new.append(line)
-            lib_symbols = True
-
-        elif sline == "(symbol" and settings.get("main"):
-            section = "symbol"
-            indent = line.split("(")[0]
-            reference = ""
-            sch_data_new.append(line)
-
-        elif sline.startswith("(global_label") and settings.get("main"):
-            section = "global_label"
-            indent = line.split("(")[0]
-            reference = ""
-            sch_data_new.append(line)
-
-        elif sline.startswith("(reference ") and section and not reference and not settings.get("main"):
-            reference = sline.split('"')[1]
-            enum += 1
-
-        elif sline.startswith('(property "Reference" ') and last_uuid in refs:
-            reference_new = refs[last_uuid]
-            settings["schema_data"].append(line)
-            if settings.get("main"):
-                sch_data_new.append(line)
-
-        elif line == f"{indent})" and section:
-            if section in {"lib_symbols", "symbol", "global_label"}:
-                sch_data_new.append(line)
-            else:
-                settings["schema_data"].append("""		(instances
-                (project \"bitin\"""")
-
+        # find symbol - modify instances / reference
+        reference = None
+        for sentry in entry[1:]:
+            if sentry[0] == "property" and sentry[1].strip('"') == "Reference":
+                reference = sentry[2].strip('"')
+                # update mapping
                 for num, suuid in settings["sheets"].items():
-                    key = last_uuid + suuid
-                    if key in refs:
-                        reference_new = refs[key]
-                        settings["schema_data"].append(f"""				(path "/{rootid}/{suuid}"
-                                (reference "{reference_new}")
-                                (unit 1)
-                            )""")
+                    if reference not in settings["ref_mapping"][num]:
+                        reference = sentry[2].strip('"')
+                        fc = reference.strip("0123456789")
+                        if fc not in partnumbers:
+                            partnumbers[fc] = 0
+                        partnumbers[fc] += 1
+                        reference_new = f"{fc}{partnumbers[fc]}"
+                        settings["ref_mapping"][num][reference] = reference_new
 
-                settings["schema_data"].append("""			)
-                )""")
-
-            section = ""
-            indent = ""
-            reference = ""
-
-        elif section in {"lib_symbols", "symbol", "global_label"}:
-            sch_data_new.append(line)
-
-        elif section == "instances":
-            pass
-        else:
-            settings["schema_data"].append(line)
+        for sentry in entry[1:]:
+            if sentry[0] == "instances":
+                sentry.append(["project", '"rioboard"'])
+                for num, suuid in settings["sheets"].items():
+                    reference_new = settings["ref_mapping"][num].get(reference, reference)
+                    if settings.get("main"):
+                        ipath = f'"/{rootid}"'
+                    else:
+                        ipath = f'"/{rootid}/{suuid}"'
+                    sentry[-1].append(
+                        [
+                            "path",
+                            ipath,
+                            ["reference", f'"{reference_new}"'],
+                            ["unit", "1"],
+                        ]
+                    )
+        if not settings.get("main"):
+            settings["schema_data"].append(entry)
 
     if not settings.get("main"):
-        # print(f"{name}.kicad_sch")
-        open(f"{name}.kicad_sch", "w").write("\n".join(settings["schema_data"]))
-
+        open(f"{name}.kicad_sch", "w").write(dumps(settings["schema_data"]))
 
 if not lib_symbols:
-    sch_data_new.append("""(lib_symbols)""")
+    sch_new.append(["lib_symbols"])
 
 
 pos_x = 261.38
 pos_y = 15
 width = 20
-
 pin_conn = []
 
 for name, settings in setup.items():
@@ -465,115 +432,140 @@ for name, settings in setup.items():
     for iname, idata in settings["instances"].items():
         sheetname = f"{name}{num}"
         suuid = settings["sheets"][num]
-        height = (len(settings["spins"]) + 2) * 1.27
-
-        sch_data_new.append(f"""	(sheet
-		(at {pos_x} {pos_y})
-		(size {width} {height})
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0.0000)
-		)
-		(uuid "{suuid}")
-		(property "Sheetname" "{sheetname}"
-			(at {pos_x} {pos_y} 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "{name}.kicad_sch"
-			(at {pos_x} {pos_y + height} 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)""")
+        height = (len(settings["spins"]) + 2) * 2.54
+        sch_new.append(
+            [
+                "sheet",
+                ["at", f"{pos_x}", f"{pos_y}"],
+                ["size", f"{width}", f"{height}"],
+                ["exclude_from_sim", "no"],
+                ["in_bom", "yes"],
+                ["on_board", "yes"],
+                ["dnp", "no"],
+                ["fields_autoplaced", "yes"],
+                [
+                    "stroke",
+                    ["width", "0.1524"],
+                    ["type", "solid"],
+                ],
+                [
+                    "fill",
+                    ["color", "0", "0", "0", "0.0000"],
+                ],
+                ["uuid", f'"{suuid}"'],
+                [
+                    "property",
+                    '"Sheetname"',
+                    f'"{sheetname}"',
+                    ["at", f"{pos_x}", f"{pos_y}", "0"],
+                    [
+                        "effects",
+                        [
+                            "font",
+                            ["size", "1.27", "1.27"],
+                        ],
+                        ["justify", "left bottom"],
+                    ],
+                ],
+                [
+                    "property",
+                    '"Sheetfile"',
+                    f'"{name}.kicad_sch"',
+                    ["at", f"{pos_x}", f"{pos_y + height}", "0"],
+                    [
+                        "effects",
+                        [
+                            "font",
+                            ["size", "1.27", "1.27"],
+                        ],
+                        ["justify", "left", "top"],
+                    ],
+                ],
+            ]
+        )
 
         pin_x = pos_x
         pin_y = pos_y
         for pin_name, direction in settings["spins"].items():
-            pin_y += 1.27
+            pin_y += 2.54
             puuid = str(uuid.uuid4())
             conpuuid = str(uuid.uuid4())
             connected_pin = idata.get("pins", {}).get(pin_name)
-            # print("##", iname, pin_name, connected_pin, puuid)
-            pin_conn.append(f"""	(global_label "{connected_pin}"
-		(shape input)
-		(at {pin_x} {pin_y} 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "{conpuuid}")
-		(property "Intersheetrefs" "${{INTERSHEET_REFS}}"
-			(at {pin_x - 4.75} {pin_y} 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)""")
+            sch_new[-1].append(
+                [
+                    "pin",
+                    f'"{pin_name}"',
+                    f"{direction}",
+                    ["at", f"{pin_x}", f"{pin_y}", "180"],
+                    ["uuid", f'"{puuid}"'],
+                    [
+                        "effects",
+                        [
+                            "font",
+                            ["size", "1.27", "1.27"],
+                        ],
+                        ["justify", "left"],
+                    ],
+                ]
+            )
+            if connected_pin:
+                pin_conn.append(
+                    [
+                        "global_label",
+                        f'"{connected_pin}"',
+                        ["shape", "input"],
+                        ["at", f"{pin_x}", f"{pin_y}", "180"],
+                        ["fields_autoplaced", "yes"],
+                        [
+                            "effects",
+                            [
+                                "font",
+                                ["size", "1.27", "1.27"],
+                            ],
+                            ["justify", "right"],
+                        ],
+                        ["uuid", f'"{conpuuid}"'],
+                        [
+                            "property",
+                            '"Intersheetrefs"',
+                            '"${INTERSHEET_REFS}"',
+                            ["at", f"{pin_x - 4.75}", f"{pin_y}", "0"],
+                            [
+                                "effects",
+                                [
+                                    "font",
+                                    ["size", "1.27", "1.27"],
+                                ],
+                                ["justify", "right"],
+                                ["hide", "yes"],
+                            ],
+                        ],
+                    ]
+                )
 
-            sch_data_new.append(f"""		(pin "{pin_name}" {direction}
-			(at {pin_x} {pin_y} 180)
-			(uuid "{puuid}")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)""")
-
-        sch_data_new.append(f"""		(instances
-			(project "rioboard"
-				(path "/{rootid}"
-					(page "2")
-				)
-			)
-		)
-	)""")
-        pos_y += height + 2.54 + 1.27
+        sch_new[-1].append(
+            [
+                "instances",
+                [
+                    "project",
+                    '"rioboard"',
+                    [
+                        "path",
+                        f'"/{rootid}"',
+                        ["page", '"2"'],
+                    ],
+                ],
+            ]
+        )
+        pos_y += height + 2.54 + 2.54
         num += 1
 
+sch_new += pin_conn
+sch_new.append(["sheet_instances", ["path", '"/"', ["page", '"1"']]])
+sch_new.append(["embedded_fonts", "no"])
+# print(json.dumps(sch_new, indent=4))
+open("rioboard.kicad_sch", "w").write(dumps(sch_new))
 
-sch_data_new += pin_conn
-
-sch_data_new.append("""	(sheet_instances
-		(path "/"
-			(page "1")
-		)
-	)
-	(embedded_fonts no)
-)""")
-
-pcb_data_new.append("""	(embedded_fonts no)
-)""")
-
-
-open("rioboard.kicad_sch", "w").write("\n".join(sch_data_new))
-open("rioboard.kicad_pcb", "w").write("\n".join(pcb_data_new))
-
-# print( "\n".join(pcb_data_new) )
 
 data_pro = [
     """{
