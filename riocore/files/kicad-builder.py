@@ -1,6 +1,7 @@
 import ast
 import copy
 import json
+import os
 import sys
 import uuid
 
@@ -181,28 +182,47 @@ pcb_new = loads(template_pcb_str)
 # print(json.dumps(pcb_new, indent=4))
 
 
-# predefine
+# check old files
+# old_sch = None
+# if os.path.isfile("rioboard.kicad_sch"):
+#    old_sch = loads(open("rioboard.kicad_sch", "r").read())
+old_pcb = None
+if os.path.isfile("rioboard.kicad_pcb"):
+    # old_pcb = loads(open("../KICAD_test/rioboard.kicad_pcb", "r").read())
+    old_pcb = loads(open("rioboard.kicad_pcb", "r").read())
+
+
+# set module uuids and sheets
 for name, settings in setup.items():
     settings["spins"] = {}
     settings["sheets"] = {}
-    settings["old_sch"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
-    settings["old_pcb"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
-
+    settings["module_sch"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
+    settings["module_pcb"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
     suuid_prefix = None
-    for entry in settings["old_sch"]:
+    for entry in settings["module_sch"]:
         if entry[0] == "uuid":
             suuid_prefix = entry[1].strip('"')[:-3]
             break
     if suuid_prefix is None:
         print("ERROR")
         exit(1)
-
     for num in range(len(settings["instances"])):
         suuid = f"{suuid_prefix}{num:03d}"
         settings["sheets"][num] = suuid
 
 
+# read existing net names
 netnames = []
+if old_pcb:
+    for entry in old_pcb:
+        for sentry in entry[1:]:
+            for ssentry in sentry[1:]:
+                if ssentry[0] == "net":
+                    netname = ssentry[2].strip('"')
+                    if netname and netname not in netnames:
+                        netnames.append(netname)
+
+# read all module net names and check sizes
 for name, settings in setup.items():
     settings["start_x"] = 100000
     settings["start_y"] = 100000
@@ -210,12 +230,11 @@ for name, settings in setup.items():
     settings["end_y"] = 0
     settings["width"] = 0
     settings["height"] = 0
-
     for num, suuid in settings["sheets"].items():
         section = ""
         indent = ""
         reference = ""
-        for entry in settings["old_pcb"]:
+        for entry in settings["module_pcb"]:
             if entry[0] in {"segment", "gr_rect", "via"}:
                 for sentry in entry[1:]:
                     if sentry[0] == "start":
@@ -224,7 +243,6 @@ for name, settings in setup.items():
                     elif sentry[0] == "end":
                         settings["end_x"] = max(settings["end_x"], float(sentry[1]))
                         settings["end_y"] = max(settings["end_y"], float(sentry[2]))
-
             elif entry[0] == "footprint":
                 for sentry in entry[1:]:
                     for ssentry in sentry[1:]:
@@ -243,6 +261,34 @@ for netnum, netname in enumerate(netnames, 1):
     pcb_new.append(["net", f"{netnum}", f'"{netname}"'])
 
 
+# adding parts from existing pcb
+uuid_exsits = []
+if old_pcb:
+    for entry in old_pcb:
+        if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
+            iuuid = None
+            for sentry in entry[1:]:
+                if sentry[0] == "uuid":
+                    iuuid = sentry[1].strip('"')
+            if iuuid:
+                uuid_exsits.append(iuuid)
+
+                for sentry in entry[1:]:
+                    for ssentry in sentry[1:]:
+                        # update net numbers
+                        if ssentry[0] == "net":
+                            if len(ssentry) == 3:
+                                netname = ssentry[2].strip('"')
+                                if netname in netnames:
+                                    netnum = netnames.index(netname) + 1
+                                    # print(ssentry, netnum, netname)
+                                    ssentry[1] = f"{netnum}"
+                                else:
+                                    print(ssentry)
+
+                pcb_new.append(entry)
+
+
 # place/copy parts
 position_y = 14
 enum = 0
@@ -258,7 +304,7 @@ for name, settings in setup.items():
 
         groupids = []
         # print(num, suuid)
-        for entry in copy.deepcopy(settings["old_pcb"]):
+        for entry in copy.deepcopy(settings["module_pcb"]):
             if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
                 # print(" ", entry[0])
                 # get uuid
@@ -269,12 +315,22 @@ for name, settings in setup.items():
                 puuid = f"{uuid_prefix}{num:03d}"
                 groupids.append(puuid)
 
+                # add only new parts
+                if puuid in uuid_exsits:
+                    continue
+
+                if entry[0] == "gr_rect":
+                    for sentry in entry[1:]:
+                        # convert Edge.Cuts to F.SilkS
+                        if sentry[0] == "layer" and sentry[1].strip('"') == "Edge.Cuts":
+                            sentry[1] = '"F.SilkS"'
+
                 for sentry in entry[1:]:
                     if sentry[0] == "uuid":
                         # update uuid
                         sentry[1] = f'"{puuid}"'
-                    elif sentry[0] in {"at", "start", "end"}:
-                        # update pos
+                    if sentry[0] in {"at", "start", "end"}:
+                        # update position
                         pos_x_org = float(sentry[1].strip('"'))
                         pos_y_org = float(sentry[2].strip('"'))
                         pos_x_new = position_x + pos_x_org - settings["start_x"]
@@ -311,8 +367,9 @@ for name, settings in setup.items():
                     #    print("##", sentry)
                     #    netname = section_line.split('"')[1]
                     #    netnum = netnames.index(netname) + 1
-                    if entry[0] != "footprint":
-                        continue
+
+                    # if entry[0] != "footprint":
+                    #    continue
                     for ssentry in sentry[1:]:
                         # update net numbers
                         if ssentry[0] == "net":
@@ -366,7 +423,7 @@ sch_new = loads(template_sch_str)
 lib_symbols = False
 for name, settings in setup.items():
     settings["schema_data"] = []
-    for entry in copy.deepcopy(settings["old_sch"]):
+    for entry in copy.deepcopy(settings["module_sch"]):
         if entry[0] in {"lib_symbols", "global_label", "symbol"}:
             lib_symbols = True
             if settings.get("main"):
@@ -1187,7 +1244,6 @@ data_pro.append(f"""    [
 
 sheets = []
 for name, settings in setup.items():
-    sub_board_data_old = open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read()
     for num, suuid in settings["sheets"].items():
         sheets.append(f"""    [
       "{suuid}",
