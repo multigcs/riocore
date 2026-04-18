@@ -1643,7 +1643,7 @@
 		)
 		(uuid "ff5c9f9e-52f2-472c-8f9f-9cf5c90ed459")
 	)
-	(hierarchical_label "RX"
+	(hierarchical_label "rx"
 		(shape input)
 		(at 106.68 93.98 180)
 		(effects
@@ -1654,7 +1654,7 @@
 		)
 		(uuid "d845cc22-7b3b-4853-9ea8-68066d7edff6")
 	)
-	(hierarchical_label "TX"
+	(hierarchical_label "tx"
 		(shape input)
 		(at 106.68 99.06 180)
 		(effects

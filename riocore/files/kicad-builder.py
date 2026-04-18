@@ -92,8 +92,141 @@ def dumps(lists):
     return "".join(result).strip()
 
 
+references = []
+
+
+def update_reference(reference):
+    if reference not in references:
+        references.append(reference)
+        return reference
+    prefix = reference.strip("0123456789")
+    num = 0
+    reference = f"{prefix}{num}"
+    while reference in references:
+        num += 1
+        reference = f"{prefix}{num}"
+    references.append(reference)
+    return reference
+
+
 setup = json.loads(open(sys.argv[1], "r").read())
-rootid = str(uuid.uuid4())
+
+
+# check old files
+old_sch = None
+if os.path.isfile("rioboard.kicad_sch"):
+    old_sch = loads(open("rioboard.kicad_sch", "r").read())
+old_pcb = None
+if os.path.isfile("rioboard.kicad_pcb"):
+    old_pcb = loads(open("rioboard.kicad_pcb", "r").read())
+
+
+# set module uuids and sheets
+partnumbers = {}
+for name, settings in setup.items():
+    settings["spins"] = {}
+    settings["sheets"] = {}
+    settings["ref_mapping"] = {}
+    settings["module_sch"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
+    settings["module_pcb"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
+    suuid_prefix = None
+    for entry in settings["module_sch"]:
+        if entry[0] == "uuid":
+            suuid_prefix = entry[1].strip('"')[:-3]
+            break
+    if suuid_prefix is None:
+        print("ERROR")
+        exit(1)
+    for num in range(len(settings["instances"])):
+        suuid = f"{suuid_prefix}{num:03d}"
+        settings["sheets"][num] = suuid
+        settings["ref_mapping"][num] = {}
+
+
+# SCH
+uuid_exsits_sch = []
+if old_sch:
+    sch_new = copy.deepcopy(old_sch)
+    for entry in sch_new:
+        if not entry:
+            continue
+        if entry[0] == "uuid":
+            rootid = entry[1].strip('"')
+        for sentry in entry[1:]:
+            if sentry[0] == "uuid":
+                uuid_exsits_sch.append(sentry[1].strip('"'))
+            # elif sentry[0] == "property" and sentry[1].strip('"') == "Reference":
+            # reference = sentry[2].strip('"')
+            # reference_new = update_reference(reference)
+            # sentry[2] = f'"{reference_new}"'
+else:
+    rootid = str(uuid.uuid4())
+    template_sch_str = f"""(kicad_sch
+        (version 20250114)
+        (generator "eeschema")
+        (generator_version "9.0")
+        (uuid "{rootid}")
+        (paper "A4")
+    )
+    """
+    sch_new = loads(template_sch_str)
+
+lib_symbols = False
+for name, settings in setup.items():
+    settings["schema_data"] = []
+    for entry in copy.deepcopy(settings["module_sch"]):
+        if entry[0] in {"lib_symbols", "global_label", "symbol"}:
+            lib_symbols = True
+            if settings.get("main"):
+                suuid = None
+                for sentry in entry[1:]:
+                    if sentry[0] == "uuid":
+                        suuid = sentry[1].strip('"')
+                if suuid not in uuid_exsits_sch:
+                    sch_new.append(entry)
+
+        elif entry[0] == "hierarchical_label":
+            pin_name = entry[1].strip('"')
+            settings["spins"][pin_name] = "input"
+
+        # find symbol - modify instances / reference
+        reference = None
+        for sentry in entry[1:]:
+            if sentry[0] == "property" and sentry[1].strip('"') == "Reference":
+                # update reference mapping
+                reference = sentry[2].strip('"')
+                for num, suuid in settings["sheets"].items():
+                    if reference not in settings["ref_mapping"][num]:
+                        reference_new = update_reference(reference)
+                        settings["ref_mapping"][num][reference] = reference_new
+
+        for sentry in entry[1:]:
+            if sentry[0] == "instances":
+                sentry.append(["project", '"rioboard"'])
+                for num, suuid in settings["sheets"].items():
+                    reference_new = settings["ref_mapping"][num].get(reference, reference)
+                    if settings.get("main"):
+                        ipath = f'"/{rootid}"'
+                    else:
+                        ipath = f'"/{rootid}/{suuid}"'
+                    sentry[-1].append(
+                        [
+                            "path",
+                            ipath,
+                            ["reference", f'"{reference_new}"'],
+                            ["unit", "1"],
+                        ]
+                    )
+        if not settings.get("main"):
+            settings["schema_data"].append(entry)
+
+
+for name, settings in setup.items():
+    if not settings.get("main"):
+        open(f"{name}.kicad_sch", "w").write(dumps(settings["schema_data"]))
+
+if not lib_symbols:
+    sch_new.append(["lib_symbols"])
 
 
 template_pcb_str = """(kicad_pcb
@@ -182,35 +315,6 @@ pcb_new = loads(template_pcb_str)
 # print(json.dumps(pcb_new, indent=4))
 
 
-# check old files
-# old_sch = None
-# if os.path.isfile("rioboard.kicad_sch"):
-#    old_sch = loads(open("rioboard.kicad_sch", "r").read())
-old_pcb = None
-if os.path.isfile("rioboard.kicad_pcb"):
-    # old_pcb = loads(open("../KICAD_test/rioboard.kicad_pcb", "r").read())
-    old_pcb = loads(open("rioboard.kicad_pcb", "r").read())
-
-
-# set module uuids and sheets
-for name, settings in setup.items():
-    settings["spins"] = {}
-    settings["sheets"] = {}
-    settings["module_sch"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
-    settings["module_pcb"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
-    suuid_prefix = None
-    for entry in settings["module_sch"]:
-        if entry[0] == "uuid":
-            suuid_prefix = entry[1].strip('"')[:-3]
-            break
-    if suuid_prefix is None:
-        print("ERROR")
-        exit(1)
-    for num in range(len(settings["instances"])):
-        suuid = f"{suuid_prefix}{num:03d}"
-        settings["sheets"][num] = suuid
-
-
 # read existing net names
 netnames = []
 if old_pcb:
@@ -262,7 +366,7 @@ for netnum, netname in enumerate(netnames, 1):
 
 
 # adding parts from existing pcb
-uuid_exsits = []
+uuid_exsits_pcb = []
 if old_pcb:
     for entry in old_pcb:
         if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
@@ -271,7 +375,7 @@ if old_pcb:
                 if sentry[0] == "uuid":
                     iuuid = sentry[1].strip('"')
             if iuuid:
-                uuid_exsits.append(iuuid)
+                uuid_exsits_pcb.append(iuuid)
 
                 for sentry in entry[1:]:
                     for ssentry in sentry[1:]:
@@ -285,23 +389,18 @@ if old_pcb:
                                     ssentry[1] = f"{netnum}"
                                 else:
                                     print(ssentry)
-
                 pcb_new.append(entry)
 
 
-# place/copy parts
+# PCB: place/copy parts
 position_y = 14
 enum = 0
 ref = None
 refs = {}
-partnumbers = {}
 
 for name, settings in setup.items():
-    settings["ref_mapping"] = {}
     position_x = 300
     for num, suuid in settings["sheets"].items():
-        settings["ref_mapping"][num] = {}
-
         groupids = []
         # print(num, suuid)
         for entry in copy.deepcopy(settings["module_pcb"]):
@@ -316,7 +415,7 @@ for name, settings in setup.items():
                 groupids.append(puuid)
 
                 # add only new parts
-                if puuid in uuid_exsits:
+                if puuid in uuid_exsits_pcb:
                     continue
 
                 if entry[0] == "gr_rect":
@@ -340,14 +439,11 @@ for name, settings in setup.items():
                     elif sentry[0] == "property":
                         if sentry[1].strip('"') == "Reference":
                             # update Reference
-                            reference = sentry[2].strip('"')
-                            fc = reference.strip("0123456789")
-                            if fc not in partnumbers:
-                                partnumbers[fc] = 0
-                            partnumbers[fc] += 1
-                            reference_new = f"{fc}{partnumbers[fc]}"
-                            settings["ref_mapping"][num][reference] = reference_new
-                            sentry[2] = f'"{reference_new}"'
+                            # reference = sentry[2].strip('"')
+                            # reference_new = update_reference(reference)
+                            # settings["ref_mapping"][num][reference] = reference_new
+                            # sentry[2] = f'"{reference_new}"'
+                            pass
                     elif sentry[0] == "sheetname":
                         # update sheetname
                         sheetname_old = sentry[1].strip('"')
@@ -408,74 +504,6 @@ pcb_new.append(["embedded_fonts", "no"])
 open("rioboard.kicad_pcb", "w").write(dumps(pcb_new))
 
 
-template_sch_str = f"""(kicad_sch
-	(version 20250114)
-	(generator "eeschema")
-	(generator_version "9.0")
-	(uuid "{rootid}")
-	(paper "A4")
-)
-"""
-
-sch_new = loads(template_sch_str)
-
-
-lib_symbols = False
-for name, settings in setup.items():
-    settings["schema_data"] = []
-    for entry in copy.deepcopy(settings["module_sch"]):
-        if entry[0] in {"lib_symbols", "global_label", "symbol"}:
-            lib_symbols = True
-            if settings.get("main"):
-                sch_new.append(entry)
-
-        elif entry[0] == "hierarchical_label":
-            pin_name = entry[1].strip('"')
-            settings["spins"][pin_name] = "input"
-
-        # find symbol - modify instances / reference
-        reference = None
-        for sentry in entry[1:]:
-            if sentry[0] == "property" and sentry[1].strip('"') == "Reference":
-                reference = sentry[2].strip('"')
-                # update mapping
-                for num, suuid in settings["sheets"].items():
-                    if reference not in settings["ref_mapping"][num]:
-                        reference = sentry[2].strip('"')
-                        fc = reference.strip("0123456789")
-                        if fc not in partnumbers:
-                            partnumbers[fc] = 0
-                        partnumbers[fc] += 1
-                        reference_new = f"{fc}{partnumbers[fc]}"
-                        settings["ref_mapping"][num][reference] = reference_new
-
-        for sentry in entry[1:]:
-            if sentry[0] == "instances":
-                sentry.append(["project", '"rioboard"'])
-                for num, suuid in settings["sheets"].items():
-                    reference_new = settings["ref_mapping"][num].get(reference, reference)
-                    if settings.get("main"):
-                        ipath = f'"/{rootid}"'
-                    else:
-                        ipath = f'"/{rootid}/{suuid}"'
-                    sentry[-1].append(
-                        [
-                            "path",
-                            ipath,
-                            ["reference", f'"{reference_new}"'],
-                            ["unit", "1"],
-                        ]
-                    )
-        if not settings.get("main"):
-            settings["schema_data"].append(entry)
-
-    if not settings.get("main"):
-        open(f"{name}.kicad_sch", "w").write(dumps(settings["schema_data"]))
-
-if not lib_symbols:
-    sch_new.append(["lib_symbols"])
-
-
 pos_x = 261.38
 pos_y = 15
 width = 20
@@ -490,6 +518,11 @@ for name, settings in setup.items():
         sheetname = f"{name}{num}"
         suuid = settings["sheets"][num]
         height = (len(settings["spins"]) + 2) * 2.54
+        if suuid in uuid_exsits_sch:
+            pos_y += height + 2.54 + 2.54
+            num += 1
+            continue
+
         sch_new.append(
             [
                 "sheet",

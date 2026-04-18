@@ -63,4 +63,4 @@ class kicad:
 
         # print("##", json.dumps(setup, indent=4))
         open(os.path.join(self.kicad_path, "setup.json"), "w").write(json.dumps(setup, indent=4))
-        os.system(f"cd {self.kicad_path} && python3 {riocore_path}/files/kicad-builder.py setup.json")
+        # os.system(f"cd {self.kicad_path} && python3 {riocore_path}/files/kicad-builder.py setup.json")
