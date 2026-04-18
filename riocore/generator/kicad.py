@@ -1,6 +1,7 @@
 import glob
 import json
 import os
+import stat
 
 import riocore
 
@@ -61,6 +62,16 @@ class kicad:
                     pin_real = self.pinmapping.get(pin, pin) or ""
                     setup[kname]["instances"][instances_name]["pins"][pin_name] = pin_real
 
-        # print("##", json.dumps(setup, indent=4))
         open(os.path.join(self.kicad_path, "setup.json"), "w").write(json.dumps(setup, indent=4))
-        # os.system(f"cd {self.kicad_path} && python3 {riocore_path}/files/kicad-builder.py setup.json")
+
+        output = ["#!/bin/sh"]
+        output.append("")
+        output.append('DIRNAME=`dirname "$0"`')
+        output.append("")
+        output.append(f"(cd $DIRNAME && python3 {riocore_path}/files/kicad-builder.py setup.json)")
+        output.append("")
+        output.append("")
+
+        start_sh = os.path.join(self.kicad_path, "start.sh")
+        open(start_sh, "w").write("\n".join(output))
+        os.chmod(start_sh, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)

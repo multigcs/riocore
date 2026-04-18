@@ -1,96 +1,10 @@
-import ast
 import copy
 import json
 import os
 import sys
 import uuid
 
-
-def loads(sdata):
-    ref = []
-    inside_q = 0
-    inside_key = 0
-    skey = {"str": ""}
-    keys = []
-
-    def add_ch(ch):
-        ch = ch.replace('\\"', '\\\\"')
-        if inside_key:
-            if not inside_q and ch == " ":
-                keys.append(skey["str"] + "'")
-                skey["str"] = "'"
-            else:
-                skey["str"] += ch
-        else:
-            ref.append(ch)
-
-    for ch in sdata:
-        if ch in {"\n", "\t"}:
-            continue
-        if ch == '"':
-            add_ch(ch)
-            inside_q = 1 - inside_q
-        elif inside_q:
-            if ch == "'":
-                add_ch("\\")
-            add_ch(ch)
-        elif ch == "(" and not inside_q:
-            if inside_key:
-                inside_key = 0
-                if skey["str"].strip("'"):
-                    keys.append(skey["str"] + "'")
-                add_ch(",".join(keys))
-                add_ch(",")
-
-            add_ch("[")
-            inside_key = 1
-            skey["str"] = "'"
-            keys = []
-        elif ch == ")" and not inside_q:
-            if inside_key:
-                inside_key = 0
-                if skey["str"].strip("'"):
-                    keys.append(skey["str"] + "'")
-                add_ch(",".join(keys))
-            add_ch("],")
-        elif inside_key and False:
-            if ch == "\n":
-                inside_key = 0
-                if skey["str"].strip("'"):
-                    keys.append(skey["str"] + "'")
-                add_ch(",".join(keys))
-                add_ch(",")
-            add_ch(ch)
-        else:
-            add_ch(ch)
-    # print("".join(ref))
-    lists = ast.literal_eval("".join(ref))
-    if lists:
-        # print(json.dumps(lists[0], indent=4))
-        return lists[0]
-
-
-def dumps(lists):
-    def lp(entry, result, prefix=""):
-        if isinstance(entry, list):
-            # bad hack for better debug-diffs
-            if len(result) > 3 and "xy" in result[-4]:
-                result.append(f" ({entry[0]}")
-            else:
-                result.append(f"\n{prefix}({entry[0]}")
-            for part in entry[1:]:
-                lp(part, result, prefix=f"{prefix}\t")
-            if result[-1][-1] == ")":
-                result.append(f"\n{prefix})")
-            else:
-                result.append(")")
-        else:
-            result.append(f" {entry.strip()}")
-
-    result = []
-    lp(lists, result)
-    return "".join(result).strip()
-
+import sexp
 
 references = []
 
@@ -115,10 +29,10 @@ setup = json.loads(open(sys.argv[1], "r").read())
 # check old files
 old_sch = None
 if os.path.isfile("rioboard.kicad_sch"):
-    old_sch = loads(open("rioboard.kicad_sch", "r").read())
+    old_sch = sexp.loads(open("rioboard.kicad_sch", "r").read())
 old_pcb = None
 if os.path.isfile("rioboard.kicad_pcb"):
-    old_pcb = loads(open("rioboard.kicad_pcb", "r").read())
+    old_pcb = sexp.loads(open("rioboard.kicad_pcb", "r").read())
 
 
 # set module uuids and sheets
@@ -127,8 +41,9 @@ for name, settings in setup.items():
     settings["spins"] = {}
     settings["sheets"] = {}
     settings["ref_mapping"] = {}
-    settings["module_sch"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
-    settings["module_pcb"] = loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
+    settings["units"] = {}
+    settings["module_sch"] = sexp.loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
+    settings["module_pcb"] = sexp.loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
     suuid_prefix = None
     for entry in settings["module_sch"]:
         if entry[0] == "uuid":
@@ -169,19 +84,33 @@ else:
         (paper "A4")
     )
     """
-    sch_new = loads(template_sch_str)
+    sch_new = sexp.loads(template_sch_str)
 
 lib_symbols = False
 for name, settings in setup.items():
     settings["schema_data"] = []
+    muuid = None
     for entry in copy.deepcopy(settings["module_sch"]):
-        if entry[0] in {"lib_symbols", "global_label", "symbol"}:
+        if entry[0] == "lib_symbols":
+            lib_symbols = True
+        elif entry[0] == "uuid":
+            muuid = entry[1].strip('"')
+        if entry[0] in {"lib_symbols", "global_label", "symbol", "wire", "junction"}:
             lib_symbols = True
             if settings.get("main"):
                 suuid = None
                 for sentry in entry[1:]:
                     if sentry[0] == "uuid":
                         suuid = sentry[1].strip('"')
+                    elif sentry[0] == "instances":
+                        for ssentry in sentry[1:]:
+                            for sssentry in ssentry[1:]:
+                                if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
+                                    for ssssentry in sssentry[1:]:
+                                        if ssssentry[0] == "unit":
+                                            units = ssssentry[1]
+                                            settings["units"][suuid] = units
+
                 if suuid not in uuid_exsits_sch:
                     sch_new.append(entry)
 
@@ -200,8 +129,18 @@ for name, settings in setup.items():
                         reference_new = update_reference(reference)
                         settings["ref_mapping"][num][reference] = reference_new
 
+        puuid = None
         for sentry in entry[1:]:
-            if sentry[0] == "instances":
+            if sentry[0] == "uuid":
+                puuid = sentry[1].strip('"')
+            elif sentry[0] == "instances":
+                unit = 1
+                for ssentry in sentry[1:]:
+                    for sssentry in ssentry[1:]:
+                        if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
+                            for ssssentry in sssentry[1:]:
+                                if ssssentry[0] == "unit":
+                                    unit = ssssentry[1]
                 sentry.append(["project", '"rioboard"'])
                 for num, suuid in settings["sheets"].items():
                     reference_new = settings["ref_mapping"][num].get(reference, reference)
@@ -214,7 +153,7 @@ for name, settings in setup.items():
                             "path",
                             ipath,
                             ["reference", f'"{reference_new}"'],
-                            ["unit", "1"],
+                            ["unit", f"{unit}"],
                         ]
                     )
         if not settings.get("main"):
@@ -223,7 +162,7 @@ for name, settings in setup.items():
 
 for name, settings in setup.items():
     if not settings.get("main"):
-        open(f"{name}.kicad_sch", "w").write(dumps(settings["schema_data"]))
+        open(f"{name}.kicad_sch", "w").write(sexp.dumps(settings["schema_data"]))
 
 if not lib_symbols:
     sch_new.append(["lib_symbols"])
@@ -311,7 +250,7 @@ template_pcb_str = """(kicad_pcb
 )
 """
 
-pcb_new = loads(template_pcb_str)
+pcb_new = sexp.loads(template_pcb_str)
 # print(json.dumps(pcb_new, indent=4))
 
 
@@ -501,7 +440,7 @@ for name, settings in setup.items():
     position_y += settings["height"]
 pcb_new.append(["embedded_fonts", "no"])
 
-open("rioboard.kicad_pcb", "w").write(dumps(pcb_new))
+open("rioboard.kicad_pcb", "w").write(sexp.dumps(pcb_new))
 
 
 pos_x = 261.38
@@ -654,7 +593,7 @@ sch_new += pin_conn
 sch_new.append(["sheet_instances", ["path", '"/"', ["page", '"1"']]])
 sch_new.append(["embedded_fonts", "no"])
 # print(json.dumps(sch_new, indent=4))
-open("rioboard.kicad_sch", "w").write(dumps(sch_new))
+open("rioboard.kicad_sch", "w").write(sexp.dumps(sch_new))
 
 
 data_pro = [
