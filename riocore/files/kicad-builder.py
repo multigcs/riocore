@@ -338,7 +338,7 @@ ref = None
 refs = {}
 
 for name, settings in setup.items():
-    position_x = 300
+    position_x = 310
     for num, suuid in settings["sheets"].items():
         groupids = []
         # print(num, suuid)
@@ -437,13 +437,13 @@ for name, settings in setup.items():
             for groupid in groupids:
                 group[-1].append(f'"{groupid}"')
             pcb_new.append(group)
-    position_y += settings["height"]
+    position_y += settings["height"] + 5
 pcb_new.append(["embedded_fonts", "no"])
 
 open("rioboard.kicad_pcb", "w").write(sexp.dumps(pcb_new))
 
 
-pos_x = 261.38
+pos_x = 310
 pos_y = 15
 width = 20
 pin_conn = []

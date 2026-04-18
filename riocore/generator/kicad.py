@@ -70,6 +70,7 @@ class kicad:
         output.append("")
         output.append(f"(cd $DIRNAME && python3 {riocore_path}/files/kicad-builder.py setup.json)")
         output.append("")
+        output.append("kicad $DIRNAME/rioboard.kicad_pro")
         output.append("")
 
         start_sh = os.path.join(self.kicad_path, "start.sh")
