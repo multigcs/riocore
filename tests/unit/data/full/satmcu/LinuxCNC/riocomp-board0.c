@@ -1366,6 +1366,9 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
                         rtapi_print("%d ", rxBuffer[i]);
                     }
                     rtapi_print("\n");
+                    if (ret != BUFFER_SIZE_RX) {
+                        rtapi_print("  wrong payload size: %i, should be %i\n", ret, BUFFER_SIZE_RX);
+                    }
                     if (err_counter > 3) {
                         rtapi_print("too many errors..\n");
                         *data->sys_status = 0;
