@@ -17,6 +17,7 @@ class Plugin(PluginBase):
         self.TYPE = "base"
         self.IMAGE_SHOW = True
         self.NEEDS = []
+        self.PROVIDES = []
         self.IMAGE = ""
         self.ORIGIN = ""
         self.SIGNALS = {}
@@ -58,11 +59,12 @@ class Plugin(PluginBase):
         device = self.plugin_setup.get("device", self.option_default("device"))
         self.IMAGE = f"{device}.png"
         if device == "pcf8574":
+            self.PROVIDES = ["gpio"]
             self.PINDEFAULTS = {
                 "IO:P7": {
                     "pin": f"{self.instances_name}:7",
                     "comment": "",
-                    "pos": [140, 176.0],
+                    "pos": [70, 88],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -70,7 +72,7 @@ class Plugin(PluginBase):
                 "IO:P6": {
                     "pin": f"{self.instances_name}:6",
                     "comment": "",
-                    "pos": [140, 200.0],
+                    "pos": [70, 100],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -78,7 +80,7 @@ class Plugin(PluginBase):
                 "IO:P5": {
                     "pin": f"{self.instances_name}:5",
                     "comment": "",
-                    "pos": [140, 224.0],
+                    "pos": [70, 112],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -86,7 +88,7 @@ class Plugin(PluginBase):
                 "IO:P4": {
                     "pin": f"{self.instances_name}:4",
                     "comment": "",
-                    "pos": [140, 248.0],
+                    "pos": [70, 124],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -94,7 +96,7 @@ class Plugin(PluginBase):
                 "IO:P3": {
                     "pin": f"{self.instances_name}:3",
                     "comment": "",
-                    "pos": [140, 272.0],
+                    "pos": [70, 136],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -102,7 +104,7 @@ class Plugin(PluginBase):
                 "IO:P2": {
                     "pin": f"{self.instances_name}:2",
                     "comment": "",
-                    "pos": [140, 296.0],
+                    "pos": [70, 148],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -110,7 +112,7 @@ class Plugin(PluginBase):
                 "IO:P1": {
                     "pin": f"{self.instances_name}:1",
                     "comment": "",
-                    "pos": [140, 320.0],
+                    "pos": [70, 160],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -118,7 +120,7 @@ class Plugin(PluginBase):
                 "IO:P0": {
                     "pin": f"{self.instances_name}:0",
                     "comment": "",
-                    "pos": [140, 344.0],
+                    "pos": [70, 172],
                     "direction": "all",
                     "edge": "source",
                     "type": "GPIO",
@@ -130,13 +132,13 @@ class Plugin(PluginBase):
                     "direction": "input",
                     "format": "0.2f",
                     "unit": "°C",
-                    "pos": [145, 69],
+                    "pos": [72, 69],
                 },
                 "temp_f": {
                     "direction": "input",
                     "format": "0.2f",
                     "unit": "°F",
-                    "pos": [145, 91],
+                    "pos": [72, 91],
                 },
             }
         elif device == "hd44780":
@@ -199,26 +201,33 @@ class Plugin(PluginBase):
                     text,
                 )
 
+    @classmethod
+    def update_prefixes(cls, parent, instances):
+        for num, instance in enumerate(instances):
+            if not instance.PREFIX:
+                instance.PREFIX = f"{instance.NAME}.{num}"
+                instance.inum = num
+
     def update_pins(self, parent):
         device = self.plugin_setup.get("device", self.option_default("device"))
         self.cfgstring = "00000000"
         if device == "hd44780":
             self.cfgstring = self.plugin_setup.get("fmt", self.option_default("fmt")).replace("\n", "|")
-            return
-
-        for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
-            pin = connected_pin["pin"]
-            psetup = connected_pin["setup"]
-            direction = connected_pin["direction"]
-            inverted = connected_pin["inverted"]
-            if inverted:
-                self.cfgstring += "1"
-            else:
-                self.cfgstring += "0"
-            if direction == "output":
-                psetup["pin"] = f"rpii2c.{self.instances_name}.p{int(pin):02d}-out"
-            elif direction == "input":
-                psetup["pin"] = f"rpii2c.{self.instances_name}.p{int(pin):02d}-in"
+        elif device == "pcf8574":
+            self.cfgstring = "00000000"
+            inverts = list(self.cfgstring)
+            for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
+                pin = connected_pin["pin"]
+                psetup = connected_pin["setup"]
+                direction = connected_pin["direction"]
+                inverted = connected_pin["inverted"]
+                if inverted:
+                    inverts[int(pin)] = "1"
+                if direction == "output":
+                    psetup["pin"] = f"rpii2c.{self.inum}.p{int(pin):02d}-out"
+                elif direction == "input":
+                    psetup["pin"] = f"rpii2c.{self.inum}.p{int(pin):02d}-in"
+            self.cfgstring = "".join(inverts)
 
     @classmethod
     def component_loader(cls, instances):
@@ -227,7 +236,7 @@ class Plugin(PluginBase):
         for instance in instances:
             device = instance.plugin_setup.get("device", instance.option_default("device"))
             address = instance.plugin_setup.get("address", instance.option_default("address"))
-            args.append(f'{instance.instances_name} {device} {address} "{instance.cfgstring}"')
+            args.append(f'{instance.inum} {device} {address} "{instance.cfgstring}"')
         output.append("# load rpii2c")
         sep = " \\\n    "
         output.append(f"loadusr -Wn rpii2c ./rpii2c.py \\\n    {sep.join(args)}")
