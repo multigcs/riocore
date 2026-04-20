@@ -51,7 +51,7 @@ int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
     if (ioctl(spifd, SPI_IOC_MESSAGE(1), &tr) == -1) {
         rtapi_print_msg(RTAPI_MSG_ERR,"Failed to perform SPI transfer\n");
     }
-    return 1;
+    return size;
 }
 
 

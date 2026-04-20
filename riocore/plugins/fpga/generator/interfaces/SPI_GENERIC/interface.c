@@ -121,6 +121,6 @@ void spi_exit(void) {
 
 int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
     transfer(spi_fd, txBuffer, rxBuffer, size);
-    return 1;
+    return size;;
 }
 

@@ -4196,7 +4196,7 @@ int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
     }
     bcm2835_gpio_write(SPI_PIN_CS, HIGH);
 
-    return 1;
+    return size;
 }
 
 void spi_exit(void) {
