@@ -72,7 +72,7 @@ list of all  toolchains: [TOOLCHAINS](riocore/plugins/fpga/generator/toolchains/
 
 There are multiple ways of getting started. 
 
- 1. Installer-Script (debian-bookworm only)  [installer](#installer).
+ 1. Installer-Script (tested on debian bookworm and trixie)  [installer](#installer).
  2. Install riocore on the linux  [host](#host).
  3. Use [docker](DOCKER.md).
 
