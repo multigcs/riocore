@@ -1225,7 +1225,7 @@ class cbase:
             output.append("#endif")
 
         elif protocol and protocol.startswith("SPI"):
-            output.append("            spi_trx(txBuffer, rxBuffer, MAX(BUFFER_SIZE_RX, BUFFER_SIZE_TX));")
+            output.append("            ret = spi_trx(txBuffer, rxBuffer, MAX(BUFFER_SIZE_RX, BUFFER_SIZE_TX));")
 
         elif protocol and protocol == "UDP":
             output.append("#ifdef UDP_ASYNC")
