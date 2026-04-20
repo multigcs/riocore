@@ -1037,7 +1037,7 @@
 	)
 	(global_label "3v3"
 		(shape input)
-		(at 107.95 92.71 90)
+		(at 100.33 95.25 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1047,7 +1047,7 @@
 		)
 		(uuid "22a6ce29-6d27-4ce2-94e0-21e3df394fa2")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 107.95 86.4176 90)
+			(at 100.33 88.9576 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1081,7 +1081,7 @@
 	)
 	(global_label "gnd"
 		(shape input)
-		(at 107.95 100.33 270)
+		(at 100.33 102.87 270)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1091,7 +1091,7 @@
 		)
 		(uuid "5acefd93-9f2d-4b5c-8530-128895c2ea61")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 107.95 106.6828 90)
+			(at 100.33 109.2228 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1167,7 +1167,7 @@
 		)
 		(uuid "a6858afb-9e84-43dc-9c91-f495fd910f64")
 	)
-	(hierarchical_label "rw"
+	(hierarchical_label "tx_enable"
 		(shape input)
 		(at 121.92 96.52 180)
 		(effects
@@ -1250,7 +1250,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 107.95 96.52 0)
+		(at 100.33 99.06 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -1259,7 +1259,7 @@
 		(fields_autoplaced yes)
 		(uuid "1b4ef1f7-305b-4f02-b612-5060009c3905")
 		(property "Reference" "C3"
-			(at 111.76 95.25 0)
+			(at 104.14 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1268,7 +1268,7 @@
 			)
 		)
 		(property "Value" "100n"
-			(at 111.76 97.79 0)
+			(at 104.14 100.33 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1277,7 +1277,7 @@
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_1206_3216Metric"
-			(at 108.9152 100.33 0)
+			(at 101.2952 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1286,7 +1286,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 107.95 96.52 0)
+			(at 100.33 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1295,7 +1295,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 107.95 96.52 0)
+			(at 100.33 99.06 0)
 			(effects
 				(font
 					(size 1.27 1.27)

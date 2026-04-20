@@ -61,7 +61,7 @@ class Plugin(PluginBase):
             if instance.SUBBOARD is None:
                 # do not build, if no sub connected
                 instance.INTERFACE = {}
-                instance.PINDEFAULTS = {}
+                # instance.PINDEFAULTS = {}
             instance.SUBNUM = sub_num
 
     def gateware_instances(self):

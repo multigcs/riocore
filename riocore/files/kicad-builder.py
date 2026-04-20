@@ -442,7 +442,6 @@ pcb_new.append(["embedded_fonts", "no"])
 
 open("rioboard.kicad_pcb", "w").write(sexp.dumps(pcb_new))
 
-
 pos_x = 310
 pos_y = 15
 width = 20
@@ -512,7 +511,6 @@ for name, settings in setup.items():
                 ],
             ]
         )
-
         pin_x = pos_x
         pin_y = pos_y
         for pin_name, direction in settings["spins"].items():

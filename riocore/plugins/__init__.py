@@ -1,3 +1,4 @@
+import glob
 import os
 import time
 
@@ -61,6 +62,7 @@ class PluginBase:
         self.SUB_OPTIONS = {}
         self.KICAD = None
         self.KICAD_FOLDER = "kicad"
+        self.KICAD_MODULE = ""
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -73,9 +75,17 @@ class PluginBase:
 
         self.PLUGIN_PATH = os.path.join(riocore_path, "plugins", self.NAME)
 
+        self.KICAD_MODULE = plugin_setup.get("kicad", {}).get("module", self.KICAD_MODULE)
         kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
         if os.path.isdir(kicad_path):
             self.KICAD = kicad_path
+            kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
+            if os.path.isdir(kicad_path):
+                self.KICAD_MODULES = []
+                for kpath in glob.glob(f"{kicad_path}/*"):
+                    self.KICAD_MODULES.append(kpath.split("/")[-1])
+                if not self.KICAD_MODULE:
+                    self.KICAD_MODULE = self.KICAD_MODULES[0]
 
         if not self.GENERATOR_GROUP:
             self.GENERATOR_GROUP = self.NAME

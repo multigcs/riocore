@@ -14,6 +14,7 @@ class Plugin(PluginBase):
         self.PROVIDES = ["udp", "interface"]
         self.HOST_INTERFACE = "UDP"
         self.VERILOGS = ["w5500.v"]
+        self.KICAD_MODULE = "w5500-module"
 
         self.PINDEFAULTS = {
             "mosi": {

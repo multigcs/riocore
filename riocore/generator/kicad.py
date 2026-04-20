@@ -1,4 +1,3 @@
-import glob
 import json
 import os
 import stat
@@ -41,12 +40,9 @@ class kicad:
         setup = {}
         for plugin_instance in self.project.plugin_instances:
             kicad_path = f"{plugin_instance.PLUGIN_PATH}/{plugin_instance.KICAD_FOLDER}"
-            if not os.path.isdir(kicad_path):
+            if not plugin_instance.KICAD_MODULE:
                 continue
-            kmodules = glob.glob(f"{kicad_path}/*")
-            if not kmodules:
-                continue
-            kname = kmodules[0].split("/")[-1]
+            kname = plugin_instance.KICAD_MODULE
             instances_name = plugin_instance.instances_name
             if kname not in setup:
                 setup[kname] = {"num": 0}

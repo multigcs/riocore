@@ -44,6 +44,38 @@ class GuiPlugins:
         self.signals_tab = None
         self.main_options = {}
 
+    def edit_plugin_kicad(self, pin_selected=None, cb=None):
+        plugin_instance = self.plugin_instance
+        plugin_config = self.plugin_config
+
+        def update(arg):
+            if cb:
+                cb(arg)
+
+        myFont = QFont()
+        myFont.setBold(True)
+
+        kicad = QVBoxLayout()
+        label = QLabel("Kicad-Setup")
+        label.setFont(myFont)
+        kicad.addWidget(label)
+
+        if "kicad" not in plugin_config:
+            plugin_config["kicad"] = {}
+
+        kicad.addWidget(self.parent.edit_item(plugin_config["kicad"], "module", {"type": "select", "options": plugin_instance.KICAD_MODULES, "default": plugin_instance.KICAD_MODULE}, cb=update), stretch=6)
+        kicad_widget = QWidget()
+        kicad.addStretch()
+        kicad_widget.setLayout(kicad)
+
+        kicad_tab = QScrollArea()
+        kicad_tab.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        kicad_tab.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        kicad_tab.setWidgetResizable(True)
+        kicad_tab.setWidget(kicad_widget)
+
+        return kicad_tab
+
     def edit_plugin_pins(self, pin_selected=None, cb=None):
         plugin_instance = self.plugin_instance
         plugin_config = self.plugin_config
@@ -662,6 +694,11 @@ class GuiPlugins:
                     self.tab_widget.addTab(self.signals_tab, "Signals")
                     if signal_selected is not None:
                         self.tab_widget.setCurrentWidget(self.signals_tab)
+
+        if self.plugin_instance.KICAD:
+            self.signals_tab = self.edit_plugin_kicad(cb=cb)
+            if pin_selected is None:
+                self.tab_widget.addTab(self.signals_tab, "Kicad")
 
     def update_image(self):
         image_path = self.plugin_instance.image_path()

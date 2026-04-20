@@ -1385,6 +1385,16 @@
 	)
 	(wire
 		(pts
+			(xy 99.06 93.98) (xy 106.68 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b99e4f3-ff91-480e-970a-f9c9168fd33a")
+	)
+	(wire
+		(pts
 			(xy 138.43 91.44) (xy 138.43 93.98)
 		)
 		(stroke
@@ -1432,6 +1442,16 @@
 			(type default)
 		)
 		(uuid "7d55d560-9296-4988-943d-4398891b633f")
+	)
+	(wire
+		(pts
+			(xy 99.06 99.06) (xy 106.68 99.06)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88cdf7c1-c1c7-436c-8961-5b5ac170491e")
 	)
 	(wire
 		(pts
@@ -1645,7 +1665,7 @@
 	)
 	(hierarchical_label "rx"
 		(shape input)
-		(at 106.68 93.98 180)
+		(at 99.06 93.98 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1656,7 +1676,7 @@
 	)
 	(hierarchical_label "tx"
 		(shape input)
-		(at 106.68 99.06 180)
+		(at 99.06 99.06 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1664,6 +1684,72 @@
 			(justify right)
 		)
 		(uuid "dabdbf3e-a21d-4f5b-8044-5c62c6cd435c")
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 172.72 73.66 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "30a924ee-9a3c-4c1d-b242-a0af76b41dd7")
+		(property "Reference" "#PWR01"
+			(at 172.72 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "F_24V"
+			(at 172.72 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 172.72 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 172.72 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 172.72 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "96100f09-34d0-4904-8269-f5904bd5a0f4")
+		)
+		(instances
+			(project "rs422-master"
+				(path "/a73692ab-48b2-4aab-bf01-a614ece6b97e"
+					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -1812,6 +1898,71 @@
 			(project "rs422-master"
 				(path "/a73692ab-48b2-4aab-bf01-a614ece6b97e"
 					(reference "U17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 151.13 111.76 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "acfedbac-2a6d-4f52-aaff-026d28ed9e07")
+		(property "Reference" "#PWR03"
+			(at 151.13 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "F_GND"
+			(at 154.686 114.046 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 151.13 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 151.13 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 151.13 111.76 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "949246ca-7c05-4cb5-9a69-1ad5d51e2248")
+		)
+		(instances
+			(project "rs422-master"
+				(path "/a73692ab-48b2-4aab-bf01-a614ece6b97e"
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -1988,6 +2139,72 @@
 			(project "rs422-master"
 				(path "/a73692ab-48b2-4aab-bf01-a614ece6b97e"
 					(reference "U18")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 151.13 73.66 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e18c4a6d-ef3b-401a-8947-a74c31f00295")
+		(property "Reference" "#PWR02"
+			(at 151.13 77.47 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "F_5V"
+			(at 151.13 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 151.13 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 151.13 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 151.13 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b6b60726-bba8-4073-948a-cb27026e23ea")
+		)
+		(instances
+			(project "rs422-master"
+				(path "/a73692ab-48b2-4aab-bf01-a614ece6b97e"
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)
