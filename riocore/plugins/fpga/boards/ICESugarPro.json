@@ -1084,7 +1084,7 @@
                 "P1": {
                     "pin": "E14",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         165,
                         296
@@ -1095,7 +1095,7 @@
                 "P2": {
                     "pin": "E12",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         154,
                         296
@@ -1106,7 +1106,7 @@
                 "P3": {
                     "pin": "D13",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         143,
                         296
@@ -1117,7 +1117,7 @@
                 "P4": {
                     "pin": "D12",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         132,
                         296
@@ -1128,7 +1128,7 @@
                 "P7": {
                     "pin": "E13",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         165,
                         307
@@ -1139,7 +1139,7 @@
                 "P8": {
                     "pin": "C13",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         154,
                         307
@@ -1150,7 +1150,7 @@
                 "P9": {
                     "pin": "C12",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         143,
                         307
@@ -1161,7 +1161,7 @@
                 "P10": {
                     "pin": "C11",
                     "special": true,
-                    "comment": "Shared with dapalink",
+                    "comment": "Shared with daplink",
                     "pos": [
                         132,
                         307
