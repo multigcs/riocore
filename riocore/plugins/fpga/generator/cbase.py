@@ -1339,6 +1339,7 @@ class cbase:
         output.append("    } else {")
         output.append("        *data->sys_status = 0;")
         output.append("        *data->sys_error = 0;")
+        output.append("        err_counter = 0;")
         output.append("    }")
         output.append("}")
         output.append("")
