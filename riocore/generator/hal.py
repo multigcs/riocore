@@ -599,7 +599,7 @@ class hal_generator:
         sections = {}
         for target in self.signals_out:
             for pin, data in self.inputs2signals.items():
-                if data["signal"].startswith("j"):
+                if data["signal"].startswith("j") and data["signal"][1].isnumeric():
                     continue
                 if data["target"] == target:
                     if pin.startswith("axisui.") and self.gui and self.gui != "axis":
@@ -632,7 +632,8 @@ class hal_generator:
                         continue
 
                     for signal in data["signals"]:
-                        if signal.startswith("j"):
+                        # filtering joint signals
+                        if signal.startswith("j") and signal[1].isnumeric():
                             continue
                         if component in self.POSTGUI_COMPONENTS:
                             postgui_data.append(f"net {signal:36s} => {pin}")

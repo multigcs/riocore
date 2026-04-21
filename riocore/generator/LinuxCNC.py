@@ -1321,7 +1321,6 @@ o<{oword}> endsub
                     fname = f"wheel_{laxis}"
                     if fname in self.rio_functions["jog"]:
                         self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
-
                         if not scale_selector:
                             if wheel_scale is not None:
                                 self.halg.setp_add(f"axis.{laxis}.jog-scale", wheel_scale)
