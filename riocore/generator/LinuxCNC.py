@@ -287,7 +287,6 @@ class LinuxCNC:
 
     def startscript(self):
         jdata = self.project.config["jdata"]
-        startup = jdata.get("startup")
         output = ["#!/bin/sh"]
         output.append("")
         output.append("set -e")
@@ -298,8 +297,15 @@ class LinuxCNC:
         output.append("# compile and install dynamic-loader")
         output.append("# sudo halcompile --install riocore/files/rio.c")
         output.append("")
-
+        if startup := jdata.get("startup"):
+            output.append("# startup cmd from json")
+            output.append(startup)
+            output.append("")
         for plugin_instance in self.project.plugin_instances:
+            if startup := plugin_instance.plugin_setup.get("startup"):
+                output.append("# startup cmd from fpga")
+                output.append(startup)
+                output.append("")
             if hasattr(plugin_instance, "start_sh"):
                 if plugin_instance.fmaster:
                     continue
@@ -314,10 +320,6 @@ class LinuxCNC:
             output.append("sudo mkdir -p /usr/share/qtvcp/panels/rio-gui/")
             output.append('sudo cp -a "$DIRNAME/rio-gui_handler.py" /usr/share/qtvcp/panels/rio-gui/')
             output.append('sudo cp -a "$DIRNAME/rio-gui.ui" /usr/share/qtvcp/panels/rio-gui/')
-
-        if startup:
-            output.append(startup)
-            output.append("")
 
         output.append('linuxcnc "$DIRNAME/rio.ini" $@')
         output.append("")
@@ -536,11 +538,10 @@ class LinuxCNC:
 
         for axis_name, axis_config in axis_dict.items():
             ini_setup["HALUI"][f"MDI_COMMAND||Zero|{axis_name}"] = f"G92 {axis_name}0"
+        for axis_name, axis_config in axis_dict.items():
             if motion_probe_input:
                 if machinetype == "lathe":
-                    if axis_name == "X":
-                        ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-X"] = "o<x_touch> call"
-                    elif axis_name == "Z":
+                    if axis_name == "Z":
                         ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
                 elif axis_name == "Z":
                     ini_setup["HALUI"]["MDI_COMMAND||Touch|Touch-Z"] = "o<z_touch> call"
@@ -1338,7 +1339,7 @@ o<{oword}> endsub
                             self.halg.setp_add(f"joint.{joint}.jog-enable", 1)
                             for function, halname in self.rio_functions["jog"].items():
                                 if function == fname:
-                                    self.halg.net_add(f"{halname}-s32", f"joint.{joint}.jog-counts", f"jog-{joint}-counts")
+                                    self.halg.net_add(f"{halname}-s32", f"joint.{joint}.jog-counts")
 
             if speed_selector:
                 speed_selector_mux = 1
@@ -1852,6 +1853,7 @@ if __name__ == "__main__":
                                 gui_gen.draw_frame_end()
                         mdi_title = command.split("|")[-1]
                         if mdi_title[0] == "_":
+                            mdi_group_last = mdi_group
                             continue
                         halpin = f"halui.mdi-command-{mdi_num:02d}"
                         pname = gui_gen.draw_button(mdi_title, halpin)
@@ -2356,7 +2358,7 @@ if __name__ == "__main__":
                         self.halg.setp_add(f"{rprefix}{halname}-offset", offset)
                     if netname:
                         if direction == "inout":
-                            self.halg.fmt_add(f"net rios.{halname} {rprefix}.{halname} <=> {netname}")
+                            self.halg.fmt_add(f"net rios.{halname} {halname} <=> {netname}")
                         elif direction == "input":
                             if netname.startswith("MDI"):
                                 mdi, cmd = netname.split(":")

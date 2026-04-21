@@ -111,10 +111,10 @@ class gateware(generator_base):
 
     def makefile(self):
         flashcmd = self.jdata.get("flashcmd")
-        if flashcmd and False:
-            if flashcmd.startswith("./") and self.parent.jdata["json_path"]:
+        if flashcmd:
+            if flashcmd.startswith("./") and self.jdata["json_path"]:
                 flashcmd_script = flashcmd.split()[0].replace("./", "")
-                json_path = self.parent.jdata["json_path"]
+                json_path = self.jdata["json_path"]
                 flashcmd_script_path = os.path.join(json_path, flashcmd_script)
                 riocore.log(flashcmd_script_path)
                 if os.path.isfile(flashcmd_script_path):
