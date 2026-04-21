@@ -116,7 +116,6 @@ class gateware(generator_base):
                 flashcmd_script = flashcmd.split()[0].replace("./", "")
                 json_path = self.jdata["json_path"]
                 flashcmd_script_path = os.path.join(json_path, flashcmd_script)
-                riocore.log(flashcmd_script_path)
                 if os.path.isfile(flashcmd_script_path):
                     target = os.path.join(self.jdata["output_path"], flashcmd_script)
                     shutil.copy(flashcmd_script_path, target)
@@ -955,9 +954,9 @@ class gateware(generator_base):
         hash_new = hash_md5.hexdigest()
 
         if hash_compiled != hash_new:
-            riocore.log("  !!! gateware changed: needs to be built and flashed |||")
+            riocore.log("  !!! gateware changed: needs to be built and flashed !!!")
         elif hash_flashed != hash_new:
-            riocore.log("  !!! gateware changed: needs to flashed |||")
+            riocore.log("  !!! gateware changed: needs to flashed !!!")
         hash_file_new = os.path.join(self.jdata["output_path"], "hash_new.txt")
         open(hash_file_new, "w").write(hash_new)
 

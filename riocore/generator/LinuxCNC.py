@@ -1677,7 +1677,20 @@ if __name__ == "__main__":
             section = None
             group = displayconfig.get("group", None)
 
-            if direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
+            if direction == "input" and netname and ("spindle.0.inhibit" in netname or "motion.feed-inhibit" in netname):
+                section = displayconfig.get("section", "status").lower()
+                group = "INHIBIT"
+                if "type" in displayconfig:
+                    dtype = displayconfig["type"]
+                else:
+                    dtype = "rectled"
+                    if netname[0] == "!":
+                        displayconfig["color"] = "green"
+                        displayconfig["off_color"] = "red"
+                    else:
+                        displayconfig["color"] = "red"
+                        displayconfig["off_color"] = "green"
+            elif direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
                 section = displayconfig.get("section", "status").lower()
                 group = "ESTOP-STATUS"
                 if "type" in displayconfig:

@@ -88,7 +88,7 @@ class documentation:
             if svg_data:
                 open(svg_path, "wb").write(svg_data)
         except Exception as error:
-            print(f"WARING: failed to write halgraph.png: {error}")
+            print(f"WARNING: failed to write halgraph.png: {error}")
 
     def axis_md(self):
         output = ["# Axis/Joints"]

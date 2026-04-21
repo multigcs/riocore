@@ -376,7 +376,6 @@ class hal_generator:
                         elif function == "conv":
                             new_pin = self.pin_conv(inside, output_pin, function_params[0].strip(), function_params[1].strip())
                         elif function == "float":
-                            print(inside)
                             new_pin = self.pin_conv(inside, output_pin, "s32", "float")
                         elif function == "s32":
                             new_pin = self.pin_conv(inside, output_pin, "float", "s32")
