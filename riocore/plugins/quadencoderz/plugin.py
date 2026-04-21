@@ -42,7 +42,7 @@ class Plugin(PluginBase):
                 "size": 32,
                 "direction": "input",
             },
-            "cntreset": {
+            "nocntreset": {
                 "size": 1,
                 "direction": "output",
             },
@@ -76,7 +76,7 @@ For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your
                 "direction": "input",
                 "bool": True,
             },
-            "cntreset": {
+            "nocntreset": {
                 "direction": "output",
                 "bool": True,
                 "description": "set counter to zero on index in hardware",
