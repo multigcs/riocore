@@ -891,6 +891,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     } else {
         *data->sys_status = 0;
         *data->sys_error = 0;
+        err_counter = 0;
     }
 }
 
