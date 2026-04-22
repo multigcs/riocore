@@ -300,7 +300,8 @@ class Plugins:
                             log(f"sub_plugin not found: {sub_plugin_config.get('type') or sub_plugin_config}")
                             continue
                         for pin_name, pin_data in sub_plugin_instance.plugin_setup.get("pins", {}).items():
-                            pin_data["pin"] = f"{plugin_config['uid']}:{pin_data['pin']}"
+                            if 'pin' in pin_data:
+                                pin_data["pin"] = f"{plugin_config['uid']}:{pin_data['pin']}"
                         plugin_id += 1
 
             return self.plugin_instances

@@ -39,6 +39,7 @@ def test_generator(config):
         f"{target}/PYLIB/*/testgui.py",
         f"{target}/PYLIB/*/rio.py",
         f"{target}/Simulator",
+        f"{target}/KICAD",
     ):
         os.system(f'rm -rf tests/unit/data/full/{path}')
         os.system(f'rm -rf tests/unit/output/{path}')
