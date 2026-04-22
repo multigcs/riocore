@@ -48,7 +48,7 @@
         "silk_text_thickness": 0.1,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.5
+          "min_clearance": 0.25
         }
       },
       "diff_pair_dimensions": [],
@@ -451,7 +451,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "w5500-module.kicad_pro",
+    "filename": "uln-out.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -611,7 +611,7 @@
   },
   "sheets": [
     [
-      "0f8daeb3-9880-4424-a673-900247e6b186",
+      "8e9b24a1-4eee-484a-ae46-549e8615a680",
       "Root"
     ]
   ],
