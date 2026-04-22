@@ -84,7 +84,7 @@ class PluginBase:
                 self.KICAD_MODULES = []
                 for kpath in glob.glob(f"{kicad_path}/*"):
                     self.KICAD_MODULES.append(kpath.split("/")[-1])
-                if not self.KICAD_MODULE:
+                if not self.KICAD_MODULE and self.KICAD_MODULES:
                     self.KICAD_MODULE = self.KICAD_MODULES[0]
 
         if not self.GENERATOR_GROUP:
