@@ -73,7 +73,7 @@ number of collected values before calculate the rps value
  * type: bit
  * direction: input
 
-### cntreset:
+### nocntreset:
 set counter to zero on index in hardware
 
  * type: bit
@@ -115,7 +115,7 @@ calculates revolutions per minute
  * size: 32 bit
  * direction: input
 
-### cntreset:
+### nocntreset:
 
  * size: 1 bit
  * direction: output

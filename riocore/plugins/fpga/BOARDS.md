@@ -12,6 +12,7 @@
 | [EP2C5T144](boards/EP2C5T144.md) | Cyclone II | EP2C5T144C8 | 50.00Mhz | quartus | EP2C5T144 dev-board - untested - for this board, you need an older quartus toolchain (quartus-ii-web-edition 13-0sp1) | <img width="300" src="boards/EP2C5T144.png"> |
 | [EP4CE6E22C8](boards/EP4CE6E22C8.md) | Cyclone IV E | EP4CE6E22C8 | 100.00Mhz | quartus | EP4CE6E22C8 devboard | <img width="300" src="boards/EP4CE6E22C8.png"> |
 | [EPM240](boards/EPM240.md) | MAX II | EPM240T100C5 | 50.00Mhz | quartus | EPM240 board - very limited - only for simple satellites with digital IO's | <img width="300" src="boards/EPM240.png"> |
+| [EPM240mini](boards/EPM240mini.md) | MAX II | EPM240T100C5 | 50.00Mhz | quartus | EPM240 mini board - very limited - only for simple satellites with digital IO's | <img width="300" src="boards/EPM240mini.png"> |
 | [ICEBreakerV1.0e](boards/ICEBreakerV1.0e.md) | ice40 | up5k | 30.00Mhz | icestorm | Small and low cost FPGA educational and development board | <img width="300" src="boards/ICEBreakerV1.0e.png"> |
 | [ICESugarNano](boards/ICESugarNano.md) | ice40 | lp1k | 12.00Mhz | icestorm | ICESugarNano - usable as sat only | <img width="300" src="boards/ICESugarNano.png"> |
 | [ICESugarPro](boards/ICESugarPro.md) | ecp5 | 25k | 25.00Mhz | icestorm | Lattice ECP5 on SODIMM-200P board | <img width="300" src="boards/ICESugarPro.png"> |

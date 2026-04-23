@@ -7,6 +7,7 @@
 gpio support over i2c port
 
 * Keywords: ii2c gpio
+* PROVIDES: gpio
 
 ## Pins:
 *FPGA-pins*
