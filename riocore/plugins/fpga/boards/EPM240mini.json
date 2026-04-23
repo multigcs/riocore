@@ -53,7 +53,7 @@
                         "FPGA"
                     ],
                     "edge": "source",
-                    "pin": "PIN_13",
+                    "pin": "PIN_18",
                     "pos": [
                         119,
                         32
