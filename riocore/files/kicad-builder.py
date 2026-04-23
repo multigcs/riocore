@@ -4,6 +4,7 @@
 
 import copy
 import json
+import math
 import os
 import sys
 import uuid
@@ -27,6 +28,15 @@ def update_reference(reference):
     return reference
 
 
+def rotate_point(origin, point, angle):
+    origin_x, origin_y = origin
+    point_x, point_y = point
+    radians = math.radians(angle)
+    new_x = origin_x + math.cos(radians) * (point_x - origin_x) - math.sin(radians) * (point_y - origin_y)
+    new_y = origin_y + math.sin(radians) * (point_x - origin_x) + math.cos(radians) * (point_y - origin_y)
+    return (new_x, new_y)
+
+
 setup = json.loads(open(sys.argv[1], "r").read())
 
 
@@ -47,6 +57,9 @@ for name, settings in setup.items():
     settings["sheets"] = {}
     settings["ref_mapping"] = {}
     settings["units"] = {}
+    settings["iname"] = {}
+    settings["pos"] = {}
+    settings["rotate"] = {}
 
     # load files
     settings["module_sch"] = sexp.loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
@@ -80,10 +93,16 @@ for name, settings in setup.items():
     if suuid_prefix is None:
         print("ERROR")
         exit(1)
-    for num in range(len(settings["instances"])):
+
+    num = 0
+    for iname, idata in settings["instances"].items():
         suuid = f"{suuid_prefix}{num:03d}"
         settings["sheets"][num] = suuid
         settings["ref_mapping"][num] = {}
+        settings["iname"][num] = iname
+        settings["pos"][num] = idata.get("pos")
+        settings["rotate"][num] = idata.get("rotate")
+        num += 1
 
 print(f"Power-Signals: {powersignals}")
 
@@ -307,15 +326,17 @@ for name, settings in setup.items():
         section = ""
         indent = ""
         reference = ""
+        # print(name, num)
         for entry in settings["module_pcb"]:
             if entry[0] in {"segment", "gr_rect", "via"}:
                 for sentry in entry[1:]:
-                    if sentry[0] == "start":
-                        settings["start_x"] = min(settings["start_x"], float(sentry[1]))
-                        settings["start_y"] = min(settings["start_y"], float(sentry[2]))
-                    elif sentry[0] == "end":
-                        settings["end_x"] = max(settings["end_x"], float(sentry[1]))
-                        settings["end_y"] = max(settings["end_y"], float(sentry[2]))
+                    if sentry[0] in {"at", "start", "end"}:
+                        px = float(sentry[1])
+                        py = float(sentry[2])
+                        settings["start_x"] = min(settings["start_x"], px)
+                        settings["start_y"] = min(settings["start_y"], py)
+                        settings["end_x"] = max(settings["end_x"], px)
+                        settings["end_y"] = max(settings["end_y"], py)
             elif entry[0] == "footprint":
                 for sentry in entry[1:]:
                     for ssentry in sentry[1:]:
@@ -323,8 +344,12 @@ for name, settings in setup.items():
                             netname = ssentry[2].strip('"')
                             if netname and netname not in netnames:
                                 netnames.append(netname)
+        # only one module instance is needed
+        break
     settings["width"] = settings["end_x"] - settings["start_x"]
     settings["height"] = settings["end_y"] - settings["start_y"]
+    settings["center_x"] = settings["width"] / 2
+    settings["center_y"] = settings["height"] / 2
 
 # print(netnames)
 
@@ -374,7 +399,6 @@ for name, settings in setup.items():
         # print(num, suuid)
         for entry in copy.deepcopy(settings["module_pcb"]):
             if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
-                # print(" ", entry[0])
                 # get uuid
                 uuid_prefix = None
                 for sentry in entry[1:]:
@@ -393,25 +417,55 @@ for name, settings in setup.items():
                         if sentry[0] == "layer" and sentry[1].strip('"') == "Edge.Cuts":
                             sentry[1] = '"F.SilkS"'
 
-                for sentry in entry[1:]:
+                for sn, sentry in enumerate(entry[1:], 1):
                     if sentry[0] == "uuid":
                         # update uuid
                         sentry[1] = f'"{puuid}"'
+                    if sentry[0] == "pad":
+                        for ssn, ssentry in enumerate(sentry[4:], 4):
+                            if ssentry[0] == "at":
+                                if rotate := settings.get("rotate", {}).get(num):
+                                    rotate_org = 0
+                                    if len(ssentry) == 4:
+                                        rotate_org = int(ssentry[3])
+                                    rotate_org -= rotate
+                                    while rotate_org < -90:
+                                        rotate_org += 360
+                                    while rotate_org > 180:
+                                        rotate_org -= 360
+                                    sentry[ssn] = [ssentry[0], ssentry[1], ssentry[2], str(rotate_org)]
+
                     if sentry[0] in {"at", "start", "end"}:
                         # update position
                         pos_x_org = float(sentry[1].strip('"'))
                         pos_y_org = float(sentry[2].strip('"'))
-                        pos_x_new = position_x + pos_x_org - settings["start_x"]
-                        pos_y_new = position_y + pos_y_org - settings["start_y"]
-                        sentry[1] = f"{pos_x_new}"
-                        sentry[2] = f"{pos_y_new}"
+                        rotate_org = 0
+                        if sentry[0] == "at" and len(sentry) == 4:
+                            rotate_org = float(sentry[3].strip('"'))
+                        px = position_x
+                        py = position_y
+                        if spos := settings.get("pos", {}).get(num):
+                            px = spos[0]
+                            py = spos[1]
+
+                        if rotate := settings.get("rotate", {}).get(num):
+                            if sentry[0] == "at":
+                                rotate_org -= rotate
+                                while rotate_org < -90:
+                                    rotate_org += 360
+                                while rotate_org > 180:
+                                    rotate_org -= 360
+                            pos_x_org, pos_y_org = rotate_point((settings["start_x"] + settings["center_x"], settings["start_y"] + settings["center_y"]), (pos_x_org, pos_y_org), rotate)
+
+                        pos_x_new = px + pos_x_org - settings["start_x"]
+                        pos_y_new = py + pos_y_org - settings["start_y"]
+                        sentry[1] = f"{pos_x_new:0.3f}"
+                        sentry[2] = f"{pos_y_new:0.3f}"
+                        if sentry[0] == "at" and entry[0] not in {"via", "pad"}:
+                            entry[sn] = [sentry[0], sentry[1], sentry[2], f"{int(rotate_org)}"]
+
                     elif sentry[0] == "property":
                         if sentry[1].strip('"') == "Reference":
-                            # update Reference
-                            # reference = sentry[2].strip('"')
-                            # reference_new = update_reference(reference)
-                            # settings["ref_mapping"][num][reference] = reference_new
-                            # sentry[2] = f'"{reference_new}"'
                             pass
                     elif sentry[0] == "sheetname":
                         # update sheetname
@@ -425,16 +479,7 @@ for name, settings in setup.items():
                             sentry[1] = f'"/{cuuid}"'
                         else:
                             sentry[1] = f'"/{suuid}/{cuuid}"'
-                        # refs[cuuid] = reference_new
-                        # refs[cuuid + suuid] = reference_new
-                    # elif sentry[0] == "net":
-                    #    # TODO: if missing netname in entry (add mapping per sheet)
-                    #    print("##", sentry)
-                    #    netname = section_line.split('"')[1]
-                    #    netnum = netnames.index(netname) + 1
 
-                    # if entry[0] != "footprint":
-                    #    continue
                     for ssentry in sentry[1:]:
                         # update net numbers
                         if ssentry[0] == "net":

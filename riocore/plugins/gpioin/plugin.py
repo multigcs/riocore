@@ -8,7 +8,7 @@ class Plugin(PluginBase):
         self.INFO = "gpio input"
         self.DESCRIPTION = ""
         self.KEYWORDS = "input"
-        self.IMAGES = PluginImages.biin
+        self.IMAGES = PluginImages.bitin
         self.TYPE = "io"
         self.NEEDS = ["gpio"]
         self.SIGNALS = {

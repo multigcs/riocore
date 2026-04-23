@@ -534,7 +534,7 @@ class Project:
 
 class PluginImages:
     bitout = ["relay", "ssr", "ssr2a", "led", "led_r", "led_g", "led_b", "led_y", "smdled", "smdled_r", "smdled_g", "smdled_b", "smdled_y", "spindle500w", "compressor", "vacuum", "valve", "dinrailplug", "motor"]
-    biin = ["proximity", "estop", "estop2", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch", "mbutton"]
+    bitin = ["proximity", "estop", "estop2", "probe", "switch", "opto", "smdbutton", "touchprobe", "toggleswitch", "mbutton"]
     stepdir = ["stepper", "servo42", "stepstick", "servo", "clstepper"]
     pwmout = ["spindle500w", "laser", "led"]
     encoders = ["encoder", "encoder_optical", "jogwheel", "knob1"]

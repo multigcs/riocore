@@ -59,7 +59,7 @@ class Plugin(PluginBase):
                 },
             }
         elif self.node_type == "input":
-            self.IMAGES = PluginImages.biin
+            self.IMAGES = PluginImages.bitin
             self.OPTIONS.update(
                 {
                     "longpress": {

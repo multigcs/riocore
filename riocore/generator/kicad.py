@@ -53,6 +53,16 @@ class kicad:
             if "instances" not in setup[kname]:
                 setup[kname]["instances"] = {}
             setup[kname]["instances"][instances_name] = {"pins": {}}
+
+            pos = plugin_instance.plugin_setup.get("pos")
+            if pos:
+                x = pos[0] / 4.5
+                y = pos[1] / 4.5
+                setup[kname]["instances"][instances_name]["pos"] = [x, y]
+            rotate = plugin_instance.plugin_setup.get("rotate")
+            if rotate:
+                setup[kname]["instances"][instances_name]["rotate"] = rotate
+
             for pin_name, pin_config in plugin_instance.pins().items():
                 if pin := pin_config.get("pin"):
                     pin_real = self.pinmapping.get(pin, pin) or ""

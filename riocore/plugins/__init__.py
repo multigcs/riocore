@@ -63,6 +63,7 @@ class PluginBase:
         self.KICAD = None
         self.KICAD_FOLDER = "kicad"
         self.KICAD_MODULE = ""
+        self.KICAD_MODULES = []
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -74,18 +75,6 @@ class PluginBase:
         self.setup()
 
         self.PLUGIN_PATH = os.path.join(riocore_path, "plugins", self.NAME)
-
-        self.KICAD_MODULE = plugin_setup.get("kicad", {}).get("module", self.KICAD_MODULE)
-        kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
-        if os.path.isdir(kicad_path):
-            self.KICAD = kicad_path
-            kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
-            if os.path.isdir(kicad_path):
-                self.KICAD_MODULES = []
-                for kpath in glob.glob(f"{kicad_path}/*"):
-                    self.KICAD_MODULES.append(kpath.split("/")[-1])
-                if not self.KICAD_MODULE and self.KICAD_MODULES:
-                    self.KICAD_MODULE = self.KICAD_MODULES[0]
 
         if not self.GENERATOR_GROUP:
             self.GENERATOR_GROUP = self.NAME
@@ -136,14 +125,33 @@ class PluginBase:
                     "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
                 }
 
-        if self.IMAGES:
-            NEW_OPTIONS["image"] = {
-                "default": "generic",
-                "type": "imgselect",
-                "options": ["generic", *self.IMAGES],
-                "description": "hardware type",
-            }
-            self.image_update()
+        NEW_OPTIONS["image"] = {
+            "default": "generic",
+            "type": "imgselect",
+            "options": ["generic", *self.IMAGES],
+            "description": "hardware type",
+        }
+        self.image_update()
+
+        self.KICAD_MODULE = plugin_setup.get("kicad", {}).get("module", self.KICAD_MODULE)
+        kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
+        if os.path.isdir(kicad_path):
+            self.KICAD = kicad_path
+            kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
+            if os.path.isdir(kicad_path):
+                if "kicad" not in self.IMAGES:
+                    NEW_OPTIONS["image"]["options"].append("kicad")
+                self.KICAD_MODULES = []
+                for kpath in glob.glob(f"{kicad_path}/*"):
+                    self.KICAD_MODULES.append(kpath.split("/")[-1])
+                if not self.KICAD_MODULE and self.KICAD_MODULES:
+                    self.KICAD_MODULE = self.KICAD_MODULES[0]
+
+        if self.KICAD_MODULE:
+            image = self.plugin_setup.get("image", self.option_default("image"))
+            if image == "kicad":
+                self.IMAGE_SHOW = True
+                self.IMAGE = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"
 
         # add new options at top of dict
         if NEW_OPTIONS:
@@ -175,7 +183,7 @@ class PluginBase:
                     for pn, pin in enumerate(self.SIGNALS):
                         if pn < signals_max:
                             self.SIGNALS[pin]["pos"] = image_setup["signals"][pn]
-                elif image != "generic":
+                elif image not in {"generic", "kicad"}:
                     riocore.log(f"ERROR: image-config not found for: ({image})")
             elif image:
                 self.IMAGE_SHOW = True
