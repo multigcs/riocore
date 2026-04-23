@@ -1,0 +1,26 @@
+{
+    "name": "iCE40HX8K-EVB",
+    "description": "OLIMEX ICE40HX8K-EVB FPGA board",
+    "toolchain": "icestorm",
+    "family": "ice40",
+    "type": "hx8k",
+    "package": "ct256",
+    "clock": {
+        "speed": "100000000",
+        "pin": "J3"
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
