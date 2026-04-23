@@ -1836,9 +1836,9 @@ class Window(QMainWindow):
         elif event.key() in {Qt.Key_R}:
             if self.scene.selectedItems():
                 if event.modifiers() & Qt.ShiftModifier:
-                    self.scene.rotate("ccw", self.scene.selectedItems())
-                else:
                     self.scene.rotate("cw", self.scene.selectedItems())
+                else:
+                    self.scene.rotate("ccw", self.scene.selectedItems())
         elif event.key() == Qt.Key_S:
             if event.modifiers() & Qt.ControlModifier:
                 self.json_save()
