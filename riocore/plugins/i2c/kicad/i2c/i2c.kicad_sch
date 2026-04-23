@@ -1723,7 +1723,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "2882fb1e-8540-400a-a782-15b5330e11c3")
 		(property "Reference" "#PWR03"
 			(at 125.73 87.63 0)
@@ -1734,12 +1733,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3.3V"
-			(at 125.73 78.74 0)
+		(property "Value" "+3V3"
+			(at 123.19 79.248 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -2269,7 +2269,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "de5e40f3-06b0-4ea7-a351-93522f77510a")
 		(property "Reference" "#PWR05"
 			(at 96.52 90.17 0)
@@ -2280,12 +2279,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3.3V"
-			(at 96.52 81.28 0)
+		(property "Value" "+3V3"
+			(at 93.98 82.296 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
