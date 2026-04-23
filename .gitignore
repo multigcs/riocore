@@ -187,3 +187,4 @@ TODO.txt
 *.zip
 fp-info-cache
 *-backups
+*.lck
