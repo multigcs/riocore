@@ -129,6 +129,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### image:
+hardware type
+
+ * type: imgselect
+ * default: generic
+
 ### mode:
 gpio mode (rpi5: gpioinfo shows GPIO7 / rpi4: gpioinfo shows SPI_CE1_N for GPIO7)
 

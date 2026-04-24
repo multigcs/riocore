@@ -2519,7 +2519,7 @@
 			(uuid "9ab370a5-d298-462e-91c5-96852912a736")
 		)
 		(instances
-			(project ""
+			(project "uln-out"
 				(path "/8e9b24a1-4eee-484a-ae46-549e8615a680"
 					(reference "#PWR01")
 					(unit 1)
@@ -2912,7 +2912,7 @@
 			(uuid "a32d148f-5061-43d6-89e6-208eb0506417")
 		)
 		(instances
-			(project ""
+			(project "uln-out"
 				(path "/8e9b24a1-4eee-484a-ae46-549e8615a680"
 					(reference "#PWR02")
 					(unit 1)
@@ -3729,7 +3729,7 @@
 			(uuid "9c6a953b-4331-48a5-9268-15c36bfdf869")
 		)
 		(instances
-			(project ""
+			(project "uln-out"
 				(path "/8e9b24a1-4eee-484a-ae46-549e8615a680"
 					(reference "D1")
 					(unit 1)

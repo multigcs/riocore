@@ -735,7 +735,7 @@
 			)
 		)
 		(property "Value" "opto_in"
-			(at 3.5 9.365 0)
+			(at 3.1 7.2 0)
 			(layer "F.Fab")
 			(uuid "257326de-98e1-48ea-b216-2a0c10599d74")
 			(effects

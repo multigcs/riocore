@@ -42,6 +42,12 @@ axis name (X,Y,Z,...)
  * default: None
  * options: X, Y, Z, A, B, C, U, V, W
 
+### image:
+hardware type
+
+ * type: imgselect
+ * default: generic
+
 ### resolution:
 PDM Resolution
 

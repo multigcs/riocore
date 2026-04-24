@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 import time
 
@@ -63,7 +64,9 @@ class PluginBase:
         self.KICAD = None
         self.KICAD_FOLDER = "kicad"
         self.KICAD_MODULE = ""
+        self.KICAD_INFO = {}
         self.KICAD_MODULES = []
+        self.KICAD_IMAGE = None
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -139,8 +142,6 @@ class PluginBase:
             self.KICAD = kicad_path
             kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
             if os.path.isdir(kicad_path):
-                if "kicad" not in self.IMAGES:
-                    NEW_OPTIONS["image"]["options"].append("kicad")
                 self.KICAD_MODULES = []
                 for kpath in glob.glob(f"{kicad_path}/*"):
                     self.KICAD_MODULES.append(kpath.split("/")[-1])
@@ -148,10 +149,10 @@ class PluginBase:
                     self.KICAD_MODULE = self.KICAD_MODULES[0]
 
         if self.KICAD_MODULE:
-            image = self.plugin_setup.get("image", self.option_default("image"))
-            if image == "kicad":
-                self.IMAGE_SHOW = True
-                self.IMAGE = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"
+            self.KICAD_IMAGE = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"
+            info_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/info.json"
+            if os.path.isfile(info_path):
+                self.KICAD_INFO = json.loads(open(info_path, "r").read())
 
         # add new options at top of dict
         if NEW_OPTIONS:

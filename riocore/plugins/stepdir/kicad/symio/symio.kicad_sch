@@ -4066,7 +4066,7 @@
 		)
 		(uuid "22673da2-b555-4ef0-9aea-e5803705bd8e")
 	)
-	(hierarchical_label "rxt2"
+	(hierarchical_label "dir"
 		(shape input)
 		(at 83.82 64.77 180)
 		(effects
@@ -4110,7 +4110,7 @@
 		)
 		(uuid "431c1ae0-eac8-4d4b-bedc-71b4136b1138")
 	)
-	(hierarchical_label "rxt4"
+	(hierarchical_label "alarm"
 		(shape input)
 		(at 83.82 125.73 180)
 		(effects
@@ -4121,7 +4121,7 @@
 		)
 		(uuid "4de4f9bf-c85c-48f5-94da-bad91e4e1095")
 	)
-	(hierarchical_label "rxt1"
+	(hierarchical_label "step"
 		(shape input)
 		(at 83.82 34.29 180)
 		(effects
@@ -4143,7 +4143,7 @@
 		)
 		(uuid "6af824c7-4312-426d-b07b-f4070553c62b")
 	)
-	(hierarchical_label "rxt3"
+	(hierarchical_label "en"
 		(shape input)
 		(at 83.82 95.25 180)
 		(effects
@@ -4187,7 +4187,7 @@
 		)
 		(uuid "e72abff0-23fc-4e2b-97cf-ee0e845b2198")
 	)
-	(hierarchical_label "rxt5"
+	(hierarchical_label "reset"
 		(shape input)
 		(at 83.82 156.21 180)
 		(effects
@@ -5844,7 +5844,7 @@
 			(uuid "921d62ce-0672-44f5-bc99-fbcb9319bc47")
 		)
 		(instances
-			(project ""
+			(project "symio"
 				(path "/51ba587e-33bb-4f51-926b-30833bf30ced"
 					(reference "J1")
 					(unit 1)
@@ -7078,7 +7078,7 @@
 			(uuid "a9b49425-824d-4bac-a60a-b553b9f868a0")
 		)
 		(instances
-			(project ""
+			(project "symio"
 				(path "/51ba587e-33bb-4f51-926b-30833bf30ced"
 					(reference "JP1")
 					(unit 1)

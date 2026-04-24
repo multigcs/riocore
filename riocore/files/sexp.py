@@ -1,4 +1,5 @@
 import ast
+import math
 
 
 def loads(sdata):
@@ -84,3 +85,50 @@ def dumps(lists):
     result = []
     lp(lists, result)
     return "".join(result).strip()
+
+
+def pcb_dimentions(pcb_data):
+    dimentions = {}
+    dimentions["start_x"] = 100000
+    dimentions["start_y"] = 100000
+    dimentions["end_x"] = 0
+    dimentions["end_y"] = 0
+    dimentions["width"] = 0
+    dimentions["height"] = 0
+    for entry in pcb_data:
+        if entry[0] in {"segment", "gr_rect", "via", "footprint"}:
+            for sentry in entry[1:]:
+                if sentry[0] in {"at", "start", "end"}:
+                    px = float(sentry[1])
+                    py = float(sentry[2])
+                    dimentions["start_x"] = min(dimentions["start_x"], px)
+                    dimentions["start_y"] = min(dimentions["start_y"], py)
+                    dimentions["end_x"] = max(dimentions["end_x"], px)
+                    dimentions["end_y"] = max(dimentions["end_y"], py)
+    dimentions["width"] = dimentions["end_x"] - dimentions["start_x"]
+    dimentions["height"] = dimentions["end_y"] - dimentions["start_y"]
+    dimentions["center_x"] = dimentions["width"] / 2
+    dimentions["center_y"] = dimentions["height"] / 2
+    return dimentions
+
+
+def pcb_netnames(pcb_data):
+    netnames = []
+    for entry in pcb_data:
+        if entry[0] == "footprint":
+            for sentry in entry[1:]:
+                for ssentry in sentry[1:]:
+                    if ssentry[0] == "net":
+                        netname = ssentry[2].strip('"')
+                        if netname and netname not in netnames:
+                            netnames.append(netname)
+    return netnames
+
+
+def rotate_point(origin, point, angle):
+    origin_x, origin_y = origin
+    point_x, point_y = point
+    radians = math.radians(-angle)
+    new_x = origin_x + math.cos(radians) * (point_x - origin_x) - math.sin(radians) * (point_y - origin_y)
+    new_y = origin_y + math.sin(radians) * (point_x - origin_x) + math.cos(radians) * (point_y - origin_y)
+    return (new_x, new_y)

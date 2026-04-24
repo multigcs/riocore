@@ -316,6 +316,9 @@ if old_pcb:
 
 # read all module net names and check sizes
 for name, settings in setup.items():
+    # pcb_dimentions(pcb_data)
+    # pcb_netnames(pcb_data)
+
     settings["start_x"] = 100000
     settings["start_y"] = 100000
     settings["end_x"] = 0

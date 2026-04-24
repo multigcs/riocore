@@ -107,6 +107,12 @@ name of this plugin instance
  * type: str
  * default: 
 
+### image:
+hardware type
+
+ * type: imgselect
+ * default: generic
+
 ### mac:
 MAC-Address
 

@@ -20,12 +20,14 @@ from PyQt5.QtGui import QBrush, QColor, QFont, QImage, QMouseEvent, QPainter, QP
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
+    QCheckBox,
     QDialog,
     QFileDialog,
     QGraphicsItem,
     QGraphicsPathItem,
     QGraphicsScene,
     QGraphicsView,
+    QHBoxLayout,
     QLabel,
     QMainWindow,
     QMenu,
@@ -507,6 +509,7 @@ class MyNode(QGraphicsItem):
 
         painted_ports = []
         for port_name, port_data in self.ports.items():
+            # print(port_data)
             if not port_data.get("pos"):
                 continue
             if port_data.get("visible") is False:
@@ -656,7 +659,18 @@ class PluginNode(MyNode):
                 self.setPos(mpos.x() + pos_x, mpos.y() + pos_y)
 
     def img_show(self):
-        if self.plugin_instance.IMAGE_SHOW:
+        # if self.scene.parent.kicad.isChecked() and self.plugin_instance.KICAD_IMAGE:
+        if self.plugin_instance.KICAD_IMAGE:
+            if self.plugin_instance.TYPE == "background":
+                self.setZValue(-99)
+            else:
+                self.setZValue(1)
+            self.load_image(self.plugin_instance.KICAD_IMAGE)
+            for port_name, port_data in self.ports.items():
+                if port_name in self.plugin_instance.KICAD_INFO.get("pins", {}):
+                    port_data["pos"] = self.plugin_instance.KICAD_INFO["pins"][port_name]["pos"]
+
+        elif self.plugin_instance.IMAGE_SHOW:
             if self.plugin_instance.TYPE == "background":
                 self.setZValue(-99)
             else:
@@ -670,7 +684,6 @@ class PluginNode(MyNode):
             else:
                 image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
                 self.load_image(image)
-                # self.plugin_instance.IMAGE_SHOW = False
 
     def reload(self):
         self.master_pos()
@@ -1472,9 +1485,18 @@ class Window(QMainWindow):
         vboxMain.addWidget(self.toolbar())
         vboxMain.addWidget(self.tabwidget, stretch=1)
 
+        hboxInfo = QHBoxLayout()
+        vboxMain.addLayout(hboxInfo)
+
         self.info = QLabel("---")
         self.info.setStyleSheet("QLabel{font-size:24px;}")
-        vboxMain.addWidget(self.info, stretch=0)
+        hboxInfo.addWidget(self.info, stretch=0)
+
+        hboxInfo.addStretch()
+
+        self.kicad = QCheckBox("KICAD-MODE")
+        self.kicad.stateChanged.connect(self.redraw)
+        hboxInfo.addWidget(self.kicad, stretch=0)
 
         self.main = QWidget()
         self.setCentralWidget(self.main)

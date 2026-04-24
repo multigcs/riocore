@@ -26,7 +26,7 @@ EPM240 mini board - very limited - only for simple satellites with digital IO's
 | --- | --- | --- |
 | P2 | 3V3 | all |
 | P4 | PIN_20 | all |
-| P6 | PIN_13 | all |
+| P6 | PIN_18 | all |
 | P8 | PIN_16 | all |
 | P10 | PIN_14 | all |
 | P12 | PIN_8 | all |
