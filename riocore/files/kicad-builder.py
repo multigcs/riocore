@@ -115,7 +115,6 @@ if old_sch:
             # sentry[2] = f'"{reference_new}"'
 else:
     rootid = str(uuid.uuid4())
-    rootid = "f9386c0a-0350-43b3-bb8c-9c7d64b71905"
 
     template_sch_str = f"""(kicad_sch
         (version 20250114)
