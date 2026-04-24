@@ -157,10 +157,11 @@ class PluginBase:
                     self.KICAD_MODULE = self.KICAD_MODULES[0]
 
         if self.KICAD_MODULE:
-            self.KICAD_IMAGE = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"
-            info_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/info.json"
-            if os.path.isfile(info_path):
-                self.KICAD_INFO = json.loads(open(info_path, "r").read())
+            if os.path.isfile(f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"):
+                self.KICAD_IMAGE = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"
+                info_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/info.json"
+                if os.path.isfile(info_path):
+                    self.KICAD_INFO = json.loads(open(info_path, "r").read())
 
         # add new options at top of dict
         if NEW_OPTIONS:
