@@ -140,10 +140,9 @@ for name, settings in setup.items():
         pin_name = entry[1].strip('"')
         settings["spins"][pin_name] = "input"
 
-    for entry in copy.deepcopy(settings["module_sch"]):
+    for entry in settings["module_sch"]:
         # find symbol - modify instances / reference
         reference = None
-        
         for sentry in sexp.get_property(entry[1:], "Reference"):
             # update reference mapping
             reference = sentry[2].strip('"')
@@ -151,6 +150,12 @@ for name, settings in setup.items():
                 if reference not in settings["ref_mapping"][num]:
                     reference_new = update_reference(reference)
                     settings["ref_mapping"][num][reference] = reference_new
+
+    for entry in copy.deepcopy(settings["module_sch"]):
+        # find symbol - modify instances / reference
+        reference = None
+        for sentry in sexp.get_property(entry[1:], "Reference"):
+            reference = sentry[2].strip('"')
 
         puuid = None
         for sentry in entry[1:]:
@@ -181,24 +186,23 @@ for name, settings in setup.items():
                     )
         if not settings.get("main"):
             settings["schema_data"].append(entry)
-        else:
-            if entry[0] in {"lib_symbols", "global_label", "symbol", "wire", "junction"}:
-                suuid = None
-                for sentry in entry[1:]:
-                    if sentry[0] == "uuid":
-                        suuid = sentry[1].strip('"')
-                    elif sentry[0] == "instances":
-                        for ssentry in sentry[1:]:
-                            for sssentry in ssentry[1:]:
-                                if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
-                                    for ssssentry in sssentry[1:]:
-                                        if ssssentry[0] == "unit":
-                                            units = ssssentry[1]
-                                            settings["units"][suuid] = units
+        elif entry[0] in {"lib_symbols", "global_label", "symbol", "wire", "junction"}:
+            suuid = None
+            for sentry in entry[1:]:
+                if sentry[0] == "uuid":
+                    suuid = sentry[1].strip('"')
+                elif sentry[0] == "instances":
+                    for ssentry in sentry[1:]:
+                        for sssentry in ssentry[1:]:
+                            if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
+                                for ssssentry in sssentry[1:]:
+                                    if ssssentry[0] == "unit":
+                                        units = ssssentry[1]
+                                        settings["units"][suuid] = units
 
-                if suuid not in uuid_exsits_sch:
-                    sch_new.append(entry)
-                    uuid_exsits_sch.append(suuid)
+            if suuid not in uuid_exsits_sch:
+                sch_new.append(entry)
+                uuid_exsits_sch.append(suuid)
 
 for name, settings in setup.items():
     if not settings.get("main"):
