@@ -666,7 +666,6 @@ class PluginNode(MyNode):
                 self.setZValue(1)
             self.load_image(self.plugin_instance.KICAD_IMAGE)
             for port_name, port_data in self.ports.items():
-                port_name = port_name.split(":")[-1]
                 if port_name in self.plugin_instance.KICAD_INFO.get("pins", {}):
                     port_data["pos"] = self.plugin_instance.KICAD_INFO["pins"][port_name]["pos"]
 

@@ -9,5 +9,11 @@
     "center_x": 9.875,
     "center_y": 13.375
   },
-  "pins": {}
+  "pins": {},
+  "powersignals": [
+    "GND",
+    "F_GND",
+    "+5V",
+    "F_5V"
+  ]
 }

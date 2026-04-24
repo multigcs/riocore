@@ -110,11 +110,29 @@ elif args.generate:
                 else:
                     for kicad_module in plugin_instance.KICAD_MODULES:
                         pcb_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_pcb")
+                        sch_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_sch")
                         if not os.path.isfile(pcb_path):
                             continue
                         pcb_data = sexp.loads(open(pcb_path, "r").read())
+                        sch_data = sexp.loads(open(sch_path, "r").read())
+
                         dim = sexp.pcb_dimentions(pcb_data)
                         info = {"dimentions": dim, "pins": {}}
+
+                        powersignals = set()
+                        # search for power signals
+                        for entry in sexp.get_types(sch_data, {"lib_symbols"}):
+                            for sentry in sexp.get_types(entry[1:], {"symbol"}):
+                                for ssentry in sexp.get_property(sentry[1:], "Value"):
+                                    if ssentry[2].strip('"') in {"+3V3", "+5V", "F_24V", "F_5V", "GND", "F_GND"}:
+                                        powersignals.add(ssentry[2].strip('"'))
+                        for entry in sexp.get_types(sch_data, {"symbol"}):
+                            for sentry in sexp.get_property(entry[1:], "Value"):
+                                if sentry[2].strip('"') in {"+3V3", "+5V", "F_24V", "F_5V", "GND", "F_GND"}:
+                                    powersignals.add(sentry[2].strip('"'))
+                        info["powersignals"] = list(powersignals)
+
+                        # get pin positions
                         for pin in plugin_instance.PINDEFAULTS:
                             if ":" in pin:
                                 continue

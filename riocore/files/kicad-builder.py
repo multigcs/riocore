@@ -41,7 +41,6 @@ if os.path.isfile("rioboard.kicad_pcb"):
 
 # set module uuids and sheets
 partnumbers = {}
-powersignals = set()
 for name, settings in setup.items():
     settings["spins"] = {}
     settings["sheets"] = {}
@@ -54,25 +53,6 @@ for name, settings in setup.items():
     # load files
     settings["module_sch"] = sexp.loads(open(f"{settings['path']}/{name}/{name}.kicad_sch", "r").read())
     settings["module_pcb"] = sexp.loads(open(f"{settings['path']}/{name}/{name}.kicad_pcb", "r").read())
-
-    # search for power signals
-    for entry in settings["module_sch"]:
-        if entry[0] != "lib_symbols":
-            continue
-        for sentry in entry[1:]:
-            if sentry[0] != "symbol":
-                continue
-            for ssentry in sentry[1:]:
-                if ssentry[0] == "property" and ssentry[1].strip('"') == "Value":
-                    if ssentry[2].strip('"') in {"+3V3", "+5V", "F_24V", "F_5V", "GND", "F_GND"}:
-                        powersignals.add(ssentry[2].strip('"'))
-    for entry in settings["module_sch"]:
-        if entry[0] != "symbol":
-            continue
-        for sentry in entry[1:]:
-            if sentry[0] == "property" and sentry[1].strip('"') == "Value":
-                if sentry[2].strip('"') in {"+3V3", "+5V", "F_24V", "F_5V", "GND", "F_GND"}:
-                    powersignals.add(sentry[2].strip('"'))
 
     # check uuid
     suuid_prefix = None
@@ -93,9 +73,6 @@ for name, settings in setup.items():
         settings["pos"][num] = idata.get("pos")
         settings["rotate"][num] = idata.get("rotate")
         num += 1
-
-print(f"Power-Signals: {powersignals}")
-
 
 # SCH
 uuid_exsits_sch = []
