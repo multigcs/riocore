@@ -659,8 +659,7 @@ class PluginNode(MyNode):
                 self.setPos(mpos.x() + pos_x, mpos.y() + pos_y)
 
     def img_show(self):
-        # if self.scene.parent.kicad.isChecked() and self.plugin_instance.KICAD_IMAGE:
-        if self.plugin_instance.KICAD_IMAGE:
+        if self.scene.parent.kicad.isChecked() and self.plugin_instance.KICAD_IMAGE:
             if self.plugin_instance.TYPE == "background":
                 self.setZValue(-99)
             else:
