@@ -129,41 +129,44 @@ lib_symbols = False
 for name, settings in setup.items():
     settings["schema_data"] = []
     muuid = None
-    for entry in sexp.get_types(settings["module_sch"], {"lib_symbols"}):
-        lib_symbols = True
-        break
-    for entry in sexp.get_types(settings["module_sch"], {"uuid"}):
-        muuid = entry[1].strip('"')
-    for entry in sexp.get_types(settings["module_sch"], {"hierarchical_label"}):
-        pin_name = entry[1].strip('"')
-        settings["spins"][pin_name] = "input"
-
-    if settings.get("main"):
-        for entry in sexp.get_types(settings["module_sch"], {"lib_symbols", "global_label", "symbol", "wire", "junction"}):
-            suuid = None
-            for sentry in entry[1:]:
-                if sentry[0] == "uuid":
-                    suuid = sentry[1].strip('"')
-                elif sentry[0] == "instances":
-                    for ssentry in sentry[1:]:
-                        for sssentry in ssentry[1:]:
-                            if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
-                                for ssssentry in sssentry[1:]:
-                                    if ssssentry[0] == "unit":
-                                        units = ssssentry[1]
-                                        settings["units"][suuid] = units
-            if suuid not in uuid_exsits_sch:
-                sch_new.append(entry)
-
     for entry in copy.deepcopy(settings["module_sch"]):
+        if entry[0] == "lib_symbols":
+            lib_symbols = True
+        elif entry[0] == "uuid":
+            muuid = entry[1].strip('"')
+        if entry[0] in {"lib_symbols", "global_label", "symbol", "wire", "junction"}:
+            lib_symbols = True
+            if settings.get("main"):
+                suuid = None
+                for sentry in entry[1:]:
+                    if sentry[0] == "uuid":
+                        suuid = sentry[1].strip('"')
+                    elif sentry[0] == "instances":
+                        for ssentry in sentry[1:]:
+                            for sssentry in ssentry[1:]:
+                                if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
+                                    for ssssentry in sssentry[1:]:
+                                        if ssssentry[0] == "unit":
+                                            units = ssssentry[1]
+                                            settings["units"][suuid] = units
+
+                if suuid not in uuid_exsits_sch:
+                    sch_new.append(entry)
+
+        elif entry[0] == "hierarchical_label":
+            pin_name = entry[1].strip('"')
+            settings["spins"][pin_name] = "input"
+
         # find symbol - modify instances / reference
         reference = None
-        for sentry in sexp.get_property(entry, "Reference"):
-            reference = sentry[2].strip('"')
-            for num, suuid in settings["sheets"].items():
-                if reference not in settings["ref_mapping"][num]:
-                    reference_new = update_reference(reference)
-                    settings["ref_mapping"][num][reference] = reference_new
+        for sentry in entry[1:]:
+            if sentry[0] == "property" and sentry[1].strip('"') == "Reference":
+                # update reference mapping
+                reference = sentry[2].strip('"')
+                for num, suuid in settings["sheets"].items():
+                    if reference not in settings["ref_mapping"][num]:
+                        reference_new = update_reference(reference)
+                        settings["ref_mapping"][num][reference] = reference_new
 
         puuid = None
         for sentry in entry[1:]:
@@ -194,7 +197,6 @@ for name, settings in setup.items():
                     )
         if not settings.get("main"):
             settings["schema_data"].append(entry)
-
 
 for name, settings in setup.items():
     if not settings.get("main"):
@@ -324,7 +326,6 @@ if old_pcb:
                 iuuid = sentry[1].strip('"')
         if iuuid:
             uuid_exsits_pcb.append(iuuid)
-
             for sentry in entry[1:]:
                 for ssentry in sentry[1:]:
                     # update net numbers
@@ -338,7 +339,6 @@ if old_pcb:
                             else:
                                 print(ssentry)
             pcb_new.append(entry)
-
 
 # PCB: place/copy parts
 position_y = 14
@@ -425,7 +425,6 @@ for name, settings in setup.items():
                         sentry[1] = f'"/{cuuid}"'
                     else:
                         sentry[1] = f'"/{suuid}/{cuuid}"'
-
                 for ssentry in sentry[1:]:
                     # update net numbers
                     if ssentry[0] == "net":
@@ -469,7 +468,6 @@ pin_conn = []
 for name, settings in setup.items():
     if settings.get("main"):
         continue
-
     num = 0
     for iname, idata in settings["instances"].items():
         sheetname = f"{name}{num}"
@@ -479,7 +477,6 @@ for name, settings in setup.items():
             pos_y += height + 2.54 + 2.54
             num += 1
             continue
-
         sch_new.append(
             [
                 "sheet",
@@ -611,7 +608,6 @@ sch_new.append(["sheet_instances", ["path", '"/"', ["page", '"1"']]])
 sch_new.append(["embedded_fonts", "no"])
 # print(json.dumps(sch_new, indent=4))
 open("rioboard.kicad_sch", "w").write(sexp.dumps(sch_new))
-
 
 data_pro = [
     """{
@@ -1244,9 +1240,7 @@ for name, settings in setup.items():
 data_pro.append("""  ],
   "text_variables": {}
 }""")
-
 open("rioboard.kicad_pro", "w").write("\n".join(data_pro))
-
 
 data_prl = """{
   "board": {
