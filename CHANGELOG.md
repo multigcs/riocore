@@ -15,6 +15,7 @@
 * replacing i2cbus -> i2c/i2c_device
 * better simulation
 * test-tool is now based on the hal-component c-code
+* kicad template generator (pro/pcb/sch)
 
 
 ## v0.9.4
