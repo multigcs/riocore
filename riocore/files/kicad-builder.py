@@ -115,6 +115,8 @@ if old_sch:
             # sentry[2] = f'"{reference_new}"'
 else:
     rootid = str(uuid.uuid4())
+    rootid = "f9386c0a-0350-43b3-bb8c-9c7d64b71905"
+
     template_sch_str = f"""(kicad_sch
         (version 20250114)
         (generator "eeschema")
@@ -129,13 +131,14 @@ lib_symbols = False
 for name, settings in setup.items():
     settings["schema_data"] = []
     muuid = None
+    for entry in sexp.get_types(settings["module_sch"], {"lib_symbols"}):
+        lib_symbols = True
+        break
+    for entry in sexp.get_types(settings["module_sch"], {"uuid"}):
+        muuid = entry[1].strip('"')
+
     for entry in copy.deepcopy(settings["module_sch"]):
-        if entry[0] == "lib_symbols":
-            lib_symbols = True
-        elif entry[0] == "uuid":
-            muuid = entry[1].strip('"')
         if entry[0] in {"lib_symbols", "global_label", "symbol", "wire", "junction"}:
-            lib_symbols = True
             if settings.get("main"):
                 suuid = None
                 for sentry in entry[1:]:
@@ -197,6 +200,7 @@ for name, settings in setup.items():
                     )
         if not settings.get("main"):
             settings["schema_data"].append(entry)
+
 
 for name, settings in setup.items():
     if not settings.get("main"):
