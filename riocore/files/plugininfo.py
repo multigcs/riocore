@@ -104,13 +104,16 @@ elif args.generate:
                     for node_type in plugin_instance.OPTIONS["node_type"]["options"]:
                         for kicad_module in plugin_instance.KICAD_MODULES:
                             pcb_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, node_type, kicad_module, f"{kicad_module}.kicad_pcb")
-                            # print("   ", kicad_module, plugin_instance.KICAD_FOLDER, pcb_path)
+                            if os.path.isfile(pcb_path):
+                                pass
+
                 else:
                     for kicad_module in plugin_instance.KICAD_MODULES:
                         pcb_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_pcb")
+                        if not os.path.isfile(pcb_path):
+                            continue
                         pcb_data = sexp.loads(open(pcb_path, "r").read())
                         dim = sexp.pcb_dimentions(pcb_data)
-
                         info = {"dimentions": dim, "pins": {}}
                         for pin in plugin_instance.PINDEFAULTS:
                             if ":" in pin:
@@ -122,7 +125,6 @@ elif args.generate:
                                 for sentry in entry[2:]:
                                     if sentry[0] == "at":
                                         fat = sentry[1:]
-
                                 for sentry in entry[2:]:
                                     if sentry[0] != "pad":
                                         continue
@@ -144,16 +146,13 @@ elif args.generate:
                                         fat_r = 0.0
                                         if len(fat) == 3:
                                             fat_r = float(fat[2].strip('"'))
-
                                         nrot = 0
                                         if fat_r:
                                             at_x, at_y = sexp.rotate_point((0, 0), (at_x, at_y), fat_r)
-
                                         info["pins"][pin] = {
                                             "pos": [
                                                 ((float(fat_x) + at_x) - dim["start_x"]) * 4.2,
                                                 ((float(fat_y) + at_y) - dim["start_y"]) * 4.2,
-                                                size,
                                             ]
                                         }
 

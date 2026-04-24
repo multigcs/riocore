@@ -115,7 +115,6 @@ if old_sch:
             # sentry[2] = f'"{reference_new}"'
 else:
     rootid = str(uuid.uuid4())
-
     template_sch_str = f"""(kicad_sch
         (version 20250114)
         (generator "eeschema")

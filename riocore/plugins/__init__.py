@@ -143,8 +143,16 @@ class PluginBase:
             kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
             if os.path.isdir(kicad_path):
                 self.KICAD_MODULES = []
-                for kpath in glob.glob(f"{kicad_path}/*"):
-                    self.KICAD_MODULES.append(kpath.split("/")[-1])
+                options = self.OPTIONS.get("node_type", {}).get("options")
+                if options and not self.plugin_setup.get("node_type"):
+                    for option in options:
+                        for kpath in glob.glob(f"{kicad_path}/{option}/*"):
+                            if kpath.split("/")[-1] not in self.KICAD_MODULES:
+                                self.KICAD_MODULES.append(kpath.split("/")[-1])
+                else:
+                    for kpath in glob.glob(f"{kicad_path}/*"):
+                        if kpath.split("/")[-1] not in self.KICAD_MODULES:
+                            self.KICAD_MODULES.append(kpath.split("/")[-1])
                 if not self.KICAD_MODULE and self.KICAD_MODULES:
                     self.KICAD_MODULE = self.KICAD_MODULES[0]
 
