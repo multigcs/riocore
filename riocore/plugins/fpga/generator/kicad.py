@@ -12,9 +12,8 @@ class kicad:
         self.prefix = instance.hal_prefix
         self.kicad_path = os.path.join(self.project.config["output_path"], "KICAD", instance.instances_name)
         os.makedirs(self.kicad_path, exist_ok=True)
-
         self.setup_json()
-        self.start_sh()
+        self.build_sh()
 
     def setup_json(self):
         self.linked_pins = []
@@ -39,7 +38,10 @@ class kicad:
             for pin in plugin_instance.expansion_inputs():
                 self.expansion_pins.append(pin)
 
-        setup = {}
+        setup = {
+            "name": self.instance.instances_name,
+            "modules": {},
+        }
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
@@ -48,42 +50,42 @@ class kicad:
                 continue
             kname = plugin_instance.KICAD_MODULE
             instances_name = plugin_instance.instances_name
-            if kname not in setup:
-                setup[kname] = {"num": 0}
-            setup[kname]["path"] = kicad_path
-            setup[kname]["num"] += 1
+            if kname not in setup["modules"]:
+                setup["modules"][kname] = {"num": 0}
+            setup["modules"][kname]["path"] = kicad_path
+            setup["modules"][kname]["num"] += 1
             if plugin_instance.gmaster is None:
-                setup[kname]["main"] = True
-            if "instances" not in setup[kname]:
-                setup[kname]["instances"] = {}
-            setup[kname]["instances"][instances_name] = {"pins": {}}
+                setup["modules"][kname]["main"] = True
+            if "instances" not in setup["modules"][kname]:
+                setup["modules"][kname]["instances"] = {}
+            setup["modules"][kname]["instances"][instances_name] = {"pins": {}}
 
             pos = plugin_instance.plugin_setup.get("pos")
             if pos:
                 x = pos[0] / 4.5
                 y = pos[1] / 4.5
-                setup[kname]["instances"][instances_name]["pos"] = [x, y]
+                setup["modules"][kname]["instances"][instances_name]["pos"] = [x, y]
             rotate = plugin_instance.plugin_setup.get("rotate")
             if rotate:
-                setup[kname]["instances"][instances_name]["rotate"] = rotate
+                setup["modules"][kname]["instances"][instances_name]["rotate"] = rotate
 
             for pin_name, pin_config in plugin_instance.pins().items():
                 if pin := pin_config.get("pin"):
                     pin_real = self.pinmapping.get(pin, pin) or ""
-                    setup[kname]["instances"][instances_name]["pins"][pin_name] = pin_real
+                    setup["modules"][kname]["instances"][instances_name]["pins"][pin_name] = pin_real
 
         open(os.path.join(self.kicad_path, "setup.json"), "w").write(json.dumps(setup, indent=4))
 
-    def start_sh(self):
+    def build_sh(self):
         output = ["#!/bin/sh"]
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')
         output.append("")
         output.append(f"(cd $DIRNAME && python3 {riocore_path}/files/kicad-builder.py setup.json)")
         output.append("")
-        output.append("kicad $DIRNAME/rioboard.kicad_pro")
+        output.append(f'echo "    # kicad $DIRNAME/{self.instance.instances_name}.kicad_pro"')
         output.append("")
 
-        start_sh = os.path.join(self.kicad_path, "start.sh")
-        open(start_sh, "w").write("\n".join(output))
-        os.chmod(start_sh, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+        build_sh = os.path.join(self.kicad_path, "build.sh")
+        open(build_sh, "w").write("\n".join(output))
+        os.chmod(build_sh, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)

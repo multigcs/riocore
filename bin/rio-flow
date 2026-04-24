@@ -1574,13 +1574,6 @@ class Window(QMainWindow):
         QTabWidget.setCurrentIndex(self.tabwidget, 5)
         self.buildertab.generator_run("-s")
 
-    def generator_run_kicad(self):
-        if not self.save_check():
-            # cancel pressed
-            return
-        QTabWidget.setCurrentIndex(self.tabwidget, 5)
-        self.buildertab.generator_run("-k")
-
     def generator_run_sim(self):
         if not self.save_check():
             # cancel pressed
@@ -1760,13 +1753,6 @@ class Window(QMainWindow):
         toolbar.addAction(run_action)
 
         toolbar.addSeparator()
-
-        icon = self.style().standardIcon(QStyle.SP_DialogResetButton)
-        run_action = QAction(icon, "&generate and run kicad (F10)", self)
-        run_action.setStatusTip("generate and run kicad")
-        run_action.setShortcut("F10")
-        run_action.triggered.connect(self.generator_run_kicad)
-        toolbar.addAction(run_action)
 
         icon = self.style().standardIcon(QStyle.SP_MessageBoxInformation)
         run_action = QAction(icon, "&Documentation (F12)", self)

@@ -3,6 +3,7 @@
 #
 
 import argparse
+import glob
 import json
 import os
 import subprocess
@@ -249,16 +250,18 @@ if args.config:
                 sys.exit(1)
 
         elif sys.platform == "linux" and args.kicad:
-            kicadsh_path = os.path.join(output_path, config_name, "KICAD", "start.sh")
-            cmd = f"sh {kicadsh_path}"
-            print()
-            print("running:")
-            print(f"  {cmd}")
-            print()
-            ret = os.system(cmd)
-            if ret != 0:
-                print(f"ERROR: code {ret}")
-                sys.exit(1)
+            kicad_path = os.path.join(output_path, config_name, "KICAD")
+            for kpath in glob.glob(os.path.join(kicad_path, "*")):
+                kicadsh_path = os.path.join(kpath, "build.sh")
+                cmd = f"sh {kicadsh_path}"
+                print()
+                print("running:")
+                print(f"  {cmd}")
+                print()
+                ret = os.system(cmd)
+                if ret != 0:
+                    print(f"ERROR: code {ret}")
+                    sys.exit(1)
 
     elif args.config[0].startswith("plugininfo:"):
         plugin = args.config[0].split(":")[-1]
