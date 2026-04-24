@@ -104,8 +104,25 @@ elif args.generate:
                     for node_type in plugin_instance.OPTIONS["node_type"]["options"]:
                         for kicad_module in plugin_instance.KICAD_MODULES:
                             pcb_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, node_type, kicad_module, f"{kicad_module}.kicad_pcb")
-                            if os.path.isfile(pcb_path):
-                                pass
+                            sch_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, node_type, kicad_module, f"{kicad_module}.kicad_sch")
+                            """
+                            if not os.path.isfile(pcb_path):
+                                continue
+                            pcb_data = sexp.loads(open(pcb_path, "r").read())
+                            sch_data = sexp.loads(open(sch_path, "r").read())
+                            for lib_symbol in sexp.get_types(sch_data, {"lib_symbols"}):
+                                for symbol in sexp.get_types(lib_symbol[1:], {"symbol"}):
+                                    for symbol2 in sexp.get_types(symbol[1:], {"symbol"}):
+                                        print(symbol2)
+                                        for pinentry in sexp.get_types(symbol2[1:], {"pin"}):
+                                            name = None
+                                            number = None
+                                            for pname in sexp.get_types(pinentry[1:], {"name"}):
+                                                name = pname[1].strip('"')
+                                            for pnumber in sexp.get_types(pinentry[1:], {"number"}):
+                                                number = pnumber[1].strip('"')
+                                            print(name, number)
+                            """
 
                 else:
                     for kicad_module in plugin_instance.KICAD_MODULES:

@@ -30,7 +30,7 @@
     }
   },
   "powersignals": [
-    "GND",
-    "+5V"
+    "+5V",
+    "GND"
   ]
 }

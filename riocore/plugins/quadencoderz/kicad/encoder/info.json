@@ -11,9 +11,9 @@
   },
   "pins": {},
   "powersignals": [
-    "GND",
-    "F_GND",
     "+5V",
-    "F_5V"
+    "GND",
+    "F_5V",
+    "F_GND"
   ]
 }
