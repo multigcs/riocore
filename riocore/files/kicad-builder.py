@@ -300,7 +300,6 @@ for netnum, netname in enumerate(netnames, 1):
 uuid_exsits_pcb = []
 if old_pcb:
     for entry in sexp.get_types(old_pcb, {"footprint", "segment", "gr_rect", "via"}):
-        print(entry[0], entry[1])
         iuuid = None
         for sentry in entry[1:]:
             if sentry[0] == "uuid":

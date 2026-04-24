@@ -95,7 +95,7 @@
 	(net 15 "Net-(U8-PMODE0)")
 	(net 16 "Net-(U8-PMODE1)")
 	(net 17 "Net-(U8-PMODE2)")
-	(net 18 "/W5500.nRST")
+	(net 18 "/rst")
 	(net 19 "Net-(J6-Pad12)")
 	(net 20 "Net-(J6-Pad9)")
 	(net 21 "Net-(J6-TD-)")
@@ -109,8 +109,8 @@
 	(net 29 "unconnected-(U8-DNC-Pad7)")
 	(net 30 "/LED_GRN")
 	(net 31 "unconnected-(U8-RSVD-Pad38)")
-	(net 32 "/W5500.MISO")
-	(net 33 "/W5500.SCLK")
+	(net 32 "/miso")
+	(net 33 "/sclk")
 	(net 34 "unconnected-(U8-DUPLED-Pad26)")
 	(net 35 "unconnected-(U8-RSVD-Pad42)")
 	(net 36 "unconnected-(U8-NC-Pad46)")
@@ -119,11 +119,11 @@
 	(net 39 "unconnected-(U8-VBG-Pad18)")
 	(net 40 "unconnected-(U8-RSVD-Pad41)")
 	(net 41 "unconnected-(U8-NC-Pad47)")
-	(net 42 "/W5500.nINT")
+	(net 42 "/intr")
 	(net 43 "unconnected-(U8-NC-Pad13)")
 	(net 44 "unconnected-(U8-NC-Pad12)")
-	(net 45 "/W5500.nSCS")
-	(net 46 "/W5500.MOSI")
+	(net 45 "/sel")
+	(net 46 "/mosi")
 	(net 47 "unconnected-(U8-RSVD-Pad40)")
 	(footprint "Resistor_SMD:R_0603_1608Metric"
 		(layer "F.Cu")
@@ -979,7 +979,7 @@
 			(size 1.475 0.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 45 "/W5500.nSCS")
+			(net 45 "/sel")
 			(pinfunction "~{SCS}")
 			(pintype "input")
 			(uuid "f3340803-a33d-4ae5-9a03-85e724e97ff4")
@@ -989,7 +989,7 @@
 			(size 1.475 0.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 33 "/W5500.SCLK")
+			(net 33 "/sclk")
 			(pinfunction "SCLK")
 			(pintype "input")
 			(uuid "6efc2105-a13a-4b05-b604-72fad3423e82")
@@ -999,7 +999,7 @@
 			(size 1.475 0.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 32 "/W5500.MISO")
+			(net 32 "/miso")
 			(pinfunction "MISO")
 			(pintype "output")
 			(uuid "56b79660-8d75-474e-8633-67ae823125b8")
@@ -1009,7 +1009,7 @@
 			(size 1.475 0.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 46 "/W5500.MOSI")
+			(net 46 "/mosi")
 			(pinfunction "MOSI")
 			(pintype "input")
 			(uuid "f5afcae0-4887-4184-8269-957adcdb61b3")
@@ -1019,7 +1019,7 @@
 			(size 1.475 0.3)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 42 "/W5500.nINT")
+			(net 42 "/intr")
 			(pinfunction "~{INT}")
 			(pintype "input")
 			(uuid "ca0a807c-82bf-4a5d-a111-762e974dbeb6")
@@ -1029,7 +1029,7 @@
 			(size 0.3 1.475)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 18 "/W5500.nRST")
+			(net 18 "/rst")
 			(pinfunction "~{RST}")
 			(pintype "input")
 			(uuid "2080c59a-da98-49b5-ad8f-c1c2b93c7add")
@@ -1793,6 +1793,7 @@
 		(property "Value" "10uF/6.3V"
 			(at 0 1.43 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "9993bbd2-f263-4d3f-a8f2-27e78e66f1e5")
 			(effects
 				(font
@@ -2064,7 +2065,7 @@
 			(size 0.8 0.95)
 			(layers "F.Cu" "F.Mask" "F.Paste")
 			(roundrect_rratio 0.25)
-			(net 18 "/W5500.nRST")
+			(net 18 "/rst")
 			(pintype "passive")
 			(uuid "4961c7c1-32e0-4808-86fa-c3c532f48a9d")
 		)
@@ -2407,7 +2408,7 @@
 			)
 		)
 		(property "Value" "RJ45_Pulse_J0011D21BNL"
-			(at 4.44 18.5 90)
+			(at 4.44 15.71 90)
 			(layer "F.Fab")
 			(uuid "b50af241-bbbd-412b-8fe0-1ac616031d21")
 			(effects
@@ -4167,8 +4168,9 @@
 			)
 		)
 		(property "Value" "10uF/6.3V"
-			(at 0 1.43 90)
+			(at -1.675 -1.9 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "2aab0667-d61b-4654-905d-afcc8ffca1a0")
 			(effects
 				(font
@@ -4631,6 +4633,7 @@
 		(property "Value" "FB_100R_3A"
 			(at 0 1.43 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "8404d675-b39e-4f48-8864-47e4c2b40aad")
 			(effects
 				(font
@@ -5117,6 +5120,7 @@
 		(property "Value" "Crystal_25MHz"
 			(at 0 2.2 90)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "61bc3dcd-cc4f-4797-8ece-904be19e3d17")
 			(effects
 				(font

@@ -31,6 +31,7 @@ if sys.platform == "linux":
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
     parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
     parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
+    parser.add_argument("--kicad", "-k", help="build and start in kicad", default=False, action="store_true")
     parser.add_argument("--gui", "-G", help="start linuxcnc with other gui", type=str, default=None)
     parser.add_argument("--vcp", "-V", help="start linuxcnc with other vcp", type=str, default=None)
     parser.add_argument("--instances", "-i", help="build only this instance", type=str, default=None)
@@ -243,6 +244,18 @@ if args.config:
                     kill(proc_sim_data.pid)
                     print("..done")
 
+            if ret != 0:
+                print(f"ERROR: code {ret}")
+                sys.exit(1)
+
+        elif sys.platform == "linux" and args.kicad:
+            kicadsh_path = os.path.join(output_path, config_name, "KICAD", "start.sh")
+            cmd = f"sh {kicadsh_path}"
+            print()
+            print("running:")
+            print(f"  {cmd}")
+            print()
+            ret = os.system(cmd)
             if ret != 0:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)

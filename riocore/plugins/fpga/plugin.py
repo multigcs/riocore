@@ -11,6 +11,7 @@ from riocore.plugins import PluginBase
 from .generator.component import component
 from .generator.gateware import gateware
 from .generator.jslib import jslib
+from .generator.kicad import kicad
 from .generator.mqttbridge import mqttbridge
 from .generator.pylib import pylib
 from .generator.rosbridge import rosbridge
@@ -349,6 +350,8 @@ class Plugin(PluginBase):
             instance.gateware = gateware(parent, instance)
             if instance.jdata["toolchain"]:
                 instance.gateware.generator()
+                print("#############################", instance.instances_name)
+                kicad(parent.project, instance=instance)
 
             # linuxcnc-component
             if not instance.fmaster:

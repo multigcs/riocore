@@ -2,17 +2,21 @@ import json
 import os
 import stat
 
-import riocore
-
-riocore_path = os.path.dirname(riocore.__file__)
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
 class kicad:
-    def __init__(self, project):
+    def __init__(self, project, instance):
         self.project = project
-        self.kicad_path = os.path.join(self.project.config["output_path"], "KICAD")
+        self.instance = instance
+        self.prefix = instance.hal_prefix
+        self.kicad_path = os.path.join(self.project.config["output_path"], "KICAD", instance.instances_name)
         os.makedirs(self.kicad_path, exist_ok=True)
 
+        self.setup_json()
+        self.start_sh()
+
+    def setup_json(self):
         self.linked_pins = []
         self.virtual_pins = []
         self.expansion_pins = []
@@ -20,6 +24,8 @@ class kicad:
         self.pinmapping_rev = {}
 
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             for pin_name, pin_config in plugin_instance.PINDEFAULTS.items():
                 if "pin" in pin_config:
                     self.pinmapping[f"{plugin_instance.instances_name}:{pin_name}"] = pin_config["pin"]
@@ -33,12 +39,10 @@ class kicad:
             for pin in plugin_instance.expansion_inputs():
                 self.expansion_pins.append(pin)
 
-        plugin_names = {}
-        for plugin_instance in self.project.plugin_instances:
-            plugin_names[plugin_instance.instances_name] = plugin_instance
-
         setup = {}
         for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
             kicad_path = f"{plugin_instance.PLUGIN_PATH}/{plugin_instance.KICAD_FOLDER}"
             if not plugin_instance.KICAD_MODULE:
                 continue
@@ -70,6 +74,7 @@ class kicad:
 
         open(os.path.join(self.kicad_path, "setup.json"), "w").write(json.dumps(setup, indent=4))
 
+    def start_sh(self):
         output = ["#!/bin/sh"]
         output.append("")
         output.append('DIRNAME=`dirname "$0"`')

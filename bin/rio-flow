@@ -1571,8 +1571,15 @@ class Window(QMainWindow):
         if not self.save_check():
             # cancel pressed
             return
-        QTabWidget.setCurrentIndex(self.tabwidget, 4)
+        QTabWidget.setCurrentIndex(self.tabwidget, 5)
         self.buildertab.generator_run("-s")
+
+    def generator_run_kicad(self):
+        if not self.save_check():
+            # cancel pressed
+            return
+        QTabWidget.setCurrentIndex(self.tabwidget, 5)
+        self.buildertab.generator_run("-k")
 
     def generator_run_sim(self):
         if not self.save_check():
@@ -1589,7 +1596,7 @@ class Window(QMainWindow):
             riocore.log(msg)
             self.scene.parent.info.setText(msg)
         else:
-            QTabWidget.setCurrentIndex(self.tabwidget, 4)
+            QTabWidget.setCurrentIndex(self.tabwidget, 5)
             self.buildertab.generator_run("-S")
 
     def generator_run_udpsim(self):
@@ -1614,7 +1621,7 @@ class Window(QMainWindow):
             riocore.log(msg)
             self.scene.parent.info.setText(msg)
         else:
-            QTabWidget.setCurrentIndex(self.tabwidget, 4)
+            QTabWidget.setCurrentIndex(self.tabwidget, 5)
             self.buildertab.generator_run("-U")
 
     def runTimer(self):
@@ -1740,19 +1747,26 @@ class Window(QMainWindow):
 
         icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
         run_action = QAction(icon, "&generate and run sim (F5)", self)
-        run_action.setStatusTip("generate and run")
+        run_action.setStatusTip("generate and run sim")
         run_action.setShortcut("F5")
         run_action.triggered.connect(self.generator_run_sim)
         toolbar.addAction(run_action)
 
         icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
         run_action = QAction(icon, "&generate and run udp-sim (F6)", self)
-        run_action.setStatusTip("generate and run")
+        run_action.setStatusTip("generate and run udp-sim")
         run_action.setShortcut("F6")
         run_action.triggered.connect(self.generator_run_udpsim)
         toolbar.addAction(run_action)
 
         toolbar.addSeparator()
+
+        icon = self.style().standardIcon(QStyle.SP_DialogResetButton)
+        run_action = QAction(icon, "&generate and run kicad (F10)", self)
+        run_action.setStatusTip("generate and run kicad")
+        run_action.setShortcut("F10")
+        run_action.triggered.connect(self.generator_run_kicad)
+        toolbar.addAction(run_action)
 
         icon = self.style().standardIcon(QStyle.SP_MessageBoxInformation)
         run_action = QAction(icon, "&Documentation (F12)", self)

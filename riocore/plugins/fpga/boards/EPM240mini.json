@@ -8,7 +8,7 @@
     "package": "",
     "clock": {
         "speed": "50000000",
-        "pin": "PIN_12"
+        "pin": "PIN_64"
     },
     "slots": [
         {

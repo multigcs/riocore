@@ -88,8 +88,6 @@ elif args.generate:
             ptypes[plugin_instance.TYPE] = plugin_instance.TYPE.title()
 
     for ptype, title_raw in ptypes.items():
-        # text.append(f"## {title}:")
-        # text.append("")
         title = title_raw
         for plugin_instance in plugins.plugin_instances:
             if ptype == plugin_instance.TYPE:
