@@ -1494,7 +1494,7 @@ class Window(QMainWindow):
         hboxInfo.addStretch()
 
         self.kicad = QCheckBox("KICAD-MODE")
-        self.kicad.stateChanged.connect(self.redraw)
+        self.kicad.stateChanged.connect(self.kicad_mode)
         hboxInfo.addWidget(self.kicad, stretch=0)
 
         self.main = QWidget()
@@ -1906,6 +1906,8 @@ class Window(QMainWindow):
             self.config["flow"]["view"] = {}
         if "hal" not in self.config["flow"]:
             self.config["flow"]["hal"] = {}
+
+        self.kicad.setChecked(self.config.get("kicad_mode", False))
 
         # upgrade: board -> plugins
         board_name = self.config.get("boardcfg")
@@ -2392,6 +2394,12 @@ class Window(QMainWindow):
             return os.path.join(riocore_path, path)
         riocore.log(f"can not find path: {path}")
         # exit(1)
+
+    def kicad_mode(self):
+        if self.config:
+            self.config["kicad_mode"] = self.scene.parent.kicad.isChecked()
+        self.redraw()
+        self.cfg_check()
 
     def redraw(self):
         riocore.log_clear()
