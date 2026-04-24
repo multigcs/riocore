@@ -75,14 +75,19 @@ elif args.generate:
     text.append("| Type | Name | Info | Image | Comment |")
     text.append("| --- | :---: | --- | :---: | :---: |")
 
-    for title_raw, ptype in {
-        "Interfaces": "interface",
-        "Joints": "joint",
-        "IO": "io",
-        "FrameIO": "frameio",
-        "Expansions": "expansion",
-        "Misc": "base",
-    }.items():
+    ptypes = {
+        "interface": "Interfaces",
+        "joint": "Joints",
+        "io": "IO",
+        "frameio": "FrameIO",
+        "expansion": "Expansions",
+        "base": "Misc",
+    }
+    for plugin_instance in plugins.plugin_instances:
+        if plugin_instance.TYPE not in ptypes:
+            ptypes[plugin_instance.TYPE] = plugin_instance.TYPE.title()
+
+    for ptype, title_raw in ptypes.items():
         # text.append(f"## {title}:")
         # text.append("")
         title = title_raw
@@ -125,7 +130,9 @@ elif args.generate:
                             """
 
                 else:
+                    # print(plugin_instance.NAME)
                     for kicad_module in plugin_instance.KICAD_MODULES:
+                        # print(" ", kicad_module)
                         pcb_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_pcb")
                         sch_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_sch")
                         if not os.path.isfile(pcb_path):

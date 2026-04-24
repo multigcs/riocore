@@ -351,14 +351,29 @@ for name, settings in setup.items():
                     if sentry[0] == "layer" and sentry[1].strip('"') == "Edge.Cuts":
                         sentry[1] = '"F.SilkS"'
 
+            rotate = settings.get("rotate", {}).get(num)
+            if rotate:
+                for sentry in sexp.get_property(entry[1:], {"Value", "Reference"}) + sexp.get_types(entry[1:], {"fp_text"}):
+                    for ssn, ssentry in enumerate(sentry[1:], 1):
+                        if ssentry[0] == "at":
+                            rotate_org = 0
+                            if len(ssentry) == 4:
+                                rotate_org = int(ssentry[3])
+                            rotate_org -= rotate
+                            while rotate_org < -90:
+                                rotate_org += 360
+                            while rotate_org > 180:
+                                rotate_org -= 360
+                            sentry[ssn] = [ssentry[0], ssentry[1], ssentry[2], str(rotate_org)]
+
             for sn, sentry in enumerate(entry[1:], 1):
                 if sentry[0] == "uuid":
                     # update uuid
                     sentry[1] = f'"{puuid}"'
                 elif sentry[0] == "pad":
                     # rotating pads
-                    for ssn, ssentry in enumerate(sexp.get_types(sentry[4:], {"at"}), 4):
-                        if rotate := settings.get("rotate", {}).get(num):
+                    if rotate:
+                        for ssn, ssentry in enumerate(sexp.get_types(sentry[4:], {"at"}), 4):
                             rotate_org = 0
                             if len(ssentry) == 4:
                                 rotate_org = int(ssentry[3])

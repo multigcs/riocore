@@ -144,7 +144,9 @@ def get_types(data, types):
 
 def get_property(data, ptype):
     entrys = []
+    if isinstance(ptype, str):
+        ptype = {ptype}
     for entry in data:
-        if entry[0] == "property" and entry[1].strip('"') == ptype:
+        if entry[0] == "property" and entry[1].strip('"') in ptype:
             entrys.append(entry)
     return entrys
