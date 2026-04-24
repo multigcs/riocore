@@ -132,3 +132,19 @@ def rotate_point(origin, point, angle):
     new_x = origin_x + math.cos(radians) * (point_x - origin_x) - math.sin(radians) * (point_y - origin_y)
     new_y = origin_y + math.sin(radians) * (point_x - origin_x) + math.cos(radians) * (point_y - origin_y)
     return (new_x, new_y)
+
+
+def get_types(data, types):
+    entrys = []
+    for entry in data:
+        if entry[0] in types:
+            entrys.append(entry)
+    return entrys
+
+
+def get_property(data, ptype):
+    entrys = []
+    for entry in data:
+        if entry[0] == "property" and entry[1].strip('"') == ptype:
+            entrys.append(entry)
+    return entrys

@@ -4,7 +4,6 @@
 
 import copy
 import json
-import math
 import os
 import sys
 import uuid
@@ -26,15 +25,6 @@ def update_reference(reference):
         reference = f"{prefix}{num}"
     references.append(reference)
     return reference
-
-
-def rotate_point(origin, point, angle):
-    origin_x, origin_y = origin
-    point_x, point_y = point
-    radians = math.radians(angle)
-    new_x = origin_x + math.cos(radians) * (point_x - origin_x) - math.sin(radians) * (point_y - origin_y)
-    new_y = origin_y + math.sin(radians) * (point_x - origin_x) + math.cos(radians) * (point_y - origin_y)
-    return (new_x, new_y)
 
 
 setup = json.loads(open(sys.argv[1], "r").read())
@@ -139,44 +129,41 @@ lib_symbols = False
 for name, settings in setup.items():
     settings["schema_data"] = []
     muuid = None
+    for entry in sexp.get_types(settings["module_sch"], {"lib_symbols"}):
+        lib_symbols = True
+        break
+    for entry in sexp.get_types(settings["module_sch"], {"uuid"}):
+        muuid = entry[1].strip('"')
+    for entry in sexp.get_types(settings["module_sch"], {"hierarchical_label"}):
+        pin_name = entry[1].strip('"')
+        settings["spins"][pin_name] = "input"
+
+    if settings.get("main"):
+        for entry in sexp.get_types(settings["module_sch"], {"lib_symbols", "global_label", "symbol", "wire", "junction"}):
+            suuid = None
+            for sentry in entry[1:]:
+                if sentry[0] == "uuid":
+                    suuid = sentry[1].strip('"')
+                elif sentry[0] == "instances":
+                    for ssentry in sentry[1:]:
+                        for sssentry in ssentry[1:]:
+                            if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
+                                for ssssentry in sssentry[1:]:
+                                    if ssssentry[0] == "unit":
+                                        units = ssssentry[1]
+                                        settings["units"][suuid] = units
+            if suuid not in uuid_exsits_sch:
+                sch_new.append(entry)
+
     for entry in copy.deepcopy(settings["module_sch"]):
-        if entry[0] == "lib_symbols":
-            lib_symbols = True
-        elif entry[0] == "uuid":
-            muuid = entry[1].strip('"')
-        if entry[0] in {"lib_symbols", "global_label", "symbol", "wire", "junction"}:
-            lib_symbols = True
-            if settings.get("main"):
-                suuid = None
-                for sentry in entry[1:]:
-                    if sentry[0] == "uuid":
-                        suuid = sentry[1].strip('"')
-                    elif sentry[0] == "instances":
-                        for ssentry in sentry[1:]:
-                            for sssentry in ssentry[1:]:
-                                if sssentry[0] == "path" and sssentry[1].strip('"/') == muuid:
-                                    for ssssentry in sssentry[1:]:
-                                        if ssssentry[0] == "unit":
-                                            units = ssssentry[1]
-                                            settings["units"][suuid] = units
-
-                if suuid not in uuid_exsits_sch:
-                    sch_new.append(entry)
-
-        elif entry[0] == "hierarchical_label":
-            pin_name = entry[1].strip('"')
-            settings["spins"][pin_name] = "input"
-
         # find symbol - modify instances / reference
         reference = None
-        for sentry in entry[1:]:
-            if sentry[0] == "property" and sentry[1].strip('"') == "Reference":
-                # update reference mapping
-                reference = sentry[2].strip('"')
-                for num, suuid in settings["sheets"].items():
-                    if reference not in settings["ref_mapping"][num]:
-                        reference_new = update_reference(reference)
-                        settings["ref_mapping"][num][reference] = reference_new
+        for sentry in sexp.get_property(entry, "Reference"):
+            reference = sentry[2].strip('"')
+            for num, suuid in settings["sheets"].items():
+                if reference not in settings["ref_mapping"][num]:
+                    reference_new = update_reference(reference)
+                    settings["ref_mapping"][num][reference] = reference_new
 
         puuid = None
         for sentry in entry[1:]:
@@ -306,53 +293,17 @@ pcb_new = sexp.loads(template_pcb_str)
 # read existing net names
 netnames = []
 if old_pcb:
-    for entry in old_pcb:
-        for sentry in entry[1:]:
-            for ssentry in sentry[1:]:
-                if ssentry[0] == "net":
-                    netname = ssentry[2].strip('"')
-                    if netname and netname not in netnames:
-                        netnames.append(netname)
+    for netname in sexp.pcb_netnames(old_pcb):
+        if netname and netname not in netnames:
+            netnames.append(netname)
 
 # read all module net names and check sizes
 for name, settings in setup.items():
-    # pcb_dimentions(pcb_data)
-    # pcb_netnames(pcb_data)
-
-    settings["start_x"] = 100000
-    settings["start_y"] = 100000
-    settings["end_x"] = 0
-    settings["end_y"] = 0
-    settings["width"] = 0
-    settings["height"] = 0
-    for num, suuid in settings["sheets"].items():
-        section = ""
-        indent = ""
-        reference = ""
-        # print(name, num)
-        for entry in settings["module_pcb"]:
-            if entry[0] in {"segment", "gr_rect", "via"}:
-                for sentry in entry[1:]:
-                    if sentry[0] in {"at", "start", "end"}:
-                        px = float(sentry[1])
-                        py = float(sentry[2])
-                        settings["start_x"] = min(settings["start_x"], px)
-                        settings["start_y"] = min(settings["start_y"], py)
-                        settings["end_x"] = max(settings["end_x"], px)
-                        settings["end_y"] = max(settings["end_y"], py)
-            elif entry[0] == "footprint":
-                for sentry in entry[1:]:
-                    for ssentry in sentry[1:]:
-                        if ssentry[0] == "net":
-                            netname = ssentry[2].strip('"')
-                            if netname and netname not in netnames:
-                                netnames.append(netname)
-        # only one module instance is needed
-        break
-    settings["width"] = settings["end_x"] - settings["start_x"]
-    settings["height"] = settings["end_y"] - settings["start_y"]
-    settings["center_x"] = settings["width"] / 2
-    settings["center_y"] = settings["height"] / 2
+    dimentions = sexp.pcb_dimentions(settings["module_pcb"])
+    settings.update(dimentions)
+    for netname in sexp.pcb_netnames(settings["module_pcb"]):
+        if netname and netname not in netnames:
+            netnames.append(netname)
 
 # print(netnames)
 
@@ -365,28 +316,28 @@ for netnum, netname in enumerate(netnames, 1):
 # adding parts from existing pcb
 uuid_exsits_pcb = []
 if old_pcb:
-    for entry in old_pcb:
-        if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
-            iuuid = None
-            for sentry in entry[1:]:
-                if sentry[0] == "uuid":
-                    iuuid = sentry[1].strip('"')
-            if iuuid:
-                uuid_exsits_pcb.append(iuuid)
+    for entry in sexp.get_types(old_pcb, {"footprint", "segment", "gr_rect", "via"}):
+        print(entry[0], entry[1])
+        iuuid = None
+        for sentry in entry[1:]:
+            if sentry[0] == "uuid":
+                iuuid = sentry[1].strip('"')
+        if iuuid:
+            uuid_exsits_pcb.append(iuuid)
 
-                for sentry in entry[1:]:
-                    for ssentry in sentry[1:]:
-                        # update net numbers
-                        if ssentry[0] == "net":
-                            if len(ssentry) == 3:
-                                netname = ssentry[2].strip('"')
-                                if netname in netnames:
-                                    netnum = netnames.index(netname) + 1
-                                    # print(ssentry, netnum, netname)
-                                    ssentry[1] = f"{netnum}"
-                                else:
-                                    print(ssentry)
-                pcb_new.append(entry)
+            for sentry in entry[1:]:
+                for ssentry in sentry[1:]:
+                    # update net numbers
+                    if ssentry[0] == "net":
+                        if len(ssentry) == 3:
+                            netname = ssentry[2].strip('"')
+                            if netname in netnames:
+                                netnum = netnames.index(netname) + 1
+                                # print(ssentry, netnum, netname)
+                                ssentry[1] = f"{netnum}"
+                            else:
+                                print(ssentry)
+            pcb_new.append(entry)
 
 
 # PCB: place/copy parts
@@ -400,111 +351,101 @@ for name, settings in setup.items():
     for num, suuid in settings["sheets"].items():
         groupids = []
         # print(num, suuid)
-        for entry in copy.deepcopy(settings["module_pcb"]):
-            if entry[0] in {"footprint", "segment", "gr_rect", "via"}:
-                # get uuid
-                uuid_prefix = None
+        for entry in sexp.get_types(copy.deepcopy(settings["module_pcb"]), {"footprint", "segment", "gr_rect", "via"}):
+            # get uuid
+            uuid_prefix = None
+            for sentry in entry[1:]:
+                if sentry[0] == "uuid":
+                    uuid_prefix = sentry[1].strip('"')[:-3]
+            puuid = f"{uuid_prefix}{num:03d}"
+            groupids.append(puuid)
+
+            # add only new parts
+            if puuid in uuid_exsits_pcb:
+                continue
+
+            if entry[0] == "gr_rect":
                 for sentry in entry[1:]:
-                    if sentry[0] == "uuid":
-                        uuid_prefix = sentry[1].strip('"')[:-3]
-                puuid = f"{uuid_prefix}{num:03d}"
-                groupids.append(puuid)
+                    # convert Edge.Cuts to F.SilkS
+                    if sentry[0] == "layer" and sentry[1].strip('"') == "Edge.Cuts":
+                        sentry[1] = '"F.SilkS"'
 
-                # add only new parts
-                if puuid in uuid_exsits_pcb:
-                    continue
-
-                if entry[0] == "gr_rect":
-                    for sentry in entry[1:]:
-                        # convert Edge.Cuts to F.SilkS
-                        if sentry[0] == "layer" and sentry[1].strip('"') == "Edge.Cuts":
-                            sentry[1] = '"F.SilkS"'
-
-                for sn, sentry in enumerate(entry[1:], 1):
-                    if sentry[0] == "uuid":
-                        # update uuid
-                        sentry[1] = f'"{puuid}"'
-                    if sentry[0] == "pad":
-                        for ssn, ssentry in enumerate(sentry[4:], 4):
-                            if ssentry[0] == "at":
-                                if rotate := settings.get("rotate", {}).get(num):
-                                    rotate_org = 0
-                                    if len(ssentry) == 4:
-                                        rotate_org = int(ssentry[3])
-                                    rotate_org -= rotate
-                                    while rotate_org < -90:
-                                        rotate_org += 360
-                                    while rotate_org > 180:
-                                        rotate_org -= 360
-                                    sentry[ssn] = [ssentry[0], ssentry[1], ssentry[2], str(rotate_org)]
-
-                    if sentry[0] in {"at", "start", "end"}:
-                        # update position
-                        pos_x_org = float(sentry[1].strip('"'))
-                        pos_y_org = float(sentry[2].strip('"'))
-                        rotate_org = 0
-                        if sentry[0] == "at" and len(sentry) == 4:
-                            rotate_org = float(sentry[3].strip('"'))
-                        px = position_x
-                        py = position_y
-                        if spos := settings.get("pos", {}).get(num):
-                            px = spos[0]
-                            py = spos[1]
-
+            for sn, sentry in enumerate(entry[1:], 1):
+                if sentry[0] == "uuid":
+                    # update uuid
+                    sentry[1] = f'"{puuid}"'
+                elif sentry[0] == "pad":
+                    # rotating pads
+                    for ssn, ssentry in enumerate(sexp.get_types(sentry[4:], {"at"}), 4):
                         if rotate := settings.get("rotate", {}).get(num):
-                            if sentry[0] == "at":
-                                rotate_org -= rotate
-                                while rotate_org < -90:
-                                    rotate_org += 360
-                                while rotate_org > 180:
-                                    rotate_org -= 360
-                            pos_x_org, pos_y_org = rotate_point((settings["start_x"] + settings["center_x"], settings["start_y"] + settings["center_y"]), (pos_x_org, pos_y_org), rotate)
+                            rotate_org = 0
+                            if len(ssentry) == 4:
+                                rotate_org = int(ssentry[3])
+                            rotate_org -= rotate
+                            while rotate_org < -90:
+                                rotate_org += 360
+                            while rotate_org > 180:
+                                rotate_org -= 360
+                            sentry[ssn] = [ssentry[0], ssentry[1], ssentry[2], str(rotate_org)]
+                elif sentry[0] in {"at", "start", "end"}:
+                    # update position and rotate parts
+                    pos_x_org = float(sentry[1].strip('"'))
+                    pos_y_org = float(sentry[2].strip('"'))
+                    rotate_org = 0
+                    if sentry[0] == "at" and len(sentry) == 4:
+                        rotate_org = float(sentry[3].strip('"'))
+                    px = position_x
+                    py = position_y
+                    if spos := settings.get("pos", {}).get(num):
+                        px = spos[0]
+                        py = spos[1]
+                    if rotate := settings.get("rotate", {}).get(num):
+                        if sentry[0] == "at":
+                            rotate_org -= rotate
+                            while rotate_org < -90:
+                                rotate_org += 360
+                            while rotate_org > 180:
+                                rotate_org -= 360
+                        pos_x_org, pos_y_org = sexp.rotate_point((settings["start_x"] + settings["center_x"], settings["start_y"] + settings["center_y"]), (pos_x_org, pos_y_org), -rotate)
+                    pos_x_new = px + pos_x_org - settings["start_x"]
+                    pos_y_new = py + pos_y_org - settings["start_y"]
+                    sentry[1] = f"{pos_x_new:0.3f}"
+                    sentry[2] = f"{pos_y_new:0.3f}"
+                    if sentry[0] == "at" and entry[0] not in {"via", "pad"}:
+                        entry[sn] = [sentry[0], sentry[1], sentry[2], f"{int(rotate_org)}"]
+                elif sentry[0] == "sheetname":
+                    # update sheetname
+                    sheetname_old = sentry[1].strip('"')
+                    sheetname_new = f"/{name}{num}"
+                    sentry[1] = f'"{sheetname_new}"'
+                elif sentry[0] == "path":
+                    # update path
+                    cuuid = sentry[1].strip('"').split("/")[-1]
+                    if settings.get("main"):
+                        sentry[1] = f'"/{cuuid}"'
+                    else:
+                        sentry[1] = f'"/{suuid}/{cuuid}"'
 
-                        pos_x_new = px + pos_x_org - settings["start_x"]
-                        pos_y_new = py + pos_y_org - settings["start_y"]
-                        sentry[1] = f"{pos_x_new:0.3f}"
-                        sentry[2] = f"{pos_y_new:0.3f}"
-                        if sentry[0] == "at" and entry[0] not in {"via", "pad"}:
-                            entry[sn] = [sentry[0], sentry[1], sentry[2], f"{int(rotate_org)}"]
-
-                    elif sentry[0] == "property":
-                        if sentry[1].strip('"') == "Reference":
-                            pass
-                    elif sentry[0] == "sheetname":
-                        # update sheetname
-                        sheetname_old = sentry[1].strip('"')
-                        sheetname_new = f"/{name}{num}"
-                        sentry[1] = f'"{sheetname_new}"'
-                    elif sentry[0] == "path":
-                        # update path
-                        cuuid = sentry[1].strip('"').split("/")[-1]
-                        if settings.get("main"):
-                            sentry[1] = f'"/{cuuid}"'
-                        else:
-                            sentry[1] = f'"/{suuid}/{cuuid}"'
-
-                    for ssentry in sentry[1:]:
-                        # update net numbers
-                        if ssentry[0] == "net":
-                            # TODO: uniq or rename Net-* per sheet / or by Referenz ?
-                            if len(ssentry) == 3:
-                                netname = ssentry[2].strip('"')
-                                if netname in netnames:
-                                    netnum = netnames.index(netname) + 1
-                                    # print(ssentry, netnum, netname)
-                                    ssentry[1] = f"{netnum}"
-                                else:
-                                    print(ssentry)
-                        elif ssentry[0] == "uuid":
-                            # update sub uuid
-                            sub_uuid_prefix = ssentry[1].strip('"')[:-3]
-                            sub_uuid = f"{sub_uuid_prefix}{num:03d}"
-                            # print(sub_uuid_prefix, sub_uuid)
-                            groupids.append(sub_uuid)
-                            ssentry[1] = f'"{sub_uuid}"'
-
-                pcb_new.append(entry)
-
+                for ssentry in sentry[1:]:
+                    # update net numbers
+                    if ssentry[0] == "net":
+                        # TODO: uniq or rename Net-* per sheet / or by Referenz ?
+                        if len(ssentry) == 3:
+                            netname = ssentry[2].strip('"')
+                            if netname in netnames:
+                                netnum = netnames.index(netname) + 1
+                                # print(ssentry, netnum, netname)
+                                ssentry[1] = f"{netnum}"
+                            else:
+                                print(ssentry)
+                    elif ssentry[0] == "uuid":
+                        # update sub uuid
+                        sub_uuid_prefix = ssentry[1].strip('"')[:-3]
+                        sub_uuid = f"{sub_uuid_prefix}{num:03d}"
+                        # print(sub_uuid_prefix, sub_uuid)
+                        groupids.append(sub_uuid)
+                        ssentry[1] = f'"{sub_uuid}"'
+            pcb_new.append(entry)
         position_x += settings["width"]
 
         # print(name, groupids)
