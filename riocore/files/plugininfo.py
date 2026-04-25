@@ -47,7 +47,7 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
         renew_info = True
 
     if renew_info:
-        print("export kicad info")
+        print(f"export kicad info {plugin_instance.NAME} {kicad_module}")
         pcb_data = sexp.loads(open(pcb_path, "r").read())
         sch_data = sexp.loads(open(sch_path, "r").read())
         dim = sexp.pcb_dimentions(pcb_data)
@@ -98,8 +98,10 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
                 if at and pin in pins:
                     fat_x = float(fat[0])
                     fat_y = float(fat[1])
-                    at_x = float(at[0]) - float(size[0]) / 2
-                    at_y = float(at[1]) - float(size[1]) / 2
+                    # at_x = float(at[0]) - float(size[0]) / 2
+                    # at_y = float(at[1]) - float(size[1]) / 2
+                    at_x = float(at[0])
+                    at_y = float(at[1])
                     fat_r = 0.0
                     if len(fat) == 3:
                         fat_r = float(fat[2].strip('"'))
@@ -107,8 +109,8 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
                         at_x, at_y = sexp.rotate_point((0, 0), (at_x, at_y), fat_r)
                     info["pins"][pin] = {
                         "pos": [
-                            ((float(fat_x) + at_x) - dim["start_x"]) * 4.2,
-                            ((float(fat_y) + at_y) - dim["start_y"]) * 4.2,
+                            ((float(fat_x) + at_x) - dim["start_x"]) * 4.34,
+                            ((float(fat_y) + at_y) - dim["start_y"]) * 4.34,
                         ]
                     }
         open(info_path, "w").write(json.dumps(info, indent=2))
