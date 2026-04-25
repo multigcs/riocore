@@ -48,7 +48,7 @@
     }
   },
   "powersignals": [
-    "GND",
-    "+3V3"
+    "+3V3",
+    "GND"
   ]
 }

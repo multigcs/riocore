@@ -32,8 +32,8 @@
   "powersignals": [
     "+5V",
     "GND",
-    "F_24V",
+    "F_GND",
     "F_5V",
-    "F_GND"
+    "F_24V"
   ]
 }

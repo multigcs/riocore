@@ -27,11 +27,11 @@
           }
         },
         "powersignals": [
+          "+3V3",
           "GND",
           "F_24V",
-          "F_5V",
           "F_GND",
-          "+3V3"
+          "F_5V"
         ]
       },
       "image": "kicad/rs422-slave/rs422-slave-export.png"
@@ -89,8 +89,8 @@
           }
         },
         "powersignals": [
-          "GND",
-          "+3V3"
+          "+3V3",
+          "GND"
         ]
       },
       "image": "kicad/w5500/w5500-export.png"
@@ -134,8 +134,8 @@
           }
         },
         "powersignals": [
-          "GND",
-          "+3V3"
+          "+3V3",
+          "GND"
         ]
       },
       "image": "kicad/w5500-module/w5500-module-export.png"
@@ -255,11 +255,11 @@
           }
         },
         "powersignals": [
+          "+3V3",
           "GND",
-          "F_24V",
-          "F_5V",
           "F_GND",
-          "+3V3"
+          "F_24V",
+          "F_5V"
         ]
       },
       "image": "kicad/symio/symio-export.png"
@@ -289,8 +289,8 @@
         "powersignals": [
           "+5V",
           "GND",
-          "F_GND",
-          "+3V3"
+          "+3V3",
+          "F_GND"
         ]
       },
       "image": "kicad/optoin/optoin-export.png"
@@ -339,8 +339,8 @@
         "powersignals": [
           "+5V",
           "GND",
-          "F_GND",
-          "F_5V"
+          "F_5V",
+          "F_GND"
         ]
       },
       "image": "kicad/encoder/encoder-export.png"
@@ -382,9 +382,9 @@
         "powersignals": [
           "+5V",
           "GND",
-          "F_24V",
+          "F_GND",
           "F_5V",
-          "F_GND"
+          "F_24V"
         ]
       },
       "image": "kicad/modbus/modbus-export.png"
@@ -712,9 +712,9 @@
           }
         },
         "powersignals": [
+          "+3V3",
           "+5V",
-          "GND",
-          "+3V3"
+          "GND"
         ]
       },
       "image": "kicad/ECP5-256/ecp5-stamp/ecp5-stamp-export.png"
@@ -1260,9 +1260,9 @@
         "powersignals": [
           "+5V",
           "GND",
+          "+3V3",
           "F_5V",
-          "F_GND",
-          "+3V3"
+          "F_GND"
         ]
       },
       "image": "kicad/i2c/i2c-export.png"
@@ -1296,11 +1296,11 @@
           }
         },
         "powersignals": [
+          "+3V3",
           "GND",
           "F_24V",
-          "F_5V",
           "F_GND",
-          "+3V3"
+          "F_5V"
         ]
       },
       "image": "kicad/rs422-master/rs422-master-export.png"
