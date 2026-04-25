@@ -1566,7 +1566,7 @@ class Window(QMainWindow):
             # cancel pressed
             return
         QTabWidget.setCurrentIndex(self.tabwidget, 5)
-        self.buildertab.generator_run("-k")
+        self.buildertab.generator_run("-K")
 
     def generator_run_sim(self):
         if not self.save_check():

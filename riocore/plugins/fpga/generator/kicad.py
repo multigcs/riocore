@@ -27,6 +27,9 @@ class kicad:
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
+            if self.instance.instances_name != plugin_instance.master:
+                continue
+
             for pin_name, pin_config in plugin_instance.PINDEFAULTS.items():
                 if "pin" in pin_config:
                     self.pinmapping[f"{plugin_instance.instances_name}:{pin_name}"] = pin_config["pin"]
@@ -51,6 +54,9 @@ class kicad:
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
+            if self.instance.instances_name != plugin_instance.master:
+                continue
+
             pos = plugin_instance.plugin_setup.get("pos")
             if pos:
                 x = pos[0] / 4.5
@@ -63,6 +69,9 @@ class kicad:
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
+            if self.instance.instances_name != plugin_instance.master:
+                continue
+
             kicad_path = os.path.join(plugin_instance.PLUGIN_PATH, plugin_instance.KICAD_FOLDER)
             image = plugin_instance.plugin_setup.get("image", "")
             if not image.startswith("kicad/"):
@@ -79,9 +88,8 @@ class kicad:
                 setup["modules"][kname] = {"num": 0}
             setup["modules"][kname]["path"] = kicad_path
             setup["modules"][kname]["num"] += 1
-            if plugin_instance.master == plugin_instance.instances_name:
-                setup["modules"][kname]["main"] = True
-            if plugin_instance.gmaster is None:
+
+            if self.instance == plugin_instance:
                 setup["modules"][kname]["main"] = True
             if "instances" not in setup["modules"][kname]:
                 setup["modules"][kname]["instances"] = {}
