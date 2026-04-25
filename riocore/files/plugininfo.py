@@ -28,14 +28,14 @@ parser.add_argument("--renew", "-r", help="renew kicad images", default=False, a
 args = parser.parse_args()
 
 
-def plugin2kicad(plugin_instance, kicad_module, pins, images):
+def plugin2kicad(plugin_instance, kicad_module, pins, images, node_type=None):
     plugin_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME)
     pcb_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_pcb")
     sch_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.kicad_sch")
     info_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, "info.json")
     svg_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.svg")
     png_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.png")
-    rpng_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-render.png")
+    rpng_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.png")
     if not os.path.isfile(pcb_path):
         return
 
@@ -53,7 +53,7 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
         pcb_data = sexp.loads(open(pcb_path, "r").read())
         sch_data = sexp.loads(open(sch_path, "r").read())
         dim = sexp.pcb_dimentions(pcb_data)
-        info = {"dimentions": dim, "pins": {}}
+        info = {"dimentions": dim, "pins": {}, "node_type": node_type}
 
         powersignals = []
         # search for power signals
@@ -122,8 +122,7 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
     if plugin_instance.NAME not in images:
         images[plugin_instance.NAME] = {}
     if kicad_module not in images[plugin_instance.NAME]:
-        # images[plugin_instance.NAME][kicad_module] = {"info": info, "image": os.path.join(plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.png")}
-        images[plugin_instance.NAME][kicad_module] = {"info": info, "image": os.path.join(plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-render.png")}
+        images[plugin_instance.NAME][kicad_module] = {"info": info, "image": os.path.join(plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}.png")}
 
     renew_images = args.renew
     if os.path.exists(png_path):
@@ -250,7 +249,7 @@ elif args.generate:
                             pins[pin] = pin_data
                         for kpath in glob.glob(os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, "*")):
                             kicad_module = kpath.split("/")[-1]
-                            plugin2kicad(plugin_instance, kicad_module, pins, images)
+                            plugin2kicad(plugin_instance, kicad_module, pins, images, node_type)
                 else:
                     pins = plugin_instance.PINDEFAULTS
                     for kpath in glob.glob(os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, "*")):

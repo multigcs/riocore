@@ -883,6 +883,8 @@ class edit_imgselect(QComboBox):
         self.setFocusPolicy(Qt.StrongFocus)
 
     def get_image(self, name):
+        if name.startswith("kicad/"):
+            return os.path.join(riocore_path, "files", "images", "kicad.png")
         if image := riocore.PluginImages.images.get(name, {}).get("image"):
             return os.path.join(riocore_path, "files", "images", image)
         return None

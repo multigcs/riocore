@@ -32,7 +32,8 @@ if sys.platform == "linux":
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
     parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
     parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
-    parser.add_argument("--kicad", "-k", help="build and start in kicad", default=False, action="store_true")
+    parser.add_argument("--kicad", "-k", help="build kicad files", default=False, action="store_true")
+    parser.add_argument("--kicad-run", "-K", help="build kicad files and open in kicad", default=False, action="store_true")
     parser.add_argument("--gui", "-G", help="start linuxcnc with other gui", type=str, default=None)
     parser.add_argument("--vcp", "-V", help="start linuxcnc with other vcp", type=str, default=None)
     parser.add_argument("--instances", "-i", help="build only this instance", type=str, default=None)
@@ -249,10 +250,10 @@ if args.config:
                 print(f"ERROR: code {ret}")
                 sys.exit(1)
 
-        elif sys.platform == "linux" and args.kicad:
+        elif sys.platform == "linux" and (args.kicad | args.kicad_run):
             kicad_path = os.path.join(output_path, config_name, "KICAD")
             for kpath in glob.glob(os.path.join(kicad_path, "*")):
-                kicadsh_path = os.path.join(kpath, "build.sh")
+                kicadsh_path = os.path.join(kpath, "start.sh")
                 cmd = f"sh {kicadsh_path}"
                 print()
                 print("running:")

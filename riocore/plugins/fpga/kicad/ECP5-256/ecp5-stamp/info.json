@@ -317,6 +317,7 @@
       ]
     }
   },
+  "node_type": "ECP5-256",
   "powersignals": [
     "+3V3",
     "+5V",

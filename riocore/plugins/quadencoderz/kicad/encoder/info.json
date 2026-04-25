@@ -10,6 +10,7 @@
     "center_y": 18.524500000000003
   },
   "pins": {},
+  "node_type": null,
   "powersignals": [
     "+5V",
     "GND",

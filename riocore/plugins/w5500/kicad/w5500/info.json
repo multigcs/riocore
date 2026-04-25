@@ -47,6 +47,7 @@
       ]
     }
   },
+  "node_type": null,
   "powersignals": [
     "+3V3",
     "GND"

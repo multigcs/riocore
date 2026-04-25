@@ -16,7 +16,7 @@ from functools import partial
 from math import ceil, floor
 
 from PyQt5.QtCore import QPoint, QPointF, QRect, QRectF, QSize, QTimer, Qt
-from PyQt5.QtGui import QBrush, QColor, QFont, QImage, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QTransform
+from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QImage, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QTransform
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -1562,6 +1562,13 @@ class Window(QMainWindow):
         QTabWidget.setCurrentIndex(self.tabwidget, 5)
         self.buildertab.generator_run("-s")
 
+    def generator_run_kicad(self):
+        if not self.save_check():
+            # cancel pressed
+            return
+        QTabWidget.setCurrentIndex(self.tabwidget, 5)
+        self.buildertab.generator_run("-k")
+
     def generator_run_sim(self):
         if not self.save_check():
             # cancel pressed
@@ -1625,43 +1632,41 @@ class Window(QMainWindow):
         self.cfg_reload()
         self.snapshot()
 
+    def icon(self, name):
+        return QIcon(QPixmap(os.path.join(riocore_path, "files", "images", f"{name}.png")))
+
     def toolbar(self):
         toolbar = QToolBar("Main ToolBar")
         self.addToolBar(toolbar)
         toolbar.setIconSize(QSize(24, 24))
 
-        icon = self.style().standardIcon(QStyle.SP_DialogOpenButton)
-        load_action = QAction(icon, "&Load", self)
+        load_action = QAction(self.icon("load"), "&Load", self)
         load_action.setStatusTip("Load")
         load_action.setShortcut("Ctrl+O")
         load_action.triggered.connect(self.load)
         toolbar.addAction(load_action)
 
-        icon = self.style().standardIcon(QStyle.SP_DialogSaveButton)
-        save_action = QAction(icon, "&Save", self)
+        save_action = QAction(self.icon("save"), "&Save", self)
         save_action.setStatusTip("Save")
         save_action.setShortcut("Ctrl+S")
         save_action.triggered.connect(self.json_save)
         toolbar.addAction(save_action)
 
-        icon = self.style().standardIcon(QStyle.SP_BrowserReload)
-        reload_action = QAction(icon, "&Reload", self)
+        reload_action = QAction(self.icon("reload"), "&Reload", self)
         reload_action.setStatusTip("Reload")
         reload_action.setShortcut("Ctrl+R")
         reload_action.triggered.connect(self.cfg_reload)
         toolbar.addAction(reload_action)
 
-        icon = self.style().standardIcon(QStyle.SP_BrowserReload)
-        fit_action = QAction(icon, "&Fit View", self)
+        fit_action = QAction(self.icon("fit"), "&Fit View", self)
         fit_action.setStatusTip("Fit")
         fit_action.setShortcut("Ctrl+F")
-        fit_action.triggered.connect(self.fit_view)
+        fit_action.triggered.connect(self.fit_view_cb)
         toolbar.addAction(fit_action)
 
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_ArrowLeft)
-        undo_action = QAction(icon, "&Undo", self)
+        undo_action = QAction(self.icon("undo"), "&Undo", self)
         undo_action.setStatusTip("Undo")
         undo_action.setShortcut("Ctrl+Z")
         undo_action.triggered.connect(self.undo)
@@ -1669,8 +1674,7 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
-        selall_action = QAction(icon, "&SelectAll", self)
+        selall_action = QAction(self.icon("select-all"), "&SelectAll", self)
         selall_action.setStatusTip("selall")
         selall_action.setShortcut("Ctrl+A")
         selall_action.triggered.connect(self.select_all)
@@ -1678,8 +1682,7 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
-        copy_action = QAction(icon, "&Copy", self)
+        copy_action = QAction(self.icon("copy"), "&Copy", self)
         copy_action.setStatusTip("copy")
         copy_action.setShortcut("Ctrl+C")
         copy_action.triggered.connect(self.copy)
@@ -1687,8 +1690,7 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_DesktopIcon)
-        paste_action = QAction(icon, "&Paste", self)
+        paste_action = QAction(self.icon("paste"), "&Paste", self)
         paste_action.setStatusTip("paste")
         paste_action.setShortcut("Ctrl+V")
         paste_action.triggered.connect(self.paste)
@@ -1696,54 +1698,47 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
-        nesting_lr_action = QAction(icon, "Nesting &Left/Right (F7)", self)
+        nesting_lr_action = QAction(self.icon("h-align"), "Nesting &Left/Right (F7)", self)
         nesting_lr_action.setStatusTip("Nesting Left/Right")
         nesting_lr_action.setShortcut("F7")
         nesting_lr_action.triggered.connect(self.nesting_lr)
         toolbar.addAction(nesting_lr_action)
 
-        icon = self.style().standardIcon(QStyle.SP_FileDialogDetailedView)
-        nesting_ud_action = QAction(icon, "Nesting &Up/Down (F8)", self)
+        nesting_ud_action = QAction(self.icon("v-align"), "Nesting &Up/Down (F8)", self)
         nesting_ud_action.setStatusTip("Nesting Up/Down")
         nesting_ud_action.setShortcut("F8")
         nesting_ud_action.triggered.connect(self.nesting_ud)
         toolbar.addAction(nesting_ud_action)
 
-        icon = self.style().standardIcon(QStyle.SP_TitleBarMaxButton)
-        fit_action = QAction(icon, "&fit (F9)", self)
-        fit_action.setStatusTip("Fit to view")
-        fit_action.setShortcut("F9")
-        fit_action.triggered.connect(self.fit_view_cb)
-        toolbar.addAction(fit_action)
-
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_MediaPlay)
-        run_action = QAction(icon, "&generate and run (F4)", self)
+        run_action = QAction(self.icon("lcnc"), "&generate and run (F4)", self)
         run_action.setStatusTip("generate and run")
         run_action.setShortcut("F4")
         run_action.triggered.connect(self.generator_run)
         toolbar.addAction(run_action)
 
-        icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
-        run_action = QAction(icon, "&generate and run sim (F5)", self)
+        run_action = QAction(self.icon("sim"), "&generate and run sim (F5)", self)
         run_action.setStatusTip("generate and run sim")
         run_action.setShortcut("F5")
         run_action.triggered.connect(self.generator_run_sim)
         toolbar.addAction(run_action)
 
-        icon = self.style().standardIcon(QStyle.SP_MediaSeekForward)
-        run_action = QAction(icon, "&generate and run udp-sim (F6)", self)
+        run_action = QAction(self.icon("sim-udp"), "&generate and run udp-sim (F6)", self)
         run_action.setStatusTip("generate and run udp-sim")
         run_action.setShortcut("F6")
         run_action.triggered.connect(self.generator_run_udpsim)
         toolbar.addAction(run_action)
 
+        run_action = QAction(self.icon("kicad"), "&generate and run kicad (F10)", self)
+        run_action.setStatusTip("generate and run kicad")
+        run_action.setShortcut("F10")
+        run_action.triggered.connect(self.generator_run_kicad)
+        toolbar.addAction(run_action)
+
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_MessageBoxInformation)
-        run_action = QAction(icon, "&Documentation (F12)", self)
+        run_action = QAction(self.icon("doc"), "&Documentation (F12)", self)
         run_action.setStatusTip("Documentation")
         run_action.setShortcut("F12")
         run_action.triggered.connect(self.prebuild)
@@ -1751,8 +1746,7 @@ class Window(QMainWindow):
 
         toolbar.addSeparator()
 
-        icon = self.style().standardIcon(QStyle.SP_DialogCloseButton)
-        exit_action = QAction(icon, "&Exit", self)
+        exit_action = QAction(self.icon("exit"), "&Exit", self)
         exit_action.setStatusTip("Exit")
         exit_action.setShortcut("Alt+F4")
         exit_action.triggered.connect(self.exit)
@@ -1845,7 +1839,7 @@ class Window(QMainWindow):
         elif event.key() in {Qt.Key_K}:
             self.bgmode = 1 - self.bgmode
             if self.bgmode:
-                self.scene.setBackgroundBrush(QColor("#2e4b3a"))
+                self.scene.setBackgroundBrush(QColor("#204030"))
             else:
                 self.scene.setBackgroundBrush(QColor("#262626"))
 

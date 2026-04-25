@@ -15,6 +15,7 @@ class kicad:
         os.makedirs(self.kicad_path, exist_ok=True)
         self.setup_json()
         self.build_sh()
+        self.start_sh()
 
     def setup_json(self):
         self.linked_pins = []
@@ -107,9 +108,20 @@ class kicad:
         output.append("")
         output.append(f"(cd $DIRNAME && python3 {riocore_path}/files/kicad-builder.py setup.json)")
         output.append("")
-        output.append(f'echo "    # kicad $DIRNAME/{self.instance.instances_name}.kicad_pro"')
-        output.append("")
 
         build_sh = os.path.join(self.kicad_path, "build.sh")
         open(build_sh, "w").write("\n".join(output))
         os.chmod(build_sh, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+
+    def start_sh(self):
+        output = ["#!/bin/sh"]
+        output.append("")
+        output.append('DIRNAME=`dirname "$0"`')
+        output.append("")
+        output.append("sh $DIRNAME/build.sh")
+        output.append(f"kicad $DIRNAME/{self.instance.instances_name}.kicad_pro &")
+        output.append("")
+
+        start_sh = os.path.join(self.kicad_path, "start.sh")
+        open(start_sh, "w").write("\n".join(output))
+        os.chmod(start_sh, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)

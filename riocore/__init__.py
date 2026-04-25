@@ -593,8 +593,14 @@ class PluginImages:
     def __init__(self):
         pass
 
-    def kicad(self, plugin):
-        return json.loads(open(os.path.join(riocore_path, "kicad-images.json"), "r").read()).get(plugin) or {}
+    def kicad(self, plugin, node_type=None):
+        result = {}
+        images = json.loads(open(os.path.join(riocore_path, "kicad-images.json"), "r").read()).get(plugin) or {}
+        for name, data in images.items():
+            if data["info"]["node_type"] and node_type != data["info"]["node_type"]:
+                continue
+            result[name] = data
+        return result
 
     def get(self, image):
         if image and hasattr(self, image):

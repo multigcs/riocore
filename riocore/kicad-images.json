@@ -26,6 +26,7 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+3V3",
           "GND",
@@ -34,7 +35,7 @@
           "F_5V"
         ]
       },
-      "image": "kicad/rs422-slave/rs422-slave-render.png"
+      "image": "kicad/rs422-slave/rs422-slave.png"
     }
   },
   "w5500": {
@@ -88,12 +89,13 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+3V3",
           "GND"
         ]
       },
-      "image": "kicad/w5500/w5500-render.png"
+      "image": "kicad/w5500/w5500.png"
     },
     "w5500-module": {
       "info": {
@@ -133,12 +135,13 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+3V3",
           "GND"
         ]
       },
-      "image": "kicad/w5500-module/w5500-module-render.png"
+      "image": "kicad/w5500-module/w5500-module.png"
     }
   },
   "pwmout": {
@@ -174,12 +177,13 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+5V",
           "GND"
         ]
       },
-      "image": "kicad/uln-out/uln-out-render.png"
+      "image": "kicad/uln-out/uln-out.png"
     }
   },
   "stepdir": {
@@ -215,12 +219,13 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+5V",
           "GND"
         ]
       },
-      "image": "kicad/uln-out/uln-out-render.png"
+      "image": "kicad/uln-out/uln-out.png"
     },
     "symio": {
       "info": {
@@ -254,6 +259,7 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+3V3",
           "GND",
@@ -262,7 +268,7 @@
           "F_5V"
         ]
       },
-      "image": "kicad/symio/symio-render.png"
+      "image": "kicad/symio/symio.png"
     }
   },
   "bitin": {
@@ -286,6 +292,7 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+5V",
           "GND",
@@ -293,7 +300,7 @@
           "F_GND"
         ]
       },
-      "image": "kicad/optoin/optoin-render.png"
+      "image": "kicad/optoin/optoin.png"
     }
   },
   "bitout": {
@@ -317,9 +324,10 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": []
       },
-      "image": "kicad/transistor/transistor-render.png"
+      "image": "kicad/transistor/transistor.png"
     }
   },
   "quadencoderz": {
@@ -336,6 +344,7 @@
           "center_y": 18.524500000000003
         },
         "pins": {},
+        "node_type": null,
         "powersignals": [
           "+5V",
           "GND",
@@ -343,7 +352,7 @@
           "F_GND"
         ]
       },
-      "image": "kicad/encoder/encoder-render.png"
+      "image": "kicad/encoder/encoder.png"
     }
   },
   "mbus": {
@@ -379,6 +388,7 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+5V",
           "GND",
@@ -387,7 +397,7 @@
           "F_24V"
         ]
       },
-      "image": "kicad/modbus/modbus-render.png"
+      "image": "kicad/modbus/modbus.png"
     }
   },
   "fpga": {
@@ -711,13 +721,14 @@
             ]
           }
         },
+        "node_type": "ECP5-256",
         "powersignals": [
           "+3V3",
           "+5V",
           "GND"
         ]
       },
-      "image": "kicad/ECP5-256/ecp5-stamp/ecp5-stamp-render.png"
+      "image": "kicad/ECP5-256/ecp5-stamp/ecp5-stamp.png"
     },
     "icestamp": {
       "info": {
@@ -937,9 +948,10 @@
             ]
           }
         },
+        "node_type": "ICEBreakerV1.0e",
         "powersignals": []
       },
-      "image": "kicad/ICEBreakerV1.0e/icestamp/icestamp-render.png"
+      "image": "kicad/ICEBreakerV1.0e/icestamp/icestamp.png"
     },
     "tangnano9k": {
       "info": {
@@ -1225,9 +1237,10 @@
             ]
           }
         },
+        "node_type": "Tangoboard",
         "powersignals": []
       },
-      "image": "kicad/TangNano9K/tangnano9k/tangnano9k-render.png"
+      "image": "kicad/TangNano9K/tangnano9k/tangnano9k.png"
     }
   },
   "i2c": {
@@ -1257,6 +1270,7 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+5V",
           "GND",
@@ -1265,7 +1279,7 @@
           "F_GND"
         ]
       },
-      "image": "kicad/i2c/i2c-render.png"
+      "image": "kicad/i2c/i2c.png"
     }
   },
   "satuart": {
@@ -1295,6 +1309,7 @@
             ]
           }
         },
+        "node_type": null,
         "powersignals": [
           "+3V3",
           "GND",
@@ -1303,7 +1318,7 @@
           "F_5V"
         ]
       },
-      "image": "kicad/rs422-master/rs422-master-render.png"
+      "image": "kicad/rs422-master/rs422-master.png"
     }
   }
 }

@@ -170,7 +170,8 @@ class PluginBase:
                 self.IMAGE_SHOW = False
                 self.IMAGE = ""
 
-        for module, data in self.plugin_images.kicad(self.NAME).items():
+        # adding kicad images
+        for module, data in self.plugin_images.kicad(self.NAME, self.plugin_setup.get("node_type")).items():
             ipath = data["image"]
             if ipath not in self.IMAGES:
                 self.IMAGES.append(ipath)

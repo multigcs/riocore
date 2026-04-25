@@ -350,7 +350,6 @@ class Plugin(PluginBase):
             instance.gateware = gateware(parent, instance)
             if instance.jdata["toolchain"]:
                 instance.gateware.generator()
-                print("#############################", instance.instances_name)
                 kicad(parent.project, instance=instance)
 
             # linuxcnc-component
