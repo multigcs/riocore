@@ -43,6 +43,22 @@ class kicad:
             "name": self.instance.instances_name,
             "modules": {},
         }
+
+        # find offsets
+        min_x = 9999999999
+        min_y = 9999999999
+        for plugin_instance in self.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                continue
+            pos = plugin_instance.plugin_setup.get("pos")
+            if pos:
+                x = pos[0] / 4.5
+                y = pos[1] / 4.5
+                min_x = min(min_x, x)
+                min_y = min(min_y, y)
+        off_x = -min_x + 15.0
+        off_y = -min_y + 15.0
+
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
@@ -68,9 +84,10 @@ class kicad:
 
             pos = plugin_instance.plugin_setup.get("pos")
             if pos:
-                x = pos[0] / 4.5
-                y = pos[1] / 4.5
+                x = pos[0] / 4.5 + off_x
+                y = pos[1] / 4.5 + off_y
                 setup["modules"][kname]["instances"][instances_name]["pos"] = [x, y]
+
             rotate = plugin_instance.plugin_setup.get("rotate")
             if rotate:
                 setup["modules"][kname]["instances"][instances_name]["rotate"] = rotate
