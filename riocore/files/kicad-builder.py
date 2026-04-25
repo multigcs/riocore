@@ -86,10 +86,6 @@ if old_sch:
         for sentry in entry[1:]:
             if sentry[0] == "uuid":
                 uuid_exsits_sch.append(sentry[1].strip('"'))
-            # elif sentry[0] == "property" and sentry[1].strip('"') == "Reference":
-            # reference = sentry[2].strip('"')
-            # reference_new = update_reference(reference)
-            # sentry[2] = f'"{reference_new}"'
 else:
     rootid = str(uuid.uuid4())
     template_sch_str = f"""(kicad_sch
@@ -341,6 +337,12 @@ def update_pos(entry, sn, settings, px, py, rotate):
             while rotate_org > 180:
                 rotate_org -= 360
         pos_x_org, pos_y_org = sexp.rotate_point((settings["start_x"] + settings["center_x"], settings["start_y"] + settings["center_y"]), (pos_x_org, pos_y_org), -rotate)
+        if rotate in {-90, 90}:
+            cx = settings["center_x"]
+            cy = settings["center_y"]
+            pos_x_org += cy - cx
+            pos_y_org += cx - cy
+
     pos_x_new = px + pos_x_org - settings["start_x"]
     pos_y_new = py + pos_y_org - settings["start_y"]
     sentry[1] = f"{pos_x_new:0.3f}"
