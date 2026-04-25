@@ -1440,8 +1440,8 @@ class Window(QMainWindow):
         self.setStyleSheet('QToolTip {background-color: black; color: white; border: black solid 1px; font-family: "Monospace";}')
 
         self.scene = NodeScene(-5000, -5000, 12000, 12000, self)
+        self.bgmode = 0
         self.scene.setBackgroundBrush(QColor("#262626"))
-        # self.scene.setBackgroundBrush(QColor("#2e4b3a"))
 
         self.snapshots = []
         self.halpins = {}
@@ -1842,6 +1842,13 @@ class Window(QMainWindow):
             self.clone_selection()
         elif event.key() in {Qt.Key_Insert, Qt.Key_Plus}:
             self.gui_plugins.add_plugin(None)
+        elif event.key() in {Qt.Key_K}:
+            self.bgmode = 1 - self.bgmode
+            if self.bgmode:
+                self.scene.setBackgroundBrush(QColor("#2e4b3a"))
+            else:
+                self.scene.setBackgroundBrush(QColor("#262626"))
+
         elif event.key() in {Qt.Key_R}:
             if self.scene.selectedItems():
                 if event.modifiers() & Qt.ShiftModifier:

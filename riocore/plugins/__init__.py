@@ -122,7 +122,6 @@ class PluginBase:
                 }
 
         self.image_update()
-
         NEW_OPTIONS["image"] = {
             "default": "generic",
             "type": "imgselect",
@@ -148,20 +147,6 @@ class PluginBase:
 
         image = self.plugin_setup.get("image", self.option_default("image"))
 
-        for module, data in self.plugin_images.kicad(self.NAME).items():
-            ipath = data["image"]
-            if ipath not in self.IMAGES:
-                self.IMAGES.append(ipath)
-            ipins = data["info"]["pins"]
-            self.IMAGE_SHOW = True
-            if image == ipath:
-                for pin in self.PINDEFAULTS:
-                    pin_raw = pin.split(":")[-1]
-                    if pin_raw in ipins:
-                        self.PINDEFAULTS[pin]["pos"] = ipins[pin_raw]["pos"]
-                    elif "pos" in self.PINDEFAULTS[pin]:
-                        del self.PINDEFAULTS[pin]["pos"]
-
         if self.IMAGES and image is not None:
             if image and not image.endswith(".png"):
                 image_setup = self.plugin_images.get(image)
@@ -184,6 +169,21 @@ class PluginBase:
             else:
                 self.IMAGE_SHOW = False
                 self.IMAGE = ""
+
+        for module, data in self.plugin_images.kicad(self.NAME).items():
+            ipath = data["image"]
+            if ipath not in self.IMAGES:
+                self.IMAGES.append(ipath)
+            ipins = data["info"]["pins"]
+            if image == ipath:
+                self.IMAGE_SHOW = True
+                self.IMAGE = image
+                for pin in self.PINDEFAULTS:
+                    pin_raw = pin.split(":")[-1]
+                    if pin_raw in ipins:
+                        self.PINDEFAULTS[pin]["pos"] = ipins[pin_raw]["pos"]
+                    elif "pos" in self.PINDEFAULTS[pin]:
+                        del self.PINDEFAULTS[pin]["pos"]
 
     def image_path(self):
         self.image_update()
