@@ -68,6 +68,7 @@ class kicad:
                 for mpath in glob.glob(os.path.join(kicad_path, "*")):
                     module = mpath.split("/")[-1]
                     image = os.path.join(plugin_instance.KICAD_FOLDER, module, f"{module}-export.png")
+                    image = os.path.join(plugin_instance.KICAD_FOLDER, module, f"{module}-render.png")
                     break
 
             kname = image.split("/")[-2]

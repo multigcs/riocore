@@ -6,6 +6,7 @@ import argparse
 import glob
 import json
 import os
+import subprocess
 import sys
 
 if os.path.isfile(os.path.join("riocore", "__init__.py")):
@@ -34,13 +35,14 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
     info_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, "info.json")
     svg_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.svg")
     png_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.png")
+    rpng_path = os.path.join(plugin_path, plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-render.png")
     if not os.path.isfile(pcb_path):
         return
 
+    pcb_time = os.path.getmtime(pcb_path)
     renew_info = args.renew
     if os.path.exists(info_path):
-        pcb_time = os.path.getmtime(pcb_path)
-        info_time = os.path.getmtime(png_path)
+        info_time = os.path.getmtime(info_path)
         if pcb_time > info_time:
             renew_info = True
     else:
@@ -120,11 +122,11 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
     if plugin_instance.NAME not in images:
         images[plugin_instance.NAME] = {}
     if kicad_module not in images[plugin_instance.NAME]:
-        images[plugin_instance.NAME][kicad_module] = {"info": info, "image": os.path.join(plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.png")}
+        # images[plugin_instance.NAME][kicad_module] = {"info": info, "image": os.path.join(plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-export.png")}
+        images[plugin_instance.NAME][kicad_module] = {"info": info, "image": os.path.join(plugin_instance.KICAD_FOLDER, kicad_module, f"{kicad_module}-render.png")}
 
     renew_images = args.renew
     if os.path.exists(png_path):
-        pcb_time = os.path.getmtime(pcb_path)
         png_time = os.path.getmtime(png_path)
         if pcb_time > png_time:
             renew_images = True
@@ -136,6 +138,18 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
         os.system(f"kicad-cli pcb export svg --fit-page-to-board --layers F.Cu,F.SilkS,Edge.Cuts --output '{svg_path}' '{pcb_path}'")
         os.system(f"inkscape '{svg_path}' --export-type=png --export-filename='{png_path}' --export-dpi=110")
         os.system(f"rm -rf '{svg_path}'")
+
+    renew_redner = args.renew
+    if os.path.exists(rpng_path):
+        rpng_time = os.path.getmtime(rpng_path)
+        if pcb_time > rpng_time:
+            renew_redner = True
+    else:
+        renew_redner = True
+    if renew_redner:
+        width, height = subprocess.getoutput(f"identify -ping -format '%w %h' '{png_path}'").split()
+        os.system(f"kicad-cli pcb render --output '{rpng_path}' '{pcb_path}'")
+        os.system(f"convert '{rpng_path}' -trim -scale {width}x{height}  '{rpng_path}'")
 
 
 if args.list:

@@ -1441,6 +1441,8 @@ class Window(QMainWindow):
 
         self.scene = NodeScene(-5000, -5000, 12000, 12000, self)
         self.scene.setBackgroundBrush(QColor("#262626"))
+        # self.scene.setBackgroundBrush(QColor("#2e4b3a"))
+
         self.snapshots = []
         self.halpins = {}
         self.joints = 0
