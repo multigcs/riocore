@@ -1,5 +1,3 @@
-import glob
-import json
 import os
 import time
 
@@ -61,12 +59,7 @@ class PluginBase:
         self.BUILDER_PATH = ""  # path to the generated plugin sources (if needed)
         self.SUBBOARD = None
         self.SUB_OPTIONS = {}
-        self.KICAD = None
         self.KICAD_FOLDER = "kicad"
-        self.KICAD_MODULE = ""
-        self.KICAD_INFO = {}
-        self.KICAD_MODULES = []
-        self.KICAD_IMAGE = None
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -128,40 +121,14 @@ class PluginBase:
                     "options": ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"],
                 }
 
+        self.image_update()
+
         NEW_OPTIONS["image"] = {
             "default": "generic",
             "type": "imgselect",
             "options": ["generic", *self.IMAGES],
             "description": "hardware type",
         }
-        self.image_update()
-
-        self.KICAD_MODULE = plugin_setup.get("kicad", {}).get("module", self.KICAD_MODULE)
-        kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
-        if os.path.isdir(kicad_path):
-            self.KICAD = kicad_path
-            kicad_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}"
-            if os.path.isdir(kicad_path):
-                self.KICAD_MODULES = []
-                options = self.OPTIONS.get("node_type", {}).get("options")
-                if options and not self.plugin_setup.get("node_type"):
-                    for option in options:
-                        for kpath in glob.glob(f"{kicad_path}/{option}/*"):
-                            if kpath.split("/")[-1] not in self.KICAD_MODULES:
-                                self.KICAD_MODULES.append(kpath.split("/")[-1])
-                else:
-                    for kpath in glob.glob(f"{kicad_path}/*"):
-                        if kpath.split("/")[-1] not in self.KICAD_MODULES:
-                            self.KICAD_MODULES.append(kpath.split("/")[-1])
-                if not self.KICAD_MODULE and self.KICAD_MODULES:
-                    self.KICAD_MODULE = self.KICAD_MODULES[0]
-
-        if self.KICAD_MODULE:
-            if os.path.isfile(f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"):
-                self.KICAD_IMAGE = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/{self.KICAD_MODULE}-export.png"
-                info_path = f"{self.PLUGIN_PATH}/{self.KICAD_FOLDER}/{self.KICAD_MODULE}/info.json"
-                if os.path.isfile(info_path):
-                    self.KICAD_INFO = json.loads(open(info_path, "r").read())
 
         # add new options at top of dict
         if NEW_OPTIONS:
@@ -177,9 +144,23 @@ class PluginBase:
         return ""
 
     def image_update(self):
-        if self.IMAGES:
-            image = self.plugin_setup.get("image", self.option_default("image"))
-            self.plugin_images = riocore.PluginImages()
+        self.plugin_images = riocore.PluginImages()
+
+        image = self.plugin_setup.get("image", self.option_default("image"))
+
+        for module, data in self.plugin_images.kicad(self.NAME).items():
+            ipath = data["image"]
+            if ipath not in self.IMAGES:
+                self.IMAGES.append(ipath)
+            ipins = data["info"]["pins"]
+            self.IMAGE_SHOW = True
+            if image == ipath:
+                for pin in self.PINDEFAULTS:
+                    pin_raw = pin.split(":")[-1]
+                    if pin_raw in ipins:
+                        self.PINDEFAULTS[pin]["pos"] = ipins[pin_raw]["pos"]
+
+        if self.IMAGES and image is not None:
             if image and not image.endswith(".png"):
                 image_setup = self.plugin_images.get(image)
                 if image_setup:

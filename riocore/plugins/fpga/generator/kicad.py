@@ -1,3 +1,4 @@
+import glob
 import json
 import os
 import stat
@@ -46,9 +47,14 @@ class kicad:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
             kicad_path = f"{plugin_instance.PLUGIN_PATH}/{plugin_instance.KICAD_FOLDER}"
-            if not plugin_instance.KICAD_MODULE:
+
+            image = plugin_instance.plugin_setup.get("image", "")
+
+            if not image.startswith("kicad/"):
+                print(glob)
+
                 continue
-            kname = plugin_instance.KICAD_MODULE
+            kname = image.split("/")[-2]
             instances_name = plugin_instance.instances_name
             if kname not in setup["modules"]:
                 setup["modules"][kname] = {"num": 0}

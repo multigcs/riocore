@@ -20,7 +20,6 @@ from PyQt5.QtGui import QBrush, QColor, QFont, QImage, QMouseEvent, QPainter, QP
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
-    QCheckBox,
     QDialog,
     QFileDialog,
     QGraphicsItem,
@@ -659,17 +658,7 @@ class PluginNode(MyNode):
                 self.setPos(mpos.x() + pos_x, mpos.y() + pos_y)
 
     def img_show(self):
-        if self.scene.parent.kicad.isChecked() and self.plugin_instance.KICAD_IMAGE:
-            if self.plugin_instance.TYPE == "background":
-                self.setZValue(-99)
-            else:
-                self.setZValue(1)
-            self.load_image(self.plugin_instance.KICAD_IMAGE)
-            for port_name, port_data in self.ports.items():
-                if port_name in self.plugin_instance.KICAD_INFO.get("pins", {}):
-                    port_data["pos"] = self.plugin_instance.KICAD_INFO["pins"][port_name]["pos"]
-
-        elif self.plugin_instance.IMAGE_SHOW:
+        if self.plugin_instance.IMAGE_SHOW:
             if self.plugin_instance.TYPE == "background":
                 self.setZValue(-99)
             else:
@@ -1027,6 +1016,7 @@ class NodeViewer(QGraphicsView):
                         plugin_instance.plugin_setup["node_type"] = node_type
             plugin_instance.setup()
             if plugin_instance.IMAGES:
+                print("+++++++", plugin_instance.IMAGES)
                 plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
             insert_position = self.mapToScene(pos.x(), pos.y())
             plugin_instance.plugin_setup["pos"] = [insert_position.x(), insert_position.y()]
@@ -1493,10 +1483,6 @@ class Window(QMainWindow):
 
         hboxInfo.addStretch()
 
-        self.kicad = QCheckBox("KICAD-MODE")
-        self.kicad.stateChanged.connect(self.kicad_mode)
-        hboxInfo.addWidget(self.kicad, stretch=0)
-
         self.main = QWidget()
         self.setCentralWidget(self.main)
         self.main.setLayout(vboxMain)
@@ -1906,8 +1892,6 @@ class Window(QMainWindow):
             self.config["flow"]["view"] = {}
         if "hal" not in self.config["flow"]:
             self.config["flow"]["hal"] = {}
-
-        self.kicad.setChecked(self.config.get("kicad_mode", False))
 
         # upgrade: board -> plugins
         board_name = self.config.get("boardcfg")
@@ -2394,12 +2378,6 @@ class Window(QMainWindow):
             return os.path.join(riocore_path, path)
         riocore.log(f"can not find path: {path}")
         # exit(1)
-
-    def kicad_mode(self):
-        if self.config:
-            self.config["kicad_mode"] = self.scene.parent.kicad.isChecked()
-        self.redraw()
-        self.cfg_check()
 
     def redraw(self):
         riocore.log_clear()

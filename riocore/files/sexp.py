@@ -137,7 +137,7 @@ def rotate_point(origin, point, angle):
 def get_types(data, types):
     entrys = []
     for entry in data:
-        if entry[0] in types:
+        if entry and entry[0] in types:
             entrys.append(entry)
     return entrys
 
