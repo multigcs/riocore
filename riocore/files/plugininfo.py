@@ -83,14 +83,14 @@ def plugin2kicad(plugin_instance, kicad_module, pins, images):
                     continue
                 at = None
                 net = None
-                size = ["0", "0"]
+                # size = ["0", "0"]
                 for ssentry in sentry[3:]:
                     if ssentry[0] == "at":
                         at = ssentry[1:3]
                     elif ssentry[0] == "net":
                         net = ssentry[2].strip('"')
-                    elif ssentry[0] == "size":
-                        size = ssentry[1:3]
+                    # elif ssentry[0] == "size":
+                    #    size = ssentry[1:3]
 
                 if not net:
                     continue

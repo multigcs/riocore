@@ -322,12 +322,48 @@ enum = 0
 ref = None
 refs = {}
 
+
+def update_pos(entry, sn, settings, px, py, rotate):
+    sentry = entry[sn]
+    if not sentry:
+        return
+    # update position and rotate parts
+    pos_x_org = float(sentry[1].strip('"'))
+    pos_y_org = float(sentry[2].strip('"'))
+    rotate_org = 0
+    if sentry[0] == "at" and len(sentry) == 4:
+        rotate_org = float(sentry[3].strip('"'))
+    if rotate:
+        if sentry[0] == "at":
+            rotate_org -= rotate
+            while rotate_org < -90:
+                rotate_org += 360
+            while rotate_org > 180:
+                rotate_org -= 360
+        pos_x_org, pos_y_org = sexp.rotate_point((settings["start_x"] + settings["center_x"], settings["start_y"] + settings["center_y"]), (pos_x_org, pos_y_org), -rotate)
+    pos_x_new = px + pos_x_org - settings["start_x"]
+    pos_y_new = py + pos_y_org - settings["start_y"]
+    sentry[1] = f"{pos_x_new:0.3f}"
+    sentry[2] = f"{pos_y_new:0.3f}"
+    if sentry[0] == "at" and entry[0] not in {"via", "pad"}:
+        entry[sn] = [sentry[0], sentry[1], sentry[2], f"{int(rotate_org)}"]
+
+
 for name, settings in setup["modules"].items():
     position_x = 310
     for num, suuid in settings["sheets"].items():
         groupids = []
-        # print(num, suuid)
-        for entry in sexp.get_types(copy.deepcopy(settings["module_pcb"]), {"footprint", "segment", "gr_rect", "via"}):
+
+        px = position_x
+        py = position_y
+        if spos := settings.get("pos", {}).get(num):
+            px = spos[0]
+            py = spos[1]
+        rotate = 0
+        if settings.get("rotate", {}).get(num):
+            rotate = settings["rotate"][num]
+
+        for entry in sexp.get_types(copy.deepcopy(settings["module_pcb"]), {"footprint", "segment", "gr_rect", "via", "zone"}):
             # get uuid
             uuid_prefix = None
             for sentry in entry[1:]:
@@ -378,32 +414,16 @@ for name, settings in setup["modules"].items():
                             while rotate_org > 180:
                                 rotate_org -= 360
                             sentry[ssn] = [ssentry[0], ssentry[1], ssentry[2], str(rotate_org)]
+
                 elif sentry[0] in {"at", "start", "end"}:
-                    # update position and rotate parts
-                    pos_x_org = float(sentry[1].strip('"'))
-                    pos_y_org = float(sentry[2].strip('"'))
-                    rotate_org = 0
-                    if sentry[0] == "at" and len(sentry) == 4:
-                        rotate_org = float(sentry[3].strip('"'))
-                    px = position_x
-                    py = position_y
-                    if spos := settings.get("pos", {}).get(num):
-                        px = spos[0]
-                        py = spos[1]
-                    if rotate := settings.get("rotate", {}).get(num):
-                        if sentry[0] == "at":
-                            rotate_org -= rotate
-                            while rotate_org < -90:
-                                rotate_org += 360
-                            while rotate_org > 180:
-                                rotate_org -= 360
-                        pos_x_org, pos_y_org = sexp.rotate_point((settings["start_x"] + settings["center_x"], settings["start_y"] + settings["center_y"]), (pos_x_org, pos_y_org), -rotate)
-                    pos_x_new = px + pos_x_org - settings["start_x"]
-                    pos_y_new = py + pos_y_org - settings["start_y"]
-                    sentry[1] = f"{pos_x_new:0.3f}"
-                    sentry[2] = f"{pos_y_new:0.3f}"
-                    if sentry[0] == "at" and entry[0] not in {"via", "pad"}:
-                        entry[sn] = [sentry[0], sentry[1], sentry[2], f"{int(rotate_org)}"]
+                    update_pos(entry, sn, settings, px, py, rotate)
+
+                elif sentry[0] in {"filled_polygon", "polygon"}:
+                    for ptsn, pts in enumerate(sexp.get_types(sentry[1:], {"pts"}), 1):
+                        for pn, part in enumerate(pts[1:], 1):
+                            if part:
+                                update_pos(pts, pn, settings, px, py, rotate)
+
                 elif sentry[0] == "sheetname":
                     # update sheetname
                     sheetname_old = sentry[1].strip('"')
