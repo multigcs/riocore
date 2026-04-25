@@ -159,6 +159,8 @@ class PluginBase:
                     pin_raw = pin.split(":")[-1]
                     if pin_raw in ipins:
                         self.PINDEFAULTS[pin]["pos"] = ipins[pin_raw]["pos"]
+                    elif "pos" in self.PINDEFAULTS[pin]:
+                        del self.PINDEFAULTS[pin]["pos"]
 
         if self.IMAGES and image is not None:
             if image and not image.endswith(".png"):

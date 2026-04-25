@@ -46,14 +46,14 @@ class kicad:
         for plugin_instance in self.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
-            kicad_path = f"{plugin_instance.PLUGIN_PATH}/{plugin_instance.KICAD_FOLDER}"
-
+            kicad_path = os.path.join(plugin_instance.PLUGIN_PATH, plugin_instance.KICAD_FOLDER)
             image = plugin_instance.plugin_setup.get("image", "")
-
             if not image.startswith("kicad/"):
-                print(glob)
+                for mpath in glob.glob(os.path.join(kicad_path, "*")):
+                    module = mpath.split("/")[-1]
+                    image = os.path.join(plugin_instance.KICAD_FOLDER, module, f"{module}-export.png")
+                    break
 
-                continue
             kname = image.split("/")[-2]
             instances_name = plugin_instance.instances_name
             if kname not in setup["modules"]:

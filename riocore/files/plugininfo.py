@@ -144,8 +144,8 @@ elif args.generate:
                         at_x, at_y = sexp.rotate_point((0, 0), (at_x, at_y), fat_r)
                     info["pins"][pin] = {
                         "pos": [
-                            ((float(fat_x) + at_x) - dim["start_x"]) * 4.5,
-                            ((float(fat_y) + at_y) - dim["start_y"]) * 4.5,
+                            ((float(fat_x) + at_x) - dim["start_x"]) * 4.2,
+                            ((float(fat_y) + at_y) - dim["start_y"]) * 4.2,
                         ]
                     }
         return info
