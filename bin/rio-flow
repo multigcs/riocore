@@ -32,7 +32,6 @@ from PyQt5.QtWidgets import (
     QMenu,
     QMessageBox,
     QPushButton,
-    QStyle,
     QTabWidget,
     QToolBar,
     QVBoxLayout,

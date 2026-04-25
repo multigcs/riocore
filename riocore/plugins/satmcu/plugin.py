@@ -107,6 +107,7 @@ class Plugin(PluginBase):
 
         self.IMAGE_SHOW = True
         self.IMAGE = f"boards/{self.node_type}.png"
+        self.KICAD_FOLDER = os.path.join("kicad", self.node_type)
         self.BUILDER = [
             "build",
             "load",

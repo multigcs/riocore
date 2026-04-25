@@ -253,7 +253,10 @@ if args.config:
         elif sys.platform == "linux" and (args.kicad | args.kicad_run):
             kicad_path = os.path.join(output_path, config_name, "KICAD")
             for kpath in glob.glob(os.path.join(kicad_path, "*")):
-                kicadsh_path = os.path.join(kpath, "start.sh")
+                if args.kicad_run:
+                    kicadsh_path = os.path.join(kpath, "start.sh")
+                else:
+                    kicadsh_path = os.path.join(kpath, "build.sh")
                 cmd = f"sh {kicadsh_path}"
                 print()
                 print("running:")

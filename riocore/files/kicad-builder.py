@@ -312,12 +312,6 @@ if old_pcb:
                                 print(ssentry)
             pcb_new.append(entry)
 
-# PCB: place/copy parts
-position_y = 14
-enum = 0
-ref = None
-refs = {}
-
 
 def update_pos(entry, sn, settings, px, py, rotate):
     sentry = entry[sn]
@@ -351,6 +345,20 @@ def update_pos(entry, sn, settings, px, py, rotate):
         entry[sn] = [sentry[0], sentry[1], sentry[2], f"{int(rotate_org)}"]
 
 
+def move_polygons(entry):
+    for sn, sentry in enumerate(entry[1:], 1):
+        if sentry[0] in {"filled_polygon", "polygon"}:
+            for ptsn, pts in enumerate(sexp.get_types(sentry[1:], {"pts"}), 1):
+                for pn, part in enumerate(pts[1:], 1):
+                    if part:
+                        update_pos(pts, pn, settings, px, py, rotate)
+
+
+# PCB: place/copy parts
+position_y = 14
+enum = 0
+ref = None
+refs = {}
 for name, settings in setup["modules"].items():
     position_x = 310
     for num, suuid in settings["sheets"].items():
@@ -399,6 +407,7 @@ for name, settings in setup["modules"].items():
                                 rotate_org -= 360
                             sentry[ssn] = [ssentry[0], ssentry[1], ssentry[2], str(rotate_org)]
 
+            move_polygons(entry)
             for sn, sentry in enumerate(entry[1:], 1):
                 if sentry[0] == "uuid":
                     # update uuid
@@ -420,11 +429,8 @@ for name, settings in setup["modules"].items():
                 elif sentry[0] in {"at", "start", "end"}:
                     update_pos(entry, sn, settings, px, py, rotate)
 
-                elif sentry[0] in {"filled_polygon", "polygon"}:
-                    for ptsn, pts in enumerate(sexp.get_types(sentry[1:], {"pts"}), 1):
-                        for pn, part in enumerate(pts[1:], 1):
-                            if part:
-                                update_pos(pts, pn, settings, px, py, rotate)
+                elif sentry[0] in {"zone"}:
+                    move_polygons(sentry)
 
                 elif sentry[0] == "sheetname":
                     # update sheetname

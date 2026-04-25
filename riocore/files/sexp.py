@@ -87,6 +87,21 @@ def dumps(lists):
     return "".join(result).strip()
 
 
+def minmax_polygons(dimentions, entry):
+    for sn, sentry in enumerate(entry[1:], 1):
+        if sentry[0] in {"filled_polygon", "polygon"}:
+            for ptsn, pts in enumerate(get_types(sentry[1:], {"pts"}), 1):
+                for pn, part in enumerate(pts[1:], 1):
+                    if part and part[0] == "xy":
+                        px = float(part[1])
+                        py = float(part[2])
+                        dimentions["start_x"] = min(dimentions["start_x"], px)
+                        dimentions["start_y"] = min(dimentions["start_y"], py)
+                        dimentions["end_x"] = max(dimentions["end_x"], px)
+                        dimentions["end_y"] = max(dimentions["end_y"], py)
+    return dimentions
+
+
 def pcb_dimentions(pcb_data):
     dimentions = {}
     dimentions["start_x"] = 100000
@@ -97,24 +112,17 @@ def pcb_dimentions(pcb_data):
     dimentions["height"] = 0
     for entry in pcb_data:
         if entry[0] in {"footprint", "segment", "gr_rect", "via", "zone"}:
+            minmax_polygons(dimentions, entry)
             for sentry in entry[1:]:
-                if sentry[0] in {"at", "start", "end"}:
+                if sentry[0] in {"zone"}:
+                    minmax_polygons(dimentions, sentry)
+                elif sentry[0] in {"at", "start", "end"}:
                     px = float(sentry[1])
                     py = float(sentry[2])
                     dimentions["start_x"] = min(dimentions["start_x"], px)
                     dimentions["start_y"] = min(dimentions["start_y"], py)
                     dimentions["end_x"] = max(dimentions["end_x"], px)
                     dimentions["end_y"] = max(dimentions["end_y"], py)
-                elif sentry[0] in {"filled_polygon", "polygon"}:
-                    for pts in get_types(sentry[1:], {"pts"}):
-                        for part in pts[1:]:
-                            if part:
-                                px = float(part[1])
-                                py = float(part[2])
-                                dimentions["start_x"] = min(dimentions["start_x"], px)
-                                dimentions["start_y"] = min(dimentions["start_y"], py)
-                                dimentions["end_x"] = max(dimentions["end_x"], px)
-                                dimentions["end_y"] = max(dimentions["end_y"], py)
 
     dimentions["width"] = dimentions["end_x"] - dimentions["start_x"]
     dimentions["height"] = dimentions["end_y"] - dimentions["start_y"]
@@ -129,7 +137,7 @@ def pcb_netnames(pcb_data):
         if entry[0] == "footprint":
             for sentry in entry[1:]:
                 for ssentry in sentry[1:]:
-                    if ssentry[0] == "net":
+                    if ssentry[0] == "net" and len(ssentry) == 3:
                         netname = ssentry[2].strip('"')
                         if netname and netname not in netnames:
                             netnames.append(netname)

@@ -1,0 +1,17 @@
+{
+  "dimentions": {
+    "start_x": 114.3,
+    "start_y": 90.9,
+    "end_x": 131.8,
+    "end_y": 106.3,
+    "width": 17.500000000000014,
+    "height": 15.399999999999991,
+    "center_x": 8.750000000000007,
+    "center_y": 7.699999999999996
+  },
+  "pins": {},
+  "node_type": "encoder",
+  "powersignals": [
+    "GND"
+  ]
+}

@@ -37,6 +37,7 @@ class Plugin(PluginBase):
         )
 
         self.node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
+        self.KICAD_FOLDER = os.path.join("kicad", self.node_type)
         if self.node_type == "output":
             self.IMAGES = PluginImages.bitout
             self.SIGNALS = {

@@ -71,13 +71,16 @@ class kicad:
                     image = os.path.join(plugin_instance.KICAD_FOLDER, module, f"{module}-export.png")
                     image = os.path.join(plugin_instance.KICAD_FOLDER, module, f"{module}-render.png")
                     break
-
+            if "/" not in image:
+                continue
             kname = image.split("/")[-2]
             instances_name = plugin_instance.instances_name
             if kname not in setup["modules"]:
                 setup["modules"][kname] = {"num": 0}
             setup["modules"][kname]["path"] = kicad_path
             setup["modules"][kname]["num"] += 1
+            if plugin_instance.master == plugin_instance.instances_name:
+                setup["modules"][kname]["main"] = True
             if plugin_instance.gmaster is None:
                 setup["modules"][kname]["main"] = True
             if "instances" not in setup["modules"][kname]:
