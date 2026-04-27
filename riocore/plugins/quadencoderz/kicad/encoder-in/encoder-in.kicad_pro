@@ -451,7 +451,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "rs422-master.kicad_pro",
+    "filename": "encoder-in.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -591,6 +591,12 @@
       "pin_symbol_size": 25.0,
       "text_offset_ratio": 0.15
     },
+    "encoder-ince_current_sheet_as_root": false,
+    "encoder-ince_external_command": "encoder-ince \"%I\"",
+    "encoder-ince_model_current_sheet_as_root": true,
+    "encoder-ince_save_all_currents": false,
+    "encoder-ince_save_all_dissipations": false,
+    "encoder-ince_save_all_voltages": false,
     "legacy_lib_dir": "",
     "legacy_lib_list": [],
     "meta": {
@@ -611,7 +617,7 @@
   },
   "sheets": [
     [
-      "bc7404f2-e722-4815-98c5-e8ee35fc3f56",
+      "54b556ad-c42a-4c8e-b312-ce204c38c67b",
       "Root"
     ]
   ],

@@ -18,5 +18,9 @@
     }
   },
   "node_type": null,
-  "powersignals": []
+  "powersignals": [
+    "+5V",
+    "GND",
+    "+3V3"
+  ]
 }

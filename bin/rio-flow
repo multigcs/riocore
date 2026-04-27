@@ -1015,7 +1015,6 @@ class NodeViewer(QGraphicsView):
                         plugin_instance.plugin_setup["node_type"] = node_type
             plugin_instance.setup()
             if plugin_instance.IMAGES:
-                print("+++++++", plugin_instance.IMAGES)
                 plugin_instance.plugin_setup["image"] = plugin_instance.IMAGES[0]
             insert_position = self.mapToScene(pos.x(), pos.y())
             plugin_instance.plugin_setup["pos"] = [insert_position.x(), insert_position.y()]
