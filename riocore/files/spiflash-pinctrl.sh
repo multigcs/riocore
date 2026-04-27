@@ -70,10 +70,12 @@ then
 fi
 
 echo "  write to flash"
+rm -rf /tmp/_flash.log
 if ! flashrom -p linux_spi:dev=$SPIDEV,spispeed=$SPISPEED -w /tmp/_flash.bin > /tmp/_flash.log
 then
 	echo "   ERROR: flashrom: `cat /tmp/_flash.log`"
 	echo "   retry.."
+	rm -rf /tmp/_flash.log
 	if ! flashrom -p linux_spi:dev=$SPIDEV,spispeed=$SPISPEED -w /tmp/_flash.bin > /tmp/_flash.log
 	then
 		echo "   ERROR: flashrom: `cat /tmp/_flash.log`"
