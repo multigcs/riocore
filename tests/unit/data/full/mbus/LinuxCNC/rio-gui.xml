@@ -1,6 +1,6 @@
 <pyvcp>
   <tabs>
-    <names>['Status', 'Inputs', 'Outputs', 'Mb-Nt18B07', 'Mb-Ma01-Xacx0440', 'Mb-N4Dac02', 'Vfd', 'Mb-Dds519Mr']</names>
+    <names>['Status', 'Inputs', 'Outputs', 'Mb-Nt18B07', 'Mb-Ma01_Xacx0440', 'Mb-N4Dac02', 'Vfd', 'Mb-Dds519Mr']</names>
     <vbox>
       <labelframe text="MDI-Commands">
         <relief>GROOVE</relief>

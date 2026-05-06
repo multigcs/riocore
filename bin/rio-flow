@@ -232,6 +232,10 @@ class NodeEdge(QGraphicsPathItem):
         self.update()
 
     def delete(self):
+        if self._target_port and self._target_node and isinstance(self._target_node, PluginNode):
+            for pin_name, pin_data in self._target_node.plugin_instance.plugin_setup.get("pins", {}).items():
+                if self._target_port == pin_name and "pin" in pin_data:
+                    del pin_data["pin"]
         return True
 
 

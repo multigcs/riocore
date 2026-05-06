@@ -358,7 +358,7 @@
                     "pin": "mbus_dev5:MODBUS:OUT"
                 }
             },
-            "node_type": "MA01-XACX0440",
+            "node_type": "MA01_XACX0440",
             "priority": 2,
             "rotate": 180
         },
@@ -400,7 +400,7 @@
                 -1750.0,
                 -1270.0
             ],
-            "node_type": "MA01-AXCX4020",
+            "node_type": "MA01_AXCX4020",
             "pins": {
                 "MODBUS": {
                     "pin": "mbus_dev2:MODBUS:OUT"
@@ -802,17 +802,17 @@
                 }
             },
             "pos": [
-                850.0,
-                3854.0
+                -1740.0,
+                30.0
             ]
         }
     ],
     "flow": {
         "view": {
-            "scale": 0.0912635123161439,
+            "scale": 1.22,
             "pos": [
-                -523.826333510544,
-                -180.0
+                -2950,
+                -465
             ]
         },
         "hal": {
