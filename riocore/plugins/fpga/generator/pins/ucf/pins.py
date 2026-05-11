@@ -5,7 +5,7 @@ class Pins:
     def __init__(self, config):
         self.config = config
 
-    def generate(self, path):
+    def generate(self, path, cpld=False):
         data = []
         for pname, pins in self.config["pinlists"].items():
             data.append(f"### {pname} ###")
@@ -21,19 +21,20 @@ class Pins:
                 netstr = f'"{pin_config["varname"]}"'
                 options = []
                 options.append(f"LOC = {pinstr:6s}")
-                options.append(f"IOSTANDARD = {iostandard:5s}")
-                if pin_config["direction"] == "input":
-                    if pin_config.get("pullup", False):
-                        print('WARNING: please change your pin-config to : "pull": "up"')
-                        options.append("PULLUP")
-                    elif pin_config.get("pulldown", False):
-                        print('WARNING: please change your pin-config to : "pull": "down"')
-                        options.append("PULLDOWN")
-                    elif pin_config.get("pull"):
-                        options.append(f"PULL{pin_config['pull'].upper()}")
-                else:
-                    options.append(f"DRIVE = {drive:2s}")
-                    options.append(f"SLEW = {slew:4s}")
+                if not cpld:
+                    options.append(f"IOSTANDARD = {iostandard:5s}")
+                    if pin_config["direction"] == "input":
+                        if pin_config.get("pullup", False):
+                            print('WARNING: please change your pin-config to : "pull": "up"')
+                            options.append("PULLUP")
+                        elif pin_config.get("pulldown", False):
+                            print('WARNING: please change your pin-config to : "pull": "down"')
+                            options.append("PULLDOWN")
+                        elif pin_config.get("pull"):
+                            options.append(f"PULL{pin_config['pull'].upper()}")
+                    else:
+                        options.append(f"DRIVE = {drive:2s}")
+                        options.append(f"SLEW = {slew:4s}")
 
                 if pin == "sysclk_in":
                     options.append('TNM_NET = "sysclk_in"')

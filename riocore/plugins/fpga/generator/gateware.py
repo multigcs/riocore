@@ -608,8 +608,10 @@ class gateware(generator_base):
         output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
         output.append("")
 
-        output.append(f"    parameter TIMEOUT = {sysclk_speed // 10};")
-        output.append("    localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);")
+        timeout = sysclk_speed // 10
+        timeout_bits = self.clog2(timeout)
+        output.append(f"    parameter TIMEOUT = {timeout};")
+        output.append(f"    localparam TIMEOUT_BITS = {timeout_bits};")
         output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
         output.append("")
         output.append("    always @(posedge sysclk) begin")
@@ -1088,3 +1090,9 @@ int main(int argc, char** argv) {
 
 """)
             open(os.path.join(self.jdata["output_path"], "main.cpp"), "w").write("\n".join(main_cpp))
+
+    def clog2(self, x):
+        if x <= 0:
+            err = "clog2: domain error"
+            raise ValueError(err)
+        return (x - 1).bit_length()

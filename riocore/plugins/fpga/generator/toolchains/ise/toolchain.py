@@ -48,8 +48,13 @@ class Toolchain:
         XISE_PROJECT = False
         CPLD = False
 
+        if self.config["type"].startswith("xa9"):
+            CPLD = True
+            USING_XSTFILE = True
+            XISE_PROJECT = False
+
         pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.ucf")
-        pins_generator.Pins(self.config).generate(path)
+        pins_generator.Pins(self.config).generate(path, cpld=CPLD)
 
         if sys.platform == "linux":
             ngdbuild = shutil.which("ngdbuild")
@@ -64,8 +69,8 @@ class Toolchain:
 
         prj_data = []
         for verilog in self.config["verilog_files"]:
-            # if verilog in {"globals.v"}:
-            #    continue
+            if CPLD and verilog in {"globals.v"}:
+                continue
             prj_data.append(f'verilog work "{verilog}"')
         prj_data.append("")
         open(os.path.join(path, "rio.prj"), "w").write("\n".join(prj_data))
@@ -78,7 +83,6 @@ class Toolchain:
         xst_data.append("-ifmt mixed")
         xst_data.append("-ofn rio")
         xst_data.append("-ofmt NGC")
-        # xst_data.append("-p xa9500xl")
         xst_data.append(f"-p {self.config['type']}")
         xst_data.append("-top rio")
         xst_data.append("-opt_mode Speed")
@@ -130,7 +134,7 @@ class Toolchain:
             makefile_data.append("build:")
             makefile_data.append("	mkdir -p xst/projnav.tmp/")
             makefile_data.append('	xst -intstyle ise -ifn "$(PROJECT).xst" -ofn "$(PROJECT).syr"')
-            makefile_data.append(f"	ngdbuild -intstyle ise -dd _ngo -i -p {self.config['type']} $(PROJECT).ngc $(PROJECT).ngd")
+            makefile_data.append(f"	ngdbuild -intstyle ise -dd _ngo -p {self.config['type']} -uc pins.ucf $(PROJECT).ngc $(PROJECT).ngd")
             if CPLD:
                 makefile_data.append(f"	cpldfit -intstyle ise -p {self.config['type']} -ofmt vhdl -optimize density -htmlrpt -loc on -slew fast -init low -inputs 54 -pterms 25 -terminate keeper $(PROJECT).ngd")
                 makefile_data.append("	XSLTProcess $(PROJECT)_build.xml")
