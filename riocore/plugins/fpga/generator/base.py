@@ -10,7 +10,7 @@ class generator_base:
         self.multiplexed_output_size = 0
         self.multiplexed_output_id = 0
         for plugin_instance in project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for data_config in plugin_instance.interface_data().values():
                 self.interface_sizes.add(data_config["size"])
@@ -96,7 +96,7 @@ class generator_base:
         interface_data = []
         for size in sorted(self.interface_sizes, reverse=True):
             for plugin_instance in project.plugin_instances:
-                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                     continue
                 for data_name, data_config in plugin_instance.interface_data().items():
                     if data_config["size"] == size:

@@ -107,7 +107,7 @@ class rosbridge(cbase):
     def ros_functions(self):
         output = []
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
@@ -139,7 +139,7 @@ class rosbridge(cbase):
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
@@ -169,7 +169,7 @@ class rosbridge(cbase):
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]

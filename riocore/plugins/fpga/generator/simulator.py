@@ -58,7 +58,7 @@ class simulator(generator_base):
 
         self.expansion_pins = []
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for pin in plugin_instance.expansion_outputs():
                 self.expansion_pins.append(pin)
@@ -67,7 +67,7 @@ class simulator(generator_base):
 
         self.virtual_pins = []
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for pin_name, pin_config in plugin_instance.pins().items():
                 if "pin" in pin_config and pin_config["pin"].startswith("VIRT:"):

@@ -128,7 +128,7 @@ body {
         output.append('    <div class="container">')
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             signals = plugin_instance.signals()
             if not signals:
@@ -187,7 +187,7 @@ body {
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             signals = plugin_instance.signals()
             if not signals:
@@ -214,7 +214,7 @@ body {
         output.append('            console.log("connected");')
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             signals = plugin_instance.signals()
             if not signals:
@@ -261,7 +261,7 @@ body {
         output.append('            // console.log("msg", message.destinationName, message.payloadString);')
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             signals = plugin_instance.signals()
             if not signals:
@@ -306,7 +306,7 @@ body {
         # output.append("    printf(\"###    message: %.*s\\n\", message->payloadlen, (char*)message->payload);")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
@@ -379,7 +379,7 @@ body {
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]
@@ -400,7 +400,7 @@ body {
         output.append("    while (1) {")
         output.append("        rio_readwrite(NULL, 0);")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 halname = signal_config["halname"]

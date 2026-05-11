@@ -390,7 +390,7 @@ class LinuxCNC:
         open(os.path.join(self.configuration_path, "rio.hal"), "w").write("\n".join(output_hal))
         open(os.path.join(self.configuration_path, "custom_postgui.hal"), "w").write("\n".join(output_postgui))
 
-        if (gui == "gmoccapy" or gui == "gscreen") and self.gui_type == "gladevcp":
+        if gui in {"gmoccapy", "gscreen"} and self.gui_type == "gladevcp":
             riocore.log("## INFO: custom_postgui.hal will be load by gladevcp")
             self.postgui_call_rm.append("custom_postgui.hal")
         else:
@@ -1240,7 +1240,7 @@ o<{oword}> endsub
 
                 speed_selector_mux = 1
                 for function, halname in self.rio_functions["jog"].items():
-                    if function == "speed0" or function == "speed1" or function == "fast":
+                    if function in {"speed0", "speed1", "fast"}:
                         speed_selector_mux *= 2
 
                 # TODO: using mux-gen ?
@@ -1350,11 +1350,9 @@ o<{oword}> endsub
 
             if speed_selector:
                 speed_selector_mux = 1
-
                 for function, halname in self.rio_functions["jog"].items():
-                    if function == "speed0" or function == "speed1" or function == "fast":
+                    if function in {"speed0", "speed1", "fast"}:
                         speed_selector_mux *= 2
-
                 if speed_selector_mux > 4:
                     riocore.log("ERROR: only two speed selectors are supported")
                     speed_selector_mux = 4
@@ -2484,7 +2482,7 @@ if __name__ == "__main__":
                     home_sequence_default = 2
                     if axis_name == "X":
                         home_sequence_default = 2
-                    elif axis_name == "Y" or axis_name == "Z" or axis_name == "A":
+                    elif axis_name in {"Y", "Z", "A"}:
                         home_sequence_default = 1
                     elif axis_name == "B":
                         home_sequence_default = 2

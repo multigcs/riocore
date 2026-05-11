@@ -58,7 +58,7 @@ class HalGraph:
                         name, value = line.split("=", 1)
                         name = name.strip()
                         value = value.strip()
-                        if name == "HALFILE" or name == "POSTGUI_HALFILE":
+                        if name in {"HALFILE", "POSTGUI_HALFILE"}:
                             self.load_halfile(base_dir, value)
             groups = {}
             for signal_name, parts in self.signals.items():

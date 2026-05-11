@@ -84,7 +84,7 @@ class pylib(cbase):
         output.append("")
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             signals = plugin_instance.signals()
             if not signals:
@@ -163,7 +163,7 @@ class pylib(cbase):
             output.append('      ("MULTIPLEXER_INPUT_ID", ctypes.c_char),')
         output.append("      # signals")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 if signal_config.get("expansion") is True:
@@ -258,7 +258,7 @@ class pylib(cbase):
         output.append("    def plugin_info(self):")
         output.append("        return {")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             is_joint = plugin_instance.OPTIONS.get("is_joint", {}).get("default", False)
             ui_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, "widget.ui")
@@ -302,7 +302,7 @@ class pylib(cbase):
         output.append("    def data_info(self):")
         output.append("        return {")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 if signal_config.get("expansion") is True:
@@ -383,7 +383,7 @@ class pylib(cbase):
         output.append("")
         output.append("int set_values(void) {")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 if signal_config.get("expansion") is True:
@@ -405,7 +405,7 @@ class pylib(cbase):
 
         output.append("int print_values(void) {")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 if signal_config.get("expansion") is True:
@@ -453,7 +453,7 @@ class pylib(cbase):
 
         output.append("def set_values(rio):")
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
                 if signal_config.get("expansion") is True:

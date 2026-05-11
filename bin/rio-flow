@@ -1393,7 +1393,7 @@ class NodeScene(QGraphicsScene):
     def disconnect_node(self, node):
         for item in self.items():
             if isinstance(item, NodeEdge):
-                if item._target_node == node or item._source_node == node:
+                if node in {item._target_node, item._source_node}:
                     self.removeItem(item)
 
     def drawBackground(self, painter, rect):

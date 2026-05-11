@@ -495,7 +495,7 @@ on TangNano9k:
         instance_parameter = instance["parameter"]
         node_type = self.plugin_setup.get("node_type", self.option_default("node_type"))
         instance["module"] = self.VERILOGS[0].replace(".v", "")
-        if node_type == "rioencoder" or node_type == "panasonic" or node_type == "stepperonline" or node_type == "t3d":
+        if node_type in {"rioencoder", "panasonic", "stepperonline", "t3d"}:
             instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         elif node_type == "yaskawa":
             instance_parameter["DELAY"] = int(self.plugin_setup.get("delay", self.OPTIONS["delay"]["default"]))

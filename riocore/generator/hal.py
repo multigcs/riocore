@@ -651,7 +651,7 @@ class hal_generator:
             for pin in sorted(data):
                 # little bit more grouping
                 prefix = ".".join(pin.split(".")[:-1])[:-2]
-                if prefix != prefix_last and prefix_last != "":
+                if prefix_last not in {prefix, ""}:
                     hal_data.append("")
                 prefix_last = prefix
 

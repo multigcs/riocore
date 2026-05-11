@@ -460,7 +460,7 @@ for line in ini_data.split("\n"):
             name, value = line.split("=", 1)
             name = name.strip()
             value = value.strip()
-            if name == "HALFILE" or name == "POSTGUI_HALFILE":
+            if name in {"HALFILE", "POSTGUI_HALFILE"}:
                 load_halfile(base_dir, value)
 
 

@@ -62,7 +62,7 @@ lint.select = [
     "SIM118",  # in-dict-keys (SIM118)
     "PLR2044",  # empty-comment (PLR2044)
     "UP006",  # non-pep585-annotation (UP006)
-    #"PLR1714",  # repeated-equality-comparison (PLR1714)
+    "PLR1714",  # repeated-equality-comparison (PLR1714)
     "PLR1730",  # if-stmt-min-max (PLR1730)
     "UP032",  # f-string (UP032)
     "PLR5501",  # collapsible-else-if (PLR5501)
@@ -88,12 +88,12 @@ lint.select = [
     "TC003",  # typing-only-standard-library-import (TC003)
     "TC002",  # typing-only-third-party-import (TC002)
     "N805",  # invalid-first-argument-name-for-method (N805)
-    #"RUF059",  # unused-unpacked-variable (RUF059)
+    "RUF059",  # unused-unpacked-variable (RUF059)
     "C419",  # unnecessary-comprehension-in-call (C419)
     "C409",  # unnecessary-literal-within-tuple-call (C409)
     "TC001",  # typing-only-first-party-import (TC001)
     "F401",  # unused-import (F401)
-    #"PYI061",  # redundant-none-literal (PYI061)
+    "PYI061",  # redundant-none-literal (PYI061)
 ]
 
 [tool.ruff.lint.isort]

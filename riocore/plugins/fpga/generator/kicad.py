@@ -25,7 +25,7 @@ class kicad:
         self.pinmapping_rev = {}
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             if self.instance.instances_name != plugin_instance.master:
                 continue
@@ -52,7 +52,7 @@ class kicad:
         min_x = 9999999999
         min_y = 9999999999
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             if self.instance.instances_name != plugin_instance.master:
                 continue
@@ -67,7 +67,7 @@ class kicad:
         off_y = -min_y + 15.0
 
         for plugin_instance in self.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             if self.instance.instances_name != plugin_instance.master:
                 continue

@@ -53,14 +53,14 @@ class gateware(generator_base):
             self.jdata["toolchain_generator"] = None
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             plugin_instance.post_setup(self.parent.project)
 
         self.parent.expansion_pins = []
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for pin in plugin_instance.expansion_outputs():
                 self.parent.expansion_pins.append(pin)
@@ -69,7 +69,7 @@ class gateware(generator_base):
 
         self.parent.virtual_pins = []
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config.get("pin") and pin_config["pin"].startswith("VIRT:"):
@@ -123,7 +123,7 @@ class gateware(generator_base):
 
         all_modifiers = set()
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             all_modifiers.update(plugin_instance.USED_MODIFIERS)
             for verilog in plugin_instance.gateware_files():
@@ -166,7 +166,7 @@ class gateware(generator_base):
         self.jdata["timing_constraints"] = {}
         self.jdata["timing_constraints_instance"] = {}
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for key, value in plugin_instance.timing_constraints().items():
                 if key[0] == ":":
@@ -417,7 +417,7 @@ class gateware(generator_base):
             self.parent.iface_out.append([variable_name, size])
 
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.parent.project):
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             multiplexed = data_config.get("multiplexed", False)
             if self.instance.fmaster is not None:
@@ -541,7 +541,7 @@ class gateware(generator_base):
 
         error_signals = ["INTERFACE_TIMEOUT"]
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for interface_setup in plugin_instance.interface_data().values():
                 error_on = interface_setup.get("error_on")
@@ -660,7 +660,7 @@ class gateware(generator_base):
             output.append(f"    wire {pinname};")
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config and pin_config["pin"] in self.parent.virtual_pins:
@@ -683,7 +683,7 @@ class gateware(generator_base):
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for data_config in plugin_instance.interface_data().values():
                 if not data_config.get("expansion"):
@@ -719,7 +719,7 @@ class gateware(generator_base):
 
         # gateware_defines
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             define_string = "\n    ".join(plugin_instance.gateware_defines())
             if define_string:
@@ -730,7 +730,7 @@ class gateware(generator_base):
         used_expansion_outputs = []
         input_exp = []
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for pin_config in plugin_instance.pins().values():
                 if "pin" in pin_config:
@@ -794,7 +794,7 @@ class gateware(generator_base):
             output.append("            end")
             mpid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data(self.parent.project):
-                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                     continue
                 multiplexed = data_config.get("multiplexed", False)
                 if self.instance.fmaster is not None:
@@ -818,7 +818,7 @@ class gateware(generator_base):
             output.append("    always @(posedge sysclk) begin")
             mpid = 0
             for size, plugin_instance, data_name, data_config in self.get_interface_data(self.parent.project):
-                if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                     continue
                 multiplexed = data_config.get("multiplexed", False)
                 if self.instance.fmaster is not None:
@@ -837,7 +837,7 @@ class gateware(generator_base):
         varmapping = {}
         varmapping_fallback = {}
         for plugin_instance in self.parent.project.plugin_instances:
-            if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal, signal_config in plugin_instance.SIGNALS.items():
                 if signal in plugin_instance.INTERFACE:
