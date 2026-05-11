@@ -50,7 +50,7 @@ lint.select = [
     "SIM210",  # if-expr-with-true-false 
     "EM103",  # dot-format-in-exception
     "EM102",  # f-string-in-exception (EM102)
-    #"RUF100",  # unused-noqa (RUF100)
+    "RUF100",  # unused-noqa (RUF100)
     "RSE102",  # unnecessary-paren-on-raise-exception (RSE102)
     "FLY002",  # static-join-to-f-string (FLY002)
     "FURB188",  # slice-to-remove-prefix-or-suffix (FURB188)
@@ -81,7 +81,7 @@ lint.select = [
     "SIM401",  # if-else-block-instead-of-dict-get (SIM401)
     "RUF046",  # unnecessary-cast-to-int (RUF046)
     "D415",  # missing-terminal-punctuation (D415)
-    #"PLR1733",  # unnecessary-dict-index-lookup (PLR1733)
+    "PLR1733",  # unnecessary-dict-index-lookup (PLR1733)
     "ISC003",  # explicit-string-concatenation (ISC003)
     "SIM910",  # dict-get-with-none-default (SIM910)
     "B010",  # set-attr-with-constant (B010)

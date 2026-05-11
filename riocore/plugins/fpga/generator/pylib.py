@@ -332,7 +332,7 @@ class pylib(cbase):
                 for key, value in signal_config.items():
                     if key in {"plugin_instance", "setup"}:
                         continue
-                    signal_config_cleaned[key] = signal_config[key]
+                    signal_config_cleaned[key] = value
 
                 output.append(f'            "{varname}": {{')
                 output.append(f'                "plugin": "{plugin_instance.instances_name}",')

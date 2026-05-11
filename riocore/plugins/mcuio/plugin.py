@@ -406,7 +406,7 @@ void IRAM_ATTR handleLoop() {{
 
     def firmware_defines(self, variable_name):
         name = self.instances_name.upper()
-        if self.node_type == "output" or self.node_type == "input":
+        if self.node_type in {"output", "input"}:
             pin = self.plugin_setup["pins"]["bit"]["pin"]
             return f"#define {name}_PIN_BIT {pin}"
         if self.node_type == "adc":

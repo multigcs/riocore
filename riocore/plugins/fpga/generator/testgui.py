@@ -74,7 +74,7 @@ QCheckBox::indicator {
 
 class SliderProxyStyle(QProxyStyle):
     def pixelMetric(self, metric, option, widget):
-        if metric == QStyle.PM_SliderThickness or metric == QStyle.PM_SliderLength:
+        if metric in {QStyle.PM_SliderThickness, QStyle.PM_SliderLength}:
             return 40
         return super().pixelMetric(metric, option, widget)
 
