@@ -60,6 +60,7 @@ class Plugin(PluginBase):
                 },
             }
         elif self.node_type == "input":
+            self.PLUGIN_CONFIGS = {"Wizard": "config.py"}
             self.IMAGES = PluginImages.bitin
             self.OPTIONS.update(
                 {
