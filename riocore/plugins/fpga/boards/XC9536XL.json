@@ -64,7 +64,7 @@
             "comment": "",
             "default": "",
             "pins": {
-                "P1": {
+                "GND": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -77,7 +77,7 @@
                     ],
                     "marker": true
                 },
-                "P2": {
+                "P44": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -89,7 +89,7 @@
                         6
                     ]
                 },
-                "P3": {
+                "P43": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -101,7 +101,7 @@
                         6
                     ]
                 },
-                "P4": {
+                "P42": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -113,7 +113,7 @@
                         6
                     ]
                 },
-                "P5": {
+                "P41": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -125,7 +125,7 @@
                         6
                     ]
                 },
-                "P6": {
+                "P40": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -137,7 +137,7 @@
                         6
                     ]
                 },
-                "P7": {
+                "P39": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -149,7 +149,7 @@
                         6
                     ]
                 },
-                "P8": {
+                "P38": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -161,7 +161,7 @@
                         6
                     ]
                 },
-                "P9": {
+                "P37": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -173,7 +173,7 @@
                         6
                     ]
                 },
-                "P10": {
+                "P36": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -185,7 +185,7 @@
                         6
                     ]
                 },
-                "P11": {
+                "P34": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -197,7 +197,7 @@
                         6
                     ]
                 },
-                "P12": {
+                "P33": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -209,7 +209,7 @@
                         6
                     ]
                 },
-                "P13": {
+                "P32": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -221,7 +221,7 @@
                         6
                     ]
                 },
-                "P14": {
+                "P31": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -233,7 +233,7 @@
                         6
                     ]
                 },
-                "P15": {
+                "P30": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -245,7 +245,7 @@
                         6
                     ]
                 },
-                "P16": {
+                "P29": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -257,7 +257,7 @@
                         6
                     ]
                 },
-                "P17": {
+                "P28": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -269,7 +269,7 @@
                         6
                     ]
                 },
-                "P18": {
+                "P27": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -281,7 +281,7 @@
                         6
                     ]
                 },
-                "P19": {
+                "1V8": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -294,7 +294,7 @@
                     ],
                     "marker": true
                 },
-                "P20": {
+                "3V3": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -314,7 +314,7 @@
             "comment": "",
             "default": "",
             "pins": {
-                "P1": {
+                "1V8": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -327,7 +327,7 @@
                     ],
                     "marker": true
                 },
-                "P2": {
+                "3V3": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -340,7 +340,7 @@
                     ],
                     "marker": true
                 },
-                "P3": {
+                "CLK": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -352,7 +352,7 @@
                         192
                     ]
                 },
-                "P4": {
+                "P2": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -364,7 +364,7 @@
                         192
                     ]
                 },
-                "P5": {
+                "P3": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -376,7 +376,7 @@
                         192
                     ]
                 },
-                "P6": {
+                "P5": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -388,7 +388,7 @@
                         192
                     ]
                 },
-                "P7": {
+                "P6": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -400,7 +400,7 @@
                         192
                     ]
                 },
-                "P8": {
+                "P7": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -412,7 +412,7 @@
                         192
                     ]
                 },
-                "P9": {
+                "P8": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -424,7 +424,7 @@
                         192
                     ]
                 },
-                "P10": {
+                "P12": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -436,7 +436,7 @@
                         192
                     ]
                 },
-                "P11": {
+                "P13": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -448,7 +448,7 @@
                         192
                     ]
                 },
-                "P12": {
+                "P14": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -460,7 +460,7 @@
                         192
                     ]
                 },
-                "P13": {
+                "P16": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -472,7 +472,7 @@
                         192
                     ]
                 },
-                "P14": {
+                "P18": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -484,7 +484,7 @@
                         192
                     ]
                 },
-                "P15": {
+                "P19": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -496,7 +496,7 @@
                         192
                     ]
                 },
-                "P16": {
+                "P20": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -508,7 +508,7 @@
                         192
                     ]
                 },
-                "P17": {
+                "P21": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -520,7 +520,7 @@
                         192
                     ]
                 },
-                "P18": {
+                "P22": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -532,7 +532,7 @@
                         192
                     ]
                 },
-                "P19": {
+                "P23": {
                     "direction": "all",
                     "type": [
                         "FPGA"
@@ -544,7 +544,7 @@
                         192
                     ]
                 },
-                "P20": {
+                "GND": {
                     "direction": "all",
                     "type": [
                         "FPGA"
