@@ -128,6 +128,9 @@ RIO_FUNCTIONS = {
         "jog.plus": {"help": "Jog selected axis plus", "type": bool},
         "jog.minus": {"help": "Jog selected axis minus", "type": bool},
         "jog.fast": {"help": "Jog set fast", "type": bool},
+        "jog.scale0": {"help": "Jog set scale0", "type": bool},
+        "jog.scale1": {"help": "Jog set scale1", "type": bool},
+        "jog.scale2": {"help": "Jog set scale2", "type": bool},
     },
 }
 
