@@ -23,8 +23,12 @@ lint.select = [
     "RET506",  # superfluous-else-raise
     "RET507",  # superfluous-else-continue
     "RET508",  # superfluous-else-break
-    #"SIM",  # future
-    "SIM102",  # future
+    "SIM102",
+    #"SIM105",  # Use `contextlib.suppress(Exception)`
+    #"SIM108",  # Use ternary operator
+    #"SIM113",  # Use `enumerate()` for index variable
+    #"SIM115",  # Use a context manager for opening files
+    "SIM222",
     "B006",  # mutable-argument-default
     "B905",  # zip-without-explicit-strict
     "C4",  # flake8-comprehensions

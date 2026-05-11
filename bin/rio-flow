@@ -823,8 +823,7 @@ class SubNode(MyNode):
         self.parent = parent
         self.name = title
         self.ports = {}
-        if show_signals or True:
-            self.ports = ports
+        self.ports = ports
         self.width = 200
         self.setZValue(9)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
