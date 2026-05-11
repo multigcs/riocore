@@ -121,9 +121,11 @@ class gateware(generator_base):
                     shutil.copy(flashcmd_script_path, target)
                     os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
+        all_modifiers = set()
         for plugin_instance in self.parent.project.plugin_instances:
             if plugin_instance.master != self.instance.instances_name and plugin_instance.gmaster != self.instance.instances_name:
                 continue
+            all_modifiers.update(plugin_instance.USED_MODIFIERS)
             for verilog in plugin_instance.gateware_files():
                 if verilog in self.parent.verilogs:
                     continue
@@ -146,11 +148,13 @@ class gateware(generator_base):
                 target = os.path.join(self.jdata["output_path"], verilog)
                 open(target, "w").write(data)
 
-        for extrafile in ("debouncer.v", "toggle.v", "pwmmod.v", "oneshot.v", "delay.v"):
-            self.parent.verilogs.append(extrafile)
+        for modifier in all_modifiers:
+            extrafile = f"{modifier}.v"
             source = os.path.join(riocore_path, "files", "verilog", extrafile)
-            target = os.path.join(self.jdata["output_path"], extrafile)
-            shutil.copy(source, target)
+            if os.path.isfile(source):
+                self.parent.verilogs.append(extrafile)
+                target = os.path.join(self.jdata["output_path"], extrafile)
+                shutil.copy(source, target)
         self.parent.verilogs.append("rio.v")
         self.jdata["verilog_files"] = self.parent.verilogs
         self.jdata["pinlists"] = {}

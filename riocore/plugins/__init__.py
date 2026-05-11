@@ -60,6 +60,7 @@ class PluginBase:
         self.SUBBOARD = None
         self.SUB_OPTIONS = {}
         self.KICAD_FOLDER = "kicad"
+        self.USED_MODIFIERS = set()
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -456,6 +457,7 @@ class PluginBase:
         for modifier_num, modifier in enumerate(modifier_list):
             if modifier:
                 modifier_type = modifier["type"]
+                self.USED_MODIFIERS.add(modifier_type)
                 modifier_function = getattr(Modifiers, f"pin_modifier_{modifier_type}")
                 if modifier_function:
                     pin_varname = modifier_function(self, instances, modifier_num, pin_name, pin_varname, modifier, self.system_setup)
