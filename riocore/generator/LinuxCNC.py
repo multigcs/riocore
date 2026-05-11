@@ -1189,6 +1189,7 @@ o<{oword}> endsub
             axis_move = False
             wheel = False
             position_display = False
+            scale_selector_reset = False
             for function, halname in self.rio_functions["jog"].items():
                 if function.startswith("select-"):
                     axis_selector = True
@@ -1200,6 +1201,9 @@ o<{oword}> endsub
                     speed_selector = True
                 elif function in {"scale0", "scale1", "scale2"}:
                     scale_selector = True
+                elif function in {"scaleselect0", "scaleselect1", "scaleselect2"}:
+                    scale_selector = True
+                    scale_selector_reset = True
                 elif function in {"position"}:
                     position_display = True
                 elif function in {"wheel"}:
@@ -1222,7 +1226,11 @@ o<{oword}> endsub
                         self.halg.net_add(f"scale-select.selected{function[-1]}", halname)
 
                 shutil.copy(os.path.join(riocore_path, "files", "fselect.py"), os.path.join(self.configuration_path, "fselect.py"))
-                self.halg.fmt_add(f"loadusr -Wn scale-select ./fselect.py scale-select {scale_selectors}")
+                if scale_selector_reset:
+                    self.halg.fmt_add(f"loadusr -Wn scale-select ./fselect.py scale-select {scale_selectors} 1")
+                else:
+                    self.halg.fmt_add(f"loadusr -Wn scale-select ./fselect.py scale-select {scale_selectors}")
+
                 self.halg.net_add("0.001", "scale-select.value0")
                 self.halg.net_add("0.01", "scale-select.value1")
                 self.halg.net_add("0.1", "scale-select.value2")

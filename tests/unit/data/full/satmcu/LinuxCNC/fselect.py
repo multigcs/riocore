@@ -9,9 +9,12 @@ import hal
 
 halname = "fselect"
 values = 3
-if len(sys.argv) == 3:
+allow_zero = 0
+if len(sys.argv) >= 3:
     halname = sys.argv[1]
     values = int(sys.argv[2])
+if len(sys.argv) >= 4:
+    allow_zero = int(sys.argv[3])
 
 h = hal.component(halname)
 for vn in range(values):
@@ -23,23 +26,28 @@ h.newpin("out", hal.HAL_FLOAT, hal.HAL_OUT)
 h["selected"] = 0
 h.ready()
 
-
 try:
     while 1:
+        zero = False
+        if allow_zero:
+            zero = True
         for vn in range(values):
             if h[f"in{vn}"]:
                 h["selected"] = vn
+                zero = False
                 break
-
-        for vn in range(values):
-            if h["selected"] == vn:
-                h["out"] = h[f"value{vn}"]
-                for vn2 in range(values):
-                    if vn == vn2:
-                        h[f"selected{vn2}"] = 1
-                    else:
-                        h[f"selected{vn2}"] = 0
-                break
+        if zero:
+            h["out"] = 0.0
+        else:
+            for vn in range(values):
+                if h["selected"] == vn:
+                    h["out"] = h[f"value{vn}"]
+                    for vn2 in range(values):
+                        if vn == vn2:
+                            h[f"selected{vn2}"] = 1
+                        else:
+                            h[f"selected{vn2}"] = 0
+                    break
 
         time.sleep(0.1)
 
