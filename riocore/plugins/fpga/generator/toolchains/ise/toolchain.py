@@ -44,6 +44,10 @@ class Toolchain:
                 self.config["speed"] = new_speed
 
     def generate(self, path):
+        USING_XSTFILE = True
+        XISE_PROJECT = False
+        CPLD = False
+
         pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.ucf")
         pins_generator.Pins(self.config).generate(path)
 
@@ -58,6 +62,49 @@ class Toolchain:
         # CClk | jtagclk
         startupClk = self.config["clock"].get("startup", "jtagclk")
 
+        prj_data = []
+        for verilog in self.config["verilog_files"]:
+            # if verilog in {"globals.v"}:
+            #    continue
+            prj_data.append(f'verilog work "{verilog}"')
+        prj_data.append("")
+        open(os.path.join(path, "rio.prj"), "w").write("\n".join(prj_data))
+
+        xst_data = []
+        xst_data.append('set -tmpdir "xst/projnav.tmp"')
+        xst_data.append('set -xsthdpdir "xst"')
+        xst_data.append("run")
+        xst_data.append("-ifn rio.prj")
+        xst_data.append("-ifmt mixed")
+        xst_data.append("-ofn rio")
+        xst_data.append("-ofmt NGC")
+        # xst_data.append("-p xa9500xl")
+        xst_data.append(f"-p {self.config['type']}")
+        xst_data.append("-top rio")
+        xst_data.append("-opt_mode Speed")
+        xst_data.append("-opt_level 1")
+        xst_data.append("-iuc NO")
+        xst_data.append("-keep_hierarchy Yes")
+        xst_data.append("-netlist_hierarchy As_Optimized")
+        xst_data.append("-rtlview Yes")
+        xst_data.append("-hierarchy_separator /")
+        xst_data.append("-bus_delimiter <>")
+        xst_data.append("-case Maintain")
+        xst_data.append("-fsm_extract YES -fsm_encoding Auto")
+        xst_data.append("-safe_implementation No")
+        xst_data.append("-resource_sharing YES")
+        xst_data.append("-iobuf YES")
+        if CPLD:
+            xst_data.append("-verilog2001 YES")
+            xst_data.append("-mux_extract Yes")
+            xst_data.append("-pld_mp YES")
+            xst_data.append("-pld_xp YES")
+            xst_data.append("-pld_ce YES")
+            xst_data.append("-wysiwyg NO")
+        xst_data.append("-equivalent_register_removal YES")
+        xst_data.append("")
+        open(os.path.join(path, "rio.xst"), "w").write("\n".join(xst_data))
+
         makefile_data = []
         makefile_data.append("")
         makefile_data.append("# Toolchain: ISE/Webpack")
@@ -65,6 +112,7 @@ class Toolchain:
         if self.toolchain_path:
             makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
             makefile_data.append("")
+
         makefile_data.append("PROJECT  := rio")
         makefile_data.append("TOP      := rio")
         makefile_data.append(f"PART     := {self.config['type']}")
@@ -74,34 +122,53 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("all: clean build load")
         makefile_data.append("")
-        makefile_data.append("build: $(PROJECT).bit")
-        makefile_data.append("")
-        makefile_data.append("$(PROJECT)-modules.v: $(VERILOGS)")
-        makefile_data.append("	cat $(VERILOGS) > $(PROJECT)-modules.v")
-        makefile_data.append("")
-        makefile_data.append("$(PROJECT).ngc: $(PROJECT)-modules.v")
-        makefile_data.append("	echo 'run -ifn $(PROJECT)-modules.v -ifmt Verilog -ofn $(PROJECT).ngc -top $(TOP) -p $(PART) -opt_mode Speed -opt_level 1' | xst")
-        makefile_data.append("")
-        makefile_data.append("$(PROJECT).ngd: $(PROJECT).ngc pins.ucf")
-        makefile_data.append("	ngdbuild -p $(PART) -uc pins.ucf $(PROJECT).ngc")
-        makefile_data.append("")
-        makefile_data.append("$(PROJECT).ncd: $(PROJECT).ngd")
-        makefile_data.append("	map -detail -pr b $(PROJECT).ngd")
-        makefile_data.append("")
-        makefile_data.append("parout.ncd: $(PROJECT).ncd $(PROJECT).pcf")
-        makefile_data.append("	par -w $(PROJECT).ncd parout.ncd $(PROJECT).pcf")
-        makefile_data.append("")
-        makefile_data.append("$(PROJECT).bit: parout.ncd $(PROJECT).pcf")
-        makefile_data.append("	bitgen -w -g StartUpClk:$(STARTUP_CLK) -g CRC:Enable parout.ncd $(PROJECT).bit $(PROJECT).pcf")
-        makefile_data.append("	promgen -spi -o $(PROJECT).bin -p bin -w -u 0 $(PROJECT).bit")
-        makefile_data.append("	dd if=/dev/zero of=$(PROJECT)-2048.bin  bs=2097152 count=1")
-        makefile_data.append("	dd if=$(PROJECT).bin conv=notrunc of=$(PROJECT)-2048.bin")
-        makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
-        makefile_data.append("")
         makefile_data.append("clean:")
-        makefile_data.append("	rm -rf $(PROJECT).ngc $(PROJECT).ngd $(PROJECT).ncd parout.ncd $(PROJECT).bit")
+        makefile_data.append("	rm -rf $(PROJECT).ngc $(PROJECT).ngd $(PROJECT).ncd parout.ncd $(PROJECT).bit xst/projnav.tmp/")
         makefile_data.append("")
-        # makefile_data.append("load: $(PROJECT).bit")
+
+        if USING_XSTFILE:
+            makefile_data.append("build:")
+            makefile_data.append("	mkdir -p xst/projnav.tmp/")
+            makefile_data.append('	xst -intstyle ise -ifn "$(PROJECT).xst" -ofn "$(PROJECT).syr"')
+            makefile_data.append(f"	ngdbuild -intstyle ise -dd _ngo -i -p {self.config['type']} $(PROJECT).ngc $(PROJECT).ngd")
+            if CPLD:
+                makefile_data.append(f"	cpldfit -intstyle ise -p {self.config['type']} -ofmt vhdl -optimize density -htmlrpt -loc on -slew fast -init low -inputs 54 -pterms 25 -terminate keeper $(PROJECT).ngd")
+                makefile_data.append("	XSLTProcess $(PROJECT)_build.xml")
+            else:
+                makefile_data.append("	map -detail -pr b $(PROJECT).ngd")
+                makefile_data.append("	par -w $(PROJECT).ncd parout.ncd $(PROJECT).pcf")
+                makefile_data.append("	bitgen -w -g StartUpClk:$(STARTUP_CLK) -g CRC:Enable parout.ncd $(PROJECT).bit $(PROJECT).pcf")
+                makefile_data.append("	promgen -spi -o $(PROJECT).bin -p bin -w -u 0 $(PROJECT).bit")
+                makefile_data.append("	dd if=/dev/zero of=$(PROJECT)-2048.bin  bs=2097152 count=1")
+                makefile_data.append("	dd if=$(PROJECT).bin conv=notrunc of=$(PROJECT)-2048.bin")
+                makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+            makefile_data.append("")
+        else:
+            makefile_data.append("build: $(PROJECT).bit")
+            makefile_data.append("")
+            makefile_data.append("$(PROJECT)-modules.v: $(VERILOGS)")
+            makefile_data.append("	cat $(VERILOGS) > $(PROJECT)-modules.v")
+            makefile_data.append("")
+            makefile_data.append("$(PROJECT).ngc: $(PROJECT)-modules.v")
+            makefile_data.append("	echo 'run -ifn $(PROJECT)-modules.v -ifmt Verilog -ofn $(PROJECT).ngc -top $(TOP) -p $(PART) -opt_mode Speed -opt_level 1' | xst")
+            makefile_data.append("")
+            makefile_data.append("$(PROJECT).ngd: $(PROJECT).ngc pins.ucf")
+            makefile_data.append("	ngdbuild -p $(PART) -uc pins.ucf $(PROJECT).ngc")
+            makefile_data.append("")
+            makefile_data.append("$(PROJECT).ncd: $(PROJECT).ngd")
+            makefile_data.append("	map -detail -pr b $(PROJECT).ngd")
+            makefile_data.append("")
+            makefile_data.append("parout.ncd: $(PROJECT).ncd $(PROJECT).pcf")
+            makefile_data.append("	par -w $(PROJECT).ncd parout.ncd $(PROJECT).pcf")
+            makefile_data.append("")
+            makefile_data.append("$(PROJECT).bit: parout.ncd $(PROJECT).pcf")
+            makefile_data.append("	bitgen -w -g StartUpClk:$(STARTUP_CLK) -g CRC:Enable parout.ncd $(PROJECT).bit $(PROJECT).pcf")
+            makefile_data.append("	promgen -spi -o $(PROJECT).bin -p bin -w -u 0 $(PROJECT).bit")
+            makefile_data.append("	dd if=/dev/zero of=$(PROJECT)-2048.bin  bs=2097152 count=1")
+            makefile_data.append("	dd if=$(PROJECT).bin conv=notrunc of=$(PROJECT)-2048.bin")
+            makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+            makefile_data.append("")
+
         makefile_data.append("load:")
         flashcmd = self.config.get("flashcmd")
         if flashcmd:
@@ -118,24 +185,27 @@ class Toolchain:
             makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
         makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
         makefile_data.append("")
+
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
-        device = self.config["type"].split("-")[0]
-        speed = self.config["type"].split("-")[1][0]
-        package = self.config["type"].split("-")[1][1:]
+        if XISE_PROJECT:
+            device = self.config["type"].split("-")[0]
+            speed = self.config["type"].split("-")[1][0]
+            package = self.config["type"].split("-")[1][1:]
 
-        # generating ISE project file
-        modules = []
-        for verilog in self.config["verilog_files"]:
-            source = os.path.join(path, verilog)
-            if os.path.isfile(source):
-                modules.append(open(source).read())
-            else:
-                print(f"ERROR: missing file: {source}")
-        open(os.path.join(path, "rio-modules.v"), "w").write("\n\n".join(modules))
+            # generating ISE project file
+            modules = []
+            for verilog in self.config["verilog_files"]:
+                source = os.path.join(path, verilog)
+                if os.path.isfile(source):
+                    modules.append(open(source).read())
+                else:
+                    print(f"ERROR: missing file: {source}")
 
-        ise_project = f"""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+            open(os.path.join(path, "rio-modules.v"), "w").write("\n\n".join(modules))
+
+            ise_project = f"""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <project xmlns="http://www.xilinx.com/XMLSchema" xmlns:xil_pn="http://www.xilinx.com/XMLSchema">
   <header>
   </header>
@@ -512,4 +582,4 @@ class Toolchain:
   </autoManagedFiles>
 </project>
 """
-        open(os.path.join(path, "rio.xise"), "w").write(ise_project)
+            open(os.path.join(path, "rio.xise"), "w").write(ise_project)
