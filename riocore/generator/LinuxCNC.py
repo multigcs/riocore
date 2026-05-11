@@ -8,7 +8,6 @@ import stat
 import riocore
 
 from riocore import halpins
-from riocore.generator.flexvcp import flexvcp
 from riocore.generator.gladevcp import gladevcp
 from riocore.generator.hal import hal_generator
 from riocore.generator.pyvcp import pyvcp
@@ -461,7 +460,9 @@ class LinuxCNC:
         return f"halui.mdi-command-{mdi_index:02d}"
 
     @classmethod
-    def ini_defaults(cls, jdata, num_joints=5, axis_dict={}, dios=16, aios=16, gui_type="pyvcp", ini_setup=None):
+    def ini_defaults(cls, jdata, num_joints=5, axis_dict=None, dios=16, aios=16, gui_type="pyvcp", ini_setup=None):
+        if axis_dict is None:
+            axis_dict = {}
         linuxcnc_config = jdata.get("linuxcnc", {})
         if not ini_setup:
             ini_setup = copy.deepcopy(cls.INI_DEFAULTS)
@@ -1578,8 +1579,6 @@ if __name__ == "__main__":
                 gui_gen = qtvcp(self.gui_prefix, vcp_pos=vcp_pos)
             elif self.gui_type == "qtpyvcp":
                 gui_gen = qtpyvcp(self.gui_prefix, vcp_pos=vcp_pos, mode=gui)
-            elif self.gui_type == "flexvcp":
-                gui_gen = flexvcp(self.gui_prefix, vcp_pos=vcp_pos)
 
         if not gui_gen:
             return

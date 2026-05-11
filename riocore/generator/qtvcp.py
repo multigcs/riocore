@@ -235,7 +235,7 @@ class qtvcp:
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
 
-    def draw_button(self, name, halpin, setup={}):
+    def draw_button(self, name, halpin, setup=None):
         self.cfgxml_data.append(f"""
               <item>
                <widget class="PushButton" name="{halpin}">
@@ -266,13 +266,17 @@ QLabel {{
         """)
         return f"{self.prefix}.{halpin}"
 
-    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale_s32(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         if "resolution" not in setup:
             setup["resolution"] = 1
         self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
         return f"{self.prefix}.{halpin}-s"
 
-    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0)
@@ -290,7 +294,9 @@ QLabel {{
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}-f"
 
-    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_meter(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -351,19 +357,21 @@ QLabel {{
         self.cfgxml_data.append("   </item>")
         return f"{self.prefix}.{halpin}_value"
 
-    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_bar(self, name, halpin, setup=None, vmin=0, vmax=100):
         return self.draw_number(name, halpin, setup)
 
-    def draw_number_u32(self, name, halpin, setup={}):
+    def draw_number_u32(self, name, halpin, setup=None):
         return self.draw_number(name, halpin, hal_type="u32", setup=setup)
 
-    def draw_number_s32(self, name, halpin, setup={}):
+    def draw_number_s32(self, name, halpin, setup=None):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
-    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+    def draw_graph(self, name, halpin, setup=None, hal_type="float"):
         return self.draw_bar(name, halpin, setup=setup)
 
-    def draw_number(self, name, halpin, setup={}, hal_type="float"):
+    def draw_number(self, name, halpin, setup=None, hal_type="float"):
+        if setup is None:
+            setup = {}
         if hal_type == "float":
             display_format = setup.get("format", "0.2f")
         else:
@@ -407,7 +415,9 @@ QLabel {{
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_checkbutton(self, name, halpin, setup={}):
+    def draw_checkbutton(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         display_initval = "true" if setup.get("initval", 0) else "false"
         title = setup.get("title", name)
         self.draw_hbox_begin()
@@ -449,7 +459,9 @@ QLabel {{
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_led(self, name, halpin, setup={}):
+    def draw_led(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         color = setup.get("color")
         on_color = "yellow"
@@ -500,5 +512,5 @@ QLabel {{
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_rectled(self, name, halpin, setup={}):
+    def draw_rectled(self, name, halpin, setup=None):
         return self.draw_led(name, halpin, setup=setup)

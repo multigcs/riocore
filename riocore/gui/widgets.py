@@ -232,6 +232,7 @@ class edit_float(QDoubleSpinBox):
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QSpinBox.wheelEvent(self, *args, **kwargs)
+        return None
 
     def change(self):
         if self.no_update:
@@ -289,6 +290,7 @@ class edit_int(QSpinBox):
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QSpinBox.wheelEvent(self, *args, **kwargs)
+        return None
 
     def change(self):
         if self.no_update:
@@ -346,6 +348,7 @@ class edit_avgfilter(QSpinBox):
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QSpinBox.wheelEvent(self, *args, **kwargs)
+        return None
 
     def change(self):
         if self.no_update:
@@ -796,6 +799,7 @@ class edit_combobox(QComboBox):
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QComboBox.wheelEvent(self, *args, **kwargs)
+        return None
 
     def change(self):
         if self.no_update:
@@ -922,6 +926,7 @@ class edit_imgselect(QComboBox):
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QComboBox.wheelEvent(self, *args, **kwargs)
+        return None
 
     def change(self):
         if self.no_update:
@@ -962,6 +967,7 @@ class modifier_selector(QComboBox):
     def wheelEvent(self, *args, **kwargs):
         if self.hasFocus():
             return QComboBox.wheelEvent(self, *args, **kwargs)
+        return None
 
     def change(self):
         selected = self.currentText()
@@ -1030,6 +1036,7 @@ class ImageMap(QLabel):
         else:
             if self.parent.scale < 10.0:
                 self.parent.scale += 0.1
+        return None
     """
 
     def setPin(self, pos):

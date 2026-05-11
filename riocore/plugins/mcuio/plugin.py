@@ -674,6 +674,7 @@ static void max7219_display(int32_t *values) {
             return ["https://github.com/MrYsLab/NeoPixelConnect"]
         if self.node_type == "mcp4725":
             return ["https://github.com/RobTillaart/MCP4725"]
+        return []
 
     @classmethod
     def firmware_type_setup(cls, instances):

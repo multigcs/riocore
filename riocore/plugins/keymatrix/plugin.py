@@ -181,3 +181,4 @@ class Plugin(PluginBase):
         sendkeys = self.plugin_setup.get("sendkeys", self.OPTIONS["sendkeys"]["default"])
         if sendkeys:
             return "sudo modprobe uinput\nsudo chmod 0666 /dev/uinput\n"
+        return ""

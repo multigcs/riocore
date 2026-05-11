@@ -393,7 +393,7 @@ class UserTab(QWidget):
         self.cfgxml_data.append("      </layout>")
         self.cfgxml_data.append("     </item>")
 
-    def draw_button(self, name, halpin, setup={}):
+    def draw_button(self, name, halpin, setup=None):
         halpin = halpin.replace("_", "-")
         self.cfgxml_data.append(f"""
               <item>
@@ -423,13 +423,17 @@ class UserTab(QWidget):
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
 
-    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale_s32(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         if "resolution" not in setup:
             setup["resolution"] = 1
         pname = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
         return f"conv({pname},float,s32)"
 
-    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         halpin = halpin.replace("_", "-")
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -457,7 +461,9 @@ class UserTab(QWidget):
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.out-f"
 
-    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_meter(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
         width = setup.get("width", 100)
@@ -497,19 +503,21 @@ class UserTab(QWidget):
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.in-f"
 
-    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_bar(self, name, halpin, setup=None, vmin=0, vmax=100):
         halpin = halpin.replace("_", "-")
         return self.draw_number(name, halpin, setup)
 
-    def draw_number_u32(self, name, halpin, setup={}):
+    def draw_number_u32(self, name, halpin, setup=None):
         halpin = halpin.replace("_", "-")
         return self.draw_number(name, halpin, hal_type="u32", setup=setup)
 
-    def draw_number_s32(self, name, halpin, setup={}):
+    def draw_number_s32(self, name, halpin, setup=None):
         halpin = halpin.replace("_", "-")
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
-    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+    def draw_graph(self, name, halpin, setup=None, hal_type="float"):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
         width = setup.get("width", 200)
@@ -552,7 +560,7 @@ class UserTab(QWidget):
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.Series1"
 
-    def draw_number(self, name, halpin, setup={}, hal_type="float"):
+    def draw_number(self, name, halpin, setup=None, hal_type="float"):
         halpin = halpin.replace("_", "-")
         self.draw_hbox_begin()
         self.draw_title(name)
@@ -582,7 +590,9 @@ class UserTab(QWidget):
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.in"
 
-    def draw_checkbutton(self, name, halpin, setup={}):
+    def draw_checkbutton(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
         width = setup.get("width", 16)
@@ -620,7 +630,9 @@ class UserTab(QWidget):
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.checked"
 
-    def draw_led(self, name, halpin, setup={}):
+    def draw_led(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         halpin = halpin.replace("_", "-")
         width = setup.get("width", 16)
@@ -676,5 +688,5 @@ class UserTab(QWidget):
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}.on"
 
-    def draw_rectled(self, name, halpin, setup={}):
+    def draw_rectled(self, name, halpin, setup=None):
         return self.draw_led(name, halpin, setup=setup)

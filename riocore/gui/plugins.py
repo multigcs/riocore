@@ -751,6 +751,7 @@ class GuiPlugins:
                     del self.plugin_config[key]
             for key in self.plugin_config_backup:
                 self.plugin_config[key] = self.plugin_config_backup[key]
+        return True
 
     def options_update(self):
         for key, value in self.main_options.items():
@@ -1137,6 +1138,7 @@ class GuiPlugins:
                     self.parent.insert_plugin(plugin_instance)
 
             return dialog.selected
+        return None
 
     def del_plugin(self, plugin_instance, widget, dialog=None):
         plugin_id = plugin_instance.plugin_id

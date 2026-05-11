@@ -104,17 +104,19 @@ class pyvcp:
             e_label.append(e_width)
         self.parent.append(e_label)
 
-    def draw_scale_u32(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale_u32(self, name, halpin, setup=None, vmin=0, vmax=100):
         guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
         return f"conv({guipin[0:-2]}-i, s32, u32)"
 
-    def draw_scale_s32(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale_s32(self, name, halpin, setup=None, vmin=0, vmax=100):
         if "resolution" not in setup:
             setup["resolution"] = 1
         guipin = self.draw_scale(name, halpin, setup=setup, vmin=vmin, vmax=vmax)
         return f"{guipin[0:-2]}-i"
 
-    def draw_scale(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_scale(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -151,7 +153,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}-f"
 
-    def draw_fselect(self, name, halpin, setup={}):
+    def draw_fselect(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         values = setup.get("values", {"v0": 0, "v1": 1})
         display_min = 0
@@ -207,7 +211,9 @@ class pyvcp:
         self.draw_vbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_spinbox(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_spinbox(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         # display_min = setup.get("min", vmin)
         # display_max = setup.get("max", vmax)
@@ -233,7 +239,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_jogwheel(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_jogwheel(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -273,7 +281,9 @@ class pyvcp:
         self.parent.append(e_jogwheel)
         return f"{self.prefix}.{halpin}"
 
-    def draw_dial(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_dial(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -325,7 +335,9 @@ class pyvcp:
         self.parent.append(e_dial)
         return f"{self.prefix}.{halpin}"
 
-    def draw_meter(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_meter(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         display_unit = setup.get("unit", "")
         if not display_unit and "." in name:
             display_unit = name.split(".")[-1]
@@ -375,7 +387,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_bar(self, name, halpin, setup={}, vmin=0, vmax=100):
+    def draw_bar(self, name, halpin, setup=None, vmin=0, vmax=100):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         display_min = setup.get("min", vmin)
         display_max = setup.get("max", vmax)
@@ -383,12 +397,9 @@ class pyvcp:
         display_range = setup.get("range", setup.get("region", []))
         display_unit = setup.get("unit")
         display_format = setup.get("format", "05d")
-
         bar_height = setup.get("height")
-
         if display_unit and len(display_format) < 5:
             display_format = f"{display_format} {display_unit}"
-
         display_fillcolor = setup.get("fillcolor", "red")
         display_bgcolor = setup.get("fillcolor", "grey")
         self.draw_hbox_begin()
@@ -434,16 +445,18 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_number_u32(self, name, halpin, setup={}):
+    def draw_number_u32(self, name, halpin, setup=None):
         return self.draw_number(name, halpin, hal_type="u32", setup=setup)
 
-    def draw_number_s32(self, name, halpin, setup={}):
+    def draw_number_s32(self, name, halpin, setup=None):
         return self.draw_number(name, halpin, hal_type="s32", setup=setup)
 
-    def draw_graph(self, name, halpin, setup={}, hal_type="float"):
+    def draw_graph(self, name, halpin, setup=None, hal_type="float"):
         return self.draw_bar(name, halpin, setup=setup)
 
-    def draw_number(self, name, halpin, setup={}, hal_type="float"):
+    def draw_number(self, name, halpin, setup=None, hal_type="float"):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         if hal_type == "float":
             display_format = setup.get("format", "07.2f")
@@ -478,7 +491,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_checkbutton(self, name, halpin, setup={}):
+    def draw_checkbutton(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         display_initval = setup.get("initval", 0)
         self.draw_hbox_begin()
@@ -501,7 +516,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup={}):
+    def draw_checkbutton_rgb(self, name, halpin_g, halpin_b, halpin_r, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         self.draw_hbox_begin()
         self.draw_title(title)
@@ -535,7 +552,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin_g}"
 
-    def draw_led(self, name, halpin, setup={}):
+    def draw_led(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         size = setup.get("size", 16)
         self.draw_hbox_begin()
@@ -580,7 +599,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_rectled(self, name, halpin, setup={}):
+    def draw_rectled(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         width = setup.get("width", 16)
         height = setup.get("height", 16)
@@ -630,7 +651,9 @@ class pyvcp:
         self.draw_hbox_end()
         return f"{self.prefix}.{halpin}"
 
-    def draw_button(self, name, halpin, setup={}):
+    def draw_button(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         title = setup.get("title", name)
         e_button = etree.Element("button")
         self.parent.append(e_button)
@@ -652,7 +675,9 @@ class pyvcp:
         self.parent.append(e_button)
         return f"{self.prefix}.{halpin}"
 
-    def draw_multilabel(self, name, halpin, setup={}):
+    def draw_multilabel(self, name, halpin, setup=None):
+        if setup is None:
+            setup = {}
         legends = setup.get("legends", ["LABEL1", "LABEL2", "LABEL3", "LABEL4"])
         e_multilabel = etree.Element("multilabel")
         self.parent.append(e_multilabel)
