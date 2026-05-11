@@ -655,13 +655,12 @@ class GuiPlugins:
             if pin_selected is None:
                 self.tab_widget.addTab(self.joint_tab, "Joint")
 
-        if self.plugin_instance.TYPE != "interface":
-            if self.plugin_instance.SIGNALS:
-                self.signals_tab = self.edit_plugin_signals(signal_selected=signal_selected, cb=cb)
-                if pin_selected is None:
-                    self.tab_widget.addTab(self.signals_tab, "Signals")
-                    if signal_selected is not None:
-                        self.tab_widget.setCurrentWidget(self.signals_tab)
+        if self.plugin_instance.TYPE != "interface" and self.plugin_instance.SIGNALS:
+            self.signals_tab = self.edit_plugin_signals(signal_selected=signal_selected, cb=cb)
+            if pin_selected is None:
+                self.tab_widget.addTab(self.signals_tab, "Signals")
+                if signal_selected is not None:
+                    self.tab_widget.setCurrentWidget(self.signals_tab)
 
     def update_image(self):
         image_path = self.plugin_instance.image_path()
@@ -711,9 +710,8 @@ class GuiPlugins:
         if hasattr(self.parent, "STYLESHEET_TABBAR"):
             self.tab_widget.setStyleSheet(self.parent.STYLESHEET_TABBAR)
 
-        if is_new and self.plugin_instance.TYPE == "joint":
-            if "position" in self.plugin_instance.SIGNALS:
-                self.plugin_config["is_joint"] = True
+        if is_new and self.plugin_instance.TYPE == "joint" and "position" in self.plugin_instance.SIGNALS:
+            self.plugin_config["is_joint"] = True
 
         self.options_tab = self.edit_plugin_options(cb=update)
         if signal_selected is None and pin_selected is None:
@@ -751,7 +749,6 @@ class GuiPlugins:
                     del self.plugin_config[key]
             for key in self.plugin_config_backup:
                 self.plugin_config[key] = self.plugin_config_backup[key]
-        return True
 
     def options_update(self):
         for key, value in self.main_options.items():
@@ -1047,9 +1044,8 @@ class GuiPlugins:
                     }
                     for spin_name, spin in slot.get("pins", {}).items():
                         direction = spin.get("direction") or "all"
-                        if self.parent.get_plugin_by_pin(spin["pin"]) == (None, None):
-                            if direction:
-                                slotpins[direction].append(spin_name)
+                        if self.parent.get_plugin_by_pin(spin["pin"]) == (None, None) and direction:
+                            slotpins[direction].append(spin_name)
 
                     # map single pin plugin to pin_id
                     num_mandatory = 0
@@ -1138,7 +1134,6 @@ class GuiPlugins:
                     self.parent.insert_plugin(plugin_instance)
 
             return dialog.selected
-        return None
 
     def del_plugin(self, plugin_instance, widget, dialog=None):
         plugin_id = plugin_instance.plugin_id

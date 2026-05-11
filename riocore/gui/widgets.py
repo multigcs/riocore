@@ -328,9 +328,8 @@ class edit_avgfilter(QSpinBox):
             self.setMaximum(vmax)
         else:
             self.setMaximum(99999999)
-        if key in obj:
-            if obj[key]:
-                self.setValue(obj[key][0].get("depth", 0))
+        if obj.get(key):
+            self.setValue(obj[key][0].get("depth", 0))
 
         self.valueChanged.connect(self.change)
         self.editingFinished.connect(self.change)
@@ -340,9 +339,8 @@ class edit_avgfilter(QSpinBox):
         if obj is not None:
             self.obj = obj
         self.no_update = True
-        if self.key in self.obj:
-            if self.obj[self.key]:
-                self.setValue(self.obj[self.key][0].get("depth", 0))
+        if self.obj.get(self.key):
+            self.setValue(self.obj[self.key][0].get("depth", 0))
         self.no_update = False
 
     def wheelEvent(self, *args, **kwargs):
@@ -664,9 +662,8 @@ class edit_radio(QWidget):
             if key in obj:
                 if str(obj[key]) == opt:
                     bcheck.setChecked(True)
-            elif default is not None:
-                if str(default) == opt:
-                    bcheck.setChecked(True)
+            elif default is not None and str(default) == opt:
+                bcheck.setChecked(True)
             bcheck.toggled.connect(self.change)
             self.boxes.append(bcheck)
 
@@ -678,9 +675,8 @@ class edit_radio(QWidget):
             if self.key in self.obj:
                 if str(obj[self.key]) == opt:
                     self.boxes[bn].setChecked(True)
-            elif self.default is not None:
-                if str(self.default) == opt:
-                    self.boxes[bn].setChecked(True)
+            elif self.default is not None and str(self.default) == opt:
+                self.boxes[bn].setChecked(True)
 
         self.no_update = False
 

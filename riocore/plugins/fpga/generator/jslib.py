@@ -83,20 +83,19 @@ class jslib(generator_base):
                         self.rx_dict[plugin_instance.instances_name] = {}
                     self.rx_dict[plugin_instance.instances_name][data_name] = variable_name
 
-            elif data_config["direction"] == "output":
-                if not data_config.get("expansion"):
-                    if size >= 8:
-                        for bit_num in range(0, size, 8):
-                            input_pos -= 8
-                    elif size > 1:
-                        input_pos -= size
-                    else:
-                        input_pos -= 1
-                    self.iface_out.append([variable_name, size])
+            elif data_config["direction"] == "output" and not data_config.get("expansion"):
+                if size >= 8:
+                    for bit_num in range(0, size, 8):
+                        input_pos -= 8
+                elif size > 1:
+                    input_pos -= size
+                else:
+                    input_pos -= 1
+                self.iface_out.append([variable_name, size])
 
-                    if plugin_instance.instances_name not in self.tx_dict:
-                        self.tx_dict[plugin_instance.instances_name] = {}
-                    self.tx_dict[plugin_instance.instances_name][data_name] = variable_name
+                if plugin_instance.instances_name not in self.tx_dict:
+                    self.tx_dict[plugin_instance.instances_name] = {}
+                self.tx_dict[plugin_instance.instances_name][data_name] = variable_name
 
         # self.byte_size = self.buffer_size // 8
 

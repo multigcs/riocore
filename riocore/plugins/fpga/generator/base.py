@@ -29,14 +29,13 @@ class generator_base:
                             self.multiplexed_input_size = max(self.multiplexed_input_size, 8)
                         else:
                             self.input_size += variable_size
-                elif data_config["direction"] == "output":
-                    if not data_config.get("expansion"):
-                        if multiplexed:
-                            self.multiplexed_output += 1
-                            self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
-                            self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
-                        else:
-                            self.output_size += variable_size
+                elif data_config["direction"] == "output" and not data_config.get("expansion"):
+                    if multiplexed:
+                        self.multiplexed_output += 1
+                        self.multiplexed_output_size = (max(self.multiplexed_output_size, variable_size) + 7) // 8 * 8
+                        self.multiplexed_output_size = max(self.multiplexed_output_size, 8)
+                    else:
+                        self.output_size += variable_size
 
         if self.multiplexed_input:
             self.input_size += self.multiplexed_input_size + 8
@@ -78,9 +77,8 @@ class generator_base:
                 if data_config["direction"] == "input":
                     if not data_config.get("expansion"):
                         self.sub_input_size += variable_size
-                elif data_config["direction"] == "output":
-                    if not data_config.get("expansion"):
-                        self.sub_output_size += variable_size
+                elif data_config["direction"] == "output" and not data_config.get("expansion"):
+                    self.sub_output_size += variable_size
 
         self.sub_input_size = self.sub_input_size + self.header_size
         self.sub_output_size = self.sub_output_size + self.header_size

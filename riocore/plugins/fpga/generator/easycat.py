@@ -411,10 +411,9 @@ void loop() {
                             out_size += 32
                     # output.append(f"    float {varname}_OFFSET;")
                     # out_size += 32;
-                    elif direction == "input":
-                        if not boolean:
-                            output.append(f"    float {varname}_SCALE;")
-                            out_size += 32
+                    elif direction == "input" and not boolean:
+                        output.append(f"    float {varname}_SCALE;")
+                        out_size += 32
         # output.append(f"    float {varname}_OFFSET;")
         # out_size += 32;
 

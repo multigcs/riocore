@@ -51,15 +51,14 @@ class HalGraph:
             for line in ini_data.split("\n"):
                 if line.startswith("["):
                     section = line.strip("[]")
-                elif "=" in line:
-                    if section == "HAL":
-                        if line.split()[0] == "#":
-                            continue
-                        name, value = line.split("=", 1)
-                        name = name.strip()
-                        value = value.strip()
-                        if name in {"HALFILE", "POSTGUI_HALFILE"}:
-                            self.load_halfile(base_dir, value)
+                elif "=" in line and section == "HAL":
+                    if line.split()[0] == "#":
+                        continue
+                    name, value = line.split("=", 1)
+                    name = name.strip()
+                    value = value.strip()
+                    if name in {"HALFILE", "POSTGUI_HALFILE"}:
+                        self.load_halfile(base_dir, value)
             groups = {}
             for signal_name, parts in self.signals.items():
                 source_parts = parts["source"].split(".")

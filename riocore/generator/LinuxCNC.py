@@ -2297,17 +2297,16 @@ if __name__ == "__main__":
                 "genserkins.D-5": 235,
             }
 
-        if embed_vismach:
-            if embed_vismach in {"fanuc_200f"}:
-                for joint in range(len(self.project.axis_dict)):
-                    if machinetype in {"melfa", "melfa_nogl"}:
-                        # melfa has some inverted joints
-                        if joint in {1, 2, 3}:
-                            self.halg.net_add(f"(joint.{joint}.pos-fb * -1)", f"{embed_vismach}.joint{joint + 1}")
-                        else:
-                            self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
+        if embed_vismach and embed_vismach in {"fanuc_200f"}:
+            for joint in range(len(self.project.axis_dict)):
+                if machinetype in {"melfa", "melfa_nogl"}:
+                    # melfa has some inverted joints
+                    if joint in {1, 2, 3}:
+                        self.halg.net_add(f"(joint.{joint}.pos-fb * -1)", f"{embed_vismach}.joint{joint + 1}")
                     else:
                         self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
+                else:
+                    self.halg.net_add(f"joint.{joint}.pos-fb", f"{embed_vismach}.joint{joint + 1}", f"j{joint}pos-fb")
 
         linuxcnc_setp.update(linuxcnc_config.get("setp", {}))
         for key, value in linuxcnc_setp.items():
@@ -2510,11 +2509,10 @@ if __name__ == "__main__":
                         joint_data[key.upper()] = value
                     joint_data["HOME_SEQUENCE"] = home_sequence_default
 
-                    if machinetype not in {"scara", "melfa", "melfa_nogl", "puma", "lathe"}:
-                        if axis_name in {"Z"}:
-                            joint_data["HOME_SEARCH_VEL"] *= -1.0
-                            joint_data["HOME_LATCH_VEL"] *= -1.0
-                            joint_data["MAX_VELOCITY"] /= 3.0
+                    if machinetype not in {"scara", "melfa", "melfa_nogl", "puma", "lathe"} and axis_name in {"Z"}:
+                        joint_data["HOME_SEARCH_VEL"] *= -1.0
+                        joint_data["HOME_LATCH_VEL"] *= -1.0
+                        joint_data["MAX_VELOCITY"] /= 3.0
 
                     if joint_data["homeswitch"] is None:
                         joint_data["HOME_SEARCH_VEL"] = 0.0

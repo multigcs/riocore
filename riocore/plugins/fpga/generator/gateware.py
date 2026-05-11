@@ -111,15 +111,14 @@ class gateware(generator_base):
 
     def makefile(self):
         flashcmd = self.jdata.get("flashcmd")
-        if flashcmd:
-            if flashcmd.startswith("./") and self.jdata["json_path"]:
-                flashcmd_script = flashcmd.split()[0].replace("./", "")
-                json_path = self.jdata["json_path"]
-                flashcmd_script_path = os.path.join(json_path, flashcmd_script)
-                if os.path.isfile(flashcmd_script_path):
-                    target = os.path.join(self.jdata["output_path"], flashcmd_script)
-                    shutil.copy(flashcmd_script_path, target)
-                    os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
+        if flashcmd and flashcmd.startswith("./") and self.jdata["json_path"]:
+            flashcmd_script = flashcmd.split()[0].replace("./", "")
+            json_path = self.jdata["json_path"]
+            flashcmd_script_path = os.path.join(json_path, flashcmd_script)
+            if os.path.isfile(flashcmd_script_path):
+                target = os.path.join(self.jdata["output_path"], flashcmd_script)
+                shutil.copy(flashcmd_script_path, target)
+                os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
         all_modifiers = set()
         for plugin_instance in self.parent.project.plugin_instances:
@@ -270,21 +269,20 @@ class gateware(generator_base):
                         sub_output_pos -= size
                     sub_output_variables_list.append(f"{', '.join(pack_list)}")
                     self.parent.iface_in.append([variable_name, size])
-            elif data_config["direction"] == "input":
-                if not data_config.get("expansion"):
-                    pack_list = []
-                    if size >= 8:
-                        for bit_num in range(0, size, 8):
-                            pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - 8}]")
-                            sub_input_pos -= 8
-                    elif size > 1:
-                        pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - size}]")
-                        sub_input_pos -= size
-                    else:
-                        pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}]")
-                        sub_input_pos -= 1
-                    sub_input_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-                    self.parent.iface_out.append([variable_name, size])
+            elif data_config["direction"] == "input" and not data_config.get("expansion"):
+                pack_list = []
+                if size >= 8:
+                    for bit_num in range(0, size, 8):
+                        pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - 8}]")
+                        sub_input_pos -= 8
+                elif size > 1:
+                    pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}:{sub_input_pos - size}]")
+                    sub_input_pos -= size
+                else:
+                    pack_list.append(f"sub{subnumber}_rx_data[{sub_input_pos - 1}]")
+                    sub_input_pos -= 1
+                sub_input_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+                self.parent.iface_out.append([variable_name, size])
 
         if self.sub_buffer_size_out > self.sub_output_size:
             diff = self.sub_buffer_size_out - self.sub_output_size
@@ -435,21 +433,20 @@ class gateware(generator_base):
                         pack_list.append(f"{variable_name}")
                     input_variables_list.append(f"{', '.join(pack_list)}")
                     self.parent.iface_in.append([variable_name, size])
-            elif data_config["direction"] == "output":
-                if not data_config.get("expansion"):
-                    pack_list = []
-                    if size >= 8:
-                        for bit_num in range(0, size, 8):
-                            pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
-                            output_pos -= 8
-                    elif size > 1:
-                        pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - size}]")
-                        output_pos -= size
-                    else:
-                        pack_list.append(f"rx_data[{output_pos - 1}]")
-                        output_pos -= 1
-                    output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
-                    self.parent.iface_out.append([variable_name, size])
+            elif data_config["direction"] == "output" and not data_config.get("expansion"):
+                pack_list = []
+                if size >= 8:
+                    for bit_num in range(0, size, 8):
+                        pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
+                        output_pos -= 8
+                elif size > 1:
+                    pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - size}]")
+                    output_pos -= size
+                else:
+                    pack_list.append(f"rx_data[{output_pos - 1}]")
+                    output_pos -= 1
+                output_variables_list.append(f"assign {variable_name} = {{{', '.join(reversed(pack_list))}}};")
+                self.parent.iface_out.append([variable_name, size])
 
         if self.buffer_size_in > self.input_size:
             diff = self.buffer_size_in - self.input_size
@@ -753,10 +750,8 @@ class gateware(generator_base):
                 for pin_config in plugin_instance.pins().values():
                     if pin_config.get("bus"):
                         continue
-                    if "pin" in pin_config:
-                        if pin_config["pin"] in self.parent.expansion_pins:
-                            if pin_config["direction"] == "output":
-                                output_exp.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
+                    if "pin" in pin_config and pin_config["pin"] in self.parent.expansion_pins and pin_config["direction"] == "output":
+                        output_exp.append(f"        {pin_config['pin']} <= {pin_config['varname']};")
             # set expansion output pins without driver
             for plugin_instance in self.parent.project.plugin_instances:
                 for data_config in plugin_instance.interface_data().values():
@@ -894,33 +889,32 @@ class gateware(generator_base):
                             output_first.append(f"    {part}")
                         else:
                             output_last.append(f"    {part}")
-                if not instance_direct:
-                    if instance_arguments:
-                        if instance_parameter:
-                            output_last.append(f"    {instance_module} #(")
-                            parameters_list = []
-                            for parameter_name, parameter_value in instance_parameter.items():
-                                parameters_list.append(f".{parameter_name}({parameter_value})")
-                            parameters_string = ",\n        ".join(parameters_list)
-                            output_last.append(f"        {parameters_string}")
-                            output_last.append(f"    ) {instance_name} (")
-                        else:
-                            output_last.append(f"    {instance_module} {instance_name} (")
-                        arguments_list = []
-                        for argument_name, argument_value in instance_arguments.items():
-                            value = argument_value
-                            if ":" in value:
-                                if value in varmapping:
-                                    value = varmapping[value]
-                                elif value in varmapping_fallback:
-                                    value = varmapping_fallback[value]
-                                else:
-                                    riocore.log(f"ERROR: no mapping found: {value}")
-                            arguments_list.append(f".{argument_name}({value})")
+                if not instance_direct and instance_arguments:
+                    if instance_parameter:
+                        output_last.append(f"    {instance_module} #(")
+                        parameters_list = []
+                        for parameter_name, parameter_value in instance_parameter.items():
+                            parameters_list.append(f".{parameter_name}({parameter_value})")
+                        parameters_string = ",\n        ".join(parameters_list)
+                        output_last.append(f"        {parameters_string}")
+                        output_last.append(f"    ) {instance_name} (")
+                    else:
+                        output_last.append(f"    {instance_module} {instance_name} (")
+                    arguments_list = []
+                    for argument_name, argument_value in instance_arguments.items():
+                        value = argument_value
+                        if ":" in value:
+                            if value in varmapping:
+                                value = varmapping[value]
+                            elif value in varmapping_fallback:
+                                value = varmapping_fallback[value]
+                            else:
+                                riocore.log(f"ERROR: no mapping found: {value}")
+                        arguments_list.append(f".{argument_name}({value})")
 
-                        arguments_string = ",\n        ".join(arguments_list)
-                        output_last.append(f"        {arguments_string}")
-                        output_last.append("    );")
+                    arguments_string = ",\n        ".join(arguments_list)
+                    output_last.append(f"        {arguments_string}")
+                    output_last.append("    );")
             output += output_first
             output += output_last
 

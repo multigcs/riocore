@@ -270,9 +270,8 @@ class HomeAnimation(QWidget):
         painter.drawEllipse(QRect(x + 31, y + 10, 7, 7))
         # sense
         painter.setPen(QPen(Qt.black, 2))
-        if trigger:
-            if (self.invert > 0 and self.slider_pos < (x - self.zero) + 6) or (self.invert < 0 and self.slider_pos * self.invert > (x - self.zero) + 1):
-                painter.setPen(QPen(Qt.red, 2))
+        if trigger and ((self.invert > 0 and self.slider_pos < (x - self.zero) + 6) or (self.invert < 0 and self.slider_pos * self.invert > (x - self.zero) + 1)):
+            painter.setPen(QPen(Qt.red, 2))
         painter.drawLine(x, y - 5, x + 38, y)
         painter.drawLine(x - 5, y - 3, x, y - 5)
         # pins

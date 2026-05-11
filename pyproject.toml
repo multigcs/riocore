@@ -23,7 +23,8 @@ lint.select = [
     "RET506",  # superfluous-else-raise
     "RET507",  # superfluous-else-continue
     "RET508",  # superfluous-else-break
-    "SIM",  # future
+    #"SIM",  # future
+    "SIM102",  # future
     "B006",  # mutable-argument-default
     "B905",  # zip-without-explicit-strict
     "C4",  # flake8-comprehensions

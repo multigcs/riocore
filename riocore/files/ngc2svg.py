@@ -42,16 +42,15 @@ for line in output:
         exit(1)
 
     result = COMMAND.match(line.strip())
-    if result:
-        if result["type"] in {"ARC_FEED", "STRAIGHT_FEED", "STRAIGHT_TRAVERSE"}:
-            coords = result["coords"].split(",")
-            new_x = float(coords[0].strip())
-            new_y = float(coords[1].strip())
-            new_z = float(coords[2].strip())
-            pos_min_x = min(new_x, pos_min_x)
-            pos_min_y = min(new_y, pos_min_y)
-            pos_max_x = max(new_x, pos_max_x)
-            pos_max_y = max(new_y, pos_max_y)
+    if result and result["type"] in {"ARC_FEED", "STRAIGHT_FEED", "STRAIGHT_TRAVERSE"}:
+        coords = result["coords"].split(",")
+        new_x = float(coords[0].strip())
+        new_y = float(coords[1].strip())
+        new_z = float(coords[2].strip())
+        pos_min_x = min(new_x, pos_min_x)
+        pos_min_y = min(new_y, pos_min_y)
+        pos_max_x = max(new_x, pos_max_x)
+        pos_max_y = max(new_y, pos_max_y)
 
 # print(pos_min_x, pos_min_y, pos_max_x, pos_max_y)
 

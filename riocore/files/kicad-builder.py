@@ -301,15 +301,14 @@ if old_pcb:
             for sentry in entry[1:]:
                 for ssentry in sentry[1:]:
                     # update net numbers
-                    if ssentry[0] == "net":
-                        if len(ssentry) == 3:
-                            netname = ssentry[2].strip('"')
-                            if netname in netnames:
-                                netnum = netnames.index(netname) + 1
-                                # print(ssentry, netnum, netname)
-                                ssentry[1] = f"{netnum}"
-                            else:
-                                print(ssentry)
+                    if ssentry[0] == "net" and len(ssentry) == 3:
+                        netname = ssentry[2].strip('"')
+                        if netname in netnames:
+                            netnum = netnames.index(netname) + 1
+                            # print(ssentry, netnum, netname)
+                            ssentry[1] = f"{netnum}"
+                        else:
+                            print(ssentry)
             pcb_new.append(entry)
 
 

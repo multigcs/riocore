@@ -133,53 +133,51 @@ class hy_vfd:
 
     def frameio_rx(self, frame_new, frame_id, frame_len, frame_data):
         config = self.config
-        if frame_new:
-            # print(f"hy rx frame  {frame_id} {frame_len}: {frame_data}")
-            if frame_len > 4:
-                frame_data[0]
-                frame_data[1]
-                frame_data[2]
-                csum = crc16()
-                csum.update(frame_data[:-2])
-                csum_calc = csum.intdigest()
-                if csum_calc != frame_data[-2:]:
-                    print(f"ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
-                else:
-                    if frame_data[0] == config["address"]:
-                        if frame_data[1] == 0x01 and frame_data[2] == 0x03:
-                            register = frame_data[3]
-                            value = self.list2int(frame_data[4:-2])
-                            self.HYVFD_CONFIG_REGISTER[register]["value"] = value
-                            self.HYVFD_CONFIG_REGISTER[register]["done"] = True
-                        elif frame_data[1] == 0x04 and frame_data[2] == 0x03:
-                            status_register = frame_data[3]
-                            status_name = self.HYVFD_STATUS_REGISTER[status_register]["name"]
-                            status_scale = self.HYVFD_STATUS_REGISTER[status_register]["scale"]
-                            value = self.list2int(frame_data[4:-2])
-                            self.HYVFD_STATUS_REGISTER[status_register]["done"] = True
-                            if status_register == 1 and self.HYVFD_DATA["max_freq"]:
-                                self.HYVFD_DATA[status_name] = value * status_scale
-                                self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
-                                self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
-                                set_speed = abs(self.signals[f"{self.signal_name}_speed_command"]["value"])
-                                tolerance = set_speed * self.signals[f"{self.signal_name}_spindle_at_speed_tolerance"]["value"]
-                                diff = abs(self.HYVFD_DATA["speed_fb"]) - set_speed
-                                if diff <= tolerance:
-                                    self.HYVFD_DATA["at_speed"] = 1
-                                else:
-                                    self.HYVFD_DATA["at_speed"] = 0
+        if frame_new and frame_len > 4:
+            frame_data[0]
+            frame_data[1]
+            frame_data[2]
+            csum = crc16()
+            csum.update(frame_data[:-2])
+            csum_calc = csum.intdigest()
+            if csum_calc != frame_data[-2:]:
+                print(f"ERROR: modbus CSUM failed {csum_calc} != {frame_data[-2:]}")
+            else:
+                if frame_data[0] == config["address"]:
+                    if frame_data[1] == 0x01 and frame_data[2] == 0x03:
+                        register = frame_data[3]
+                        value = self.list2int(frame_data[4:-2])
+                        self.HYVFD_CONFIG_REGISTER[register]["value"] = value
+                        self.HYVFD_CONFIG_REGISTER[register]["done"] = True
+                    elif frame_data[1] == 0x04 and frame_data[2] == 0x03:
+                        status_register = frame_data[3]
+                        status_name = self.HYVFD_STATUS_REGISTER[status_register]["name"]
+                        status_scale = self.HYVFD_STATUS_REGISTER[status_register]["scale"]
+                        value = self.list2int(frame_data[4:-2])
+                        self.HYVFD_STATUS_REGISTER[status_register]["done"] = True
+                        if status_register == 1 and self.HYVFD_DATA["max_freq"]:
+                            self.HYVFD_DATA[status_name] = value * status_scale
+                            self.HYVFD_DATA["speed_fb"] = self.HYVFD_DATA["frq_get"] / self.HYVFD_DATA["max_freq"] * self.HYVFD_DATA["rated_motor_rev"] * self.HYVFD_CALC_KEYS["speed_fb"]["scale"]
+                            self.HYVFD_DATA["speed_fb_rps"] = self.HYVFD_DATA["speed_fb"] / 60.0
+                            set_speed = abs(self.signals[f"{self.signal_name}_speed_command"]["value"])
+                            tolerance = set_speed * self.signals[f"{self.signal_name}_spindle_at_speed_tolerance"]["value"]
+                            diff = abs(self.HYVFD_DATA["speed_fb"]) - set_speed
+                            if diff <= tolerance:
+                                self.HYVFD_DATA["at_speed"] = 1
                             else:
-                                self.HYVFD_DATA[status_name] = value * status_scale
-                            self.HYVFD_DATA["hycomm_ok"] = 1
-                        elif (frame_data[1] == 0x05 and frame_data[2] == 0x02) or (frame_data[1] == 0x03 and frame_data[2] == 0x01):
-                            self.HYVFD_DATA["hycomm_ok"] = 1
+                                self.HYVFD_DATA["at_speed"] = 0
                         else:
-                            self.HYVFD_DATA["error_count"] += 1
-                            self.HYVFD_DATA["hycomm_ok"] = 0
-                    for name, value in self.HYVFD_DATA.items():
-                        value_name = f"{self.signal_name}_{name}"
-                        if value_name in self.signals:
-                            self.signals[value_name]["value"] = value
+                            self.HYVFD_DATA[status_name] = value * status_scale
+                        self.HYVFD_DATA["hycomm_ok"] = 1
+                    elif (frame_data[1] == 0x05 and frame_data[2] == 0x02) or (frame_data[1] == 0x03 and frame_data[2] == 0x01):
+                        self.HYVFD_DATA["hycomm_ok"] = 1
+                    else:
+                        self.HYVFD_DATA["error_count"] += 1
+                        self.HYVFD_DATA["hycomm_ok"] = 0
+                for name, value in self.HYVFD_DATA.items():
+                    value_name = f"{self.signal_name}_{name}"
+                    if value_name in self.signals:
+                        self.signals[value_name]["value"] = value
 
     def frameio_tx(self, frame_ack, frame_timeout):
         cmd = []

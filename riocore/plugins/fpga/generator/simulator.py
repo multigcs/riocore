@@ -273,9 +273,8 @@ class simulator(generator_base):
             expansion = data_config.get("expansion", False)
             if multiplexed or expansion:
                 continue
-            if data_config["direction"] == "input":
-                if data_name == "bit":
-                    bitin_names.append(f'"{plugin_instance.title}-{data_name}"')
+            if data_config["direction"] == "input" and data_name == "bit":
+                bitin_names.append(f'"{plugin_instance.title}-{data_name}"')
 
         output.append("volatile int32_t joint_position[NUM_JOINTS];")
         output.append("volatile int32_t home_switch[NUM_HOMESWS];")
@@ -406,11 +405,10 @@ class simulator(generator_base):
                     output.append(f"    {var} = bitin_stat[{bitin_n}];")
                     output.append(f'    strcpy(bitin_name[{bitin_n}], "{plugin_instance.title}-{data_name}");')
                     bitin_n += 1
-            if data_config["direction"] == "output":
-                if data_name == "bit":
-                    var = interface_data["bit"]["variable"]
-                    output.append(f"    bitout_stat[{bitout_n}] = {var};")
-                    bitout_n += 1
+            if data_config["direction"] == "output" and data_name == "bit":
+                var = interface_data["bit"]["variable"]
+                output.append(f"    bitout_stat[{bitout_n}] = {var};")
+                bitout_n += 1
 
         self.homes = home_n
         self.bitouts = bitout_n
@@ -424,10 +422,9 @@ class simulator(generator_base):
         modbus_rx = {}
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):
             variable_name = data_config["variable"]
-            if data_config["direction"] == "input":
-                if plugin_instance.NAME == "modbus":
-                    modbus_rx[modbus_n] = variable_name
-                    modbus_n += 1
+            if data_config["direction"] == "input" and plugin_instance.NAME == "modbus":
+                modbus_rx[modbus_n] = variable_name
+                modbus_n += 1
 
         modbus_n = 0
         for size, plugin_instance, data_name, data_config in self.get_interface_data(self.project):

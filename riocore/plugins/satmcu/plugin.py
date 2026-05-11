@@ -171,14 +171,13 @@ class Plugin(PluginBase):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
-            if data_config["direction"] == "output" or data_config["direction"] == "input":
-                if not data_config.get("expansion"):
-                    if size in {8, 16, 32}:
-                        output.append(f"int{size}_t {variable_name} = 0;")
-                    elif size == 1:
-                        output.append(f"bool {variable_name} = 0;")
-                    else:
-                        output.append(f"//int{size}_t {variable_name} = 0;")
+            if (data_config["direction"] == "output" or data_config["direction"] == "input") and not data_config.get("expansion"):
+                if size in {8, 16, 32}:
+                    output.append(f"int{size}_t {variable_name} = 0;")
+                elif size == 1:
+                    output.append(f"bool {variable_name} = 0;")
+                else:
+                    output.append(f"//int{size}_t {variable_name} = 0;")
         output.append("")
 
         # write tx_buffer
@@ -318,36 +317,32 @@ class Plugin(PluginBase):
         # main loop
         output.append("void loop() {")
         for plugin_type, instances in ptypes.items():
-            if data_config["direction"] == "input":
-                if hasattr(instances[0], "firmware_type_loop"):
-                    ret = instances[0].firmware_type_loop(instances)
-                    if ret.strip():
-                        output.append(ret)
+            if data_config["direction"] == "input" and hasattr(instances[0], "firmware_type_loop"):
+                ret = instances[0].firmware_type_loop(instances)
+                if ret.strip():
+                    output.append(ret)
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
-            if data_config["direction"] == "input":
-                if hasattr(plugin_instance, "firmware_loop"):
-                    ret = plugin_instance.firmware_loop(data_name, variable_name)
-                    if ret.strip():
-                        output.append(ret)
+            if data_config["direction"] == "input" and hasattr(plugin_instance, "firmware_loop"):
+                ret = plugin_instance.firmware_loop(data_name, variable_name)
+                if ret.strip():
+                    output.append(ret)
         output.append("    rio_rtx();")
         for plugin_type, instances in ptypes.items():
-            if data_config["direction"] == "output":
-                if hasattr(instances[0], "firmware_type_loop"):
-                    ret = instances[0].firmware_type_loop(instances)
-                    if ret.strip():
-                        output.append(ret)
+            if data_config["direction"] == "output" and hasattr(instances[0], "firmware_type_loop"):
+                ret = instances[0].firmware_type_loop(instances)
+                if ret.strip():
+                    output.append(ret)
         for size, plugin_instance, data_name, data_config in self.gateware.get_interface_data(parent.project):
             if plugin_instance.master != subname:
                 continue
             variable_name = data_config["variable"]
-            if data_config["direction"] == "output":
-                if hasattr(plugin_instance, "firmware_loop"):
-                    ret = plugin_instance.firmware_loop(data_name, variable_name)
-                    if ret.strip():
-                        output.append(ret)
+            if data_config["direction"] == "output" and hasattr(plugin_instance, "firmware_loop"):
+                ret = plugin_instance.firmware_loop(data_name, variable_name)
+                if ret.strip():
+                    output.append(ret)
         output.append("}")
         output.append("")
 

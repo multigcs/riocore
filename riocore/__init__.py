@@ -245,10 +245,9 @@ class Plugins:
                 plugin_instance = self.plugin_modules[plugin_type].Plugin(plugin_id, plugin_config, system_setup=system_setup)
                 plugin_instance.setup_object = plugin_config
                 for pin_name, pin_config in plugin_instance.pins().items():
-                    if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION"):
-                        if pin_config["pin"] == "" or pin_config["pin"] is None:
-                            log(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
-                            del pin_config["pin"]
+                    if "pin" in pin_config and pin_config["pin"] and not pin_config["pin"].startswith("EXPANSION") and (pin_config["pin"] == "" or pin_config["pin"] is None):
+                        log(f"WARNING: pin '{pin_name}' of '{plugin_instance.instances_name}' is not set / removed")
+                        del pin_config["pin"]
 
                 for option_name, option_data in plugin_instance.OPTIONS.items():
                     if option_name == "is_joint" and option_name not in plugin_instance.plugin_setup and option_data.get("default"):
@@ -328,9 +327,8 @@ class Project:
             busid = None
             for plugin_instance in self.plugin_instances:
                 for pin_name, pin_data in plugin_instance.PINDEFAULTS.items():
-                    if target_pin == f"{plugin_instance.instances_name}:{pin_name}":
-                        if source := pin_data.get("source"):
-                            busid = bus_trace(plugin_instance.plugin_setup.get("pins", {}).get(source, {}).get("pin"), tracelist) or pin_data.get("busid") or busid
+                    if target_pin == f"{plugin_instance.instances_name}:{pin_name}" and (source := pin_data.get("source")):
+                        busid = bus_trace(plugin_instance.plugin_setup.get("pins", {}).get(source, {}).get("pin"), tracelist) or pin_data.get("busid") or busid
             return busid
 
         for plugin_instance in self.plugin_instances:

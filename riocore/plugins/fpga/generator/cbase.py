@@ -176,13 +176,12 @@ class cbase:
             signal_config = plugin_instance.signals().get(data_name, {})
             userconfig = signal_config.get("userconfig", {})
             net = userconfig.get("net")
-            if data_config["direction"] == "input":
-                if net and net.startswith("joint.") and net.endswith(".home-sw-in"):
-                    jn = net.split(".")[1]
-                    if "bit" not in interface_data:
-                        continue
-                    var = interface_data["bit"]["variable"]
-                    homes[jn] = var
+            if data_config["direction"] == "input" and net and net.startswith("joint.") and net.endswith(".home-sw-in"):
+                jn = net.split(".")[1]
+                if "bit" not in interface_data:
+                    continue
+                var = interface_data["bit"]["variable"]
+                homes[jn] = var
 
         output.append("// input: rxBuffer -> VAROUT -> calc -> SIGOUT")
         position_mapping = {}
@@ -486,10 +485,9 @@ class cbase:
                                         output.append(f"    {calc.strip()}")
                                         output.append(f"    *data->{tvarname} = value_{target};")
 
-                                    if not boolean and direction == "input" and hal_type == "float":
-                                        if convert_c and "last_raw_value" in convert_c:
-                                            output.append("")
-                                            output.append("    last_raw_value = raw_value;")
+                                    if not boolean and direction == "input" and hal_type == "float" and convert_c and "last_raw_value" in convert_c:
+                                        output.append("")
+                                        output.append("    last_raw_value = raw_value;")
                                 elif interface == "calc":
                                     convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
                                     if convert_c:
@@ -1057,10 +1055,9 @@ class cbase:
             modbus_rx = {}
             for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
                 variable_name = data_config["variable"]
-                if data_config["direction"] == "input":
-                    if plugin_instance.NAME in {"mbus", "modbus"}:
-                        modbus_rx[modbus_n] = variable_name
-                        modbus_n += 1
+                if data_config["direction"] == "input" and plugin_instance.NAME in {"mbus", "modbus"}:
+                    modbus_rx[modbus_n] = variable_name
+                    modbus_n += 1
             simulation = self.instance.plugin_setup.get("simulation", self.instance.option_default("simulation"))
             if modbus_n:
                 modbus_port = self.instance.plugin_setup.get("modbus_port", self.instance.option_default("modbus_port", ""))
@@ -1292,46 +1289,45 @@ class cbase:
             modbus_n = 0
             for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
                 variable_name = data_config["variable"]
-                if data_config["direction"] == "output":
-                    if plugin_instance.NAME in {"mbus", "modbus"}:
-                        output.append("#ifdef MODBUS_SIM")
-                        output.append(f"             if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM) {{")
-                        output.append(f"                static uint8_t frame{modbus_n}_id_last = 255;")
-                        output.append(f"                static uint8_t frame{modbus_n}_rx[{size // 8}];")
-                        output.append(f"                uint8_t frame{modbus_n}_id = data->{variable_name}[0];")
-                        output.append(f"                uint8_t frame{modbus_n}_len = data->{variable_name}[1];")
-                        output.append(f"                if (frame{modbus_n}_id_last != frame{modbus_n}_id && frame{modbus_n}_len > 0) {{")
-                        output.append(f"                    if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
-                        output.append(f'                        printf("> {plugin_instance.instances_name}.{data_name} (seq%i) ", frame{modbus_n}_id);')
-                        output.append(f"                        for (int i = 0; i < frame{modbus_n}_len; i++) {{")
-                        output.append(f'                            printf("%i ", data->{variable_name}[i + 2]);')
-                        output.append("                        }")
-                        output.append('                        printf("\\n");')
-                        output.append("                    }")
-                        output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(data->{variable_name} + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
-                        output.append("                    if (len_rx > 0) {")
-                        output.append("                        for (int cn = 0; cn < len_rx; cn++) {")
-                        output.append(f"                            data->{modbus_rx[modbus_n]}[len_rx - cn + 2] = frame{modbus_n}_rx[cn];")
-                        output.append("                        }")
-                        output.append(f"                        data->{modbus_rx[modbus_n]}[0] = frame{modbus_n}_id;")
-                        output.append(f"                        data->{modbus_rx[modbus_n]}[1] = frame{modbus_n}_id;")
-                        output.append(f"                        data->{modbus_rx[modbus_n]}[2] = len_rx;")
+                if data_config["direction"] == "output" and plugin_instance.NAME in {"mbus", "modbus"}:
+                    output.append("#ifdef MODBUS_SIM")
+                    output.append(f"             if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM) {{")
+                    output.append(f"                static uint8_t frame{modbus_n}_id_last = 255;")
+                    output.append(f"                static uint8_t frame{modbus_n}_rx[{size // 8}];")
+                    output.append(f"                uint8_t frame{modbus_n}_id = data->{variable_name}[0];")
+                    output.append(f"                uint8_t frame{modbus_n}_len = data->{variable_name}[1];")
+                    output.append(f"                if (frame{modbus_n}_id_last != frame{modbus_n}_id && frame{modbus_n}_len > 0) {{")
+                    output.append(f"                    if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
+                    output.append(f'                        printf("> {plugin_instance.instances_name}.{data_name} (seq%i) ", frame{modbus_n}_id);')
+                    output.append(f"                        for (int i = 0; i < frame{modbus_n}_len; i++) {{")
+                    output.append(f'                            printf("%i ", data->{variable_name}[i + 2]);')
+                    output.append("                        }")
+                    output.append('                        printf("\\n");')
+                    output.append("                    }")
+                    output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(data->{variable_name} + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
+                    output.append("                    if (len_rx > 0) {")
+                    output.append("                        for (int cn = 0; cn < len_rx; cn++) {")
+                    output.append(f"                            data->{modbus_rx[modbus_n]}[len_rx - cn + 2] = frame{modbus_n}_rx[cn];")
+                    output.append("                        }")
+                    output.append(f"                        data->{modbus_rx[modbus_n]}[0] = frame{modbus_n}_id;")
+                    output.append(f"                        data->{modbus_rx[modbus_n]}[1] = frame{modbus_n}_id;")
+                    output.append(f"                        data->{modbus_rx[modbus_n]}[2] = len_rx;")
 
-                        output.append(f"                        if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
-                        output.append('                            printf("                                                        < rxdata ");')
-                        output.append("                            for (int i = 0; i < len_rx; i++) {")
-                        output.append(f'                                printf("%i ", frame{modbus_n}_rx[i ]);')
-                        output.append("                            }")
-                        output.append('                            printf("\\n");')
-                        output.append("                        }")
+                    output.append(f"                        if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
+                    output.append('                            printf("                                                        < rxdata ");')
+                    output.append("                            for (int i = 0; i < len_rx; i++) {")
+                    output.append(f'                                printf("%i ", frame{modbus_n}_rx[i ]);')
+                    output.append("                            }")
+                    output.append('                            printf("\\n");')
+                    output.append("                        }")
 
-                        output.append("                    }")
-                        output.append("                }")
-                        output.append(f"                frame{modbus_n}_id_last = frame{modbus_n}_id;")
-                        output.append("             }")
-                        output.append("#endif")
-                        output.append("")
-                        modbus_n += 1
+                    output.append("                    }")
+                    output.append("                }")
+                    output.append(f"                frame{modbus_n}_id_last = frame{modbus_n}_id;")
+                    output.append("             }")
+                    output.append("#endif")
+                    output.append("")
+                    modbus_n += 1
 
         output.append("            convert_inputs();")
         output.append("            *data->sys_status = 1;")

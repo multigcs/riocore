@@ -292,12 +292,11 @@ class TabDrawing:
             self.plugins.load_plugin(unum, psetup, self.parent.config)
             plugin_instance = self.plugins.plugin_instances[-1]
 
-            if not node_type:
-                if "node_type" in plugin_instance.OPTIONS:
-                    option_data = plugin_instance.OPTIONS["node_type"]
-                    node_type = self.parent.dialog_select("Plugin node select", option_data["options"])
-                    if node_type:
-                        plugin_instance.plugin_setup["node_type"] = node_type
+            if not node_type and "node_type" in plugin_instance.OPTIONS:
+                option_data = plugin_instance.OPTIONS["node_type"]
+                node_type = self.parent.dialog_select("Plugin node select", option_data["options"])
+                if node_type:
+                    plugin_instance.plugin_setup["node_type"] = node_type
 
             plugin_instance.setup()
             if plugin_instance.IMAGES:
@@ -902,13 +901,12 @@ class TabAxis:
         plugin_instances = {}
 
         for item in self.parent.scene.items():
-            if hasattr(item, "plugin_instance"):
-                if "bit" in item.plugin_instance.SIGNALS and item.plugin_instance.SIGNALS["bit"].get("direction") == "input":
-                    if item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net"):
-                        continue
-                    title = f"{item.plugin_instance.title}"
-                    halpin.addItem(title)
-                    plugin_instances[title] = item.plugin_instance
+            if hasattr(item, "plugin_instance") and "bit" in item.plugin_instance.SIGNALS and item.plugin_instance.SIGNALS["bit"].get("direction") == "input":
+                if item.plugin_instance.plugin_setup.get("signals", {}).get("bit", {}).get("net"):
+                    continue
+                title = f"{item.plugin_instance.title}"
+                halpin.addItem(title)
+                plugin_instances[title] = item.plugin_instance
 
         dialog.layout.addWidget(halpin)
         dialog.layout.addWidget(dialog.buttonBox)
