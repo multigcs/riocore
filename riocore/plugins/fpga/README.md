@@ -26,7 +26,6 @@ fpga
 | ICESugarPro | <img height="48" src="boards/ICESugarPro.png"> |
 | IceShield | <img height="48" src="boards/IceShield.png"> |
 | LX9MicroBoard | <img height="48" src="boards/LX9MicroBoard.png"> |
-| Mesa7c80 | <img height="48" src="boards/Mesa7c80.png"> |
 | Mesa7c81 | <img height="48" src="boards/Mesa7c81.png"> |
 | MotoMan | <img height="48" src="boards/MotoMan.png"> |
 | Numato-Spartan6 | <img height="48" src="boards/Numato-Spartan6.png"> |
@@ -39,8 +38,8 @@ fpga
 | TangPrimer20K | <img height="48" src="boards/TangPrimer20K.png"> |
 | TangPrimer25K | <img height="48" src="boards/TangPrimer25K.png"> |
 | Tangbob | <img height="48" src="boards/Tangbob.png"> |
-| Tangbob-noudp | <img height="48" src="boards/Tangbob-noudp.png"> |
 | Tangoboard | <img height="48" src="boards/Tangoboard.png"> |
+| XC9536XL | <img height="48" src="boards/XC9536XL.png"> |
 | rioctrl | <img height="48" src="boards/rioctrl.png"> |
 
 ## Pins:
@@ -66,7 +65,7 @@ board type
 
  * type: select
  * default: 
- * options: Altera10M08Eval, Basys2, CYC1000, Colorlight5A-75B-v8.0, Colorlight5A-75E, Colorlight_i5-v7_0, EBAZ4205, ECP5-256, EP2C5T144, EP4CE6E22C8, EPM240, EPM240mini, ICEBreakerV1.0e, ICESugarNano, ICESugarPro, IceShield, LX9MicroBoard, Mesa7c80, Mesa7c81, MotoMan, Numato-Spartan6, OctoBot, Olimex-ICE40HX8K-EVB, TangNano1K, TangNano20K, TangNano4K, TangNano9K, TangPrimer20K, TangPrimer25K, Tangbob, Tangbob-noudp, Tangoboard, rioctrl
+ * options: Altera10M08Eval, Basys2, CYC1000, Colorlight5A-75B-v8.0, Colorlight5A-75E, Colorlight_i5-v7_0, EBAZ4205, ECP5-256, EP2C5T144, EP4CE6E22C8, EPM240, EPM240mini, ICEBreakerV1.0e, ICESugarNano, ICESugarPro, IceShield, LX9MicroBoard, Mesa7c81, MotoMan, Numato-Spartan6, OctoBot, Olimex-ICE40HX8K-EVB, TangNano1K, TangNano20K, TangNano4K, TangNano9K, TangPrimer20K, TangPrimer25K, Tangbob, Tangoboard, XC9536XL, rioctrl
 
 ### simulation:
 simulation mode

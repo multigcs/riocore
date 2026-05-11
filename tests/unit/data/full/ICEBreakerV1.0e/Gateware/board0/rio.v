@@ -74,7 +74,7 @@ module rio (
     wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);
 
     parameter TIMEOUT = 3000000;
-    localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);
+    localparam TIMEOUT_BITS = 22;
     reg [TIMEOUT_BITS-1:0] timeout_counter = 0;
 
     always @(posedge sysclk) begin
