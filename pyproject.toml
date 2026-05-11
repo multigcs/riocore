@@ -15,7 +15,9 @@ lint.select = [
     "PLC",  # pylint convention
     "PIE",  # flake8-pie - misc. lints
     "RSE",  # future
-    #"RET501", "RET502", "RET503",  # return statements
+    "RET501",  # return statements
+    "RET502",  # return statements
+    #"RET503",  # return statements
     "RET504",  # unnecessary-assign
     "RET505",  # superfluous-else-return
     "RET506",  # superfluous-else-raise
