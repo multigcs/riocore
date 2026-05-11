@@ -212,6 +212,7 @@ class LinuxCNC:
         self.pregui_call_list = []
         self.feedbacks = []
         self.halextras = []
+        self.vcp_values = []
         self.mqtt_publisher = []
         self.project = project
         self.base_path = os.path.join(self.project.config["output_path"], "LinuxCNC")
@@ -1243,6 +1244,22 @@ o<{oword}> endsub
                         joint = joint_setup["num"]
                         self.halg.net_add("scale-select.out", f"joint.{joint}.jog-scale")
 
+                self.vcp_values.append(
+                    {
+                        "direction": "output",
+                        "halname": "scale-select.out",
+                        "userconfig": {
+                            "display": {
+                                "section": "status",
+                                "group": "JOG",
+                                "title": "Scale",
+                                "type": "number",
+                                "format": "0.3f",
+                            },
+                        },
+                    },
+                )
+
             if speed_selector:
                 wheel_scale = None
 
@@ -1430,6 +1447,25 @@ o<{oword}> endsub
                                             joint = joint_setup["num"]
                                             self.halg.net_add(f"riof.axisui-{laxis}-oneshot.out", f"halui.joint.{joint}.select")
                         joint_n += 1
+
+                for axis_id, axis_config in self.project.axis_dict.items():
+                    for joint_setup in axis_config["joints"]:
+                        joint = joint_setup["num"]
+                        self.vcp_values.append(
+                            {
+                                "direction": "output",
+                                "halname": f"halui.joint.{joint}.is-selected",
+                                "userconfig": {
+                                    "display": {
+                                        "section": "status",
+                                        "group": "JOG",
+                                        "title": f"Joint-{joint} ({axis_id})",
+                                        "type": "led",
+                                    },
+                                },
+                            },
+                        )
+
             else:
                 for axis_id, axis_config in self.project.axis_dict.items():
                     laxis = axis_id.lower()
@@ -1632,7 +1668,7 @@ if __name__ == "__main__":
 
         def vcp_add(signal_config, widgets, errors=False):
             halname = signal_config["halname"]
-            netname = signal_config["netname"]
+            netname = signal_config.get("netname", halname)
             direction = signal_config["direction"]
             userconfig = signal_config.get("userconfig", {})
             boolean = signal_config.get("bool")
@@ -1695,6 +1731,7 @@ if __name__ == "__main__":
                     else:
                         displayconfig["color"] = "red"
                         displayconfig["off_color"] = "green"
+
             elif direction == "input" and netname and "iocontrol.0.emc-enable-in" in netname:
                 section = displayconfig.get("section", "status").lower()
                 group = "ESTOP-STATUS"
@@ -1815,6 +1852,9 @@ if __name__ == "__main__":
                 if signal_config.get("expansion") is True:
                     continue
                 vcp_add(signal_config, widgets)
+
+        for signal_config in self.vcp_values:
+            vcp_add(signal_config, widgets)
 
         tablist = []
         for tab in vcp_sections:
