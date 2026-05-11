@@ -48,7 +48,7 @@ class Toolchain:
         XISE_PROJECT = False
         CPLD = False
 
-        if self.config["type"].startswith("xa9"):
+        if self.config["type"].startswith(("xa9", "xc9")):
             CPLD = True
             USING_XSTFILE = True
             XISE_PROJECT = False

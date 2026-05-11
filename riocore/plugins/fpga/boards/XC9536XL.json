@@ -5,8 +5,7 @@
     "pinimage": "board.png",
     "toolchain": "ise",
     "family": "xc9500xl",
-    "type": "xa9536xl-15-vq44",
-    "_type": "xa9536xl-15-vq44",
+    "types": ["xa9536xl-15-vq44", "xc9536xl-10-vq44", "xa9572xl-15-vq44", "xc9572xl-10-vq44"],
     "package": "vq44",
     "clock": {
         "speed": "50000000",
