@@ -1222,7 +1222,7 @@ o<{oword}> endsub
                         self.halg.net_add(f"scale-select.selected{function[-1]}", halname)
 
                 shutil.copy(os.path.join(riocore_path, "files", "fselect.py"), os.path.join(self.configuration_path, "fselect.py"))
-                self.halg.fmt_add(f"loadusr -Wn scale-select ./fselect.py scale-select {scale_selectors} 1")
+                self.halg.fmt_add(f"loadusr -Wn scale-select ./fselect.py scale-select {scale_selectors}")
                 self.halg.net_add("0.001", "scale-select.value0")
                 self.halg.net_add("0.01", "scale-select.value1")
                 self.halg.net_add("0.1", "scale-select.value2")
