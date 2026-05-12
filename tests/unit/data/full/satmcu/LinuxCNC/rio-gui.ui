@@ -962,6 +962,269 @@ QLabel {
      </widget>
     </item>
         
+
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <layout class="QVBoxLayout">
+        
+     <item>
+      <layout class="QVBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>Scale</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="HALLabel" name="scale-select.out">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>20</height>
+       </size>
+      </property>
+      <property name="textTemplate" stdset="0">
+       <string>%0.3f</string>
+      </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+      <property name="styleSheet">
+       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>
+      </property>
+      <property name="s32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="u32_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="float_pin_type" stdset="0">
+       <bool>true</bool>
+      </property>
+      <property name="bin_pin_type" stdset="0">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>Joint-0 (X)</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="halui.joint.0.is-selected">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>Joint-1 (Y)</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="halui.joint.1.is-selected">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout">
+      <property name="leftMargin">
+       <number>5</number>
+      </property>
+      <property name="topMargin">
+       <number>5</number>
+      </property>
+      <property name="rightMargin">
+       <number>5</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+    <item>
+     <widget class="QLabel">
+      <property name="text">
+       <string>Joint-2 (Z)</string>
+      </property>
+      <property name="indent">
+       <number>4</number>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="LED" name="halui.joint.2.is-selected">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+      <property name="diameter">
+       <number>16</number>
+      </property>
+        <property name="minimumSize">
+         <size>
+          <width>32</width>
+          <height>40</height>
+         </size>
+        </property>
+        <property name="color">
+          <color>
+            <red>255</red><green>255</green><blue>0</blue>
+          </color>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
+     </widget>
+    </item>
+      </layout>
+     </item>
+      </layout>
+     </item>
+
+      </layout>
+     </widget>
+    </item>
+        
            <item>
             <widget class="QWidget" native="true"/>
            </item>

@@ -155,8 +155,11 @@ net sig_board0_sys-error                 => halui.estop.activate
 
 net sig_board0_satmcu0_feed_position-s32 => halui.feed-override.counts
 
+net sig_halui_joint_0_is-selected        <= halui.joint.0.is-selected
 net sig_board0_satmcu0_selectx_bit       => halui.joint.0.select
+net sig_halui_joint_1_is-selected        <= halui.joint.1.is-selected
 net sig_board0_satmcu0_selecty_bit       => halui.joint.1.select
+net sig_halui_joint_2_is-selected        <= halui.joint.2.is-selected
 net sig_board0_satmcu0_selectz_bit       => halui.joint.2.select
 
 net sig_qtdragon_rio-gui_halui_mdi-command-00 => halui.mdi-command-00
