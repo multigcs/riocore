@@ -16,14 +16,16 @@ clusters = {
     "MPG": ["mpg"],
     "RoboJog": ["robojog"],
     "Spacemouse": ["spnav"],
-    "Axis": ["axis"],
-    "GUI": ["pyvcp", "qtdragon"],
-    "RIO": ["rio"],
-    "EtherCAT": ["lcec"],
-    "Joints": ["joint", "pid"],
-    "UI": ["halui", "axisui"],
-    "IOcontrol": ["iocontrol"],
-    "Spindle": ["spindle"],
+    # "Axis": ["axis"],
+    # "GUI": ["pyvcp", "qtdragon"],
+    # "RIO": ["rio"],
+    # "EtherCAT": ["lcec"],
+    # "Joints": ["joint", "pid"],
+    # "UI": ["halui", "axisui"],
+    # "IOcontrol": ["iocontrol"],
+    # "Spindle": ["spindle"],
+    # "Joints": ["joint"],
+    # "PIDs": ["pid"],
 }
 
 
@@ -117,8 +119,10 @@ class HalGraph:
                     else:
                         self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
 
-            for group_name, pins in groups.items():
-                cgroup = group_name.split(".")[0]
+            used = []
+            for group_name in sorted(groups, reverse=True):
+                pins = groups[group_name]
+                # cgroup = group_name.split(".")[0]
                 pin_strs = []
                 for pin in pins:
                     port = pin.split("=")[0]
@@ -136,7 +140,8 @@ class HalGraph:
                     color = "lightgray"
 
                 for setp_raw, value in self.setps.items():
-                    if setp_raw.startswith(group_name):
+                    if setp_raw.startswith(group_name) and setp_raw not in used:
+                        used.append(setp_raw)
                         setp = setp_raw.replace(f"{group_name}.", "")
                         if html:
                             pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
@@ -151,9 +156,10 @@ class HalGraph:
                     label = f"{title} | {'|'.join(pin_strs)} "
                 cluster = None
                 for title, prefixes in clusters.items():
-                    if cgroup in prefixes:
-                        cluster = title
-                        break
+                    for prefix in prefixes:
+                        if group_name.startswith(prefix):
+                            cluster = title
+                            break
 
                 if html:
                     style = ""

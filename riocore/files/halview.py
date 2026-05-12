@@ -49,7 +49,7 @@ if __name__ == "__main__":
             self.resize(800, 600)
 
             graph = halgraph.HalGraph()
-            svg_data = graph.svg(inifile, fill="=000.000")
+            svg_data = graph.svg(inifile, clustering=False, fill="=000.000")
             self.root = ET.fromstring(svg_data)
             if self.root is None:
                 print("ERROR parsing ini file")
