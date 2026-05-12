@@ -69,7 +69,7 @@ class documentation:
                     self.iface_out.append([variable_name, size, hal_name])
         """
 
-        self.halgraph_png()
+        self.halgraph()
         self.config_md()
         self.axis_md()
         self.pins_md()
@@ -79,16 +79,16 @@ class documentation:
         self.readme_md()
         self.index_html()
 
-    def halgraph_png(self):
+    def halgraph(self):
         try:
             ini_path = os.path.join(self.project.config["output_path"], "LinuxCNC", "rio.ini")
-            svg_path = os.path.join(self.doc_path, "halgraph.png")
+            svg_path = os.path.join(self.doc_path, "halgraph.svg")
             graph = halgraph.HalGraph()
-            svg_data = graph.png(ini_path)
+            svg_data = graph.svg(ini_path)
             if svg_data:
                 open(svg_path, "wb").write(svg_data)
         except Exception as error:
-            print(f"WARNING: failed to write halgraph.png: {error}")
+            print(f"WARNING: failed to write halgraph.svg: {error}")
 
     def axis_md(self):
         output = ["# Axis/Joints"]
@@ -409,7 +409,7 @@ class documentation:
     def linuxcnc_md(self):
         output = ["# LinuxCNC"]
         output.append("## Hal-Graph")
-        output.append("![halgraph](./halgraph.png)")
+        output.append("![halgraph](./halgraph.svg)")
         open(os.path.join(self.doc_path, "LINUXCNC.md"), "w").write("\n".join(output))
 
     def index_html(self):

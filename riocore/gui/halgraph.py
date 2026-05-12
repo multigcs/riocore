@@ -33,9 +33,9 @@ class HalGraph:
     ):
         pass
 
-    def png(self, ini_file, clustering=False, html=True):
+    def export(self, ini_file, clustering=False, html=True, fmt="png"):
         try:
-            self.gAll = graphviz.Digraph("G", format="png")
+            self.gAll = graphviz.Digraph("G", format=fmt)
             self.gAll.attr(rankdir="LR")
             # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
@@ -107,15 +107,17 @@ class HalGraph:
                     #    elabel = signal_name
 
                     source_name = source.split("=")[0]
+                    eid = source_name.replace(":", ".")
+                    elabel = " "
 
                     if source.startswith("pyvcp"):
-                        self.gAll.edge(target_name, source_name, dir="back", label=elabel)
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
                     elif target.startswith("pyvcp"):
-                        self.gAll.edge(source_name, target_name, label=elabel)
+                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
                     elif source.startswith(("rio.", "lcec.0.rio.")):
-                        self.gAll.edge(target_name, source_name, dir="back", label=elabel)
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
                     else:
-                        self.gAll.edge(source_name, target_name, label=elabel)
+                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
 
             for group_name, pins in groups.items():
                 cgroup = group_name.split(".")[0]
@@ -189,6 +191,12 @@ class HalGraph:
                 return self.png(ini_file, clustering=False)
             print(f"ERROR(HAL_GRAPH): {error}")
         return None
+
+    def png(self, ini_file, clustering=False, html=True):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="png")
+
+    def svg(self, ini_file, clustering=False, html=True):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="svg")
 
     def load_halfile(self, basepath, filepath):
         if filepath.startswith("LIB:"):
