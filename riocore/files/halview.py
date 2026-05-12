@@ -49,13 +49,23 @@ if __name__ == "__main__":
             self.resize(800, 600)
 
             graph = halgraph.HalGraph()
-            svg_data = graph.svg(inifile)
+            svg_data = graph.svg(inifile, fill="=000.000")
             self.root = ET.fromstring(svg_data)
             if self.root is None:
                 print("ERROR parsing ini file")
                 exit(0)
 
-            self.h = hal.component("halview")
+            """
+            bg = self.root.find(".//{http://www.w3.org/2000/svg}polygon")
+            if bg is not None:
+                bg.attrib["fill"] = "gray"
+
+            for poly in self.root.findall(".//{http://www.w3.org/2000/svg}polygon[@stroke='black']"):
+                poly.attrib["stroke"] = "white"
+                poly.attrib["fill"] = "gray"
+            """
+
+            self.h = hal.component("halview5")
 
             vboxMain = QVBoxLayout()
 
@@ -102,13 +112,14 @@ if __name__ == "__main__":
                 data[pinName] = {
                     "text": str(pinValue),
                     "color": "black",
+                    "type": pinType,
                 }
                 if pinType == 1:
                     if pinValue:
                         data[pinName]["color"] = "red"
                     else:
                         data[pinName]["color"] = "black"
-                    data[pinName]["text"] = ""
+                    # data[pinName]["text"] = ""
                 elif pinType == 2:
                     data[pinName]["text"] = f"{pinValue:0.3f}"
 
@@ -124,9 +135,30 @@ if __name__ == "__main__":
                     if polygon is not None:
                         polygon.attrib["stroke"] = data[eid]["color"]
                         polygon.attrib["fill"] = data[eid]["color"]
-                    text = edge.find(".//{http://www.w3.org/2000/svg}text")
-                    if text is not None:
-                        text.text = data[eid]["text"]
+                    # text = edge.find(".//{http://www.w3.org/2000/svg}text")
+                    # if text is not None:
+                    #    text.text = data[eid]["text"]
+
+            nodes = self.root.findall(".//*[@class='node']")
+            for node in nodes:
+                title = node.find(".//{http://www.w3.org/2000/svg}title")
+                if title is not None:
+                    center = 0
+                    for element in node:
+                        if element.tag == "{http://www.w3.org/2000/svg}polygon":
+                            x1 = float(element.attrib["points"].split()[0].split(",")[0])
+                            x2 = float(element.attrib["points"].split()[2].split(",")[0])
+                            center = x1 + (x2 - x1) / 2
+                        elif element.tag == "{http://www.w3.org/2000/svg}text":
+                            pin = element.text.split("=")[0]
+                            eid = f"{title.text}.{pin}"
+                            if eid in data:
+                                # print(eid, pin)
+                                element.attrib["fill"] = data[eid]["color"]
+                                if data[eid]["text"]:
+                                    element.attrib["text-anchor"] = "middle"
+                                    element.attrib["x"] = str(center)
+                                    element.text = f"{pin}={data[eid]['text']}"
 
             self.svgWidget.load(QByteArray(ET.tostring(self.root)))
 

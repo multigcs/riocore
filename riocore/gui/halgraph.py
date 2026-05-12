@@ -33,7 +33,7 @@ class HalGraph:
     ):
         pass
 
-    def export(self, ini_file, clustering=False, html=True, fmt="png"):
+    def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None):
         try:
             self.gAll = graphviz.Digraph("G", format=fmt)
             self.gAll.attr(rankdir="LR")
@@ -108,8 +108,6 @@ class HalGraph:
 
                     source_name = source.split("=")[0]
                     eid = source_name.replace(":", ".")
-                    elabel = " "
-
                     if source.startswith("pyvcp"):
                         self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
                     elif target.startswith("pyvcp"):
@@ -125,7 +123,7 @@ class HalGraph:
                 for pin in pins:
                     port = pin.split("=")[0]
                     if html:
-                        pin_str = f'<tr><td port="{port}">{pin}</td></tr>'
+                        pin_str = f'<tr><td port="{port}">{pin}{fill or ""}</td></tr>'
                     else:
                         pin_str = f"<{port}>{pin}"
                     pin_strs.append(pin_str)
@@ -139,7 +137,7 @@ class HalGraph:
 
                 for setp_raw, value in self.setps.items():
                     if setp_raw.startswith(group_name):
-                        setp = setp_raw.split(".")[-1]
+                        setp = setp_raw.replace(f"{group_name}.", "")
                         if html:
                             pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
                         else:
@@ -148,7 +146,7 @@ class HalGraph:
 
                 if html:
                     title = title.replace("\\n", "<br/>")
-                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td  bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
+                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
                 else:
                     label = f"{title} | {'|'.join(pin_strs)} "
                 cluster = None
@@ -192,11 +190,11 @@ class HalGraph:
             print(f"ERROR(HAL_GRAPH): {error}")
         return None
 
-    def png(self, ini_file, clustering=False, html=True):
-        return self.export(ini_file, clustering=clustering, html=html, fmt="png")
+    def png(self, ini_file, clustering=False, html=True, fill=None):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="png", fill=fill)
 
-    def svg(self, ini_file, clustering=False, html=True):
-        return self.export(ini_file, clustering=clustering, html=html, fmt="svg")
+    def svg(self, ini_file, clustering=False, html=True, fill=None):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="svg", fill=fill)
 
     def load_halfile(self, basepath, filepath):
         if filepath.startswith("LIB:"):
