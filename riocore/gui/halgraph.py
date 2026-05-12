@@ -37,7 +37,7 @@ class HalGraph:
 
     def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None):
         try:
-            self.gAll = graphviz.Digraph("G", format=fmt)
+            self.gAll = graphviz.Digraph("G", format=fmt, engine='dot')
             self.gAll.attr(rankdir="LR")
             # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
