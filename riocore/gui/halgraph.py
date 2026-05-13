@@ -241,6 +241,52 @@ class HalGraph:
     def svg(self, ini_file, clustering=False, html=True, fill=None, colors=None):
         return self.export(ini_file, clustering=clustering, html=html, fmt="svg", fill=fill, colors=colors)
 
+    def pin_direction(self, pin):
+        if pin in halpins.LINUXCNC_SIGNALS["input"] and pin not in halpins.LINUXCNC_SIGNALS["output"]:
+            return "input"
+        if pin in halpins.LINUXCNC_SIGNALS["output"] and pin not in halpins.LINUXCNC_SIGNALS["input"]:
+            return "output"
+        if pin.startswith(("conv-", "conv_", "toggle.", "or2.", "and2.", "xor2.", "timedelay.", "not.", "mux2.")):
+            if pin.endswith((".in", ".in0", ".in1", ".sel")):
+                return "input"
+            if pin.endswith(".out"):
+                return "output"
+        if pin.startswith(("estop-latch.")):
+            if pin.endswith("-in"):
+                return "input"
+            if pin.endswith("-out"):
+                return "output"
+            if pin.endswith(".reset"):
+                return "input"
+        if pin.startswith("siggen.") and pin.endswith(".clock"):
+            return "output"
+        if pin.startswith("hm2_"):
+            if ".analogin" in pin:
+                return "output"
+            if pin.endswith(".velocity-cmd"):
+                return "input"
+            if pin.endswith(".position-fb"):
+                return "output"
+            if pin.endswith(".enable"):
+                return "input"
+        if pin.startswith("lcec."):
+            if pin.endswith(".slave-state-op"):
+                return "output"
+            if ".pwm-" in pin:
+                return "input"
+            if ".din-" in pin:
+                return "output"
+            if ".dout-" in pin:
+                return "input"
+        if pin.startswith("halui.mdi-command-"):
+            return "input"
+        if pin.startswith("time."):
+            if pin.endswith(".start"):
+                return "input"
+            return "output"
+        # print(pin)
+        return None
+
     def load_halfile(self, basepath, filepath):
         if filepath.startswith("LIB:"):
             basepath = self.LIB_PATH
@@ -335,16 +381,22 @@ class HalGraph:
                         next_dir = "inout"
                     elif next_dir == "inout":
                         self.signals[signalname]["targets"].append(part)
-                    elif (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) or next_dir == "input":
-                        if (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) and next_dir == "output":
-                            print(f"WARNING: {signalname}: wrong direction-marker: {part} ({filepath})")
+                    elif self.pin_direction(part) == "input" or next_dir == "input":
+                        if next_dir == "output":
+                            print(f"WARNING: {signalname}: wrong direction-marker: {part} ({filepath}:{line_num})")
                         self.signals[signalname]["targets"].append(part)
                     elif not self.signals[signalname]["source"]:
                         self.signals[signalname]["source"] = part
                     elif not self.signals[signalname]["targets"]:
-                        # swapping IN/OUT
-                        self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
-                        self.signals[signalname]["source"] = part
+                        pdir = self.pin_direction(part)
+                        if next_dir and pdir and next_dir != pdir:
+                            print(f"WARNING: {signalname}: wrong direction-marker: {part} ({filepath}:{line_num})")
+                        if self.pin_direction(self.signals[signalname]["source"]) == "output" or pdir == "input":
+                            self.signals[signalname]["targets"].append(part)
+                        else:
+                            # swapping IN/OUT
+                            self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
+                            self.signals[signalname]["source"] = part
                     else:
                         ignore = False
                         if signalname in self.signals and part == self.signals.get(signalname, {}).get("source"):
