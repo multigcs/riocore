@@ -56,7 +56,7 @@ class HalGraph:
                 "header_text": "white",
                 "port_bg": "white",
                 "port_text": "black",
-                "setp_bg": "white",
+                "setp_bg": "gray",
                 "setp_text": "black",
             }
 
@@ -163,7 +163,7 @@ class HalGraph:
                 pins = groups[group_name]
                 # cgroup = group_name.split(".")[0]
                 pin_strs = []
-                for pin in pins:
+                for pin in sorted(pins):
                     port = pin.split("=")[0]
                     if html:
                         pin_str = f'<tr><td bgcolor="{colors["port_bg"]}" port="{port}"><font color="{colors["port_text"]}">{pin}{fill or ""}</font></td></tr>'
