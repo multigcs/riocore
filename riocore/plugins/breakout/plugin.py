@@ -37,6 +37,7 @@ class Plugin(PluginBase):
         self.INFO = jdata.get("comment", "")
         self.NEEDS = jdata.get("needs", ["fpga"])
         self.PROVIDES += jdata.get("provides", [])
+        self.KICAD_FOLDER = os.path.join("kicad", node_type)
 
         self.SUB_PLUGINS = []
         sub_uids = []
@@ -48,8 +49,12 @@ class Plugin(PluginBase):
                 sub_plugin["uid"] = f"{self.instances_name}_{sub_plugin['uid']}"
             self.SUB_PLUGINS.append(sub_plugin)
 
-        for pin, data in jdata.get("main", {}).items():
-            self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "pintype": "BREAKOUT", "type": ["BREAKOUT"], "pos": data["pos"]}
+        if not jdata.get("slots"):
+            for pin, data in jdata.get("main", {}).items():
+                self.PINDEFAULTS[pin] = {"direction": data.get("direction") or "all", "edge": "target", "optional": True, "type": ["FPGA"], "pos": data["pos"], "pin": pin}
+        else:
+            for pin, data in jdata.get("main", {}).items():
+                self.PINDEFAULTS[f"SLOT:{pin}"] = {"direction": "all", "edge": "target", "optional": True, "pintype": "BREAKOUT", "type": ["BREAKOUT"], "pos": data["pos"]}
 
         for slot in jdata.get("slots", []):
             slot_name = slot["name"]
