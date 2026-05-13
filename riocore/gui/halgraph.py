@@ -61,6 +61,14 @@ class HalGraph:
                     value = value.strip()
                     if name in {"HALFILE", "POSTGUI_HALFILE"}:
                         self.load_halfile(base_dir, value)
+
+            # checking signals
+            for signalname, signal in self.signals.items():
+                if not signal["source"]:
+                    print(f"WARNING: signal {signalname} has no source >= {', '.join(signal['targets'])} ({', '.join(signal['files'])})")
+                elif not signal["targets"]:
+                    print(f"WARNING: signal {signalname} has no target: <= {signal['source']} ({', '.join(signal['files'])})")
+
             groups = {}
             for signal_name, parts in self.signals.items():
                 source_parts = parts["source"].split(".")
@@ -82,7 +90,6 @@ class HalGraph:
                 if source_group:
                     if source_group not in groups:
                         groups[source_group] = []
-
                     if source_value:
                         groups[source_group].append(f"{source_pin}={source_value}")
                     else:
@@ -107,6 +114,11 @@ class HalGraph:
                     elabel = ""
                     # if args.elabel:
                     #    elabel = signal_name
+
+                    if not source_group and not source_pin:
+                        continue
+                    if not target_name:
+                        continue
 
                     source_name = source.split("=")[0]
                     eid = source_name.replace(":", ".")
@@ -232,8 +244,10 @@ class HalGraph:
         #    print(f"loading {basepath}/{filepath}")
 
         halfile_data = open(os.path.join(basepath, filepath)).read()
-        for line_raw in halfile_data.split("\n"):
-            line = line_raw.strip()
+        for line_num, line_raw in enumerate(halfile_data.split("\n"), 1):
+            line = line_raw.split("#")[0].strip()
+            if not line:
+                continue
 
             if line.startswith("source "):
                 self.load_halfile(basepath, line.split()[-1])
@@ -264,10 +278,13 @@ class HalGraph:
                         "source": f"{halpin}",
                         "source_value": value,
                         "targets": [],
+                        "files": [f"{filepath}:{line_num}"],
                     }
                 else:
                     self.signals[signalname]["source"] = f"{halpin}"
                     self.signals[signalname]["source_value"] = value
+                    if filepath not in self.signals[signalname]["files"]:
+                        self.signals[signalname]["files"].append(f"{filepath}:{line_num}")
 
             elif line.startswith("net "):
                 parts = line.split()
@@ -280,22 +297,20 @@ class HalGraph:
                             self.signals[signalname] = {
                                 "source": "",
                                 "targets": [],
+                                "files": [f"{filepath}:{line_num}"],
                             }
                         continue
                     if part == "=>":
                         next_dir = "input"
                     elif part == "<=":
                         next_dir = "output"
-
                     elif part == "<=>":
                         next_dir = "inout"
-
                     elif next_dir == "inout":
                         self.signals[signalname]["targets"].append(part)
-
                     elif (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) or next_dir == "input":
                         if (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) and next_dir == "output":
-                            print(f"WARNING: {signalname}: wrong direction-marker: {part}")
+                            print(f"WARNING: {signalname}: wrong direction-marker: {part} ({filepath})")
                         self.signals[signalname]["targets"].append(part)
                     elif not self.signals[signalname]["source"]:
                         self.signals[signalname]["source"] = part
@@ -304,7 +319,19 @@ class HalGraph:
                         self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
                         self.signals[signalname]["source"] = part
                     else:
-                        print("ERROR: double input", signalname, part, self.signals[signalname]["source"])
+                        ignore = False
+                        if signalname in self.signals and part == self.signals.get(signalname, {}).get("source"):
+                            ignore = True
+                        if not ignore:
+                            files = self.signals.get(signalname, {}).get("files", [])
+                            if filepath not in files:
+                                files.append(filepath)
+                            if not next_dir:
+                                # using as output
+                                if signalname in self.signals:
+                                    self.signals[signalname]["targets"].append(part)
+                            else:
+                                print(f"WARNING: {signalname}: double input {part}: {self.signals[signalname]['source']} ->  {', '.join(self.signals[signalname]['targets'])} ({', '.join(files)})")
 
 
 if __name__ == "__main__":
