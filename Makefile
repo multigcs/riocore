@@ -2,7 +2,9 @@
 VERSION ?= $(shell grep "VERSION = " riocore/VERSION.py | cut -d'"' -f2)
 
 clean:
-	find ./ -type d | grep "/__pycache__" | xargs -r -l rm -r
+	find ./riocore -type d | grep "/__pycache__" | xargs -r -l rm -r
+	find ./riocore -type d | grep "/kicad/.*-backups" | xargs -r -l rm -r
+	find ./riocore -type f | grep "/fp-info-cache" | xargs -r -l rm
 	rm -rf dist *.egg-info
 
 format:
