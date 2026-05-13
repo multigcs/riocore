@@ -37,6 +37,18 @@ class HalGraph:
 
     def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None, colors=None):
         if colors is None:
+            """
+            colors = {
+                "bg": "gray",
+                "edge": "red",
+                "header_bg": "gray",
+                "header_text": "white",
+                "port_bg": "yellow",
+                "port_text": "black",
+                "setp_bg": "green",
+                "setp_text": "black",
+            }
+            """
             colors = {
                 "bg": "",
                 "edge": "black",
