@@ -35,9 +35,24 @@ class HalGraph:
     ):
         pass
 
-    def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None):
-        try:
+    def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None, colors=None):
+        if colors is None:
+            colors = {
+                "bg": "",
+                "edge": "black",
+                "header_bg": "black",
+                "header_text": "white",
+                "port_bg": "white",
+                "port_text": "black",
+                "setp_bg": "white",
+                "setp_text": "black",
+            }
+
+        # try:
+        if True:
             self.gAll = graphviz.Digraph("G", format=fmt, engine="dot")
+            if colors["bg"]:
+                self.gAll.attr(bgcolor=colors["bg"])
             self.gAll.attr(rankdir="LR")
             # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
@@ -123,13 +138,13 @@ class HalGraph:
                     source_name = source.split("=")[0]
                     eid = source_name.replace(":", ".")
                     if source.startswith("pyvcp"):
-                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2", color=colors["edge"])
                     elif target.startswith("pyvcp"):
-                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2", color=colors["edge"])
                     elif source.startswith(("rio.", "lcec.0.rio.")):
-                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2", color=colors["edge"])
                     else:
-                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2", color=colors["edge"])
 
             used = []
             for group_name in sorted(groups, reverse=True):
@@ -139,31 +154,31 @@ class HalGraph:
                 for pin in pins:
                     port = pin.split("=")[0]
                     if html:
-                        pin_str = f'<tr><td port="{port}">{pin}{fill or ""}</td></tr>'
+                        pin_str = f'<tr><td bgcolor="{colors["port_bg"]}" port="{port}"><font color="{colors["port_text"]}">{pin}{fill or ""}</font></td></tr>'
                     else:
                         pin_str = f"<{port}>{pin}"
                     pin_strs.append(pin_str)
 
-                color = "lightyellow"
+                # color = "lightyellow"
                 title = group_name
                 if group_name in self.components:
                     comp = self.components[group_name]
                     title = f"{group_name}\\n--{comp}--"
-                    color = "lightgray"
+                    # color = "lightgray"
 
                 for setp_raw, value in self.setps.items():
                     if setp_raw.startswith(group_name) and setp_raw not in used:
                         used.append(setp_raw)
                         setp = setp_raw.replace(f"{group_name}.", "")
                         if html:
-                            pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
+                            pin_str = f'<tr><td bgcolor="{colors["setp_bg"]}" port="{setp}"><font color="{colors["setp_text"]}">{setp}={value}</font></td></tr>'
                         else:
                             pin_str = f"<{setp}>{setp}={value}"
                         pin_strs.append(pin_str)
 
                 if html:
                     title = title.replace("\\n", "<br/>")
-                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
+                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td bgcolor="{colors["header_bg"]}"><font color="{colors["header_text"]}">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
                 else:
                     label = f"{title} | {'|'.join(pin_strs)} "
                 cluster = None
@@ -188,7 +203,7 @@ class HalGraph:
                             label=label,
                             fontsize="11pt",
                             style=style,
-                            fillcolor=color,
+                            # fillcolor=color,
                         )
                 else:
                     self.gAll.node(
@@ -197,22 +212,22 @@ class HalGraph:
                         label=label,
                         fontsize="11pt",
                         style=style,
-                        fillcolor=color,
+                        # fillcolor=color,
                     )
 
             return self.gAll.pipe()
 
-        except Exception as error:
-            if clustering:
-                return self.png(ini_file, clustering=False)
-            print(f"ERROR(HAL_GRAPH): {error}")
+        # except Exception as error:
+        #    if clustering:
+        #        return self.png(ini_file, clustering=False)
+        #    print(f"ERROR(HAL_GRAPH): {error}")
         return None
 
-    def png(self, ini_file, clustering=False, html=True, fill=None):
-        return self.export(ini_file, clustering=clustering, html=html, fmt="png", fill=fill)
+    def png(self, ini_file, clustering=False, html=True, fill=None, colors=None):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="png", fill=fill, colors=colors)
 
-    def svg(self, ini_file, clustering=False, html=True, fill=None):
-        return self.export(ini_file, clustering=clustering, html=html, fmt="svg", fill=fill)
+    def svg(self, ini_file, clustering=False, html=True, fill=None, colors=None):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="svg", fill=fill, colors=colors)
 
     def load_halfile(self, basepath, filepath):
         if filepath.startswith("LIB:"):
