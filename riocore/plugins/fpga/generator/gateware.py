@@ -360,9 +360,10 @@ class gateware(generator_base):
         self.parent.iface_out = []
         output_pos = self.buffer_size_out
 
+        size = 0
         if use_header:
             variable_name = "header_rx"
-            size = 32
+            size += 32
             pack_list = []
             for bit_num in range(0, size, 8):
                 pack_list.append(f"rx_data[{output_pos - 1}:{output_pos - 8}]")
@@ -597,7 +598,10 @@ class gateware(generator_base):
                     output.append("    pll mypll(sysclk_in, sysclk, locked);")
         else:
             output.append("    wire sysclk;")
-            output.append("    assign sysclk = sysclk_in;")
+            if self.jdata["family"] == "xc9500xl":
+                output.append("    BUFG u_bufg (.I(sysclk_in), .O(sysclk));")
+            else:
+                output.append("    assign sysclk = sysclk_in;")
         output.append("")
 
         sysclk_speed = self.jdata["speed"]

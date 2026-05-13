@@ -138,6 +138,25 @@ class Toolchain:
             if CPLD:
                 makefile_data.append(f"	cpldfit -intstyle ise -p {self.config['type']} -ofmt vhdl -optimize density -htmlrpt -loc on -slew fast -init low -inputs 54 -pterms 25 -terminate keeper $(PROJECT).ngd")
                 makefile_data.append("	XSLTProcess $(PROJECT)_build.xml")
+                makefile_data.append("	hprep6 -s IEEE1149 -n $(PROJECT) -i $(PROJECT)")
+
+                makefile_data.append("load:")
+                flashcmd = self.config.get("flashcmd")
+                if flashcmd:
+                    makefile_data.append(f"	{flashcmd}")
+                else:
+                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).jed -f")
+                makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+                makefile_data.append("")
+                makefile_data.append("sload:")
+                sflashcmd = self.config.get("sflashcmd")
+                if sflashcmd:
+                    makefile_data.append(f"	{sflashcmd}")
+                else:
+                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).jed")
+                makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+                makefile_data.append("")
+
             else:
                 makefile_data.append("	map -detail -pr b $(PROJECT).ngd")
                 makefile_data.append("	par -w $(PROJECT).ncd parout.ncd $(PROJECT).pcf")
@@ -172,23 +191,22 @@ class Toolchain:
             makefile_data.append("	dd if=$(PROJECT).bin conv=notrunc of=$(PROJECT)-2048.bin")
             makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
             makefile_data.append("")
-
-        makefile_data.append("load:")
-        flashcmd = self.config.get("flashcmd")
-        if flashcmd:
-            makefile_data.append(f"	{flashcmd}")
-        else:
-            makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
-        makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
-        makefile_data.append("")
-        makefile_data.append("sload: $(PROJECT).bit")
-        sflashcmd = self.config.get("sflashcmd")
-        if sflashcmd:
-            makefile_data.append(f"	{sflashcmd}")
-        else:
-            makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
-        makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
-        makefile_data.append("")
+            makefile_data.append("load:")
+            flashcmd = self.config.get("flashcmd")
+            if flashcmd:
+                makefile_data.append(f"	{flashcmd}")
+            else:
+                makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+            makefile_data.append("sload: $(PROJECT).bit")
+            sflashcmd = self.config.get("sflashcmd")
+            if sflashcmd:
+                makefile_data.append(f"	{sflashcmd}")
+            else:
+                makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
 
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))

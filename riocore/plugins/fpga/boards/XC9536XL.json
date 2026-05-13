@@ -9,24 +9,15 @@
     "package": "vq44",
     "clock": {
         "speed": "50000000",
-        "startup": "jtagclk",
-        "pin": "P6"
+        "pin": "P1"
     },
     "slots": [
         {
             "name": "LEDS",
             "comment": "LEDS",
             "pins": {
-                "LED1": {
-                    "pin": "0",
-                    "pos": [
-                        29,
-                        90
-                    ],
-                    "direction": "output"
-                },
                 "LED2": {
-                    "pin": "0",
+                    "pin": "P34",
                     "pos": [
                         29,
                         108
@@ -34,7 +25,7 @@
                     "direction": "output"
                 },
                 "LED3": {
-                    "pin": "0",
+                    "pin": "P33",
                     "pos": [
                         29,
                         126
@@ -42,7 +33,7 @@
                     "direction": "output"
                 },
                 "LED4": {
-                    "pin": "0",
+                    "pin": "P32",
                     "pos": [
                         29,
                         144
@@ -50,7 +41,7 @@
                     "direction": "output"
                 },
                 "LED5": {
-                    "pin": "0",
+                    "pin": "P31",
                     "pos": [
                         29,
                         162

@@ -34,5 +34,7 @@ class Plugin(PluginBase):
         instance["arguments"]
         freq = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // freq // 2
+        divider_bits = self.clog2(divider + 1)
         instance_parameter["DIVIDER"] = divider
+        instance_parameter["DIVIDER_BITS"] = divider_bits
         return instances
