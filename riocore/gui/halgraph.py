@@ -35,9 +35,36 @@ class HalGraph:
     ):
         pass
 
-    def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None):
-        try:
+    def export(self, ini_file, clustering=False, html=True, fmt="png", fill=None, colors=None):
+        if colors is None:
+            """
+            colors = {
+                "bg": "gray",
+                "edge": "red",
+                "header_bg": "gray",
+                "header_text": "white",
+                "port_bg": "yellow",
+                "port_text": "black",
+                "setp_bg": "green",
+                "setp_text": "black",
+            }
+            """
+            colors = {
+                "bg": "",
+                "edge": "black",
+                "header_bg": "black",
+                "header_text": "white",
+                "port_bg": "white",
+                "port_text": "black",
+                "setp_bg": "gray",
+                "setp_text": "black",
+            }
+
+        # try:
+        if True:
             self.gAll = graphviz.Digraph("G", format=fmt, engine="dot")
+            if colors["bg"]:
+                self.gAll.attr(bgcolor=colors["bg"])
             self.gAll.attr(rankdir="LR")
             # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
@@ -61,6 +88,14 @@ class HalGraph:
                     value = value.strip()
                     if name in {"HALFILE", "POSTGUI_HALFILE"}:
                         self.load_halfile(base_dir, value)
+
+            # checking signals
+            for signalname, signal in self.signals.items():
+                if not signal["source"]:
+                    print(f"WARNING: signal {signalname} has no source >= {', '.join(signal['targets'])} ({', '.join(signal['files'])})")
+                elif not signal["targets"]:
+                    print(f"WARNING: signal {signalname} has no target: <= {signal['source']} ({', '.join(signal['files'])})")
+
             groups = {}
             for signal_name, parts in self.signals.items():
                 source_parts = parts["source"].split(".")
@@ -82,7 +117,6 @@ class HalGraph:
                 if source_group:
                     if source_group not in groups:
                         groups[source_group] = []
-
                     if source_value:
                         groups[source_group].append(f"{source_pin}={source_value}")
                     else:
@@ -108,50 +142,55 @@ class HalGraph:
                     # if args.elabel:
                     #    elabel = signal_name
 
+                    if not source_group and not source_pin:
+                        continue
+                    if not target_name:
+                        continue
+
                     source_name = source.split("=")[0]
                     eid = source_name.replace(":", ".")
                     if source.startswith("pyvcp"):
-                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2", color=colors["edge"])
                     elif target.startswith("pyvcp"):
-                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2", color=colors["edge"])
                     elif source.startswith(("rio.", "lcec.0.rio.")):
-                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(target_name, source_name, dir="back", label=elabel, id=eid, penwidth="2", color=colors["edge"])
                     else:
-                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2")
+                        self.gAll.edge(source_name, target_name, label=elabel, id=eid, penwidth="2", color=colors["edge"])
 
             used = []
             for group_name in sorted(groups, reverse=True):
                 pins = groups[group_name]
                 # cgroup = group_name.split(".")[0]
                 pin_strs = []
-                for pin in pins:
+                for pin in sorted(pins):
                     port = pin.split("=")[0]
                     if html:
-                        pin_str = f'<tr><td port="{port}">{pin}{fill or ""}</td></tr>'
+                        pin_str = f'<tr><td bgcolor="{colors["port_bg"]}" port="{port}"><font color="{colors["port_text"]}">{pin}{fill or ""}</font></td></tr>'
                     else:
                         pin_str = f"<{port}>{pin}"
                     pin_strs.append(pin_str)
 
-                color = "lightyellow"
+                # color = "lightyellow"
                 title = group_name
                 if group_name in self.components:
                     comp = self.components[group_name]
                     title = f"{group_name}\\n--{comp}--"
-                    color = "lightgray"
+                    # color = "lightgray"
 
                 for setp_raw, value in self.setps.items():
                     if setp_raw.startswith(group_name) and setp_raw not in used:
                         used.append(setp_raw)
                         setp = setp_raw.replace(f"{group_name}.", "")
                         if html:
-                            pin_str = f'<tr><td port="{setp}">{setp}={value}</td></tr>'
+                            pin_str = f'<tr><td bgcolor="{colors["setp_bg"]}" port="{setp}"><font color="{colors["setp_text"]}">{setp}={value}</font></td></tr>'
                         else:
                             pin_str = f"<{setp}>{setp}={value}"
                         pin_strs.append(pin_str)
 
                 if html:
                     title = title.replace("\\n", "<br/>")
-                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td bgcolor="black"><font color="white">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
+                    label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td bgcolor="{colors["header_bg"]}"><font color="{colors["header_text"]}">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
                 else:
                     label = f"{title} | {'|'.join(pin_strs)} "
                 cluster = None
@@ -176,7 +215,7 @@ class HalGraph:
                             label=label,
                             fontsize="11pt",
                             style=style,
-                            fillcolor=color,
+                            # fillcolor=color,
                         )
                 else:
                     self.gAll.node(
@@ -185,22 +224,68 @@ class HalGraph:
                         label=label,
                         fontsize="11pt",
                         style=style,
-                        fillcolor=color,
+                        # fillcolor=color,
                     )
 
             return self.gAll.pipe()
 
-        except Exception as error:
-            if clustering:
-                return self.png(ini_file, clustering=False)
-            print(f"ERROR(HAL_GRAPH): {error}")
+        # except Exception as error:
+        #    if clustering:
+        #        return self.png(ini_file, clustering=False)
+        #    print(f"ERROR(HAL_GRAPH): {error}")
         return None
 
-    def png(self, ini_file, clustering=False, html=True, fill=None):
-        return self.export(ini_file, clustering=clustering, html=html, fmt="png", fill=fill)
+    def png(self, ini_file, clustering=False, html=True, fill=None, colors=None):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="png", fill=fill, colors=colors)
 
-    def svg(self, ini_file, clustering=False, html=True, fill=None):
-        return self.export(ini_file, clustering=clustering, html=html, fmt="svg", fill=fill)
+    def svg(self, ini_file, clustering=False, html=True, fill=None, colors=None):
+        return self.export(ini_file, clustering=clustering, html=html, fmt="svg", fill=fill, colors=colors)
+
+    def pin_direction(self, pin):
+        if pin in halpins.LINUXCNC_SIGNALS["input"] and pin not in halpins.LINUXCNC_SIGNALS["output"]:
+            return "input"
+        if pin in halpins.LINUXCNC_SIGNALS["output"] and pin not in halpins.LINUXCNC_SIGNALS["input"]:
+            return "output"
+        if pin.startswith(("conv-", "conv_", "toggle.", "or2.", "and2.", "xor2.", "timedelay.", "not.", "mux2.")):
+            if pin.endswith((".in", ".in0", ".in1", ".sel")):
+                return "input"
+            if pin.endswith(".out"):
+                return "output"
+        if pin.startswith(("estop-latch.")):
+            if pin.endswith("-in"):
+                return "input"
+            if pin.endswith("-out"):
+                return "output"
+            if pin.endswith(".reset"):
+                return "input"
+        if pin.startswith("siggen.") and pin.endswith(".clock"):
+            return "output"
+        if pin.startswith("hm2_"):
+            if ".analogin" in pin:
+                return "output"
+            if pin.endswith(".velocity-cmd"):
+                return "input"
+            if pin.endswith(".position-fb"):
+                return "output"
+            if pin.endswith(".enable"):
+                return "input"
+        if pin.startswith("lcec."):
+            if pin.endswith(".slave-state-op"):
+                return "output"
+            if ".pwm-" in pin:
+                return "input"
+            if ".din-" in pin:
+                return "output"
+            if ".dout-" in pin:
+                return "input"
+        if pin.startswith("halui.mdi-command-"):
+            return "input"
+        if pin.startswith("time."):
+            if pin.endswith(".start"):
+                return "input"
+            return "output"
+        # print(pin)
+        return None
 
     def load_halfile(self, basepath, filepath):
         if filepath.startswith("LIB:"):
@@ -232,8 +317,10 @@ class HalGraph:
         #    print(f"loading {basepath}/{filepath}")
 
         halfile_data = open(os.path.join(basepath, filepath)).read()
-        for line_raw in halfile_data.split("\n"):
-            line = line_raw.strip()
+        for line_num, line_raw in enumerate(halfile_data.split("\n"), 1):
+            line = line_raw.split("#")[0].strip()
+            if not line:
+                continue
 
             if line.startswith("source "):
                 self.load_halfile(basepath, line.split()[-1])
@@ -264,10 +351,13 @@ class HalGraph:
                         "source": f"{halpin}",
                         "source_value": value,
                         "targets": [],
+                        "files": [f"{filepath}:{line_num}"],
                     }
                 else:
                     self.signals[signalname]["source"] = f"{halpin}"
                     self.signals[signalname]["source_value"] = value
+                    if filepath not in self.signals[signalname]["files"]:
+                        self.signals[signalname]["files"].append(f"{filepath}:{line_num}")
 
             elif line.startswith("net "):
                 parts = line.split()
@@ -280,31 +370,47 @@ class HalGraph:
                             self.signals[signalname] = {
                                 "source": "",
                                 "targets": [],
+                                "files": [f"{filepath}:{line_num}"],
                             }
                         continue
                     if part == "=>":
                         next_dir = "input"
                     elif part == "<=":
                         next_dir = "output"
-
                     elif part == "<=>":
                         next_dir = "inout"
-
                     elif next_dir == "inout":
                         self.signals[signalname]["targets"].append(part)
-
-                    elif (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) or next_dir == "input":
-                        if (part in halpins.LINUXCNC_SIGNALS["input"] and part not in halpins.LINUXCNC_SIGNALS["output"]) and next_dir == "output":
-                            print(f"WARNING: {signalname}: wrong direction-marker: {part}")
+                    elif self.pin_direction(part) == "input" or next_dir == "input":
+                        if next_dir == "output":
+                            print(f"WARNING: {signalname}: wrong direction-marker: {part} ({filepath}:{line_num})")
                         self.signals[signalname]["targets"].append(part)
                     elif not self.signals[signalname]["source"]:
                         self.signals[signalname]["source"] = part
                     elif not self.signals[signalname]["targets"]:
-                        # swapping IN/OUT
-                        self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
-                        self.signals[signalname]["source"] = part
+                        pdir = self.pin_direction(part)
+                        if next_dir and pdir and next_dir != pdir:
+                            print(f"WARNING: {signalname}: wrong direction-marker: {part} ({filepath}:{line_num})")
+                        if self.pin_direction(self.signals[signalname]["source"]) == "output" or pdir == "input":
+                            self.signals[signalname]["targets"].append(part)
+                        else:
+                            # swapping IN/OUT
+                            self.signals[signalname]["targets"].append(self.signals[signalname]["source"])
+                            self.signals[signalname]["source"] = part
                     else:
-                        print("ERROR: double input", signalname, part, self.signals[signalname]["source"])
+                        ignore = False
+                        if signalname in self.signals and part == self.signals.get(signalname, {}).get("source"):
+                            ignore = True
+                        if not ignore:
+                            files = self.signals.get(signalname, {}).get("files", [])
+                            if filepath not in files:
+                                files.append(filepath)
+                            if not next_dir:
+                                # using as output
+                                if signalname in self.signals:
+                                    self.signals[signalname]["targets"].append(part)
+                            else:
+                                print(f"WARNING: {signalname}: double input {part}: {self.signals[signalname]['source']} ->  {', '.join(self.signals[signalname]['targets'])} ({', '.join(files)})")
 
 
 if __name__ == "__main__":

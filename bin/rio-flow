@@ -1078,7 +1078,6 @@ class NodeViewer(QGraphicsView):
                 if target_port.startswith("SLOT:") or "BREAKOUT" in target_node.ports.get(target_port, {}).get("type", []):
                     slot = source_port.split(":")[0]
                     self.scene.parent.connect_slot(source_node, slot, target_node, target_port)
-
                 else:
                     # check type and dir
                     types = source_node.ports.get(source_port, {}).get("type", [])

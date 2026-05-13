@@ -11,6 +11,7 @@
 | --- | --- |
 | china-bob5x | <img height="48" src="boards/china-bob5x.png"> |
 | db25-1205 | <img height="48" src="boards/db25-1205.png"> |
+| db25 | <img height="48" src="boards/db25.png"> |
 | rio-icebreaker3x | <img height="48" src="boards/rio-icebreaker3x.png"> |
 | rioctrl-quadenc4 | <img height="48" src="boards/rioctrl-quadenc4.png"> |
 | rioctrl-shiftio | <img height="48" src="boards/rioctrl-shiftio.png"> |
@@ -254,7 +255,7 @@ board type
 
  * type: select
  * default: china-bob5x
- * options: china-bob5x, db25-1205, rio-icebreaker3x, rioctrl-quadenc4, rioctrl-shiftio, rioctrl-stepdir, rpi-db25hat
+ * options: china-bob5x, db25-1205, db25, rio-icebreaker3x, rioctrl-quadenc4, rioctrl-shiftio, rioctrl-stepdir, rpi-db25hat
 
 
 ## Signals:
