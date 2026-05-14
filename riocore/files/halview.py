@@ -1,9 +1,9 @@
-import argparse
-import os
+import subprocess
 import sys
 import uuid
 import xml.etree.ElementTree as ET
 
+import graphviz
 import hal
 
 from PyQt5.QtCore import QPoint, QPointF, QRectF, QTimer, Qt
@@ -19,28 +19,6 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
-if os.path.isfile(os.path.join("riocore", "__init__.py")):
-    sys.path.insert(0, os.getcwd())
-
-from riocore.gui import halgraph
-
-grid_size = 10
-grid_color = QColor(150, 150, 150)
-max_size = 99999
-
-
-# generate different colors with different styles
-colors = []
-cn = 15
-for s in (Qt.SolidLine, Qt.DashLine, Qt.DotLine, Qt.DashDotLine, Qt.DashDotDotLine):
-    o = 0
-    for i in range(cn):
-        hue = i / cn + 1 / cn * o / 10
-        lightness = 0.7
-        saturation = 0.9 / 5 * (10 - o) / 2
-        color = QColor.fromHslF(hue, saturation, lightness)
-        colors.append((color, s))
 
 
 class NodeEdge(QGraphicsPathItem):
@@ -229,26 +207,6 @@ class NodeScene(QGraphicsScene):
         self.parent = parent
         self.setBackgroundBrush(QColor("#262626"))
 
-    def drawBackground(self, painter, rect):
-        super().drawBackground(painter, rect)
-        """
-        zoom = self.parent.view.getZoom()
-        if zoom < 0.5:
-            return
-        left, right = floor(rect.left()), ceil(rect.right())
-        top, bottom = floor(rect.top()), ceil(rect.bottom())
-        grid_points = []
-        for x in range(left - (left % grid_size), right, grid_size):
-            for y in range(top - (top % grid_size), bottom, grid_size):
-                grid_points.append(QPoint(x, y))
-
-        if len(grid_points) > 0:
-            pen = QPen(grid_color)
-            pen.setWidthF(1)
-            painter.setPen(pen)
-            painter.drawPoints(grid_points)
-        """
-
 
 class NodeViewer(QGraphicsView):
     def __init__(self, scene):
@@ -308,7 +266,7 @@ class NodeViewer(QGraphicsView):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, inifile):
+    def __init__(self):
         super().__init__()
         self.setWindowTitle("HalView")
         self.resize(1200, 900)
@@ -317,18 +275,16 @@ class MainWindow(QMainWindow):
         self.view = NodeViewer(self.scene)
         self.view.setZoom(1.0)
 
-        graph = halgraph.HalGraph()
-        svg_data = graph.svg(inifile, clustering=False, fill="=000.000")
-        open("/tmp/g.svg", "w").write(svg_data.decode())
-
+        svg_data = self.export()
         self.root = ET.fromstring(svg_data)
         if self.root is None:
             print("ERROR parsing ini file")
             exit(0)
+        # open("/tmp/g.svg", "w").write(svg_data.decode())
 
         self.h = hal.component(f"halview-{uuid.uuid4()}")
 
-        button_fit = QPushButton("FIT")
+        button_fit = QPushButton("Fit to Window")
         button_fit.clicked.connect(self.fit_view)
 
         vboxMain = QVBoxLayout()
@@ -347,6 +303,142 @@ class MainWindow(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(100)
+
+    def export(self):
+        colors = {
+            "bg": "",
+            "edge": "black",
+            "header_bg": "black",
+            "header_text": "white",
+            "port_bg": "white",
+            "port_text": "black",
+            "setp_bg": "gray",
+            "setp_text": "black",
+        }
+
+        self.gAll = graphviz.Digraph("G", format="svg", engine="dot")
+        self.gAll.attr(ranksep="2.5")
+        self.gAll.attr(rankdir="LR")
+
+        self.signals = {}
+        self.components = {}
+        self.setps = {}
+        self.setss = {}
+
+        result = subprocess.run(["halcmd", "show"], stdout=subprocess.PIPE, check=False)
+        section = ""
+        for line in result.stdout.decode().split("\n"):
+            if line == "Parameters:":
+                section = "params"
+            elif line == "Component Pins:":
+                section = "pins"
+            elif not line:
+                section = ""
+            elif section == "pins" and line.split()[0].isnumeric():
+                if "=" in line:
+                    owner, vtype, direction, value, name, arrow, signal = line.split()
+                    if signal not in self.signals:
+                        self.signals[signal] = {
+                            "source": "",
+                            "targets": [],
+                        }
+                    if arrow == "<==":
+                        self.signals[signal]["targets"].append(name)
+                    elif arrow == "==>":
+                        self.signals[signal]["source"] = name
+                else:
+                    owner, vtype, direction, value, name = line.split()
+                    cfilter = ("halui.", "joint.", "pid.", "spindle.", "iocontrol.", "axis.")
+                    pfilter = "-not"
+                    if not name.startswith((cfilter)) and not name.endswith(pfilter):
+                        self.setps[name] = value
+
+        groups = {}
+        for signal_name, parts in self.signals.items():
+            source_parts = parts["source"].split(".")
+            source_value = parts.get("source_value", "")
+            source_group = ".".join(source_parts[:-1])
+            source_pin = source_parts[-1]
+            if source_group.startswith("halui.") or "vcp." in source_group or "qtdragon" in source_group:
+                source_group = ".".join(source_parts[0:1])
+                source_pin = ".".join(source_parts[1:])
+
+            if not source_group:
+                source_group = source_pin
+
+            source = f"{source_group}:{source_pin}"
+
+            if not source_group:
+                source_group = source_parts[0]
+
+            if source_group:
+                if source_group not in groups:
+                    groups[source_group] = []
+                if source_value:
+                    groups[source_group].append(f"{source_pin}={source_value}")
+                else:
+                    groups[source_group].append(source_pin)
+
+            for target in parts["targets"]:
+                target_parts = target.split(".")
+                target_group = ".".join(target_parts[:-1])
+                target_pin = target_parts[-1]
+                if target_group.startswith("halui.") or "vcp." in target_group or "qtdragon" in target_group:
+                    target_group = ".".join(target_parts[0:1])
+                    target_pin = ".".join(target_parts[1:])
+                target_name = f"{target_group}:{target_pin}"
+
+                if not target_group:
+                    target_group = target_parts[0]
+
+                if target_group not in groups:
+                    groups[target_group] = []
+                groups[target_group].append(target_pin)
+
+                if not source_group and not source_pin:
+                    continue
+                if not target_name:
+                    continue
+
+                source_name = source.split("=")[0]
+                eid = source_name.replace(":", ".")
+                if source.startswith("pyvcp"):
+                    self.gAll.edge(target_name, source_name, dir="back", id=eid, penwidth="2", color=colors["edge"])
+                elif target.startswith("pyvcp"):
+                    self.gAll.edge(source_name, target_name, id=eid, penwidth="2", color=colors["edge"])
+                elif source.startswith(("rio.", "lcec.0.rio.")):
+                    self.gAll.edge(target_name, source_name, dir="back", id=eid, penwidth="2", color=colors["edge"])
+                else:
+                    self.gAll.edge(source_name, target_name, id=eid, penwidth="2", color=colors["edge"])
+
+        used = []
+        for group_name in sorted(groups, reverse=True):
+            pins = groups[group_name]
+            # cgroup = group_name.split(".")[0]
+            pin_strs = []
+            for pin in sorted(pins):
+                port = pin.split("=")[0]
+                pin_str = f'<tr><td bgcolor="{colors["port_bg"]}" port="{port}"><font color="{colors["port_text"]}">{pin}=000.000</font></td></tr>'
+                pin_strs.append(pin_str)
+
+            for setp_raw, value in self.setps.items():
+                if setp_raw.startswith(group_name) and setp_raw not in used:
+                    used.append(setp_raw)
+                    setp = setp_raw.replace(f"{group_name}.", "")
+                    pin_str = f'<tr><td bgcolor="{colors["setp_bg"]}" port="{setp}"><font color="{colors["setp_text"]}">-{setp}={value}=000.000-</font></td></tr>'
+                    pin_strs.append(pin_str)
+
+            title = group_name.replace("\\n", "<br/>")
+            label = f'<<table border="0" cellborder="1" cellspacing="0"><tr><td bgcolor="{colors["header_bg"]}"><font color="{colors["header_text"]}">{title}</font></td></tr>{"".join(pin_strs)}</table>>'
+            self.gAll.node(
+                group_name,
+                shape="plaintext",
+                label=label,
+                fontsize="11pt",
+                style="",
+            )
+
+        return self.gAll.pipe()
 
     def readGraph(self):
         self.pinsdict = {}
@@ -375,11 +467,11 @@ class MainWindow(QMainWindow):
                     if title.text != pin_name:
                         self.pinsdict[f"{title.text}.{pin_name.strip('-')}"] = (title.text, pin_name)
 
-                w = abs(x2 - x1) + 50
+                w = abs(x2 - x1) + 30
                 h = abs(y2 - y1)
                 w = max(w, 70)
                 h = max(h, 40)
-                self.nodesdict[title.text] = MyNode(self.scene, x1 + 500, y1 + 1300, w, h, title.text, pins)
+                self.nodesdict[title.text] = MyNode(self.scene, x1, y1, w, h, title.text, pins)
                 self.scene.addItem(self.nodesdict[title.text])
 
         self.edges = {}
@@ -433,10 +525,10 @@ class MainWindow(QMainWindow):
             node.update()
 
     def fit_view(self):
-        min_x = max_size
-        min_y = max_size
-        max_x = -max_size
-        max_y = -max_size
+        min_x = 99999
+        min_y = 99999
+        max_x = -99999
+        max_y = -99999
         for item in self.scene.items():
             if isinstance(item, NodeEdge):
                 continue
@@ -447,7 +539,7 @@ class MainWindow(QMainWindow):
             max_x = max(max_x, px + item.width)
             max_y = max(max_y, py + item.height)
         # calc scale and offsets
-        if min_x == max_size:
+        if min_x == 99999:
             min_x = 0
             max_x = 800
             min_y = 0
@@ -476,12 +568,7 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("ini", help="ini file", nargs="?", type=str, default=None)
-    args = parser.parse_args()
-
-    if args.ini:
-        app = QApplication(sys.argv)
-        window = MainWindow(args.ini)
-        window.show()
-        app.exec()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
