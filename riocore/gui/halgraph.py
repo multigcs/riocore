@@ -294,7 +294,7 @@ class HalGraph:
             filepath = filepath.split(":", 1)[-1]
 
         if filepath.endswith(".tcl"):
-            print(f"ERROR: tcl is not sulorted yet: {basepath}/{filepath}")
+            print(f"ERROR: tcl is not supported yet: {basepath}/{filepath}")
 
             """
             set KINS(KINEMATICS)  "trivkins"
@@ -417,7 +417,7 @@ class HalGraph:
 if __name__ == "__main__":
     ini_path = sys.argv[1]
     graph = HalGraph()
-    png_data = graph.png(ini_path)
-    if png_data:
-        open("/tmp/test.png", "wb").write(png_data)
-        # print(png_data.decode())
+    svg_data = graph.svg(ini_path)
+    if svg_data:
+        open("/tmp/test.svg", "wb").write(svg_data)
+        # print(svg_data.decode())
