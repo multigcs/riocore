@@ -1566,7 +1566,7 @@ o<{oword}> endsub
 
         elif gui in {"tnc"}:
             try:
-                import tnc  # noqa: PLC0415
+                import tnc
 
                 tnc_path = os.path.dirname(tnc.__file__)
                 os.makedirs(os.path.join(self.configuration_path), exist_ok=True)

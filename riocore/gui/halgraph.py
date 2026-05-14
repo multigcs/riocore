@@ -65,6 +65,7 @@ class HalGraph:
             self.gAll = graphviz.Digraph("G", format=fmt, engine="dot")
             if colors["bg"]:
                 self.gAll.attr(bgcolor=colors["bg"])
+            self.gAll.attr(ranksep="2.5")
             self.gAll.attr(rankdir="LR")
             # self.gAll.attr(splines="ortho")
             base_dir = os.path.dirname(ini_file)
@@ -183,7 +184,7 @@ class HalGraph:
                         used.append(setp_raw)
                         setp = setp_raw.replace(f"{group_name}.", "")
                         if html:
-                            pin_str = f'<tr><td bgcolor="{colors["setp_bg"]}" port="{setp}"><font color="{colors["setp_text"]}">{setp}={value}</font></td></tr>'
+                            pin_str = f'<tr><td bgcolor="{colors["setp_bg"]}" port="{setp}"><font color="{colors["setp_text"]}">-{setp}={value}-</font></td></tr>'
                         else:
                             pin_str = f"<{setp}>{setp}={value}"
                         pin_strs.append(pin_str)
