@@ -1964,7 +1964,7 @@ class Window(QMainWindow):
             del self.config["rpi5"]
             for pn, plugin in enumerate(list(self.config.get("plugins", []))):
                 if plugin["type"] == "spi":
-                    riocore.log(f"INFO: set spi rpi5 mode")
+                    riocore.log("INFO: set spi rpi5 mode")
                     plugin["spitype"] = "rpi5"
 
         # upgrade: i2c_bus -> i2c + i2c_device

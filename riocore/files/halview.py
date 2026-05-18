@@ -336,7 +336,7 @@ class MainWindow(QMainWindow):
                 section = ""
             elif section == "pins" and line.split()[0].isnumeric():
                 if "=" in line:
-                    owner, vtype, direction, value, name, arrow, signal = line.split()
+                    _owner, _vtype, _direction, value, name, arrow, signal = line.split()
                     if signal not in self.signals:
                         self.signals[signal] = {
                             "source": "",
@@ -347,7 +347,7 @@ class MainWindow(QMainWindow):
                     elif arrow == "==>":
                         self.signals[signal]["source"] = name
                 else:
-                    owner, vtype, direction, value, name = line.split()
+                    _owner, _vtype, _direction, value, name = line.split()
                     cfilter = ("halui.", "joint.", "pid.", "spindle.", "iocontrol.", "axis.")
                     pfilter = "-not"
                     if not name.startswith((cfilter)) and not name.endswith(pfilter):

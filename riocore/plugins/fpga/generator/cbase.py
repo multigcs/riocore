@@ -327,7 +327,7 @@ class cbase:
                                     output.append("")
 
                         if signal_config.get("no_convert") is not True:
-                            output.append(f"void convert_{varname.lower()}(data_t *data) {{")
+                            foutput = []
                             for data_name, data_config in plugin_instance.interface_data().items():
                                 variable_name = data_config["variable"]
                                 variable_size = data_config["size"]
@@ -350,56 +350,56 @@ class cbase:
 
                                     if not boolean:
                                         if hal_type == "u32":
-                                            output.append(f"    uint32_t value = data->{source};")
+                                            foutput.append(f"    uint32_t value = data->{source};")
                                         elif hal_type == "s32":
-                                            output.append(f"    int32_t value = data->{source};")
+                                            foutput.append(f"    int32_t value = data->{source};")
                                         else:
-                                            output.append(f"    float value = data->{source};")
+                                            foutput.append(f"    float value = data->{source};")
                                     else:
-                                        output.append(f"    bool value = data->{source};")
+                                        foutput.append(f"    bool value = data->{source};")
 
                                     if signal_config.get("is_index_out"):
-                                        output.append(f"    if (*data->{var_prefix}_INDEX_WAIT == 1) {{")
-                                        output.append(f"        *data->{var_prefix}_INDEX_WAIT = 0;")
-                                        output.append("        value = 1;")
-                                        output.append("    }")
-                                        output.append(f"    if (*data->{varname} != value) {{")
-                                        output.append(f"        *data->{varname} = value;")
-                                        output.append("        if (value == 0) {")
-                                        output.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
-                                        output.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
-                                        output.append("        }")
-                                        output.append("    }")
+                                        foutput.append(f"    if (*data->{var_prefix}_INDEX_WAIT == 1) {{")
+                                        foutput.append(f"        *data->{var_prefix}_INDEX_WAIT = 0;")
+                                        foutput.append("        value = 1;")
+                                        foutput.append("    }")
+                                        foutput.append(f"    if (*data->{varname} != value) {{")
+                                        foutput.append(f"        *data->{varname} = value;")
+                                        foutput.append("        if (value == 0) {")
+                                        foutput.append(f"            *data->SIGINOUT_{var_prefix}_INDEXENABLE = value;")
+                                        foutput.append(f"            *data->{var_prefix}_INDEX_RESET = 1;")
+                                        foutput.append("        }")
+                                        foutput.append("    }")
 
                                     convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
 
                                     if not boolean and direction == "input" and hal_type == "float":
-                                        output.append(f"    float offset = *data->{varname}_OFFSET;")
-                                        output.append(f"    float scale = *data->{varname}_SCALE;")
+                                        foutput.append(f"    float offset = *data->{varname}_OFFSET;")
+                                        foutput.append(f"    float scale = *data->{varname}_SCALE;")
                                         if "last_value" in convert_c:
-                                            output.append(f"    float last_value = *data->{varname};")
+                                            foutput.append(f"    float last_value = *data->{varname};")
                                         if "last_raw_value" in convert_c or "last_raw_value" in str(signal_targets.values()):
-                                            output.append("    static float last_raw_value = 0.0;")
+                                            foutput.append("    static float last_raw_value = 0.0;")
                                         if "raw_value" in convert_c or "raw_value" in str(signal_targets.values()):
-                                            output.append("    float raw_value = value;")
+                                            foutput.append("    float raw_value = value;")
 
                                     if convert_c:
-                                        output.append("    // -- calc --")
-                                        output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
-                                        output.append("    // ----------")
+                                        foutput.append("    // -- calc --")
+                                        foutput.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                                        foutput.append("    // ----------")
 
                                     if not boolean and direction == "input" and hal_type == "float":
-                                        output.append("    value = value + offset;")
-                                        output.append("    value = value / scale;")
+                                        foutput.append("    value = value + offset;")
+                                        foutput.append("    value = value / scale;")
                                         compensations = plugin_instance.plugin_setup.get("joint", {}).get("compensation", {})
                                         if compensations:
                                             for name, cscale in compensations.items():
                                                 csource = position_mapping.get(name)
-                                                output.append(f"    value += *data->{csource} / {cscale};")
+                                                foutput.append(f"    value += *data->{csource} / {cscale};")
 
                                         if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
-                                            output.append("    if (*data->sys_simulation == 1) {")
-                                            output.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
+                                            foutput.append("    if (*data->sys_simulation == 1) {")
+                                            foutput.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
                                             axis = ""
                                             home_sw = ""
                                             home_offset = 0.0
@@ -413,88 +413,92 @@ class cbase:
                                                         home_search_vel = joint["HOME_SEARCH_VEL"]
                                                         home_sw = homes.get(str(jn))
                                             if home_sw:
-                                                output.append(f"        // simulating {axis} homing")
-                                                # output.append(f"        float diff = value - *data->{varname};")
-                                                output.append(f"        float home_offset = {home_offset};")
+                                                foutput.append(f"        // simulating {axis} homing")
+                                                # foutput.append(f"        float diff = value - *data->{varname};")
+                                                foutput.append(f"        float home_offset = {home_offset};")
                                                 if home_search_vel > 0:
-                                                    # output.append("        if (diff > 0) {")
-                                                    # output.append("            home_offset += 0.5;")
-                                                    # output.append("        }")
-                                                    output.append("        if (value > home_offset) {")
+                                                    # foutput.append("        if (diff > 0) {")
+                                                    # foutput.append("            home_offset += 0.5;")
+                                                    # foutput.append("        }")
+                                                    foutput.append("        if (value > home_offset) {")
                                                 else:
-                                                    # output.append("        if (diff > 0) {")
-                                                    # output.append("            home_offset -= 0.5;")
-                                                    # output.append("        }")
-                                                    output.append("        if (value < home_offset) {")
-                                                output.append(f"            data->{home_sw} = 1;")
-                                                output.append("        } else {")
-                                                output.append(f"            data->{home_sw} = 0;")
-                                                output.append("        }")
-                                            output.append("    }")
+                                                    # foutput.append("        if (diff > 0) {")
+                                                    # foutput.append("            home_offset -= 0.5;")
+                                                    # foutput.append("        }")
+                                                    foutput.append("        if (value < home_offset) {")
+                                                foutput.append(f"            data->{home_sw} = 1;")
+                                                foutput.append("        } else {")
+                                                foutput.append(f"            data->{home_sw} = 0;")
+                                                foutput.append("        }")
+                                            foutput.append("    }")
 
-                                        output.append(f"    *data->{varname}_ABS = fabs(value);")
-                                        output.append(f"    *data->{varname}_S32 = value;")
-                                        output.append(f"    *data->{varname}_U32_ABS = fabs(value);")
+                                        foutput.append(f"    *data->{varname}_ABS = fabs(value);")
+                                        foutput.append(f"    *data->{varname}_S32 = value;")
+                                        foutput.append(f"    *data->{varname}_U32_ABS = fabs(value);")
                                     if boolean:
                                         in_filter = signal_config.get("filter")
                                         if in_filter == "longpress":
                                             varname = "_".join(varname.split("_")[:-1])  # base name
-                                            output.append("    static bool last = 0;")
-                                            output.append("    static uint16_t press_timer = 0;")
-                                            output.append("    static uint16_t reset_timer = 0;")
-                                            output.append("    if (value == 1) {")
-                                            output.append("        if (press_timer < 9000) {")
-                                            output.append("            press_timer++;")
-                                            output.append("        }")
-                                            output.append("    } else if (last == 1 && value == 0) {")
-                                            output.append("        reset_timer = servo_period * 100 / 1000000;")
-                                            output.append("        if ((servo_period * press_timer / 1000000) > 1500) {")
-                                            output.append("            // long 2")
-                                            output.append(f"            *data->{varname}_LONG2 = 1;")
-                                            output.append(f"            *data->{varname}_LONG2_not = 0;")
-                                            output.append("        } else if ((servo_period * press_timer / 1000000) > 500) {")
-                                            output.append("            // long 1")
-                                            output.append(f"            *data->{varname}_LONG1 = 1;")
-                                            output.append(f"            *data->{varname}_LONG1_not = 0;")
-                                            output.append("        } else {")
-                                            output.append("            // short")
-                                            output.append(f"            *data->{varname}_SHORT = 1;")
-                                            output.append(f"            *data->{varname}_SHORT_not = 0;")
-                                            output.append("        }")
-                                            output.append("    } else if (reset_timer > 0) {")
-                                            output.append("        reset_timer--;")
-                                            output.append("    } else {")
-                                            output.append("        // reset all")
-                                            output.append("        press_timer = 0;")
+                                            foutput.append("    static bool last = 0;")
+                                            foutput.append("    static uint16_t press_timer = 0;")
+                                            foutput.append("    static uint16_t reset_timer = 0;")
+                                            foutput.append("    if (value == 1) {")
+                                            foutput.append("        if (press_timer < 9000) {")
+                                            foutput.append("            press_timer++;")
+                                            foutput.append("        }")
+                                            foutput.append("    } else if (last == 1 && value == 0) {")
+                                            foutput.append("        reset_timer = servo_period * 100 / 1000000;")
+                                            foutput.append("        if ((servo_period * press_timer / 1000000) > 1500) {")
+                                            foutput.append("            // long 2")
+                                            foutput.append(f"            *data->{varname}_LONG2 = 1;")
+                                            foutput.append(f"            *data->{varname}_LONG2_not = 0;")
+                                            foutput.append("        } else if ((servo_period * press_timer / 1000000) > 500) {")
+                                            foutput.append("            // long 1")
+                                            foutput.append(f"            *data->{varname}_LONG1 = 1;")
+                                            foutput.append(f"            *data->{varname}_LONG1_not = 0;")
+                                            foutput.append("        } else {")
+                                            foutput.append("            // short")
+                                            foutput.append(f"            *data->{varname}_SHORT = 1;")
+                                            foutput.append(f"            *data->{varname}_SHORT_not = 0;")
+                                            foutput.append("        }")
+                                            foutput.append("    } else if (reset_timer > 0) {")
+                                            foutput.append("        reset_timer--;")
+                                            foutput.append("    } else {")
+                                            foutput.append("        // reset all")
+                                            foutput.append("        press_timer = 0;")
                                             for suffix in ("SHORT", "LONG1", "LONG2"):
-                                                output.append(f"        *data->{varname}_{suffix} = 0;")
-                                                output.append(f"        *data->{varname}_{suffix}_not = 1;")
-                                            output.append("    }")
-                                            output.append("    last = value;")
+                                                foutput.append(f"        *data->{varname}_{suffix} = 0;")
+                                                foutput.append(f"        *data->{varname}_{suffix}_not = 1;")
+                                            foutput.append("    }")
+                                            foutput.append("    last = value;")
                                         else:
-                                            output.append(f"    *data->{varname} = value;")
-                                            output.append(f"    *data->{varname}_not = 1 - value;")
+                                            foutput.append(f"    *data->{varname} = value;")
+                                            foutput.append(f"    *data->{varname}_not = 1 - value;")
                                     else:
-                                        output.append(f"    *data->{varname} = value;")
+                                        foutput.append(f"    *data->{varname} = value;")
 
                                     for target, calc in signal_targets.items():
                                         tvarname = f"SIGIN_{var_prefix}_{target.upper()}"
-                                        output.append("")
-                                        output.append(f"    // calc {target}")
-                                        output.append(f"    float value_{target} = *data->{tvarname};")
-                                        output.append(f"    {calc.strip()}")
-                                        output.append(f"    *data->{tvarname} = value_{target};")
+                                        foutput.append("")
+                                        foutput.append(f"    // calc {target}")
+                                        foutput.append(f"    float value_{target} = *data->{tvarname};")
+                                        foutput.append(f"    {calc.strip()}")
+                                        foutput.append(f"    *data->{tvarname} = value_{target};")
 
                                     if not boolean and direction == "input" and hal_type == "float" and convert_c and "last_raw_value" in convert_c:
-                                        output.append("")
-                                        output.append("    last_raw_value = raw_value;")
+                                        foutput.append("")
+                                        foutput.append("    last_raw_value = raw_value;")
                                 elif interface == "calc":
                                     convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
                                     if convert_c:
-                                        output.append("    // -- calc --")
-                                        output.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
-                                        output.append("    // ----------")
-
+                                        foutput.append("    // -- calc --")
+                                        foutput.append("    " + plugin_instance.convert_c(signal_name, signal_config).strip())
+                                        foutput.append("    // ----------")
+                            if foutput:
+                                output.append(f"void convert_{varname.lower()}(data_t *data) {{")
+                                output += foutput
+                            else:
+                                output.append(f"void convert_{varname.lower()}(__attribute__((unused)) data_t *data) {{")
                             output.append("}")
                             output.append("")
         output.append("")

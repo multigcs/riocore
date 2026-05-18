@@ -16,7 +16,15 @@ from riocore.generator.qtvcp import qtvcp
 
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
-MAX_HAL_LEN = 40
+MAX_HAL_LEN = 36
+
+
+def axis_sort(axis_list):
+    res = []
+    for axis in ("X", "Y", "Z", "A", "B", "C", "U", "V", "W"):
+        if axis in list(axis_list):
+            res.append(axis)
+    return axis_list
 
 
 class LinuxCNC:
@@ -204,6 +212,7 @@ class LinuxCNC:
         "TangNano": "tn",
         "power": "pwr",
         "factor": "fct",
+        "nocntreset": "nocntr",
     }
 
     def __init__(self, project):
@@ -486,7 +495,7 @@ class LinuxCNC:
             ini_setup["DISPLAY"]["LATHE"] = 1
 
         coordinates = []
-        for axis_name in sorted(axis_dict.keys()):
+        for axis_name in axis_sort(axis_dict.keys()):
             axis_config = axis_dict[axis_name]
             for joint_setup in axis_config["joints"]:
                 coordinates.append(axis_name)
@@ -539,9 +548,9 @@ class LinuxCNC:
                 motion_probe_input = True
                 break
 
-        for axis_name in sorted(axis_dict.keys()):
+        for axis_name in axis_sort(axis_dict.keys()):
             ini_setup["HALUI"][f"MDI_COMMAND||Zero|{axis_name}"] = f"G92 {axis_name}0"
-        for axis_name in sorted(axis_dict.keys()):
+        for axis_name in axis_sort(axis_dict.keys()):
             axis_config = axis_dict[axis_name]
             if motion_probe_input:
                 if machinetype == "lathe":
@@ -588,7 +597,7 @@ class LinuxCNC:
                 "Y": "10.0",
                 "Z": "-80.0",
             }
-            for axis_name in sorted(axis_dict.keys()):
+            for axis_name in axis_sort(axis_dict.keys()):
                 if axis_name not in {"X", "Y", "Z"}:
                     ini_setup["TOOLSENSOR"][axis_name] = "0.0"
 
@@ -713,7 +722,7 @@ class LinuxCNC:
         # update VELOCITY values
         max_linear_velocity = 0
         max_angular_velocity = 0
-        for axis_name in sorted(self.project.axis_dict.keys()):
+        for axis_name in axis_sort(self.project.axis_dict.keys()):
             axis_config = self.project.axis_dict[axis_name]
             for joint_setup in axis_config["joints"]:
                 if joint_setup["TYPE"] == "LINEAR":
@@ -749,7 +758,7 @@ class LinuxCNC:
                     output.append(f"{key} = {value}")
             output.append("")
 
-        for axis_name in sorted(self.project.axis_dict.keys()):
+        for axis_name in axis_sort(self.project.axis_dict.keys()):
             axis_config = self.project.axis_dict[axis_name]
             output.append(f"[AXIS_{axis_name}]")
             axis_setup = copy.deepcopy(self.AXIS_DEFAULTS)
@@ -1236,7 +1245,7 @@ o<{oword}> endsub
                 self.halg.net_add("0.01", "scale-select.value1")
                 self.halg.net_add("0.1", "scale-select.value2")
 
-                for axis_name in sorted(self.project.axis_dict.keys()):
+                for axis_name in axis_sort(self.project.axis_dict.keys()):
                     axis_config = self.project.axis_dict[axis_name]
                     laxis = axis_name.lower()
                     self.halg.net_add("scale-select.out", f"axis.{laxis}.jog-scale")
@@ -1316,7 +1325,7 @@ o<{oword}> endsub
                     halname_wheel = "riof.jog.wheelilowpass.out"
 
                 if halname_wheel:
-                    for axis_name in sorted(self.project.axis_dict.keys()):
+                    for axis_name in axis_sort(self.project.axis_dict.keys()):
                         axis_config = self.project.axis_dict[axis_name]
                         laxis = axis_name.lower()
                         self.halg.setp_add(f"axis.{laxis}.jog-vel-mode", 1)
@@ -1341,7 +1350,7 @@ o<{oword}> endsub
                             self.halg.net_add(halname_wheel, f"joint.{joint}.jog-counts")
 
             else:
-                for axis_name in sorted(self.project.axis_dict.keys()):
+                for axis_name in axis_sort(self.project.axis_dict.keys()):
                     axis_config = self.project.axis_dict[axis_name]
                     laxis = axis_name.lower()
                     fname = f"wheel_{laxis}"
@@ -1764,7 +1773,7 @@ if __name__ == "__main__":
                 if direction == "input":
                     if netname.endswith(".home-sw-in"):
                         title = netname
-                        for axis_name in sorted(self.project.axis_dict.keys()):
+                        for axis_name in axis_sort(self.project.axis_dict.keys()):
                             axis_config = self.project.axis_dict[axis_name]
                             joints = axis_config["joints"]
                             for joint in joints:
@@ -1941,7 +1950,7 @@ if __name__ == "__main__":
                     pname = gui_gen.draw_checkbutton("Enable", "traj_planner_type", {"initval": 1})
                     self.halg.net_add(f"conv({pname},bit,s32)", "ini.traj_planner_type")
 
-                    for axis_name in sorted(self.project.axis_dict.keys()):
+                    for axis_name in axis_sort(self.project.axis_dict.keys()):
                         axis_config = self.project.axis_dict[axis_name]
                         joints = axis_config["joints"]
                         jerk = 0.0
@@ -1962,7 +1971,7 @@ if __name__ == "__main__":
                     pname = gui_gen.draw_number("Servothread-Time", "servothreadtime", setup={"unit": "ms", "format": "01.4f"})
                     self.halg.net_add("(float(servo-thread.time) / 1000000.0)", pname)
 
-                    for axis_name in sorted(self.project.axis_dict.keys()):
+                    for axis_name in axis_sort(self.project.axis_dict.keys()):
                         axis_config = self.project.axis_dict[axis_name]
                         joints = axis_config["joints"]
                         for joint in joints:
@@ -2205,7 +2214,7 @@ if __name__ == "__main__":
         self.halg.fmt_add_top("addf motion-controller servo-thread")
 
         wcomps = {}
-        for axis_name in sorted(self.project.axis_dict.keys()):
+        for axis_name in axis_sort(self.project.axis_dict.keys()):
             axis_config = self.project.axis_dict[axis_name]
             for joint_setup in axis_config["joints"]:
                 joint = joint_setup["num"]
