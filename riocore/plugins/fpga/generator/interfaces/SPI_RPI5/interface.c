@@ -6,11 +6,11 @@ static uint8_t bits = 8;
 static uint32_t speed = 1500000;
 
 
-int spi_init(void) {
+int spi_init(char *spi_device) {
     rtapi_print("Info: Initialize SPI5 connection\n");
-    spifd = open(SPI_DEVICE, O_RDWR);
+    spifd = open(spi_device, O_RDWR);
     if (spifd < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to open SPI device\n");
+        rtapi_print_msg(RTAPI_MSG_ERR,"Failed to open SPI device: %s\n", spi_device);
         return -1;
     }
     // Set SPI mode

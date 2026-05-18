@@ -17,7 +17,6 @@
 #include <linux/spi/spidev.h>
 
 int spi_fd = -1;
-static const char *device = SPI_DEVICE;
 static uint32_t mode = 0;
 static uint8_t bits = 8;
 static uint32_t speed = 1000000;
@@ -64,11 +63,11 @@ static void transfer(int fd, uint8_t const *tx, uint8_t const *rx, size_t len) {
 
 
 
-int spi_init(void) {
+int spi_init(char *spi_device) {
     rtapi_print("Info: Initialize SPI connection\n");
 	int ret = 0;
 
-	spi_fd = open(device, O_RDWR);
+	spi_fd = open(spi_device, O_RDWR);
 	if (spi_fd < 0)
 		rtapi_print("can't open device\n");
         return -1;
@@ -114,6 +113,7 @@ int spi_init(void) {
 	rtapi_print("bits per word: %u\n", bits);
 	rtapi_print("max speed: %u Hz (%u kHz)\n", speed, speed/1000);
 
+    return 0;
 }
 
 void spi_exit(void) {

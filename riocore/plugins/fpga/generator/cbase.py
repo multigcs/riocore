@@ -1119,15 +1119,20 @@ class cbase:
             output.append("    modbus_init();")
 
         if protocol == "UART":
-            output.append("    char serialPort[1024];")
             output.append("    if (argc > 1) {")
             output.append("        strncpy(serialPort, argv[1], 1023);")
             output.append("    } else {")
             output.append("        strncpy(serialPort, SERIAL_PORT, 1023);")
             output.append("    }")
-            output.append("    uart_init(serialPort);")
+            output.append("    return uart_init(serialPort);")
         elif protocol and protocol.startswith("SPI"):
-            output.append("    spi_init();")
+            output.append("    char spiDevice[1024];")
+            output.append("    if (argc > 1) {")
+            output.append("        strncpy(spiDevice, argv[1], 1023);")
+            output.append("    } else {")
+            output.append("        strncpy(spiDevice, SPI_DEVICE, 1023);")
+            output.append("    }")
+            output.append("    return spi_init(spiDevice);")
         elif protocol and protocol == "UDP":
             output.append("    char dstAddress[20];")
             output.append("    int dstPort = DST_PORT;")
@@ -1144,17 +1149,18 @@ class cbase:
             output.append("                dstPort = port;")
             output.append("            }")
             output.append("        }")
-            output.append("        udp_init(dstAddress, dstPort, SRC_PORT);")
+            output.append("        return udp_init(dstAddress, dstPort, SRC_PORT);")
             output.append("    } else {")
-            output.append("        udp_init(UDP_IP, DST_PORT, SRC_PORT);")
+            output.append("        return udp_init(UDP_IP, DST_PORT, SRC_PORT);")
             output.append("    }")
+            output.append("    return -1;")
         elif protocol is not None:
             print("ERROR: unsupported interface")
             sys.exit(1)
         else:
             print("WARNING: no interface found")
+            output.append("    return 0;")
 
-        output.append("    return 0;")
         output.append("}")
         output.append("")
         if libmode:

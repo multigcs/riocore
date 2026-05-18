@@ -47,7 +47,9 @@ int rtapi_app_main(void) {
     rtapi_print_msg(RTAPI_MSG_INFO, "%s: installed driver\n", modname);
     hal_ready(comp_id);
 
-    interface_init(0, NULL);
+    if (interface_init(0, NULL) < 0) {
+        return -1;
+    }
 
     rio_readwrite(NULL, 0);
 

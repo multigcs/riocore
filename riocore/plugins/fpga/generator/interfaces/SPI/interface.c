@@ -4162,7 +4162,7 @@ exit:
 }
 
 
-int spi_init(void) {
+int spi_init(__attribute__((unused)) char *spi_device) {
     rtapi_print("Info: Initialize SPI connection\n");
     // Map the RPi BCM2835 peripherals - uses "rtapi_open_as_root" in place of "open"
     if (!rt_bcm2835_init()) {
