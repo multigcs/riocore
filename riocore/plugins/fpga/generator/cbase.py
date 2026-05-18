@@ -948,7 +948,7 @@ class cbase:
             # TODO: offset workaround
             offset = int(self.instance.instances_name[-1])
             src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1 + offset))
-        elif protocol == "SPI":
+        elif protocol.startswith("SPI"):
             cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
         elif protocol == "UART":
             uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
@@ -982,6 +982,15 @@ class cbase:
                 defines["SPI_PIN_CS"] = "8"  # CE0 = 8 / CE1 = 7
             defines["SPI_DEVICE"] = f'"/dev/spidev0.{cspin}"'
             defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
+        elif protocol.startswith("SPI"):
+            defines["SPI_PIN_MOSI"] = "10"
+            defines["SPI_PIN_MISO"] = "9"
+            defines["SPI_PIN_CLK"] = "11"
+            if cspin == 1:
+                defines["SPI_PIN_CS"] = "7"  # CE0 = 8 / CE1 = 7
+            else:
+                defines["SPI_PIN_CS"] = "8"  # CE0 = 8 / CE1 = 7
+            defines["SPI_DEVICE"] = f'"/dev/spidev0.{cspin}"'
         elif protocol == "UART":
             defines["SERIAL_PORT"] = f'"{uart}"'
             defines["SERIAL_BAUD"] = f"B{baud}"

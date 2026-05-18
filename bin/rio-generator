@@ -140,7 +140,7 @@ if args.config:
 
         project = riocore.Project(config_file, args.output)
         project.generator(preview=args.preview)
-        config_name = project.config.get("name")
+        config_name = project.config.get("name").replace(" ", "_")
         output_path = "Output"
         if args.output:
             output_path = args.output
@@ -158,7 +158,7 @@ if args.config:
                     if not arguments:
                         print(f"WARNING: build cmd 'clean/build' not found for '{plugin_instance.instances_name}'")
                         continue
-                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    cmd = f"(cd \"{plugin_instance.BUILDER_PATH}\" && make {' '.join(arguments)})"
                     print()
                     print("running:")
                     print(f"  {cmd}")
@@ -181,7 +181,7 @@ if args.config:
                     if not arguments:
                         print(f"WARNING: build cmd 'load' not found for '{plugin_instance.instances_name}'")
                         continue
-                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    cmd = f"(cd \"{plugin_instance.BUILDER_PATH}\" && make {' '.join(arguments)})"
                     print()
                     print("running:")
                     print(f"  {cmd}")
@@ -204,7 +204,7 @@ if args.config:
                     if not arguments:
                         print(f"WARNING: build cmd 'sload' not found for '{plugin_instance.instances_name}'")
                         continue
-                    cmd = f"(cd {plugin_instance.BUILDER_PATH} && make {' '.join(arguments)})"
+                    cmd = f"(cd \"{plugin_instance.BUILDER_PATH}\" && make {' '.join(arguments)})"
                     print()
                     print("running:")
                     print(f"  {cmd}")
@@ -223,7 +223,7 @@ if args.config:
                         arguments = []
                         if plugin_instance.BUILDER and hasattr(plugin_instance, "protocol") and plugin_instance.protocol == "UDP":
                             simulatorsh_path = os.path.join(output_path, config_name, "Simulator", plugin_instance.instances_name, "start.sh")
-                            cmd = f"sh {simulatorsh_path}"
+                            cmd = f"sh \"{simulatorsh_path}\""
                             print()
                             print("running:")
                             print(f"  {cmd}")
@@ -234,7 +234,7 @@ if args.config:
                 ngc_realpath = os.path.realpath(args.ngc)
                 cmd = f"sh {startsh_path} {ngc_realpath}"
             else:
-                cmd = f"sh {startsh_path}"
+                cmd = f"sh \"{startsh_path}\""
             print()
             print("running:")
             print(f"  {cmd}")
@@ -257,7 +257,7 @@ if args.config:
                     kicadsh_path = os.path.join(kpath, "start.sh")
                 else:
                     kicadsh_path = os.path.join(kpath, "build.sh")
-                cmd = f"sh {kicadsh_path}"
+                cmd = f"sh \"{kicadsh_path}\""
                 print()
                 print("running:")
                 print(f"  {cmd}")

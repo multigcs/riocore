@@ -4183,6 +4183,7 @@ int spi_init(void) {
     bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);
     bcm2835_spi_setClockDivider(SPI_SPEED);
     bcm2835_spi_chipSelect(BCM2835_SPI_CS_NONE);
+    return 0;
 }
 
 int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {

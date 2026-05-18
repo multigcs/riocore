@@ -31,6 +31,7 @@ int spi_init(void) {
         close(spifd);
         return -1;
     }
+    return 0;
 }
 
 void spi_exit(void) {

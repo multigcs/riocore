@@ -419,7 +419,7 @@ class Project:
 
     def info(self):
         jdata = self.config["jdata"]
-        name = jdata.get("name")
+        name = jdata.get("name").replace(" ", "_")
         output = [f"RIO - {name}"]
         output.append("")
         for name in ("description", "gui", "protocol"):
@@ -515,8 +515,8 @@ class Project:
         self.pin_mapping = {}
         self.config = project
         self.config["pin_mapping"] = self.pin_mapping
-        self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"])
-        self.config["name"] = project["jdata"]["name"]
+        self.config["output_path"] = os.path.join(output_path, project["jdata"]["name"].replace(" ", "_"))
+        self.config["name"] = project["jdata"]["name"].replace(" ", "_")
         self.config["json_path"] = project["json_path"]
 
     def generator(self, preview=False):
