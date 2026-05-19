@@ -2606,8 +2606,13 @@ class Window(QMainWindow):
                 continue
             item.setPos(pos_x, pos_y)
             itemsdone[item] = (pos_x, pos_y)
+            pos_y += item.height + grid(20)
 
         for item in self.scene.items():
+            if isinstance(item, NodeEdge):
+                continue
+            if item in itemsdone:
+                continue
             if isinstance(item, ModifierNode):
                 pitem = self.scene.parent.get_next(item, "out")
                 if pitem and pitem[0] in itemsdone:
@@ -2621,11 +2626,15 @@ class Window(QMainWindow):
                             left = True
                     if left:
                         item.setPos(px + pitem[0].width + 10, py)
+                        itemsdone[item] = (px + pitem[0].width + 10, py)
                         item.flow_cfg["rotate"] = 180
                     else:
                         item.setPos(px - item.width - 10, py)
+                        itemsdone[item] = (px - item.width - 10, py)
                 else:
                     item.setPos(pos_x, pos_y)
+                    itemsdone[item] = (pos_x, pos_y)
+                pos_y += item.height + grid(20)
 
         self.fit_view()
 
