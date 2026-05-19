@@ -1928,15 +1928,17 @@ class Window(QMainWindow):
                     del self.config["plugins"][pn]
                 # rename pins
                 for signal_name, signal_data in plugin_data.get("signals", {}).items():
-                    if not plugin_data.get("image"):
-                        if ".home-sw-in" in signal_data.get("net"):
+                    if not plugin_data.get("image") and signal_data:
+                        if ".home-sw-in" in signal_data.get("net", ""):
                             plugin_data["image"] = "proximity"
-                        elif ".index-enable" in signal_data.get("net"):
+                            plugin_data["rotate"] = 180
+                        elif ".index-enable" in signal_data.get("net", ""):
                             plugin_data["image"] = "encoder_optical"
-                        elif ".jog-counts" in signal_data.get("net"):
+                        elif ".jog-counts" in signal_data.get("net", ""):
                             plugin_data["image"] = "encoder"
                         elif plugin_data["type"] == "bitin":
                             plugin_data["image"] = "smdbutton"
+                            plugin_data["rotate"] = 180
                         elif plugin_data["type"] == "bitout":
                             plugin_data["image"] = "led"
                         elif plugin_data["type"] == "wled":
@@ -2573,8 +2575,8 @@ class Window(QMainWindow):
 
     def nesting_all(self):
         left = 0.0
-        strgroup = [["quadencoder", "quadencoderz"], ["bitin"], ["interface", "fpga"], ["bitout", "wled"], ["mbus", "i2c", "joint"], ["mbus_device", "i2c_device"]]
-        itemsdone = []
+        strgroup = [["quadencoder", "quadencoderz"], ["bitin"], ["interface", "fpga"], ["bitout", "wled"], ["mbus", "i2c", "joint"], ["mbus_device", "i2c_device"], ["signal"]]
+        itemsdone = {}
         pos_x = 0.0
         for mgroup in strgroup:
             pos_y = 0.0
@@ -2588,10 +2590,10 @@ class Window(QMainWindow):
                     if not isinstance(item, PluginNode) or group not in {item.plugin_instance.TYPE, item.plugin_instance.NAME}:
                         continue
                     item.setPos(pos_x, pos_y)
-                    itemsdone.append(item)
+                    itemsdone[item] = (pos_x, pos_y)
                     max_w = max(max_w, item.width)
                     pos_y += item.height + grid(20)
-            pos_x += grid(max_w + 100)
+            pos_x += grid(max_w + 150)
             left += grid(20)
 
         pos_x -= grid(max_w + 100)
@@ -2600,7 +2602,30 @@ class Window(QMainWindow):
                 continue
             if item in itemsdone:
                 continue
+            if isinstance(item, ModifierNode):
+                continue
             item.setPos(pos_x, pos_y)
+            itemsdone[item] = (pos_x, pos_y)
+
+        for item in self.scene.items():
+            if isinstance(item, ModifierNode):
+                pitem = self.scene.parent.get_next(item, "out")
+                if pitem and pitem[0] in itemsdone:
+                    px, py = itemsdone[pitem[0]]
+                    left = False
+                    if isinstance(pitem[0], PluginNode) and pitem[1]:
+                        ppos = pitem[0].port_pos(pitem[1])
+                        if ppos:
+                            py = ppos.y() - 15
+                        if pitem[0].plugin_instance.NAME in {"quadencoder", "quadencoderz", "bitin", "interface"}:
+                            left = True
+                    if left:
+                        item.setPos(px + pitem[0].width + 10, py)
+                        item.flow_cfg["rotate"] = 180
+                    else:
+                        item.setPos(px - item.width - 10, py)
+                else:
+                    item.setPos(pos_x, pos_y)
 
         self.fit_view()
 
