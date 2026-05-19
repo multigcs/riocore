@@ -134,7 +134,8 @@ module rio (
     assign PINOUT_BLINK0_LED_RAW_ONERROR = PINOUT_BLINK0_LED_RAW & ERROR;
     assign PINOUT_BLINK0_LED = PINOUT_BLINK0_LED_RAW_ONERROR;
     blink #(
-        .DIVIDER(50000000)
+        .DIVIDER(50000000),
+        .DIVIDER_BITS(26)
     ) blink0 (
         .clk(sysclk),
         .led(PINOUT_BLINK0_LED_RAW)

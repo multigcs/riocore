@@ -120,7 +120,8 @@ module rio (
     wire PINOUT_BLINK0_LED_RAW;
     assign PINOUT_BLINK0_LED = PINOUT_BLINK0_LED_RAW;
     blink #(
-        .DIVIDER(24000000)
+        .DIVIDER(24000000),
+        .DIVIDER_BITS(25)
     ) blink0 (
         .clk(sysclk),
         .led(PINOUT_BLINK0_LED_RAW)

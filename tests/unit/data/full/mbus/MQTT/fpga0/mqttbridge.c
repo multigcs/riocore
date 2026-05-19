@@ -1151,11 +1151,11 @@ int interface_init(int argc, char **argv) {
                 dstPort = port;
             }
         }
-        udp_init(dstAddress, dstPort, SRC_PORT);
+        return udp_init(dstAddress, dstPort, SRC_PORT);
     } else {
-        udp_init(UDP_IP, DST_PORT, SRC_PORT);
+        return udp_init(UDP_IP, DST_PORT, SRC_PORT);
     }
-    return 0;
+    return -1;
 }
 
 void interface_exit(void) {

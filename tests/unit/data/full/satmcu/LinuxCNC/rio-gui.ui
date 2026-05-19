@@ -868,7 +868,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="board0.satuart0.timeout">
+     <widget class="LED" name="brd0.satuart0.timeout">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1347,7 +1347,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="HALLabel" name="board0.satmcu0.feed.pos">
+     <widget class="HALLabel" name="brd0.sm0.feed.pos">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -1410,7 +1410,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="HALLabel" name="board0.satmcu0.spl.pos">
+     <widget class="HALLabel" name="brd0.sm0.spl.pos">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -1473,7 +1473,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="HALLabel" name="brd0.satmcu0.rapid.pos">
+     <widget class="HALLabel" name="brd0.sm0.rapid.pos">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
         <horstretch>0</horstretch>
@@ -1536,7 +1536,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="brd0.sm0.lbutton.bit">
+     <widget class="LED" name="brd0.sm0.lbtn.bit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1592,7 +1592,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="brd0.sm0.lbutton.bit_st">
+     <widget class="LED" name="brd0.sm0.lbtn.bit_st">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1760,7 +1760,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="brd0.sm0.cbutton.bit">
+     <widget class="LED" name="brd0.sm0.cbtn.bit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1816,7 +1816,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="brd0.sm0.rbutton.bit">
+     <widget class="LED" name="brd0.sm0.rbtn.bit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1872,7 +1872,7 @@ QLabel {
      </widget>
     </item>
     <item>
-     <widget class="LED" name="brd0.sm0.rbutton.bit_st">
+     <widget class="LED" name="brd0.sm0.rbtn.bit_st">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>

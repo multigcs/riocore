@@ -355,11 +355,11 @@ int interface_init(int argc, char **argv) {
                 dstPort = port;
             }
         }
-        udp_init(dstAddress, dstPort, SRC_PORT);
+        return udp_init(dstAddress, dstPort, SRC_PORT);
     } else {
-        udp_init(UDP_IP, DST_PORT, SRC_PORT);
+        return udp_init(UDP_IP, DST_PORT, SRC_PORT);
     }
-    return 0;
+    return -1;
 }
 
 void interface_exit(void) {
@@ -419,7 +419,9 @@ int rtapi_app_main(void) {
     rtapi_print_msg(RTAPI_MSG_INFO, "%s: installed driver\n", modname);
     hal_ready(comp_id);
 
-    interface_init(0, NULL);
+    if (interface_init(0, NULL) < 0) {
+        return -1;
+    }
 
     rio_readwrite(NULL, 0);
 

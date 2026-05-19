@@ -661,11 +661,11 @@ int interface_init(int argc, char **argv) {
                 dstPort = port;
             }
         }
-        udp_init(dstAddress, dstPort, SRC_PORT);
+        return udp_init(dstAddress, dstPort, SRC_PORT);
     } else {
-        udp_init(UDP_IP, DST_PORT, SRC_PORT);
+        return udp_init(UDP_IP, DST_PORT, SRC_PORT);
     }
-    return 0;
+    return -1;
 }
 
 void interface_exit(void) {
@@ -725,7 +725,9 @@ int rtapi_app_main(void) {
     rtapi_print_msg(RTAPI_MSG_INFO, "%s: installed driver\n", modname);
     hal_ready(comp_id);
 
-    interface_init(0, NULL);
+    if (interface_init(0, NULL) < 0) {
+        return -1;
+    }
 
     rio_readwrite(NULL, 0);
 
@@ -1103,7 +1105,7 @@ void convert_sigin_board0_satmcu0_lbutton_bit(data_t *data) {
     *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_not = 1 - value;
 }
 
-void convert_sigin_board0_satmcu0_lbutton_bit_short(data_t *data) {
+void convert_sigin_board0_satmcu0_lbutton_bit(data_t *data) {
     bool value = data->VARIN1_LBUTTON_BIT;
     static bool last = 0;
     static uint16_t press_timer = 0;
@@ -1154,7 +1156,7 @@ void convert_sigin_board0_satmcu0_rbutton_bit(data_t *data) {
     *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_not = 1 - value;
 }
 
-void convert_sigin_board0_satmcu0_rbutton_bit_short(data_t *data) {
+void convert_sigin_board0_satmcu0_rbutton_bit(data_t *data) {
     bool value = data->VARIN1_RBUTTON_BIT;
     static bool last = 0;
     static uint16_t press_timer = 0;

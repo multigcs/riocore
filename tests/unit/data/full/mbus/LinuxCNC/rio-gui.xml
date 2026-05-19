@@ -1089,7 +1089,7 @@
           <width>15</width>
         </label>
         <number>
-          <halpin>"fpga0.mbus_device0.power_factor_0"</halpin>
+          <halpin>"fpga0.mbus_device0.pwr_fct_0"</halpin>
           <font>("Helvetica",14)</font>
           <format>"0.2f"</format>
           <anchor>"e"</anchor>
@@ -1135,7 +1135,7 @@
           <width>15</width>
         </label>
         <number>
-          <halpin>"fpga0.mbus_device0.power_total_0"</halpin>
+          <halpin>"fpga0.mbus_device0.pwr_total_0"</halpin>
           <font>("Helvetica",14)</font>
           <format>"0.1f"</format>
           <anchor>"e"</anchor>

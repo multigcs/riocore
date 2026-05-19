@@ -58,9 +58,9 @@ net sig_fpga0_mbus_hy0_ac_volt           => pyvcp.fpga0.mbus_hy0.ac_volt
 net sig_fpga0_mbus_device0_voltage_0     => pyvcp.fpga0.mbus_device0.voltage_0
 net sig_fpga0_mbus_device0_current_0     => pyvcp.fpga0.mbus_device0.current_0
 net sig_fpga0_mbus_device0_power_0       => pyvcp.fpga0.mbus_device0.power_0
-net sig_fpga0_mbus_device0_power_factor_0 => pyvcp.fpga0.mbus_device0.power_factor_0
+net sig_fpga0_mbus_device0_power_factor_0 => pyvcp.fpga0.mbus_device0.pwr_fct_0
 net sig_fpga0_mbus_device0_freq_0        => pyvcp.fpga0.mbus_device0.freq_0
-net sig_fpga0_mbus_device0_power_total_0 => pyvcp.fpga0.mbus_device0.power_total_0
+net sig_fpga0_mbus_device0_power_total_0 => pyvcp.fpga0.mbus_device0.pwr_total_0
 
 #################################################################################
 # setp

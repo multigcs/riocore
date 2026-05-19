@@ -134,7 +134,7 @@ class Plugin(PluginBase):
         self.URL = self.jdata.get("url", "")
         self.KEYWORDS = f"{node_type} board fpga gateware"
         self.PINDEFAULTS = {}
-        for slot in self.jdata["slots"]:
+        for slot in self.jdata.get("slots", []):
             slot_name = slot["name"]
             for pin_name, pin_data in slot["pins"].items():
                 if isinstance(pin_data, str):

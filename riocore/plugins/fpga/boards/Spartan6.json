@@ -1,0 +1,15 @@
+{
+    "name": "Spartan6",
+    "description": "Spartan6 - only for testing the toolchain and porting old configs",
+    "url": "https://github.com/ozzyrob/Linuxcnc-FPGA/",
+    "toolchain": "ise",
+    "family": "xc6",
+    "type": "xc6slx9-2tqg144",
+    "flashcmd": "openFPGALoader -v -c usb-blaster --fpga-part xc6slx9tqg144 -f rio.bit",
+    "package": "tqg144",
+    "clock": {
+        "speed": "50000000",
+        "pin": "p55",
+        "startup": "CClk"
+    }
+}
