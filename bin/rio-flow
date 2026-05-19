@@ -1888,9 +1888,11 @@ class Window(QMainWindow):
             self.config["flow"]["hal"] = {}
 
         # upgrade: board -> plugins
+        do_nesting = False
         board_name = self.config.get("boardcfg")
         board_uid = "board0"
         if board_name:
+            do_nesting = True
             riocore.log(f"INFO: converting board into fpga-plugin: {board_name}")
             boardpath = os.path.join(riocore_path, "plugins", "fpga", "boards", f"{board_name}.json")
             if not os.path.exists(boardpath):
@@ -1933,6 +1935,12 @@ class Window(QMainWindow):
                             plugin_data["image"] = "encoder_optical"
                         elif ".jog-counts" in signal_data.get("net"):
                             plugin_data["image"] = "encoder"
+                        elif plugin_data["type"] == "bitin":
+                            plugin_data["image"] = "smdbutton"
+                        elif plugin_data["type"] == "bitout":
+                            plugin_data["image"] = "led"
+                        elif plugin_data["type"] == "wled":
+                            plugin_data["image"] = "wled"
 
                 if not plugin_data.get("image"):
                     if plugin_data["type"] in {"stepdir"}:
@@ -2024,9 +2032,10 @@ class Window(QMainWindow):
                         self.config["plugins"].append(new_plugin)
                     del plugin["config"]
 
-        # self.nesting_all()
         self.redraw()
-        # self.fit_view()
+        if do_nesting:
+            self.nesting_all()
+            self.fit_view()
         self.cfg_check()
 
     def snapshot(self):
@@ -2564,65 +2573,34 @@ class Window(QMainWindow):
 
     def nesting_all(self):
         left = 0.0
-        for group in ("base", ModifierNode, PluginNode, SubNode):
-            items = {}
-            top = max_size
-            max_x = -max_size
-            for item in self.scene.items():
-                if isinstance(item, NodeEdge):
-                    continue
-                if group == "base":
-                    if not isinstance(item, PluginNode) or item.plugin_instance.TYPE != "base":
+        strgroup = [["quadencoder", "quadencoderz"], ["bitin"], ["interface", "fpga"], ["bitout", "wled"], ["mbus", "i2c", "joint"], ["mbus_device", "i2c_device"]]
+        itemsdone = []
+        pos_x = 0.0
+        for mgroup in strgroup:
+            pos_y = 0.0
+            max_w = 0.0
+            for group in mgroup:
+                for item in self.scene.items():
+                    if item in itemsdone:
                         continue
-                elif not isinstance(item, group) or (isinstance(item, PluginNode) and item.plugin_instance.TYPE == "base"):
-                    continue
-
-                px = item.pos().x()
-                py = item.pos().y()
-                top = min(top, py)
-                max_x = max(max_x, px)
-
-                x_pos_list = []
-                y_pos_list = []
-                for edge_item in self.scene.items():
-                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item and edge_item._source_node:
-                        pos = edge_item._source_node.port_pos(edge_item._source_port)
-                        x_pos_list.append(pos.x())
-                        y_pos_list.append(pos.y())
-                if x_pos_list:
-                    x_avg = sum(x_pos_list) / len(x_pos_list)
-                    y_avg = sum(y_pos_list) / len(y_pos_list)
-                else:
-                    x_avg = 0
-                    y_avg = 0
-                weight = y_avg * 100000 + x_avg
-                if weight not in items:
-                    items[weight] = []
-                items[weight].append(item)
-
-            # check sizes
-            group_h = 0.0
-            group_w = 0.0
-            for key in sorted(items.keys()):
-                for item in items[key]:
-                    group_w = max(group_w, item.width)
-                    group_h += item.height + grid_size
-
-            # center y
-            # top = grid(-group_h / 2)
-            top = 0.0
-
-            # set positions
-            for key in sorted(items.keys()):
-                for item in items[key]:
-                    item.setPos(left, top)
-                    top += item.height + grid_size
-
-            if group_w:
-                left += grid(group_w)
-            elif group == ModifierNode:
-                left += grid(100)
+                    if isinstance(item, NodeEdge):
+                        continue
+                    if not isinstance(item, PluginNode) or group not in {item.plugin_instance.TYPE, item.plugin_instance.NAME}:
+                        continue
+                    item.setPos(pos_x, pos_y)
+                    itemsdone.append(item)
+                    max_w = max(max_w, item.width)
+                    pos_y += item.height + grid(20)
+            pos_x += grid(max_w + 100)
             left += grid(20)
+
+        pos_x -= grid(max_w + 100)
+        for item in self.scene.items():
+            if isinstance(item, NodeEdge):
+                continue
+            if item in itemsdone:
+                continue
+            item.setPos(pos_x, pos_y)
 
         self.fit_view()
 
