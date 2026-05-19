@@ -14,6 +14,11 @@ from riocore.generator.pyvcp import pyvcp
 from riocore.generator.qtpyvcp import qtpyvcp
 from riocore.generator.qtvcp import qtvcp
 
+try:
+    import tnc
+except Exception:
+    tnc = None
+
 riocore_path = os.path.dirname(os.path.dirname(__file__))
 
 MAX_HAL_LEN = 36
@@ -1574,9 +1579,9 @@ o<{oword}> endsub
                 shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
 
         elif gui in {"tnc"}:
-            try:
-                import tnc
-
+            if tnc is None:
+                riocore.log("ERROR: no tnc installation found")
+            else:
                 tnc_path = os.path.dirname(tnc.__file__)
                 os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
                 ini_setup["DISPLAY"]["DISPLAY"] = "./tnc"
@@ -1613,8 +1618,6 @@ if __name__ == "__main__":
                 open(target_path, "w").write(tnc_main)
                 os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
                 shutil.copy(os.path.join(tnc_path, "ui", "window.ui"), os.path.join(self.configuration_path, "ui", "window.ui"))
-            except Exception:
-                riocore.log("ERROR: no tnc installation found")
 
         gui_gen = None
         if vcp_mode != "NONE":
