@@ -95,7 +95,7 @@ class Plugin(PluginBase):
         if signal_name == "velocity":
             return """
     if (value != 0) {
-        value = OSC_CLOCK / value / 2;
+        value = OSC_CLOCK / value;
     }
             """
         return ""

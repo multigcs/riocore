@@ -562,7 +562,7 @@ void convert_varout32_stepdir0_velocity(data_t *data) {
     value = value * *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_SCALE;
     value = value + *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY_OFFSET;
     if (value != 0) {
-        value = OSC_CLOCK / value / 2;
+        value = OSC_CLOCK / value;
     }
     data->VAROUT32_STEPDIR0_VELOCITY = value;
 }
@@ -577,7 +577,7 @@ void convert_varout32_stepdir1_velocity(data_t *data) {
     value = value * *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_SCALE;
     value = value + *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY_OFFSET;
     if (value != 0) {
-        value = OSC_CLOCK / value / 2;
+        value = OSC_CLOCK / value;
     }
     data->VAROUT32_STEPDIR1_VELOCITY = value;
 }
@@ -592,7 +592,7 @@ void convert_varout32_stepdir2_velocity(data_t *data) {
     value = value * *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_SCALE;
     value = value + *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY_OFFSET;
     if (value != 0) {
-        value = OSC_CLOCK / value / 2;
+        value = OSC_CLOCK / value;
     }
     data->VAROUT32_STEPDIR2_VELOCITY = value;
 }
