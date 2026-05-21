@@ -1936,15 +1936,17 @@ class Window(QMainWindow):
                     del self.config["plugins"][pn]
                 # rename pins
                 for signal_name, signal_data in plugin_data.get("signals", {}).items():
-                    if not plugin_data.get("image"):
-                        if ".home-sw-in" in signal_data.get("net"):
+                    if not plugin_data.get("image") and signal_data:
+                        if ".home-sw-in" in signal_data.get("net", ""):
                             plugin_data["image"] = "proximity"
-                        elif ".index-enable" in signal_data.get("net"):
+                            # plugin_data["rotate"] = 180
+                        elif ".index-enable" in signal_data.get("net", ""):
                             plugin_data["image"] = "encoder_optical"
-                        elif ".jog-counts" in signal_data.get("net"):
+                        elif ".jog-counts" in signal_data.get("net", ""):
                             plugin_data["image"] = "encoder"
                         elif plugin_data["type"] == "bitin":
                             plugin_data["image"] = "smdbutton"
+                            # plugin_data["rotate"] = 180
                         elif plugin_data["type"] == "bitout":
                             plugin_data["image"] = "led"
                         elif plugin_data["type"] == "wled":
@@ -2586,12 +2588,8 @@ class Window(QMainWindow):
         self.snapshot()
 
     def nesting_all(self):
-        left = 0.0
-        strgroup = [["quadencoder", "quadencoderz"], ["bitin"], ["interface", "fpga"], ["bitout", "wled"], ["mbus", "i2c", "joint", "shiftreg"], ["mbus_device", "i2c_device"]]
-        itemsdone = []
-
         fallback = True
-        if graphviz is not None:
+        if graphviz is not None and not self.args.no_graphviz:
             try:
                 mapping = {}
                 dot = graphviz.Digraph(comment="flow", format="svg", engine="dot")
@@ -2627,6 +2625,9 @@ class Window(QMainWindow):
                 print(f"ERROR: generating graphviz layout :{err}")
 
         if fallback:
+            strgroup = [["quadencoder", "quadencoderz"], ["bitin"], ["interface", "fpga"], ["bitout", "wled"], ["mbus", "i2c", "joint", "shiftreg"], ["mbus_device", "i2c_device"]]
+            itemsdone = []
+            left = 0.0
             pos_x = 0.0
             for mgroup in strgroup:
                 pos_y = 0.0
@@ -3027,6 +3028,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("config", help="config file", nargs="?", type=str, default=None)
     parser.add_argument("-p", "--png", help="save view to png", type=str, default=None)
+    parser.add_argument("-n", "--no-graphviz", help="do not use graphviz for the layout",  default=False, action="store_true")
     args = parser.parse_args()
     Window(args, app=app)
     app.exec()
