@@ -55,8 +55,8 @@ class Modifiers:
     def pin_modifier_debounce(self, instances, modifier_num, pin_name, pin_varname, modifier, system_setup):
         delay = modifier.get("delay", 2.5)
         delay_divider = int(system_setup["speed"] * delay / 1000)
-        instances[f"debouncer{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "module": "debouncer",
+        instances[f"debounce{modifier_num}_{self.instances_name}_{pin_name}"] = {
+            "module": "debounce",
             "parameter": {"DELAY": delay_divider},
             "arguments": {
                 "clk": "sysclk",
@@ -145,7 +145,7 @@ class Modifiers:
         frequency_divider = system_setup["speed"] // frequency
         dty_divider = frequency_divider * dty // 100
         instances[f"pwm{modifier_num}_{self.instances_name}_{pin_name}"] = {
-            "module": "pwmmod",
+            "module": "pwm",
             "parameter": {"DIVIDER_FREQ": frequency_divider, "DIVIDER_DTY": dty_divider},
             "predefines": [
                 f"wire {pin_varname}_PWM;",

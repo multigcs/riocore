@@ -18,7 +18,7 @@
         <File path="i2cbus_i2cbus0.v" type="file.verilog" enable="1"/>
         <File path="pwmout.v" type="file.verilog" enable="1"/>
         <File path="stepdir.v" type="file.verilog" enable="1"/>
-        <File path="debouncer.v" type="file.verilog" enable="1"/>
+        <File path="debounce.v" type="file.verilog" enable="1"/>
         <File path="toggle.v" type="file.verilog" enable="1"/>
         <File path="pwmmod.v" type="file.verilog" enable="1"/>
         <File path="oneshot.v" type="file.verilog" enable="1"/>

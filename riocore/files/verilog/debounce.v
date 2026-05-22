@@ -1,5 +1,5 @@
 
-module debouncer
+module debounce
     #(parameter DELAY = 16)
     (
         input clk,

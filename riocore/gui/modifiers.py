@@ -81,6 +81,8 @@ class GuiModifiers:
         if hasattr(self.parent, "STYLESHEET"):
             dialog.setStyleSheet(self.parent.STYLESHEET)
         dialog.modifier_id = modifier_id
+        if dialog.modifier_id >= len(modifier_list):
+            return
         modifier_config = modifier_list[dialog.modifier_id]
         modifier_type = modifier_config.get("type", "???")
 

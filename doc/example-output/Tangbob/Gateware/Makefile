@@ -7,7 +7,7 @@ FAMILY   := GW1N-9C
 FAMILY_GOWIN := GW1NR-9C
 DEVICE   := GW1NR-LV9QN88PC6/I5
 CLK_SPEED := 27.0
-VERILOGS := globals.v w5500.v ws2812.v wled.v modbus.v uart_baud.v uart_rx.v uart_tx.v blink.v i2c_master.v i2cbus_i2cbus0.v pwmout.v stepdir.v debouncer.v toggle.v pwmmod.v oneshot.v delay.v rio.v
+VERILOGS := globals.v w5500.v ws2812.v wled.v modbus.v uart_baud.v uart_rx.v uart_tx.v blink.v i2c_master.v i2cbus_i2cbus0.v pwmout.v stepdir.v debounce.v toggle.v pwmmod.v oneshot.v delay.v rio.v
 
 all: impl/pnr/project.fs
 

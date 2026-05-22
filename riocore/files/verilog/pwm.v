@@ -1,5 +1,5 @@
 
-module pwmmod
+module pwm
     #(parameter DIVIDER_FREQ = 255, parameter DIVIDER_DTY = 128)
     (
         input clk,

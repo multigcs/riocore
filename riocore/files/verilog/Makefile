@@ -11,22 +11,22 @@ testb_oneshot:
 	vvp testb_oneshot.out
 	test -e testb_oneshot.gtkw && gtkwave testb_oneshot.gtkw || gtkwave testb_oneshot.vcd
 
-testb_debouncer:
-	iverilog -Wall -o testb_debouncer.out testb_debouncer.v debouncer.v
-	vvp testb_debouncer.out
-	test -e testb_debouncer.gtkw && gtkwave testb_debouncer.gtkw || gtkwave testb_debouncer.vcd
+testb_debounce:
+	iverilog -Wall -o testb_debounce.out testb_debounce.v debounce.v
+	vvp testb_debounce.out
+	test -e testb_debounce.gtkw && gtkwave testb_debounce.gtkw || gtkwave testb_debounce.vcd
 
 testb_delay:
 	iverilog -Wall -o testb_delay.out testb_delay.v delay.v
 	vvp testb_delay.out
 	test -e testb_delay.gtkw && gtkwave testb_delay.gtkw || gtkwave testb_delay.vcd
 
-testb_pwmmod:
-	cat pwmmod.v | sed 's| clog2(| $$clog2(|g' > pwmmod-test.v
-	iverilog -Wall -o testb_pwmmod.out testb_pwmmod.v pwmmod-test.v
-	rm -rf pwmmod-test.v
-	vvp testb_pwmmod.out
-	test -e testb_pwmmod.gtkw && gtkwave testb_pwmmod.gtkw || gtkwave testb_pwmmod.vcd
+testb_pwm:
+	cat pwm.v | sed 's| clog2(| $$clog2(|g' > pwm-test.v
+	iverilog -Wall -o testb_pwm.out testb_pwm.v pwm-test.v
+	rm -rf pwm-test.v
+	vvp testb_pwm.out
+	test -e testb_pwm.gtkw && gtkwave testb_pwm.gtkw || gtkwave testb_pwm.vcd
 
 clean:
 	rm -rf *.out *.vcd

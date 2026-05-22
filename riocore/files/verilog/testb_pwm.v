@@ -1,7 +1,7 @@
 
 `timescale 1ns/100ps
 
-module testb_pwmmod;
+module testb_pwm;
     reg clk = 0;
     always #1 clk = !clk;
 
@@ -10,7 +10,7 @@ module testb_pwmmod;
     wire dout2;
 
     initial begin
-        $dumpfile("testb_pwmmod.vcd");
+        $dumpfile("testb_pwm.vcd");
         $dumpvars(0, clk);
 
         $dumpvars(1, din);
@@ -28,13 +28,13 @@ module testb_pwmmod;
         #50 $finish;
     end
 
-    pwmmod #(.DIVIDER_FREQ(10), .DIVIDER_DTY(3)) pwmmod1 (
+    pwm #(.DIVIDER_FREQ(10), .DIVIDER_DTY(3)) pwm1 (
         .clk(clk),
         .din(din),
         .dout(dout1)
     );
 
-    pwmmod #(.DIVIDER_FREQ(20), .DIVIDER_DTY(10)) pwmmod2 (
+    pwm #(.DIVIDER_FREQ(20), .DIVIDER_DTY(10)) pwm2 (
         .clk(clk),
         .din(din),
         .dout(dout2)

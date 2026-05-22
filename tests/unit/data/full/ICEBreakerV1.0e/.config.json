@@ -126,7 +126,51 @@
                     "pin": "breakout0:J1:dir"
                 },
                 "step": {
-                    "pin": "breakout0:J1:step"
+                    "pin": "breakout0:J1:step",
+                    "modifier": [
+                        {
+                            "type": "debounce",
+                            "pos": [
+                                80.0,
+                                -300.0
+                            ]
+                        },
+                        {
+                            "type": "delay",
+                            "pos": [
+                                80.0,
+                                -340.0
+                            ]
+                        },
+                        {
+                            "type": "onerror",
+                            "pos": [
+                                80.0,
+                                -220.0
+                            ]
+                        },
+                        {
+                            "type": "oneshot",
+                            "pos": [
+                                80.0,
+                                -260.0
+                            ]
+                        },
+                        {
+                            "type": "pwm",
+                            "pos": [
+                                80.0,
+                                -380.0
+                            ]
+                        },
+                        {
+                            "type": "toggle",
+                            "pos": [
+                                80.0,
+                                -180.0
+                            ]
+                        }
+                    ]
                 }
             }
         },

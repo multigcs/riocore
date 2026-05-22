@@ -1,7 +1,7 @@
 
 `timescale 1ns/100ps
 
-module testb_debouncer;
+module testb_debounce;
     reg clk = 0;
     always #1 clk = !clk;
 
@@ -9,7 +9,7 @@ module testb_debouncer;
     wire dout;
 
     initial begin
-        $dumpfile("testb_debouncer.vcd");
+        $dumpfile("testb_debounce.vcd");
         $dumpvars(0, clk);
 
         $dumpvars(1, din);
@@ -46,7 +46,7 @@ module testb_debouncer;
         # 100 $finish;
     end
 
-    debouncer #(.DELAY(10)) debouncer0 (
+    debounce #(.DELAY(10)) debounce0 (
         .clk(clk),
         .din(din),
         .dout(dout)
