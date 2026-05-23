@@ -1,0 +1,81 @@
+{
+    "name": "OLIMEX_iCE40HX8K-EVB",
+    "description": "OLIMEX iCE40HX8K-EVB board over SPI",
+    "boardcfg": "iCE40HX8K-EVB_minimal",
+    "protocol": "SPI",
+    "plugins": [
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "M12"
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "type": "blink",
+            "pins": {
+                "led": {
+                    "pin": "R16"
+                }
+            },
+            "frequency": 1.0
+        },
+        {
+            "name": "joint-0",
+            "type": "stepdir",
+            "pins": {
+                "step": {
+                    "pin": "J2"
+                },
+                "dir": {
+                    "pin": "H1"
+                }
+            },
+            "is_joint": true,
+            "axis": "X",
+            "joint": {
+                "type": "LINEAR",
+                "min_limit": 0.0,
+                "max_limit": 100.0,
+                "max_velocity": 8.0,
+                "max_acceleration": 100.0,
+                "stepgen_maxaccel": 130.0,
+                "home_search_vel": 20.0,
+                "home_latch_vel": 10.0,
+                "home_final_vel": 20.0
+            }
+        },
+        {
+            "type": "spi",
+            "pins": {
+                "mosi": {
+                    "pin": "P11"
+                },
+                "miso": {
+                    "pin": "P12"
+                },
+                "sclk": {
+                    "pin": "R11"
+                },
+                "sel": {
+                    "pin": "R12"
+                }
+            }
+        }
+    ],
+    "machinetype": "mill",
+    "linuxcnc": {
+        "ini": {
+            "KINS": {
+                "JOINTS": 1,
+                "KINEMATICS": "trivkins coordinates=X"
+            },
+            "TRAJ": {
+                "COORDINATES": "X"
+            }
+        }
+    },
+    "axis": 1
+}
