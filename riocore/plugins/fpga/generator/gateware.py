@@ -150,7 +150,6 @@ class gateware(generator_base):
         for modifier in all_modifiers:
             extrafile = f"{modifier}.v"
             source = os.path.join(riocore_path, "files", "verilog", extrafile)
-            print(source)
             if os.path.isfile(source):
                 self.parent.verilogs.append(extrafile)
                 target = os.path.join(self.jdata["output_path"], extrafile)

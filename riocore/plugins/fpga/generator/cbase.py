@@ -1119,6 +1119,7 @@ class cbase:
             output.append("    modbus_init();")
 
         if protocol == "UART":
+            output.append("    char serialPort[1024];")
             output.append("    if (argc > 1) {")
             output.append("        strncpy(serialPort, argv[1], 1023);")
             output.append("    } else {")
