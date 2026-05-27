@@ -50,6 +50,11 @@ class hal_generator:
     def virtual_components_add(self, component):
         self.POSTGUI_COMPONENTS.append(component)
 
+    def add_halcomp(self, component, name):
+        if component not in self.hal_calcs:
+            self.hal_calcs[component] = []
+        self.hal_calcs[component].append(name)
+
     def pin2signal(self, pin, target, signal_name=None):
         if pin.startswith("sig:"):
             return pin.split(":", 2)[-1]
@@ -121,9 +126,7 @@ class hal_generator:
             # pin <> value1,value2
             wcomp_out = wcomp_types[etype]
             fname = f"func.wcomp_{wcomp_out}_{new_signal}"
-            if "wcomp" not in self.hal_calcs:
-                self.hal_calcs["wcomp"] = []
-            self.hal_calcs["wcomp"].append(fname)
+            self.add_halcomp("wcomp", fname)
             input_pin = parts[0]
             min_value = parts[2]
             max_value = min_value
@@ -173,9 +176,7 @@ class hal_generator:
                 self.setp_add(f"{fname}.gain1", -1.0)
             else:
                 fname = f"func.{int_types[etype]}_{new_signal}"
-            if personality not in self.hal_calcs:
-                self.hal_calcs[personality] = []
-            self.hal_calcs[personality].append(fname)
+            self.add_halcomp(personality, fname)
             for in_n in range(n_inputs):
                 input_pin = parts[in_n * 2]
                 if input_pin.replace(".", "").lstrip("-").isnumeric():
@@ -222,9 +223,7 @@ class hal_generator:
         fname = f"func.not_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-        if "not" not in self.hal_calcs:
-            self.hal_calcs["not"] = []
-        self.hal_calcs["not"].append(fname)
+        self.add_halcomp("not", fname)
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
         self.function_cache[fname] = f"{fname}.out"
@@ -249,9 +248,7 @@ class hal_generator:
         fname = f"func.{operation}_{input_pin.replace('.', '_')}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-        if operation not in self.hal_calcs:
-            self.hal_calcs[operation] = []
-        self.hal_calcs[operation].append(fname)
+        self.add_halcomp(operation, fname)
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.{in_name}"] = {"signals": [input_signal], "target": target}
         self.function_cache[fname] = f"{fname}.{out_name}"
@@ -284,13 +281,11 @@ class hal_generator:
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
-        if operation not in self.hal_calcs:
-            self.hal_calcs[operation] = []
-        fnum = len(self.hal_calcs[operation]) + 1
+        fnum = len(self.hal_calcs.get(operation, [])) + 1
         fname = f"func.{operation}-{fnum}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-        self.hal_calcs[operation].append(fname)
+        self.add_halcomp(operation, fname)
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.{in_name}"] = {"signals": [input_signal], "target": target}
         for arg_num, arg_name in enumerate(arg_names):
@@ -330,13 +325,11 @@ class hal_generator:
             print(f"component: {func} not found")
             exit(1)
 
-        if func not in self.hal_calcs:
-            self.hal_calcs[func] = []
-        fnum = len(self.hal_calcs[func]) + 1
+        fnum = len(self.hal_calcs.get(func, [])) + 1
         fname = f"func.{func}-{fnum}"
         if fname in self.function_cache:
             return self.function_cache[fname]
-        self.hal_calcs[func].append(fname)
+        self.add_halcomp(func, fname)
         input_signal = self.pin2signal(input_pin, target)
         self.outputs2signals[f"{fname}.in"] = {"signals": [input_signal], "target": target}
         self.function_cache[fname] = f"{fname}.out"
