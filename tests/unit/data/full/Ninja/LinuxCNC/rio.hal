@@ -18,6 +18,9 @@ addf motion-controller servo-thread
 # write
 addf stepgen-ninja.0.process-recv servo-thread
 
+#################################################################################
+# hal-components
+#################################################################################
 loadrt conv_s32_u32 names=func.conv_s32_u32-1
 addf func.conv_s32_u32-1 servo-thread
 

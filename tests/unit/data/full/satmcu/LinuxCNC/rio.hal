@@ -23,7 +23,7 @@ addf motion-controller servo-thread
 # write
 
 #################################################################################
-# logic and calc components
+# hal-components
 #################################################################################
 loadrt logic names=func.and_0.1 personality=0x107
 addf func.and_0.1 servo-thread

@@ -13,7 +13,7 @@ def test_generator():
 # write
 
 #################################################################################
-# logic and calc components
+# hal-components
 #################################################################################
 loadrt logic names=func.and_0.1,func.and_2.1,func.or_3.1,func.and_6.1,func.or_7.1,func.and_7.2,func.or_8.1,func.or_9.1,func.or_11.1 personality=0x102,0x102,0x204,0x102,0x203,0x103,0x202,0x202,0x202
 addf func.and_0.1 servo-thread
@@ -251,7 +251,7 @@ def test_generator_not():
 # write
 
 #################################################################################
-# logic and calc components
+# hal-components
 #################################################################################
 loadrt logic names=func.and_0.1 personality=0x102
 addf func.and_0.1 servo-thread
@@ -325,7 +325,7 @@ def test_generator_abs():
 # write
 
 #################################################################################
-# logic and calc components
+# hal-components
 #################################################################################
 loadrt logic names=func.and_0.1 personality=0x102
 addf func.and_0.1 servo-thread

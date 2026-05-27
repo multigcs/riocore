@@ -39,7 +39,7 @@ class hal_generator:
         self.outputs2signals = {}
         self.function_cache = {}
         self.hal_logics = {}
-        self.hal_calcs = {}
+        self.hal_component = {"logic": []}
         self.setps = {}
         self.preformated = []
         self.preformated_top = []
@@ -50,10 +50,14 @@ class hal_generator:
     def virtual_components_add(self, component):
         self.POSTGUI_COMPONENTS.append(component)
 
-    def add_halcomp(self, component, name):
-        if component not in self.hal_calcs:
-            self.hal_calcs[component] = []
-        self.hal_calcs[component].append(name)
+    def add_hallogic(self, personality, name):
+        self.hal_logics[name] = f"0x{personality:x}"
+        self.add_halcomp("logic", name, options={"personality": f"0x{personality:x}"})
+
+    def add_halcomp(self, component, name, options=None):
+        if component not in self.hal_component:
+            self.hal_component[component] = []
+        self.hal_component[component].append((name, options))
 
     def pin2signal(self, pin, target, signal_name=None):
         if pin.startswith("sig:"):
@@ -105,7 +109,7 @@ class hal_generator:
             # pin1 OR pin2
             personality = logic_types[etype] + n_inputs
             fname = f"func.{etype.lower()}_{new_signal}"
-            self.hal_logics[fname] = f"0x{personality:x}"
+            self.add_hallogic(personality, fname)
             for in_n in range(n_inputs):
                 input_pin = parts[in_n * 2]
                 if input_pin.replace(".", "").lstrip("-").lstrip("-").isnumeric():
@@ -281,7 +285,7 @@ class hal_generator:
         if target not in self.logic_ids:
             self.logic_ids[target] = 0
         self.logic_ids[target] += 1
-        fnum = len(self.hal_calcs.get(operation, [])) + 1
+        fnum = len(self.hal_component.get(operation, [])) + 1
         fname = f"func.{operation}-{fnum}"
         if fname in self.function_cache:
             return self.function_cache[fname]
@@ -301,7 +305,7 @@ class hal_generator:
             input_pin = f"charge-pump.out-{divider}"
         else:
             input_pin = "charge-pump.out"
-        self.hal_calcs["charge_pump"] = ["charge-pump"]
+        self.hal_component["charge_pump"] = ["charge-pump"]
         return input_pin
 
     def pin_conv(self, input_pin, target, type_in, type_out):
@@ -325,7 +329,7 @@ class hal_generator:
             print(f"component: {func} not found")
             exit(1)
 
-        fnum = len(self.hal_calcs.get(func, [])) + 1
+        fnum = len(self.hal_component.get(func, [])) + 1
         fname = f"func.{func}-{fnum}"
         if fname in self.function_cache:
             return self.function_cache[fname]
@@ -558,27 +562,36 @@ class hal_generator:
                     self.outputs2signals[output] = {"signals": [input_signal], "target": output}
 
         # combine and add functions
-        func_names = []
-        func_personalities = []
-        for func, personality in self.hal_logics.items():
-            func_names.append(func)
-            func_personalities.append(personality)
-        if func_names:
-            hal_data.append("#################################################################################")
-            hal_data.append("# logic and calc components")
-            hal_data.append("#################################################################################")
-            hal_data.append(f"loadrt logic names={','.join(func_names)} personality={','.join(func_personalities)}")
-            for fname in func_names:
-                hal_data.append(f"addf {fname} servo-thread")
-            hal_data.append("")
-        func_names = []
-        func_personalities = []
-        for calc, names in self.hal_calcs.items():
-            if calc in {"charge_pump"}:
-                hal_data.append(f"loadrt {calc}")
+        hal_data.append("#################################################################################")
+        hal_data.append("# hal-components")
+        hal_data.append("#################################################################################")
+        for component, instances in self.hal_component.items():
+            if component in {"charge_pump"}:
+                hal_data.append(f"loadrt {component}")
             else:
-                hal_data.append(f"loadrt {calc} names={','.join(names)}")
-            for name in names:
+                if not instances:
+                    continue
+                args = []
+                names = []
+                options = {}
+                for instance in instances:
+                    names.append(instance[0])
+                    if instance[1]:
+                        for name, value in instance[1].items():
+                            if name not in options:
+                                options[name] = []
+                            options[name].append(value)
+                for name, values in options.items():
+                    if len(names) != len(values):
+                        print(f"ERROR: hal-component: number of arguments: {name}: {len(names)} != {len(values)}")
+                    args.append(f"{name}={','.join(values)}")
+                if args:
+                    hal_data.append(f"loadrt {component} names={','.join(names)} {' '.join(args)}")
+                else:
+                    hal_data.append(f"loadrt {component} names={','.join(names)}")
+
+            for instance in instances:
+                name = instance[0]
                 hal_data.append(f"addf {name} servo-thread")
             hal_data.append("")
 
