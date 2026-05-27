@@ -27,7 +27,7 @@ int uart_init(char *serialPort) {
     rtapi_print("Info: Initialize serial connection: %s\n", serialPort);
     uart_serial_fd = open (serialPort, O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY);
     if (uart_serial_fd < 0) {
-        rtapi_print_msg(RTAPI_MSG_ERR,"usb setup error\n");
+        rtapi_print_msg(RTAPI_MSG_ERR,"uart setup error: '%s'\n", serialPort);
         return errno;
     }
     uart_set_interface_attribs(uart_serial_fd, SERIAL_BAUD);
