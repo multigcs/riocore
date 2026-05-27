@@ -3,9 +3,6 @@
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
-# pid controller
-loadrt pid num_chan=3
-
 # manual toolchanger
 loadusr -W hal_manualtoolchange
 
@@ -18,9 +15,6 @@ setp board0.sys-simulation 1
 # read
 addf board0.readwrite servo-thread
 # process
-addf pid.0.do-pid-calcs servo-thread
-addf pid.1.do-pid-calcs servo-thread
-addf pid.2.do-pid-calcs servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 # write
@@ -31,6 +25,11 @@ addf motion-controller servo-thread
 loadrt logic names=func.and_13.1,func.or_14.1 personality=0x102,0x202
 addf func.and_13.1 servo-thread
 addf func.or_14.1 servo-thread
+
+loadrt pid names=pid.0,pid.1,pid.2
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
 
 loadrt limit1 names=func.limit1-1
 addf func.limit1-1 servo-thread

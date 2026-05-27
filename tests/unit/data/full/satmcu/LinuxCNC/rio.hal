@@ -3,9 +3,6 @@
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
-# pid controller
-loadrt pid num_chan=3
-
 # fpga board(s) Tangoboard
 loadrt rio comp_names=riocomp-board0
 
@@ -15,9 +12,6 @@ setp board0.sys-simulation 0
 # read
 addf board0.readwrite servo-thread
 # process
-addf pid.0.do-pid-calcs servo-thread
-addf pid.1.do-pid-calcs servo-thread
-addf pid.2.do-pid-calcs servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 # write
@@ -27,6 +21,11 @@ addf motion-controller servo-thread
 #################################################################################
 loadrt logic names=func.and_0.1 personality=0x107
 addf func.and_0.1 servo-thread
+
+loadrt pid names=pid.0,pid.1,pid.2
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
 
 loadrt not names=func.not_board0_satuart0_timeout
 addf func.not_board0_satuart0_timeout servo-thread

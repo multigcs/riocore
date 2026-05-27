@@ -60,14 +60,10 @@ class Plugin(PluginBase):
         joypad_btn_slow = self.plugin_setup.get("slow", self.option_default("slow"))
         joypad_btn_medium = self.plugin_setup.get("medium", self.option_default("medium"))
         joypad_btn_fast = self.plugin_setup.get("fast", self.option_default("fast"))
-
-        muxes = []
         for axis_name, axis_config in parent.project.axis_dict.items():
             joints = axis_config["joints"]
             axis_lower = axis_name.lower()
-            muxes.append(f"mux2_{axis_lower}")
-
-        parent.halg.fmt_add(f"loadrt mux2 names={','.join(muxes)}")
+            parent.halg.add_halcomp("mux2", f"mux2_{axis_lower}")
 
         parent.halg.setp_add("joy_mux4.in0", 0.0)
         parent.halg.setp_add("joy_mux4.in1", 50.0)
@@ -114,7 +110,6 @@ class Plugin(PluginBase):
                     parent.halg.setp_add(f"input.0.{jaxis}-scale", scale * -1.0)
                 else:
                     parent.halg.setp_add(f"input.0.{jaxis}-scale", scale)
-                parent.halg.fmt_add(f"addf mux2_{axis_lower} servo-thread")
                 parent.halg.net_add("halui.machine.is-on", f"mux2_{axis_lower}.sel")
                 # TODO: abs/rel
                 parent.halg.net_add(f"input.0.{jaxis}-position", f"mux2_{axis_lower}.in1")
@@ -129,7 +124,6 @@ class Plugin(PluginBase):
         for instance in instances:
             joypad_name = instance.plugin_setup.get("joypad_name", instance.option_default("joypad_name"))
         output.append(f"loadusr -W hal_input -KRAL {joypad_name}")
-        output.append("loadrt mux4 names=joy_mux4")
-        output.append("addf joy_mux4 servo-thread")
         output.append("")
+        instances[0].parent.halg.add_halcomp("mux4", "joy_mux4")
         return "\n".join(output)

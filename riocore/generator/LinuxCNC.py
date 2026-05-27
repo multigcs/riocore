@@ -1170,10 +1170,7 @@ o<{oword}> endsub
 
         if "chargepump" in self.rio_functions:
             outputs = self.rio_functions["chargepump"]
-            self.halg.fmt_add_top("# charge_pump / watchdog output")
-            self.halg.fmt_add_top("loadrt charge_pump")
-            self.halg.fmt_add_top("")
-            self.halg.fmt_add_top("addf charge-pump servo-thread")
+            self.halg.add_halcomp("charge_pump", "")
             for output in outputs:
                 self.halg.net_add("charge-pump.out-4", output)
 
@@ -1185,8 +1182,7 @@ o<{oword}> endsub
                 vmin = halname["vmin"]
                 vmax = halname["vmax"]
                 virtual = halname["virtual"]
-                self.halg.fmt_add(f"loadrt wcomp names=riof.{source}")
-                self.halg.fmt_add(f"addf riof.{source} servo-thread")
+                self.halg.add_halcomp("wcomp", f"riof.{source}")
                 self.halg.setp_add(f"riof.{source}.min", vmin)
                 self.halg.setp_add(f"riof.{source}.max", vmax)
                 if virtual:
@@ -1290,9 +1286,7 @@ o<{oword}> endsub
                     riocore.log("ERROR: no speed selectors found")
 
                 if speed_selector_mux in {2, 4}:
-                    self.halg.fmt_add(f"loadrt mux{speed_selector_mux} names=riof.jog.wheelscale_mux")
-                    self.halg.fmt_add("addf riof.jog.wheelscale_mux servo-thread")
-
+                    self.halg.add_halcomp(f"mux{speed_selector_mux}", "riof.jog.wheelscale_mux")
                     self.halg.setp_add("riof.jog.wheelscale_mux.in0", riof_jog_setup("wheel", "scale_0"))
                     self.halg.setp_add("riof.jog.wheelscale_mux.in1", riof_jog_setup("wheel", "scale_1"))
                     if speed_selector_mux == 4:
@@ -1322,8 +1316,7 @@ o<{oword}> endsub
                 if halname_wheel and wheelfilter:
                     wf_gain = riof_jog_setup("wheel", "filter_gain")
                     wf_scale = riof_jog_setup("wheel", "filter_scale")
-                    self.halg.fmt_add("loadrt ilowpass names=riof.jog.wheelilowpass")
-                    self.halg.fmt_add("addf riof.jog.wheelilowpass servo-thread")
+                    self.halg.add_halcomp("ilowpass", "riof.jog.wheelilowpass")
                     self.halg.setp_add("riof.jog.wheelilowpass.gain", wf_gain)
                     self.halg.setp_add("riof.jog.wheelilowpass.scale", wf_scale)
                     self.halg.net_add(halname_wheel, "riof.jog.wheelilowpass.in")
@@ -1399,9 +1392,7 @@ o<{oword}> endsub
                     riocore.log("ERROR: no speed selectors found")
 
                 if speed_selector_mux in {2, 4}:
-                    self.halg.fmt_add(f"loadrt mux{speed_selector_mux} names=riof.jog.speed_mux")
-                    self.halg.fmt_add("addf riof.jog.speed_mux servo-thread")
-
+                    self.halg.add_halcomp(f"mux{speed_selector_mux}", "riof.jog.speed_mux")
                     if speed_selector_mux == 2:
                         self.halg.setp_add("riof.jog.speed_mux.in0", riof_jog_setup("keys", "speed_0"))
                         self.halg.setp_add("riof.jog.speed_mux.in1", riof_jog_setup("keys", "speed_1"))
@@ -1450,8 +1441,7 @@ o<{oword}> endsub
                                 if axis_name == laxis:
                                     self.halg.fmt_add("")
                                     self.halg.fmt_add(f"# axis {laxis} selection")
-                                    self.halg.fmt_add(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                                    self.halg.fmt_add(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                                    self.halg.add_halcomp("oneshot", f"riof.axisui-{laxis}-oneshot")
                                     self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
                                     self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
                                     if gui == "axis":
@@ -1485,8 +1475,7 @@ o<{oword}> endsub
                     laxis = axis_id.lower()
                     self.halg.fmt_add("")
                     self.halg.fmt_add(f"# axis {laxis} selection")
-                    self.halg.fmt_add(f"loadrt oneshot names=riof.axisui-{laxis}-oneshot")
-                    self.halg.fmt_add(f"addf riof.axisui-{laxis}-oneshot servo-thread")
+                    self.halg.add_halcomp("oneshot", f"riof.axisui-{laxis}-oneshot")
                     self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.width", 0.1)
                     self.halg.setp_add(f"riof.axisui-{laxis}-oneshot.retriggerable", 0)
                     if gui == "axis":
@@ -1499,8 +1488,7 @@ o<{oword}> endsub
             if axis_selector and position_display:
                 self.halg.fmt_add("")
                 self.halg.fmt_add("# display position")
-                self.halg.fmt_add("loadrt mux16 names=riof.jog.position_mux")
-                self.halg.fmt_add("addf riof.jog.position_mux servo-thread")
+                self.halg.add_halcomp("mux16", "riof.jog.position_mux")
                 mux_select = 0
                 mux_input = 1
                 for function, halname in self.rio_functions["jog"].items():
@@ -2008,8 +1996,7 @@ if __name__ == "__main__":
                     displayconfig = widget["displayconfig"]
 
                     if dtype == "multilabel" and not boolean:
-                        self.halextras.append(f"loadrt demux names=demux_{halname} personality={max(mapping.keys()) + 1}")
-                        self.halextras.append(f"addf demux_{halname} servo-thread")
+                        self.halg.add_halcomp("demux", f"demux_{halname}", {"personality": f"{max(mapping.keys()) + 1}"})
                         displayconfig["legends"] = []
                         lnum = 0
                         for value, text in mapping.items():
@@ -2051,22 +2038,18 @@ if __name__ == "__main__":
                     if dtype == "fselect":
                         values = displayconfig.get("values", {"v0": 0, "v1": 1})
                         n_values = len(values)
-                        self.halextras.append(f"loadrt conv_s32_u32 names=conv_s32_u32_{halname}")
-                        self.halextras.append(f"addf conv_s32_u32_{halname} servo-thread")
+                        self.halg.add_halcomp("conv_s32_u32", f"conv_s32_u32_{halname}")
                         self.halg.net_add(f"{gui_pinname}-i", f"conv_s32_u32_{halname}.in")
                         self.halextras.append("")
-                        self.halextras.append(f"loadrt demux names=demux_{halname} personality={n_values}")
-                        self.halextras.append(f"addf demux_{halname} servo-thread")
+                        self.halg.add_halcomp("demux", f"demux_{halname}", {"personality": f"{n_values}"})
                         self.halg.net_add(f"conv_s32_u32_{halname}.out", f"demux_{halname}.sel-u32")
                         for nv in range(n_values):
                             self.halg.net_add(f"demux_{halname}.out-{nv:02d}", f"{gui_pinname}-label.legend{nv}")
                         self.halextras.append("")
-                        self.halextras.append(f"loadrt bitslice names=bitslice_{halname} personality=3")
-                        self.halextras.append(f"addf bitslice_{halname} servo-thread")
+                        self.halg.add_halcomp("bitslice", f"bitslice_{halname}", {"personality": "3"})
                         self.halg.net_add(f"conv_s32_u32_{halname}.out", f"bitslice_{halname}.in")
                         self.halextras.append("")
-                        self.halextras.append(f"loadrt mux8 names=mux8_{halname}")
-                        self.halextras.append(f"addf mux8_{halname} servo-thread")
+                        self.halg.add_halcomp("mux8", f"mux8_{halname}")
                         self.halg.net_add(f"bitslice_{halname}.out-00", f"mux8_{halname}.sel0")
                         self.halg.net_add(f"bitslice_{halname}.out-01", f"mux8_{halname}.sel1")
                         self.halg.net_add(f"bitslice_{halname}.out-02", f"mux8_{halname}.sel2")
@@ -2080,8 +2063,7 @@ if __name__ == "__main__":
                         dfilter_type = dfilter.get("type")
                         if dfilter_type == "LOWPASS":
                             dfilter_gain = dfilter.get("gain", "0.001")
-                            self.halextras.append(f"loadrt lowpass names=lowpass_{halname}")
-                            self.halextras.append(f"addf lowpass_{halname} servo-thread")
+                            self.halg.add_halcomp("lowpass", f"lowpass_{halname}")
                             self.halg.setp_add(f"lowpass_{halname}.load", 0)
                             self.halg.setp_add(f"lowpass_{halname}.gain", dfilter_gain)
                             self.halg.net_add(gui_pinname, f"lowpass_{halname}.in")
@@ -2207,11 +2189,8 @@ if __name__ == "__main__":
                 plugin_instance.update_pins(self)
 
         if self.num_pids:
-            self.halg.fmt_add_top("# pid controller")
-            self.halg.fmt_add_top(f"loadrt pid num_chan={self.num_pids}")
-            self.halg.fmt_add_top("")
             for pidn in range(self.num_pids):
-                self.halg.fmt_add_top(f"addf pid.{pidn}.do-pid-calcs servo-thread")
+                self.halg.add_halcomp("pid", f"pid.{pidn}")
 
         self.halg.fmt_add_top("addf motion-command-handler servo-thread")
         self.halg.fmt_add_top("addf motion-controller servo-thread")
@@ -2229,10 +2208,9 @@ if __name__ == "__main__":
 
         if wcomps:
             self.halg.fmt_add_top("# wcomp for saturated pid check")
-            self.halg.fmt_add_top(f"loadrt wcomp names={''.join(list(wcomps))}")
-            self.halg.fmt_add_top("")
+            for wcomp in list(wcomps):
+                self.halg.add_halcomp("wcomp", wcomp)
             for name, wcomp in wcomps.items():
-                self.halg.fmt_add_top(f"addf {name} servo-thread")
                 self.halg.setp_add(f"{name}.min", -1.0)
                 self.halg.setp_add(f"{name}.max", wcomp)
 
@@ -2299,10 +2277,7 @@ if __name__ == "__main__":
         linuxcnc_setp = {}
 
         if machinetype == "corexy":
-            self.halg.fmt_add_top("# machinetype is corexy")
-            self.halg.fmt_add_top("loadrt corexy_by_hal names=corexy")
-            self.halg.fmt_add_top("")
-            self.halg.fmt_add_top("addf corexy servo-thread")
+            self.halg.add_halcomp("corexy_by_hal", "corexy")
         elif machinetype == "ldelta":
             self.halg.fmt_add_top("# loading lineardelta gl-view")
             self.halg.fmt_add_top("loadusr -W lineardelta MIN_JOINT=-420")
@@ -2387,6 +2362,7 @@ if __name__ == "__main__":
         # run the component loaders
         for component_type, instances in components.items():
             if hasattr(instances[0], "component_loader"):
+                instances[0].parent = self
                 ret = instances[0].component_loader(instances)
                 if ret:
                     self.halg.fmt_add_top(ret)

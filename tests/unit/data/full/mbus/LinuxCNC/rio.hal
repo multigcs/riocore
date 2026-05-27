@@ -3,9 +3,6 @@
 loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS num_dio=[EMCMOT]NUM_DIO num_aio=[EMCMOT]NUM_AIO
 
-# pid controller
-loadrt pid num_chan=3
-
 # manual toolchanger
 loadusr -W hal_manualtoolchange
 
@@ -18,9 +15,6 @@ setp fpga0.sys-simulation 0
 # read
 addf fpga0.readwrite servo-thread
 # process
-addf pid.0.do-pid-calcs servo-thread
-addf pid.1.do-pid-calcs servo-thread
-addf pid.2.do-pid-calcs servo-thread
 addf motion-command-handler servo-thread
 addf motion-controller servo-thread
 # write
@@ -30,6 +24,11 @@ addf motion-controller servo-thread
 #################################################################################
 loadrt logic names=func.or_0.2 personality=0x202
 addf func.or_0.2 servo-thread
+
+loadrt pid names=pid.0,pid.1,pid.2
+addf pid.0.do-pid-calcs servo-thread
+addf pid.1.do-pid-calcs servo-thread
+addf pid.2.do-pid-calcs servo-thread
 
 loadrt not names=func.not_halui_mode_is-auto
 addf func.not_halui_mode_is-auto servo-thread

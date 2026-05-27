@@ -568,6 +568,7 @@ class hal_generator:
         for component, instances in self.hal_component.items():
             if component in {"charge_pump"}:
                 hal_data.append(f"loadrt {component}")
+                hal_data.append("addf charge-pump servo-thread")
             else:
                 if not instances:
                     continue
@@ -589,7 +590,11 @@ class hal_generator:
 
             for instance in instances:
                 name = instance[0]
-                hal_data.append(f"addf {name} servo-thread")
+                if component == "pid":
+                    hal_data.append(f"addf {name}.do-pid-calcs servo-thread")
+                else:
+                    hal_data.append(f"addf {name} servo-thread")
+
             hal_data.append("")
 
         # add networks (sorting/grouping)
