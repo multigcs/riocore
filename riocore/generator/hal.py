@@ -571,7 +571,7 @@ class hal_generator:
             else:
                 if not instances:
                     continue
-                args = []
+                args = [""]
                 names = []
                 options = {}
                 for instance in instances:
@@ -585,10 +585,7 @@ class hal_generator:
                     if len(names) != len(values):
                         print(f"ERROR: hal-component: number of arguments: {name}: {len(names)} != {len(values)}")
                     args.append(f"{name}={','.join(values)}")
-                if args:
-                    hal_data.append(f"loadrt {component} names={','.join(names)} {' '.join(args)}")
-                else:
-                    hal_data.append(f"loadrt {component} names={','.join(names)}")
+                hal_data.append(f"loadrt {component} names={','.join(names)}{' '.join(args)}")
 
             for instance in instances:
                 name = instance[0]
