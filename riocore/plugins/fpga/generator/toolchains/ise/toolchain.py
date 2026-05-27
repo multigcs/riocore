@@ -165,6 +165,26 @@ class Toolchain:
                 makefile_data.append("	dd if=/dev/zero of=$(PROJECT)-2048.bin  bs=2097152 count=1")
                 makefile_data.append("	dd if=$(PROJECT).bin conv=notrunc of=$(PROJECT)-2048.bin")
                 makefile_data.append("	cp -v hash_new.txt hash_compiled.txt")
+                makefile_data.append("")
+
+                makefile_data.append("load:")
+                flashcmd = self.config.get("flashcmd")
+                if flashcmd:
+                    makefile_data.append(f"	{flashcmd}")
+                else:
+                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
+                makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+                makefile_data.append("")
+                makefile_data.append("sload:")
+                sflashcmd = self.config.get("sflashcmd")
+                if sflashcmd:
+                    makefile_data.append(f"	{sflashcmd}")
+                else:
+                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).jed")
+                makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+                makefile_data.append("")
+
+
             makefile_data.append("")
         else:
             makefile_data.append("build: $(PROJECT).bit")
