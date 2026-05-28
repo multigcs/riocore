@@ -1845,6 +1845,26 @@ if __name__ == "__main__":
                 riocore.log(f"WARNING: 'draw_{dtype}' not found")
 
         widgets = {}
+
+        """
+        for outpin in list(self.halg.signals_out):
+            value = self.halg.signals_out[outpin]
+            if outpin == "iocontrol.0.emc-enable-in":
+                # add overwrite button for iocontrol.0.emc-enable-in
+                expression = self.halg.signals_out[outpin]["expression"]
+                self.halg.add_hallogic(0x202, "estop-overwrite")
+                vcp_add({"halname": "estop-overwrite.in-00", "netname": "", "direction": "output", "userconfig": {"display": {"section": "status", "group": "ESTOP-STATUS", "title": "Overwrite", "type": "checkbutton"}}}, widgets)
+                self.halg.signals_out[outpin]["expression"] = "estop-overwrite.or"
+                self.halg.net_add(expression, "estop-overwrite.in-01")
+            elif outpin == "motion.enable":
+                # add overwrite button for motion.enable
+                expression = self.halg.signals_out[outpin]["expression"]
+                self.halg.add_hallogic(0x202, "machine-overwrite")
+                vcp_add({"halname": "machine-overwrite.in-00", "netname": "", "direction": "output", "userconfig": {"display": {"section": "status", "group": "MACHINE-STATUS", "title": "Overwrite", "type": "checkbutton"}}}, widgets)
+                self.halg.signals_out[outpin]["expression"] = "machine-overwrite.or"
+                self.halg.net_add(expression, "machine-overwrite.in-01")
+        """
+
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
                 if plugin_instance.plugin_setup.get("is_joint", False) and signal_name in {"position", "position-scale", "position-fb", "velocity", "position-cmd", "enable", "dty"}:

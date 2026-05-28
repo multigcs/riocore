@@ -38,9 +38,8 @@ for part in " ".join(sys.argv[1:]).replace("cfg=", "").replace('"', "").split():
     if part.isnumeric():
         last_pnum = part
         config[last_pnum] = "epp"
-    else:
-        if last_pnum is not None:
-            config[last_pnum] = part
+    elif last_pnum is not None:
+        config[last_pnum] = part
 
 for pnum, mode in config.items():
     for pin in modes[mode]["inputs"]:
