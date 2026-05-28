@@ -184,7 +184,6 @@ class Toolchain:
                 makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
                 makefile_data.append("")
 
-
             makefile_data.append("")
         else:
             makefile_data.append("build: $(PROJECT).bit")

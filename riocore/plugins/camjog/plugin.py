@@ -51,7 +51,7 @@ class Plugin(PluginBase):
             if camjog_device not in devices:
                 devices.append(camjog_device)
             else:
-                print(f"ERROR: camjog: device allready in use: {camjog_device}")
+                print(f"ERROR: camjog: device already in use: {camjog_device}")
             instance.camjog_num = cnum
 
     def cmd_args(self):
