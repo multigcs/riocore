@@ -1929,11 +1929,17 @@ class Window(QMainWindow):
                 board_plugins[plugin["type"]] = plugin
             if "protocol" in self.config:
                 del self.config["protocol"]
-            for pn, plugin_data in enumerate(self.config.get("plugins", [])):
-                # remove plugins that exist as sub in the board-file
+
+            # remove plugins that exist as sub in the board-file
+            plugins_cleaned = []
+            for plugin_data in self.config.get("plugins", []):
                 if plugin_data["type"] in {"wled", "w5500"} and plugin_data["type"] in board_plugins:
                     riocore.log(f"INFO: removing plugin: {plugin_data['type']} (is sub-plugin in board-file)")
-                    del self.config["plugins"][pn]
+                else:
+                    plugins_cleaned.append(plugin_data)
+            self.config["plugins"] = plugins_cleaned
+
+            for plugin_data in self.config.get("plugins", []):
                 # rename pins
                 for signal_name, signal_data in plugin_data.get("signals", {}).items():
                     if not plugin_data.get("image") and signal_data:
@@ -2521,7 +2527,7 @@ class Window(QMainWindow):
                 x_pos_list = []
                 y_pos_list = []
                 for edge_item in self.scene.items():
-                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item:
+                    if isinstance(edge_item, NodeEdge) and edge_item._target_node == item and edge_item._source_node is not None:
                         pos = edge_item._source_node.port_pos(edge_item._source_port)
                         x_pos_list.append(pos.x())
                         y_pos_list.append(pos.y())
