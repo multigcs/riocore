@@ -1939,6 +1939,12 @@ class Window(QMainWindow):
                     plugins_cleaned.append(plugin_data)
             self.config["plugins"] = plugins_cleaned
 
+            shiftregs = {}
+            for plugin_data in self.config.get("plugins", []):
+                if plugin_data["type"] == "shiftreg":
+                    name = plugin_data.get("name", plugin_data.get("uid", "shiftreg")).lower()
+                    shiftregs[name] = plugin_data.get("uid", "shiftreg0")
+
             for plugin_data in self.config.get("plugins", []):
                 # rename pins
                 for signal_name, signal_data in plugin_data.get("signals", {}).items():
@@ -1970,8 +1976,16 @@ class Window(QMainWindow):
                         pin_data = {"pin": pin_data}
                     pin = pin_data.get("pin")
                     if pin:
-                        print(pin)
-                        if pin.startswith(("SHIFTREG_OUTPUT[", "SHIFTREG_INPUT[")):
+                        if pin[-1] == "]" and ("_INPUT[" in pin or "_OUTPUT[" in pin):
+                            prefix = pin.split("_")[0]
+                            nuid = "shiftreg0"
+                            if prefix.lower() in shiftregs:
+                                nuid = shiftregs[prefix.lower()]
+                            direction = pin.split("[")[0].split("_")[-1]
+                            pnum = pin.split("[")[-1].split("]")[0]
+                            riocore.log(f"INFO: renaming pin: {pin_data['pin']} -> shiftreg0:{direction}:{pnum}")
+                            pin_data["pin"] = f"{nuid}:{direction}:{pnum}"
+                        elif pin.startswith(("SHIFTREG_OUTPUT[", "SHIFTREG_INPUT[")):
                             direction = pin.split("[")[0].replace("SHIFTREG_", "")
                             pnum = pin.split("[")[-1].split("]")[0]
                             riocore.log(f"INFO: renaming pin: {pin_data['pin']} -> shiftreg0:{direction}:{pnum}")
