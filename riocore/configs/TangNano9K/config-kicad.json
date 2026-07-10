@@ -1,0 +1,561 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K KiCAD test-config",
+    "protocol": "UART",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "TangNano9K",
+            "uid": "board0",
+            "pos": [
+                150.0,
+                210.0
+            ],
+            "rotate": 0
+        },
+        {
+            "type": "pwmout",
+            "uid": "pwmout0",
+            "image": "kicad/uln-out/uln-out.png",
+            "pos": [
+                140.0,
+                390.0
+            ],
+            "pins": {
+                "pwm": {
+                    "pin": "board0:PIN:40"
+                },
+                "dir": {
+                    "pin": "board0:PIN:34"
+                },
+                "en": {
+                    "pin": "board0:PIN:33"
+                }
+            },
+            "rotate": 180,
+            "signals": {
+                "dty": {
+                    "net": "spindle.0.speed-out"
+                },
+                "enable": {
+                    "net": "spindle.0.on"
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "image": "kicad/uln-out/uln-out.png",
+            "pos": [
+                690.0,
+                390.0
+            ],
+            "pins": {
+                "en": {
+                    "pin": "board0:PIN:69"
+                },
+                "dir": {
+                    "pin": "board0:PIN:57"
+                },
+                "step": {
+                    "pin": "board0:PIN:68"
+                }
+            },
+            "rotate": 180,
+            "axis": "X"
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "pos": [
+                680.0,
+                220.0
+            ],
+            "pins": {
+                "mosi": {
+                    "pin": "board0:PIN:49"
+                },
+                "miso": {
+                    "pin": "board0:PIN:48"
+                },
+                "sclk": {
+                    "pin": "board0:PIN:31"
+                },
+                "sel": {
+                    "pin": "board0:PIN:32"
+                }
+            },
+            "image": "kicad/w5500-module/w5500-module.png",
+            "rotate": 0
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin4",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                -200.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pull": "up",
+                    "pin": "board0:PIN:86"
+                }
+            },
+            "rotate": 0,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": "joint.0.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                -140.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:85"
+                }
+            },
+            "rotate": 0,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": "joint.1.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                -80.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:84"
+                }
+            },
+            "rotate": 0,
+            "name": "",
+            "signals": {
+                "bit": {
+                    "net": "joint.2.home-sw-in"
+                }
+            }
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                -20.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:83"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                40.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:82"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin5",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                100.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:81"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin6",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                160.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:80"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin7",
+            "image": "kicad/optoin/optoin.png",
+            "pos": [
+                220.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:79"
+                }
+            },
+            "rotate": 0,
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "pos": [
+                310.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:77"
+                }
+            },
+            "image": "kicad/transistor/transistor.png"
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "image": "kicad/uln-out/uln-out.png",
+            "pos": [
+                580.0,
+                390.0
+            ],
+            "pins": {
+                "en": {
+                    "pin": ""
+                },
+                "dir": {
+                    "pin": "board0:PIN:55"
+                },
+                "step": {
+                    "pin": "board0:PIN:56"
+                }
+            },
+            "rotate": 180,
+            "axis": "Y",
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "image": "kicad/uln-out/uln-out.png",
+            "pos": [
+                470.0,
+                390.0
+            ],
+            "pins": {
+                "en": {
+                    "pin": ""
+                },
+                "dir": {
+                    "pin": "board0:PIN:53"
+                },
+                "step": {
+                    "pin": "board0:PIN:54"
+                }
+            },
+            "rotate": 180,
+            "axis": "Z",
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir3",
+            "is_joint": true,
+            "image": "kicad/uln-out/uln-out.png",
+            "pos": [
+                360.0,
+                390.0
+            ],
+            "pins": {
+                "en": {
+                    "pin": ""
+                },
+                "dir": {
+                    "pin": "board0:PIN:42"
+                },
+                "step": {
+                    "pin": "board0:PIN:51"
+                }
+            },
+            "rotate": 180,
+            "axis": "A",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "pos": [
+                370.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:76"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout2",
+            "pos": [
+                430.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:75"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout3",
+            "pos": [
+                490.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:74"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout4",
+            "pos": [
+                550.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:73"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout5",
+            "pos": [
+                610.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:72"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout6",
+            "pos": [
+                670.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:71"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout7",
+            "pos": [
+                730.0,
+                60.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "board0:PIN:70"
+                }
+            },
+            "image": "kicad/transistor/transistor.png",
+            "name": ""
+        },
+        {
+            "type": "mbus",
+            "uid": "mbus0",
+            "pos": [
+                -200.0,
+                420.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PIN:38"
+                },
+                "tx": {
+                    "pin": "board0:PIN:37"
+                },
+                "tx_enable": {
+                    "pin": "board0:PIN:36"
+                }
+            },
+            "image": "kicad/modbus/modbus.png",
+            "rotate": 180
+        },
+        {
+            "type": "mbus",
+            "uid": "mbus1",
+            "pos": [
+                -120.0,
+                420.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PIN:39"
+                },
+                "tx": {
+                    "pin": "board0:PIN:25"
+                },
+                "tx_enable": {
+                    "pin": "board0:PIN:26"
+                },
+                "BUS:IO": {
+                    "pin": ""
+                }
+            },
+            "image": "kicad/modbus/modbus.png",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "uart",
+            "uid": "uart0",
+            "pos": [
+                50.0,
+                400.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PIN:30"
+                },
+                "tx": {
+                    "pin": "board0:PIN:29"
+                }
+            },
+            "image": "kicad/rs422-slave/rs422-slave.png",
+            "rotate": 180
+        },
+        {
+            "type": "uart",
+            "uid": "uart1",
+            "pos": [
+                -40.0,
+                400.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PIN:28"
+                },
+                "tx": {
+                    "pin": "board0:PIN:27"
+                },
+                "tx_enable": {
+                    "pin": ""
+                },
+                "SAT": {
+                    "pin": ""
+                }
+            },
+            "image": "kicad/rs422-slave/rs422-slave.png",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir4",
+            "is_joint": true,
+            "image": "kicad/uln-out/uln-out.png",
+            "pos": [
+                250.0,
+                390.0
+            ],
+            "pins": {
+                "en": {
+                    "pin": ""
+                },
+                "dir": {
+                    "pin": "board0:PIN:35"
+                },
+                "step": {
+                    "pin": "board0:PIN:41"
+                }
+            },
+            "rotate": 180,
+            "axis": "B",
+            "name": ""
+        }
+    ],
+    "toolchain": "icestorm",
+    "flow": {
+        "view": {
+            "scale": 0.88,
+            "pos": [
+                -315,
+                -80
+            ]
+        },
+        "board": {
+            "pos": [
+                330.0,
+                170.0
+            ],
+            "rotate": 90
+        }
+    },
+    "linuxcnc": {
+        "debug_info": true
+    }
+}
