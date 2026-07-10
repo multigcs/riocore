@@ -193,9 +193,9 @@ class simulator(generator_base):
                 break
             output.append(f"#define VIRT_SCALE_{axis}  {scale}")
 
-        output.append(f"#define VIRT_WIDTH    {axis_limits['X']}")
-        output.append(f"#define VIRT_HEIGHT   {axis_limits['Y']}")
-        output.append(f"#define VIRT_DEPTH    {axis_limits['Z']}")
+        output.append(f"#define VIRT_WIDTH    {axis_limits.get('X', '0')}")
+        output.append(f"#define VIRT_HEIGHT   {axis_limits.get('Y', '0')}")
+        output.append(f"#define VIRT_DEPTH    {axis_limits.get('Z', '0')}")
         output.append("")
         output.append("extern uint8_t sim_running;")
         output.append("")
