@@ -475,7 +475,7 @@ class simulator(generator_base):
         output.append("void* simThread(void* vargp) {")
         output.append("    uint16_t ret = 0;")
         output.append("")
-        output.append("    interface_init(0, NULL);")
+        output.append("    interface_init();")
         output.append("")
         output.append("    modbus_init();")
         output.append("")

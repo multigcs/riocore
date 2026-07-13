@@ -238,7 +238,7 @@ class jslib(generator_base):
         if not http_support:
             for plugin, values in self.rx_dict.items():
                 for key, value in values.items():
-                    output.append(f'    console.log("{plugin}.{key} = ", rio_rx["{plugin}"]["{key}"]);')
+                    output.append(f'    console.log("{plugin}.{key} = ", rio_rx["{plugin}"] ? rio_rx["{plugin}"]["{key}"] : "N/A");')
         output.append("});")
         output.append("")
         output.append("function send() {")
@@ -296,7 +296,7 @@ class jslib(generator_base):
             for plugin, values in self.rx_dict.items():
                 for key, value in values.items():
                     output.append(f'    res.write("{plugin}.{key} = ");')
-                    output.append(f'    res.write(String(rio_rx["{plugin}"]["{key}"]));')
+                    output.append(f'    res.write(String(rio_rx["{plugin}"] ? rio_rx["{plugin}"]["{key}"] : "N/A"));')
                     output.append('    res.write("<br/>");')
             output.append("")
             output.append("    res.end();")

@@ -112,10 +112,12 @@ class cclient(generator_base):
         output.append("#include <riocore.h>")
         output.append("")
 
-        buffer_size_bytes = self.project.buffer_size // 8
-        buffer_init = ["0"] * buffer_size_bytes
-        output.append(f"uint8_t rxBuffer[BUFFER_SIZE_RX] = {{{', '.join(buffer_init)}}};")
-        output.append(f"uint8_t txBuffer[BUFFER_SIZE_TX] = {{{', '.join(buffer_init)}}};")
+        rx_buffer_size_bytes = self.buffer_size_out // 8
+        tx_buffer_size_bytes = self.buffer_size_in // 8
+        rx_buffer_init = ["0"] * rx_buffer_size_bytes
+        tx_buffer_init = ["0"] * tx_buffer_size_bytes
+        output.append(f"uint8_t rxBuffer[BUFFER_SIZE_RX] = {{{', '.join(rx_buffer_init)}}};")
+        output.append(f"uint8_t txBuffer[BUFFER_SIZE_TX] = {{{', '.join(tx_buffer_init)}}};")
 
         if self.multiplexed_output:
             output.append("float MULTIPLEXER_INPUT_VALUE;")
