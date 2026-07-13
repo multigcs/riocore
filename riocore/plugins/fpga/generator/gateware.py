@@ -657,6 +657,67 @@ class gateware(generator_base):
                 output.append("    assign sysclk = sysclk_in;")
         output.append("")
 
+        output.append("    // data buffers")
+        output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
+        idata = []
+        isedges = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            if plugin_instance.TYPE == "interface":
+                uid = plugin_instance.plugin_setup["uid"]
+                output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data_{uid.lower()};")
+                idata.append(f"rx_data_{uid.lower()}")
+                isedges.append(f"INTERFACE_SYNC_{uid.upper()}_RISINGEDGE")
+        if len(idata) > 1:
+            riocore.log("  INFO: multiple interfaces found")
+            output.append("    reg  [BUFFER_SIZE_RX-1:0] rx_data = 0;")
+        else:
+            output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data = {idata[0]};")
+        output.append("")
+
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            if plugin_instance.TYPE == "interface":
+                uid = plugin_instance.plugin_setup["uid"]
+                output.append(f"    // generate sync edge ({uid})")
+                output.append(f"    wire INTERFACE_SYNC_{uid.upper()};")
+                output.append(f"    reg[2:0] INTERFACE_SYNC_{uid.upper()}_REG;")
+                output.append(f"    wire INTERFACE_SYNC_{uid.upper()}_RISINGEDGE = (INTERFACE_SYNC_{uid.upper()}_REG[2:1]==2'b01);")
+                output.append("    always @(posedge sysclk) begin")
+                output.append(f"        INTERFACE_SYNC_{uid.upper()}_REG <= {{INTERFACE_SYNC_{uid.upper()}_REG[1:0], INTERFACE_SYNC_{uid.upper()}}};")
+                output.append("    end")
+                output.append("")
+
+        output.append("    // check interface timeout via sync flag")
+        output.append(f"    wire INTERFACE_SYNC_RISINGEDGE = {' | '.join(isedges)};")
+        output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
+        output.append("    reg INTERFACE_TIMEOUT = 0;")
+        output.append("    always @(posedge sysclk) begin")
+
+        toutifs = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            if plugin_instance.TYPE == "interface":
+                uid = plugin_instance.plugin_setup["uid"]
+                if len(idata) > 1:
+                    toutifs.append(f"if (INTERFACE_SYNC_{uid.upper()}_RISINGEDGE == 1) begin\n            timeout_counter <= 0;\n            rx_data <= rx_data_{uid.lower()};\n        end")
+                else:
+                    toutifs.append(f"if (INTERFACE_SYNC_{uid.upper()}_RISINGEDGE == 1) begin\n            timeout_counter <= 0;\n        end")
+
+        output.append(f"        {' else '.join(toutifs)} else begin")
+        output.append("            if (timeout_counter < TIMEOUT) begin")
+        output.append("                timeout_counter <= timeout_counter + 1'd1;")
+        output.append("                INTERFACE_TIMEOUT <= 0;")
+        output.append("            end else begin")
+        output.append("                INTERFACE_TIMEOUT <= 1;")
+        output.append("            end")
+        output.append("        end")
+        output.append("    end")
+        output.append("")
+
         output.append("    // errors")
         error_signals = ["INTERFACE_TIMEOUT"]
         for plugin_instance in self.parent.project.plugin_instances:
@@ -672,56 +733,6 @@ class gateware(generator_base):
         output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
         output.append("")
 
-        output.append("    // data buffers")
-        idata = []
-        isyncs = []
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            if plugin_instance.TYPE == "interface":
-                output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data_{plugin_instance.plugin_setup['uid'].lower()};")
-                idata.append(f"rx_data_{plugin_instance.plugin_setup['uid'].lower()}")
-                isyncs.append(f"INTERFACE_SYNC_{plugin_instance.plugin_setup['uid'].upper()}")
-        if len(isyncs) > 1:
-            riocore.log("  INFO: multiple interfaces found")
-            output.append("    reg  [BUFFER_SIZE_RX-1:0] rx_data = 0;")
-        else:
-            output.append("    wire [BUFFER_SIZE_RX-1:0] rx_data;")
-        output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
-        if len(isyncs) == 1:
-            output.append(f"    assign rx_data = {idata[0]};")
-        output.append("")
-
-        output.append("    // check interface timeout via sync flag")
-        output.append("    reg INTERFACE_TIMEOUT = 0;")
-        output.append("    wire INTERFACE_SYNC;")
-        output.append(f"    assign INTERFACE_SYNC = {' | '.join(isyncs)};")
-        output.append("    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};")
-        output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
-        output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
-        output.append("    always @(posedge sysclk) begin")
-        output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
-        output.append("            timeout_counter <= 0;")
-
-        if len(isyncs) > 1:
-            for plugin_instance in self.parent.project.plugin_instances:
-                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                    continue
-                if plugin_instance.TYPE == "interface":
-                    output.append(f"            if (INTERFACE_SYNC_{plugin_instance.plugin_setup['uid'].upper()} == 1) begin")
-                    output.append(f"                rx_data <= rx_data_{plugin_instance.plugin_setup['uid'].lower()};")
-                    output.append("            end")
-
-        output.append("        end else begin")
-        output.append("            if (timeout_counter < TIMEOUT) begin")
-        output.append("                timeout_counter <= timeout_counter + 1'd1;")
-        output.append("                INTERFACE_TIMEOUT <= 0;")
-        output.append("            end else begin")
-        output.append("                INTERFACE_TIMEOUT <= 1;")
-        output.append("            end")
-        output.append("        end")
-        output.append("    end")
-        output.append("")
         if use_timestamp:
             output.append("    // timestamp counter")
             output.append("    reg [31:0] timestamp = 32'd0;")

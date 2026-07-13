@@ -70,25 +70,25 @@ module rio (
     wire locked;
     pll mypll(sysclk_in, sysclk, locked);
 
-    // errors
-    wire ERROR;
-    assign ERROR = (INTERFACE_TIMEOUT);
-
     // data buffers
-    wire [BUFFER_SIZE_RX-1:0] rx_data_w55000;
-    wire [BUFFER_SIZE_RX-1:0] rx_data;
     wire [BUFFER_SIZE_TX-1:0] tx_data;
-    assign rx_data = rx_data_w55000;
+    wire [BUFFER_SIZE_RX-1:0] rx_data_w55000;
+    wire [BUFFER_SIZE_RX-1:0] rx_data = rx_data_w55000;
+
+    // generate sync edge (w55000)
+    wire INTERFACE_SYNC_W55000;
+    reg[2:0] INTERFACE_SYNC_W55000_REG;
+    wire INTERFACE_SYNC_W55000_RISINGEDGE = (INTERFACE_SYNC_W55000_REG[2:1]==2'b01);
+    always @(posedge sysclk) begin
+        INTERFACE_SYNC_W55000_REG <= {INTERFACE_SYNC_W55000_REG[1:0], INTERFACE_SYNC_W55000};
+    end
 
     // check interface timeout via sync flag
-    reg INTERFACE_TIMEOUT = 0;
-    wire INTERFACE_SYNC;
-    assign INTERFACE_SYNC = INTERFACE_SYNC_W55000;
-    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};
-    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);
+    wire INTERFACE_SYNC_RISINGEDGE = INTERFACE_SYNC_W55000_RISINGEDGE;
     reg [TIMEOUT_BITS-1:0] timeout_counter = 0;
+    reg INTERFACE_TIMEOUT = 0;
     always @(posedge sysclk) begin
-        if (INTERFACE_SYNC_RISINGEDGE == 1) begin
+        if (INTERFACE_SYNC_W55000_RISINGEDGE == 1) begin
             timeout_counter <= 0;
         end else begin
             if (timeout_counter < TIMEOUT) begin
@@ -99,6 +99,10 @@ module rio (
             end
         end
     end
+
+    // errors
+    wire ERROR;
+    assign ERROR = (INTERFACE_TIMEOUT);
 
     // timestamp counter
     reg [31:0] timestamp = 32'd0;

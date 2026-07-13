@@ -486,7 +486,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
                     }
                     printf("\n");
                     if (ret != BUFFER_SIZE_RX) {
-                        rtapi_print("  wrong payload size: %i, should be %i\n", ret, BUFFER_SIZE_RX);
+                        printf("  wrong payload size: %i, should be %i\n", ret, BUFFER_SIZE_RX);
                     }
                     if (err_counter > 3) {
                         printf("too many errors..\n");
