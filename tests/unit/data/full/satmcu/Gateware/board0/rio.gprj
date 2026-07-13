@@ -15,6 +15,6 @@
         <File path="uart_tx.v" type="file.verilog" enable="1"/>
         <File path="satmcu.v" type="file.verilog" enable="1"/>
         <File path="rio.v" type="file.verilog" enable="1"/>
-    <File path="pins.cst" type="file.cst" enable="1"/>
+        <File path="pins.cst" type="file.cst" enable="1"/>
     </FileList>
 </Project>

@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### Tangbob #########
 
@@ -32,8 +35,6 @@
     PINOUT_BITOUT0_BIT -> 30 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO

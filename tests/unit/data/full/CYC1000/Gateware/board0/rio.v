@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### CYC1000 #########
 
@@ -23,8 +26,6 @@
     PINOUT_STEPDIR0_DIR -> PIN_N5 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO

@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### ICEBreakerV1.0e #########
 
@@ -30,8 +33,6 @@
     PININ_BITIN5_BIT <- 31 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO

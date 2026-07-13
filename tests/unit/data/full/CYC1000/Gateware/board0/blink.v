@@ -2,8 +2,8 @@
 module blink
     #(parameter DIVIDER = 100000, parameter DIVIDER_BITS = 24)
     (
-        input clk,
-        output led
+        input clk, // clock signal
+        output led // output pin
     );
     reg rled = 0;
     reg [DIVIDER_BITS-1:0] counter = 0;

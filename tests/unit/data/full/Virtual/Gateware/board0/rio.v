@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### Tangbob #########
 
@@ -21,8 +24,6 @@
     PINOUT_STEPDIR2_DIR -> 76 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO

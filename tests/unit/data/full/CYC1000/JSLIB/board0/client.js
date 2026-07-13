@@ -88,10 +88,10 @@ http.createServer(function (req, res) {
     res.write("</form>");
 
     res.write("stepdir0.position = ");
-    res.write(String(rio_rx["stepdir0"]["position"]));
+    res.write(String(rio_rx["stepdir0"] ? rio_rx["stepdir0"]["position"] : "N/A"));
     res.write("<br/>");
     res.write("bitin0.bit = ");
-    res.write(String(rio_rx["bitin0"]["bit"]));
+    res.write(String(rio_rx["bitin0"] ? rio_rx["bitin0"]["bit"] : "N/A"));
     res.write("<br/>");
 
     res.end();

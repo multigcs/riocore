@@ -11,6 +11,6 @@
         <File path="stepdir.v" type="file.verilog" enable="1"/>
         <File path="w5500.v" type="file.verilog" enable="1"/>
         <File path="rio.v" type="file.verilog" enable="1"/>
-    <File path="pins.cst" type="file.cst" enable="1"/>
+        <File path="pins.cst" type="file.cst" enable="1"/>
     </FileList>
 </Project>

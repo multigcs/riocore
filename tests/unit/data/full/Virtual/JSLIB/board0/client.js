@@ -103,13 +103,13 @@ http.createServer(function (req, res) {
     res.write("</form>");
 
     res.write("stepdir0.position = ");
-    res.write(String(rio_rx["stepdir0"]["position"]));
+    res.write(String(rio_rx["stepdir0"] ? rio_rx["stepdir0"]["position"] : "N/A"));
     res.write("<br/>");
     res.write("stepdir1.position = ");
-    res.write(String(rio_rx["stepdir1"]["position"]));
+    res.write(String(rio_rx["stepdir1"] ? rio_rx["stepdir1"]["position"] : "N/A"));
     res.write("<br/>");
     res.write("stepdir2.position = ");
-    res.write(String(rio_rx["stepdir2"]["position"]));
+    res.write(String(rio_rx["stepdir2"] ? rio_rx["stepdir2"]["position"] : "N/A"));
     res.write("<br/>");
 
     res.end();

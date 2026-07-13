@@ -1,14 +1,16 @@
-
+/*
+    step/dir generator
+*/
 module stepdir
     #(parameter PULSE_LEN = 2, parameter DIR_DELAY = 1)
     (
-        input clk,
-        input enable,
-        input signed [31:0] velocity,
-        output reg signed [31:0] position = 32'd0,
-        output reg dir = 0,
-        output reg step = 0,
-        output en
+        input clk, // clock signal
+        input enable, // enable signal
+        input signed [31:0] velocity, // velocity input
+        output reg signed [31:0] position = 32'd0, // position feedback
+        output reg dir = 0, // dir pin
+        output reg step = 0, // step pin
+        output en // enable pin
     );
     wire dirFlag;
     assign dirFlag = (velocity >= 0);

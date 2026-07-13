@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### Tangbob #########
 
@@ -31,8 +34,6 @@
     PINOUT_MBMASTER0_TX_ENABLE -> 68 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO

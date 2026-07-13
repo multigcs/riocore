@@ -1,4 +1,6 @@
-
+/*
+    UDP-Interface based on W5500 chip
+*/
 
 module w5500
     #(
@@ -13,16 +15,16 @@ module w5500
          parameter DIVIDER=3
      )
      (
-         input clk,
-         output mosi,
-         input miso,
-         output sclk,
-         output sel,
-         input intr,
-         output rst,
-         input [BUFFER_SIZE_TX-1:0] tx_data,
-         output [BUFFER_SIZE_RX-1:0] rx_data,
-         output reg sync = 0
+         input clk, // clock signal
+         output mosi, // mosi pin
+         input miso, // miso pin
+         output sclk, // slck pin
+         output sel, // select pin
+         input intr, // interupt pin
+         output rst, // reset pin
+         input [BUFFER_SIZE_TX-1:0] tx_data, // send buffer
+         output [BUFFER_SIZE_RX-1:0] rx_data, // receive buffer
+         output reg sync = 0 // sync flag (new package received)
      );
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);

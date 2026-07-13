@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### Tangoboard #########
 
@@ -34,8 +37,6 @@
     PINOUT_SATUART0_TX -> 40 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO

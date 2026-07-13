@@ -1,3 +1,6 @@
+
+/* verilator lint_off UNUSEDSIGNAL */
+
 /*
     ######### TangPrimer25K #########
 
@@ -25,8 +28,6 @@
     PINOUT_W55000_SEL -> D11 
 
 */
-
-/* verilator lint_off UNUSEDSIGNAL */
 
 module rio (
         // RIO
