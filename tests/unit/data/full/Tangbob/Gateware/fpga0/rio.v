@@ -63,24 +63,33 @@ module rio (
         output PINOUT_BITOUT0_BIT
     );
 
+    localparam HEADER_TX = 32'h64617461;
+    localparam TIMEOUT = 2700000;
+    localparam TIMEOUT_BITS = 22;
     localparam BUFFER_SIZE_TX = 16'd320; // 40 bytes
     localparam BUFFER_SIZE_RX = 16'd264; // 33 bytes
 
-    reg INTERFACE_TIMEOUT = 0;
-    wire INTERFACE_SYNC;
-    wire ERROR;
-    assign ERROR = (INTERFACE_TIMEOUT);
-
+    // system clock
     wire sysclk;
     assign sysclk = sysclk_in;
 
+    // errors
+    wire ERROR;
+    assign ERROR = (INTERFACE_TIMEOUT);
+
+    // data buffers
+    wire [BUFFER_SIZE_RX-1:0] rx_data_fpga0_w5500;
+    wire [BUFFER_SIZE_RX-1:0] rx_data;
+    wire [BUFFER_SIZE_TX-1:0] tx_data;
+    assign rx_data = rx_data_fpga0_w5500;
+
+    // check interface timeout via sync flag
+    reg INTERFACE_TIMEOUT = 0;
+    wire INTERFACE_SYNC;
+    assign INTERFACE_SYNC = INTERFACE_SYNC_FPGA0_W5500;
     reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};
     wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);
-
-    parameter TIMEOUT = 2700000;
-    localparam TIMEOUT_BITS = 22;
     reg [TIMEOUT_BITS-1:0] timeout_counter = 0;
-
     always @(posedge sysclk) begin
         if (INTERFACE_SYNC_RISINGEDGE == 1) begin
             timeout_counter <= 0;
@@ -94,11 +103,7 @@ module rio (
         end
     end
 
-    wire [BUFFER_SIZE_RX-1:0] rx_data;
-    wire [BUFFER_SIZE_TX-1:0] tx_data;
-
-    localparam HEADER_TX = 32'h64617461;
-
+    // timestamp counter
     reg [31:0] timestamp = 32'd0;
     always @(posedge sysclk) begin
         timestamp <= timestamp + 32'd1;
@@ -106,6 +111,7 @@ module rio (
 
     reg [15:0] MULTIPLEXED_INPUT_VALUE = 0;
     reg [7:0] MULTIPLEXED_INPUT_ID = 0;
+    // plugin variables
     wire VAROUT1_FPGA0_WLED_0_GREEN;
     wire VAROUT1_FPGA0_WLED_0_BLUE;
     wire VAROUT1_FPGA0_WLED_0_RED;
@@ -201,9 +207,9 @@ module rio (
         .sel(PINOUT_FPGA0_W5500_SEL_RAW),
         .rst(UNUSED_PIN_FPGA0_W5500_RST),
         .intr(1'd0),
-        .rx_data(rx_data),
+        .rx_data(rx_data_fpga0_w5500),
         .tx_data(tx_data),
-        .sync(INTERFACE_SYNC)
+        .sync(INTERFACE_SYNC_FPGA0_W5500)
     );
 
     // Name: fpga0_wled (wled)

@@ -67,24 +67,33 @@ module rio (
         output PINOUT_SATUART0_TX
     );
 
+    localparam HEADER_TX = 32'h64617461;
+    localparam TIMEOUT = 2700000;
+    localparam TIMEOUT_BITS = 22;
     localparam BUFFER_SIZE_TX = 16'd224; // 28 bytes
     localparam BUFFER_SIZE_RX = 16'd160; // 20 bytes
 
-    reg INTERFACE_TIMEOUT = 0;
-    wire INTERFACE_SYNC;
-    wire ERROR;
-    assign ERROR = (INTERFACE_TIMEOUT);
-
+    // system clock
     wire sysclk;
     assign sysclk = sysclk_in;
 
+    // errors
+    wire ERROR;
+    assign ERROR = (INTERFACE_TIMEOUT);
+
+    // data buffers
+    wire [BUFFER_SIZE_RX-1:0] rx_data_w55000;
+    wire [BUFFER_SIZE_RX-1:0] rx_data;
+    wire [BUFFER_SIZE_TX-1:0] tx_data;
+    assign rx_data = rx_data_w55000;
+
+    // check interface timeout via sync flag
+    reg INTERFACE_TIMEOUT = 0;
+    wire INTERFACE_SYNC;
+    assign INTERFACE_SYNC = INTERFACE_SYNC_W55000;
     reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};
     wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);
-
-    parameter TIMEOUT = 2700000;
-    localparam TIMEOUT_BITS = 22;
     reg [TIMEOUT_BITS-1:0] timeout_counter = 0;
-
     always @(posedge sysclk) begin
         if (INTERFACE_SYNC_RISINGEDGE == 1) begin
             timeout_counter <= 0;
@@ -98,11 +107,7 @@ module rio (
         end
     end
 
-    wire [BUFFER_SIZE_RX-1:0] rx_data;
-    wire [BUFFER_SIZE_TX-1:0] tx_data;
-
-    localparam HEADER_TX = 32'h64617461;
-
+    // timestamp counter
     reg [31:0] timestamp = 32'd0;
     always @(posedge sysclk) begin
         timestamp <= timestamp + 32'd1;
@@ -110,6 +115,7 @@ module rio (
 
     reg [31:0] MULTIPLEXED_INPUT_VALUE = 0;
     reg [7:0] MULTIPLEXED_INPUT_ID = 0;
+    // plugin variables
     wire VARIN1_BITIN0_BIT;
     wire VARIN1_BITIN1_BIT;
     wire VARIN1_BITIN2_BIT;
@@ -366,9 +372,9 @@ module rio (
         .sel(PINOUT_W55000_SEL_RAW),
         .rst(UNUSED_PIN_W55000_RST),
         .intr(1'd0),
-        .rx_data(rx_data),
+        .rx_data(rx_data_w55000),
         .tx_data(tx_data),
-        .sync(INTERFACE_SYNC)
+        .sync(INTERFACE_SYNC_W55000)
     );
 
     // Name: alarm_x (bitin)

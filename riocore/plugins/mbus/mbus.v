@@ -2,12 +2,12 @@
 module mbus
     #(parameter RX_BUFFERSIZE=64, parameter TX_BUFFERSIZE=64, parameter ClkFrequency=12000000, parameter Baud=9600)
     (
-        input clk,
-        input rx,
-        output tx,
-        output wire tx_enable,
-        output reg [RX_BUFFERSIZE-1:0] rxdata,
-        input [TX_BUFFERSIZE-1:0] txdata
+        input clk, // clock signal
+        input rx, // rx pin
+        output tx, // tx pin
+        output wire tx_enable, // tx enable pin for rs485
+        output reg [RX_BUFFERSIZE-1:0] rxdata, // received data
+        input [TX_BUFFERSIZE-1:0] txdata // data to send
     );
 
     reg [31:0] counter = 0;

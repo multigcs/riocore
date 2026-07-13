@@ -4,14 +4,14 @@ module stepper
         parameter STEPTYPE = 1
     )
     (
-        input clk,
-        input enable,
-        input signed [31:0] velocity,
-        output signed [31:0] position,
-        output a1,
-        output a2,
-        output b1,
-        output b2
+        input clk, // clock signal
+        input enable, // enable segnal
+        input signed [31:0] velocity, // step velocity
+        output signed [31:0] position, // feedback position
+        output a1, // phase a1
+        output a2, // phase a2
+        output b1, // phase b1
+        output b2 // phase b2
     );
 
     localparam TYPE_WAVE = 0;

@@ -91,7 +91,7 @@
         },
         {
             "type": "bitin",
-            "uid": "bitin4",
+            "uid": "bitin0",
             "image": "kicad/optoin/optoin.png",
             "pos": [
                 -200.0,
@@ -113,7 +113,7 @@
         },
         {
             "type": "bitin",
-            "uid": "bitin0",
+            "uid": "bitin1",
             "image": "kicad/optoin/optoin.png",
             "pos": [
                 -140.0,
@@ -134,7 +134,7 @@
         },
         {
             "type": "bitin",
-            "uid": "bitin1",
+            "uid": "bitin2",
             "image": "kicad/optoin/optoin.png",
             "pos": [
                 -80.0,
@@ -155,7 +155,7 @@
         },
         {
             "type": "bitin",
-            "uid": "bitin2",
+            "uid": "bitin3",
             "image": "kicad/optoin/optoin.png",
             "pos": [
                 -20.0,
@@ -171,7 +171,7 @@
         },
         {
             "type": "bitin",
-            "uid": "bitin3",
+            "uid": "bitin4",
             "image": "kicad/optoin/optoin.png",
             "pos": [
                 40.0,
@@ -471,49 +471,6 @@
             "name": ""
         },
         {
-            "type": "uart",
-            "uid": "uart0",
-            "pos": [
-                50.0,
-                400.0
-            ],
-            "pins": {
-                "rx": {
-                    "pin": "board0:PIN:30"
-                },
-                "tx": {
-                    "pin": "board0:PIN:29"
-                }
-            },
-            "image": "kicad/rs422-slave/rs422-slave.png",
-            "rotate": 180
-        },
-        {
-            "type": "uart",
-            "uid": "uart1",
-            "pos": [
-                -40.0,
-                400.0
-            ],
-            "pins": {
-                "rx": {
-                    "pin": "board0:PIN:28"
-                },
-                "tx": {
-                    "pin": "board0:PIN:27"
-                },
-                "tx_enable": {
-                    "pin": ""
-                },
-                "SAT": {
-                    "pin": ""
-                }
-            },
-            "image": "kicad/rs422-slave/rs422-slave.png",
-            "rotate": 180,
-            "name": ""
-        },
-        {
             "type": "stepdir",
             "uid": "stepdir4",
             "is_joint": true,
@@ -536,15 +493,74 @@
             "rotate": 180,
             "axis": "B",
             "name": ""
+        },
+        {
+            "type": "satuart",
+            "uid": "satuart0",
+            "pos": [
+                -40.0,
+                400.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PIN:28"
+                },
+                "tx": {
+                    "pin": "board0:PIN:27"
+                }
+            },
+            "image": "kicad/rs422-master/rs422-master.png",
+            "rotate": 180
+        },
+        {
+            "type": "satuart",
+            "uid": "satuart1",
+            "pos": [
+                50.0,
+                400.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:PIN:30"
+                },
+                "tx": {
+                    "pin": "board0:PIN:29"
+                },
+                "tx_enable": {
+                    "pin": ""
+                },
+                "SAT:OUT": {
+                    "pin": ""
+                }
+            },
+            "image": "kicad/rs422-master/rs422-master.png",
+            "rotate": 180,
+            "name": ""
+        },
+        {
+            "type": "uart",
+            "uid": "uart0",
+            "pos": [
+                -120.0,
+                220.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:UART:RX"
+                },
+                "tx": {
+                    "pin": "board0:UART:TX"
+                }
+            }
         }
     ],
     "toolchain": "icestorm",
     "flow": {
         "view": {
-            "scale": 0.88,
+            "scale": 1.41,
             "pos": [
-                -315,
-                -80
+                -283,
+                147
             ]
         },
         "board": {

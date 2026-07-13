@@ -2,12 +2,12 @@
 module pwmout
     #(parameter DIVIDER = 255, parameter BITWIDTH = 32)
      (
-         input clk,
-         input signed [BITWIDTH-1:0] dty,
-         input enable,
-         output reg dir = 0,
-         output pwm,
-         output en
+         input clk, // clock signal
+         input signed [BITWIDTH-1:0] dty, // duty cycle
+         input enable, // enable signal
+         output reg dir = 0, // direction pin
+         output pwm, // pwm pin
+         output en // enable pin
      );
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);

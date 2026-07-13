@@ -582,30 +582,19 @@ class gateware(generator_base):
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
+        output.append("    localparam HEADER_TX = 32'h64617461;")
+        sysclk_speed = self.jdata["speed"]
+        timeout = sysclk_speed // 10
+        timeout_bits = self.clog2(timeout)
+        output.append(f"    localparam TIMEOUT = {timeout};")
+        output.append(f"    localparam TIMEOUT_BITS = {timeout_bits};")
         output.append(f"    localparam BUFFER_SIZE_TX = 16'd{self.buffer_size_in}; // {self.buffer_size_in // 8} bytes")
         output.append(f"    localparam BUFFER_SIZE_RX = 16'd{self.buffer_size_out}; // {self.buffer_size_out // 8} bytes")
         output.append("")
-        output.append("    reg INTERFACE_TIMEOUT = 0;")
-        output.append("    wire INTERFACE_SYNC;")
 
-        error_signals = ["INTERFACE_TIMEOUT"]
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            for interface_setup in plugin_instance.interface_data().values():
-                error_on = interface_setup.get("error_on")
-                if error_on is True:
-                    error_signals.append(interface_setup["variable"])
-                elif error_on is False:
-                    error_signals.append(f"~{interface_setup['variable']}")
-
-        output.append("    wire ERROR;")
-        output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
-        output.append("")
-
+        output.append("    // system clock")
         osc_clock = self.jdata["clock"].get("osc")
         speed = self.jdata["clock"].get("speed")
-
         if self.jdata.get("toolchain") == "greenpak":
             output.append("    wire sysclk;")
             output.append("    assign sysclk = sysclk_in;")
@@ -620,7 +609,6 @@ class gateware(generator_base):
                             continue
                         if pin_config["direction"] == "output":
                             output.append(f"    assign {pin_config['varname']}_OE = 1'b1;")
-
         elif self.jdata["sysclk_pin"] == "internal":
             if self.jdata["family"] == "ice40" and self.jdata["type"] == "up5k":
                 mapping = {48000000: "0b00", 24000000: "0b01", 12000000: "0b10", 6000000: "0b11"}
@@ -636,7 +624,6 @@ class gateware(generator_base):
             else:
                 print("ERROR: internal clock only for ice40up5k chips")
                 sys.exit(1)
-
         elif osc_clock and float(osc_clock) != float(speed):
             if self.parent.generate_pll:
                 if hasattr(self.jdata["toolchain_generator"], "pll"):
@@ -670,20 +657,61 @@ class gateware(generator_base):
                 output.append("    assign sysclk = sysclk_in;")
         output.append("")
 
-        sysclk_speed = self.jdata["speed"]
-        output.append("    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};")
-        output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
+        output.append("    // errors")
+        error_signals = ["INTERFACE_TIMEOUT"]
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            for interface_setup in plugin_instance.interface_data().values():
+                error_on = interface_setup.get("error_on")
+                if error_on is True:
+                    error_signals.append(interface_setup["variable"])
+                elif error_on is False:
+                    error_signals.append(f"~{interface_setup['variable']}")
+        output.append("    wire ERROR;")
+        output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
         output.append("")
 
-        timeout = sysclk_speed // 10
-        timeout_bits = self.clog2(timeout)
-        output.append(f"    parameter TIMEOUT = {timeout};")
-        output.append(f"    localparam TIMEOUT_BITS = {timeout_bits};")
-        output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
+        output.append("    // data buffers")
+        idata = []
+        isyncs = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            if plugin_instance.TYPE == "interface":
+                output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data_{plugin_instance.plugin_setup['uid'].lower()};")
+                idata.append(f"rx_data_{plugin_instance.plugin_setup['uid'].lower()}")
+                isyncs.append(f"INTERFACE_SYNC_{plugin_instance.plugin_setup['uid'].upper()}")
+        if len(isyncs) > 1:
+            riocore.log("  INFO: multiple interfaces found")
+            output.append("    reg  [BUFFER_SIZE_RX-1:0] rx_data = 0;")
+        else:
+            output.append("    wire [BUFFER_SIZE_RX-1:0] rx_data;")
+        output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
+        if len(isyncs) == 1:
+            output.append(f"    assign rx_data = {idata[0]};")
         output.append("")
+
+        output.append("    // check interface timeout via sync flag")
+        output.append("    reg INTERFACE_TIMEOUT = 0;")
+        output.append("    wire INTERFACE_SYNC;")
+        output.append(f"    assign INTERFACE_SYNC = {' | '.join(isyncs)};")
+        output.append("    reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};")
+        output.append("    wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);")
+        output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
         output.append("    always @(posedge sysclk) begin")
         output.append("        if (INTERFACE_SYNC_RISINGEDGE == 1) begin")
         output.append("            timeout_counter <= 0;")
+
+        if len(isyncs) > 1:
+            for plugin_instance in self.parent.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                if plugin_instance.TYPE == "interface":
+                    output.append(f"            if (INTERFACE_SYNC_{plugin_instance.plugin_setup['uid'].upper()} == 1) begin")
+                    output.append(f"                rx_data <= rx_data_{plugin_instance.plugin_setup['uid'].lower()};")
+                    output.append("            end")
+
         output.append("        end else begin")
         output.append("            if (timeout_counter < TIMEOUT) begin")
         output.append("                timeout_counter <= timeout_counter + 1'd1;")
@@ -694,12 +722,8 @@ class gateware(generator_base):
         output.append("        end")
         output.append("    end")
         output.append("")
-        output.append("    wire [BUFFER_SIZE_RX-1:0] rx_data;")
-        output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
-        output.append("")
-        output.append("    localparam HEADER_TX = 32'h64617461;")
-        output.append("")
         if use_timestamp:
+            output.append("    // timestamp counter")
             output.append("    reg [31:0] timestamp = 32'd0;")
             output.append("    always @(posedge sysclk) begin")
             output.append("        timestamp <= timestamp + 32'd1;")
@@ -749,6 +773,7 @@ class gateware(generator_base):
             output.append(f"    wire [{self.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
             output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
+        output.append("    // plugin variables")
         for plugin_instance in self.parent.project.plugin_instances:
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue

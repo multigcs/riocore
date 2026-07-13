@@ -3,19 +3,19 @@
 module i2c_master 
     #(parameter MAX_BITS = 64, parameter MAX_DIN = 64, parameter DIVIDER_BITS = 31)
     (
-        input clk,
-        inout sda,
+        input clk, // clock signal
+        inout sda, // sda pin
         input wire [DIVIDER_BITS-1:0] set_divider,
-        output reg scl = 1,
-        input wire start,
-        output reg busy = 0,
-        input wire [6:0] set_addr,
-        input wire set_rw,
+        output reg scl = 1, // scl pin
+        input wire start, // start transmission
+        output reg busy = 0, // bus is bussy
+        input wire [6:0] set_addr, // device address
+        input wire set_rw, // set write bit
         input wire stop,
         input wire wakeup,
-        input wire [4:0] set_bytes,
-        input wire [MAX_BITS-1:0] set_data_out,
-        output reg [MAX_DIN-1:0] data_in,
+        input wire [4:0] set_bytes, // data size
+        input wire [MAX_BITS-1:0] set_data_out, // send data
+        output reg [MAX_DIN-1:0] data_in, // received data
         output reg error = 0
     );
 

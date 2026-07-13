@@ -59,25 +59,34 @@ module rio (
         input PININ_BITIN5_BIT
     );
 
+    localparam HEADER_TX = 32'h64617461;
+    localparam TIMEOUT = 3000000;
+    localparam TIMEOUT_BITS = 22;
     localparam BUFFER_SIZE_TX = 16'd168; // 21 bytes
     localparam BUFFER_SIZE_RX = 16'd136; // 17 bytes
 
-    reg INTERFACE_TIMEOUT = 0;
-    wire INTERFACE_SYNC;
-    wire ERROR;
-    assign ERROR = (INTERFACE_TIMEOUT);
-
+    // system clock
     wire sysclk;
     wire locked;
     pll mypll(sysclk_in, sysclk, locked);
 
+    // errors
+    wire ERROR;
+    assign ERROR = (INTERFACE_TIMEOUT);
+
+    // data buffers
+    wire [BUFFER_SIZE_RX-1:0] rx_data_w55000;
+    wire [BUFFER_SIZE_RX-1:0] rx_data;
+    wire [BUFFER_SIZE_TX-1:0] tx_data;
+    assign rx_data = rx_data_w55000;
+
+    // check interface timeout via sync flag
+    reg INTERFACE_TIMEOUT = 0;
+    wire INTERFACE_SYNC;
+    assign INTERFACE_SYNC = INTERFACE_SYNC_W55000;
     reg[2:0] INTERFACE_SYNCr;  always @(posedge sysclk) INTERFACE_SYNCr <= {INTERFACE_SYNCr[1:0], INTERFACE_SYNC};
     wire INTERFACE_SYNC_RISINGEDGE = (INTERFACE_SYNCr[2:1]==2'b01);
-
-    parameter TIMEOUT = 3000000;
-    localparam TIMEOUT_BITS = 22;
     reg [TIMEOUT_BITS-1:0] timeout_counter = 0;
-
     always @(posedge sysclk) begin
         if (INTERFACE_SYNC_RISINGEDGE == 1) begin
             timeout_counter <= 0;
@@ -91,16 +100,13 @@ module rio (
         end
     end
 
-    wire [BUFFER_SIZE_RX-1:0] rx_data;
-    wire [BUFFER_SIZE_TX-1:0] tx_data;
-
-    localparam HEADER_TX = 32'h64617461;
-
+    // timestamp counter
     reg [31:0] timestamp = 32'd0;
     always @(posedge sysclk) begin
         timestamp <= timestamp + 32'd1;
     end
 
+    // plugin variables
     wire [31:0] VAROUT32_STEPDIR0_VELOCITY;
     wire VAROUT1_STEPDIR0_ENABLE;
     wire [31:0] VARIN32_STEPDIR0_POSITION;
@@ -175,9 +181,9 @@ module rio (
         .sel(PINOUT_W55000_SEL_RAW),
         .rst(UNUSED_PIN_W55000_RST),
         .intr(1'd0),
-        .rx_data(rx_data),
+        .rx_data(rx_data_w55000),
         .tx_data(tx_data),
-        .sync(INTERFACE_SYNC)
+        .sync(INTERFACE_SYNC_W55000)
     );
 
     // Name: stepdir0 (stepdir)

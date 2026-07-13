@@ -510,9 +510,9 @@ class PluginBase:
                 instance_arguments[name] = name
 
         if self.TYPE == "interface":
-            instance_arguments["rx_data"] = "rx_data"
+            instance_arguments["rx_data"] = f"rx_data_{self.plugin_setup['uid'].lower()}"
             instance_arguments["tx_data"] = "tx_data"
-            instance_arguments["sync"] = "INTERFACE_SYNC"
+            instance_arguments["sync"] = f"INTERFACE_SYNC_{self.plugin_setup['uid'].upper()}"
 
         elif self.TYPE == "expansion":
             instance_arguments["data_in"] = f"{self.expansion_prefix}_INPUT"

@@ -2,23 +2,21 @@
 module spi_prog
     #(parameter BUFFER_SIZE_RX=64, parameter BUFFER_SIZE_TX=64, parameter MSGID=32'h74697277)
      (
-         input clk,
-         input mosi,
-         output reg miso = 1,
-         input sclk,
-         input sel,
+         input clk, // clock signal
+         input mosi, // mosi pin
+         output reg miso = 1, // miso pin
+         input sclk, // clock pin
+         input sel, // select pin
          input prog,
          output reg reboot = 1,
          output reg eeprom_mosi = 1,
          input eeprom_miso,
          output reg eeprom_sclk = 1,
          output reg eeprom_sel = 1,
-         input [BUFFER_SIZE_TX-1:0] tx_data,
-         output [BUFFER_SIZE_RX-1:0] rx_data,
-         output reg sync = 0
-         //output [15:0] counter
+         input [BUFFER_SIZE_TX-1:0] tx_data, // data to send
+         output [BUFFER_SIZE_RX-1:0] rx_data, // received data
+         output reg sync = 0 // new pkg received
      );
-    //assign counter = bitcnt;
     reg[2:0] SCKr;  always @(posedge clk) SCKr <= {SCKr[1:0], sclk};
     wire SCK_risingedge = (SCKr[2:1]==2'b01);  // now we can detect SCK rising edges
     wire SCK_fallingedge = (SCKr[2:1]==2'b10);  // and falling edges
