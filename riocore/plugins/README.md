@@ -152,6 +152,7 @@
 |  | [i2c_device](i2c_device/README.md) | i2c device |  |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
+|  | [mqtt](mqtt/README.md) | mqtt to hal | <img src="mqtt/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> |  |
 |  | [rmpg](rmpg/README.md) | remote mpg server | <img src="rmpg/image.png" height="48"> |  |
@@ -169,6 +170,7 @@
 |  | [i2c_device](i2c_device/README.md) | i2c device |  |  |
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
+|  | [mqtt](mqtt/README.md) | mqtt to hal | <img src="mqtt/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> |  |
 |  | [rmpg](rmpg/README.md) | remote mpg server | <img src="rmpg/image.png" height="48"> |  |

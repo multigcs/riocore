@@ -7,6 +7,6 @@
 | [greenpak](greenpak/README.md) | Renesas - GreenPack |
 | [icestorm](icestorm/README.md) | Icestorm (yosys/nextpnr) |
 | [ise](ise/README.md) | Xilinx/AMD ISE WebPACK |
-| [quartus](quartus/README.md) | Intel Quartus |
+| [quartus](quartus/README.md) | Intel Quartus - please check the version that supports your FPGA |
 | [verilator](verilator/README.md) | verilog simulation |
 | [vivado](vivado/README.md) | Xilinx/AMD Vivado |
