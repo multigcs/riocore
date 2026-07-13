@@ -1294,7 +1294,7 @@ class cbase:
         output.append("                    }")
         output.append(f'                    {self.printf}("\\n");')
         output.append("                    if (ret != BUFFER_SIZE_RX) {")
-        output.append('                        rtapi_print("  wrong payload size: %i, should be %i\\n", ret, BUFFER_SIZE_RX);')
+        output.append(f'                        {self.printf}("  wrong payload size: %i, should be %i\\n", ret, BUFFER_SIZE_RX);')
         output.append("                    }")
         output.append("                    if (err_counter > 3) {")
         output.append(f'                        {self.printf}("too many errors..\\n");')
