@@ -92,7 +92,7 @@ class simulator(generator_base):
             timestamp_size = 32
 
         sym_io = False
-        if self.instance.protocol == "SPI":
+        if self.instance.protocol.startswith("SPI"):
             # input and output frames with has same size
             sym_io = True
 

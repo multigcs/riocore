@@ -59,11 +59,15 @@ class Toolchain:
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
+        buffersize = 0
         pinlist = []
         riov_data = open(os.path.join(path, "rio.v"), "r").read()
-        for line in riov_data.split("\n"):
-            if line.strip().startswith("PIN") and (" <- " in line or " -> " in line):
-                pinlist.append(line.strip().split()[0])
+        for _line in riov_data.split("\n"):
+            line = _line.strip()
+            if line.startswith("PIN") and (" <- " in line or " -> " in line):
+                pinlist.append(line.split()[0])
+            elif line.startswith("localparam BUFFER_SIZE_"):
+                buffersize = max(buffersize, int(line.split()[5]))
 
         main_cpp = []
         main_cpp.append("""
@@ -75,10 +79,12 @@ class Toolchain:
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+""")
 
-#define BUFFER_BIT 40
-#define BUFFER_BYTES (BUFFER_BIT / 8)
+        main_cpp.append(f"#define BUFFER_BIT {buffersize * 8}")
+        main_cpp.append(f"#define BUFFER_BYTES {buffersize}")
 
+        main_cpp.append("""
 int main(int argc, char** argv) {
 
     uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};
@@ -145,9 +151,10 @@ int main(int argc, char** argv) {
                             spi_rx_bit = 0;
                             spi_rx_num++;
                             if (spi_rx_num == BUFFER_BYTES) {
-                                int fd_rx = open("/dev/shm/verilog.rx", O_WRONLY);
+                                int fd_rx = open("/dev/shm/verilog.rx.new", O_WRONLY);
                                 write(fd_rx, spi_rx, BUFFER_BYTES);
                                 close(fd_rx);
+                                rename("/dev/shm/verilog.rx.new", "/dev/shm/verilog.rx");
                             } else {
                                 spi_rx[spi_rx_num] = 0;
                             }
