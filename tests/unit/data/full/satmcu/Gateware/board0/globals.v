@@ -1,7 +1,6 @@
-localparam FPGA_FAMILY = "GW1N-9C";
-localparam FPGA_TYPE = "GW1NR-LV9QN88PC6/I5";
-localparam TOOLCHAIN = "gowin";
-
+// localparam FPGA_FAMILY = "GW1N-9C";
+// localparam FPGA_TYPE = "GW1NR-LV9QN88PC6/I5";
+// localparam TOOLCHAIN = "gowin";
 
 // replacement for $clog2
 function integer clog2;

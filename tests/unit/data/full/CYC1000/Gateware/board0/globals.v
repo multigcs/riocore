@@ -1,7 +1,6 @@
-localparam FPGA_FAMILY = "Cyclone 10 LP";
-localparam FPGA_TYPE = "10CL025YU256C8G";
-localparam TOOLCHAIN = "quartus";
-
+// localparam FPGA_FAMILY = "Cyclone 10 LP";
+// localparam FPGA_TYPE = "10CL025YU256C8G";
+// localparam TOOLCHAIN = "quartus";
 
 // replacement for $clog2
 function integer clog2;

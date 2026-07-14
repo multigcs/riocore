@@ -1,6 +1,6 @@
-localparam FPGA_FAMILY = "ice40";
-localparam FPGA_TYPE = "up5k";
-localparam TOOLCHAIN = "icestorm";
+// localparam FPGA_FAMILY = "ice40";
+// localparam FPGA_TYPE = "up5k";
+// localparam TOOLCHAIN = "icestorm";
 
 `define DSP_CALC
 

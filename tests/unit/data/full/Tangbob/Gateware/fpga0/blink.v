@@ -13,7 +13,7 @@ module blink
             counter <= DIVIDER;
             rled <= ~rled;
         end else begin
-            counter <= counter - 1;
+            counter <= counter - 1'd1;
         end
     end
 endmodule

@@ -1,7 +1,6 @@
-localparam FPGA_FAMILY = "GW5A-25A";
-localparam FPGA_TYPE = "GW5A-LV25MG121NC1/I0";
-localparam TOOLCHAIN = "gowin";
-
+// localparam FPGA_FAMILY = "GW5A-25A";
+// localparam FPGA_TYPE = "GW5A-LV25MG121NC1/I0";
+// localparam TOOLCHAIN = "gowin";
 
 // replacement for $clog2
 function integer clog2;
