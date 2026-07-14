@@ -23,14 +23,21 @@ void spi_exit(void) {
 }
 
 int spi_trx(uint8_t *txBuffer, uint8_t *rxBuffer, uint16_t size) {
-    int fd_tx = open("/dev/shm/verilog.tx.new", O_WRONLY);
+    int fd_tx = open("/dev/shm/verilog.tx", O_WRONLY);
     write(fd_tx, txBuffer, size);
     close(fd_tx);
-    rename("/dev/shm/verilog.tx.new", "/dev/shm/verilog.tx");
 
     int fd_rx = open("/dev/shm/verilog.rx", O_RDONLY);
     read(fd_rx, rxBuffer, size);
     close(fd_rx);
+    /*
+    int i = 0;    
+    printf("data1(%i): ", size);
+    for (i = 0; i < size; i++) {
+        printf("%d ", rxBuffer[i]);
+    }
+    printf("\n");
+    * */
     return size;;
 }
 

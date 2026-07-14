@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
         main_cpp.append("""
             fprintf(stdout, "\\n");
         }
-        if (spi_counter++ > 10000) {
+        if (spi_counter++ > 1000) {
             spi_counter = 0;
             if (rio->PININ_SPI0_SEL == 0) {
                 if (rio->PININ_SPI0_SCLK == 0) {
@@ -151,10 +151,19 @@ int main(int argc, char** argv) {
                             spi_rx_bit = 0;
                             spi_rx_num++;
                             if (spi_rx_num == BUFFER_BYTES) {
-                                int fd_rx = open("/dev/shm/verilog.rx.new", O_WRONLY);
+                                int fd_rx = open("/dev/shm/verilog.rx", O_WRONLY);
                                 write(fd_rx, spi_rx, BUFFER_BYTES);
                                 close(fd_rx);
-                                rename("/dev/shm/verilog.rx.new", "/dev/shm/verilog.rx");
+
+                                /*
+                                int i = 0;
+                                printf("data2(%i): ", BUFFER_BYTES);
+                                for (i = 0; i < BUFFER_BYTES; i++) {
+                                    printf("%d ", spi_rx[i]);
+                                }
+                                printf("\\n");
+                                */
+
                             } else {
                                 spi_rx[spi_rx_num] = 0;
                             }
@@ -172,6 +181,7 @@ int main(int argc, char** argv) {
                 int fd_tx = open("/dev/shm/verilog.tx", O_RDONLY);
                 read(fd_tx, spi_tx, BUFFER_BYTES);
                 close(fd_tx);
+
                 spi_rx_bit = 0;
                 spi_rx_num = 0;
                 spi_rx[spi_rx_num] = 0;
