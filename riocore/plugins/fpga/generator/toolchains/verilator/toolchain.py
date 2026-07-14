@@ -151,9 +151,13 @@ int main(int argc, char** argv) {
                             spi_rx_bit = 0;
                             spi_rx_num++;
                             if (spi_rx_num == BUFFER_BYTES) {
-                                int fd_rx = open("/dev/shm/verilog.rx", O_WRONLY);
-                                write(fd_rx, spi_rx, BUFFER_BYTES);
-                                close(fd_rx);
+                                int fd_rx = open("/dev/shm/verilator.rx", O_WRONLY | O_CREAT, 0644);
+                                if (fd_rx < 0) {
+                                    printf("ERROR open file: /dev/shm/verilator.rx: %i\\n", fd_rx);
+                                } else {
+                                    write(fd_rx, spi_rx, BUFFER_BYTES);
+                                    close(fd_rx);
+                                }
 
                                 /*
                                 int i = 0;
@@ -178,9 +182,13 @@ int main(int argc, char** argv) {
                     spi_rx_num = 0;
                 }
             } else if (rio->PININ_SPI0_SEL == 1) {
-                int fd_tx = open("/dev/shm/verilog.tx", O_RDONLY);
-                read(fd_tx, spi_tx, BUFFER_BYTES);
-                close(fd_tx);
+                int fd_tx = open("/dev/shm/verilator.tx", O_RDONLY);
+                if (fd_tx < 0) {
+                    // printf("ERROR open file: /dev/shm/verilator.tx\\n");
+                } else {
+                    read(fd_tx, spi_tx, BUFFER_BYTES);
+                    close(fd_tx);
+                }
 
                 spi_rx_bit = 0;
                 spi_rx_num = 0;
