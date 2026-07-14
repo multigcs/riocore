@@ -225,6 +225,7 @@ class gateware(generator_base):
             header_size = 32
 
         self.calc_buffersize_sub(self.parent.project, subname, sym_io=sym_io, header_size=header_size)
+
         output = []
         output.append(f"    localparam SUB{subnumber}_BUFFER_SIZE_RX = 16'd{self.sub_buffer_size_in}; // {self.sub_buffer_size_in // 8} bytes")
         output.append(f"    localparam SUB{subnumber}_BUFFER_SIZE_TX = 16'd{self.sub_buffer_size_out}; // {self.sub_buffer_size_out // 8} bytes")
@@ -351,6 +352,8 @@ class gateware(generator_base):
             sym_io = True
 
         self.calc_buffersize(self.parent.project, timestamp_size=timestamp_size, header_size=header_size, sym_io=sym_io)
+        self.jdata["buffer_size_in"] = self.buffer_size_in
+        self.jdata["buffer_size_out"] = self.buffer_size_out
 
         output = []
         input_variables_list = []

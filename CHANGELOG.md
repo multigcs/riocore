@@ -16,6 +16,7 @@
 * better simulation
 * test-tool is now based on the hal-component c-code
 * kicad template generator (pro/pcb/sch)
+* verilator based simulation
 
 
 ## v0.9.4

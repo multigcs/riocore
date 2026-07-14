@@ -10,9 +10,8 @@
         "pmod",
         "pmod2"
     ],
-    "_flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
     "clock": {
-        "speed": 24000000,
+        "speed": 10000000,
         "pin": "35"
     },
     "slots": [

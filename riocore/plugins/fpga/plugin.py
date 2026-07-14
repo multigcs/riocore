@@ -55,6 +55,7 @@ class Plugin(PluginBase):
             return
         board_file = os.path.join(os.path.dirname(__file__), "boards", f"{node_type}.json")
         self.jdata = json.loads(open(board_file).read())
+        self.jdata["board_file"] = board_file
         self.PROVIDES += self.jdata.get("provides", [])
         self.KICAD_FOLDER = os.path.join("kicad", node_type)
 
@@ -128,6 +129,8 @@ class Plugin(PluginBase):
         )
 
         self.IMAGE = f"boards/{node_type}.png"
+        self.jdata["boardimage"] = os.path.join(os.path.dirname(__file__), self.IMAGE)
+
         self.IMAGE_SHOW = True
         self.DESCRIPTION = self.jdata.get("comment", "")
         self.INFO = self.jdata.get("description", "")
@@ -344,9 +347,21 @@ class Plugin(PluginBase):
                     if "pin" in pin_config and not pin_config["pin"]:
                         del pin_config["pin"]
 
-            parent.project.config["speed"] = instance.jdata["speed"]
+            # add varnames to slots/pins
+            for plugin_instance in parent.project.plugin_instances:
+                if plugin_instance.master != instance.instances_name:
+                    continue
+                for pin_config in plugin_instance.pins().values():
+                    if "pin" in pin_config:
+                        for slot in instance.jdata.get("slots", []):
+                            for pin_name, pin_data in slot["pins"].items():
+                                if isinstance(pin_data, str):
+                                    slot["pins"][pin_name] = {"pin": pin_data}
+                                if pin_config["pin"] == slot["pins"][pin_name]["pin"]:
+                                    slot["pins"][pin_name]["varname"] = pin_config["varname"]
 
             # gateware
+            parent.project.config["speed"] = instance.jdata["speed"]
             instance.gateware = gateware(parent, instance)
             if instance.jdata["toolchain"]:
                 instance.gateware.generator()

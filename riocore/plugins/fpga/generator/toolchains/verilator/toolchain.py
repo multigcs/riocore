@@ -43,12 +43,17 @@ class Toolchain:
         makefile_data.append(f"VERILOGS  := {verilogs}")
         makefile_data.append(f"CLK_SPEED := {float(self.config['speed']) / 1000000}")
         makefile_data.append("")
+        makefile_data.append("VFLAGS = -O3 --x-assign fast --x-initial fast --noassert")
+        makefile_data.append("SDL_CFLAGS = `sdl2-config --cflags`")
+        makefile_data.append("SDL_LDFLAGS = `sdl2-config --libs` -lSDL2_image")
+        makefile_data.append("")
         makefile_data.append("all: clean build load")
         makefile_data.append("")
         makefile_data.append("build: obj_dir/V$(TOP)")
         makefile_data.append("")
         makefile_data.append("obj_dir/V$(TOP): $(VERILOGS)")
-        makefile_data.append("	verilator --cc --exe --build -j 0 -Wall main.cpp $(TOP).v")
+        makefile_data.append('	verilator --cc --exe --build -j 0 -Wall -CFLAGS "${SDL_CFLAGS}" -LDFLAGS "${SDL_LDFLAGS}" main.cpp $(TOP).v')
+        # makefile_data.append("	verilator --cc --exe --build -j 0 -Wall main.cpp $(TOP).v")
         makefile_data.append("")
         makefile_data.append("load:")
         makefile_data.append("	obj_dir/Vrio")
@@ -59,15 +64,16 @@ class Toolchain:
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
-        buffersize = 0
-        pinlist = []
-        riov_data = open(os.path.join(path, "rio.v"), "r").read()
-        for _line in riov_data.split("\n"):
-            line = _line.strip()
-            if line.startswith("PIN") and (" <- " in line or " -> " in line):
-                pinlist.append(line.split()[0])
-            elif line.startswith("localparam BUFFER_SIZE_"):
-                buffersize = max(buffersize, int(line.split()[5]))
+        pindict = {}
+        for slot in self.config.get("slots", []):
+            for pin_name, pin_data in slot["pins"].items():
+                pos = pin_data.get("pos")
+                varname = pin_data.get("varname")
+                if pos and varname:
+                    pindict[varname] = pos
+        buffersize = max(self.config["buffer_size_in"], self.config["buffer_size_out"])
+        boardimage = self.config.get("boardimage")
+        boardscale = 3
 
         main_cpp = []
         main_cpp.append("""
@@ -79,14 +85,109 @@ class Toolchain:
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#include <SDL.h>
+#include <SDL_image.h>
 """)
 
-        main_cpp.append(f"#define BUFFER_BIT {buffersize * 8}")
-        main_cpp.append(f"#define BUFFER_BYTES {buffersize}")
-
+        main_cpp.append(f'#define WINDOW_TITLE "{self.config["name"]}"')
+        main_cpp.append(f'#define BOARD_IMAGE "{boardimage}"')
+        main_cpp.append(f"#define BUFFER_BYTES {buffersize // 8}")
+        main_cpp.append("")
+        main_cpp.append(f"int boardscale = {boardscale};")
+        main_cpp.append("volatile uint8_t running = 1;")
+        main_cpp.append("")
+        main_cpp.append("void draw_pins(SDL_Renderer *sdl_renderer, Vrio *rio) {")
+        main_cpp.append("    SDL_Rect rect;")
+        for varname, pos in pindict.items():
+            main_cpp.append(f"    if (rio->{varname} == 1) {{")
+            main_cpp.append("        SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);")
+            main_cpp.append("    } else {")
+            main_cpp.append("        SDL_SetRenderDrawColor(sdl_renderer, 120, 0, 0, 255);")
+            main_cpp.append("    }")
+            main_cpp.append(f"    rect = {{{pos[0] * boardscale - 11}, {pos[1] * boardscale - 11}, {22}, {22}}};")
+            main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
+            main_cpp.append("")
+        main_cpp.append("}")
         main_cpp.append("""
-int main(int argc, char** argv) {
+static void *run(void *arg) {
+    Vrio* rio = (Vrio*)arg;
 
+    printf("INFO: Press 'Q' to quit.\\n");
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("SDL init failed.\\n");
+        return NULL;
+    }
+    int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        printf("SDL_image init failed.\\n");
+        SDL_Quit();
+        return NULL;
+    }
+
+    SDL_Event    event;
+    SDL_Rect     rect;
+    SDL_Point    size;
+    SDL_Color    White = {255, 255, 255};
+    SDL_Window   *sdl_window   = NULL;
+    SDL_Renderer *sdl_renderer = NULL;
+    SDL_Texture  *sdl_texture  = NULL;
+    SDL_Surface  *image_surface = IMG_Load(BOARD_IMAGE);
+    int window_w = image_surface->w * boardscale;
+    int window_h = image_surface->h * boardscale;
+
+    sdl_window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_w, window_h, SDL_WINDOW_SHOWN);
+    if (!sdl_window) {
+        printf("Window creation failed: %s\\n", SDL_GetError());
+        return NULL;
+    }
+    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!sdl_renderer) {
+        printf("Renderer creation failed: %s\\n", SDL_GetError());
+        return NULL;
+    }
+    sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_w, window_h);
+    if (!sdl_texture) {
+        printf("Texture creation failed: %s\\n", SDL_GetError());
+        return NULL;
+    }
+    const Uint8 *keyb_state = SDL_GetKeyboardState(NULL);
+    SDL_Texture *image_texture = SDL_CreateTextureFromSurface(sdl_renderer, image_surface);
+    SDL_FreeSurface(image_surface);
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                printf("exit..\\n");
+                running = 0;
+                break;
+            } else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {""")
+
+        for varname, pos in pindict.items():
+            if varname.startswith("PININ_"):
+                main_cpp.append(f"                if (abs(event.button.x / boardscale - {pos[0]}) < 6 && abs(event.button.y / boardscale - {pos[1]}) < 6) {{")
+                main_cpp.append(f"                    rio->{varname} = 1 - rio->{varname};")
+                main_cpp.append("                }")
+
+        main_cpp.append("""            }
+        }
+        if (keyb_state[SDL_SCANCODE_Q]) {
+            printf("exit..\\n");
+            running = 0;
+            break;
+        }
+        SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
+        SDL_RenderClear(sdl_renderer);
+        SDL_RenderCopy(sdl_renderer, image_texture, NULL, NULL);
+        draw_pins(sdl_renderer, rio);
+        SDL_RenderPresent(sdl_renderer);
+        SDL_Delay(40);
+    }
+    return NULL;
+}
+
+int main(int argc, char** argv) {
     uint8_t spi_tx[BUFFER_BYTES] = {0x74, 0x69, 0x72, 0x77};
     uint8_t spi_rx[BUFFER_BYTES];
     int spi_rx_num = 0;
@@ -98,37 +199,23 @@ int main(int argc, char** argv) {
     Vrio* rio = new Vrio{contextp};
 """)
 
-        for pin in pinlist:
-            main_cpp.append(f"    rio->{pin} = 0;")
+        for varname in pindict:
+            main_cpp.append(f"    rio->{varname} = 0;")
 
         main_cpp.append("""
-    rio->PININ_SPI0_MOSI = 0;
-    rio->PINOUT_SPI0_MISO = 0;
-    rio->PININ_SPI0_SCLK = 0;
-    rio->PININ_SPI0_SEL = 0;
     rio->sysclk_in = 0;
     rio->eval();
 
-    int print_counter = 0;
+    pthread_t sdl_thread;
+    pthread_create(&sdl_thread, NULL, run, rio);
+
     int spi_counter = 0;
-    while (!contextp->gotFinish()) {
+    while (!contextp->gotFinish() && running == 1) {
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
 
-        if (print_counter++ > 1000000) {
-            print_counter = 0;
-
-""")
-
-        for pin in pinlist:
-            if pin.startswith("PINOUT_") and "SPI" not in pin:
-                main_cpp.append(f'            fprintf(stdout, "{pin}=%i ", rio->{pin});')
-
-        main_cpp.append("""
-            fprintf(stdout, "\\n");
-        }
         if (spi_counter++ > 1000) {
             spi_counter = 0;
             if (rio->PININ_SPI0_SEL == 0) {
@@ -158,16 +245,6 @@ int main(int argc, char** argv) {
                                     write(fd_rx, spi_rx, BUFFER_BYTES);
                                     close(fd_rx);
                                 }
-
-                                /*
-                                int i = 0;
-                                printf("data2(%i): ", BUFFER_BYTES);
-                                for (i = 0; i < BUFFER_BYTES; i++) {
-                                    printf("%d ", spi_rx[i]);
-                                }
-                                printf("\\n");
-                                */
-
                             } else {
                                 spi_rx[spi_rx_num] = 0;
                             }
@@ -189,7 +266,6 @@ int main(int argc, char** argv) {
                     read(fd_tx, spi_tx, BUFFER_BYTES);
                     close(fd_tx);
                 }
-
                 spi_rx_bit = 0;
                 spi_rx_num = 0;
                 spi_rx[spi_rx_num] = 0;
@@ -198,6 +274,7 @@ int main(int argc, char** argv) {
             }
         }
     }
+    running = 0;
     delete rio;
     delete contextp;
     return 0;
