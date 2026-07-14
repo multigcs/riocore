@@ -669,7 +669,10 @@ class gateware(generator_base):
                 output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data_{uid.lower()};")
                 idata.append(f"rx_data_{uid.lower()}")
                 isedges.append(f"INTERFACE_SYNC_{uid.upper()}_RISINGEDGE")
-        if len(idata) > 1:
+        if not idata:
+            riocore.log("  ERROR: no interfaces found")
+            sys.exit(1)
+        elif len(idata) > 1:
             riocore.log("  INFO: multiple interfaces found")
             output.append("    reg  [BUFFER_SIZE_RX-1:0] rx_data = 0;")
         else:
