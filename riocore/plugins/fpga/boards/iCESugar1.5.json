@@ -110,6 +110,42 @@
                         65
                     ]
                 },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "comment": "3V3",
+                    "marker": true,
+                    "pos": [
+                        288,
+                        65
+                    ]
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "comment": "3V3",
+                    "marker": true,
+                    "pos": [
+                        288,
+                        53
+                    ]
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        302,
+                        65
+                    ]
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        302,
+                        53
+                    ]
+                },
                 "P7": {
                     "pin": "9",
                     "pos": [
@@ -170,6 +206,42 @@
                     "pos": [
                         332,
                         107
+                    ]
+                },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "comment": "3V3",
+                    "marker": true,
+                    "pos": [
+                        332,
+                        119
+                    ]
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "comment": "3V3",
+                    "marker": true,
+                    "pos": [
+                        344,
+                        119
+                    ]
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        344,
+                        130
+                    ]
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        332,
+                        130
                     ]
                 },
                 "P7": {
@@ -235,6 +307,42 @@
                         219
                     ]
                 },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "comment": "3V3",
+                    "marker": true,
+                    "pos": [
+                        332,
+                        231
+                    ]
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "comment": "3V3",
+                    "marker": true,
+                    "pos": [
+                        344,
+                        231
+                    ]
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        344,
+                        242
+                    ]
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        332,
+                        242
+                    ]
+                },
                 "P7": {
                     "pin": "32",
                     "pos": [
@@ -264,6 +372,67 @@
                     ]
                 }
             }
+        },
+
+
+        {
+            "name": "J7",
+            "comment": "shared with PMOD1",
+            "pins": {
+                "P1": {
+                    "pin": "48",
+                    "comment": "shared with PMOD1:P4",
+                    "pos": [
+                        332,
+                        143
+                    ]
+                },
+                "P2": {
+                    "pin": "47",
+                    "comment": "shared with PMOD1:P10",
+                    "pos": [
+                        344,
+                        143
+                    ]
+                },
+                "5V": {
+                    "pin": "5V",
+                    "comment": "5V",
+                    "marker": true,
+                    "pos": [
+                        332,
+                        155
+                    ]
+                },
+                "GND": {
+                    "pin": "GND",
+                    "comment": "GND",
+                    "marker": true,
+                    "pos": [
+                        344,
+                        155
+                    ]
+                },
+                "P3": {
+                    "pin": "3",
+                    "comment": "shared with PMOD1:P3",
+                    "pos": [
+                        332,
+                        167
+                    ]
+                },
+                "P4": {
+                    "pin": "2",
+                    "comment": "shared with PMOD1:P9",
+                    "pos": [
+                        344,
+                        167
+                    ]
+                }
+            }
         }
+
+
+
     ]
 }
