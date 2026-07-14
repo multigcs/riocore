@@ -1256,7 +1256,7 @@ class cbase:
             print("ERROR: unsupported interface")
             sys.exit(1)
 
-        if protocol in {"UDP", "UART", "SPI", "SPI_RPI5"}:
+        if protocol in {"UDP", "UART", "SPI", "SPI_RPI5", "SPI_VERILATOR"}:
             if self.use_header:
                 output.append("            if (ret == BUFFER_SIZE_RX && rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
             else:

@@ -48,7 +48,7 @@ SPI-Type
 
  * type: select
  * default: rpi4
- * options: rpi4, rpi5, generic
+ * options: rpi4, rpi5, generic, verilator
 
 ### cs:
 Chip-Select pin on the Host-Side CS0/CS1

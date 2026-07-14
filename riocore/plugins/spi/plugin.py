@@ -40,7 +40,7 @@ class Plugin(PluginBase):
             "spitype": {
                 "default": "rpi4",
                 "type": "select",
-                "options": ["rpi4", "rpi5", "generic"],
+                "options": ["rpi4", "rpi5", "generic", "verilator"],
                 "description": "SPI-Type",
             },
             "cs": {
@@ -62,6 +62,8 @@ class Plugin(PluginBase):
             self.HOST_INTERFACE = "SPI_RPI5"
         elif spitype == "generic":
             self.HOST_INTERFACE = "SPI_GENERIC"
+        elif spitype == "verilator":
+            self.HOST_INTERFACE = "SPI_VERILATOR"
         else:
             self.HOST_INTERFACE = "SPI"
 

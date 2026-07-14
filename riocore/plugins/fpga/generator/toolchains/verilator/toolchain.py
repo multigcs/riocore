@@ -59,6 +59,12 @@ class Toolchain:
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 
+        pinlist = []
+        riov_data = open(os.path.join(path, "rio.v"), "r").read()
+        for line in riov_data.split("\n"):
+            if line.strip().startswith("PIN") and (" <- " in line or " -> " in line):
+                pinlist.append(line.strip().split()[0])
+
         main_cpp = []
         main_cpp.append("""
 #include "Vrio.h"
@@ -84,7 +90,12 @@ int main(int argc, char** argv) {
     VerilatedContext* contextp = new VerilatedContext;
     contextp->commandArgs(argc, argv);
     Vrio* rio = new Vrio{contextp};
-    rio->PINOUT_BLINK0_LED = 0;
+""")
+
+        for pin in pinlist:
+            main_cpp.append(f"    rio->{pin} = 0;")
+
+        main_cpp.append("""
     rio->PININ_SPI0_MOSI = 0;
     rio->PINOUT_SPI0_MISO = 0;
     rio->PININ_SPI0_SCLK = 0;
@@ -92,25 +103,28 @@ int main(int argc, char** argv) {
     rio->sysclk_in = 0;
     rio->eval();
 
-    int counter = 0;
-    int last = 0;
+    int print_counter = 0;
+    int spi_counter = 0;
     while (!contextp->gotFinish()) {
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
 
-        if (rio->PINOUT_BLINK0_LED != last) {
-            fprintf(stdout, "PINOUT_BLINK0_LED=%i ", rio->PINOUT_BLINK0_LED);
-            // fprintf(stdout, "DOUT0=%i ", rio->DOUT0);
-            // fprintf(stdout, "DOUT1=%i ", rio->DOUT1);
-            fprintf(stdout, "PINOUT_SPI0_MISO=%i ", rio->PINOUT_SPI0_MISO);
+        if (print_counter++ > 1000000) {
+            print_counter = 0;
+
+""")
+
+        for pin in pinlist:
+            if pin.startswith("PINOUT_") and "SPI" not in pin:
+                main_cpp.append(f'            fprintf(stdout, "{pin}=%i ", rio->{pin});')
+
+        main_cpp.append("""
             fprintf(stdout, "\\n");
         }
-        last = rio->PINOUT_BLINK0_LED;
-
-        if (counter++ > 100000) {
-            counter = 0;
+        if (spi_counter++ > 10000) {
+            spi_counter = 0;
             if (rio->PININ_SPI0_SEL == 0) {
                 if (rio->PININ_SPI0_SCLK == 0) {
                     if (spi_rx_bit < 8) {
