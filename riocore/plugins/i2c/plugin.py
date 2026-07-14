@@ -63,9 +63,10 @@ class Plugin(PluginBase):
                 instance.device_instances.append(plugin_instance)
 
             if not instance.device_instances:
+                # no pins needed if no device is configured
+                instance.PINDEFAULTS = {}
                 continue
 
-            verilog_data = []
             verilog_data = []
             verilog_data.append("")
             verilog_data.append(f"module i2cbus_{instance.instances_name}")
@@ -331,6 +332,7 @@ class Plugin(PluginBase):
 
     def gateware_instances(self):
         if not self.device_instances:
+            # no instance needed if no device is configured
             return None
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
