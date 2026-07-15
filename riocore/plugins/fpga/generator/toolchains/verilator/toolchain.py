@@ -128,6 +128,11 @@ class Toolchain:
             main_cpp.append(f"    rect = {{{pos[0] * boardscale - 11}, {pos[1] * boardscale - 11}, {22}, {22}}};")
             main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
             main_cpp.append("")
+            if varname.startswith("PININ_"):
+                print(varname)
+                main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);")
+                main_cpp.append("    SDL_RenderDrawRect(sdl_renderer, &rect);")
+
         main_cpp.append("}")
         main_cpp.append("""
 static void *run(void *arg) {
