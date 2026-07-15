@@ -171,7 +171,7 @@ class Toolchain:
             main_cpp.append(f"    rect = {{GRAPH_X, GRAPH_Y + {py}, GRAPH_W, {ph}}};")
             main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
 
-            main_cpp.append(f"    rect = {{GRAPH_TX, GRAPH_Y + {py}, textWidth{varname}, {ph}}};")
+            main_cpp.append(f"    rect = {{GRAPH_TX + 2, GRAPH_Y + {py}, textWidth{varname}, {ph + 2}}};")
             main_cpp.append(f"    SDL_RenderCopy(sdl_renderer, textTexture{varname}, NULL, &rect);")
 
             main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);")
