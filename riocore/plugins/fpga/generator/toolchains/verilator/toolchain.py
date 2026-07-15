@@ -133,6 +133,8 @@ class Toolchain:
         main_cpp.append(f"int window_h = {int(boardimage_h) * boardscale} + GRAPH_H;")
         main_cpp.append(f"int boardscale = {boardscale};")
         main_cpp.append("volatile uint8_t running = 1;")
+        main_cpp.append("volatile uint8_t vcd_record = 0;")
+        main_cpp.append("volatile uint8_t vcd_running = 0;")
         main_cpp.append("")
 
         py = 0
@@ -241,6 +243,9 @@ static void *run(void *arg) {
             printf("exit..\\n");
             running = 0;
             break;
+        } else if (keyb_state[SDL_SCANCODE_R]) {
+            vcd_record = 1 - vcd_record;
+            SDL_Delay(200);
         }
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
@@ -259,6 +264,8 @@ int main(int argc, char** argv) {
     int spi_rx_num = 0;
     int spi_rx_bit = 0;
     int spi_rx_cs = 1;
+    FILE *fd_gtkw = NULL;
+    FILE *fd_vcd = NULL;
 
     VerilatedContext* contextp = new VerilatedContext;
     contextp->commandArgs(argc, argv);
@@ -267,6 +274,7 @@ int main(int argc, char** argv) {
 
         for varname in pindict:
             main_cpp.append(f"    rio->{varname} = 0;")
+            main_cpp.append(f"    uint8_t last_{varname} = 0;")
 
         main_cpp.append("""
     rio->sysclk_in = 0;
@@ -277,23 +285,93 @@ int main(int argc, char** argv) {
 
     int spi_counter = 0;
     int chart_counter = 0;
+    int vcd_counter = 0;
+    int vcd_change = 0;
     while (!contextp->gotFinish() && running == 1) {
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
 
+        if (vcd_record == 1 && vcd_running == 0) {
+            printf("INFO: starting vcd_record to: /dev/shm/verilator.gtkw\\n");
+            vcd_running = 1;
+            vcd_counter = 0;
+            fd_gtkw = fopen("/dev/shm/verilator.gtkw", "w");
+            fprintf(fd_gtkw, "[*]\\n");
+            fprintf(fd_gtkw, "[*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI\\n");
+            fprintf(fd_gtkw, "[*] Wed Jul 15 10:04:27 2026\\n");
+            fprintf(fd_gtkw, "[*]\\n");
+            fprintf(fd_gtkw, "[dumpfile] \\"verilator.vcd\\"\\n");
+            fprintf(fd_gtkw, "[dumpfile_mtime] \\"Wed Jul 15 10:03:02 2026\\"\\n");
+            fprintf(fd_gtkw, "[savefile] \\"verilator.gtkwave.gtkw\\"\\n");
+            fprintf(fd_gtkw, "[timestart] 0\\n");""")
+        for varname in pindict:
+            main_cpp.append(f'            fprintf(fd_gtkw, "testb_toggle.{varname}\\n");')
+
+        main_cpp.append("""            fclose(fd_gtkw);
+
+            fd_vcd = fopen("/dev/shm/verilator.vcd", "w");
+            fprintf(fd_vcd, "$date\\n");
+            fprintf(fd_vcd, "	Wed Jul 15 11:08:45 2026\\n");
+            fprintf(fd_vcd, "$end\\n");
+            fprintf(fd_vcd, "$version\\n");
+            fprintf(fd_vcd, "	Icarus Verilog\\n");
+            fprintf(fd_vcd, "$end\\n");
+            fprintf(fd_vcd, "$timescale\\n");
+            fprintf(fd_vcd, "	100ps\\n");
+            fprintf(fd_vcd, "$end\\n");""")
+
+        for cn, varname in enumerate(pindict):
+            main_cpp.append('            fprintf(fd_vcd, "$scope module testb_toggle $end\\n");')
+            main_cpp.append(f'            fprintf(fd_vcd, "$var wire 1 {chr(cn + 60)} {varname} $end\\n");')
+            main_cpp.append('            fprintf(fd_vcd, "$upscope $end\\n");')
+        main_cpp.append('            fprintf(fd_vcd, "$enddefinitions $end\\n");')
+        main_cpp.append('            fprintf(fd_vcd, "#0\\n");')
+        main_cpp.append('            fprintf(fd_vcd, "$dumpvars\\n");')
+        for cn, varname in enumerate(pindict):
+            main_cpp.append(f'            fprintf(fd_vcd, "%i{chr(cn + 60)}\\n", rio->{varname});')
+        main_cpp.append('            fprintf(fd_vcd, "$end\\n");')
+        main_cpp.append("""        }
+
+        if (vcd_running == 1) {
+            vcd_change = 0;
+""")
+
+        for cn, varname in enumerate(pindict):
+            main_cpp.append(f"            if (last_{varname} != rio->{varname}) {{")
+            main_cpp.append("                vcd_change = 1;")
+            main_cpp.append("            }")
+
+        main_cpp.append("            if (vcd_change == 1) {")
+        main_cpp.append('                fprintf(fd_vcd, "#%i\\n", vcd_counter);')
+        for cn, varname in enumerate(pindict):
+            main_cpp.append(f"                if (last_{varname} != rio->{varname}) {{")
+            main_cpp.append(f'                    fprintf(fd_vcd, "%i{chr(cn + 60)}\\n", rio->{varname});')
+            main_cpp.append(f"                    last_{varname} = rio->{varname};")
+            main_cpp.append("                }")
+
+        main_cpp.append("""
+            }
+            vcd_counter++;
+        }
+
         if (chart_counter++ > 100000) {
             chart_counter = 0;
 """)
 
         for varname in pindict:
-            main_cpp.append("    for (int i = 0; i < GRAPH_W - 1; i++) {")
-            main_cpp.append(f"        hist_{varname.lower()}[i] = hist_{varname.lower()}[i + 1];")
-            main_cpp.append("    }")
-            main_cpp.append(f"    hist_{varname.lower()}[GRAPH_W - 1] = rio->{varname};")
+            main_cpp.append("            for (int i = 0; i < GRAPH_W - 1; i++) {")
+            main_cpp.append(f"                hist_{varname.lower()}[i] = hist_{varname.lower()}[i + 1];")
+            main_cpp.append("            }")
+            main_cpp.append(f"            hist_{varname.lower()}[GRAPH_W - 1] = rio->{varname};")
 
         main_cpp.append("""
+        }
+        if (vcd_record == 0 && vcd_running == 1) {
+            printf("INFO: stopping vcd_record\\n");
+            vcd_running = 0;
+            fclose(fd_vcd);
         }
 #ifdef SPI_MOSI
         if (spi_counter++ > 1000) {
@@ -357,6 +435,10 @@ int main(int argc, char** argv) {
 
     }
     running = 0;
+    if (vcd_running == 1) {
+        printf("INFO: stopping vcd_record\\n");
+        fclose(fd_vcd);
+    }
     delete rio;
     delete contextp;
     return 0;
