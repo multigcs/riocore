@@ -1,7 +1,10 @@
 import importlib
 import os
+import re
 import shutil
 import sys
+
+import magic
 
 
 class Toolchain:
@@ -72,6 +75,8 @@ class Toolchain:
                     pindict[varname] = pos
         buffersize = max(self.config["buffer_size_in"], self.config["buffer_size_out"])
         boardimage = self.config.get("boardimage")
+        t = magic.from_file(boardimage)
+        boardimage_w, boardimage_h = re.search(r"(\d+) x (\d+)", t).groups()
         boardscale = 2
 
         main_cpp = []
@@ -110,12 +115,30 @@ class Toolchain:
         else:
             print("  WARNING: no SPI insterface found, no interaction possible in verilator mode")
 
+        graph_nw = max(int(boardimage_w) * boardscale, 800)
+        graph_nh = 15
         main_cpp.append(f'#define WINDOW_TITLE "{self.config["name"]}"')
         main_cpp.append(f'#define BOARD_IMAGE "{boardimage}"')
+        main_cpp.append(f"#define BOARD_IMAGE_W {boardimage_w}")
+        main_cpp.append(f"#define BOARD_IMAGE_H {boardimage_h}")
         main_cpp.append(f"#define BUFFER_BYTES {buffersize // 8}")
+        main_cpp.append(f"#define GRAPH_X {0}")
+        main_cpp.append(f"#define GRAPH_Y {int(boardimage_h) * boardscale}")
+        main_cpp.append(f"#define GRAPH_W {graph_nw}")
+        main_cpp.append(f"#define GRAPH_H {len(pindict) * graph_nh}")
         main_cpp.append("")
+        main_cpp.append(f"int image_w = {int(boardimage_w) * boardscale};")
+        main_cpp.append(f"int image_h = {int(boardimage_h) * boardscale};")
+        main_cpp.append(f"int window_w = {graph_nw};")
+        main_cpp.append(f"int window_h = {int(boardimage_h) * boardscale} + GRAPH_H;")
         main_cpp.append(f"int boardscale = {boardscale};")
         main_cpp.append("volatile uint8_t running = 1;")
+        main_cpp.append("")
+
+        py = 0
+        for varname in pindict:
+            main_cpp.append(f"bool hist_{varname.lower()}[GRAPH_W];")
+
         main_cpp.append("")
         main_cpp.append("void draw_pins(SDL_Renderer *sdl_renderer, Vrio *rio) {")
         main_cpp.append("    SDL_Rect rect;")
@@ -132,6 +155,26 @@ class Toolchain:
                 print(varname)
                 main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);")
                 main_cpp.append("    SDL_RenderDrawRect(sdl_renderer, &rect);")
+
+        py = graph_nh
+        ph = graph_nh - 4
+        for varname, pos in pindict.items():
+            main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);")
+            main_cpp.append(f"    rect = {{GRAPH_X, GRAPH_Y + {py}, GRAPH_W, {ph}}};")
+            main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
+
+            main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);")
+
+            main_cpp.append("    for (int i = 0; i < GRAPH_W; i++) {")
+            main_cpp.append(f"    if (hist_{varname.lower()}[i] == 1) {{")
+            main_cpp.append(f"        rect = {{i, GRAPH_Y + {py}, {1}, {ph}}};")
+            main_cpp.append("        SDL_RenderDrawRect(sdl_renderer, &rect);")
+            main_cpp.append("    } else {")
+            main_cpp.append(f"        SDL_RenderDrawLine(sdl_renderer, GRAPH_X + i, GRAPH_Y + {py} + {ph}, GRAPH_X + i + 1, GRAPH_Y + {py} + {ph});")
+            main_cpp.append("    }")
+
+            main_cpp.append("    }")
+            py += graph_nh
 
         main_cpp.append("}")
         main_cpp.append("""
@@ -159,22 +202,23 @@ static void *run(void *arg) {
     SDL_Renderer *sdl_renderer = NULL;
     SDL_Texture  *sdl_texture  = NULL;
     SDL_Surface  *image_surface = IMG_Load(BOARD_IMAGE);
-    int window_w = image_surface->w * boardscale;
-    int window_h = image_surface->h * boardscale;
 
     sdl_window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_w, window_h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         printf("Window creation failed: %s\\n", SDL_GetError());
+        running = 0;
         return NULL;
     }
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!sdl_renderer) {
         printf("Renderer creation failed: %s\\n", SDL_GetError());
+        running = 0;
         return NULL;
     }
     sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_w, window_h);
     if (!sdl_texture) {
         printf("Texture creation failed: %s\\n", SDL_GetError());
+        running = 0;
         return NULL;
     }
     const Uint8 *keyb_state = SDL_GetKeyboardState(NULL);
@@ -204,7 +248,8 @@ static void *run(void *arg) {
         }
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        SDL_RenderCopy(sdl_renderer, image_texture, NULL, NULL);
+        rect = {0, 0, image_w, image_h};
+        SDL_RenderCopy(sdl_renderer, image_texture, NULL, &rect);
         draw_pins(sdl_renderer, rio);
         SDL_RenderPresent(sdl_renderer);
         SDL_Delay(40);
@@ -235,11 +280,25 @@ int main(int argc, char** argv) {
     pthread_create(&sdl_thread, NULL, run, rio);
 
     int spi_counter = 0;
+    int chart_counter = 0;
     while (!contextp->gotFinish() && running == 1) {
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
+
+        if (chart_counter++ > 100000) {
+            chart_counter = 0;
+""")
+
+        for varname in pindict:
+            main_cpp.append("    for (int i = 0; i < GRAPH_W - 1; i++) {")
+            main_cpp.append(f"        hist_{varname.lower()}[i] = hist_{varname.lower()}[i + 1];")
+            main_cpp.append("    }")
+            main_cpp.append(f"    hist_{varname.lower()}[GRAPH_W - 1] = rio->{varname};")
+
+        main_cpp.append("""
+        }
 #ifdef SPI_MOSI
         if (spi_counter++ > 1000) {
             spi_counter = 0;
