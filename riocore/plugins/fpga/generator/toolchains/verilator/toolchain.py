@@ -52,8 +52,7 @@ class Toolchain:
         makefile_data.append("build: obj_dir/V$(TOP)")
         makefile_data.append("")
         makefile_data.append("obj_dir/V$(TOP): $(VERILOGS)")
-        makefile_data.append('	verilator --cc --exe --build -j 0 -Wall -CFLAGS "${SDL_CFLAGS}" -LDFLAGS "${SDL_LDFLAGS}" main.cpp $(TOP).v')
-        # makefile_data.append("	verilator --cc --exe --build -j 0 -Wall main.cpp $(TOP).v")
+        makefile_data.append('	verilator --cc --exe --build -j 0 -Wall  -Wno-lint -CFLAGS "${SDL_CFLAGS}" -LDFLAGS "${SDL_LDFLAGS}" main.cpp $(TOP).v')
         makefile_data.append("")
         makefile_data.append("load:")
         makefile_data.append("	obj_dir/Vrio")
@@ -73,7 +72,7 @@ class Toolchain:
                     pindict[varname] = pos
         buffersize = max(self.config["buffer_size_in"], self.config["buffer_size_out"])
         boardimage = self.config.get("boardimage")
-        boardscale = 3
+        boardscale = 2
 
         main_cpp = []
         main_cpp.append("""
@@ -89,6 +88,27 @@ class Toolchain:
 #include <SDL.h>
 #include <SDL_image.h>
 """)
+
+        spi_mosi = ""
+        spi_miso = ""
+        spi_sclk = ""
+        spi_sel = ""
+        for varname in pindict:
+            if varname.endswith("_MOSI") and varname.startswith("PININ_"):
+                spi_mosi = f"rio->{varname}"
+            elif varname.endswith("_MISO") and varname.startswith("PINOUT_"):
+                spi_miso = f"rio->{varname}"
+            elif varname.endswith("_SCLK") and varname.startswith("PININ_"):
+                spi_sclk = f"rio->{varname}"
+            elif varname.endswith("_SEL") and varname.startswith("PININ_"):
+                spi_sel = f"rio->{varname}"
+        if spi_mosi and spi_miso and spi_sclk and spi_sel:
+            main_cpp.append(f"#define SPI_MOSI {spi_mosi}")
+            main_cpp.append(f"#define SPI_MISO {spi_miso}")
+            main_cpp.append(f"#define SPI_SCLK {spi_sclk}")
+            main_cpp.append(f"#define SPI_SEL {spi_sel}")
+        else:
+            print("  WARNING: no SPI insterface found, no interaction possible in verilator mode")
 
         main_cpp.append(f'#define WINDOW_TITLE "{self.config["name"]}"')
         main_cpp.append(f'#define BOARD_IMAGE "{boardimage}"')
@@ -215,22 +235,22 @@ int main(int argc, char** argv) {
         rio->eval();
         rio->sysclk_in = 1 - rio->sysclk_in;
         rio->eval();
-
+#ifdef SPI_MOSI
         if (spi_counter++ > 1000) {
             spi_counter = 0;
-            if (rio->PININ_SPI0_SEL == 0) {
-                if (rio->PININ_SPI0_SCLK == 0) {
+            if (SPI_SEL == 0) {
+                if (SPI_SCLK == 0) {
                     if (spi_rx_bit < 8) {
                         if ((spi_tx[spi_rx_num] & (1<<(7-spi_rx_bit))) > 0) {
-                            rio->PININ_SPI0_MOSI = 1;
+                            SPI_MOSI = 1;
                         } else {
-                            rio->PININ_SPI0_MOSI = 0;
+                            SPI_MOSI = 0;
                         }
                     }
-                    rio->PININ_SPI0_SCLK = 1;
+                    SPI_SCLK = 1;
                 } else if (spi_rx_num < BUFFER_BYTES) {
                     if (spi_rx_bit < 8) {
-                        if (rio->PINOUT_SPI0_MISO == 1) {
+                        if (SPI_MISO == 1) {
                             spi_rx[spi_rx_num] |= (1<<(7-spi_rx_bit));
                         }
                         spi_rx_bit++;
@@ -251,14 +271,14 @@ int main(int argc, char** argv) {
                         }
                     }
                     if (spi_rx_num < BUFFER_BYTES) {
-                        rio->PININ_SPI0_SCLK = 0;
+                        SPI_SCLK = 0;
                     }
                 } else {
-                    rio->PININ_SPI0_SEL = 1;
+                    SPI_SEL = 1;
                     spi_rx_bit = 0;
                     spi_rx_num = 0;
                 }
-            } else if (rio->PININ_SPI0_SEL == 1) {
+            } else if (SPI_SEL == 1) {
                 int fd_tx = open("/dev/shm/verilator.tx", O_RDONLY);
                 if (fd_tx < 0) {
                     // printf("ERROR open file: /dev/shm/verilator.tx\\n");
@@ -269,10 +289,12 @@ int main(int argc, char** argv) {
                 spi_rx_bit = 0;
                 spi_rx_num = 0;
                 spi_rx[spi_rx_num] = 0;
-                rio->PININ_SPI0_SEL = 0;
-                rio->PININ_SPI0_SCLK = 0;
+                SPI_SEL = 0;
+                SPI_SCLK = 0;
             }
         }
+#endif
+
     }
     running = 0;
     delete rio;

@@ -31,6 +31,7 @@ if sys.platform == "linux":
     parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
     parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
+    parser.add_argument("--verilator", "-v", help="start in verilator simulator mode", default=False, action="store_true")
     parser.add_argument("--udpsim", "-U", help="start udp simulator", default=False, action="store_true")
     parser.add_argument("--kicad", "-k", help="build kicad files", default=False, action="store_true")
     parser.add_argument("--kicad-run", "-K", help="build kicad files and open in kicad", default=False, action="store_true")
@@ -75,12 +76,12 @@ if args.config:
             exit(1)
         print(f"loading: {config_file}")
 
-        if args.udpsim or args.simulator or args.gui or args.vcp:
+        if args.udpsim or args.simulator or args.verilator or args.gui or args.vcp:
             # rewrite config for simulator
             jdata = json.loads(open(config_file).read())
             config_dir = os.path.dirname(config_file)
             config_name = os.path.basename(config_file)
-            if jdata.get("linuxcnc", {}).get("machinetype", "") in {"melfa"}:
+            if (args.udpsim or args.simulator or args.verilator) and jdata.get("linuxcnc", {}).get("machinetype", "") in {"melfa"}:
                 for pm, module in enumerate(jdata.get("modules", [])):
                     for name, plugin in module.get("setup").items():
                         if plugin.get("signals", {}).get("bit", {}).get("net", "").endswith(".home-sw-in"):
@@ -117,6 +118,13 @@ if args.config:
                 for pn, plugin in enumerate(jdata["plugins"]):
                     if plugin.get("type") == "fpga":
                         jdata["plugins"][pn]["simulation"] = True
+            elif args.verilator:
+                for pn, plugin in enumerate(jdata["plugins"]):
+                    if plugin.get("type") == "fpga":
+                        jdata["plugins"][pn]["simulation"] = False
+                        jdata["plugins"][pn]["toolchain"] = "verilator"
+                    elif plugin.get("type") in {"spi", "spibridge", "spi_prog"}:
+                        jdata["plugins"][pn]["spitype"] = "verilator"
 
             elif args.udpsim:
                 if "linuxcnc" not in jdata:

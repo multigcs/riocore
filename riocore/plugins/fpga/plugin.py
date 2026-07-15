@@ -168,7 +168,13 @@ class Plugin(PluginBase):
             if "osc" in self.jdata["clock"]:
                 del self.jdata["clock"]["osc"]
 
+        # in verilator mode, set fixed clock / no pll
+        if toolchain == "verilator":
+            self.jdata["clock"]["osc"] = 12000000
+            self.plugin_setup["speed"] = 12000000
+
         speed = self.plugin_setup.get("speed", self.option_default("speed") or int(self.jdata["clock"].get("speed")))
+
         self.jdata["toolchain"] = toolchain
         self.jdata["clock"]["speed"] = speed
         self.jdata["speed"] = speed
