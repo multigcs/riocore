@@ -152,7 +152,10 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         makefile_data.append("")
         makefile_data.append("all: clean build")
         makefile_data.append("")
-        makefile_data.append(f"build: {bitfileName}")
+        makefile_data.append("prepare:")
+        makefile_data.append("	sh prepare.sh || true")
+        makefile_data.append("")
+        makefile_data.append(f"build: prepare {bitfileName}")
         makefile_data.append("")
         # yosys_logging = "-q -l yosys.log"
         # nextpnr_logging = "-q -l nextpnr.log"
