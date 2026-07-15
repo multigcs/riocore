@@ -34,6 +34,7 @@ class PluginBase:
         self.TIMING_CONSTRAINTS = {}  # used by some plugin to set FPGA CONSTRAINTS for some pins
         self.VERILOGS = []  # list of verilog files used by this plugin
         self.VERILOGS_DATA = {}  # generated verilog files used by this plugin
+        self.SRCFILES = []  # other src files used by this plugin (like mem-files / headers)
         self.FILES = []  # other files used by this plugin (like hal-components)
         self.TYPE = "io"  # SPECIAL: interface, joint, expansion, frameio, sub_interface (internal use) / MISC: io, base, host (only for the docs)
         self.JOINT_MODE = "velocity"  # psition/velocity
@@ -210,6 +211,9 @@ class PluginBase:
 
     def gateware_files(self):
         return self.VERILOGS
+
+    def gateware_srcfiles(self):
+        return self.SRCFILES
 
     def gateware_virtual_files(self):
         return self.VERILOGS_DATA

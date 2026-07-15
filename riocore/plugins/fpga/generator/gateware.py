@@ -139,6 +139,14 @@ class gateware(generator_base):
                 target = os.path.join(self.jdata["output_path"], verilog)
                 shutil.copy(ipv_path, target)
 
+            for srcfile in plugin_instance.gateware_srcfiles():
+                ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, srcfile)
+                if not os.path.isfile(ipv_path):
+                    riocore.log(f"ERROR: can not found srcfile file: {srcfile}")
+                    sys.exit(1)
+                target = os.path.join(self.jdata["output_path"], srcfile)
+                shutil.copy(ipv_path, target)
+
             for verilog, data in plugin_instance.gateware_virtual_files().items():
                 if verilog in self.parent.verilogs:
                     continue
@@ -506,10 +514,10 @@ class gateware(generator_base):
         arguments_list = []
         if self.jdata["sysclk_pin"] != "internal":
             if self.jdata.get("toolchain") == "greenpak":
-                arguments_list.append("(* iopad_external_pin, clkbuf_inhibit *) input sysclk_in")
-                arguments_list.append("(* iopad_external_pin *) output sysclk_in_en")
+                arguments_list.append("(* iopad_external_pin, clkbuf_inhibit *) input wire sysclk_in")
+                arguments_list.append("(* iopad_external_pin *) output wire sysclk_in_en")
             else:
-                arguments_list.append("input sysclk_in")
+                arguments_list.append("input wire sysclk_in")
 
         existing_pins = {}
         double_pins = {}
@@ -528,10 +536,10 @@ class gateware(generator_base):
                         prefix = ""
                         if self.jdata.get("toolchain") == "greenpak":
                             prefix = "(* iopad_external_pin *) "
-                        arguments_list.append(f"{prefix}{pin_config['direction'].lower()} {pin_config['varname']}")
+                        arguments_list.append(f"{prefix}{pin_config['direction'].lower()} wire {pin_config['varname']}")
                         existing_pins[pin_config["pin"]] = pin_config["varname"]
                         if self.jdata.get("toolchain") == "greenpak" and pin_config["direction"] == "output":
-                            arguments_list.append(f"{prefix}output {pin_config['varname']}_OE")
+                            arguments_list.append(f"{prefix}output wire {pin_config['varname']}_OE")
 
         output.append("")
         output.append("/* verilator lint_off UNUSEDSIGNAL */")
