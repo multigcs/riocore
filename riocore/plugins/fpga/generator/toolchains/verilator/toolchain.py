@@ -21,7 +21,7 @@ class Toolchain:
         return {
             "url": "https://www.veripool.org/verilator/",
             "info": "verilog simulation",
-            "description": "",
+            "description": "you need following packages to run: libsdl2-dev, libsdl2-image-dev, libsdl2-ttf-dev, fonts-dejavu-core\nand maybe verilator if oss-cad-suite is not installed",
         }
 
     def generate(self, path):
@@ -48,7 +48,7 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("VFLAGS = -O3 --x-assign fast --x-initial fast --noassert")
         makefile_data.append("SDL_CFLAGS = `sdl2-config --cflags`")
-        makefile_data.append("SDL_LDFLAGS = `sdl2-config --libs` -lSDL2_image")
+        makefile_data.append("SDL_LDFLAGS = `sdl2-config --libs` -lSDL2_image -lSDL2_ttf")
         makefile_data.append("")
         makefile_data.append("all: clean build load")
         makefile_data.append("")
@@ -91,6 +91,7 @@ class Toolchain:
 #include <unistd.h>
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <SDL_image.h>
 """)
 
@@ -117,29 +118,35 @@ class Toolchain:
 
         graph_nw = max(int(boardimage_w) * boardscale, 800)
         graph_nh = 15
+        graph_tw = 100
         main_cpp.append(f'#define WINDOW_TITLE "{self.config["name"]}"')
         main_cpp.append(f'#define BOARD_IMAGE "{boardimage}"')
         main_cpp.append(f"#define BOARD_IMAGE_W {boardimage_w}")
         main_cpp.append(f"#define BOARD_IMAGE_H {boardimage_h}")
         main_cpp.append(f"#define BUFFER_BYTES {buffersize // 8}")
-        main_cpp.append(f"#define GRAPH_X {0}")
+        main_cpp.append(f"#define GRAPH_TX {0}")
+        main_cpp.append(f"#define GRAPH_X {graph_tw}")
         main_cpp.append(f"#define GRAPH_Y {int(boardimage_h) * boardscale}")
-        main_cpp.append(f"#define GRAPH_W {graph_nw}")
+        main_cpp.append(f"#define GRAPH_W {graph_nw - graph_tw}")
         main_cpp.append(f"#define GRAPH_H {len(pindict) * graph_nh}")
+        main_cpp.append(f"#define GRAPH_TH {graph_nh}")
         main_cpp.append("")
         main_cpp.append(f"int image_w = {int(boardimage_w) * boardscale};")
         main_cpp.append(f"int image_h = {int(boardimage_h) * boardscale};")
         main_cpp.append(f"int window_w = {graph_nw};")
-        main_cpp.append(f"int window_h = {int(boardimage_h) * boardscale} + GRAPH_H;")
+        main_cpp.append(f"int window_h = {int(boardimage_h) * boardscale} + GRAPH_H + 10;")
         main_cpp.append(f"int boardscale = {boardscale};")
         main_cpp.append("volatile uint8_t running = 1;")
         main_cpp.append("volatile uint8_t vcd_record = 0;")
         main_cpp.append("volatile uint8_t vcd_running = 0;")
         main_cpp.append("")
 
-        py = 0
         for varname in pindict:
             main_cpp.append(f"bool hist_{varname.lower()}[GRAPH_W];")
+
+        for varname in pindict:
+            main_cpp.append(f"SDL_Texture *textTexture{varname} = NULL;")
+            main_cpp.append(f"int textWidth{varname} = 0;")
 
         main_cpp.append("")
         main_cpp.append("void draw_pins(SDL_Renderer *sdl_renderer, Vrio *rio) {")
@@ -157,16 +164,20 @@ class Toolchain:
                 main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);")
                 main_cpp.append("    SDL_RenderDrawRect(sdl_renderer, &rect);")
 
-        py = graph_nh
+        py = 10
         ph = graph_nh - 4
         for varname, pos in pindict.items():
             main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);")
             main_cpp.append(f"    rect = {{GRAPH_X, GRAPH_Y + {py}, GRAPH_W, {ph}}};")
             main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
+
+            main_cpp.append(f"    rect = {{GRAPH_TX, GRAPH_Y + {py}, textWidth{varname}, {ph}}};")
+            main_cpp.append(f"    SDL_RenderCopy(sdl_renderer, textTexture{varname}, NULL, &rect);")
+
             main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);")
             main_cpp.append("    for (int i = 0; i < GRAPH_W; i++) {")
             main_cpp.append(f"        if (hist_{varname.lower()}[i] == 1) {{")
-            main_cpp.append(f"            rect = {{i, GRAPH_Y + {py}, {1}, {ph}}};")
+            main_cpp.append(f"            rect = {{GRAPH_X + i, GRAPH_Y + {py}, {1}, {ph}}};")
             main_cpp.append("            SDL_RenderDrawRect(sdl_renderer, &rect);")
             main_cpp.append("        } else {")
             main_cpp.append(f"            SDL_RenderDrawLine(sdl_renderer, GRAPH_X + i, GRAPH_Y + {py} + {ph}, GRAPH_X + i + 1, GRAPH_Y + {py} + {ph});")
@@ -183,7 +194,24 @@ static void *run(void *arg) {
     printf("INFO: Press 'r' to start/stop vcd recording.\\n");
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL init failed.\\n");
+        printf("SDL ERROR: init failed.\\n");
+        running = 0;
+        return NULL;
+    }
+
+    if (TTF_Init() == -1) {
+        printf("ERROR: SDL_ttf init failed.\\n");
+        SDL_Quit();
+        running = 0;
+        return NULL;
+    }
+
+    TTF_Font* font = TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", GRAPH_TH - 4);
+    if (!font) {
+        printf("ERROR: SDL_ttf/font init failed.\\n");
+        TTF_Quit();
+        SDL_Quit();
+        running = 0;
         return NULL;
     }
     int imgFlags = IMG_INIT_PNG | IMG_INIT_JPG;
@@ -223,6 +251,19 @@ static void *run(void *arg) {
     const Uint8 *keyb_state = SDL_GetKeyboardState(NULL);
     SDL_Texture *image_texture = SDL_CreateTextureFromSurface(sdl_renderer, image_surface);
     SDL_FreeSurface(image_surface);
+
+    SDL_Color textColor = { 255, 255, 255, 255 };
+    SDL_Surface *textSurface = NULL;
+""")
+
+        for varname in pindict:
+            title = varname.split("_", 1)[1]
+            main_cpp.append(f'    textSurface = TTF_RenderText_Blended(font, "{title}", textColor);')
+            main_cpp.append(f"    textTexture{varname} = SDL_CreateTextureFromSurface(sdl_renderer, textSurface);")
+            main_cpp.append(f"    textWidth{varname} = textSurface->w;")
+            main_cpp.append("    SDL_FreeSurface(textSurface);")
+
+        main_cpp.append("""
 
     while (running) {
         while (SDL_PollEvent(&event)) {
