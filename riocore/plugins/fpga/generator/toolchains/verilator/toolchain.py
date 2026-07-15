@@ -131,6 +131,7 @@ class Toolchain:
         main_cpp.append(f"#define GRAPH_H {len(pindict) * graph_nh}")
         main_cpp.append(f"#define GRAPH_TH {graph_nh}")
         main_cpp.append("")
+        main_cpp.append(f"int image_x = {(graph_nw - int(boardimage_w) * boardscale) // 2};")
         main_cpp.append(f"int image_w = {int(boardimage_w) * boardscale};")
         main_cpp.append(f"int image_h = {int(boardimage_h) * boardscale};")
         main_cpp.append(f"int window_w = {graph_nw};")
@@ -157,7 +158,7 @@ class Toolchain:
             main_cpp.append("    } else {")
             main_cpp.append("        SDL_SetRenderDrawColor(sdl_renderer, 120, 0, 0, 255);")
             main_cpp.append("    }")
-            main_cpp.append(f"    rect = {{{pos[0] * boardscale - 11}, {pos[1] * boardscale - 11}, {22}, {22}}};")
+            main_cpp.append(f"    rect = {{image_x + {pos[0] * boardscale - 11}, {pos[1] * boardscale - 11}, {22}, {22}}};")
             main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
             main_cpp.append("")
             if varname.startswith("PININ_"):
@@ -275,7 +276,7 @@ static void *run(void *arg) {
 
         for varname, pos in pindict.items():
             if varname.startswith("PININ_"):
-                main_cpp.append(f"                if (abs(event.button.x / boardscale - {pos[0]}) < 6 && abs(event.button.y / boardscale - {pos[1]}) < 6) {{")
+                main_cpp.append(f"                if (abs((event.button.x - image_x) / boardscale - {pos[0]}) < 6 && abs(event.button.y / boardscale - {pos[1]}) < 6) {{")
                 main_cpp.append(f"                    rio->{varname} = 1 - rio->{varname};")
                 main_cpp.append("                }")
 
@@ -291,7 +292,7 @@ static void *run(void *arg) {
         }
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        rect = {0, 0, image_w, image_h};
+        rect = {image_x, 0, image_w, image_h};
         SDL_RenderCopy(sdl_renderer, image_texture, NULL, &rect);
         draw_pins(sdl_renderer, rio);
         SDL_RenderPresent(sdl_renderer);
