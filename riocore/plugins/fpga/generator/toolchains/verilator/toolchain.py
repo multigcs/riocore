@@ -152,7 +152,6 @@ class Toolchain:
             main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
             main_cpp.append("")
             if varname.startswith("PININ_"):
-                print(varname)
                 main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);")
                 main_cpp.append("    SDL_RenderDrawRect(sdl_renderer, &rect);")
 
@@ -162,17 +161,14 @@ class Toolchain:
             main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);")
             main_cpp.append(f"    rect = {{GRAPH_X, GRAPH_Y + {py}, GRAPH_W, {ph}}};")
             main_cpp.append("    SDL_RenderFillRect(sdl_renderer, &rect);")
-
             main_cpp.append("    SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 0, 255);")
-
             main_cpp.append("    for (int i = 0; i < GRAPH_W; i++) {")
-            main_cpp.append(f"    if (hist_{varname.lower()}[i] == 1) {{")
-            main_cpp.append(f"        rect = {{i, GRAPH_Y + {py}, {1}, {ph}}};")
-            main_cpp.append("        SDL_RenderDrawRect(sdl_renderer, &rect);")
-            main_cpp.append("    } else {")
-            main_cpp.append(f"        SDL_RenderDrawLine(sdl_renderer, GRAPH_X + i, GRAPH_Y + {py} + {ph}, GRAPH_X + i + 1, GRAPH_Y + {py} + {ph});")
-            main_cpp.append("    }")
-
+            main_cpp.append(f"        if (hist_{varname.lower()}[i] == 1) {{")
+            main_cpp.append(f"            rect = {{i, GRAPH_Y + {py}, {1}, {ph}}};")
+            main_cpp.append("            SDL_RenderDrawRect(sdl_renderer, &rect);")
+            main_cpp.append("        } else {")
+            main_cpp.append(f"            SDL_RenderDrawLine(sdl_renderer, GRAPH_X + i, GRAPH_Y + {py} + {ph}, GRAPH_X + i + 1, GRAPH_Y + {py} + {ph});")
+            main_cpp.append("        }")
             main_cpp.append("    }")
             py += graph_nh
 
