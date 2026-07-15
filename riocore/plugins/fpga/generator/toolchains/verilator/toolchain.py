@@ -179,7 +179,8 @@ class Toolchain:
 static void *run(void *arg) {
     Vrio* rio = (Vrio*)arg;
 
-    printf("INFO: Press 'Q' to quit.\\n");
+    printf("INFO: Press 'q' to quit.\\n");
+    printf("INFO: Press 'r' to start/stop vcd recording.\\n");
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL init failed.\\n");
