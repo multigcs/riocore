@@ -1,9 +1,5 @@
 
-#include "leds.h"
-#include "uart.h"
-#include "countdown_timer.h"
-
-#define VIN ((volatile unsigned int *) 0x80000020)
+#include "rio.h"
 
 int main() {
   int i;
@@ -11,8 +7,7 @@ int main() {
 
   set_leds(0);
 
-  //uart_set_div(234); /* 27000000/115200 */
-  uart_set_div(2600); /* 27000000/9600 */
+  uart_set_div(2300); /* 27000000/9600 */
 
   uart_puts("hello world\r\n");
 
@@ -22,7 +17,7 @@ int main() {
     v = get_leds();
     set_leds(v+1);
 
-    *VIN = i;
+    *RIO_VIN = *RIO_VOUT + 20;
 
     cdt_delay(2700000);
     i += 1;
