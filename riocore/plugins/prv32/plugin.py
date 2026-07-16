@@ -37,7 +37,7 @@ class Plugin(PluginBase):
         self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
 
     def gateware_instances(self):
-        #uid = self.plugin_setup["uid"]
+        # uid = self.plugin_setup["uid"]
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
