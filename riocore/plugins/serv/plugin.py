@@ -111,7 +111,7 @@ time1:
         output = []
         output.append("""#!/bin/sh
 #
-# https://release-assets.githubusercontent.com/github-production-release-asset/486846742/0e1b7552-e5a3-4626-b978-a5f174501c53?sp=r&sv=2018-11-09&sr=b&spr=https&se=2026-07-16T05%3A54%3A58Z&rscd=attachment%3B+filename%3Dxpack-riscv-none-elf-gcc-15.2.0-1-linux-x64.tar.gz&rsct=application%2Foctet-stream&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2026-07-16T04%3A54%3A12Z&ske=2026-07-16T05%3A54%3A58Z&sks=b&skv=2018-11-09&sig=qIFf8KXwgQzFX9b%2Fq9ELeuCuBWBjaBLQEV%2B1qADFWlY%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc4NDE4MjEzMCwibmJmIjoxNzg0MTc4NTMwLCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.8CxYWTzLp8kYHpJ539upf5RdL9BtC_yoygJCBY3hvPE&response-content-disposition=attachment%3B%20filename%3Dxpack-riscv-none-elf-gcc-15.2.0-1-linux-x64.tar.gz&response-content-type=application%2Foctet-stream
+# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
 #
 set -x
 
