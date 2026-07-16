@@ -1,4 +1,4 @@
-`default_nettype none
+//`default_nettype none
 module serv_rf_if
   (
    input wire 	     i_clk,

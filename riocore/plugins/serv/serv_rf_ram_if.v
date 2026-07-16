@@ -1,4 +1,4 @@
-`default_nettype none
+//`default_nettype none
 module serv_rf_ram_if
   #(parameter width=8,
     parameter depth=32*36/width)
