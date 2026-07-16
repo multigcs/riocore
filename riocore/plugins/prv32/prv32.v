@@ -23,13 +23,13 @@ module prv32 (
    parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
    parameter [31:0] PROGADDR_IRQ = 32'h0000_0000;
 
-	wire [5:0] leds;
-	assign led0 = leds[0];
-	assign led1 = leds[1];
-	assign led2 = leds[2];
-	assign led3 = leds[3];
-	assign led4 = leds[4];
-	assign led5 = leds[5];
+	wire [5:0] gpios;
+	assign led0 = gpios[0];
+	assign led1 = gpios[1];
+	assign led2 = gpios[2];
+	assign led3 = gpios[3];
+	assign led4 = gpios[4];
+	assign led5 = gpios[5];
 
 	reg reset_button_n = 0;
 	reg [15:0] counter = 10000;
@@ -48,9 +48,9 @@ module prv32 (
    wire [3:0]                 mem_wstrb;
    wire                       mem_ready;
    wire                       mem_inst;
-   wire                       leds_sel;
-   wire                       leds_ready;
-   wire [31:0]                leds_data_o;
+   wire                       gpios_sel;
+   wire                       gpios_ready;
+   wire [31:0]                gpios_data_o;
    wire                       sram_sel;
    wire                       sram_ready;
    wire [31:0]                sram_data_o;
@@ -67,21 +67,21 @@ module prv32 (
    //   UART 80000008 - 8000000f
    //   CDT  80000010 - 80000014
    assign sram_sel = mem_valid && (mem_addr < 32'h00002000);
-   assign leds_sel = mem_valid && (mem_addr == 32'h80000000);
+   assign gpios_sel = mem_valid && (mem_addr == 32'h80000000);
    assign uart_sel = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);
    assign cdt_sel = mem_valid && (mem_addr == 32'h80000010);
 
    // Core can proceed regardless of *which* slave was targetted and is now ready.
-   assign mem_ready = mem_valid & (sram_ready | leds_ready | uart_ready | cdt_ready);
+   assign mem_ready = mem_valid & (sram_ready | gpios_ready | uart_ready | cdt_ready);
 
 
    // Select which slave's output data is to be fed to core.
    assign mem_rdata = sram_sel ? sram_data_o :
-                      leds_sel ? leds_data_o :
+                      gpios_sel ? gpios_data_o :
                       uart_sel ? uart_data_o :
                       cdt_sel  ? cdt_data_o  : 32'h0;
 
-   assign leds = ~leds_data_o[5:0]; // Connect to the LEDs off the FPGA
+   assign gpios = ~gpios_data_o[5:0]; // Connect to the gpios off the FPGA
 
    reset_control reset_controller
      (
@@ -127,15 +127,15 @@ module prv32 (
       .sram_data_o(sram_data_o)
       );
    
-   tang_leds soc_leds
+   gpio soc_gpios
      (
       .clk(clk),
       .reset_n(reset_n),
-      .leds_sel(leds_sel),
-      .leds_data_i(mem_wdata[5:0]),
+      .gpios_sel(gpios_sel),
+      .gpios_data_i(mem_wdata[5:0]),
       .we(mem_wstrb[0]),
-      .leds_ready(leds_ready),
-      .leds_data_o(leds_data_o)
+      .gpios_ready(gpios_ready),
+      .gpios_data_o(gpios_data_o)
       );
 
    picorv32

@@ -11,7 +11,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.VERILOGS = ["countdown_timer.v", "reset.v", "tang_nano_9k_leds.v", "gowin_sp.v", "uart_wrap.v", "simpleuart.v", "picorv32.v", "prv32.v"]
+        self.VERILOGS = ["countdown_timer.v", "reset.v", "gowin_sp.v", "gpio.v", "uart_wrap.v", "simpleuart.v", "picorv32.v", "prv32.v"]
         self.SRCFILES = ["src/sram.v", "src/link_cmd.ld", "src/uart.h", "src/countdown_timer.h", "src/leds.c", "src/main.c", "src/startup.s", "src/uart.c", "src/leds.h", "src/conv_to_init.c", "src/countdown_timer.c"]
         self.OPTIONS = {
             "source": {

@@ -4,26 +4,26 @@
 // core to write to a register that controls the LEDs on the
 // Tang Nano 9K board.  It can also read this register,
 
-module tang_leds
+module gpio
   (
    input wire         clk,
    input wire         reset_n,
-   input wire         leds_sel,
-   input wire [5:0]   leds_data_i,
+   input wire         gpios_sel,
+   input wire [5:0]   gpios_data_i,
    input wire         we,
-   output wire        leds_ready,
-   output wire [31:0] leds_data_o
+   output wire        gpios_ready,
+   output wire [31:0] gpios_data_o
    );
 
-   reg [5:0]          leds = 'b0;
+   reg [5:0]          gpios = 'b0;
 
-   assign leds_data_o = {26'b00000000000000000000000000, leds};
-   assign leds_ready = leds_sel;
+   assign gpios_data_o = {26'b00000000000000000000000000, gpios};
+   assign gpios_ready = gpios_sel;
 
    always @(posedge clk or negedge reset_n)
      if (!reset_n) 
-       leds <= 'b0;
-     else if (leds_sel)
-       if (we) leds <= leds_data_i;
+       gpios <= 'b0;
+     else if (gpios_sel)
+       if (we) gpios <= gpios_data_i;
 
-endmodule // leds
+endmodule
