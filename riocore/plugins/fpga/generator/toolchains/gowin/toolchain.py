@@ -108,7 +108,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
         makefile_data.append("all: clean build load")
         makefile_data.append("")
         makefile_data.append("prepare:")
-        makefile_data.append("	test -e prepare.sh && sh prepare.sh")
+        makefile_data.append("	test -e prepare.sh && sh prepare.sh || true")
         makefile_data.append("")
         makefile_data.append("build: prepare impl/pnr/project.fs")
         makefile_data.append("")
@@ -277,6 +277,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
             speed_ns = 1000000000 / int(self.config["clock"]["speed"])
             sdc_data.append(f"create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name sysclk [get_nets {{sysclk}}]")
         sdc_data.append("")
+        """
         if self.config["timing_constraints"]:
             sdc_data.append("// Pins")
             for key, value in self.config["timing_constraints"].items():
@@ -289,6 +290,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
                 speed_ns = 1000000000 / int(value)
                 # create_clock -period 100.000 -waveform {0.000 0.00} -name i2c [get_nets {i2c0/i2cinst0/clk_bus}]
                 sdc_data.append(f"// create_clock -period {speed_ns:0.3f} -waveform {{0.000 {speed_ns / 2:0.2f}}} -name {key.replace('.', '_')} [get_nets {{{key.replace('.', '/')}}}]")
+        """
 
         open(os.path.join(path, "rio.sdc"), "w").write("\n".join(sdc_data))
 

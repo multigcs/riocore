@@ -3,6 +3,7 @@
 #include "uart.h"
 #include "countdown_timer.h"
 
+#define VIN ((volatile unsigned int *) 0x80000020)
 
 int main() {
   int i;
@@ -20,6 +21,8 @@ int main() {
     uart_puts("Loop\r\n");
     v = get_leds();
     set_leds(v+1);
+
+    *VIN = i;
 
     cdt_delay(2700000);
     i += 1;
