@@ -1,5 +1,4 @@
 import os
-import sys
 
 from riocore.plugins import PluginBase
 
@@ -39,7 +38,7 @@ class Plugin(PluginBase):
 #ifndef DELAY
 #define DELAY 0x20000 /* Loop 100000 times before inverting the LED */
 #endif
-	
+
 	/*
 	a0 = GPIO Base address
 	t0 = Value
@@ -74,8 +73,6 @@ time1:
 	j bl1
 """,
             },
-
-
         }
         self.PINDEFAULTS = {
             "gpio0": {
@@ -100,10 +97,9 @@ time1:
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        instance_predefines = instance["predefines"]
         ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         instance_parameter["RAM_SIZE"] = ramsize
-        instance_parameter["INITIAL_FILE"] = f"\"prog_{uid}.hex\""
+        instance_parameter["INITIAL_FILE"] = f'"prog_{uid}.hex"'
         return instances
 
     @classmethod
@@ -137,6 +133,3 @@ python3 makehex.py prog_{uid}.bin {ramsize // 4} > prog_{uid}.hex
 
         target = os.path.join(parent.gateware_path, "prepare.sh")
         open(target, "w").write("\n".join(output))
-
-
-

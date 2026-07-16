@@ -70,10 +70,12 @@
 |  | [mcuio](mcuio/README.md) | mcu based io's | <img src="mcuio/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
+|  | [prv32](prv32/README.md) | risc-v softcore |  |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> |  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
+|  | [serv](serv/README.md) | minimal risc-v softcore |  |  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
@@ -118,10 +120,12 @@
 |  | [mcuio](mcuio/README.md) | mcu based io's | <img src="mcuio/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
+|  | [prv32](prv32/README.md) | risc-v softcore |  |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> |  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
+|  | [serv](serv/README.md) | minimal risc-v softcore |  |  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |

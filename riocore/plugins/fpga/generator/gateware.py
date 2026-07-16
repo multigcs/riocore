@@ -139,11 +139,18 @@ class gateware(generator_base):
                 target = os.path.join(self.jdata["output_path"], verilog)
                 shutil.copy(ipv_path, target)
 
+            for verilog in plugin_instance.VERILOGS_GEN:
+                if verilog in self.parent.verilogs:
+                    continue
+                self.parent.verilogs.append(verilog)
+
             for srcfile in plugin_instance.gateware_srcfiles():
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, srcfile)
                 if not os.path.isfile(ipv_path):
                     riocore.log(f"ERROR: can not found srcfile file: {srcfile}")
                     sys.exit(1)
+                target_dir = os.path.join(self.jdata["output_path"], os.path.dirname(srcfile))
+                os.makedirs(target_dir, exist_ok=True)
                 target = os.path.join(self.jdata["output_path"], srcfile)
                 shutil.copy(ipv_path, target)
 
