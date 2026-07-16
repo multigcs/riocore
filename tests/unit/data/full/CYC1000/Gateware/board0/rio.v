@@ -29,20 +29,20 @@
 
 module rio (
         // RIO
-        input sysclk_in,
-        output PINOUT_BLINK0_LED,
-        input PININ_BITIN0_BIT,
-        output PINOUT_BITOUT0_BIT,
-        output PINOUT_BITOUT1_BIT,
-        output PINOUT_PWMOUT0_PWM,
-        output PINOUT_PWMOUT0_DIR,
-        output PINOUT_PWMOUT0_EN,
-        output PINOUT_W55000_MOSI,
-        input PININ_W55000_MISO,
-        output PINOUT_W55000_SCLK,
-        output PINOUT_W55000_SEL,
-        output PINOUT_STEPDIR0_STEP,
-        output PINOUT_STEPDIR0_DIR
+        input wire sysclk_in,
+        output wire PINOUT_BLINK0_LED,
+        input wire PININ_BITIN0_BIT,
+        output wire PINOUT_BITOUT0_BIT,
+        output wire PINOUT_BITOUT1_BIT,
+        output wire PINOUT_PWMOUT0_PWM,
+        output wire PINOUT_PWMOUT0_DIR,
+        output wire PINOUT_PWMOUT0_EN,
+        output wire PINOUT_W55000_MOSI,
+        input wire PININ_W55000_MISO,
+        output wire PINOUT_W55000_SCLK,
+        output wire PINOUT_W55000_SEL,
+        output wire PINOUT_STEPDIR0_STEP,
+        output wire PINOUT_STEPDIR0_DIR
     );
 
     localparam HEADER_TX = 32'h64617461;

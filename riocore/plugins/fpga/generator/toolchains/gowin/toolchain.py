@@ -108,7 +108,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
         makefile_data.append("all: clean build load")
         makefile_data.append("")
         makefile_data.append("prepare:")
-        makefile_data.append("	sh prepare.sh || true")
+        makefile_data.append("	test -e prepare.sh && sh prepare.sh")
         makefile_data.append("")
         makefile_data.append("build: prepare impl/pnr/project.fs")
         makefile_data.append("")

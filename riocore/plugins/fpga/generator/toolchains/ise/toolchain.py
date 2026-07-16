@@ -131,7 +131,10 @@ class Toolchain:
         makefile_data.append("")
 
         if USING_XSTFILE:
-            makefile_data.append("build:")
+            makefile_data.append("prepare:")
+            makefile_data.append("	test -e prepare.sh && sh prepare.sh")
+            makefile_data.append("")
+            makefile_data.append("build: prepare")
             makefile_data.append("	mkdir -p xst/projnav.tmp/")
             makefile_data.append('	xst -intstyle ise -ifn "$(PROJECT).xst" -ofn "$(PROJECT).syr"')
             makefile_data.append(f"	ngdbuild -intstyle ise -dd _ngo -p {self.config['type']} -uc pins.ucf $(PROJECT).ngc $(PROJECT).ngd")
@@ -186,7 +189,10 @@ class Toolchain:
 
             makefile_data.append("")
         else:
-            makefile_data.append("build: $(PROJECT).bit")
+            makefile_data.append("prepare:")
+            makefile_data.append("	test -e prepare.sh && sh prepare.sh")
+            makefile_data.append("")
+            makefile_data.append("build: prepare $(PROJECT).bit")
             makefile_data.append("")
             makefile_data.append("$(PROJECT)-modules.v: $(VERILOGS)")
             makefile_data.append("	cat $(VERILOGS) > $(PROJECT)-modules.v")

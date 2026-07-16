@@ -5,6 +5,9 @@ module serv (
 	output wire gpio1,
 	output wire gpio2
 );
+	parameter RAM_SIZE = 64;
+    parameter INITIAL_FILE = "prog.hex";
+
 	reg resetn = 0;
 	reg [1:0] counter = 1;
 	always @(posedge clk) begin
@@ -119,8 +122,8 @@ module serv (
 	end
 
 	ram32 #(
-		.INITIAL_FILE("prog.hex"),
-		.RAM_SIZE(64)
+		.INITIAL_FILE(INITIAL_FILE),
+		.RAM_SIZE(RAM_SIZE)
 	) iram(
 		.clk(clk),
 		.resetn(resetn),
