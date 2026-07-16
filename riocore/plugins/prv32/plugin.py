@@ -7,7 +7,7 @@ class Plugin(PluginBase):
     def setup(self):
         self.NAME = "prv32"
         self.INFO = "risc-v softcore"
-        self.DESCRIPTION = "risc-v cpu for testing"
+        self.DESCRIPTION = "picorv32 risc-v cpu for testing"
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
@@ -35,6 +35,24 @@ class Plugin(PluginBase):
         uid = self.plugin_setup["uid"]
         self.VERILOGS_GEN = [f"sram_{uid}.v"]
         self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+        self.INTERFACE = {
+            "val_in": {
+                "size": 16,
+                "direction": "input",
+            },
+            "val_out": {
+                "size": 16,
+                "direction": "output",
+            },
+        }
+        self.SIGNALS = {
+            "val_in": {
+                "direction": "input",
+            },
+            "val_out": {
+                "direction": "output",
+            },
+        }
 
     def gateware_instances(self):
         # uid = self.plugin_setup["uid"]

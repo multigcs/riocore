@@ -11,7 +11,7 @@ int main() {
   set_leds(0);
 
   //uart_set_div(234); /* 27000000/115200 */
-  uart_set_div(2812); /* 27000000/9600 */
+  uart_set_div(2600); /* 27000000/9600 */
 
   uart_puts("hello world\r\n");
 
@@ -20,8 +20,6 @@ int main() {
     uart_puts("Loop\r\n");
     v = get_leds();
     set_leds(v+1);
-
-    uart_set_div(2000 + i);
 
     cdt_delay(2700000);
     i += 1;

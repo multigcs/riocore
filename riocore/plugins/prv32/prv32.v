@@ -8,7 +8,9 @@ module prv32 (
         output wire led2,
         output wire led3,
         output wire led4,
-        output wire led5
+        output wire led5,
+        input wire [15:0] val_out,
+        output reg [15:0] val_in
     );
 
    parameter [0:0] BARREL_SHIFTER = 0;
@@ -19,7 +21,7 @@ module prv32 (
    parameter [0:0] ENABLE_IRQ_QREGS = 0;
 
    parameter integer MEMBYTES = 8192; // This is not easy to change
-   parameter [31:0] STACKADDR = (MEMBYTES); // Grows down.  Software should set it.
+   parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
    parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
    parameter [31:0] PROGADDR_IRQ = 32'h0000_0000;
 
