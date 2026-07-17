@@ -240,9 +240,12 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
                 output.append(f"#define RIO_{iname.upper():10s} ((volatile unsigned int *) 0x{idata['addr']:x})")
         output.append("")
         if instance.uarts:
+            for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
+                output.append(f"#define UART_B{baud} {instance.system_setup['speed'] * 12 // baud}")
             for uart_n in range(instance.uarts):
                 output.append(f"#define UART{uart_n}_DIV ((volatile unsigned char *) 0x80000008)")
                 output.append(f"#define UART{uart_n}_DATA ((volatile unsigned char *) 0x8000000c)")
+            output.append("")
             output.append("#ifdef ENABLE_MUL")
             output.append("#ifdef ENABLE_DIV")
             output.append("extern void uart_set_baud(unsigned int uart, unsigned int baud);")
@@ -351,6 +354,7 @@ uint32_t mills(void) {
         output.append("    parameter [0:0] ENABLE_COMPRESSED = 0;")
         output.append("    parameter [0:0] ENABLE_IRQ_QREGS = 0;")
         output.append(f"    parameter integer MEMBYTES = {instance.memsize};")
+        output.append(f"    parameter UART_DIV = {instance.system_setup['speed'] * 12 // 115200};")
         output.append("""
     parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
     parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
@@ -456,7 +460,7 @@ uint32_t mills(void) {
         .reset_n(reset_n)
     );
 
-    prv32_uart_wrap uart0 (
+    prv32_uart_wrap #(.DEFAULT_DIV(UART_DIV)) uart0 (
         .clk(clk),
         .reset_n(reset_n),
         .uart_tx(uart0_tx),
