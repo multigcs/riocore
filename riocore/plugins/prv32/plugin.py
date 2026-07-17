@@ -12,6 +12,7 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
+        self.VERILOGS.append("prv32_mem_gowin.v")
         self.SRCFILES = ["src/sram_gowin.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c"]
         self.OPTIONS = {
             "ENABLE_MUL": {

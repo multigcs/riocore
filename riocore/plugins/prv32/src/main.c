@@ -3,9 +3,7 @@
 
 int main() {
     #ifdef UART0_DIV
-    
         uart_set_div(0, UART_B115200);
-    
         uart_puts(0, SYSNAME);
         uart_puts(0, ": hello world\r\n");
     #endif
@@ -27,21 +25,19 @@ int main() {
     uint32_t last = mills();
     while (1) {
         
-        uart_putchar(0, 85);
-        
         uint32_t now = mills();
         if (now - last > 100) {
             last = now;
 
             #ifdef UART0_DIV
-                //uart_puts(0, SYSNAME);
-                //uart_puts(0, " - ");
+                uart_puts(0, SYSNAME);
+                uart_puts(0, " - ");
                 #ifdef ENABLE_MUL
-                    //uart_print_hex(0, now / 100);
+                    uart_print_hex(0, now / 100);
                 #else
-                    //uart_print_hex(0, now);
+                    uart_print_hex(0, now);
                 #endif
-                //uart_puts(0, ": Loop\r\n");
+                uart_puts(0, ": Loop\r\n");
             #endif
 
             #ifdef GPIO_LED0
