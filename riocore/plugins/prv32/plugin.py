@@ -14,20 +14,42 @@ class Plugin(PluginBase):
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = ["src/sram_gowin.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c"]
         self.OPTIONS = {
+            "uarts": {
+                "type": int,
+                "min": 0,
+                "max": 1,
+                "default": 1,
+                "description": "number of serial interfaces",
+            },
+            "gpios": {
+                "type": int,
+                "min": 0,
+                "max": 16,
+                "default": 4,
+                "description": "number of gpio pins",
+            },
             "source": {
                 "type": "multiline",
                 "description": "source code (asm)",
                 "default": "",
             },
         }
-        self.PINDEFAULTS = {
-            "uart_rx": {
-                "direction": "input",
-            },
-            "uart_tx": {
-                "direction": "output",
-            },
-        }
+        self.gpios = self.plugin_setup.get("gpios", self.OPTIONS["gpios"]["default"])
+        self.uarts = self.plugin_setup.get("uarts", self.OPTIONS["uarts"]["default"])
+        for uart_n in range(self.uarts):
+            self.PINDEFAULTS = {
+                f"uart{uart_n}_rx": {
+                    "direction": "input",
+                },
+                f"uart{uart_n}_tx": {
+                    "direction": "output",
+                },
+            }
+        for gpio_n in range(self.gpios):
+            self.PINDEFAULTS[f"io{gpio_n}"] = {
+                "direction": "inout",
+            }
+
         uid = self.plugin_setup["uid"]
         self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
         self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
@@ -49,10 +71,6 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-        for gpio_n in range(8):
-            self.PINDEFAULTS[f"io{gpio_n}"] = {
-                "direction": "inout",
-            }
 
     def gateware_instances(self):
         # uid = self.plugin_setup["uid"]
@@ -147,21 +165,25 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("")
         output.append("#include <stdint.h>")
         output.append("")
-        output.append("#define INPUT  0")
-        output.append("#define OUTPUT 1")
-        output.append("#define LOW    0")
-        output.append("#define HIGH   1")
-        output.append("#define TOGGLE 2")
-        output.append("#define GPIOS ((volatile unsigned int *) 0x80000000)")
+        output.append(f"#define SYSCLOCK {instance.system_setup['speed']}")
         output.append("")
-        gpio_n = 0
-        for pname, pdata in instance.PINDEFAULTS.items():
-            if pdata["direction"] == "inout":
-                output.append(f"#define GPIO_{pname.upper()}  {gpio_n}")
-                gpio_n += 1
-        output.append("")
-        output.append("#define UART_DIV ((volatile unsigned char *) 0x80000008)")
-        output.append("#define UART_DATA ((volatile unsigned char *) 0x8000000c)")
+        if instance.gpios:
+            output.append("#define INPUT  0")
+            output.append("#define OUTPUT 1")
+            output.append("#define LOW    0")
+            output.append("#define HIGH   1")
+            output.append("#define TOGGLE 2")
+            output.append("#define GPIOS ((volatile unsigned int *) 0x80000000)")
+            gpio_n = 0
+            for pname, pdata in instance.PINDEFAULTS.items():
+                if pdata["direction"] == "inout":
+                    output.append(f"#define GPIO_{pname.upper()}  {gpio_n}")
+                    gpio_n += 1
+            output.append("extern void pinMode(uint8_t num, uint8_t dir);")
+            output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
+            output.append("extern uint8_t digitalRead(uint8_t num);")
+            output.append("extern void gpio_toggle(uint8_t num);")
+            output.append("")
         output.append("")
         output.append("#define CDT_COUNTER ((volatile unsigned int *) 0x80000010)")
         output.append("#define CDT_COUNTER_H0 ((volatile unsigned short *) 0x80000010)")
@@ -175,12 +197,16 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
             if idata["size"] == 32:
                 output.append(f"#define RIO_{iname.upper():10s} ((volatile unsigned int *) 0x{idata['addr']:x})")
         output.append("")
-        output.append("extern void uart_set_div(unsigned int div);")
-        output.append("extern void uart_print_hex(unsigned int val);")
-        output.append("extern char uart_getchar(void);")
-        output.append("extern void uart_putchar(char ch);")
-        output.append("extern void uart_puts(char *s);")
-        output.append("")
+        if instance.uarts:
+            for uart_n in range(instance.uarts):
+                output.append(f"#define UART{uart_n}_DIV ((volatile unsigned char *) 0x80000008)")
+                output.append(f"#define UART{uart_n}_DATA ((volatile unsigned char *) 0x8000000c)")
+            output.append("extern void uart_set_div(unsigned int uart, unsigned int div);")
+            output.append("extern void uart_print_hex(unsigned int uart, unsigned int val);")
+            output.append("extern char uart_getchar(unsigned int uart);")
+            output.append("extern void uart_putchar(unsigned int uart, char ch);")
+            output.append("extern void uart_puts(unsigned int uart, char *s);")
+            output.append("")
         output.append("extern void cdt_wbyte0(const unsigned char value);")
         output.append("extern void cdt_wbyte1(const unsigned char value);")
         output.append("extern void cdt_wbyte2(const unsigned char value);")
@@ -192,11 +218,6 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("extern void cdt_write(const unsigned int value);")
         output.append("extern unsigned int cdt_read(void);")
         output.append("extern void cdt_delay(const unsigned int value);")
-        output.append("")
-        output.append("extern void pinMode(uint8_t num, uint8_t dir);")
-        output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
-        output.append("extern uint8_t digitalRead(uint8_t num);")
-        output.append("extern void gpio_toggle(uint8_t num);")
         output.append("")
         output.append("#endif")
         output.append("")
@@ -253,8 +274,8 @@ uint8_t digitalRead(uint8_t num) {
 
         output.append("module prv32 (")
         output.append("        input wire  clk,")
-        output.append("        input wire  uart_rx,")
-        output.append("        output wire uart_tx,")
+        output.append("        input wire  uart0_rx,")
+        output.append("        output wire uart0_tx,")
 
         for iname, idata in instance.INTERFACE.items():
             if idata["direction"] == "output" and idata["size"] == 32:
@@ -306,9 +327,9 @@ uint8_t digitalRead(uint8_t num) {
     wire                       cdt_sel;
     wire                       cdt_ready;
     wire [31:0]                cdt_data_o;
-    wire                       uart_sel;
-    wire [31:0]                uart_data_o;
-    wire                       uart_ready;
+    wire                       uart0_sel;
+    wire [31:0]                uart0_data_o;
+    wire                       uart0_ready;
 
     wire                       gpios_sel;
     wire                       gpios_ready;
@@ -334,7 +355,7 @@ uint8_t digitalRead(uint8_t num) {
 
         output.append("    assign sram_sel  = mem_valid && (mem_addr < 32'h00002000);")
         output.append("    assign gpios_sel = mem_valid && (mem_addr == 32'h80000000);")
-        output.append("    assign uart_sel  = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
+        output.append("    assign uart0_sel  = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
         output.append("    assign cdt_sel   = mem_valid && (mem_addr == 32'h80000010);")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
@@ -345,7 +366,7 @@ uint8_t digitalRead(uint8_t num) {
         output.append("    assign mem_ready = mem_valid & (")
         output.append("        sram_ready |")
         output.append("        gpios_ready |")
-        output.append("        uart_ready |")
+        output.append("        uart0_ready |")
         output.append("        cdt_ready |")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
@@ -357,7 +378,7 @@ uint8_t digitalRead(uint8_t num) {
         output.append("    assign mem_rdata = ")
         output.append("        sram_sel ? sram_data_o :")
         output.append("        gpios_sel ? gpios_data_o :")
-        output.append("        uart_sel ? uart_data_o :")
+        output.append("        uart0_sel ? uart0_data_o :")
         output.append("        cdt_sel  ? cdt_data_o  :")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
@@ -373,17 +394,17 @@ uint8_t digitalRead(uint8_t num) {
         .reset_n(reset_n)
     );
 
-    prv32_uart_wrap uart (
+    prv32_uart_wrap uart0 (
         .clk(clk),
         .reset_n(reset_n),
-        .uart_tx(uart_tx),
-        .uart_rx(uart_rx),
-        .uart_sel(uart_sel),
+        .uart_tx(uart0_tx),
+        .uart_rx(uart0_rx),
+        .uart_sel(uart0_sel),
         .addr(mem_addr[3:0]),
         .uart_wstrb(mem_wstrb),
         .uart_di(mem_wdata),
-        .uart_do(uart_data_o),
-        .uart_ready(uart_ready)
+        .uart_do(uart0_data_o),
+        .uart_ready(uart0_ready)
     );
 
     prv32_timer cdt (

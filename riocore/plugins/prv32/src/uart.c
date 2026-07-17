@@ -3,39 +3,39 @@
 
 #include "rio.h"
 
-void uart_set_div(unsigned int div) {
+void uart_set_div(unsigned int uart, unsigned int div) {
   volatile int delay;
 
-  *UART_DIV = div;
+  *UART0_DIV = div;
 
   /* Need to delay a little */
   for (delay = 0; delay < 200; delay++) {}
 }
 
-void uart_print_hex(unsigned int val) {
+void uart_print_hex(unsigned int uart, unsigned int val) {
   char ch;
   int i;
 
   for (i = 0; i < 8; i++) {
     ch = (val & 0xf0000000) >> 28;
-    *UART_DATA = "0123456789abcdef"[ch];
+    *UART0_DATA = "0123456789abcdef"[ch];
     val = val << 4;
   }
 }
 
-char uart_getchar(void) {
+char uart_getchar(unsigned int uart) {
   unsigned char ch;
 
   /* UART gives 0xff when empty */
-  while ((ch = *UART_DATA) == 0xff) {}
+  while ((ch = *UART0_DATA) == 0xff) {}
 
   return(ch);
 }
 
-void uart_putchar(char ch) {
-  *UART_DATA = ch;
+void uart_putchar(unsigned int uart, char ch) {
+  *UART0_DATA = ch;
 }
   
-void uart_puts(char *s) {
-  while (*s != 0) *UART_DATA = *s++;
+void uart_puts(unsigned int uart, char *s) {
+  while (*s != 0) *UART0_DATA = *s++;
 }

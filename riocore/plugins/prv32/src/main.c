@@ -5,8 +5,8 @@ int main() {
     int i;
     unsigned char v, ch;
 
-    uart_set_div(2300); /* 27000000/9600 */
-    uart_puts("hello world\r\n");
+    uart_set_div(0, SYSCLOCK / 9600);
+    uart_puts(0, "hello world\r\n");
 
     pinMode(0, OUTPUT);
     pinMode(1, OUTPUT);
@@ -27,11 +27,11 @@ int main() {
 
     i = 0;
     while (1) {
-    uart_puts("Loop\r\n");
+    uart_puts(0, "Loop\r\n");
 
         *RIO_VIN = *RIO_VOUT + 20;
 
-        gpio_toggle(0);
+        digitalWrite(0, TOGGLE);
         digitalWrite(4, digitalRead(6));
         digitalWrite(5, digitalRead(7));
 
