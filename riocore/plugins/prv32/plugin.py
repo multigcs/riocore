@@ -28,10 +28,6 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
-        for led in range(6):
-            self.PINDEFAULTS[f"led{led}"] = {
-                "direction": "output",
-            }
         uid = self.plugin_setup["uid"]
         self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
         self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
@@ -53,6 +49,10 @@ class Plugin(PluginBase):
                 "direction": "output",
             },
         }
+        for gpio_n in range(8):
+            self.PINDEFAULTS[f"io{gpio_n}"] = {
+                "direction": "inout",
+            }
 
     def gateware_instances(self):
         # uid = self.plugin_setup["uid"]
@@ -145,7 +145,19 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("#ifndef RIO_H")
         output.append("#define RIO_H")
         output.append("")
-        output.append("#define LEDS ((volatile unsigned char *) 0x80000000)")
+        output.append("#include <stdint.h>")
+        output.append("")
+        output.append("#define GPIO_OUT 1")
+        output.append("#define GPIO_IN  0")
+        output.append("#define GPIO_HI  1")
+        output.append("#define GPIO_LO  0")
+        output.append("#define GPIOS ((volatile unsigned int *) 0x80000000)")
+        output.append("")
+        gpio_n = 0
+        for pname, pdata in instance.PINDEFAULTS.items():
+            if pdata["direction"] == "inout":
+                output.append(f"#define GPIO_{pname.upper()}  {gpio_n}")
+                gpio_n += 1
         output.append("")
         output.append("#define UART_DIV ((volatile unsigned char *) 0x80000008)")
         output.append("#define UART_DATA ((volatile unsigned char *) 0x8000000c)")
@@ -161,10 +173,6 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
                 output.append(f"#define RIO_{iname.upper():10s} ((volatile unsigned int *) 0x{idata['addr']:x})")
-        output.append("")
-
-        output.append("extern void set_leds(unsigned char val);")
-        output.append("extern unsigned char get_leds(void);")
         output.append("")
         output.append("extern void uart_set_div(unsigned int div);")
         output.append("extern void uart_print_hex(unsigned int val);")
@@ -184,6 +192,11 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("extern unsigned int cdt_read(void);")
         output.append("extern void cdt_delay(const unsigned int value);")
         output.append("")
+        output.append("extern void gpio_dir(uint8_t num, uint8_t dir);")
+        output.append("extern void gpio_set(uint8_t num, uint8_t value);")
+        output.append("extern uint8_t gpio_get(uint8_t num);")
+        output.append("extern void gpio_toggle(uint8_t num);")
+        output.append("")
         output.append("#endif")
         output.append("")
         return output
@@ -191,16 +204,37 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
     @classmethod
     def rio_c(cls, instance):
         output = []
-        output.append('#include "rio.h"')
+        output.append("#include <rio.h>")
         output.append("")
         output.append("""
-void set_leds(unsigned char val) {
-  *LEDS = val;
+// GPIO functions
+void gpio_dir(uint8_t num, uint8_t dir) {
+    if (dir == GPIO_OUT) {
+        *GPIOS |= (1<<(num + 16));
+    } else {
+        *GPIOS &= ~(1<<(num + 16));
+    }
 }
 
-unsigned char get_leds(void) {
-  return *LEDS;
+void gpio_set(uint8_t num, uint8_t value) {
+    if (value == GPIO_HI) {
+        *GPIOS |= (1<<num);
+    } else {
+        *GPIOS &= ~(1<<num);
+    }
 }
+
+uint8_t gpio_get(uint8_t num) {
+    if ((*GPIOS & (1<<num)) != 0) {
+        return GPIO_HI;
+    }
+    return GPIO_LO;
+}
+
+void gpio_toggle(uint8_t num) {
+    gpio_set(num, 1 - gpio_get(num));
+}
+
 """)
         output.append("")
         return output
@@ -214,50 +248,36 @@ unsigned char get_leds(void) {
                 idata["addr"] = addr
                 addr += 0x10
 
-        output.append("""
-module prv32 (
-        input wire  clk,
-""")
-        output.append("""
-        input wire  uart_rx,
-        output wire uart_tx,
-""")
+        output.append("module prv32 (")
+        output.append("        input wire  clk,")
+        output.append("        input wire  uart_rx,")
+        output.append("        output wire uart_tx,")
 
         for iname, idata in instance.INTERFACE.items():
             if idata["direction"] == "output" and idata["size"] == 32:
                 output.append(f"        input  wire [31:0] {iname},")
             elif idata["direction"] == "input" and idata["size"] == 32:
-                output.append(f"        output  wire [31:0] {iname},")
+                output.append(f"        output wire [31:0] {iname},")
 
-        output.append("""
-        output wire led0,
-        output wire led1,
-        output wire led2,
-        output wire led3,
-        output wire led4,
-        output wire led5
-    );
+        gpio_pins = []
+        for pname, pdata in instance.PINDEFAULTS.items():
+            if pdata["direction"] == "inout":
+                gpio_pins.append(f"inout wire {pname}")
 
-    parameter [0:0] BARREL_SHIFTER = 0;
-    parameter [0:0] ENABLE_MUL = 0;
-    parameter [0:0] ENABLE_DIV = 0;
-    parameter [0:0] ENABLE_FAST_MUL = 0;
-    parameter [0:0] ENABLE_COMPRESSED = 0;
-    parameter [0:0] ENABLE_IRQ_QREGS = 0;
-""")
+        output.append("        " + ",\n        ".join(gpio_pins))
+        output.append("    );")
+        output.append("")
+        output.append("    parameter [0:0] BARREL_SHIFTER = 0;")
+        output.append("    parameter [0:0] ENABLE_MUL = 0;")
+        output.append("    parameter [0:0] ENABLE_DIV = 0;")
+        output.append("    parameter [0:0] ENABLE_FAST_MUL = 0;")
+        output.append("    parameter [0:0] ENABLE_COMPRESSED = 0;")
+        output.append("    parameter [0:0] ENABLE_IRQ_QREGS = 0;")
         output.append(f"    parameter integer MEMBYTES = {instance.memsize};")
         output.append("""
     parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
     parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
     parameter [31:0] PROGADDR_IRQ = 32'h0000_0000;
-
-	wire [5:0] gpios;
-	assign led0 = gpios[0];
-	assign led1 = gpios[1];
-	assign led2 = gpios[2];
-	assign led3 = gpios[3];
-	assign led4 = gpios[4];
-	assign led5 = gpios[5];
 
 	reg reset_button_n = 0;
 	reg [15:0] counter = 10000;
@@ -280,15 +300,16 @@ module prv32 (
     wire                       sram_sel;
     wire                       sram_ready;
     wire [31:0]                sram_data_o;
-    wire                       gpios_sel;
-    wire                       gpios_ready;
-    wire [31:0]                gpios_data_o;
     wire                       cdt_sel;
     wire                       cdt_ready;
     wire [31:0]                cdt_data_o;
     wire                       uart_sel;
     wire [31:0]                uart_data_o;
     wire                       uart_ready;
+
+    wire                       gpios_sel;
+    wire                       gpios_ready;
+    wire [31:0]                gpios_data_o;
 """)
 
         for iname, idata in instance.INTERFACE.items():
@@ -300,7 +321,7 @@ module prv32 (
 
         output.append("    // Establish memory map for all slaves:")
         output.append("    //   SRAM       0x00000000 - 0x0001ffff")
-        output.append("    //   LED        0x80000000")
+        output.append("    //   GPIO       0x80000000")
         output.append("    //   UART       0x80000008 - 0x8000000f")
         output.append("    //   CDT        0x80000010 - 0x80000014")
         for iname, idata in instance.INTERFACE.items():
@@ -343,8 +364,6 @@ module prv32 (
 
         output.append("""
 
-    assign gpios = ~gpios_data_o[5:0]; // Connect to the gpios off the FPGA
-
     prv32_reset_control reset_controller (
         .clk(clk),
         .reset_button_n(reset_button_n),
@@ -384,17 +403,26 @@ module prv32 (
         .sram_ready(sram_ready),
         .sram_data_o(sram_data_o)
     );
-
-    prv32_gpio soc_gpios (
-        .clk(clk),
-        .reset_n(reset_n),
-        .gpios_sel(gpios_sel),
-        .gpios_data_i(mem_wdata[5:0]),
-        .we(mem_wstrb[0]),
-        .gpios_ready(gpios_ready),
-        .gpios_data_o(gpios_data_o)
-    );
 """)
+
+        gpio_n = 0
+        gpio_pins = []
+        for pname, pdata in instance.PINDEFAULTS.items():
+            if pdata["direction"] == "inout":
+                gpio_pins.append(f".gpio{gpio_n}({pname})")
+                gpio_n += 1
+        if gpio_pins:
+            output.append("    prv32_gpio soc_gpios (")
+            output.append("        .clk(clk),")
+            output.append("        .reset_n(reset_n),")
+            output.append("        .gpios_sel(gpios_sel),")
+            output.append("        .gpios_data_i(mem_wdata),")
+            output.append("        .we(mem_wstrb[0]),")
+            output.append("        .gpios_ready(gpios_ready),")
+            output.append("        .gpios_data_o(gpios_data_o),")
+            output.append("        " + ",\n        ".join(gpio_pins))
+            output.append("    );")
+            output.append("")
 
         for iname, idata in instance.INTERFACE.items():
             if idata["direction"] == "output" and idata["size"] == 32:
