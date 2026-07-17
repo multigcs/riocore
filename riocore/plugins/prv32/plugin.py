@@ -147,10 +147,11 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("")
         output.append("#include <stdint.h>")
         output.append("")
-        output.append("#define GPIO_OUT 1")
-        output.append("#define GPIO_IN  0")
-        output.append("#define GPIO_HI  1")
-        output.append("#define GPIO_LO  0")
+        output.append("#define INPUT  0")
+        output.append("#define OUTPUT 1")
+        output.append("#define LOW    0")
+        output.append("#define HIGH   1")
+        output.append("#define TOGGLE 2")
         output.append("#define GPIOS ((volatile unsigned int *) 0x80000000)")
         output.append("")
         gpio_n = 0
@@ -192,9 +193,9 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("extern unsigned int cdt_read(void);")
         output.append("extern void cdt_delay(const unsigned int value);")
         output.append("")
-        output.append("extern void gpio_dir(uint8_t num, uint8_t dir);")
-        output.append("extern void gpio_set(uint8_t num, uint8_t value);")
-        output.append("extern uint8_t gpio_get(uint8_t num);")
+        output.append("extern void pinMode(uint8_t num, uint8_t dir);")
+        output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
+        output.append("extern uint8_t digitalRead(uint8_t num);")
         output.append("extern void gpio_toggle(uint8_t num);")
         output.append("")
         output.append("#endif")
@@ -208,31 +209,33 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram
         output.append("")
         output.append("""
 // GPIO functions
-void gpio_dir(uint8_t num, uint8_t dir) {
-    if (dir == GPIO_OUT) {
+void pinMode(uint8_t num, uint8_t dir) {
+    if (dir == OUTPUT) {
         *GPIOS |= (1<<(num + 16));
     } else {
         *GPIOS &= ~(1<<(num + 16));
     }
 }
 
-void gpio_set(uint8_t num, uint8_t value) {
-    if (value == GPIO_HI) {
+void digitalWrite(uint8_t num, uint8_t value) {
+    if (value == HIGH) {
         *GPIOS |= (1<<num);
-    } else {
+    } else if (value == LOW) {
         *GPIOS &= ~(1<<num);
+    } else if (TOGGLE) {
+        if ((*GPIOS & (1<<num)) != 0) {
+            *GPIOS &= ~(1<<num);
+        } else {
+            *GPIOS |= (1<<num);
+        }
     }
 }
 
-uint8_t gpio_get(uint8_t num) {
+uint8_t digitalRead(uint8_t num) {
     if ((*GPIOS & (1<<num)) != 0) {
-        return GPIO_HI;
+        return HIGH;
     }
-    return GPIO_LO;
-}
-
-void gpio_toggle(uint8_t num) {
-    gpio_set(num, 1 - gpio_get(num));
+    return LOW;
 }
 
 """)

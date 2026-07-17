@@ -26,25 +26,7 @@ module prv32_gpio (
    );
 
     assign gpios_ready = gpios_sel;
-    assign gpios_data_o = {
-        gdir,
-        gpio15,
-        gpio14,
-        gpio13,
-        gpio12,
-        gpio11,
-        gpio10,
-        gpio9,
-        gpio8,
-        gpio7,
-        gpio6,
-        gpio5,
-        gpio4,
-        gpio3,
-        gpio2,
-        gpio1,
-        gpio0
-    };
+    assign gpios_data_o = {gdir, gpio15, gpio14, gpio13, gpio12, gpio11, gpio10, gpio9, gpio8, gpio7, gpio6, gpio5, gpio4, gpio3, gpio2, gpio1, gpio0};
 
     reg [15:0] gdir = 'd0;
     reg [15:0] gout = 'd0;
