@@ -4,8 +4,7 @@
 // core to write to a register that controls the LEDs on the
 // Tang Nano 9K board.  It can also read this register,
 
-module gpio
-  (
+module prv32_gpio (
    input wire         clk,
    input wire         reset_n,
    input wire         gpios_sel,

@@ -1,7 +1,6 @@
 /* Copyright 2024 Grug Huhler.  License SPDX BSD-2-Clause. */
 
-module reset_control
-(
+module prv32_reset_control (
  input wire  clk,
  input wire  reset_button_n,
  output wire reset_n

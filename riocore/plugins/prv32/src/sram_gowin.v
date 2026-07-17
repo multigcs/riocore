@@ -2,7 +2,7 @@
 
 // 8192 bytes of sram formed from 4 Gowin single-port BSRAMs.
 
-module sram
+module prv32_sram
   #(parameter ADDRWIDTH=13)
    (
     input wire                 clk,

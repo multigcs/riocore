@@ -13,8 +13,7 @@ overcomplicated.  It meets unnecessary goals:
     as soon as SEL is seen.
 */
 
-module countdown_timer
-  (
+module prv32_timer (
    input wire         clk,
    input wire         reset_n,
    input wire         cdt_sel,
@@ -64,19 +63,15 @@ module countdown_timer
    always @(posedge clk or negedge reset_n)
      if (!reset_n) begin
         counter <= 'b0;
-     end
-     else if (cdt_sel) begin
+     end else if (cdt_sel) begin
         if (we) begin
            if (we[3]) counter[31:24] <= cdt_data_i[31:24];
            if (we[2]) counter[23:16] <= cdt_data_i[23:16];
            if (we[1]) counter[15:8] <= cdt_data_i[15:8];
            if (we[0]) counter[7:0] <= cdt_data_i[7:0];
-        end
-        else
-          if (counter != 'b0) counter <= counter - 1;
-     end
-     else begin
+        end else if (counter != 'b0) counter <= counter - 1;
+     end else begin
         if (counter != 'b0) counter <= counter - 1;
      end
 
-endmodule // countdown_timer
+endmodule

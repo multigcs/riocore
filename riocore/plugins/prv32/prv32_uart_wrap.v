@@ -1,5 +1,5 @@
-module uart_wrap
-  (
+
+module prv32_uart_wrap (
    input wire         clk,
    input wire         reset_n,
    input wire         uart_rx,
@@ -17,15 +17,13 @@ module uart_wrap
    wire [31:0]        div_do;
    wire [31:0]        dat_do;
    wire               dat_wait;
-            
+
    assign div_sel = uart_sel && (addr == 4'h8);
    assign dat_sel = uart_sel && (addr == 4'hc);
-   assign uart_do = div_sel ? div_do :
-                    dat_sel ? dat_do : 32'h0;
+   assign uart_do = div_sel ? div_do : dat_sel ? dat_do : 32'h0;
    assign uart_ready = div_sel | (dat_sel && !dat_wait);
-   
-   simpleuart uart
-     (
+
+   prv32_simpleuart uart (
       .clk(clk),
       .resetn(reset_n),
       .ser_tx(uart_tx),

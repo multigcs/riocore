@@ -11,8 +11,8 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.VERILOGS = ["countdown_timer.v", "reset.v", "gowin_sp.v", "gpio.v", "uart_wrap.v", "simpleuart.v", "picorv32.v"]
-        self.SRCFILES = ["src/sram.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/countdown_timer.c"]
+        self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
+        self.SRCFILES = ["src/sram_gowin.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c"]
         self.OPTIONS = {
             "source": {
                 "type": "multiline",
@@ -33,7 +33,7 @@ class Plugin(PluginBase):
                 "direction": "output",
             }
         uid = self.plugin_setup["uid"]
-        self.VERILOGS_GEN = [f"sram_{uid}.v", f"prv32_{uid}.v"]
+        self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
         self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
         self.INTERFACE = {
             "vin": {
@@ -118,12 +118,12 @@ gcc -o conv_to_init conv_to_init.c
 
             output.append(f"""
 
-rm -f prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o countdown_timer.o uart.o
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c countdown_timer.c -Iinc_{uid}
+rm -f prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
+$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o countdown_timer.o uart.o
+$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
 
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 rm -f ../mem_init_{uid}.v
@@ -131,8 +131,8 @@ od -v -Ax -t x4 prog_{uid}.bin > prog_{uid}.hex
 
 ./conv_to_init prog_{uid}.bin > ../mem_init_{uid}.v
 
-# sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram.v | sed "s|module sram|module sram_{uid}|g" > ../sram_{uid}.v
-sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram.v > ../sram_{uid}.v
+# sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module sram|module sram_{uid}|g" > ../prv32_sram_{uid}.v
+sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram_{uid}.v
 
 """)
 
@@ -345,13 +345,13 @@ module prv32 (
 
     assign gpios = ~gpios_data_o[5:0]; // Connect to the gpios off the FPGA
 
-    reset_control reset_controller (
+    prv32_reset_control reset_controller (
         .clk(clk),
         .reset_button_n(reset_button_n),
         .reset_n(reset_n)
     );
 
-    uart_wrap uart (
+    prv32_uart_wrap uart (
         .clk(clk),
         .reset_n(reset_n),
         .uart_tx(uart_tx),
@@ -364,7 +364,7 @@ module prv32 (
         .uart_ready(uart_ready)
     );
 
-    countdown_timer cdt (
+    prv32_timer cdt (
         .clk(clk),
         .reset_n(reset_n),
         .cdt_sel(cdt_sel),
@@ -374,7 +374,7 @@ module prv32 (
         .cdt_data_o(cdt_data_o)
     );
 
-    sram #(.ADDRWIDTH(13)) memory (
+    prv32_sram #(.ADDRWIDTH(13)) memory (
         .clk(clk),
         .resetn(reset_n),
         .sram_sel(sram_sel),
@@ -385,7 +385,7 @@ module prv32 (
         .sram_data_o(sram_data_o)
     );
 
-    gpio soc_gpios (
+    prv32_gpio soc_gpios (
         .clk(clk),
         .reset_n(reset_n),
         .gpios_sel(gpios_sel),
@@ -398,7 +398,7 @@ module prv32 (
 
         for iname, idata in instance.INTERFACE.items():
             if idata["direction"] == "output" and idata["size"] == 32:
-                output.append(f"    rio_vout soc_val_{iname} (")
+                output.append(f"    prv32_rio_vout soc_val_{iname} (")
                 output.append("        .clk(clk),")
                 output.append("        .reset_n(reset_n),")
                 output.append(f"        .vout_sel({iname}_sel),")
@@ -409,7 +409,7 @@ module prv32 (
                 output.append(f"        .vout({iname})")
                 output.append("    );")
             elif idata["direction"] == "input" and idata["size"] == 32:
-                output.append(f"    rio_vin soc_val_{iname} (")
+                output.append(f"    prv32_rio_vin soc_val_{iname} (")
                 output.append("        .clk(clk),")
                 output.append("        .reset_n(reset_n),")
                 output.append(f"        .vin_sel({iname}_sel),")
@@ -448,7 +448,7 @@ module prv32 (
 
 endmodule
 
-module rio_vin (
+module prv32_rio_vin (
     input wire         clk,
     input wire         reset_n,
     input wire         vin_sel,
@@ -473,7 +473,7 @@ module rio_vin (
     end
 endmodule
 
-module rio_vout (
+module prv32_rio_vout (
     input wire         clk,
     input wire         reset_n,
     input wire         vout_sel,
