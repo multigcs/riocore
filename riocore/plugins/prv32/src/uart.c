@@ -3,6 +3,8 @@
 
 #include "rio.h"
 
+#ifdef UART0_DIV
+
 void uart_set_div(unsigned int uart, unsigned int div) {
   volatile int delay;
 
@@ -39,3 +41,5 @@ void uart_putchar(unsigned int uart, char ch) {
 void uart_puts(unsigned int uart, char *s) {
   while (*s != 0) *UART0_DATA = *s++;
 }
+
+#endif

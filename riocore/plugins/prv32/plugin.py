@@ -73,10 +73,11 @@ class Plugin(PluginBase):
         }
 
     def gateware_instances(self):
-        # uid = self.plugin_setup["uid"]
+        uid = self.plugin_setup["uid"]
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
+        instance["module"] = f"prv32_{uid}"
         instance_parameter["BARREL_SHIFTER"] = "0"
         instance_parameter["ENABLE_MUL"] = "0"
         instance_parameter["ENABLE_DIV"] = "0"
@@ -149,8 +150,7 @@ od -v -Ax -t x4 prog_{uid}.bin > prog_{uid}.hex
 
 ./conv_to_init prog_{uid}.bin > ../mem_init_{uid}.v
 
-# sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module sram|module sram_{uid}|g" > ../prv32_sram_{uid}.v
-sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v > ../prv32_sram_{uid}.v
+sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
 
 """)
 
@@ -267,21 +267,20 @@ uint8_t digitalRead(uint8_t num) {
     def soc(cls, instance):
         output = []
         addr = 0x80000020
+        uid = instance.plugin_setup["uid"]
         for iname, idata in instance.INTERFACE.items():
-            if (idata["direction"] == "output" and idata["size"] == 32) or (idata["direction"] == "input" and idata["size"] == 32):
+            if idata["size"] == 32:
                 idata["addr"] = addr
                 addr += 0x10
 
-        output.append("module prv32 (")
+        output.append(f"module prv32_{uid} (")
         output.append("        input wire  clk,")
         output.append("        input wire  uart0_rx,")
         output.append("        output wire uart0_tx,")
 
         for iname, idata in instance.INTERFACE.items():
-            if idata["direction"] == "output" and idata["size"] == 32:
-                output.append(f"        input  wire [31:0] {iname},")
-            elif idata["direction"] == "input" and idata["size"] == 32:
-                output.append(f"        output wire [31:0] {iname},")
+            if idata["size"] == 32:
+                output.append(f"        {idata['direction']} wire [31:0] {iname},")
 
         gpio_pins = []
         for pname, pdata in instance.PINDEFAULTS.items():
@@ -387,7 +386,6 @@ uint8_t digitalRead(uint8_t num) {
         output.append("")
 
         output.append("""
-
     prv32_reset_control reset_controller (
         .clk(clk),
         .reset_button_n(reset_button_n),
@@ -416,18 +414,20 @@ uint8_t digitalRead(uint8_t num) {
         .cdt_ready(cdt_ready),
         .cdt_data_o(cdt_data_o)
     );
-
-    prv32_sram #(.ADDRWIDTH(13)) memory (
-        .clk(clk),
-        .resetn(reset_n),
-        .sram_sel(sram_sel),
-        .wstrb(mem_wstrb),
-        .addr(mem_addr[12:0]),
-        .sram_data_i(mem_wdata),
-        .sram_ready(sram_ready),
-        .sram_data_o(sram_data_o)
-    );
 """)
+
+        addr_bits = instance.clog2(instance.memsize)
+        output.append(f"    prv32_sram_{uid} #(.ADDRWIDTH({addr_bits})) memory (")
+        output.append("        .clk(clk),")
+        output.append("        .resetn(reset_n),")
+        output.append("        .sram_sel(sram_sel),")
+        output.append("        .wstrb(mem_wstrb),")
+        output.append(f"        .addr(mem_addr[{addr_bits - 1}:0]),")
+        output.append("        .sram_data_i(mem_wdata),")
+        output.append("        .sram_ready(sram_ready),")
+        output.append("        .sram_data_o(sram_data_o)")
+        output.append("    );")
+        output.append("")
 
         gpio_n = 0
         gpio_pins = []
@@ -449,27 +449,17 @@ uint8_t digitalRead(uint8_t num) {
             output.append("")
 
         for iname, idata in instance.INTERFACE.items():
-            if idata["direction"] == "output" and idata["size"] == 32:
-                output.append(f"    prv32_rio_vout soc_val_{iname} (")
+            if idata["size"] == 32:
+                direction = idata["direction"].replace("put", "")
+                output.append(f"    prv32_rio_v{direction} soc_val_{iname} (")
                 output.append("        .clk(clk),")
                 output.append("        .reset_n(reset_n),")
-                output.append(f"        .vout_sel({iname}_sel),")
-                output.append("        .vout_data_i(mem_wdata),")
+                output.append(f"        .v{direction}_sel({iname}_sel),")
+                output.append(f"        .v{direction}_data_i(mem_wdata),")
                 output.append("        .we(mem_wstrb[0]),")
-                output.append(f"        .vout_ready({iname}_ready),")
-                output.append(f"        .vout_data_o({iname}_data_o),")
-                output.append(f"        .vout({iname})")
-                output.append("    );")
-            elif idata["direction"] == "input" and idata["size"] == 32:
-                output.append(f"    prv32_rio_vin soc_val_{iname} (")
-                output.append("        .clk(clk),")
-                output.append("        .reset_n(reset_n),")
-                output.append(f"        .vin_sel({iname}_sel),")
-                output.append("        .vin_data_i(mem_wdata),")
-                output.append("        .we(mem_wstrb[0]),")
-                output.append(f"        .vin_ready({iname}_ready),")
-                output.append(f"        .vin_data_o({iname}_data_o),")
-                output.append(f"        .vin({iname})")
+                output.append(f"        .v{direction}_ready({iname}_ready),")
+                output.append(f"        .v{direction}_data_o({iname}_data_o),")
+                output.append(f"        .v{direction}({iname})")
                 output.append("    );")
         output.append("")
 
