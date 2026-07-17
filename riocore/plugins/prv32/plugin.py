@@ -14,6 +14,18 @@ class Plugin(PluginBase):
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = ["src/sram_gowin.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c"]
         self.OPTIONS = {
+            "ENABLE_MUL": {
+                "type": bool,
+                "default": True,
+            },
+            "ENABLE_DIV": {
+                "type": bool,
+                "default": True,
+            },
+            "ENABLE_COMPRESSED": {
+                "type": bool,
+                "default": False,
+            },
             "uarts": {
                 "type": int,
                 "min": 0,
@@ -22,11 +34,19 @@ class Plugin(PluginBase):
                 "description": "number of serial interfaces",
             },
             "gpios": {
-                "type": int,
-                "min": 0,
-                "max": 16,
-                "default": 4,
-                "description": "number of gpio pins",
+                "type": str,
+                "default": "LED0 LED1 SW",
+                "description": "space seperated list of gpio pin-names (no _ please)",
+            },
+            "signals_in": {
+                "type": str,
+                "default": "vin0 vin1",
+                "description": "space seperated list of input signals (to host)",
+            },
+            "signals_out": {
+                "type": str,
+                "default": "vout0 vout1",
+                "description": "space seperated list of output signals (from host)",
             },
             "source": {
                 "type": "multiline",
@@ -36,6 +56,8 @@ class Plugin(PluginBase):
         }
         self.gpios = self.plugin_setup.get("gpios", self.OPTIONS["gpios"]["default"])
         self.uarts = self.plugin_setup.get("uarts", self.OPTIONS["uarts"]["default"])
+        self.signals_in = self.plugin_setup.get("signals_in", self.OPTIONS["signals_in"]["default"])
+        self.signals_out = self.plugin_setup.get("signals_out", self.OPTIONS["signals_out"]["default"])
         for uart_n in range(self.uarts):
             self.PINDEFAULTS = {
                 f"uart{uart_n}_rx": {
@@ -45,32 +67,32 @@ class Plugin(PluginBase):
                     "direction": "output",
                 },
             }
-        for gpio_n in range(self.gpios):
-            self.PINDEFAULTS[f"io{gpio_n}"] = {
+        for gpio in self.gpios.split():
+            self.PINDEFAULTS[gpio] = {
                 "direction": "inout",
             }
 
         uid = self.plugin_setup["uid"]
         self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
         self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
-        self.INTERFACE = {
-            "vin": {
+        self.INTERFACE = {}
+        self.SIGNALS = {}
+        for name in self.signals_in.split():
+            self.INTERFACE[name] = {
                 "size": 32,
                 "direction": "input",
-            },
-            "vout": {
+            }
+            self.SIGNALS[name] = {
+                "direction": "input",
+            }
+        for name in self.signals_out.split():
+            self.INTERFACE[name] = {
                 "size": 32,
                 "direction": "output",
-            },
-        }
-        self.SIGNALS = {
-            "vin": {
-                "direction": "input",
-            },
-            "vout": {
+            }
+            self.SIGNALS[name] = {
                 "direction": "output",
-            },
-        }
+            }
 
     def gateware_instances(self):
         uid = self.plugin_setup["uid"]
@@ -79,10 +101,10 @@ class Plugin(PluginBase):
         instance_parameter = instance["parameter"]
         instance["module"] = f"prv32_{uid}"
         instance_parameter["BARREL_SHIFTER"] = "0"
-        instance_parameter["ENABLE_MUL"] = "0"
-        instance_parameter["ENABLE_DIV"] = "0"
+        instance_parameter["ENABLE_MUL"] = str(int(self.plugin_setup.get("ENABLE_MUL", self.OPTIONS["ENABLE_MUL"]["default"])))
+        instance_parameter["ENABLE_DIV"] = str(int(self.plugin_setup.get("ENABLE_DIV", self.OPTIONS["ENABLE_DIV"]["default"])))
         instance_parameter["ENABLE_FAST_MUL"] = "0"
-        instance_parameter["ENABLE_COMPRESSED"] = "0"
+        instance_parameter["ENABLE_COMPRESSED"] = str(int(self.plugin_setup.get("ENABLE_COMPRESSED", self.OPTIONS["ENABLE_COMPRESSED"]["default"])))
         instance_parameter["ENABLE_IRQ_QREGS"] = "0"
         return instances
 
@@ -135,14 +157,22 @@ gcc -o conv_to_init conv_to_init.c
             target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
             open(target, "w").write(source)
 
+            mabi = "ilp32"
+            march = "rv32i"
+            if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]) and instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
+                march += "m"
+            if instance.plugin_setup.get("ENABLE_COMPRESSED", instance.OPTIONS["ENABLE_COMPRESSED"]["default"]):
+                march += "c"
+            march += "2p0"
+
             output.append(f"""
 
 rm -f prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march=rv32i2p0 -mabi=ilp32 -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
+$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
 
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 rm -f ../mem_init_{uid}.v
@@ -159,13 +189,23 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
 
     @classmethod
     def rio_h(cls, instance):
+        uid = instance.plugin_setup["uid"]
         output = []
         output.append("#ifndef RIO_H")
         output.append("#define RIO_H")
         output.append("")
         output.append("#include <stdint.h>")
         output.append("")
+        output.append(f'#define SYSNAME "{uid}"')
         output.append(f"#define SYSCLOCK {instance.system_setup['speed']}")
+
+        if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]):
+            output.append("#define ENABLE_MUL")
+        if instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
+            output.append("#define ENABLE_DIV")
+        if instance.plugin_setup.get("ENABLE_COMPRESSED", instance.OPTIONS["ENABLE_COMPRESSED"]["default"]):
+            output.append("#define ENABLE_COMPRESSED")
+
         output.append("")
         if instance.gpios:
             output.append("#define INPUT  0")
@@ -201,6 +241,11 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
             for uart_n in range(instance.uarts):
                 output.append(f"#define UART{uart_n}_DIV ((volatile unsigned char *) 0x80000008)")
                 output.append(f"#define UART{uart_n}_DATA ((volatile unsigned char *) 0x8000000c)")
+            output.append("#ifdef ENABLE_MUL")
+            output.append("#ifdef ENABLE_DIV")
+            output.append("extern void uart_set_baud(unsigned int uart, unsigned int baud);")
+            output.append("#endif")
+            output.append("#endif")
             output.append("extern void uart_set_div(unsigned int uart, unsigned int div);")
             output.append("extern void uart_print_hex(unsigned int uart, unsigned int val);")
             output.append("extern char uart_getchar(unsigned int uart);")
@@ -218,6 +263,7 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
         output.append("extern void cdt_write(const unsigned int value);")
         output.append("extern unsigned int cdt_read(void);")
         output.append("extern void cdt_delay(const unsigned int value);")
+        output.append("extern void delay(const unsigned int value);")
         output.append("")
         output.append("#endif")
         output.append("")
@@ -280,7 +326,8 @@ uint8_t digitalRead(uint8_t num) {
 
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
-                output.append(f"        {idata['direction']} wire [31:0] {iname},")
+                direction = {"input": "output", "output": "input"}.get(idata["direction"])
+                output.append(f"        {direction} wire [31:0] {iname},")
 
         gpio_pins = []
         for pname, pdata in instance.PINDEFAULTS.items():
@@ -450,7 +497,7 @@ uint8_t digitalRead(uint8_t num) {
 
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
-                direction = idata["direction"].replace("put", "")
+                direction = {"output": "out", "input": "in"}.get(idata["direction"])
                 output.append(f"    prv32_rio_v{direction} soc_val_{iname} (")
                 output.append("        .clk(clk),")
                 output.append("        .reset_n(reset_n),")

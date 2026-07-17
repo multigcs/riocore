@@ -14,6 +14,14 @@ void uart_set_div(unsigned int uart, unsigned int div) {
   for (delay = 0; delay < 200; delay++) {}
 }
 
+#ifdef ENABLE_MUL
+#ifdef ENABLE_DIV
+void uart_set_baud(unsigned int uart, unsigned int baud) {
+    uart_set_div(uart, SYSCLOCK / baud);
+}
+#endif
+#endif
+
 void uart_print_hex(unsigned int uart, unsigned int val) {
   char ch;
   int i;

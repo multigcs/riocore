@@ -132,7 +132,8 @@ class Toolchain:
 
         if USING_XSTFILE:
             makefile_data.append("prepare:")
-            makefile_data.append("	test -e prepare.sh && sh prepare.sh")
+            makefile_data.append("	test -e prepare.sh || touch prepare.sh")
+            makefile_data.append("	sh prepare.sh")
             makefile_data.append("")
             makefile_data.append("build: prepare")
             makefile_data.append("	mkdir -p xst/projnav.tmp/")
@@ -190,7 +191,8 @@ class Toolchain:
             makefile_data.append("")
         else:
             makefile_data.append("prepare:")
-            makefile_data.append("	test -e prepare.sh && sh prepare.sh")
+            makefile_data.append("	test -e prepare.sh || touch prepare.sh")
+            makefile_data.append("	sh prepare.sh")
             makefile_data.append("")
             makefile_data.append("build: prepare $(PROJECT).bit")
             makefile_data.append("")

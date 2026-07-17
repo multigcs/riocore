@@ -41,3 +41,8 @@ void cdt_delay(const unsigned int value) {
   cdt_write(value);
   while (*CDT_COUNTER) {}
 }
+
+void delay(const unsigned int value) {
+  cdt_write(SYSCLOCK / 1000 * value);
+  while (*CDT_COUNTER) {}
+}
