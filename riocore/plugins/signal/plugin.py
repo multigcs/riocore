@@ -34,7 +34,7 @@ class Plugin(PluginBase):
         if vtype == "bool":
             self.SIGNALS["value"]["bool"] = True
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         return None
 
     @classmethod

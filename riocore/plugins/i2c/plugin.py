@@ -330,7 +330,7 @@ class Plugin(PluginBase):
 
             instance.VERILOGS_DATA = {f"i2cbus_{instance.instances_name}.v": "\n".join(verilog_data)}
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         if not self.device_instances:
             # no instance needed if no device is configured
             return None

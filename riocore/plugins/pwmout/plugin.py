@@ -126,7 +126,7 @@ class Plugin(PluginBase):
         return f"{freq} Hz"
 
     # optional function, only needed if you add parameter to the verilog functions
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]

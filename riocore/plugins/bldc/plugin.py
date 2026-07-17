@@ -184,7 +184,7 @@ Motor-Setup:
             },
         }
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]

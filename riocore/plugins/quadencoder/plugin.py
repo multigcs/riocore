@@ -63,7 +63,7 @@ For examle if you have a 600 CPR encoder 4x mode will give you 2400 PPR and your
         }
         self.rps_sum = self.plugin_setup.get("rps_sum", self.OPTIONS["rps_sum"]["default"])
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]

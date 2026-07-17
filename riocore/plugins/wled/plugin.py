@@ -56,7 +56,7 @@ class Plugin(PluginBase):
         level = self.plugin_setup.get("level", 127)
         return f"LED's: {num_leds}\nLevel: {level}"
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_predefines = instance["predefines"]

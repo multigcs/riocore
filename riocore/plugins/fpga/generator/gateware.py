@@ -1004,7 +1004,7 @@ class gateware(generator_base):
 
             output_first = []
             output_last = []
-            for instance_name, instance_config in plugin_instance.gateware_instances().items():
+            for instance_name, instance_config in plugin_instance.gateware_instances(self).items():
                 instance_module = instance_config.get("module")
                 instance_parameter = instance_config.get("parameter")
                 instance_arguments = instance_config.get("arguments")

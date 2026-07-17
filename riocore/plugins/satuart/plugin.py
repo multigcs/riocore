@@ -64,7 +64,7 @@ class Plugin(PluginBase):
                 # instance.PINDEFAULTS = {}
             instance.SUBNUM = sub_num
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         if self.SUBBOARD is None:
             return None
         instances = self.gateware_instances_base()

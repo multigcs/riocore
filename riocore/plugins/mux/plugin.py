@@ -41,7 +41,7 @@ class Plugin(PluginBase):
                 "direction": "output",
             }
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         bits = self.plugin_setup.get("bits", self.OPTIONS["bits"]["default"])
 

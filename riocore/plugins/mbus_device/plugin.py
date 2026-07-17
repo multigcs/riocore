@@ -460,5 +460,5 @@ class Plugin(PluginBase):
         output += self.device_functions_rx(bus_master)
         return "\n".join(output)
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         return None

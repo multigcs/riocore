@@ -11,9 +11,8 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
-        self.VERILOGS.append("prv32_mem_gowin.v")
-        self.SRCFILES = ["src/sram_gowin.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c"]
+        self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
+        self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
         self.OPTIONS = {
             "ENABLE_MUL": {
                 "type": bool,
@@ -26,6 +25,13 @@ class Plugin(PluginBase):
             "ENABLE_COMPRESSED": {
                 "type": bool,
                 "default": False,
+            },
+            "ramsize": {
+                "type": int,
+                "min": 512,
+                "max": 8192,
+                "default": 4096,
+                "description": "size of ram in byte",
             },
             "uarts": {
                 "type": int,
@@ -55,6 +61,8 @@ class Plugin(PluginBase):
                 "default": "",
             },
         }
+        self.toolchain = None
+        self.ramsize = self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"])
         self.gpios = self.plugin_setup.get("gpios", self.OPTIONS["gpios"]["default"])
         self.uarts = self.plugin_setup.get("uarts", self.OPTIONS["uarts"]["default"])
         self.signals_in = self.plugin_setup.get("signals_in", self.OPTIONS["signals_in"]["default"])
@@ -63,14 +71,17 @@ class Plugin(PluginBase):
             self.PINDEFAULTS = {
                 f"uart{uart_n}_rx": {
                     "direction": "input",
+                    "optional": True,
                 },
                 f"uart{uart_n}_tx": {
                     "direction": "output",
+                    "optional": True,
                 },
             }
         for gpio in self.gpios.split():
             self.PINDEFAULTS[gpio] = {
                 "direction": "inout",
+                "optional": True,
             }
 
         uid = self.plugin_setup["uid"]
@@ -95,8 +106,19 @@ class Plugin(PluginBase):
                 "direction": "output",
             }
 
-    def gateware_instances(self):
+        if self.ramsize % 4:
+            print("ERROR: ramsize must be multiple of 4")
+
+
+    def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
+        if gateware:
+            self.toolchain = gateware.jdata["toolchain"]
+            if self.toolchain == "gowin":
+                self.VERILOGS.append("prv32_mem_gowin.v")
+                self.SRCFILES.append("src/sram_gowin.v")
+            else:
+                self.SRCFILES.append("src/sram_bram.v")
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
@@ -122,21 +144,28 @@ RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
 
 cd src/
-rm -rf conv_to_init
-gcc -o conv_to_init conv_to_init.c
 
 """)
         for instance in instances:
             uid = instance.plugin_setup["uid"]
             os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
-            instance.memsize = 8192
+
+            if instance.toolchain == "gowin":
+                if instance.ramsize != 8192:
+                    instance.ramsize = 8192
+                    print(f"  INFO: set ram size to {instance.ramsize} (gowin)")
+            elif instance.ramsize > 8192:
+                instance.ramsize = 8192
+                print(f"  INFO: limit ram size to {instance.ramsize}")
+
+            instance.addrbits = instance.clog2(instance.ramsize)
 
             startup = []
             startup.append("")
             startup.append(".text")
             startup.append(".global _start")
             startup.append("_start:")
-            startup.append(f"	li x2, {instance.memsize}")
+            startup.append(f"	li x2, {instance.ramsize}")
             startup.append("	call main")
             startup.append("")
             target = os.path.join(parent.gateware_path, "src", f"startup_{uid}.s")
@@ -168,23 +197,32 @@ gcc -o conv_to_init conv_to_init.c
 
             output.append(f"""
 
-rm -f prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
+TOOLCHAIN="{instance.toolchain}"
+
+rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
+
 $RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
-
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
+
 rm -f ../mem_init_{uid}.v
-od -v -Ax -t x4 prog_{uid}.bin > prog_{uid}.hex
 
-./conv_to_init prog_{uid}.bin > ../mem_init_{uid}.v
 
-sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
+if test "$TOOLCHAIN" = "gowin"
+then
+    # od -v -Ax -t x4 prog_{uid}.bin > prog_{uid}.hex
+    gcc -o conv_to_init conv_to_init.c
+    ./conv_to_init prog_{uid}.bin > ../mem_init_{uid}.v
+    sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
+else
+    python3 makehex.py prog_{uid}.bin {instance.ramsize} > prog_{uid}.hex
+    sed "s|src/prog.hex|src/prog_{uid}.hex|g" sram_bram.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
+fi
 
 """)
-
         target = os.path.join(parent.gateware_path, "prepare.sh")
         open(target, "w").write("\n".join(output))
 
@@ -354,7 +392,8 @@ uint32_t mills(void) {
         output.append("    parameter [0:0] ENABLE_FAST_MUL = 0;")
         output.append("    parameter [0:0] ENABLE_COMPRESSED = 0;")
         output.append("    parameter [0:0] ENABLE_IRQ_QREGS = 0;")
-        output.append(f"    parameter integer MEMBYTES = {instance.memsize};")
+        output.append(f"    parameter MEMBYTES = {instance.ramsize};")
+        output.append(f"    parameter ADDRWIDTH = {instance.addrbits};")
         output.append(f"    parameter UART_DIV = {instance.system_setup['speed'] * 12 // 115200};")
         output.append("""
     parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
@@ -485,13 +524,12 @@ uint32_t mills(void) {
     );
 """)
 
-        addr_bits = instance.clog2(instance.memsize)
-        output.append(f"    prv32_sram_{uid} #(.ADDRWIDTH({addr_bits})) memory (")
+        output.append(f"    prv32_sram_{uid} #(.ADDRWIDTH(ADDRWIDTH), .MEMBYTES(MEMBYTES)) memory (")
         output.append("        .clk(clk),")
         output.append("        .resetn(reset_n),")
         output.append("        .sram_sel(sram_sel),")
         output.append("        .wstrb(mem_wstrb),")
-        output.append(f"        .addr(mem_addr[{addr_bits - 1}:0]),")
+        output.append("        .addr(mem_addr[ADDRWIDTH-1:0]),")
         output.append("        .sram_data_i(mem_wdata),")
         output.append("        .sram_ready(sram_ready),")
         output.append("        .sram_data_o(sram_data_o)")

@@ -15,7 +15,7 @@ int main() {
 
     #ifdef GPIO_LED1
         pinMode(GPIO_LED1, OUTPUT);
-        digitalWrite(GPIO_LED1, HIGH);
+        digitalWrite(GPIO_LED1, LOW);
     #endif
 
     #ifdef GPIO_SW
@@ -42,6 +42,11 @@ int main() {
 
             #ifdef GPIO_LED0
                 digitalWrite(GPIO_LED0, TOGGLE);
+            #endif
+            #ifdef GPIO_LED1
+                #ifndef GPIO_SW
+                    digitalWrite(GPIO_LED1, TOGGLE);
+                #endif
             #endif
         }
 

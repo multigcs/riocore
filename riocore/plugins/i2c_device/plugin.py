@@ -115,5 +115,5 @@ class Plugin(PluginBase):
                     psetup["pin"] = f"VAROUT8_{self.instances_name.upper()}_{direction}[{bit}]"
             connected_pin["instance"].master = self.master
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         return None

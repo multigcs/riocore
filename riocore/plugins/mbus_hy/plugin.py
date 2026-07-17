@@ -428,5 +428,5 @@ class Plugin(PluginBase):
         output += self.func_rx()
         return "\n".join(output)
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         return None

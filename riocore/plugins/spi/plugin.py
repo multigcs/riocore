@@ -67,7 +67,7 @@ class Plugin(PluginBase):
         else:
             self.HOST_INTERFACE = "SPI"
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         frame = self.plugin_setup.get("frame", self.OPTIONS["frame"]["default"])
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]

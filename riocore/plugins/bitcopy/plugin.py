@@ -35,7 +35,7 @@ graph LR;
             },
         }
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         origin = self.plugin_setup.get("origin", self.OPTIONS["origin"]["default"])
         for instance in instances.values():

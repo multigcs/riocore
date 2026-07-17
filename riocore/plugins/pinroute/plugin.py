@@ -63,7 +63,7 @@ graph LR;
                     "direction": "input",
                 }
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         num_inputs = self.plugin_setup.get("inputs", 2)
         num_channels = self.plugin_setup.get("channels", 1)

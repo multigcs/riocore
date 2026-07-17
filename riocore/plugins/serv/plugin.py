@@ -92,7 +92,7 @@ time1:
             },
         }
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]

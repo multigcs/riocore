@@ -90,7 +90,7 @@ class Plugin(PluginBase):
                 }
         self.keysnum = None
 
-    def gateware_instances(self):
+    def gateware_instances(self, gateware=None):
         delay = self.plugin_setup.get("delay", self.OPTIONS["delay"]["default"])
         cols = self.plugin_setup.get("cols", self.OPTIONS["cols"]["default"])
         rows = self.plugin_setup.get("rows", self.OPTIONS["rows"]["default"])
