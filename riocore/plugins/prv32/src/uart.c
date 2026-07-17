@@ -17,7 +17,7 @@ void uart_set_div(unsigned int uart, unsigned int div) {
 #ifdef ENABLE_MUL
 #ifdef ENABLE_DIV
 void uart_set_baud(unsigned int uart, unsigned int baud) {
-    uart_set_div(uart, SYSCLOCK / baud);
+    uart_set_div(uart, F_CPU / baud);
 }
 #endif
 #endif

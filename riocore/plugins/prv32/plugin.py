@@ -197,7 +197,7 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
         output.append("#include <stdint.h>")
         output.append("")
         output.append(f'#define SYSNAME "{uid}"')
-        output.append(f"#define SYSCLOCK {instance.system_setup['speed']}")
+        output.append(f"#define F_CPU {instance.system_setup['speed']}")
 
         if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]):
             output.append("#define ENABLE_MUL")
@@ -222,7 +222,7 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
             output.append("extern void pinMode(uint8_t num, uint8_t dir);")
             output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
             output.append("extern uint8_t digitalRead(uint8_t num);")
-            output.append("extern void gpio_toggle(uint8_t num);")
+            output.append("extern uint32_t mills(void);")
             output.append("")
         output.append("")
         output.append("#define CDT_COUNTER ((volatile unsigned int *) 0x80000010)")
@@ -232,6 +232,8 @@ sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module
         output.append("#define CDT_COUNTER_B1 ((volatile unsigned char *) 0x80000011)")
         output.append("#define CDT_COUNTER_B2 ((volatile unsigned char *) 0x80000012)")
         output.append("#define CDT_COUNTER_B3 ((volatile unsigned char *) 0x80000013)")
+        output.append("")
+        output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
         output.append("")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
@@ -305,6 +307,11 @@ uint8_t digitalRead(uint8_t num) {
     return LOW;
 }
 
+// UTIMER
+uint32_t mills(void) {
+    return *UTIMER;
+}
+
 """)
         output.append("")
         return output
@@ -312,7 +319,7 @@ uint8_t digitalRead(uint8_t num) {
     @classmethod
     def soc(cls, instance):
         output = []
-        addr = 0x80000020
+        addr = 0x80000030
         uid = instance.plugin_setup["uid"]
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
@@ -370,12 +377,18 @@ uint8_t digitalRead(uint8_t num) {
     wire                       sram_sel;
     wire                       sram_ready;
     wire [31:0]                sram_data_o;
+
     wire                       cdt_sel;
     wire                       cdt_ready;
     wire [31:0]                cdt_data_o;
+
     wire                       uart0_sel;
     wire [31:0]                uart0_data_o;
     wire                       uart0_ready;
+
+    wire                       utimer_sel;
+    wire                       utimer_ready;
+    wire [31:0]                utimer_data_o;
 
     wire                       gpios_sel;
     wire                       gpios_ready;
@@ -394,15 +407,17 @@ uint8_t digitalRead(uint8_t num) {
         output.append("    //   GPIO       0x80000000")
         output.append("    //   UART       0x80000008 - 0x8000000f")
         output.append("    //   CDT        0x80000010 - 0x80000014")
+        output.append("    //   UTIMER     0x80000020 - 0x80000024")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
                 output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 4:x}")
         output.append("")
 
-        output.append("    assign sram_sel  = mem_valid && (mem_addr < 32'h00002000);")
-        output.append("    assign gpios_sel = mem_valid && (mem_addr == 32'h80000000);")
+        output.append("    assign sram_sel   = mem_valid && (mem_addr < 32'h00002000);")
+        output.append("    assign gpios_sel  = mem_valid && (mem_addr == 32'h80000000);")
         output.append("    assign uart0_sel  = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
-        output.append("    assign cdt_sel   = mem_valid && (mem_addr == 32'h80000010);")
+        output.append("    assign cdt_sel    = mem_valid && (mem_addr == 32'h80000010);")
+        output.append("    assign utimer_sel = mem_valid && (mem_addr == 32'h80000020);")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
                 output.append(f"    assign {iname}_sel = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
@@ -414,6 +429,7 @@ uint8_t digitalRead(uint8_t num) {
         output.append("        gpios_ready |")
         output.append("        uart0_ready |")
         output.append("        cdt_ready |")
+        output.append("        utimer_ready |")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
                 output.append(f"        {iname}_ready |")
@@ -422,10 +438,11 @@ uint8_t digitalRead(uint8_t num) {
 
         output.append("    // Select which slave's output data is to be fed to core.")
         output.append("    assign mem_rdata = ")
-        output.append("        sram_sel ? sram_data_o :")
-        output.append("        gpios_sel ? gpios_data_o :")
-        output.append("        uart0_sel ? uart0_data_o :")
-        output.append("        cdt_sel  ? cdt_data_o  :")
+        output.append("        sram_sel   ? sram_data_o :")
+        output.append("        gpios_sel  ? gpios_data_o :")
+        output.append("        uart0_sel  ? uart0_data_o :")
+        output.append("        cdt_sel    ? cdt_data_o  :")
+        output.append("        utimer_sel ? utimer_data_o :")
         for iname, idata in instance.INTERFACE.items():
             if idata["size"] == 32:
                 output.append(f"        {iname}_sel  ? {iname}_data_o  :")
@@ -508,6 +525,17 @@ uint8_t digitalRead(uint8_t num) {
                 output.append(f"        .v{direction}_data_o({iname}_data_o),")
                 output.append(f"        .v{direction}({iname})")
                 output.append("    );")
+                output.append("")
+
+        output.append(f"    prv32_utimer #(.MS_DIVIDER({instance.system_setup['speed'] // 1000})) soc_utimer (")
+        output.append("        .clk(clk),")
+        output.append("        .reset_n(reset_n),")
+        output.append("        .utimer_sel(utimer_sel),")
+        output.append("        .utimer_data_i(mem_wdata),")
+        output.append("        .we(mem_wstrb[0]),")
+        output.append("        .utimer_ready(utimer_ready),")
+        output.append("        .utimer_data_o(utimer_data_o)")
+        output.append("    );")
         output.append("")
 
         output.append("""

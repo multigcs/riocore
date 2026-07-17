@@ -17,7 +17,7 @@
  *
  */
 
-module prv32_simpleuart #(parameter integer DEFAULT_DIV = 1) (
+module prv32_simpleuart #(parameter integer DEFAULT_DIV = 2812) (
 	input clk,
 	input resetn,
 
@@ -56,10 +56,10 @@ module prv32_simpleuart #(parameter integer DEFAULT_DIV = 1) (
 		if (!resetn) begin
 			cfg_divider <= DEFAULT_DIV;
 		end else begin
-			if (reg_div_we[0]) cfg_divider[ 7: 0] <= reg_div_di[ 7: 0];
-			if (reg_div_we[1]) cfg_divider[15: 8] <= reg_div_di[15: 8];
-			if (reg_div_we[2]) cfg_divider[23:16] <= reg_div_di[23:16];
-			if (reg_div_we[3]) cfg_divider[31:24] <= reg_div_di[31:24];
+			//if (reg_div_we[0]) cfg_divider[ 7: 0] <= reg_div_di[ 7: 0];
+			//if (reg_div_we[1]) cfg_divider[15: 8] <= reg_div_di[15: 8];
+			//if (reg_div_we[2]) cfg_divider[23:16] <= reg_div_di[23:16];
+			//if (reg_div_we[3]) cfg_divider[31:24] <= reg_div_di[31:24];
 		end
 	end
 
