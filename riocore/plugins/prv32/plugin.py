@@ -11,7 +11,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
+        self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_mem_gowin.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = ["src/sram_gowin.v", "src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c"]
         self.OPTIONS = {
             "source": {
@@ -448,45 +448,5 @@ module prv32 (
 
 endmodule
 
-module prv32_rio_vin (
-    input wire         clk,
-    input wire         reset_n,
-    input wire         vin_sel,
-    input wire [31:0]  vin_data_i,
-    input wire         we,
-    output wire        vin_ready,
-    output wire [31:0]  vin_data_o,
-    output reg [31:0]  vin
-    );
-
-    assign vin_ready = vin_sel;
-    assign vin_data_o = vin;
-
-    always @(posedge clk or negedge reset_n) begin
-        if (!reset_n) begin
-            vin <= 'b0;
-        end else if (vin_sel) begin
-            if (we) begin
-                vin <= vin_data_i;
-            end
-        end
-    end
-endmodule
-
-module prv32_rio_vout (
-    input wire         clk,
-    input wire         reset_n,
-    input wire         vout_sel,
-    input wire [31:0]  vout_data_i,
-    input wire         we,
-    output wire        vout_ready,
-    output wire [31:0] vout_data_o,
-    input wire [31:0]  vout
-    );
-
-    assign vout_ready = vout_sel;
-    assign vout_data_o = vout;
-
-endmodule
 """)
         return output
