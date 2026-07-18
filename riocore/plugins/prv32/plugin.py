@@ -30,7 +30,7 @@ class Plugin(PluginBase):
                 "type": int,
                 "min": 512,
                 "max": 8192,
-                "default": 4096,
+                "default": 8192,
                 "description": "size of ram in byte",
             },
             "uarts": {
@@ -61,7 +61,7 @@ class Plugin(PluginBase):
                 "default": "",
             },
         }
-        self.toolchain = None
+        self.fpga_toolchain = None
         self.ramsize = self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"])
         self.gpios = self.plugin_setup.get("gpios", self.OPTIONS["gpios"]["default"])
         self.uarts = self.plugin_setup.get("uarts", self.OPTIONS["uarts"]["default"])
@@ -109,12 +109,13 @@ class Plugin(PluginBase):
         if self.ramsize % 4:
             print("ERROR: ramsize must be multiple of 4")
 
-
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
         if gateware:
-            self.toolchain = gateware.jdata["toolchain"]
-            if self.toolchain == "gowin":
+            self.fpga_toolchain = gateware.jdata["toolchain"]
+            self.fpga_family = gateware.jdata.get("family")
+            self.fpga_type = gateware.jdata.get("type")
+            if self.fpga_toolchain == "gowin":
                 self.VERILOGS.append("prv32_mem_gowin.v")
                 self.SRCFILES.append("src/sram_gowin.v")
             else:
@@ -139,6 +140,7 @@ class Plugin(PluginBase):
 # https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
 #
 set -x
+set -e
 
 RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
@@ -150,7 +152,7 @@ cd src/
             uid = instance.plugin_setup["uid"]
             os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
 
-            if instance.toolchain == "gowin":
+            if instance.fpga_toolchain == "gowin":
                 if instance.ramsize != 8192:
                     instance.ramsize = 8192
                     print(f"  INFO: set ram size to {instance.ramsize} (gowin)")
@@ -159,6 +161,13 @@ cd src/
                 print(f"  INFO: limit ram size to {instance.ramsize}")
 
             instance.addrbits = instance.clog2(instance.ramsize)
+            instance.mabi = "ilp32"
+            instance.march = "rv32i"
+            if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]) and instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
+                instance.march += "m"
+            if instance.plugin_setup.get("ENABLE_COMPRESSED", instance.OPTIONS["ENABLE_COMPRESSED"]["default"]):
+                instance.march += "c"
+            instance.march += "2p0"
 
             startup = []
             startup.append("")
@@ -187,25 +196,17 @@ cd src/
             target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
             open(target, "w").write(source)
 
-            mabi = "ilp32"
-            march = "rv32i"
-            if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]) and instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
-                march += "m"
-            if instance.plugin_setup.get("ENABLE_COMPRESSED", instance.OPTIONS["ENABLE_COMPRESSED"]["default"]):
-                march += "c"
-            march += "2p0"
-
             output.append(f"""
 
-TOOLCHAIN="{instance.toolchain}"
+TOOLCHAIN="{instance.fpga_toolchain}"
 
 rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
 
-$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={march} -mabi={mabi} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 
 rm -f ../mem_init_{uid}.v
@@ -235,9 +236,18 @@ fi
         output.append("")
         output.append("#include <stdint.h>")
         output.append("")
-        output.append(f'#define SYSNAME "{uid}"')
-        output.append(f"#define F_CPU {instance.system_setup['speed']}")
-
+        output.append(f"#define F_CPU          {instance.system_setup['speed']}")
+        output.append(f'#define SYSNAME        "{uid}"')
+        output.append('#define CPU_TYPE       "PicoRV32"')
+        output.append(f'#define CPU_MABI       "{instance.mabi}"')
+        output.append(f'#define CPU_MARCH      "{instance.march}"')
+        if instance.fpga_toolchain:
+            output.append(f'#define FPGA_TOOLCHAIN "{instance.fpga_toolchain}"')
+        if instance.fpga_family:
+            output.append(f'#define FPGA_FAMILY    "{instance.fpga_family}"')
+        if instance.fpga_type:
+            output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
+        output.append("")
         if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]):
             output.append("#define ENABLE_MUL")
         if instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
@@ -292,6 +302,7 @@ fi
             output.append("#endif")
             output.append("extern void uart_set_div(unsigned int uart, unsigned int div);")
             output.append("extern void uart_print_hex(unsigned int uart, unsigned int val);")
+            output.append("extern void uart_print_dec(unsigned int uart, unsigned int val);")
             output.append("extern char uart_getchar(unsigned int uart);")
             output.append("extern void uart_putchar(unsigned int uart, char ch);")
             output.append("extern void uart_puts(unsigned int uart, char *s);")

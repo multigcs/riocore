@@ -33,7 +33,7 @@ int main() {
                 uart_puts(0, SYSNAME);
                 uart_puts(0, " - ");
                 #ifdef ENABLE_MUL
-                    uart_print_hex(0, now / 100);
+                    uart_print_dec(0, now / 100);
                 #else
                     uart_print_hex(0, now);
                 #endif

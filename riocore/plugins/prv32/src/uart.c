@@ -33,6 +33,22 @@ void uart_print_hex(unsigned int uart, unsigned int val) {
   }
 }
 
+#ifdef ENABLE_MUL
+#ifdef ENABLE_DIV
+void uart_print_dec(unsigned int uart, unsigned int val) {
+	char buffer[10];
+	char *p = buffer;
+	while (val || p == buffer) {
+		*(p++) = val % 10;
+		val = val / 10;
+	}
+	while (p != buffer) {
+		*((volatile uint32_t*)UART0_DATA) = '0' + *(--p);
+	}
+}
+#endif
+#endif
+
 char uart_getchar(unsigned int uart) {
   unsigned char ch;
 
