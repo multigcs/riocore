@@ -18,6 +18,9 @@
 * kicad template generator (pro/pcb/sch)
 * verilator based simulation
 
+### Plugins
+* prv32: risc-v soc based on picorv32
+
 
 ## v0.9.4
 

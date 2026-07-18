@@ -366,6 +366,14 @@ class Plugin(PluginBase):
                                 if pin_config["pin"] == slot["pins"][pin_name]["pin"]:
                                     slot["pins"][pin_name]["varname"] = pin_config["varname"]
 
+            # check for interfaces
+            instance.interface_found = False
+            for plugin_instance in parent.project.plugin_instances:
+                if instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                if plugin_instance.TYPE == "interface":
+                    instance.interface_found = True
+
             # gateware
             parent.project.config["speed"] = instance.jdata["speed"]
             instance.gateware = gateware(parent, instance)
@@ -376,13 +384,14 @@ class Plugin(PluginBase):
 
             # linuxcnc-component
             if not instance.fmaster:
-                component(parent.project, instance=instance)
-                rosbridge(parent.project, instance=instance)
-                mqttbridge(parent.project, instance=instance)
-                pylib(parent.project, instance=instance)
-                if instance.protocol == "UDP":
-                    jslib(parent.project, instance=instance)
-                    simulator(parent.project, instance=instance)
+                if instance.interface_found:
+                    component(parent.project, instance=instance)
+                    rosbridge(parent.project, instance=instance)
+                    mqttbridge(parent.project, instance=instance)
+                    pylib(parent.project, instance=instance)
+                    if instance.protocol == "UDP":
+                        jslib(parent.project, instance=instance)
+                        simulator(parent.project, instance=instance)
             elif not instance.jdata["toolchain"]:
                 instance.jdata["output_path"] = firmware_path
                 instance.firmware(parent, instances)
