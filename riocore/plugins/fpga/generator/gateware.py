@@ -229,7 +229,7 @@ class gateware(generator_base):
 
     def subcon(self, subname, subnumber):
         sym_io = False
-        if self.instance.protocol.startswith("SPI"):
+        if self.instance.protocol and self.instance.protocol.startswith("SPI"):
             # input and output frames with has same size
             sym_io = True
 
@@ -362,7 +362,7 @@ class gateware(generator_base):
             timestamp_size = 32
 
         sym_io = False
-        if self.instance.protocol.startswith("SPI"):
+        if self.instance.protocol and self.instance.protocol.startswith("SPI"):
             # input and output frames with has same size
             sym_io = True
 
@@ -600,15 +600,31 @@ class gateware(generator_base):
         output.append(f"        {arguments_string}")
         output.append("    );")
         output.append("")
-        output.append("    localparam HEADER_TX = 32'h64617461;")
-        sysclk_speed = self.jdata["speed"]
-        timeout = sysclk_speed // 10
-        timeout_bits = self.clog2(timeout)
-        output.append(f"    localparam TIMEOUT = {timeout};")
-        output.append(f"    localparam TIMEOUT_BITS = {timeout_bits};")
-        output.append(f"    localparam BUFFER_SIZE_TX = 16'd{self.buffer_size_in}; // {self.buffer_size_in // 8} bytes")
-        output.append(f"    localparam BUFFER_SIZE_RX = 16'd{self.buffer_size_out}; // {self.buffer_size_out // 8} bytes")
-        output.append("")
+
+        idata = []
+        output_rx_data = []
+        isedges = []
+        for plugin_instance in self.parent.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            if plugin_instance.TYPE == "interface":
+                uid = plugin_instance.plugin_setup["uid"]
+                output_rx_data.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data_{uid.lower()};")
+                idata.append(f"rx_data_{uid.lower()}")
+                isedges.append(f"INTERFACE_SYNC_{uid.upper()}_RISINGEDGE")
+
+        if not idata:
+            riocore.log("  WARNING: no interface found")
+        else:
+            output.append("    localparam HEADER_TX = 32'h64617461;")
+            sysclk_speed = self.jdata["speed"]
+            timeout = sysclk_speed // 10
+            timeout_bits = self.clog2(timeout)
+            output.append(f"    localparam TIMEOUT = {timeout};")
+            output.append(f"    localparam TIMEOUT_BITS = {timeout_bits};")
+            output.append(f"    localparam BUFFER_SIZE_TX = 16'd{self.buffer_size_in}; // {self.buffer_size_in // 8} bytes")
+            output.append(f"    localparam BUFFER_SIZE_RX = 16'd{self.buffer_size_out}; // {self.buffer_size_out // 8} bytes")
+            output.append("")
 
         output.append("    // system clock")
         osc_clock = self.jdata["clock"].get("osc")
@@ -675,92 +691,84 @@ class gateware(generator_base):
                 output.append("    assign sysclk = sysclk_in;")
         output.append("")
 
-        output.append("    // data buffers")
-        output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
-        idata = []
-        isedges = []
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            if plugin_instance.TYPE == "interface":
-                uid = plugin_instance.plugin_setup["uid"]
-                output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data_{uid.lower()};")
-                idata.append(f"rx_data_{uid.lower()}")
-                isedges.append(f"INTERFACE_SYNC_{uid.upper()}_RISINGEDGE")
-        if not idata:
-            riocore.log("  ERROR: no interfaces found")
-            sys.exit(1)
-        elif len(idata) > 1:
-            riocore.log("  INFO: multiple interfaces found")
-            output.append("    reg  [BUFFER_SIZE_RX-1:0] rx_data = 0;")
-        else:
-            output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data = {idata[0]};")
-        output.append("")
+        if idata:
+            output.append("    // data buffers")
+            output.append("    wire [BUFFER_SIZE_TX-1:0] tx_data;")
+            output += output_rx_data
+            if len(idata) > 1:
+                riocore.log("  INFO: multiple interfaces found")
+                output.append("    reg  [BUFFER_SIZE_RX-1:0] rx_data = 0;")
+            else:
+                output.append(f"    wire [BUFFER_SIZE_RX-1:0] rx_data = {idata[0]};")
+            output.append("")
 
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            if plugin_instance.TYPE == "interface":
-                uid = plugin_instance.plugin_setup["uid"]
-                output.append(f"    // generate sync edge ({uid})")
-                output.append(f"    wire INTERFACE_SYNC_{uid.upper()};")
-                output.append(f"    reg[2:0] INTERFACE_SYNC_{uid.upper()}_REG;")
-                output.append(f"    wire INTERFACE_SYNC_{uid.upper()}_RISINGEDGE = (INTERFACE_SYNC_{uid.upper()}_REG[2:1]==2'b01);")
-                output.append("    always @(posedge sysclk) begin")
-                output.append(f"        INTERFACE_SYNC_{uid.upper()}_REG <= {{INTERFACE_SYNC_{uid.upper()}_REG[1:0], INTERFACE_SYNC_{uid.upper()}}};")
-                output.append("    end")
-                output.append("")
+            for plugin_instance in self.parent.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                if plugin_instance.TYPE == "interface":
+                    uid = plugin_instance.plugin_setup["uid"]
+                    output.append(f"    // generate sync edge ({uid})")
+                    output.append(f"    wire INTERFACE_SYNC_{uid.upper()};")
+                    output.append(f"    reg[2:0] INTERFACE_SYNC_{uid.upper()}_REG;")
+                    output.append(f"    wire INTERFACE_SYNC_{uid.upper()}_RISINGEDGE = (INTERFACE_SYNC_{uid.upper()}_REG[2:1]==2'b01);")
+                    output.append("    always @(posedge sysclk) begin")
+                    output.append(f"        INTERFACE_SYNC_{uid.upper()}_REG <= {{INTERFACE_SYNC_{uid.upper()}_REG[1:0], INTERFACE_SYNC_{uid.upper()}}};")
+                    output.append("    end")
+                    output.append("")
 
-        output.append("    // check interface timeout via sync flag")
-        output.append(f"    wire INTERFACE_SYNC_RISINGEDGE = {' | '.join(isedges)};")
-        output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
-        output.append("    reg INTERFACE_TIMEOUT = 0;")
-        output.append("    always @(posedge sysclk) begin")
-
-        toutifs = []
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            if plugin_instance.TYPE == "interface":
-                uid = plugin_instance.plugin_setup["uid"]
-                if len(idata) > 1:
-                    toutifs.append(f"if (INTERFACE_SYNC_{uid.upper()}_RISINGEDGE == 1) begin\n            timeout_counter <= 0;\n            rx_data <= rx_data_{uid.lower()};\n        end")
-                else:
-                    toutifs.append(f"if (INTERFACE_SYNC_{uid.upper()}_RISINGEDGE == 1) begin\n            timeout_counter <= 0;\n        end")
-
-        output.append(f"        {' else '.join(toutifs)} else begin")
-        output.append("            if (timeout_counter < TIMEOUT) begin")
-        output.append("                timeout_counter <= timeout_counter + 1'd1;")
-        output.append("                INTERFACE_TIMEOUT <= 0;")
-        output.append("            end else begin")
-        output.append("                INTERFACE_TIMEOUT <= 1;")
-        output.append("            end")
-        output.append("        end")
-        output.append("    end")
-        output.append("")
-
-        output.append("    // errors")
-        error_signals = ["INTERFACE_TIMEOUT"]
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            for interface_setup in plugin_instance.interface_data().values():
-                error_on = interface_setup.get("error_on")
-                if error_on is True:
-                    error_signals.append(interface_setup["variable"])
-                elif error_on is False:
-                    error_signals.append(f"~{interface_setup['variable']}")
-        output.append("    wire ERROR;")
-        output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
-        output.append("")
-
-        if use_timestamp:
-            output.append("    // timestamp counter")
-            output.append("    reg [31:0] timestamp = 32'd0;")
+            output.append("    // check interface timeout via sync flag")
+            output.append(f"    wire INTERFACE_SYNC_RISINGEDGE = {' | '.join(isedges)};")
+            output.append("    reg [TIMEOUT_BITS-1:0] timeout_counter = 0;")
+            output.append("    reg INTERFACE_TIMEOUT = 0;")
             output.append("    always @(posedge sysclk) begin")
-            output.append("        timestamp <= timestamp + 32'd1;")
+            toutifs = []
+            for plugin_instance in self.parent.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                if plugin_instance.TYPE == "interface":
+                    uid = plugin_instance.plugin_setup["uid"]
+                    if len(idata) > 1:
+                        toutifs.append(f"if (INTERFACE_SYNC_{uid.upper()}_RISINGEDGE == 1) begin\n            timeout_counter <= 0;\n            rx_data <= rx_data_{uid.lower()};\n        end")
+                    else:
+                        toutifs.append(f"if (INTERFACE_SYNC_{uid.upper()}_RISINGEDGE == 1) begin\n            timeout_counter <= 0;\n        end")
+
+            output.append(f"        {' else '.join(toutifs)} else begin")
+            output.append("            if (timeout_counter < TIMEOUT) begin")
+            output.append("                timeout_counter <= timeout_counter + 1'd1;")
+            output.append("                INTERFACE_TIMEOUT <= 0;")
+            output.append("            end else begin")
+            output.append("                INTERFACE_TIMEOUT <= 1;")
+            output.append("            end")
+            output.append("        end")
             output.append("    end")
             output.append("")
+
+        output.append("    // errors")
+        if not idata:
+            output.append("    reg ERROR = 0;")
+            output.append("")
+        else:
+            output.append("    wire ERROR;")
+            error_signals = ["INTERFACE_TIMEOUT"]
+            for plugin_instance in self.parent.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                for interface_setup in plugin_instance.interface_data().values():
+                    error_on = interface_setup.get("error_on")
+                    if error_on is True:
+                        error_signals.append(interface_setup["variable"])
+                    elif error_on is False:
+                        error_signals.append(f"~{interface_setup['variable']}")
+            output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
+            output.append("")
+
+            if use_timestamp:
+                output.append("    // timestamp counter")
+                output.append("    reg [31:0] timestamp = 32'd0;")
+                output.append("    always @(posedge sysclk) begin")
+                output.append("        timestamp <= timestamp + 32'd1;")
+                output.append("    end")
+                output.append("")
 
         if double_pins:
             output.append("    // linking double used input pins")
@@ -797,49 +805,73 @@ class gateware(generator_base):
                         output.append(f"    wire {pin_config['varname']};")
                         output.append(f"    assign {pin_config['varname']} = {pinname}; // {pin_config['direction']}")
 
-        # multiplexing
-        if self.multiplexed_input:
-            output.append(f"    reg [{self.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE = 0;")
-            output.append("    reg [7:0] MULTIPLEXED_INPUT_ID = 0;")
-        if self.multiplexed_output:
-            output.append(f"    wire [{self.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
-            output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
+        if idata:
+            # multiplexing
+            if self.multiplexed_input:
+                output.append(f"    reg [{self.multiplexed_input_size - 1}:0] MULTIPLEXED_INPUT_VALUE = 0;")
+                output.append("    reg [7:0] MULTIPLEXED_INPUT_ID = 0;")
+            if self.multiplexed_output:
+                output.append(f"    wire [{self.multiplexed_output_size - 1}:0] MULTIPLEXED_OUTPUT_VALUE;")
+                output.append("    wire [7:0] MULTIPLEXED_OUTPUT_ID;")
 
-        output.append("    // plugin variables")
-        for plugin_instance in self.parent.project.plugin_instances:
-            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
-                continue
-            for data_config in plugin_instance.interface_data().values():
-                if not data_config.get("expansion"):
-                    variable_name = data_config["variable"]
-                    variable_size = data_config["size"]
-                    direction = data_config["direction"]
-                    multiplexed = data_config.get("multiplexed", False)
-                    if self.instance.fmaster is not None:
-                        multiplexed = False
-                    if variable_size > 1:
-                        if multiplexed and direction == "output":
-                            output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
+            output.append("    // plugin variables")
+            for plugin_instance in self.parent.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                for data_config in plugin_instance.interface_data().values():
+                    if not data_config.get("expansion"):
+                        variable_name = data_config["variable"]
+                        variable_size = data_config["size"]
+                        direction = data_config["direction"]
+                        multiplexed = data_config.get("multiplexed", False)
+                        if self.instance.fmaster is not None:
+                            multiplexed = False
+                        if variable_size > 1:
+                            if multiplexed and direction == "output":
+                                output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
+                            else:
+                                output.append(f"    wire [{variable_size - 1}:0] {variable_name};")
+                        elif multiplexed and direction == "output":
+                            output.append(f"    reg {variable_name};")
                         else:
-                            output.append(f"    wire [{variable_size - 1}:0] {variable_name};")
-                    elif multiplexed and direction == "output":
-                        output.append(f"    reg {variable_name};")
-                    else:
-                        output.append(f"    wire {variable_name};")
-        output.append("")
+                            output.append(f"    wire {variable_name};")
+            output.append("")
 
-        output_variables_string = "\n    ".join(output_variables_list)
-        output.append(f"    {output_variables_string}")
-        output.append("")
-        if self.instance.fmaster is None:
-            output.append(f"    // MASTER_FPGA -> PC IN ({self.input_size} + FILL = {self.buffer_size_in})")
+            output_variables_string = "\n    ".join(output_variables_list)
+            output.append(f"    {output_variables_string}")
+            output.append("")
+            if self.instance.fmaster is None:
+                output.append(f"    // MASTER_FPGA -> PC IN ({self.input_size} + FILL = {self.buffer_size_in})")
+            else:
+                output.append(f"    // MASTER_SUB -> MASTER_FPGA IN ({self.input_size} + FILL = {self.buffer_size_in})")
+            output.append("    assign tx_data = {")
+            input_variables_string = ",\n        ".join(input_variables_list)
+            output.append(f"        {input_variables_string}")
+            output.append("    };")
+            output.append("")
         else:
-            output.append(f"    // MASTER_SUB -> MASTER_FPGA IN ({self.input_size} + FILL = {self.buffer_size_in})")
-        output.append("    assign tx_data = {")
-        input_variables_string = ",\n        ".join(input_variables_list)
-        output.append(f"        {input_variables_string}")
-        output.append("    };")
-        output.append("")
+            output.append("    // plugin variables")
+            for plugin_instance in self.parent.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                for data_config in plugin_instance.interface_data().values():
+                    if not data_config.get("expansion"):
+                        variable_name = data_config["variable"]
+                        variable_size = data_config["size"]
+                        direction = data_config["direction"]
+                        multiplexed = data_config.get("multiplexed", False)
+                        if self.instance.fmaster is not None:
+                            multiplexed = False
+                        if variable_size > 1:
+                            if direction == "output":
+                                output.append(f"    reg [{variable_size - 1}:0] {variable_name} = 0;")
+                            else:
+                                output.append(f"    wire [{variable_size - 1}:0] {variable_name};")
+                        elif direction == "output":
+                            output.append(f"    reg {variable_name};")
+                        else:
+                            output.append(f"    wire {variable_name};")
+            output.append("")
 
         # gateware_defines
         for plugin_instance in self.parent.project.plugin_instances:

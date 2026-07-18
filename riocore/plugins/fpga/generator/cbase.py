@@ -937,28 +937,25 @@ class cbase:
 
         protocol = self.instance.protocol
         interface_instance = self.instance.interface_instance
-        if interface_instance is None:
-            print(f"ERROR: {self.instance.instances_name}: no interface found")
-            exit(1)
-
-        if protocol == "UDP":
-            ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))
-            port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
-            udp_async = interface_instance.plugin_setup.get("async", interface_instance.option_default("async", False))
-            # backward compatibility (SPI/UDP)
-            ip = self.project.config["jdata"].get("ip", ip)
-            port = self.project.config["jdata"].get("port", port)
-            dst_port = self.project.config["jdata"].get("dst_port", port)
-            # TODO: offset workaround
-            offset = int(self.instance.instances_name[-1])
-            src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1 + offset))
-        elif protocol.startswith("SPI"):
-            cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
-        elif protocol == "UART":
-            uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
-            baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
-            csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
-            serial_async = interface_instance.plugin_setup.get("async", interface_instance.option_default("async", False))
+        if interface_instance:
+            if protocol == "UDP":
+                ip = interface_instance.plugin_setup.get("ip", interface_instance.option_default("ip", "192.168.10.194"))
+                port = interface_instance.plugin_setup.get("port", interface_instance.option_default("port", 2390))
+                udp_async = interface_instance.plugin_setup.get("async", interface_instance.option_default("async", False))
+                # backward compatibility (SPI/UDP)
+                ip = self.project.config["jdata"].get("ip", ip)
+                port = self.project.config["jdata"].get("port", port)
+                dst_port = self.project.config["jdata"].get("dst_port", port)
+                # TODO: offset workaround
+                offset = int(self.instance.instances_name[-1])
+                src_port = self.project.config["jdata"].get("src_port", str(int(port) + 1 + offset))
+            elif protocol and protocol.startswith("SPI"):
+                cspin = interface_instance.plugin_setup.get("cs", interface_instance.option_default("cs", 0))
+            elif protocol == "UART":
+                uart = interface_instance.plugin_setup.get("uart", interface_instance.option_default("uart", "/dev/ttyUSB0"))
+                baud = interface_instance.plugin_setup.get("baud", interface_instance.option_default("baud", 1000000))
+                csum = interface_instance.plugin_setup.get("csum", interface_instance.option_default("csum", False))
+                serial_async = interface_instance.plugin_setup.get("async", interface_instance.option_default("async", False))
 
         defines = {
             "MODNAME": f'"riocomp-{self.instance.instances_name}"',
@@ -986,7 +983,7 @@ class cbase:
                 defines["SPI_PIN_CS"] = "8"  # CE0 = 8 / CE1 = 7
             defines["SPI_DEVICE"] = f'"/dev/spidev0.{cspin}"'
             defines["SPI_SPEED"] = "BCM2835_SPI_CLOCK_DIVIDER_256"
-        elif protocol.startswith("SPI"):
+        elif protocol and protocol.startswith("SPI"):
             defines["SPI_PIN_MOSI"] = "10"
             defines["SPI_PIN_MISO"] = "9"
             defines["SPI_PIN_CLK"] = "11"
@@ -1159,7 +1156,6 @@ class cbase:
             print("ERROR: unsupported interface")
             sys.exit(1)
         else:
-            print("WARNING: no interface found")
             output.append("    return 0;")
 
         output.append("}")
