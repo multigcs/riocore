@@ -63,8 +63,16 @@ class Plugin(PluginBase):
         self.INTERFACE = {}
         self.SIGNALS = {}
         for name, data in self.variables.items():
+            ctype = data.get("ctype", "uint32_t")
+            bsize = 32
+            if ctype == "bool":
+                bsize = 1
+            elif ctype.endswith("int8_t"):
+                bsize = 8
+            elif ctype.endswith("int16_t"):
+                bsize = 16
             self.INTERFACE[name] = {
-                "size": data.get("size", 32),
+                "size": bsize,
                 "direction": data.get("dir", "output"),
             }
             self.SIGNALS[name] = {
