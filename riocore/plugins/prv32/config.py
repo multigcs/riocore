@@ -14,6 +14,13 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
 )
 
+try:
+    from PyQt5.Qsci import QsciLexerCPP, QsciScintilla
+
+    editor_widget = QsciScintilla
+except Exception:
+    editor_widget = QTextEdit
+
 plugin_path = os.path.dirname(__file__)
 
 
@@ -132,7 +139,13 @@ class config:
         hlayout.addLayout(right_layout, stretch=3)
 
         right_layout.addWidget(QLabel("Source:"))
-        self.source = QTextEdit()
+
+        self.source = editor_widget()
+        if editor_widget != QTextEdit:
+            lexer = QsciLexerCPP()
+            # lexer.setDefaultFont(font)
+            self.source.setLexer(lexer)
+
         right_layout.addWidget(self.source)
 
         dialog.layout.addWidget(dialog.buttonBox)
