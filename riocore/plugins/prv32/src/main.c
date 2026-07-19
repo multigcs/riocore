@@ -52,9 +52,9 @@ int main() {
 
         #ifdef RIO_VIN0
             #ifdef RIO_VOUT0
-                *RIO_VIN0 = *RIO_VOUT0 + 20;
+                RIO_VIN0 = RIO_VOUT0 + 20;
             #else
-                *RIO_VIN0 = 123;
+                RIO_VIN0 = 123;
             #endif
         #endif
 

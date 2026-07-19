@@ -13,6 +13,7 @@ class Plugin(PluginBase):
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
+        self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.OPTIONS = {
             "ENABLE_MUL": {
                 "type": bool,
@@ -33,40 +34,13 @@ class Plugin(PluginBase):
                 "default": 8192,
                 "description": "size of ram in byte",
             },
-            "uarts": {
-                "type": int,
-                "min": 0,
-                "max": 1,
-                "default": 1,
-                "description": "number of serial interfaces",
-            },
-            "gpios": {
-                "type": str,
-                "default": "LED0 LED1 SW",
-                "description": "space seperated list of gpio pin-names (no _ please)",
-            },
-            "signals_in": {
-                "type": str,
-                "default": "vin0 vin1",
-                "description": "space seperated list of input signals (to host)",
-            },
-            "signals_out": {
-                "type": str,
-                "default": "vout0 vout1",
-                "description": "space seperated list of output signals (from host)",
-            },
-            "source": {
-                "type": "multiline",
-                "description": "source code (asm)",
-                "default": "",
-            },
         }
         self.fpga_toolchain = None
         self.ramsize = self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"])
-        self.gpios = self.plugin_setup.get("gpios", self.OPTIONS["gpios"]["default"])
-        self.uarts = self.plugin_setup.get("uarts", self.OPTIONS["uarts"]["default"])
-        self.signals_in = self.plugin_setup.get("signals_in", self.OPTIONS["signals_in"]["default"])
-        self.signals_out = self.plugin_setup.get("signals_out", self.OPTIONS["signals_out"]["default"])
+        self.uarts = self.plugin_setup.get("uarts", 1)
+        self.gpios = self.plugin_setup.get("gpios", {})
+        self.variables = self.plugin_setup.get("riovars", {})
+        self.source = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
         for uart_n in range(self.uarts):
             self.PINDEFAULTS = {
                 f"uart{uart_n}_rx": {
@@ -78,32 +52,23 @@ class Plugin(PluginBase):
                     "optional": True,
                 },
             }
-        for gpio in self.gpios.split():
-            self.PINDEFAULTS[gpio] = {
+        for gpio in self.gpios:
+            self.PINDEFAULTS[gpio.upper()] = {
                 "direction": "inout",
                 "optional": True,
             }
 
         uid = self.plugin_setup["uid"]
         self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
-        self.OPTIONS["source"]["default"] = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
         self.INTERFACE = {}
         self.SIGNALS = {}
-        for name in self.signals_in.split():
+        for name, data in self.variables.items():
             self.INTERFACE[name] = {
-                "size": 32,
-                "direction": "input",
+                "size": data.get("size", 32),
+                "direction": data.get("dir", "output"),
             }
             self.SIGNALS[name] = {
-                "direction": "input",
-            }
-        for name in self.signals_out.split():
-            self.INTERFACE[name] = {
-                "size": 32,
-                "direction": "output",
-            }
-            self.SIGNALS[name] = {
-                "direction": "output",
+                "direction": data.get("dir", "output"),
             }
 
         if self.ramsize % 4:
@@ -192,9 +157,8 @@ cd src/
             target = os.path.join(parent.gateware_path, "src", f"rio_{uid}.c")
             open(target, "w").write("\n".join(rio_c))
 
-            source = instance.plugin_setup.get("source", instance.OPTIONS["source"]["default"])
             target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
-            open(target, "w").write(source)
+            open(target, "w").write(instance.source)
 
             output.append(f"""
 
@@ -284,9 +248,8 @@ fi
         output.append("")
         output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
         output.append("")
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                output.append(f"#define RIO_{iname.upper():10s} ((volatile unsigned int *) 0x{idata['addr']:x})")
+        for iname, idata in instance.variables.items():
+            output.append(f"#define RIO_{iname.upper():10s} *((volatile unsigned int *) 0x{idata['addr']:x})")
         output.append("")
         if instance.uarts:
             for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
@@ -374,20 +337,18 @@ uint32_t mills(void) {
         output = []
         addr = 0x80000030
         uid = instance.plugin_setup["uid"]
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                idata["addr"] = addr
-                addr += 0x10
+        for iname, idata in instance.variables.items():
+            idata["addr"] = addr
+            addr += 0x10
 
         output.append(f"module prv32_{uid} (")
         output.append("        input wire  clk,")
         output.append("        input wire  uart0_rx,")
         output.append("        output wire uart0_tx,")
 
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                direction = {"input": "output", "output": "input"}.get(idata["direction"])
-                output.append(f"        {direction} wire [31:0] {iname},")
+        for iname, idata in instance.variables.items():
+            direction = {"input": "output", "output": "input"}.get(idata.get("direction", "output"))
+            output.append(f"        {direction} wire [31:0] {iname},")
 
         gpio_pins = []
         for pname, pdata in instance.PINDEFAULTS.items():
@@ -450,11 +411,10 @@ uint32_t mills(void) {
     wire [31:0]                gpios_data_o;
 """)
 
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                output.append(f"    wire                       {iname}_sel;")
-                output.append(f"    wire                       {iname}_ready;")
-                output.append(f"    wire [31:0]                {iname}_data_o;")
+        for iname, idata in instance.variables.items():
+            output.append(f"    wire                       {iname}_sel;")
+            output.append(f"    wire                       {iname}_ready;")
+            output.append(f"    wire [31:0]                {iname}_data_o;")
         output.append("")
 
         output.append("    // Establish memory map for all slaves:")
@@ -463,9 +423,8 @@ uint32_t mills(void) {
         output.append("    //   UART       0x80000008 - 0x8000000f")
         output.append("    //   CDT        0x80000010 - 0x80000014")
         output.append("    //   UTIMER     0x80000020 - 0x80000024")
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 4:x}")
+        for iname, idata in instance.variables.items():
+            output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 4:x}")
         output.append("")
 
         output.append("    assign sram_sel   = mem_valid && (mem_addr < 32'h00002000);")
@@ -473,9 +432,8 @@ uint32_t mills(void) {
         output.append("    assign uart0_sel  = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
         output.append("    assign cdt_sel    = mem_valid && (mem_addr == 32'h80000010);")
         output.append("    assign utimer_sel = mem_valid && (mem_addr == 32'h80000020);")
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                output.append(f"    assign {iname}_sel = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
+        for iname, idata in instance.variables.items():
+            output.append(f"    assign {iname}_sel = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
         output.append("")
 
         output.append("    // Core can proceed regardless of *which* slave was targetted and is now ready.")
@@ -485,9 +443,8 @@ uint32_t mills(void) {
         output.append("        uart0_ready |")
         output.append("        cdt_ready |")
         output.append("        utimer_ready |")
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                output.append(f"        {iname}_ready |")
+        for iname, idata in instance.variables.items():
+            output.append(f"        {iname}_ready |")
         output.append("        0);")
         output.append("")
 
@@ -498,9 +455,8 @@ uint32_t mills(void) {
         output.append("        uart0_sel  ? uart0_data_o :")
         output.append("        cdt_sel    ? cdt_data_o  :")
         output.append("        utimer_sel ? utimer_data_o :")
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                output.append(f"        {iname}_sel  ? {iname}_data_o  :")
+        for iname, idata in instance.variables.items():
+            output.append(f"        {iname}_sel  ? {iname}_data_o  :")
         output.append("        32'h0;")
         output.append("")
 
@@ -566,20 +522,19 @@ uint32_t mills(void) {
             output.append("    );")
             output.append("")
 
-        for iname, idata in instance.INTERFACE.items():
-            if idata["size"] == 32:
-                direction = {"output": "out", "input": "in"}.get(idata["direction"])
-                output.append(f"    prv32_rio_v{direction} soc_val_{iname} (")
-                output.append("        .clk(clk),")
-                output.append("        .reset_n(reset_n),")
-                output.append(f"        .v{direction}_sel({iname}_sel),")
-                output.append(f"        .v{direction}_data_i(mem_wdata),")
-                output.append("        .we(mem_wstrb[0]),")
-                output.append(f"        .v{direction}_ready({iname}_ready),")
-                output.append(f"        .v{direction}_data_o({iname}_data_o),")
-                output.append(f"        .v{direction}({iname})")
-                output.append("    );")
-                output.append("")
+        for iname, idata in instance.variables.items():
+            direction = {"output": "out", "input": "in"}.get(idata.get("direction", "output"))
+            output.append(f"    prv32_rio_v{direction} soc_val_{iname} (")
+            output.append("        .clk(clk),")
+            output.append("        .reset_n(reset_n),")
+            output.append(f"        .v{direction}_sel({iname}_sel),")
+            output.append(f"        .v{direction}_data_i(mem_wdata),")
+            output.append("        .we(mem_wstrb[0]),")
+            output.append(f"        .v{direction}_ready({iname}_ready),")
+            output.append(f"        .v{direction}_data_o({iname}_data_o),")
+            output.append(f"        .v{direction}({iname})")
+            output.append("    );")
+            output.append("")
 
         output.append(f"    prv32_utimer #(.MS_DIVIDER({instance.system_setup['speed'] // 1000})) soc_utimer (")
         output.append("        .clk(clk),")
