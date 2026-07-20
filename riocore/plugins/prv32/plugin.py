@@ -12,7 +12,7 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
-        self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
+        self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/spi.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.OPTIONS = {
             "ENABLE_MUL": {
@@ -174,13 +174,14 @@ cd src/
 
 TOOLCHAIN="{instance.fpga_toolchain}"
 
-rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
+rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o spi.o
 
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c spi.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o spi.o
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 
 rm -f ../mem_init_{uid}.v
@@ -282,6 +283,10 @@ fi
             output.append("extern void uart_putchar(unsigned int uart, char ch);")
             output.append("extern void uart_puts(unsigned int uart, char *s);")
             output.append("")
+        output.append("#ifdef GPIO_SPI0_SCLK")
+        output.append("extern unsigned char spi0_transfer_byte(unsigned char send_val);")
+        output.append("#endif")
+        output.append("")
         output.append("extern void cdt_wbyte0(const unsigned char value);")
         output.append("extern void cdt_wbyte1(const unsigned char value);")
         output.append("extern void cdt_wbyte2(const unsigned char value);")
