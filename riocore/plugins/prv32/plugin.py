@@ -77,6 +77,7 @@ class Plugin(PluginBase):
             }
             self.SIGNALS[name] = {
                 "direction": data.get("dir", "output"),
+                "bool": bsize == 1,
             }
 
         if self.ramsize % 4:
@@ -136,6 +137,7 @@ cd src/
             instance.addrbits = instance.clog2(instance.ramsize)
             instance.mabi = "ilp32"
             instance.march = "rv32i"
+            instance.gcc_options = ""
             if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]) and instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
                 instance.march += "m"
             if instance.plugin_setup.get("ENABLE_COMPRESSED", instance.OPTIONS["ENABLE_COMPRESSED"]["default"]):
@@ -174,11 +176,11 @@ TOOLCHAIN="{instance.fpga_toolchain}"
 
 rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o
 
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c timer.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c uart.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c main_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 
 rm -f ../mem_init_{uid}.v
@@ -257,7 +259,8 @@ fi
         output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
         output.append("")
         for iname, idata in instance.variables.items():
-            output.append(f"#define RIO_{iname.upper():10s} *((volatile unsigned int *) 0x{idata['addr']:x})")
+            ctype = idata.get("ctype", "uint32_t")
+            output.append(f"#define RIO_{iname.upper():10s} *((volatile {ctype} *) 0x{idata['addr']:x})")
         output.append("")
         if instance.uarts:
             for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
@@ -347,7 +350,7 @@ uint32_t mills(void) {
         uid = instance.plugin_setup["uid"]
         for iname, idata in instance.variables.items():
             idata["addr"] = addr
-            addr += 0x10
+            addr += 0x04
 
         output.append(f"module prv32_{uid} (")
         output.append("        input wire  clk,")
@@ -355,7 +358,7 @@ uint32_t mills(void) {
         output.append("        output wire uart0_tx,")
 
         for iname, idata in instance.variables.items():
-            direction = {"input": "output", "output": "input"}.get(idata.get("direction", "output"))
+            direction = {"input": "output", "output": "input"}.get(idata.get("dir", "output"))
             output.append(f"        {direction} wire [31:0] {iname},")
 
         gpio_pins = []
@@ -432,7 +435,7 @@ uint32_t mills(void) {
         output.append("    //   CDT        0x80000010 - 0x80000014")
         output.append("    //   UTIMER     0x80000020 - 0x80000024")
         for iname, idata in instance.variables.items():
-            output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 4:x}")
+            output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 3:x}")
         output.append("")
 
         output.append("    assign sram_sel   = mem_valid && (mem_addr < 32'h00002000);")
@@ -531,7 +534,7 @@ uint32_t mills(void) {
             output.append("")
 
         for iname, idata in instance.variables.items():
-            direction = {"output": "out", "input": "in"}.get(idata.get("direction", "output"))
+            direction = {"output": "out", "input": "in"}.get(idata.get("dir", "output"))
             output.append(f"    prv32_rio_v{direction} soc_val_{iname} (")
             output.append("        .clk(clk),")
             output.append("        .reset_n(reset_n),")
