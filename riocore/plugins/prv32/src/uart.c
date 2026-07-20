@@ -53,6 +53,10 @@ char uart_getchar(unsigned int uart) {
     return *UART0_DATA;
 }
 
+char uart_available(unsigned int uart) {
+    return (*UART0_DATA)>>8;
+}
+
 void uart_putchar(unsigned int uart, char ch) {
     *UART0_DATA = ch;
 }

@@ -267,7 +267,7 @@ fi
                 output.append(f"#define UART_B{baud} {instance.system_setup['speed'] * 12 // baud}")
             for uart_n in range(instance.uarts):
                 output.append(f"#define UART{uart_n}_DIV ((volatile unsigned char *) 0x80000008)")
-                output.append(f"#define UART{uart_n}_DATA ((volatile unsigned char *) 0x8000000c)")
+                output.append(f"#define UART{uart_n}_DATA ((volatile unsigned int *) 0x8000000c)")
             output.append("")
             output.append("#ifdef ENABLE_MUL")
             output.append("#ifdef ENABLE_DIV")
@@ -278,6 +278,7 @@ fi
             output.append("extern void uart_print_hex(unsigned int uart, unsigned int val);")
             output.append("extern void uart_print_dec(unsigned int uart, unsigned int val);")
             output.append("extern char uart_getchar(unsigned int uart);")
+            output.append("extern char uart_available(unsigned int uart);")
             output.append("extern void uart_putchar(unsigned int uart, char ch);")
             output.append("extern void uart_puts(unsigned int uart, char *s);")
             output.append("")

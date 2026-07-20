@@ -50,7 +50,8 @@ module prv32_simpleuart #(parameter DEFAULT_DIV=2812) (
 	assign reg_div_do = cfg_divider;
 
 	assign reg_dat_wait = reg_dat_we && (send_bitcnt || send_dummy);
-	assign reg_dat_do = recv_buf_valid ? recv_buf_data : ~0;
+	//assign reg_dat_do = recv_buf_valid ? recv_buf_data : ~0;
+	assign reg_dat_do = {7'd0, recv_buf_valid, recv_buf_data};
 
 	always @(posedge clk) begin
 		if (!resetn) begin
