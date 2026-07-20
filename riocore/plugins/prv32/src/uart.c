@@ -50,20 +50,15 @@ void uart_print_dec(unsigned int uart, unsigned int val) {
 #endif
 
 char uart_getchar(unsigned int uart) {
-  unsigned char ch;
-
-  /* UART gives 0xff when empty */
-  while ((ch = *UART0_DATA) == 0xff) {}
-
-  return(ch);
+    return *UART0_DATA;
 }
 
 void uart_putchar(unsigned int uart, char ch) {
-  *UART0_DATA = ch;
+    *UART0_DATA = ch;
 }
   
 void uart_puts(unsigned int uart, char *s) {
-  while (*s != 0) *UART0_DATA = *s++;
+    while (*s != 0) *UART0_DATA = *s++;
 }
 
 #endif
