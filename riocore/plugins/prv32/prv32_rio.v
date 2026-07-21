@@ -49,11 +49,11 @@ module prv32_utimer (
     );
     parameter MS_DIVIDER = 'd27000;
 
-    reg [31:0] utimer = 'd0;
+    reg [31:0] utimer;
     assign utimer_ready = utimer_sel;
     assign utimer_data_o = utimer;
 
-    reg [31:0] clk_counter = 'd0;
+    reg [31:0] clk_counter;
     always @(posedge clk or negedge reset_n) begin
         if (!reset_n) begin
             utimer <= 'd0;

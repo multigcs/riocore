@@ -3,7 +3,8 @@
   "description": "TEI0003",
   "url": "https://wiki.trenz-electronic.de/display/PD/TEI0003+Getting+Started",
   "size": [62, 25],
-  "flashcmd": "openFPGALoader -v -b cyc1000 -m rio.rbf -f",
+  "flashcmd": "openFPGALoader -v -b cyc1000 -f rio.rbf",
+  "flashcmd_ram": "openFPGALoader -v -b cyc1000 rio.rbf",
   "toolchain": "quartus",
   "family": "Cyclone 10 LP",
   "type": "10CL025YU256C8G",
@@ -17,6 +18,29 @@
     "pin": "PIN_M2"
   },
   "slots": [
+    {
+      "name": "UART",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "RX": {
+          "pin": "PIN_R7",
+          "pos": [
+            13,
+            70
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "PIN_T7",
+          "pos": [
+            13,
+            91
+          ],
+          "direction": "output"
+        }
+    }
+    },
     {
       "name": "LED",
       "comment": "",

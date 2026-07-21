@@ -248,6 +248,12 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
             makefile_data.append("load:")
             makefile_data.append(f"	{flashcmd}")
             makefile_data.append("")
+            flashcmd_ram = self.config.get("flashcmd_ram")
+            if flashcmd_ram:
+                makefile_data.append("sload:")
+                makefile_data.append(f"	{flashcmd_ram}")
+                makefile_data.append("")
+
         else:
             if board and board.startswith("ICESugarNano"):
                 makefile_data.append("/dev/disk/by-label/iCELink:")

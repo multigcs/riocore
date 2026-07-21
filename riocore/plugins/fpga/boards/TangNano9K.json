@@ -573,6 +573,58 @@
           "direction": "input"
         }
       }
+    },
+    {
+      "name": "SLCD",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "MOSI": {
+          "pin": "77",
+          "pos": [
+            230,
+            47
+          ],
+          "comment": "shared with PIN:77",
+          "direction": "output"
+        },
+        "RS": {
+          "pin": "49",
+          "pos": [
+            230,
+            57
+          ],
+          "comment": "shared with PIN:49",
+          "direction": "output"
+        },
+        "SEL": {
+          "pin": "48",
+          "pos": [
+            230,
+            67
+          ],
+          "comment": "shared with PIN:48",
+          "direction": "output"
+        },
+        "SCLK": {
+          "pin": "76",
+          "pos": [
+            230,
+            77
+          ],
+          "comment": "shared with PIN:76",
+          "direction": "output"
+        },
+        "RST": {
+          "pin": "47",
+          "pos": [
+            230,
+            87
+          ],
+          "comment": "shared with PIN:47",
+          "direction": "output"
+        }
+      }
     }
   ]
 }

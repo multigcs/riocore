@@ -8,6 +8,7 @@
     "family": "ecp5",
     "type": "25k",
     "flashcmd": "openFPGALoader -v -c usb-blaster rio.bit -f",
+    "flashcmd_ram": "openFPGALoader -v -c usb-blaster rio.bit",
     "package": "CABGA256",
     "provides": [
         "pmod",
