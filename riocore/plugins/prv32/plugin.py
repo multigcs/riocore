@@ -197,7 +197,7 @@ then
 else
     sed "s|src/prog.hex|src/prog_{uid}.hex|g" sram_bram.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
 fi
-python3 makehex.py prog_{uid}.bin {instance.ramsize} > prog_{uid}.hex
+python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
 
 """)
         target = os.path.join(parent.gateware_path, "prepare.sh")
