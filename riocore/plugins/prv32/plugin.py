@@ -6,8 +6,8 @@ from riocore.plugins import PluginBase
 class Plugin(PluginBase):
     def setup(self):
         self.NAME = "prv32"
-        self.INFO = "risc-v softcore"
-        self.DESCRIPTION = "picorv32 risc-v cpu for testing"
+        self.INFO = "picorv32 based risc-v softcore"
+        self.DESCRIPTION = "picorv32 risc-v cpu for testing\ni using this riscv-toolchain: https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1"
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
@@ -116,7 +116,7 @@ class Plugin(PluginBase):
 set -x
 set -e
 
-RISCV_BIN="riscv64-unknown-elf"
+# RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
 
 cd src/
@@ -183,6 +183,7 @@ $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -c rio_{uid}.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} -nostartfiles -nostdlib -static -O1 -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o spi.o
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
+$RISCV_BIN-size -G -d prog_{uid}.elf
 
 rm -f ../mem_init_{uid}.v
 
@@ -194,9 +195,9 @@ then
     ./conv_to_init prog_{uid}.bin > ../mem_init_{uid}.v
     sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
 else
-    python3 makehex.py prog_{uid}.bin {instance.ramsize} > prog_{uid}.hex
     sed "s|src/prog.hex|src/prog_{uid}.hex|g" sram_bram.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
 fi
+python3 makehex.py prog_{uid}.bin {instance.ramsize} > prog_{uid}.hex
 
 """)
         target = os.path.join(parent.gateware_path, "prepare.sh")
@@ -213,6 +214,7 @@ fi
         output.append("")
         output.append(f"#define F_CPU          {instance.system_setup['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
+        output.append(f'#define MEMBYTES       {instance.ramsize}')
         output.append('#define CPU_TYPE       "PicoRV32"')
         output.append(f'#define CPU_MABI       "{instance.mabi}"')
         output.append(f'#define CPU_MARCH      "{instance.march}"')
