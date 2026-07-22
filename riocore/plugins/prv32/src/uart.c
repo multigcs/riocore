@@ -11,7 +11,7 @@ void uart_set_div(unsigned int uart, unsigned int div) {
   *UART0_DIV = div;
 
   /* Need to delay a little */
-  for (delay = 0; delay < 200; delay++) {}
+//  for (delay = 0; delay < 200; delay++) {}
 }
 
 #ifdef ENABLE_MUL
@@ -57,7 +57,7 @@ char uart_available(unsigned int uart) {
     return (*UART0_DATA)>>8;
 }
 
-void uart_putchar(unsigned int uart, char ch) {
+void uart_putc(unsigned int uart, char ch) {
     *UART0_DATA = ch;
 }
   

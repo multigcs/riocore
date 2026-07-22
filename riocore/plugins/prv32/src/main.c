@@ -30,9 +30,17 @@ int main() {
             last = now;
 
             #ifdef UART0_DIV
+
+                if (uart_available(0)) {
+                    char rx = uart_getchar(0);
+                    uart_puts(0, "rec: ");
+                    uart_putc(0, rx);
+                    uart_puts(0, "\r\n");
+                }
+
                 uart_puts(0, SYSNAME);
                 uart_puts(0, " - ");
-                #ifdef ENABLE_MUL
+                #ifdef ENABLE_MUL__
                     uart_print_dec(0, now / 100);
                 #else
                     uart_print_hex(0, now);

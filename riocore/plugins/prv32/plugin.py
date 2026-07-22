@@ -83,6 +83,10 @@ class Plugin(PluginBase):
         if self.ramsize % 4:
             print("ERROR: ramsize must be multiple of 4")
 
+        # uart baudrate scale (ice40 = 1 / tangnano = 12) ????
+        self.uart_baud_scale = 1
+
+
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
         if gateware:
@@ -90,9 +94,11 @@ class Plugin(PluginBase):
             self.fpga_family = gateware.jdata.get("family")
             self.fpga_type = gateware.jdata.get("type")
             if self.fpga_toolchain == "gowin":
+                self.uart_baud_scale = 12
                 self.VERILOGS.append("prv32_mem_gowin.v")
                 self.SRCFILES.append("src/sram_gowin.v")
             else:
+                self.uart_baud_scale = 1
                 self.SRCFILES.append("src/sram_bram.v")
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
@@ -267,9 +273,10 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
         output.append("")
         if instance.uarts:
             for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
-                output.append(f"#define UART_B{baud} {instance.system_setup['speed'] * 12 // baud}")
+                #output.append(f"#define UART_B{baud} {instance.system_setup['speed'] * instance.uart_baud_scale // baud}")
+                output.append(f"#define UART_B{str(baud):7s} 0x{instance.system_setup['speed'] * instance.uart_baud_scale // baud:08x}")
             for uart_n in range(instance.uarts):
-                output.append(f"#define UART{uart_n}_DIV ((volatile unsigned char *) 0x80000008)")
+                output.append(f"#define UART{uart_n}_DIV  ((volatile unsigned int *) 0x80000008)")
                 output.append(f"#define UART{uart_n}_DATA ((volatile unsigned int *) 0x8000000c)")
             output.append("")
             output.append("#ifdef ENABLE_MUL")
@@ -282,7 +289,7 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
             output.append("extern void uart_print_dec(unsigned int uart, unsigned int val);")
             output.append("extern char uart_getchar(unsigned int uart);")
             output.append("extern char uart_available(unsigned int uart);")
-            output.append("extern void uart_putchar(unsigned int uart, char ch);")
+            output.append("extern void uart_putc(unsigned int uart, char ch);")
             output.append("extern void uart_puts(unsigned int uart, char *s);")
             output.append("")
         output.append("#ifdef GPIO_SPI0_SCLK")
@@ -395,7 +402,7 @@ uint32_t mills(void) {
         output.append("    parameter [0:0] ENABLE_IRQ_QREGS = 0;")
         output.append(f"    parameter MEMBYTES = {instance.ramsize};")
         output.append(f"    parameter ADDRWIDTH = {instance.addrbits};")
-        output.append(f"    parameter UART_DIV = {instance.system_setup['speed'] * 12 // 115200};")
+        output.append(f"    parameter UART_DIV = {instance.system_setup['speed'] * instance.uart_baud_scale // 115200};")
         output.append("""
     parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
     parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
