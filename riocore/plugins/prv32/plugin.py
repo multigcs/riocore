@@ -214,7 +214,7 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
         output.append("")
         output.append(f"#define F_CPU          {instance.system_setup['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
-        output.append(f'#define MEMBYTES       {instance.ramsize}')
+        output.append(f"#define MEMBYTES       {instance.ramsize}")
         output.append('#define CPU_TYPE       "PicoRV32"')
         output.append(f'#define CPU_MABI       "{instance.mabi}"')
         output.append(f'#define CPU_MARCH      "{instance.march}"')
@@ -364,10 +364,20 @@ uint32_t mills(void) {
         output.append("        input wire  clk,")
         output.append("        input wire  uart0_rx,")
         output.append("        output wire uart0_tx,")
-
         for iname, idata in instance.variables.items():
             direction = {"input": "output", "output": "input"}.get(idata.get("dir", "output"))
-            output.append(f"        {direction} wire [31:0] {iname},")
+            ctype = idata.get("ctype", "uint32_t")
+            bsize = 32
+            if ctype == "bool":
+                bsize = 1
+            elif ctype.endswith("int8_t"):
+                bsize = 8
+            elif ctype.endswith("int16_t"):
+                bsize = 16
+            if bsize > 1:
+                output.append(f"        {direction} wire [{bsize - 1}:0] {iname},")
+            else:
+                output.append(f"        {direction} wire {iname},")
 
         gpio_pins = []
         for pname, pdata in instance.PINDEFAULTS.items():
