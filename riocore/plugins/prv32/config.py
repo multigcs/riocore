@@ -67,9 +67,8 @@ class config:
 
     def update(self):
         self.update_flag = True
-        self.peri_uarts.setValue(self.plugin_setup.get("uarts", 1))
+        self.peri_uarts.setValue(self.plugin_setup.get("uarts", 0))
         self.peri_pwms.setValue(self.plugin_setup.get("pwms", 0))
-        self.peri_uarts.setValue(self.plugin_setup.get("pwms", 1))
 
         pin_n = 0
         for pin_name in self.plugin_setup.get("gpios", {}):

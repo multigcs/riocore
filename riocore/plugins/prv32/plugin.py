@@ -37,7 +37,7 @@ class Plugin(PluginBase):
         }
         self.fpga_toolchain = None
         self.ramsize = self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"])
-        self.uarts = self.plugin_setup.get("uarts", 1)
+        self.uarts = self.plugin_setup.get("uarts", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
         self.source = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
