@@ -432,6 +432,67 @@
                     "direction": "input"
                 }
             }
+        },
+        {
+            "name": "PWR",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "5V": {
+                    "pin": "5V",
+                    "marker": true,
+                    "pos": [
+                        51,
+                        121
+                    ],
+                    "direction": "all"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        65,
+                        121
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        79,
+                        121
+                    ],
+                    "direction": "all"
+                },
+                "1V8": {
+                    "pin": "1V8",
+                    "marker": true,
+                    "pos": [
+                        93,
+                        121
+                    ],
+                    "direction": "all"
+                },
+                "3V3": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        110,
+                        7
+                    ],
+                    "direction": "all"
+                },
+                "2V5": {
+                    "pin": "2V5",
+                    "marker": true,
+                    "pos": [
+                        124,
+                        7
+                    ],
+                    "direction": "all"
+                }
+            }
         }
     ]
 }
