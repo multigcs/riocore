@@ -92,7 +92,18 @@ over USB
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| S1 | 3 | input |
-| S2 | 4 | input |
+| S1 | 4 | input |
+| S2 | 3 | input |
+
+### SLCD
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| MOSI | 77 | output |
+| RS | 49 | output |
+| SEL | 48 | output |
+| SCLK | 76 | output |
+| RST | 47 | output |
 
 

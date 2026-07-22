@@ -1,44 +1,14 @@
 # prv32
-**risc-v softcore**
+**picorv32 based risc-v softcore**
 
-risc-v cpu for testing
+picorv32 risc-v cpu for testing
+i using this riscv-toolchain: https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
 
 * Keywords: risc-v softcore cpu
 * NEEDS: fpga
 
 ## Pins:
 *FPGA-pins*
-### uart_rx:
-
- * direction: input
-
-### uart_tx:
-
- * direction: output
-
-### led0:
-
- * direction: output
-
-### led1:
-
- * direction: output
-
-### led2:
-
- * direction: output
-
-### led3:
-
- * direction: output
-
-### led4:
-
- * direction: output
-
-### led5:
-
- * direction: output
 
 
 ## Options:
@@ -55,42 +25,28 @@ hardware type
  * type: imgselect
  * default: generic
 
-### source:
-source code (asm)
+### ENABLE_MUL:
 
- * type: multiline
- * default: 
-#include "leds.h"
-#include "uart.h"
-#include "countdown_timer.h"
+ * type: bool
+ * default: True
 
+### ENABLE_DIV:
 
-int main() {
-  int i;
-  unsigned char v, ch;
+ * type: bool
+ * default: True
 
-  set_leds(0);
+### ENABLE_COMPRESSED:
 
-  //uart_set_div(234); /* 27000000/115200 */
-  uart_set_div(2812); /* 27000000/9600 */
+ * type: bool
+ * default: False
 
-  uart_puts("hello world\r\n");
+### ramsize:
+size of ram in byte
 
-  i = 0;
-  while (1) {
-    uart_puts("Loop\r\n");
-    v = get_leds();
-    set_leds(v+1);
-
-    uart_set_div(2000 + i);
-
-    cdt_delay(2700000);
-    i += 1;
-  }
-  
-  return 0;
-}
-
+ * type: int
+ * min: 512
+ * max: 8192
+ * default: 8192
 
 
 ## Signals:
@@ -102,11 +58,10 @@ int main() {
 
 
 ## Verilogs:
- * [countdown_timer.v](countdown_timer.v)
- * [reset.v](reset.v)
- * [tang_nano_9k_leds.v](tang_nano_9k_leds.v)
- * [gowin_sp.v](gowin_sp.v)
- * [uart_wrap.v](uart_wrap.v)
- * [simpleuart.v](simpleuart.v)
+ * [prv32_timer.v](prv32_timer.v)
+ * [prv32_reset.v](prv32_reset.v)
+ * [prv32_gpio.v](prv32_gpio.v)
+ * [prv32_rio.v](prv32_rio.v)
+ * [prv32_uart_wrap.v](prv32_uart_wrap.v)
+ * [prv32_simpleuart.v](prv32_simpleuart.v)
  * [picorv32.v](picorv32.v)
- * [prv32.v](prv32.v)

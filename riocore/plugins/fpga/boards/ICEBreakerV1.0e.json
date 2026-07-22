@@ -95,7 +95,7 @@
                 "RED": {
                     "pin": "39",
                     "pos": [
-                        35,
+                        23,
                         74
                     ],
                     "direction": "all"
@@ -103,8 +103,53 @@
                 "BLU": {
                     "pin": "41",
                     "pos": [
+                        23,
+                        86
+                    ],
+                    "direction": "all"
+                },
+                "1V5": {
+                    "pin": "1V5",
+                    "marker": true,
+                    "pos": [
                         11,
                         86
+                    ],
+                    "direction": "all"
+                },
+                "3V3": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        23,
+                        110
+                    ],
+                    "direction": "all"
+                },
+                "5V": {
+                    "pin": "5V",
+                    "marker": true,
+                    "pos": [
+                        11,
+                        110
+                    ],
+                    "direction": "all"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        11,
+                        98
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        23,
+                        98
                     ],
                     "direction": "all"
                 }
@@ -115,6 +160,14 @@
             "comment": "SPI",
             "default": "spi",
             "pins": {
+                "FLASH_CS": {
+                    "pin": "16",
+                    "pos": [
+                        11,
+                        137
+                    ],
+                    "direction": "all"
+                },
                 "SCLK": {
                     "pin": "15",
                     "pos": [
@@ -125,6 +178,7 @@
                 },
                 "MISO": {
                     "pin": "17",
+                    "comment": "IO0",
                     "pos": [
                         11,
                         162
@@ -133,6 +187,7 @@
                 },
                 "MOSI": {
                     "pin": "14",
+                    "comment": "IO1",
                     "pos": [
                         11,
                         174
@@ -141,6 +196,7 @@
                 },
                 "SEL": {
                     "pin": "12",
+                    "comment": "IO2",
                     "pos": [
                         11,
                         186
@@ -149,9 +205,78 @@
                 },
                 "IO3": {
                     "pin": "13",
+                    "comment": "IO3",
                     "pos": [
                         11,
                         197
+                    ],
+                    "direction": "all"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        11,
+                        209
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        48,
+                        209
+                    ],
+                    "direction": "all"
+                },
+                "RST": {
+                    "pin": "RST",
+                    "marker": true,
+                    "pos": [
+                        36,
+                        209
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
+        {
+            "name": "PWR",
+            "pins": {
+                "5V_1": {
+                    "pin": "5V",
+                    "marker": true,
+                    "pos": [
+                        36,
+                        235
+                    ],
+                    "direction": "all"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        36,
+                        248
+                    ],
+                    "direction": "all"
+                },
+                "5V_2": {
+                    "pin": "5V",
+                    "marker": true,
+                    "pos": [
+                        162,
+                        136
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        175,
+                        136
                     ],
                     "direction": "all"
                 }
@@ -216,6 +341,42 @@
                         175,
                         85
                     ]
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        175,
+                        97
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        162,
+                        97
+                    ],
+                    "direction": "all"
+                },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        175,
+                        109
+                    ],
+                    "direction": "all"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        162,
+                        109
+                    ],
+                    "direction": "all"
                 }
             }
         },
@@ -278,6 +439,42 @@
                         175,
                         198
                     ]
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        175,
+                        210
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        162,
+                        210
+                    ],
+                    "direction": "all"
+                },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        175,
+                        222
+                    ],
+                    "direction": "all"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        162,
+                        222
+                    ],
+                    "direction": "all"
                 }
             }
         },
@@ -341,6 +538,42 @@
                         86,
                         249
                     ]
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        74,
+                        249
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        74,
+                        236
+                    ],
+                    "direction": "all"
+                },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        62,
+                        249
+                    ],
+                    "direction": "all"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        62,
+                        236
+                    ],
+                    "direction": "all"
                 }
             }
         }

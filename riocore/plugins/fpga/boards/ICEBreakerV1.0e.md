@@ -44,17 +44,36 @@ BUTTON
 | GRN | 40 | all |
 | RED | 39 | all |
 | BLU | 41 | all |
+| 1V5 | 1V5 | all |
+| 3V3 | 3V3 | all |
+| 5V | 5V | all |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
 
 ### SPI
 SPI
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| FLASH_CS | 16 | all |
 | SCLK | 15 | all |
 | MISO | 17 | all |
 | MOSI | 14 | all |
 | SEL | 12 | all |
 | IO3 | 13 | all |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| RST | RST | all |
+
+### PWR
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V_1 | 5V | all |
+| GND_1 | GND | all |
+| 5V_2 | 5V | all |
+| GND_2 | GND | all |
 
 ### PMOD1A
 PMOD 1A
@@ -69,6 +88,10 @@ PMOD 1A
 | P8 | 48 |  |
 | P9 | 46 |  |
 | P10 | 44 |  |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 
 ### PMOD1B
 PMOD 1B
@@ -83,6 +106,10 @@ PMOD 1B
 | P8 | 36 |  |
 | P9 | 32 |  |
 | P10 | 28 |  |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 
 ### PMOD2
 PMOD2
@@ -97,5 +124,9 @@ PMOD2
 | P8 | 23 |  |
 | P9 | 20 |  |
 | P10 | 18 |  |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
 
 
