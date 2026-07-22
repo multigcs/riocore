@@ -86,15 +86,18 @@ class Plugin(PluginBase):
         # uart baudrate scale (ice40 = 1 / tangnano = 12) ????
         self.uart_baud_scale = 1
 
-
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
         if gateware:
+            self.gateware = gateware
             self.fpga_toolchain = gateware.jdata["toolchain"]
             self.fpga_family = gateware.jdata.get("family")
             self.fpga_type = gateware.jdata.get("type")
             if self.fpga_toolchain == "gowin":
-                self.uart_baud_scale = 12
+                if self.fpga_family == "GW1N-9C":
+                    self.uart_baud_scale = 12
+                elif self.fpga_family == "GW5A-25A":
+                    self.uart_baud_scale = 4
                 self.VERILOGS.append("prv32_mem_gowin.v")
                 self.SRCFILES.append("src/sram_gowin.v")
             else:
@@ -218,7 +221,7 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
         output.append("")
         output.append("#include <stdint.h>")
         output.append("")
-        output.append(f"#define F_CPU          {instance.system_setup['speed']}")
+        output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
         output.append(f"#define MEMBYTES       {instance.ramsize}")
         output.append('#define CPU_TYPE       "PicoRV32"')
@@ -273,8 +276,7 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
         output.append("")
         if instance.uarts:
             for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
-                #output.append(f"#define UART_B{baud} {instance.system_setup['speed'] * instance.uart_baud_scale // baud}")
-                output.append(f"#define UART_B{str(baud):7s} 0x{instance.system_setup['speed'] * instance.uart_baud_scale // baud:08x}")
+                output.append(f"#define UART_B{baud!s:7s} {instance.gateware.jdata['speed'] * instance.uart_baud_scale // baud}")
             for uart_n in range(instance.uarts):
                 output.append(f"#define UART{uart_n}_DIV  ((volatile unsigned int *) 0x80000008)")
                 output.append(f"#define UART{uart_n}_DATA ((volatile unsigned int *) 0x8000000c)")
@@ -402,7 +404,7 @@ uint32_t mills(void) {
         output.append("    parameter [0:0] ENABLE_IRQ_QREGS = 0;")
         output.append(f"    parameter MEMBYTES = {instance.ramsize};")
         output.append(f"    parameter ADDRWIDTH = {instance.addrbits};")
-        output.append(f"    parameter UART_DIV = {instance.system_setup['speed'] * instance.uart_baud_scale // 115200};")
+        output.append(f"    parameter UART_DIV = {instance.gateware.jdata['speed'] * instance.uart_baud_scale // 115200};")
         output.append("""
     parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
     parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
@@ -572,7 +574,7 @@ uint32_t mills(void) {
             output.append("    );")
             output.append("")
 
-        output.append(f"    prv32_utimer #(.MS_DIVIDER({instance.system_setup['speed'] // 1000})) soc_utimer (")
+        output.append(f"    prv32_utimer #(.MS_DIVIDER({instance.gateware.jdata['speed'] // 1000})) soc_utimer (")
         output.append("        .clk(clk),")
         output.append("        .reset_n(reset_n),")
         output.append("        .utimer_sel(utimer_sel),")

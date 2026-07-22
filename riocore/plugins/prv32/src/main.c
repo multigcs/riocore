@@ -2,12 +2,6 @@
 #include <rio.h>
 
 int main() {
-    #ifdef UART0_DIV
-        uart_set_div(0, UART_B115200);
-        uart_puts(0, SYSNAME);
-        uart_puts(0, ": hello world\r\n");
-    #endif
-
     #ifdef GPIO_LED0
         pinMode(GPIO_LED0, OUTPUT);
         digitalWrite(GPIO_LED0, HIGH);
@@ -20,6 +14,12 @@ int main() {
 
     #ifdef GPIO_SW
         pinMode(GPIO_SW, INPUT);
+    #endif
+
+    #ifdef UART0_DIV
+        uart_set_div(0, UART_B115200);
+        uart_puts(0, SYSNAME);
+        uart_puts(0, ": hello world\r\n");
     #endif
 
     uint32_t last = mills();

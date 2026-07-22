@@ -174,7 +174,6 @@ class Plugin(PluginBase):
             self.plugin_setup["speed"] = 12000000
 
         speed = self.plugin_setup.get("speed", self.option_default("speed") or int(self.jdata["clock"].get("speed")))
-
         self.jdata["toolchain"] = toolchain
         self.jdata["clock"]["speed"] = speed
         self.jdata["speed"] = speed

@@ -92,14 +92,6 @@ class ConfigLoader:
         self.dialog.layout = QVBoxLayout()
         self.dialog.setLayout(self.dialog.layout)
 
-        button_wizard = QPushButton(" Wizard")
-        button_wizard.setIcon(self.parent.style().standardIcon(QStyle.SP_MediaPlay))
-        button_wizard.setIconSize(QSize(48, 48))
-        button_wizard.setFixedSize(300, 100)
-        button_wizard.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
-        button_wizard.clicked.connect(self.config_wizard)
-        self.dialog.layout.addWidget(button_wizard)
-
         button_empty = QPushButton(" Empty Config")
         button_empty.setIcon(self.parent.style().standardIcon(QStyle.SP_FileIcon))
         button_empty.setIconSize(QSize(48, 48))
@@ -107,6 +99,14 @@ class ConfigLoader:
         button_empty.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
         button_empty.clicked.connect(self.config_empty)
         self.dialog.layout.addWidget(button_empty)
+
+        button_wizard = QPushButton(" Wizard")
+        button_wizard.setIcon(self.parent.style().standardIcon(QStyle.SP_MediaPlay))
+        button_wizard.setIconSize(QSize(48, 48))
+        button_wizard.setFixedSize(300, 100)
+        button_wizard.setStyleSheet("QPushButton{border: 1px solid; font-size:18px;}")
+        button_wizard.clicked.connect(self.config_wizard)
+        self.dialog.layout.addWidget(button_wizard)
 
         button_config = QPushButton(" Select Config")
         button_config.setIcon(self.parent.style().standardIcon(QStyle.SP_ComputerIcon))
