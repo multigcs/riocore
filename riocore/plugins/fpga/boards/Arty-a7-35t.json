@@ -1,0 +1,521 @@
+{
+  "name": "Arty-a7-35t",
+  "description": "Arty a7-35t - testing",
+  "toolchain": "vivado",
+  "family": "xc7",
+  "type": "xc7a35ticsg324-1l",
+  "package": "csg324",
+  "clock": {
+    "speed": "100000000",
+    "pin": "E3"
+  },
+  "slots": [
+    {
+      "name": "ChipKit",
+      "comment": "ChipKit/Arduino Header",
+      "pins": {
+        "D0": {
+          "pin": "V15",
+          "comment": "",
+          "pos": [
+            445,
+            85
+          ],
+          "direction": "none"
+        },
+        "D1": {
+          "pin": "U16",
+          "comment": "",
+          "pos": [
+            434,
+            85
+          ],
+          "direction": "none"
+        },
+        "D2": {
+          "pin": "P14",
+          "comment": "",
+          "pos": [
+            423,
+            85
+          ],
+          "direction": "none"
+        },
+        "D3": {
+          "pin": "T11",
+          "comment": "",
+          "pos": [
+            412,
+            85
+          ],
+          "direction": "none"
+        },
+        "D4": {
+          "pin": "R12",
+          "comment": "",
+          "pos": [
+            401,
+            85
+          ],
+          "direction": "none"
+        },
+        "D5": {
+          "pin": "T14",
+          "comment": "",
+          "pos": [
+            390,
+            85
+          ],
+          "direction": "none"
+        },
+        "D6": {
+          "pin": "T15",
+          "comment": "",
+          "pos": [
+            379,
+            85
+          ],
+          "direction": "none"
+        },
+        "D7": {
+          "pin": "T16",
+          "comment": "",
+          "pos": [
+            368,
+            85
+          ],
+          "direction": "none"
+        },
+        "D8": {
+          "pin": "N15",
+          "comment": "",
+          "pos": [
+            357,
+            85
+          ],
+          "direction": "none"
+        },
+        "D9": {
+          "pin": "M16",
+          "comment": "",
+          "pos": [
+            346,
+            85
+          ],
+          "direction": "none"
+        },
+        "D10": {
+          "pin": "V17",
+          "comment": "",
+          "pos": [
+            335,
+            85
+          ],
+          "direction": "none"
+        },
+        "D11": {
+          "pin": "U18",
+          "comment": "",
+          "pos": [
+            324,
+            85
+          ],
+          "direction": "none"
+        },
+        "D12": {
+          "pin": "R17",
+          "comment": "",
+          "pos": [
+            313,
+            85
+          ],
+          "direction": "none"
+        },
+        "D13": {
+          "pin": "P17",
+          "comment": "",
+          "pos": [
+            302,
+            85
+          ],
+          "direction": "none"
+        },
+        "A0": {
+          "pin": "F5",
+          "comment": "",
+          "pos": [
+            444,
+            295
+          ],
+          "direction": "none"
+        },
+        "A1": {
+          "pin": "D8",
+          "comment": "",
+          "pos": [
+            433,
+            295
+          ],
+          "direction": "none"
+        },
+        "A2": {
+          "pin": "C7",
+          "comment": "",
+          "pos": [
+            422,
+            295
+          ],
+          "direction": "none"
+        },
+        "A3": {
+          "pin": "E7",
+          "comment": "",
+          "pos": [
+            411,
+            295
+          ],
+          "direction": "none"
+        },
+        "A4": {
+          "pin": "D7",
+          "comment": "",
+          "pos": [
+            400,
+            295
+          ],
+          "direction": "none"
+        },
+        "A5": {
+          "pin": "D5",
+          "comment": "",
+          "pos": [
+            389,
+            295
+          ],
+          "direction": "none"
+        },
+        "RST": {
+          "pin": "C2",
+          "comment": "",
+          "pos": [
+            308,
+            295
+          ],
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "PMOD_JA",
+      "comment": "PMOD JA",
+      "pins": {
+        "P1": {
+          "pin": "G13",
+          "comment": "",
+          "pos": [
+            59,
+            53
+          ],
+          "direction": "none"
+        },
+        "P2": {
+          "pin": "B11",
+          "comment": "",
+          "pos": [
+            70,
+            53
+          ],
+          "direction": "none"
+        },
+        "P3": {
+          "pin": "A11",
+          "comment": "",
+          "pos": [
+            81,
+            53
+          ],
+          "direction": "none"
+        },
+        "P4": {
+          "pin": "D12",
+          "comment": "",
+          "pos": [
+            92,
+            53
+          ],
+          "direction": "none"
+        },
+        "P7": {
+          "pin": "D13",
+          "comment": "",
+          "pos": [
+            59,
+            42
+          ],
+          "direction": "none"
+        },
+        "P8": {
+          "pin": "B18",
+          "comment": "",
+          "pos": [
+            70,
+            42
+          ],
+          "direction": "none"
+        },
+        "P9": {
+          "pin": "A18",
+          "comment": "",
+          "pos": [
+            81,
+            42
+          ],
+          "direction": "none"
+        },
+        "P10": {
+          "pin": "K16",
+          "comment": "",
+          "pos": [
+            92,
+            42
+          ],
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "PMOD_JB",
+      "comment": "PMOD JB",
+      "pins": {
+        "P1": {
+          "pin": "E15",
+          "comment": "",
+          "pos": [
+            158,
+            53
+          ],
+          "direction": "none"
+        },
+        "P2": {
+          "pin": "E16",
+          "comment": "",
+          "pos": [
+            169,
+            53
+          ],
+          "direction": "none"
+        },
+        "P3": {
+          "pin": "D15",
+          "comment": "",
+          "pos": [
+            180,
+            53
+          ],
+          "direction": "none"
+        },
+        "P4": {
+          "pin": "C15",
+          "comment": "",
+          "pos": [
+            191,
+            53
+          ],
+          "direction": "none"
+        },
+        "P7": {
+          "pin": "J17",
+          "comment": "",
+          "pos": [
+            158,
+            42
+          ],
+          "direction": "none"
+        },
+        "P8": {
+          "pin": "J18",
+          "comment": "",
+          "pos": [
+            169,
+            42
+          ],
+          "direction": "none"
+        },
+        "P9": {
+          "pin": "K15",
+          "comment": "",
+          "pos": [
+            180,
+            42
+          ],
+          "direction": "none"
+        },
+        "P10": {
+          "pin": "J15",
+          "comment": "",
+          "pos": [
+            191,
+            42
+          ],
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "PMOD_JC",
+      "comment": "PMOD JC",
+      "pins": {
+        "P1": {
+          "pin": "U12",
+          "comment": "",
+          "pos": [
+            257,
+            53
+          ],
+          "direction": "none"
+        },
+        "P2": {
+          "pin": "V12",
+          "comment": "",
+          "pos": [
+            268,
+            53
+          ],
+          "direction": "none"
+        },
+        "P3": {
+          "pin": "V10",
+          "comment": "",
+          "pos": [
+            279,
+            53
+          ],
+          "direction": "none"
+        },
+        "P4": {
+          "pin": "V11",
+          "comment": "",
+          "pos": [
+            290,
+            53
+          ],
+          "direction": "none"
+        },
+        "P7": {
+          "pin": "U14",
+          "comment": "",
+          "pos": [
+            257,
+            42
+          ],
+          "direction": "none"
+        },
+        "P8": {
+          "pin": "V14",
+          "comment": "",
+          "pos": [
+            268,
+            42
+          ],
+          "direction": "none"
+        },
+        "P9": {
+          "pin": "T13",
+          "comment": "",
+          "pos": [
+            279,
+            42
+          ],
+          "direction": "none"
+        },
+        "P10": {
+          "pin": "U13",
+          "comment": "",
+          "pos": [
+            290,
+            42
+          ],
+          "direction": "none"
+        }
+      }
+    },
+    {
+      "name": "PMOD_JD",
+      "comment": "PMOD JD",
+      "pins": {
+        "P1": {
+          "pin": "D4",
+          "comment": "",
+          "pos": [
+            356,
+            53
+          ],
+          "direction": "none"
+        },
+        "P2": {
+          "pin": "D3",
+          "comment": "",
+          "pos": [
+            367,
+            53
+          ],
+          "direction": "none"
+        },
+        "P3": {
+          "pin": "F4",
+          "comment": "",
+          "pos": [
+            378,
+            53
+          ],
+          "direction": "none"
+        },
+        "P4": {
+          "pin": "F3",
+          "comment": "",
+          "pos": [
+            389,
+            53
+          ],
+          "direction": "none"
+        },
+        "P7": {
+          "pin": "E2",
+          "comment": "",
+          "pos": [
+            356,
+            42
+          ],
+          "direction": "none"
+        },
+        "P8": {
+          "pin": "D2",
+          "comment": "",
+          "pos": [
+            367,
+            42
+          ],
+          "direction": "none"
+        },
+        "P9": {
+          "pin": "H2",
+          "comment": "",
+          "pos": [
+            378,
+            42
+          ],
+          "direction": "none"
+        },
+        "P10": {
+          "pin": "G2",
+          "comment": "",
+          "pos": [
+            389,
+            42
+          ],
+          "direction": "none"
+        }
+      }
+    }
+  ]
+}
