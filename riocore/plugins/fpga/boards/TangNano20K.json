@@ -19,7 +19,6 @@
         "pin": "4"
     },
     "slots": [
-
         {
             "name": "PWR",
             "pins": {
@@ -27,8 +26,8 @@
                     "pin": "5V",
                     "marker": true,
                     "pos": [
-                        21,
-                        11
+                        11,
+                        5
                     ],
                     "direction": "all"
                 },
@@ -36,8 +35,8 @@
                     "pin": "GND",
                     "marker": true,
                     "pos": [
-                        39,
-                        11
+                        23,
+                        5
                     ],
                     "direction": "all"
                 },
@@ -45,8 +44,8 @@
                     "pin": "GND",
                     "marker": true,
                     "pos": [
-                        282,
-                        11
+                        175,
+                        5
                     ],
                     "direction": "all"
                 },
@@ -54,8 +53,8 @@
                     "pin": "3V3",
                     "marker": true,
                     "pos": [
-                        300,
-                        11
+                        187,
+                        5
                     ],
                     "direction": "all"
                 },
@@ -63,8 +62,8 @@
                     "pin": "3V3",
                     "marker": true,
                     "pos": [
-                        358,
-                        156
+                        222,
+                        97
                     ],
                     "direction": "all"
                 },
@@ -72,8 +71,8 @@
                     "pin": "GND",
                     "marker": true,
                     "pos": [
-                        376,
-                        156
+                        233,
+                        97
                     ],
                     "direction": "all"
                 }
@@ -85,8 +84,8 @@
                 "76": {
                     "pin": "76",
                     "pos": [
-                        58,
-                        11
+                        35,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -94,8 +93,8 @@
                 "80": {
                     "pin": "80",
                     "pos": [
-                        76,
-                        11
+                        46,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -103,8 +102,8 @@
                 "42": {
                     "pin": "42",
                     "pos": [
-                        95,
-                        11
+                        58,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -112,8 +111,8 @@
                 "41": {
                     "pin": "41",
                     "pos": [
-                        114,
-                        11
+                        70,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -121,8 +120,8 @@
                 "56": {
                     "pin": "56",
                     "pos": [
-                        133,
-                        11
+                        82,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -130,8 +129,8 @@
                 "54": {
                     "pin": "54",
                     "pos": [
-                        152,
-                        11
+                        94,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -139,8 +138,8 @@
                 "51": {
                     "pin": "51",
                     "pos": [
-                        170,
-                        11
+                        104,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -148,8 +147,8 @@
                 "48": {
                     "pin": "48",
                     "pos": [
-                        189,
-                        11
+                        116,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -157,8 +156,8 @@
                 "55": {
                     "pin": "55",
                     "pos": [
-                        208,
-                        11
+                        128,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -166,8 +165,8 @@
                 "49": {
                     "pin": "49",
                     "pos": [
-                        227,
-                        11
+                        140,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -175,8 +174,8 @@
                 "86": {
                     "pin": "86",
                     "pos": [
-                        246,
-                        11
+                        152,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -184,8 +183,8 @@
                 "79": {
                     "pin": "79",
                     "pos": [
-                        264,
-                        11
+                        163,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -193,8 +192,8 @@
                 "72": {
                     "pin": "72",
                     "pos": [
-                        321,
-                        11
+                        198,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -202,8 +201,8 @@
                 "71": {
                     "pin": "71",
                     "pos": [
-                        340,
-                        11
+                        210,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -211,8 +210,8 @@
                 "53": {
                     "pin": "53",
                     "pos": [
-                        358,
-                        11
+                        222,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -220,8 +219,8 @@
                 "52": {
                     "pin": "52",
                     "pos": [
-                        377,
-                        11
+                        233,
+                        5
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -229,8 +228,8 @@
                 "73": {
                     "pin": "73",
                     "pos": [
-                        20,
-                        156
+                        11,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -238,8 +237,8 @@
                 "74": {
                     "pin": "74",
                     "pos": [
-                        39,
-                        156
+                        23,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -247,8 +246,8 @@
                 "75": {
                     "pin": "75",
                     "pos": [
-                        58,
-                        156
+                        35,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -256,8 +255,8 @@
                 "85": {
                     "pin": "85",
                     "pos": [
-                        76,
-                        156
+                        46,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -265,8 +264,8 @@
                 "77": {
                     "pin": "77",
                     "pos": [
-                        95,
-                        156
+                        58,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -275,8 +274,8 @@
                     "pin": "15",
                     "comment": "LED0",
                     "pos": [
-                        114,
-                        156
+                        70,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -285,8 +284,8 @@
                     "pin": "16",
                     "comment": "LED1",
                     "pos": [
-                        133,
-                        156
+                        82,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -294,8 +293,8 @@
                 "27": {
                     "pin": "27",
                     "pos": [
-                        152,
-                        156
+                        94,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -303,8 +302,8 @@
                 "28": {
                     "pin": "28",
                     "pos": [
-                        170,
-                        156
+                        104,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -312,8 +311,8 @@
                 "25": {
                     "pin": "25",
                     "pos": [
-                        189,
-                        156
+                        116,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -321,8 +320,8 @@
                 "26": {
                     "pin": "26",
                     "pos": [
-                        208,
-                        156
+                        128,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -330,8 +329,8 @@
                 "29": {
                     "pin": "29",
                     "pos": [
-                        227,
-                        156
+                        140,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -339,8 +338,8 @@
                 "30": {
                     "pin": "30",
                     "pos": [
-                        246,
-                        156
+                        152,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -348,8 +347,8 @@
                 "31": {
                     "pin": "31",
                     "pos": [
-                        264,
-                        156
+                        163,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -358,8 +357,8 @@
                     "pin": "17",
                     "comment": "LED2",
                     "pos": [
-                        283,
-                        156
+                        176,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -368,8 +367,8 @@
                     "pin": "20",
                     "comment": "LED5",
                     "pos": [
-                        302,
-                        156
+                        187,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -378,8 +377,8 @@
                     "pin": "19",
                     "comment": "LED4",
                     "pos": [
-                        321,
-                        156
+                        198,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -388,8 +387,8 @@
                     "pin": "18",
                     "comment": "LED3",
                     "pos": [
-                        340,
-                        156
+                        210,
+                        97
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -402,8 +401,8 @@
                 "L0": {
                     "pin": "15",
                     "pos": [
-                        73,
-                        138
+                        35,
+                        83
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -411,8 +410,8 @@
                 "L1": {
                     "pin": "16",
                     "pos": [
-                        83,
-                        138
+                        45,
+                        83
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -420,8 +419,8 @@
                 "L2": {
                     "pin": "17",
                     "pos": [
-                        93,
-                        138
+                        55,
+                        83
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -429,8 +428,8 @@
                 "L3": {
                     "pin": "18",
                     "pos": [
-                        104,
-                        138
+                        65,
+                        83
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -438,8 +437,8 @@
                 "L4": {
                     "pin": "19",
                     "pos": [
-                        115,
-                        138
+                        75,
+                        83
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -447,8 +446,8 @@
                 "L5": {
                     "pin": "20",
                     "pos": [
-                        125,
-                        138
+                        85,
+                        83
                     ],
                     "rotate": true,
                     "direction": "all"
@@ -463,16 +462,16 @@
                 "S1": {
                     "pin": "88",
                     "pos": [
-                        23,
-                        137
+                        15,
+                        86
                     ],
                     "direction": "input"
                 },
                 "S2": {
                     "pin": "87",
                     "pos": [
-                        23,
-                        31
+                        15,
+                        19
                     ],
                     "direction": "input"
                 }
@@ -484,16 +483,16 @@
                 "RX": {
                     "pin": "70",
                     "pos": [
-                        20,
-                        75
+                        11,
+                        46
                     ],
                     "direction": "input"
                 },
                 "TX": {
                     "pin": "69",
                     "pos": [
-                        20,
-                        90
+                        11,
+                        55
                     ],
                     "direction": "output"
                 }
@@ -507,8 +506,8 @@
                 "DATA": {
                     "pin": "79",
                     "pos": [
-                        284,
-                        47
+                        176,
+                        27
                     ],
                     "direction": "all"
                 }
