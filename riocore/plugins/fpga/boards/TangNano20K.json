@@ -19,6 +19,66 @@
         "pin": "4"
     },
     "slots": [
+
+        {
+            "name": "PWR",
+            "pins": {
+                "5V": {
+                    "pin": "5V",
+                    "marker": true,
+                    "pos": [
+                        21,
+                        11
+                    ],
+                    "direction": "all"
+                },
+                "GND_1": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        39,
+                        11
+                    ],
+                    "direction": "all"
+                },
+                "GND_2": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        282,
+                        11
+                    ],
+                    "direction": "all"
+                },
+                "3V3_1": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        300,
+                        11
+                    ],
+                    "direction": "all"
+                },
+                "3V3_2": {
+                    "pin": "3V3",
+                    "marker": true,
+                    "pos": [
+                        358,
+                        156
+                    ],
+                    "direction": "all"
+                },
+                "GND_3": {
+                    "pin": "GND",
+                    "marker": true,
+                    "pos": [
+                        376,
+                        156
+                    ],
+                    "direction": "all"
+                }
+            }
+        },
         {
             "name": "PIN",
             "pins": {
