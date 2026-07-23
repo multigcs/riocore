@@ -166,7 +166,8 @@ class Plugin(PluginBase):
         instance_parameter["MAC_ADDR"] = f"{{8'h{macl[0]}, 8'h{macl[1]}, 8'h{macl[2]}, 8'h{macl[3]}, 8'h{macl[4]}, 8'h{macl[5]}}}"
         instance_parameter["PORT"] = port
 
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
+        instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         instance_parameter["MSGID"] = "32'h74697277"
 
         return instances

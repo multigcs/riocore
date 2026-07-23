@@ -1,7 +1,8 @@
 
 module arty_mii
     #(
-         parameter BUFFER_SIZE=16'd64,
+         parameter BUFFER_SIZE_RX=16'd64,
+         parameter BUFFER_SIZE_TX=16'd64,
          parameter MSGID=32'h74697277,
          parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
          parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1D},
@@ -30,8 +31,8 @@ module arty_mii
     output wire       phy_reset_n,
     output wire       phy_ref_clk,
 
-    input [BUFFER_SIZE-1:0] tx_data,
-    output reg [BUFFER_SIZE-1:0] rx_data,
+    input [BUFFER_SIZE_TX-1:0] tx_data,
+    output reg [BUFFER_SIZE_RX-1:0] rx_data,
     output reg sync = 0
 );
 
@@ -244,23 +245,23 @@ assign rx_fifo_udp_payload_axis_tuser = rx_udp_payload_axis_tuser;
 
 reg [7:0] data_counter = 0;
 
-reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;
-reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;
+reg [BUFFER_SIZE_TX-1:0] tx_data_buffer = 0;
+reg [BUFFER_SIZE_TX-1:0] rx_data_buffer = 0;
 
 always @(posedge clk) begin
     sync <= 0;
 
     if (~rst) begin
         if (tx_udp_payload_axis_tvalid) begin
-            if (data_counter < BUFFER_SIZE / 8) begin
-                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE-1-8:0], tx_fifo_udp_payload_axis_tdata};
-                tx_udp_payload_axis_tdata <= tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
-                tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};
+            if (data_counter < BUFFER_SIZE_RX / 8) begin
+                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX-1-8:0], tx_fifo_udp_payload_axis_tdata};
+                tx_udp_payload_axis_tdata <= tx_data_buffer[BUFFER_SIZE_TX-1:BUFFER_SIZE_TX-1-7];
+                tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX-1-8:0], 8'd0};
             end
             data_counter <= data_counter + 1;
 
         end else begin
-            if (rx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-32] == MSGID) begin
+            if (rx_data_buffer[BUFFER_SIZE_RX-1:BUFFER_SIZE_RX-32] == MSGID) begin
                 rx_data <= rx_data_buffer;
                 rx_data_buffer <= 0;
                 sync <= 1;
@@ -268,8 +269,8 @@ always @(posedge clk) begin
             rx_data_buffer <= 0;
             data_counter <= 0;
             tx_udp_payload_axis_tdata <= 97;
-            tx_data_buffer <= {tx_data[BUFFER_SIZE-1-8:0], 8'd0};;
-            tx_udp_payload_axis_tdata <= tx_data[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
+            tx_data_buffer <= {tx_data[BUFFER_SIZE_TX-1-8:0], 8'd0};;
+            tx_udp_payload_axis_tdata <= tx_data[BUFFER_SIZE_TX-1:BUFFER_SIZE_TX-1-7];
         end
     end
 end

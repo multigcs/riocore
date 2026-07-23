@@ -1,6 +1,6 @@
 {
   "name": "Arty-a7-35t",
-  "description": "Arty a7-35t - testing",
+  "description": "Arty a7-35t",
   "toolchain": "vivado",
   "family": "xc7",
   "type": "xc7a35ticsg324-1l",
@@ -788,6 +788,48 @@
       }
     },
     {
+      "name": "SW",
+      "comment": "",
+      "pins": {
+        "S0": {
+          "pin": "A8",
+          "comment": "",
+          "pos": [
+            278,
+            340
+          ],
+          "direction": "input"
+        },
+        "S1": {
+          "pin": "C11",
+          "comment": "",
+          "pos": [
+            242,
+            340
+          ],
+          "direction": "input"
+        },
+        "S2": {
+          "pin": "C10",
+          "comment": "",
+          "pos": [
+            207,
+            340
+          ],
+          "direction": "input"
+        },
+        "S3": {
+          "pin": "A10",
+          "comment": "",
+          "pos": [
+            170,
+            340
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
       "name": "LED",
       "comment": "LEDs",
       "pins": {
@@ -936,6 +978,237 @@
           "direction": "output"
         }
 
+      }
+    },
+    {
+      "name": "MII",
+      "comment": "Ethernet PHY",
+      "pins": {
+        "COL": {
+          "pin": "D17",
+          "comment": "",
+          "pos": [
+            105,
+            150
+          ],
+          "direction": "all"
+        },
+        "CRS": {
+          "pin": "G14",
+          "comment": "",
+          "pos": [
+            105,
+            161
+          ],
+          "direction": "all"
+        },
+        "MDC": {
+          "pin": "F16",
+          "comment": "",
+          "pos": [
+            105,
+            172
+          ],
+          "direction": "all"
+        },
+        "MDIO": {
+          "pin": "K13",
+          "comment": "",
+          "pos": [
+            105,
+            183
+          ],
+          "direction": "all"
+        },
+        "REF_CLK": {
+          "pin": "G18",
+          "comment": "",
+          "pos": [
+            105,
+            194
+          ],
+          "direction": "all"
+        },
+        "RSTN": {
+          "pin": "C16",
+          "comment": "",
+          "pos": [
+            105,
+            205
+          ],
+          "direction": "all"
+        },
+        "RX_CLK": {
+          "pin": "F15",
+          "comment": "",
+          "pos": [
+            116,
+            150
+          ],
+          "direction": "all"
+        },
+        "RX_DV": {
+          "pin": "G16",
+          "comment": "",
+          "pos": [
+            116,
+            161
+          ],
+          "direction": "all"
+        },
+        "RX_D0": {
+          "pin": "D18",
+          "comment": "",
+          "pos": [
+            116,
+            172
+          ],
+          "direction": "all"
+        },
+        "RX_D1": {
+          "pin": "E17",
+          "comment": "",
+          "pos": [
+            116,
+            183
+          ],
+          "direction": "all"
+        },
+        "RX_D2": {
+          "pin": "E18",
+          "comment": "",
+          "pos": [
+            116,
+            194
+          ],
+          "direction": "all"
+        },
+        "RX_D3": {
+          "pin": "G17",
+          "comment": "",
+          "pos": [
+            116,
+            205
+          ],
+          "direction": "all"
+        },
+        "RX_ERR": {
+          "pin": "C17",
+          "comment": "",
+          "pos": [
+            116,
+            216
+          ],
+          "direction": "all"
+        },
+        "TX_CLK": {
+          "pin": "H16",
+          "comment": "",
+          "pos": [
+            127,
+            150
+          ],
+          "direction": "all"
+        },
+        "TX_EN": {
+          "pin": "H15",
+          "comment": "",
+          "pos": [
+            127,
+            161
+          ],
+          "direction": "all"
+        },
+        "TX_D0": {
+          "pin": "H14",
+          "comment": "",
+          "pos": [
+            127,
+            172
+          ],
+          "direction": "all"
+        },
+        "TX_D1": {
+          "pin": "J14",
+          "comment": "",
+          "pos": [
+            127,
+            183
+          ],
+          "direction": "all"
+        },
+        "TX_D2": {
+          "pin": "J13",
+          "comment": "",
+          "pos": [
+            127,
+            194
+          ],
+          "direction": "all"
+        },
+        "TX_D3": {
+          "pin": "H17",
+          "comment": "",
+          "pos": [
+            127,
+            205
+          ],
+          "direction": "all"
+        }
+
+      }
+    },
+
+
+    {
+      "name": "FLASH",
+      "comment": "Quad SPI Flash",
+      "pins": {
+        "SEL": {
+          "pin": "L13",
+          "comment": "",
+          "pos": [
+            128,
+            80
+          ],
+          "direction": "output"
+        },
+        "D0": {
+          "pin": "K17",
+          "comment": "",
+          "pos": [
+            128,
+            91
+          ],
+          "direction": "all"
+        },
+        "D1": {
+          "pin": "K18",
+          "comment": "",
+          "pos": [
+            128,
+            102
+          ],
+          "direction": "all"
+        },
+        "D2": {
+          "pin": "L14",
+          "comment": "",
+          "pos": [
+            128,
+            113
+          ],
+          "direction": "all"
+        },
+        "D3": {
+          "pin": "M14",
+          "comment": "",
+          "pos": [
+            128,
+            124
+          ],
+          "direction": "all"
+        }
       }
     }
 

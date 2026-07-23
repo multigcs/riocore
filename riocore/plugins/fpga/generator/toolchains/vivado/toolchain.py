@@ -217,16 +217,23 @@ class Toolchain:
 
         flashcmd = self.config.get("flashcmd")
         if flashcmd:
-            makefile_data.append(f"load: {bitfileName}")
+            makefile_data.append(f"load:")
             makefile_data.append(f"	{flashcmd}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            flashcmd_ram = self.config.get("flashcmd_ram")
+            if flashcmd_ram:
+                makefile_data.append(f"sload:")
+                makefile_data.append(f"	{flashcmd_ram}")
         else:
-            makefile_data.append(f"xc3sprog: {bitfileName}")
+            makefile_data.append(f"xc3sprog:")
             makefile_data.append(f"	xc3sprog -c nexys4 {bitfileName}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
-            makefile_data.append(f"load: {bitfileName}")
+            makefile_data.append(f"load:")
             makefile_data.append(f"	openFPGALoader -b arty -f {bitfileName}")
+            makefile_data.append("")
+            makefile_data.append(f"sload:")
+            makefile_data.append(f"	openFPGALoader -b arty {bitfileName}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
 
