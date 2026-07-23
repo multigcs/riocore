@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
-    QSpinBox,
     QTableWidget,
     QTableWidgetItem,
     QTextEdit,

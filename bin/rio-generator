@@ -126,7 +126,7 @@ if args.config:
                     elif plugin.get("type") in {"spi", "spibridge", "spi_prog"}:
                         jdata["plugins"][pn]["spitype"] = "verilator"
 
-            elif args.udpsim:
+            elif args.udpsim or args.verilator:
                 if "linuxcnc" not in jdata:
                     jdata["linuxcnc"] = {}
                 jdata["linuxcnc"]["simulation"] = False
@@ -223,7 +223,7 @@ if args.config:
                     if ret != 0:
                         print(f"ERROR: code {ret}")
                         sys.exit(1)
-        if sys.platform == "linux" and (args.start or args.simulator or args.udpsim):
+        if sys.platform == "linux" and (args.start or args.simulator or args.udpsim or args.verilator):
             proc_sims = {}
             if args.udpsim:
                 for plugin_instance in project.plugin_instances:
@@ -238,25 +238,42 @@ if args.config:
                             print()
                             proc_sims[plugin_instance.instances_name] = subprocess.Popen(cmd, shell=True)
 
-            if args.ngc:
-                ngc_realpath = os.path.realpath(args.ngc)
-                cmd = f"sh {startsh_path} {ngc_realpath}"
-            else:
-                cmd = f'sh "{startsh_path}"'
-            print()
-            print("running:")
-            print(f"  {cmd}")
-            print()
-            ret = os.system(cmd)
-            if args.udpsim:
-                for proc_sim_data in proc_sims.values():
-                    print(f"stopping {proc_sim_data.pid} and sub processes..")
-                    kill(proc_sim_data.pid)
-                    print("..done")
+            if args.verilator:
+                for plugin_instance in project.plugin_instances:
+                    if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH:
+                        arguments = []
+                        if plugin_instance.BUILDER:
+                            startsh_path = ""
+                            if hasattr(plugin_instance, "protocol") and plugin_instance.protocol.startswith("SPI"):
+                                startsh_path = os.path.join(output_path, config_name, "PYLIB", plugin_instance.instances_name, "start.sh")
+                            simulatorsh_path = os.path.join(output_path, config_name, "Gateware", plugin_instance.instances_name)
+                            cmd = f'cd "{simulatorsh_path}" ; make build load'
+                            print()
+                            print("running:")
+                            print(f"  {cmd}")
+                            print()
+                            proc_sims[plugin_instance.instances_name] = subprocess.Popen(cmd, shell=True)
 
-            if ret != 0:
-                print(f"ERROR: code {ret}")
-                sys.exit(1)
+            if startsh_path:
+                if args.ngc:
+                    ngc_realpath = os.path.realpath(args.ngc)
+                    cmd = f"sh {startsh_path} {ngc_realpath}"
+                else:
+                    cmd = f'sh "{startsh_path}"'
+                print()
+                print("running:")
+                print(f"  {cmd}")
+                print()
+                ret = os.system(cmd)
+                if args.udpsim:
+                    for proc_sim_data in proc_sims.values():
+                        print(f"stopping {proc_sim_data.pid} and sub processes..")
+                        kill(proc_sim_data.pid)
+                        print("..done")
+
+                if ret != 0:
+                    print(f"ERROR: code {ret}")
+                    sys.exit(1)
 
         elif sys.platform == "linux" and (args.kicad | args.kicad_run):
             kicad_path = os.path.join(output_path, config_name, "KICAD")
