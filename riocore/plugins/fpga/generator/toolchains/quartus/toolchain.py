@@ -176,7 +176,7 @@ https://downloads.intel.com/akdlm/software/acdsinst/17.0std/595/ib_tar/Quartus-l
             makefile_data.append("load: load_openfpga")
         makefile_data.append("load_openfpga:")
         makefile_data.append("	# openFPGALoader -v -c usb-blaster -m $(PROJECT).svf -f")
-        makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf -f")
+        makefile_data.append("	openFPGALoader -v -c usb-blaster -f $(PROJECT).svf")
         makefile_data.append("")
         makefile_data.append("sload:")
         makefile_data.append("	openFPGALoader -v -c usb-blaster -m $(PROJECT).rbf")

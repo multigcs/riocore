@@ -67,8 +67,6 @@ class config:
 
     def update(self):
         self.update_flag = True
-        self.peri_uarts.setValue(self.plugin_setup.get("uarts", 0))
-        self.peri_pwms.setValue(self.plugin_setup.get("pwms", 0))
 
         pin_n = 0
         for pin_name in self.plugin_setup.get("gpios", {}):
@@ -130,18 +128,6 @@ class config:
 
         left_layout.addWidget(QLabel("Periphery"), stretch=0)
 
-        self.peri_uarts = QSpinBox()
-        self.peri_uarts.setMinimum(0)
-        self.peri_uarts.setMaximum(1)
-        left_layout.addWidget(QLabel("Uart's"))
-        left_layout.addWidget(self.peri_uarts, stretch=0)
-
-        self.peri_pwms = QSpinBox()
-        self.peri_pwms.setMinimum(0)
-        self.peri_pwms.setMaximum(16)
-        left_layout.addWidget(QLabel("PWM's"))
-        left_layout.addWidget(self.peri_pwms, stretch=0)
-
         left_layout.addWidget(QLabel("gpios"), stretch=0)
         self.pin_table = QTableWidget()
         self.pin_table.setColumnCount(1)
@@ -183,9 +169,6 @@ class config:
                 self.plugin_setup["source"] = self.source.toPlainText()
             else:
                 self.plugin_setup["source"] = self.source.text()
-
-            self.plugin_setup["uarts"] = self.peri_uarts.value()
-            self.plugin_setup["pwms"] = self.peri_pwms.value()
 
 
 if __name__ == "__main__":

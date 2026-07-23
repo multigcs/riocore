@@ -27,16 +27,22 @@ class Plugin(PluginBase):
                 "type": bool,
                 "default": False,
             },
-            "ramsize": {
+            "uarts": {
                 "type": int,
-                "min": 512,
-                "max": 8192,
-                "default": 8192,
-                "description": "size of ram in byte",
+                "min": 0,
+                "max": 1,
+                "default": 0,
+                "description": "number of uarts",
+            },
+            "ramsize": {
+                "type": "select",
+                "options": ["512", "768", "1024", "2048", "4096", "8192"],
+                "default": "2048",
+                "description": "size of ram in bytes\nfor uart demo, you need >= 1024 Bytes",
             },
         }
         self.fpga_toolchain = None
-        self.ramsize = self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"])
+        self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
