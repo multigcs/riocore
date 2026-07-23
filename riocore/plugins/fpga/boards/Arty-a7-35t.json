@@ -21,7 +21,7 @@
             445,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D1": {
           "pin": "U16",
@@ -30,7 +30,7 @@
             434,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D2": {
           "pin": "P14",
@@ -39,7 +39,7 @@
             423,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D3": {
           "pin": "T11",
@@ -48,7 +48,7 @@
             412,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D4": {
           "pin": "R12",
@@ -57,7 +57,7 @@
             401,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D5": {
           "pin": "T14",
@@ -66,7 +66,7 @@
             390,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D6": {
           "pin": "T15",
@@ -75,7 +75,7 @@
             379,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D7": {
           "pin": "T16",
@@ -84,115 +84,115 @@
             368,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D8": {
           "pin": "N15",
           "comment": "",
           "pos": [
-            357,
+            349,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D9": {
           "pin": "M16",
           "comment": "",
           "pos": [
-            346,
+            338,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D10": {
           "pin": "V17",
           "comment": "",
           "pos": [
-            335,
+            327,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D11": {
           "pin": "U18",
           "comment": "",
           "pos": [
-            324,
+            316,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D12": {
           "pin": "R17",
           "comment": "",
           "pos": [
-            313,
+            305,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "D13": {
           "pin": "P17",
           "comment": "",
           "pos": [
-            302,
+            294,
             85
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "A0": {
           "pin": "F5",
           "comment": "",
           "pos": [
-            444,
+            389,
             295
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "A1": {
           "pin": "D8",
           "comment": "",
           "pos": [
-            433,
+            400,
             295
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "A2": {
           "pin": "C7",
           "comment": "",
           "pos": [
-            422,
+            411,
             295
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "A3": {
           "pin": "E7",
           "comment": "",
           "pos": [
-            411,
+            422,
             295
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "A4": {
           "pin": "D7",
           "comment": "",
           "pos": [
-            400,
+            433,
             295
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "A5": {
           "pin": "D5",
           "comment": "",
           "pos": [
-            389,
+            444,
             295
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "RST": {
           "pin": "C2",
@@ -201,7 +201,211 @@
             308,
             295
           ],
-          "direction": "none"
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "ChipKitExt",
+      "comment": "ChipKit2/Extended Arduino Header",
+      "pins": {
+        "D26": {
+          "pin": "U11",
+          "comment": "",
+          "pos": [
+            445,
+            96
+          ],
+          "direction": "all"
+        },
+        "D27": {
+          "pin": "V16",
+          "comment": "",
+          "pos": [
+            434,
+            96
+          ],
+          "direction": "all"
+        },
+        "D28": {
+          "pin": "M13",
+          "comment": "",
+          "pos": [
+            423,
+            96
+          ],
+          "direction": "all"
+        },
+        "D29": {
+          "pin": "R10",
+          "comment": "",
+          "pos": [
+            412,
+            96
+          ],
+          "direction": "all"
+        },
+        "D30": {
+          "pin": "R11",
+          "comment": "",
+          "pos": [
+            401,
+            96
+          ],
+          "direction": "all"
+        },
+        "D31": {
+          "pin": "R13",
+          "comment": "",
+          "pos": [
+            390,
+            96
+          ],
+          "direction": "all"
+        },
+        "D32": {
+          "pin": "R15",
+          "comment": "",
+          "pos": [
+            379,
+            96
+          ],
+          "direction": "all"
+        },
+        "D33": {
+          "pin": "P15",
+          "comment": "",
+          "pos": [
+            368,
+            96
+          ],
+          "direction": "all"
+        },
+        "D34": {
+          "pin": "R16",
+          "comment": "",
+          "pos": [
+            349,
+            96
+          ],
+          "direction": "all"
+        },
+        "D35": {
+          "pin": "N16",
+          "comment": "",
+          "pos": [
+            338,
+            96
+          ],
+          "direction": "all"
+        },
+        "D36": {
+          "pin": "N14",
+          "comment": "",
+          "pos": [
+            327,
+            96
+          ],
+          "direction": "all"
+        },
+        "D37": {
+          "pin": "U17",
+          "comment": "",
+          "pos": [
+            316,
+            96
+          ],
+          "direction": "all"
+        },
+        "D38": {
+          "pin": "T18",
+          "comment": "",
+          "pos": [
+            305,
+            96
+          ],
+          "direction": "all"
+        },
+        "D39": {
+          "pin": "R18",
+          "comment": "",
+          "pos": [
+            294,
+            96
+          ],
+          "direction": "all"
+        },
+        "D40": {
+          "pin": "P18",
+          "comment": "",
+          "pos": [
+            283,
+            96
+          ],
+          "direction": "all"
+        },
+        "D41": {
+          "pin": "N17",
+          "comment": "",
+          "pos": [
+            272,
+            96
+          ],
+          "direction": "all"
+        },
+        "A11": {
+          "pin": "A3",
+          "comment": "",
+          "pos": [
+            444,
+            284
+          ],
+          "direction": "all"
+        },
+        "A10": {
+          "pin": "A4",
+          "comment": "",
+          "pos": [
+            433,
+            284
+          ],
+          "direction": "all"
+        },
+        "A9": {
+          "pin": "E5",
+          "comment": "",
+          "pos": [
+            422,
+            284
+          ],
+          "direction": "all"
+        },
+        "A8": {
+          "pin": "E6",
+          "comment": "",
+          "pos": [
+            411,
+            284
+          ],
+          "direction": "all"
+        },
+        "A7": {
+          "pin": "B6",
+          "comment": "",
+          "pos": [
+            400,
+            284
+          ],
+          "direction": "all"
+        },
+        "A6": {
+          "pin": "B7",
+          "comment": "",
+          "pos": [
+            389,
+            284
+          ],
+          "direction": "all"
         }
       }
     },
@@ -216,7 +420,7 @@
             59,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P2": {
           "pin": "B11",
@@ -225,7 +429,7 @@
             70,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P3": {
           "pin": "A11",
@@ -234,7 +438,7 @@
             81,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P4": {
           "pin": "D12",
@@ -243,7 +447,7 @@
             92,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P7": {
           "pin": "D13",
@@ -252,7 +456,7 @@
             59,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P8": {
           "pin": "B18",
@@ -261,7 +465,7 @@
             70,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P9": {
           "pin": "A18",
@@ -270,7 +474,7 @@
             81,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P10": {
           "pin": "K16",
@@ -279,7 +483,7 @@
             92,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         }
       }
     },
@@ -294,7 +498,7 @@
             158,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P2": {
           "pin": "E16",
@@ -303,7 +507,7 @@
             169,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P3": {
           "pin": "D15",
@@ -312,7 +516,7 @@
             180,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P4": {
           "pin": "C15",
@@ -321,7 +525,7 @@
             191,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P7": {
           "pin": "J17",
@@ -330,7 +534,7 @@
             158,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P8": {
           "pin": "J18",
@@ -339,7 +543,7 @@
             169,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P9": {
           "pin": "K15",
@@ -348,7 +552,7 @@
             180,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P10": {
           "pin": "J15",
@@ -357,7 +561,7 @@
             191,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         }
       }
     },
@@ -372,7 +576,7 @@
             257,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P2": {
           "pin": "V12",
@@ -381,7 +585,7 @@
             268,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P3": {
           "pin": "V10",
@@ -390,7 +594,7 @@
             279,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P4": {
           "pin": "V11",
@@ -399,7 +603,7 @@
             290,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P7": {
           "pin": "U14",
@@ -408,7 +612,7 @@
             257,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P8": {
           "pin": "V14",
@@ -417,7 +621,7 @@
             268,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P9": {
           "pin": "T13",
@@ -426,7 +630,7 @@
             279,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P10": {
           "pin": "U13",
@@ -435,7 +639,7 @@
             290,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         }
       }
     },
@@ -450,7 +654,7 @@
             356,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P2": {
           "pin": "D3",
@@ -459,7 +663,7 @@
             367,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P3": {
           "pin": "F4",
@@ -468,7 +672,7 @@
             378,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P4": {
           "pin": "F3",
@@ -477,7 +681,7 @@
             389,
             53
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P7": {
           "pin": "E2",
@@ -486,7 +690,7 @@
             356,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P8": {
           "pin": "D2",
@@ -495,7 +699,7 @@
             367,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P9": {
           "pin": "H2",
@@ -504,7 +708,7 @@
             378,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         },
         "P10": {
           "pin": "G2",
@@ -513,9 +717,228 @@
             389,
             42
           ],
-          "direction": "none"
+          "direction": "all"
         }
       }
+    },
+    {
+      "name": "UART",
+      "comment": "USB-UART",
+      "pins": {
+        "RX": {
+          "pin": "A9",
+          "comment": "",
+          "pos": [
+            60,
+            90
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "D10",
+          "comment": "",
+          "pos": [
+            60,
+            105
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "BTN",
+      "comment": "",
+      "pins": {
+        "B0": {
+          "pin": "D9",
+          "comment": "",
+          "pos": [
+            440,
+            343
+          ],
+          "direction": "input"
+        },
+        "B1": {
+          "pin": "C9",
+          "comment": "",
+          "pos": [
+            405,
+            343
+          ],
+          "direction": "input"
+        },
+        "B2": {
+          "pin": "B9",
+          "comment": "",
+          "pos": [
+            365,
+            343
+          ],
+          "direction": "input"
+        },
+        "B3": {
+          "pin": "B8",
+          "comment": "",
+          "pos": [
+            325,
+            343
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "LED",
+      "comment": "LEDs",
+      "pins": {
+        "L7": {
+          "pin": "T10",
+          "comment": "",
+          "pos": [
+            39,
+            330
+          ],
+          "direction": "output"
+        },
+        "L6": {
+          "pin": "T9",
+          "comment": "",
+          "pos": [
+            69,
+            330
+          ],
+          "direction": "output"
+        },
+        "L5": {
+          "pin": "J5",
+          "comment": "",
+          "pos": [
+            99,
+            330
+          ],
+          "direction": "output"
+        },
+        "L4": {
+          "pin": "H5",
+          "comment": "",
+          "pos": [
+            129,
+            330
+          ],
+          "direction": "output"
+        },
+        "L3R": {
+          "pin": "K1",
+          "comment": "red",
+          "pos": [
+            39,
+            342
+          ],
+          "direction": "output"
+        },
+        "L3G": {
+          "pin": "H6",
+          "comment": "green",
+          "pos": [
+            39,
+            353
+          ],
+          "direction": "output"
+        },
+        "L3B": {
+          "pin": "K2",
+          "comment": "blue",
+          "pos": [
+            39,
+            364
+          ],
+          "direction": "output"
+        },
+        "L2R": {
+          "pin": "J3",
+          "comment": "red",
+          "pos": [
+            69,
+            342
+          ],
+          "direction": "output"
+        },
+        "L2G": {
+          "pin": "J2",
+          "comment": "green",
+          "pos": [
+            69,
+            353
+          ],
+          "direction": "output"
+        },
+        "L2B": {
+          "pin": "H4",
+          "comment": "blue",
+          "pos": [
+            69,
+            364
+          ],
+          "direction": "output"
+        },
+        "L1R": {
+          "pin": "G3",
+          "comment": "red",
+          "pos": [
+            99,
+            342
+          ],
+          "direction": "output"
+        },
+        "L1G": {
+          "pin": "J4",
+          "comment": "green",
+          "pos": [
+            99,
+            353
+          ],
+          "direction": "output"
+        },
+        "L1B": {
+          "pin": "G4",
+          "comment": "blue",
+          "pos": [
+            99,
+            364
+          ],
+          "direction": "output"
+        },
+        "L0R": {
+          "pin": "G6",
+          "comment": "red",
+          "pos": [
+            129,
+            342
+          ],
+          "direction": "output"
+        },
+        "L0G": {
+          "pin": "F6",
+          "comment": "green",
+          "pos": [
+            129,
+            353
+          ],
+          "direction": "output"
+        },
+        "L0B": {
+          "pin": "E1",
+          "comment": "blue",
+          "pos": [
+            129,
+            364
+          ],
+          "direction": "output"
+        }
+
+      }
     }
+
+
   ]
 }
