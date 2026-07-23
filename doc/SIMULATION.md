@@ -1,6 +1,7 @@
 # Simulation
 
 ## gateware simulation inside verilator
+<img align="right" width="300" src="images/veri-sim.png">
 
 * to test the verilog code
 
@@ -15,6 +16,7 @@ you need an spi interface to simulate the host-interface.
 
 
 ## inside hal-component
+<img align="right" width="300" src="images/comp-sim.png">
 
 * to test the linuxcnc and vcp frontend
 
@@ -27,6 +29,7 @@ all inside the linuxcnc component
 
 
 ## udp client simulation in c
+<img align="right" width="300" src="images/udp-sim.png">
 
 * to test the interface and your config
 
