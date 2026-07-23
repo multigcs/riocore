@@ -13,6 +13,18 @@ TangNano20K - GW2AR-18 devboard
 | URL | [link](https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html) |
 
 ## Slots
+### PWR
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V | 5V | all |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 3V3_1 | 3V3 | all |
+| 3V3_2 | 3V3 | all |
+| GND_3 | GND | all |
+
 ### PIN
 
 

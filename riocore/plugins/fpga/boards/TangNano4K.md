@@ -72,4 +72,16 @@ TangNano4K - cheap Devboard
 | S1 | 14 | input |
 | S2 | 15 | input |
 
+### PWR
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| 5V | 5V | all |
+| GND_1 | GND | all |
+| GND_2 | GND | all |
+| 1V8 | 1V8 | all |
+| 3V3 | 3V3 | all |
+| 2V5 | 2V5 | all |
+
 

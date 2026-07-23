@@ -2,6 +2,7 @@
 | Name | Family | Type | Clock | Toolchain | Description | Image |
 | --- | --- | --- | --- | --- | --- | --- |
 | [Altera10M08Eval](boards/Altera10M08Eval.md) | MAX 10 | 10M08SAE144C8G | 50.00Mhz | quartus | Altera10M08Eval - Evaluation Kit | <img width="300" src="boards/Altera10M08Eval.png"> |
+| [Arty-a7-35t](boards/Arty-a7-35t.md) | xc7 | xc7a35ticsg324-1l | 100.00Mhz | vivado | Arty a7-35t | <img width="300" src="boards/Arty-a7-35t.png"> |
 | [Basys2](boards/Basys2.md) | xc3 | xc3s100e-4-cp132 | 50.00Mhz | ise | Digilent - Basys2 | <img width="300" src="boards/Basys2.png"> |
 | [CYC1000](boards/CYC1000.md) | Cyclone 10 LP | 10CL025YU256C8G | 48.00Mhz | quartus | TEI0003 | <img width="300" src="boards/CYC1000.png"> |
 | [Colorlight5A-75B-v8.0](boards/Colorlight5A-75B-v8.0.md) | ecp5 | 25k | 25.00Mhz | icestorm | Lattice ECP5 board | <img width="300" src="boards/Colorlight5A-75B-v8.0.png"> |
@@ -31,6 +32,7 @@
 | [TangNano9K](boards/TangNano9K.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/TangNano9K.png"> |
 | [TangPrimer20K](boards/TangPrimer20K.md) | GW2A-18C | GW2A-LV18PG256C8/I7 | 27.00Mhz | gowin (icestorm) | TangPrimer20K-Devboard on Dock ext-board | <img width="300" src="boards/TangPrimer20K.png"> |
 | [TangPrimer25K](boards/TangPrimer25K.md) | GW5A-25A | GW5A-LV25MG121NC1/I0 | 100.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img width="300" src="boards/TangPrimer25K.png"> |
+| [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
 | [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
 | [Tangoboard](boards/Tangoboard.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | based on TangNano9k | <img width="300" src="boards/Tangoboard.png"> |
 | [XC9536XL](boards/XC9536XL.md) | xc9500xl |  | 50.00Mhz | ise | XC9536XL - minimal CPLD-Devboard | <img width="300" src="boards/XC9536XL.png"> |

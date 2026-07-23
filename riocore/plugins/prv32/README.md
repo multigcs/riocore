@@ -40,13 +40,21 @@ hardware type
  * type: bool
  * default: False
 
-### ramsize:
-size of ram in byte
+### uarts:
+number of uarts
 
  * type: int
- * min: 512
- * max: 8192
- * default: 8192
+ * min: 0
+ * max: 1
+ * default: 0
+
+### ramsize:
+size of ram in bytes
+for uart demo, you need >= 1024 Bytes
+
+ * type: select
+ * default: 2048
+ * options: 512, 768, 1024, 2048, 4096, 8192
 
 
 ## Signals:

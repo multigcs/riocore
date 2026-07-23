@@ -36,14 +36,22 @@ SPI FLASH
 | P9 | C2 | all |
 | P8 | E3 | all |
 | P7 | C6 | all |
+| 3V3_1 | 3V3 | all |
+| GND_1 | GND | all |
+| 3V3_2 | 3V3 | all |
+| GND_2 | GND | all |
 
 ### PMOD1
 
 
 | Name | Pin | Direction |
 | --- | --- | --- |
+| P4 | A1 | all |
+| P3 | B1 | all |
 | P2 | D1 | input |
 | P1 | E2 | all |
+| 3V3 | 3V3 | all |
+| GND | GND | all |
 
 ### PMOD2
 
@@ -54,5 +62,7 @@ SPI FLASH
 | P2 | A3 | input |
 | P3 | B6 | all |
 | P4 | C5 | all |
+| GND | GND | all |
+| 3V3 | 3V3 | all |
 
 

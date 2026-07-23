@@ -63,4 +63,18 @@ over USB
 | B | 44 | input |
 | A | 13 | input |
 
+### PWR
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| GND_1 | GND | input |
+| GND_2 | GND | input |
+| 3V3_1 | 3V3 | input |
+| 3V3_2 | 3V3 | input |
+| GND_3 | GND | input |
+| GND_4 | GND | input |
+| 5V_1 | 5V | input |
+| 5V_2 | 5V | input |
+
 
