@@ -18,8 +18,8 @@ USB UART
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| RX | 6 | input |
-| TX | 4 | output |
+| RX | 4 | input |
+| TX | 6 | output |
 
 ### USB
 Micro-USB

@@ -36,12 +36,12 @@ hardware type
  * default: generic
 
 ### ramsize:
-memory size
+memory size in bytes
 
  * type: int
  * min: 64
  * max: 2048
- * default: 64
+ * default: 256
  * unit: byte
 
 

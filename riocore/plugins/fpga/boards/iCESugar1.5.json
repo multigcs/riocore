@@ -31,8 +31,8 @@
             "comment": "USB UART",
             "pins": {
                 "RX": {
-                    "pin": "6",
-                    "comment": "shared with PMOD1:P2",
+                    "pin": "4",
+                    "comment": "shared with PMOD1:P8",
                     "pos": [
                         11,
                         159
@@ -40,8 +40,8 @@
                     "direction": "input"
                 },
                 "TX": {
-                    "pin": "4",
-                    "comment": "shared with PMOD1:P8",
+                    "pin": "6",
+                    "comment": "shared with PMOD1:P2",
                     "pos": [
                         11,
                         147
