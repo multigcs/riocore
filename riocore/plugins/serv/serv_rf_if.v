@@ -47,7 +47,7 @@ module serv_rf_if
    input wire [4:0]  i_rs2_raddr,
    output wire 	     o_rs2);
 
-`include "serv_params.vh"
+`include "src/serv_params.vh"
 
    /*
     ********** Write side ***********

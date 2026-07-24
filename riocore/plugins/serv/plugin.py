@@ -12,7 +12,8 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["serv.v", "ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v"]
-        self.SRCFILES = ["makehex.py", "link.ld", "serv_params.vh"]
+        self.SRCFILES = ["src/makehex.py", "src/link.ld", "src/serv_params.vh", "src/main.c"]
+        self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.OPTIONS = {
             "ramsize": {
                 "default": 64,
@@ -21,57 +22,6 @@ class Plugin(PluginBase):
                 "max": 2048,
                 "unit": "byte",
                 "description": "memory size",
-            },
-            "source": {
-                "type": "multiline",
-                "description": "source code (asm)",
-                "default": """/*
-* LED Blinker
-* Assuming that GPIO_BASE is mapped to a GPIO core, which in turn is
-* connected to LEDs, this will light the LEDs one at a time.
-* Useful as smoke test to see that serv is running correctly
-*/
-#ifndef GPIO_BASE
-#define GPIO_BASE 0x100
-#endif
-
-#ifndef DELAY
-#define DELAY 0x20000 /* Loop 100000 times before inverting the LED */
-#endif
-
-	/*
-	a0 = GPIO Base address
-	t0 = Value
-	t1 = Timer max value
-	t2 = Current timer value
-
-	*/
-
-.globl _start
-_start:
-	/* Load GPIO base address to a0 */
-	lui a0, %hi(GPIO_BASE)
-	addi a0, a0, %lo(GPIO_BASE)
-
-	/* Set timer value to control blink speed */
-	li t1, DELAY
-
-bl1:
-	/* Write to LEDs */
-	sb t0, 0(a0)
-
-	/* invert LED */
-	xori t0, t0, 1
-
-	/* Reset timer */
-	and t2, zero, zero
-
-	/* Delay loop */
-time1:
-	addi t2, t2, 1
-	bne t1, t2, time1
-	j bl1
-""",
             },
         }
         self.PINDEFAULTS = {
@@ -91,6 +41,7 @@ time1:
                 "pull": None,
             },
         }
+        self.source = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
 
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
@@ -99,11 +50,12 @@ time1:
         instance_parameter = instance["parameter"]
         ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         instance_parameter["RAM_SIZE"] = ramsize
-        instance_parameter["INITIAL_FILE"] = f'"prog_{uid}.hex"'
+        instance_parameter["INITIAL_FILE"] = f'"src/prog_{uid}.hex"'
         return instances
 
     @classmethod
     def extra_files(cls, parent, instances):
+
         output = []
         output.append("""#!/bin/sh
 #
@@ -114,18 +66,43 @@ set -x
 RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
 
+cd src/
+
 """)
         for instance in instances:
             uid = instance.plugin_setup["uid"]
             ramsize = int(instance.plugin_setup.get("ramsize", instance.OPTIONS["ramsize"]["default"]))
-            source = instance.plugin_setup.get("source", instance.OPTIONS["source"]["default"])
-            target = os.path.join(parent.gateware_path, f"prog_{uid}.S")
-            open(target, "w").write(source)
+
+            startup = []
+            startup.append("")
+            startup.append(".text")
+            startup.append(".global _start")
+            startup.append("_start:")
+            startup.append(f"	li x2, {ramsize}")
+            startup.append("	call main")
+            startup.append("")
+            target = os.path.join(parent.gateware_path, "src", f"startup_{uid}.s")
+            open(target, "w").write("\n".join(startup))
+
+            target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
+            open(target, "w").write(instance.source)
+
+            instance.march = "rv32i"
+            instance.mabi = "ilp32"
+            instance.gcc_options = ""
 
             output.append(f"""
 echo "compile prog_{uid}.hex"
 rm -f prog_{uid}.elf prog_{uid}.bin prog_{uid}.hex
-$RISCV_BIN-gcc -nostdlib -nostartfiles -march=rv32i -mabi=ilp32 -Tlink.ld -oprog_{uid}.elf prog_{uid}.S
+
+FLAGS="-nostartfiles -nostdlib -static -Os"
+
+#$RISCV_BIN-gcc -nostdlib -nostartfiles -march=rv32i -mabi=ilp32 -Tlink.ld -oprog_{uid}.elf prog_{uid}.S
+
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o
+$RISCV_BIN-size -G -d prog_{uid}.elf
+
 $RISCV_BIN-objcopy -O binary prog_{uid}.elf prog_{uid}.bin
 python3 makehex.py prog_{uid}.bin {ramsize // 4} > prog_{uid}.hex
 #rm -rf prog_{uid}.bin prog_{uid}.elf
