@@ -244,7 +244,7 @@ if args.config:
                         arguments = []
                         if plugin_instance.BUILDER:
                             startsh_path = ""
-                            if hasattr(plugin_instance, "protocol") and plugin_instance.protocol.startswith("SPI"):
+                            if hasattr(plugin_instance, "protocol") and plugin_instance.protocol and plugin_instance.protocol.startswith("SPI"):
                                 startsh_path = os.path.join(output_path, config_name, "PYLIB", plugin_instance.instances_name, "start.sh")
                             simulatorsh_path = os.path.join(output_path, config_name, "Gateware", plugin_instance.instances_name)
                             cmd = f'cd "{simulatorsh_path}" ; make build load'

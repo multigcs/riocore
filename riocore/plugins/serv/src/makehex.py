@@ -15,6 +15,9 @@ nwords = int(argv[2])
 with open(binfile, "rb") as f:
     bindata = f.read()
 
+while len(bindata) % 4 != 0:
+    bindata += bytes([0])
+
 assert len(bindata) < 4 * nwords
 assert len(bindata) % 4 == 0
 
