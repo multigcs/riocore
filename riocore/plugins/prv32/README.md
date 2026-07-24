@@ -48,6 +48,14 @@ number of uarts
  * max: 1
  * default: 0
 
+### pwms:
+number of pwms
+
+ * type: int
+ * min: 0
+ * max: 1
+ * default: 0
+
 ### ramsize:
 size of ram in bytes
 for uart demo, you need >= 1024 Bytes

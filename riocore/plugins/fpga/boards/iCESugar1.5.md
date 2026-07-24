@@ -34,18 +34,18 @@ Micro-USB
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| GRN | 41 | output |
+| GRN | 39 | output |
 | RED | 40 | output |
-| BLU | 39 | output |
+| BLU | 41 | output |
 
 ### J6
 RGB-Pins
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| B | 39 | all |
-| G | 40 | all |
-| R | 41 | all |
+| B | 41 | all |
+| G | 39 | all |
+| R | 40 | all |
 | LED_B | RGB_B | all |
 | LED_G | RGB_G | all |
 | LED_R | RGB_R | all |
