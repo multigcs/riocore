@@ -300,10 +300,11 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
             output.append("#ifdef ENABLE_MUL")
             output.append("#ifdef ENABLE_DIV")
             pbase = 0x80000030
+            output.append(f"#define PWM_BASE ((volatile unsigned int *) 0x{pbase:x})")
+            output.append(f"#define PWM_MAX  {instance.pwms}")
             for pwms_n in range(instance.pwms):
-                fdiv = f"{instance.gateware.jdata['speed'] // 10000}"
-                output.append(f"#define PWM{pwms_n}_DIV {fdiv}")
                 output.append(f"#define PWM{pwms_n}_PULSE ((volatile unsigned int *) 0x{pbase:x})")
+                output.append(f"#define PWM{pwms_n}_TOTAL ((volatile unsigned int *) 0x{pbase + 4:x})")
                 pbase += 8
             output.append("#endif")
             output.append("#endif")
@@ -333,11 +334,8 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
             output.append("extern void uart_putc(unsigned int uart, char ch);")
             output.append("extern void uart_puts(unsigned int uart, char *s);")
         if instance.pwms:
-            output.append("#ifdef ENABLE_MUL")
-            output.append("#ifdef ENABLE_DIV")
-            output.append("void pwm_set(unsigned int pwm, unsigned int percent);")
-            output.append("#endif")
-            output.append("#endif")
+            output.append("void pwm_set_total(unsigned int pwm, unsigned int total);")
+            output.append("void pwm_set_pulse(unsigned int pwm, unsigned int pulse);")
             output.append("")
         output.append("#ifdef GPIO_SPI0_SCLK")
         output.append("extern unsigned char spi0_transfer_byte(unsigned char send_val);")
@@ -516,17 +514,19 @@ uint32_t mills(void) {
             output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 3:x}")
         output.append("")
 
-        output.append("    assign sram_sel   = mem_valid && (mem_addr < 32'h00002000);")
-        output.append("    assign gpios_sel  = mem_valid && (mem_addr == 32'h80000000);")
-        output.append("    assign uart0_sel  = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
-        output.append("    assign cdt_sel    = mem_valid && (mem_addr == 32'h80000010);")
-        output.append("    assign utimer_sel = mem_valid && (mem_addr == 32'h80000020);")
+        output.append("    assign sram_sel         = mem_valid && (mem_addr < 32'h00002000);")
+        output.append("    assign gpios_sel        = mem_valid && (mem_addr == 32'h80000000);")
+        output.append("    assign uart0_sel        = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
+        output.append("    assign cdt_sel          = mem_valid && (mem_addr == 32'h80000010);")
+        output.append("    assign utimer_sel       = mem_valid && (mem_addr == 32'h80000020);")
         pbase = 0x80000030
         for pwm_n in range(instance.pwms):
-            output.append(f"    assign pwm{pwm_n}_sel = mem_valid && (mem_addr == 32'h{pbase:x});")
+            sel = f"pwm{pwm_n}_sel"
+            output.append(f"    assign {sel:16s} = mem_valid && (mem_addr == 32'h{pbase:x} || mem_addr == 32'h{pbase + 4:x});")
             pbase += 8
         for iname, idata in instance.variables.items():
-            output.append(f"    assign {iname}_sel = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
+            sel = f"{iname}_sel"
+            output.append(f"    assign {sel:16s} = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
         output.append("")
 
         output.append("    // Core can proceed regardless of *which* slave was targetted and is now ready.")
@@ -635,11 +635,12 @@ uint32_t mills(void) {
             output.append("    );")
             output.append("")
 
+        pbase = 0x80000030
         for pwm_n in range(instance.pwms):
-            fdiv = f"{instance.gateware.jdata['speed'] // 10000}"
-            output.append(f"    prv32_pwm #(.PWM_DIVIDER({fdiv})) soc_pwm{pwm_n} (")
+            output.append(f"    prv32_pwm soc_pwm{pwm_n} (")
             output.append("        .clk(clk),")
             output.append("        .reset_n(reset_n),")
+            output.append(f"        .pwm_addr(mem_addr - 32'h{pbase:x}),")
             output.append(f"        .pwm_sel(pwm{pwm_n}_sel),")
             output.append("        .pwm_data_i(mem_wdata),")
             output.append("        .we(mem_wstrb[0]),")
@@ -648,6 +649,7 @@ uint32_t mills(void) {
             output.append(f"        .pwm(pwm{pwm_n})")
             output.append("    );")
             output.append("")
+            pbase += 8
 
         output.append(f"    prv32_utimer #(.MS_DIVIDER({instance.gateware.jdata['speed'] // 1000})) soc_utimer (")
         output.append("        .clk(clk),")

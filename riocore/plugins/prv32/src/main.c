@@ -12,8 +12,9 @@ int main() {
         digitalWrite(GPIO_LED1, LOW);
     #endif
 
-    #ifdef PWM0_DIV
-        pwm_set(0, 30);
+    #ifdef PWM0_TOTAL
+        pwm_set_total(0, F_CPU);
+        pwm_set_pulse(0, F_CPU - F_CPU / 100);
     #endif
 
     #ifdef GPIO_SW

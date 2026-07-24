@@ -1,10 +1,11 @@
 
 #include "rio.h"
 
-#ifdef PWM0_DIV
-
-void pwm_set(unsigned int pwm, unsigned int percent) {
-    *PWM0_PULSE = PWM0_DIV * percent / 100;
+void pwm_set_total(unsigned int pwm, unsigned int total) {
+    *PWM0_TOTAL = total;
 }
 
-#endif
+void pwm_set_pulse(unsigned int pwm, unsigned int pulse) {
+    *PWM0_PULSE = pulse;
+}
+
