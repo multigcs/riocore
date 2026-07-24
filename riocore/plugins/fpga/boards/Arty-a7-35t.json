@@ -202,6 +202,121 @@
             295
           ],
           "direction": "all"
+        },
+        "3V3": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            319,
+            295
+          ],
+          "direction": "all"
+        },
+        "5V": {
+          "pin": "5V",
+          "marker": true,
+          "pos": [
+            330,
+            295
+          ],
+          "direction": "all"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            341,
+            295
+          ],
+          "direction": "all"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            352,
+            295
+          ],
+          "direction": "all"
+        },
+        "VIN": {
+          "pin": "VIN",
+          "marker": true,
+          "pos": [
+            363,
+            295
+          ],
+          "direction": "all"
+        },
+        "XGND": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            352,
+            284
+          ],
+          "direction": "all"
+        },
+        "XVREF": {
+          "pin": "XVREF",
+          "marker": true,
+          "pos": [
+            363,
+            284
+          ],
+          "direction": "all"
+        },
+        "V_N": {
+          "pin": "V_N",
+          "marker": true,
+          "pos": [
+            341,
+            284
+          ],
+          "direction": "all"
+        },
+        "V_P": {
+          "pin": "V_P",
+          "marker": true,
+          "pos": [
+            330,
+            284
+          ],
+          "direction": "all"
+        },
+        "G": {
+          "pin": "G",
+          "marker": true,
+          "pos": [
+            283,
+            85
+          ],
+          "direction": "all"
+        },
+        "A": {
+          "pin": "A",
+          "marker": true,
+          "pos": [
+            272,
+            85
+          ],
+          "direction": "all"
+        },
+        "SDA": {
+          "pin": "M18",
+          "pos": [
+            261,
+            85
+          ],
+          "direction": "all"
+        },
+        "SCL": {
+          "pin": "L18",
+          "pos": [
+            250,
+            85
+          ],
+          "direction": "all"
         }
       }
     },
@@ -484,6 +599,42 @@
             42
           ],
           "direction": "all"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            101,
+            42
+          ],
+          "direction": "all"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            101,
+            53
+          ],
+          "direction": "all"
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            112,
+            42
+          ],
+          "direction": "all"
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            112,
+            53
+          ],
+          "direction": "all"
         }
       }
     },
@@ -560,6 +711,42 @@
           "pos": [
             191,
             42
+          ],
+          "direction": "all"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            202,
+            42
+          ],
+          "direction": "all"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            202,
+            53
+          ],
+          "direction": "all"
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            213,
+            42
+          ],
+          "direction": "all"
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            213,
+            53
           ],
           "direction": "all"
         }
@@ -640,6 +827,42 @@
             42
           ],
           "direction": "all"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            301,
+            42
+          ],
+          "direction": "all"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            301,
+            53
+          ],
+          "direction": "all"
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            312,
+            42
+          ],
+          "direction": "all"
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            312,
+            53
+          ],
+          "direction": "all"
         }
       }
     },
@@ -716,6 +939,42 @@
           "pos": [
             389,
             42
+          ],
+          "direction": "all"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            400,
+            42
+          ],
+          "direction": "all"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            400,
+            53
+          ],
+          "direction": "all"
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            411,
+            42
+          ],
+          "direction": "all"
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            411,
+            53
           ],
           "direction": "all"
         }
