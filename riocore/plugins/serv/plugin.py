@@ -21,7 +21,7 @@ class Plugin(PluginBase):
                 "min": 64,
                 "max": 2048,
                 "unit": "byte",
-                "description": "memory size",
+                "description": "memory size in bytes",
             },
         }
         self.PINDEFAULTS = {
@@ -55,7 +55,6 @@ class Plugin(PluginBase):
 
     @classmethod
     def extra_files(cls, parent, instances):
-
         output = []
         output.append("""#!/bin/sh
 #
