@@ -27,18 +27,15 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {
             "gpio0": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
+                "optional": True,
             },
             "gpio1": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
+                "optional": True,
             },
             "gpio2": {
                 "direction": "output",
-                "invert": False,
-                "pull": None,
+                "optional": True,
             },
         }
         self.source = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
