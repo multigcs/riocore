@@ -16,7 +16,7 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.OPTIONS = {
             "ramsize": {
-                "default": 64,
+                "default": 256,
                 "type": int,
                 "min": 64,
                 "max": 2048,

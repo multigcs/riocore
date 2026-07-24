@@ -2,8 +2,6 @@
 #include <stdint.h>
 
 #define GPIO_BASE ((volatile unsigned int *) 0x100)
-#define DELAY 0x20000
-
 #define INPUT  0
 #define OUTPUT 1
 #define LOW    0
@@ -25,15 +23,17 @@ void digitalWrite(uint8_t num, uint8_t value) {
     }
 }
 
+static inline void delay(uint32_t delay) {
+    for (int i = 0; i < delay; i++) {
+        asm("nop");
+    }
+}
+
 int main() {
     digitalWrite(1, HIGH);
     while (1) {
-
         digitalWrite(0, TOGGLE);
-        for (int i = 0; i < DELAY; i++) {
-            asm("nop");
-        }
-
+        delay(0x20000);
     }
     return 0;
 }
