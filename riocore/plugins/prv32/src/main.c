@@ -12,6 +12,10 @@ int main() {
         digitalWrite(GPIO_LED1, LOW);
     #endif
 
+    #ifdef PWM0_DIV
+        pwm_set(0, 30);
+    #endif
+
     #ifdef GPIO_SW
         pinMode(GPIO_SW, INPUT);
     #endif

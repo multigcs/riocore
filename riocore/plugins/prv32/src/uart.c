@@ -11,7 +11,7 @@ void uart_set_div(unsigned int uart, unsigned int div) {
   *UART0_DIV = div;
 
   /* Need to delay a little */
-//  for (delay = 0; delay < 200; delay++) {}
+  for (delay = 0; delay < 200; delay++) {}
 }
 
 #ifdef ENABLE_MUL

@@ -12,7 +12,7 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
-        self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/spi.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
+        self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/pwm.c", "src/spi.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.OPTIONS = {
             "ENABLE_MUL": {
@@ -34,6 +34,13 @@ class Plugin(PluginBase):
                 "default": 0,
                 "description": "number of uarts",
             },
+            "pwms": {
+                "type": int,
+                "min": 0,
+                "max": 1,
+                "default": 0,
+                "description": "number of pwms",
+            },
             "ramsize": {
                 "type": "select",
                 "options": ["512", "768", "1024", "2048", "4096", "8192"],
@@ -44,6 +51,7 @@ class Plugin(PluginBase):
         self.fpga_toolchain = None
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
+        self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
         self.source = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
@@ -54,6 +62,13 @@ class Plugin(PluginBase):
                     "optional": True,
                 },
                 f"uart{uart_n}_tx": {
+                    "direction": "output",
+                    "optional": True,
+                },
+            }
+        for pwm_n in range(self.pwms):
+            self.PINDEFAULTS = {
+                f"pwm{pwm_n}": {
                     "direction": "output",
                     "optional": True,
                 },
@@ -189,17 +204,18 @@ cd src/
 
 TOOLCHAIN="{instance.fpga_toolchain}"
 
-rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o spi.o
+rm -f conv_to_init prog_{uid}.elf prog_{uid}.hex prog_{uid}.bin main_{uid}.o timer.o uart.o pwm.o spi.o
 
 FLAGS="-nostartfiles -nostdlib -static -Os"
 #FLAGS="-nostartfiles -static -Os"
 
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c timer.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c uart.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c pwm.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c spi.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o spi.o
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o pwm.o spi.o
 $RISCV_BIN-strip prog_{uid}.elf
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 $RISCV_BIN-size -G -d prog_{uid}.elf
@@ -280,10 +296,23 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
         output.append("")
         output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
         output.append("")
+        if instance.pwms:
+            output.append("#ifdef ENABLE_MUL")
+            output.append("#ifdef ENABLE_DIV")
+            pbase = 0x80000030
+            for pwms_n in range(instance.pwms):
+                fdiv = f"{instance.gateware.jdata['speed'] // 10000}"
+                output.append(f"#define PWM{pwms_n}_DIV {fdiv}")
+                output.append(f"#define PWM{pwms_n}_PULSE ((volatile unsigned int *) 0x{pbase:x})")
+                pbase += 8
+            output.append("#endif")
+            output.append("#endif")
+            output.append("")
         for iname, idata in instance.variables.items():
             ctype = idata.get("ctype", "uint32_t")
             output.append(f"#define RIO_{iname.upper():10s} *((volatile {ctype} *) 0x{idata['addr']:x})")
         output.append("")
+
         if instance.uarts:
             for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
                 output.append(f"#define UART_B{baud!s:7s} {instance.gateware.jdata['speed'] * instance.uart_baud_scale // baud}")
@@ -303,6 +332,12 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
             output.append("extern char uart_available(unsigned int uart);")
             output.append("extern void uart_putc(unsigned int uart, char ch);")
             output.append("extern void uart_puts(unsigned int uart, char *s);")
+        if instance.pwms:
+            output.append("#ifdef ENABLE_MUL")
+            output.append("#ifdef ENABLE_DIV")
+            output.append("void pwm_set(unsigned int pwm, unsigned int percent);")
+            output.append("#endif")
+            output.append("#endif")
             output.append("")
         output.append("#ifdef GPIO_SPI0_SCLK")
         output.append("extern unsigned char spi0_transfer_byte(unsigned char send_val);")
@@ -373,7 +408,7 @@ uint32_t mills(void) {
     @classmethod
     def soc(cls, instance):
         output = []
-        addr = 0x80000030
+        addr = 0x80000100
         uid = instance.plugin_setup["uid"]
         for iname, idata in instance.variables.items():
             idata["addr"] = addr
@@ -400,8 +435,8 @@ uint32_t mills(void) {
 
         gpio_pins = []
         for pname, pdata in instance.PINDEFAULTS.items():
-            if pdata["direction"] == "inout":
-                gpio_pins.append(f"inout wire {pname}")
+            direction = pdata["direction"]
+            gpio_pins.append(f"{direction} wire {pname}")
 
         output.append("        " + ",\n        ".join(gpio_pins))
         output.append("    );")
@@ -459,11 +494,17 @@ uint32_t mills(void) {
     wire [31:0]                gpios_data_o;
 """)
 
+        for pwm_n in range(instance.pwms):
+            output.append(f"    wire                       pwm{pwm_n}_sel;")
+            output.append(f"    wire                       pwm{pwm_n}_ready;")
+            output.append(f"    wire [31:0]                pwm{pwm_n}_data_o;")
+            output.append("")
+
         for iname, idata in instance.variables.items():
             output.append(f"    wire                       {iname}_sel;")
             output.append(f"    wire                       {iname}_ready;")
             output.append(f"    wire [31:0]                {iname}_data_o;")
-        output.append("")
+            output.append("")
 
         output.append("    // Establish memory map for all slaves:")
         output.append("    //   SRAM       0x00000000 - 0x0001ffff")
@@ -480,6 +521,10 @@ uint32_t mills(void) {
         output.append("    assign uart0_sel  = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
         output.append("    assign cdt_sel    = mem_valid && (mem_addr == 32'h80000010);")
         output.append("    assign utimer_sel = mem_valid && (mem_addr == 32'h80000020);")
+        pbase = 0x80000030
+        for pwm_n in range(instance.pwms):
+            output.append(f"    assign pwm{pwm_n}_sel = mem_valid && (mem_addr == 32'h{pbase:x});")
+            pbase += 8
         for iname, idata in instance.variables.items():
             output.append(f"    assign {iname}_sel = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
         output.append("")
@@ -491,6 +536,8 @@ uint32_t mills(void) {
         output.append("        uart0_ready |")
         output.append("        cdt_ready |")
         output.append("        utimer_ready |")
+        for pwm_n in range(instance.pwms):
+            output.append(f"        pwm{pwm_n}_ready |")
         for iname, idata in instance.variables.items():
             output.append(f"        {iname}_ready |")
         output.append("        0);")
@@ -498,13 +545,17 @@ uint32_t mills(void) {
 
         output.append("    // Select which slave's output data is to be fed to core.")
         output.append("    assign mem_rdata = ")
-        output.append("        sram_sel   ? sram_data_o :")
-        output.append("        gpios_sel  ? gpios_data_o :")
-        output.append("        uart0_sel  ? uart0_data_o :")
-        output.append("        cdt_sel    ? cdt_data_o  :")
-        output.append("        utimer_sel ? utimer_data_o :")
+        output.append("        sram_sel         ? sram_data_o :")
+        output.append("        gpios_sel        ? gpios_data_o :")
+        output.append("        uart0_sel        ? uart0_data_o :")
+        output.append("        cdt_sel          ? cdt_data_o  :")
+        output.append("        utimer_sel       ? utimer_data_o :")
+        for pwm_n in range(instance.pwms):
+            sel = f"pwm{pwm_n}_sel"
+            output.append(f"        {sel:16s} ? pwm{pwm_n}_data_o  :")
         for iname, idata in instance.variables.items():
-            output.append(f"        {iname}_sel  ? {iname}_data_o  :")
+            sel = f"{iname}_sel"
+            output.append(f"        {sel:16s} ? {iname}_data_o  :")
         output.append("        32'h0;")
         output.append("")
 
@@ -581,6 +632,20 @@ uint32_t mills(void) {
             output.append(f"        .v{direction}_ready({iname}_ready),")
             output.append(f"        .v{direction}_data_o({iname}_data_o),")
             output.append(f"        .v{direction}({iname})")
+            output.append("    );")
+            output.append("")
+
+        for pwm_n in range(instance.pwms):
+            fdiv = f"{instance.gateware.jdata['speed'] // 10000}"
+            output.append(f"    prv32_pwm #(.PWM_DIVIDER({fdiv})) soc_pwm{pwm_n} (")
+            output.append("        .clk(clk),")
+            output.append("        .reset_n(reset_n),")
+            output.append(f"        .pwm_sel(pwm{pwm_n}_sel),")
+            output.append("        .pwm_data_i(mem_wdata),")
+            output.append("        .we(mem_wstrb[0]),")
+            output.append(f"        .pwm_ready(pwm{pwm_n}_ready),")
+            output.append(f"        .pwm_data_o(pwm{pwm_n}_data_o),")
+            output.append(f"        .pwm(pwm{pwm_n})")
             output.append("    );")
             output.append("")
 

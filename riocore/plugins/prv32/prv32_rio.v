@@ -1,3 +1,4 @@
+
 module prv32_rio_vin (
         input wire         clk,
         input wire         reset_n,
@@ -15,10 +16,8 @@ module prv32_rio_vin (
     always @(posedge clk or negedge reset_n) begin
         if (!reset_n) begin
             vin <= 'b0;
-        end else if (vin_sel) begin
-            if (we) begin
-                vin <= vin_data_i;
-            end
+        end else if (vin_sel && we) begin
+            vin <= vin_data_i;
         end
     end
 endmodule
@@ -63,6 +62,44 @@ module prv32_utimer (
             clk_counter <= MS_DIVIDER;
         end else begin
             clk_counter <= clk_counter - 'd1;
+        end
+    end
+endmodule
+
+module prv32_pwm (
+        input wire         clk,
+        input wire         reset_n,
+        input wire         pwm_sel,
+        input wire [31:0]  pwm_data_i,
+        input wire         we,
+        output wire        pwm_ready,
+        output wire [31:0] pwm_data_o,
+        output reg         pwm
+    );
+    parameter PWM_DIVIDER = 'd27000000;
+
+    reg [31:0] pwm_value;
+    assign pwm_ready = pwm_sel;
+    assign pwm_data_o = pwm_value;
+
+    reg [31:0] clk_counter;
+    always @(posedge clk or negedge reset_n) begin
+        if (!reset_n) begin
+            pwm_value <= 'd0;
+            pwm <= 'd0;
+            clk_counter <= 0;
+        end else begin
+            clk_counter <= clk_counter + 'd1;
+            if (pwm_sel && we) begin
+                pwm_value <= pwm_data_i;
+            end
+            if (clk_counter >= PWM_DIVIDER) begin
+                clk_counter <= 'd0;
+            end else if (clk_counter >= pwm_value) begin
+                pwm <= 'd0;
+            end else begin
+                pwm <= 'd1;
+            end
         end
     end
 endmodule
