@@ -5,15 +5,16 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
+        uid = self.plugin_setup["uid"]
         self.NAME = "serv"
         self.INFO = "minimal risc-v softcore"
         self.DESCRIPTION = "minimal risc-v cpu for testing"
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        uid = self.plugin_setup["uid"]
         self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v"]
         self.SRCFILES = ["src/makehex.py", "src/link.ld", "src/serv_params.vh", "src/main.c", "src/rio.c"]
+        self.VERILOGS_GEN = [f"serv_{uid}.v"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True
         self.RESET = True
@@ -25,16 +26,41 @@ class Plugin(PluginBase):
                 "description": "size of ram in bytes",
             },
         }
-        self.PINDEFAULTS = {}
-        self.source = self.plugin_setup.get("source", "")
+        self.fpga_toolchain = None
+        self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
+        self.uarts = self.plugin_setup.get("uarts", 0)
+        self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
-        self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
+        self.source = self.plugin_setup.get("source", "")
+        # set pins
+        self.PINDEFAULTS = {}
         for gpio in self.gpios:
             self.PINDEFAULTS[gpio.upper()] = {
                 "direction": "inout",
                 "optional": True,
             }
+        for uart_n in range(self.uarts):
+            self.PINDEFAULTS = {
+                f"uart{uart_n}_rx": {
+                    "direction": "input",
+                    "optional": True,
+                },
+                f"uart{uart_n}_tx": {
+                    "direction": "output",
+                    "optional": True,
+                },
+            }
+        for pwm_n in range(self.pwms):
+            self.PINDEFAULTS = {
+                f"pwm{pwm_n}": {
+                    "direction": "output",
+                    "optional": True,
+                },
+            }
+        # set interface/signals
+        self.INTERFACE = {}
+        self.SIGNALS = {}
         for name, data in self.variables.items():
             ctype = data.get("ctype", "uint32_t")
             bsize = 32
@@ -50,11 +76,26 @@ class Plugin(PluginBase):
             }
             self.SIGNALS[name] = {
                 "direction": data.get("dir", "output"),
-                "bool": bsize == 1,
-                "min": 0,
-                "max": 255,
             }
-        self.VERILOGS_GEN = [f"serv_{uid}.v"]
+            if ctype == "bool":
+                self.SIGNALS[name]["bool"] = True
+            elif ctype == "uint8_t":
+                self.SIGNALS[name]["min"] = 0
+                self.SIGNALS[name]["max"] = 255
+            elif ctype == "int8_t":
+                self.SIGNALS[name]["min"] = -127
+                self.SIGNALS[name]["max"] = 127
+
+        if self.ramsize % 4:
+            print("ERROR: ramsize must be multiple of 4")
+
+        addr = 0x80000100
+        for iname, idata in self.variables.items():
+            idata["addr"] = addr
+            addr += 0x04
+
+        # uart baudrate scale (ice40 = 1 / tangnano = 12) ????
+        self.uart_baud_scale = 1
 
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
@@ -63,6 +104,13 @@ class Plugin(PluginBase):
             self.fpga_toolchain = gateware.jdata["toolchain"]
             self.fpga_family = gateware.jdata.get("family")
             self.fpga_type = gateware.jdata.get("type")
+            if self.fpga_toolchain == "gowin":
+                if self.fpga_family == "GW1N-9C":
+                    self.uart_baud_scale = 12
+                elif self.fpga_family == "GW5A-25A":
+                    self.uart_baud_scale = 4
+            else:
+                self.uart_baud_scale = 1
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance["module"] = f"serv_{uid}"
@@ -82,7 +130,163 @@ class Plugin(PluginBase):
         return instances
 
     @classmethod
-    def serv_v(cls, instance):
+    def extra_files(cls, parent, instances):
+        for instance in instances:
+            uid = instance.plugin_setup["uid"]
+            os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
+
+            instance.mabi = "ilp32"
+            instance.march = "rv32i"
+            instance.gcc_options = ""
+
+            open(os.path.join(parent.gateware_path, "src", f"inc_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
+            open(os.path.join(parent.gateware_path, "src", f"startup_{uid}.s"), "w").write("\n".join(cls.startup_s(parent, instance)))
+            open(os.path.join(parent.gateware_path, "src", f"main_{uid}.c"), "w").write(cls.main_c(parent, instance))
+            open(os.path.join(parent.gateware_path, f"serv_{uid}.v"), "w").write("\n".join(cls.soc_v(parent, instance)))
+            open(os.path.join(parent.gateware_path, "src", f"compile_{uid}.sh"), "w").write("\n".join(cls.compile_sh(parent, instance)))
+            cls.compile_run(parent, instance)
+
+    @classmethod
+    def startup_s(cls, parent, instance):
+        startup = []
+        startup.append("")
+        startup.append(".text")
+        startup.append(".global _start")
+        startup.append("_start:")
+        startup.append(f"	li x2, {instance.ramsize}")
+        startup.append("	call main")
+        startup.append("")
+        return startup
+
+    @classmethod
+    def rio_h(cls, parent, instance):
+        uid = instance.plugin_setup["uid"]
+        output = []
+        output.append("#ifndef RIO_H")
+        output.append("#define RIO_H")
+        output.append("")
+        output.append("#include <stdint.h>")
+        output.append("")
+        output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
+        output.append(f'#define SYSNAME        "{uid}"')
+        output.append(f"#define MEMBYTES       {instance.ramsize}")
+        output.append('#define CPU_TYPE       "SERV"')
+        output.append(f'#define CPU_MABI       "{instance.mabi}"')
+        output.append(f'#define CPU_MARCH      "{instance.march}"')
+        if instance.fpga_toolchain:
+            output.append(f'#define FPGA_TOOLCHAIN "{instance.fpga_toolchain}"')
+        if instance.fpga_family:
+            output.append(f'#define FPGA_FAMILY    "{instance.fpga_family}"')
+        if instance.fpga_type:
+            output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
+        output.append("")
+
+        # GPIOS
+        if instance.gpios:
+            output.append("#define INPUT  0")
+            output.append("#define OUTPUT 1")
+            output.append("#define LOW    0")
+            output.append("#define HIGH   1")
+            output.append("#define TOGGLE 2")
+            output.append("#define GPIOS ((volatile unsigned int *) 0x80000000)")
+            gpio_n = 0
+            for gpio in instance.gpios:
+                output.append(f"#define GPIO_{gpio.upper()}  {gpio_n}")
+                gpio_n += 1
+            output.append("extern void pinMode(uint8_t num, uint8_t dir);")
+            output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
+            output.append("extern uint8_t digitalRead(uint8_t num);")
+            output.append("")
+
+        # VARIABLES
+        for iname, idata in instance.variables.items():
+            ctype = idata.get("ctype", "uint32_t")
+            output.append(f"#define RIO_{iname.upper():10s} *((volatile {ctype} *) 0x{idata['addr']:x})")
+        output.append("")
+
+        # SYSTIMER
+        output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
+        output.append("extern uint32_t mills(void);")
+        output.append("extern void delay_nop(uint32_t delay);")
+        output.append("")
+
+        output.append("#endif")
+        output.append("")
+        return output
+
+    @classmethod
+    def main_c(cls, parent, instance):
+        uid = instance.plugin_setup["uid"]
+        main_c = ""
+        if instance.source:
+            if len(instance.source.split("\n")) == 1 and os.path.isfile(instance.source):
+                print(f"  INFO: {uid}: using c-file {instance.source}")
+                main_c = open(instance.source, "r").read()
+            else:
+                main_c = instance.source
+        if parent.configuration_path:
+            if not main_c:
+                cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
+                if os.path.isfile(cpath):
+                    print(f"  INFO: {uid}: using c-file {cpath}")
+                    main_c = open(cpath, "r").read()
+            if not main_c:
+                cpath = os.path.join(parent.project.config["json_path"], f"{uid}.c")
+                if os.path.isfile(cpath):
+                    print(f"  INFO: {uid}: using c-file {cpath}")
+                    main_c = open(cpath, "r").read()
+        if not main_c:
+            main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+        return main_c
+
+    @classmethod
+    def compile_sh(cls, parent, instance):
+        uid = instance.plugin_setup["uid"]
+        output = []
+        output.append(f"""#!/bin/sh
+#
+# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
+#
+set -x
+set -e
+
+# RISCV_BIN="riscv64-unknown-elf"
+RISCV_BIN="riscv-none-elf"
+FPGA_TOOLCHAIN="{instance.fpga_toolchain}"
+FLAGS="-nostartfiles -nostdlib -static -Os"
+FILES="main_{uid}.o rio.o"
+
+# clean
+rm -f $FILES prog_{uid}.elf prog_{uid}.bin prog_{uid}.hex
+
+# build
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog_{uid}.elf startup_{uid}.s $FILES
+$RISCV_BIN-strip prog_{uid}.elf
+$RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
+$RISCV_BIN-size -G -d prog_{uid}.elf
+
+# convert
+python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
+
+""")
+        return output
+
+    @classmethod
+    def compile_run(cls, parent, instance):
+        uid = instance.plugin_setup["uid"]
+        log = os.path.join(parent.gateware_path, "src", f"compile_{uid}.log")
+        print(f"  INFO: {uid}: running compiler script: {log}")
+        ret = os.system(f"cd {parent.gateware_path}/src ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
+        if ret != 0:
+            print(f"  ERROR: {uid}: running compiler script")
+            for line in open(log, "r").read().split("\n"):
+                print(f"    {line}")
+            exit(1)
+
+    @classmethod
+    def soc_v(cls, parent, instance):
         uid = instance.plugin_setup["uid"]
         output = []
         output.append(f"module serv_{uid} (")
@@ -106,7 +310,6 @@ class Plugin(PluginBase):
             ptype = "wire"
             if direction == "output":
                 ptype = "reg "
-
             if bsize > 1:
                 output.append(f"    {direction} {ptype} [{bsize - 1}:0] rio_{iname},")
             else:
@@ -121,6 +324,75 @@ class Plugin(PluginBase):
         for gn in range(gpio_n, 16):
             output.append(f"    wire gpio{gn};")
 
+        output += cls.soc_v_top(parent, instance)
+        output += cls.soc_v_mem(parent, instance)
+
+        bus_outs = []
+        output.append("    // GPIOs")
+        if instance.fpga_toolchain == "icestorm":
+            print("  ------------------------------------------------")
+            print("  WARNING: disable GPIO inputs (bug in icestorm ?)")
+            print("  ------------------------------------------------")
+            output.append("    reg [15:0] gdir = 16'hFFFF;")
+        else:
+            output.append("    reg [15:0] gdir = 16'd0;")
+        output.append("    reg [15:0] gout = 'd0;")
+        for n in range(16):
+            output.append(f"    assign gpio{n} = gdir[{n}] ? gout[{n}] : 1'bz;")
+        output.append("    wire gpio_sel = (o_dbus_adr == 'h80000000);")
+        output.append("    wire [31:0] gpio_out = {gdir, gpio15, gpio14, gpio13, gpio12, gpio11, gpio10, gpio9, gpio8, gpio7, gpio6, gpio5, gpio4, gpio3, gpio2, gpio1, gpio0};")
+        output.append("    always @(posedge clk) begin")
+        output.append("        if (o_dbus_cyc && o_dbus_we && gpio_sel) begin")
+        output.append("            gout <= o_dbus_dat[15:0];")
+        if instance.fpga_toolchain != "icestorm":
+            output.append("            gdir <= o_dbus_dat[31:16];")
+        output.append("        end")
+        output.append("    end")
+        output.append("")
+        bus_outs.append("gpio")
+
+        output.append("    // System-Timer")
+        output.append("    wire utimer_sel = (o_dbus_adr == 'h80000020);")
+        output.append("    wire [31:0] utimer_out = systimer;")
+        output.append("")
+        bus_outs.append("utimer")
+
+        for name, data in instance.variables.items():
+            direction = data.get("dir", "output")
+            ctype = data.get("ctype", "uint32_t")
+            bsize = 32
+            if ctype == "bool":
+                bsize = 1
+            elif ctype.endswith("int8_t"):
+                bsize = 8
+            elif ctype.endswith("int16_t"):
+                bsize = 16
+
+            output.append(f"    // RIO-Variable: {name}")
+            output.append(f"    wire rio_{name}_sel = (o_dbus_adr == 'h{data['addr']:x});")
+            output.append(f"    wire [31:0] rio_{name}_out = rio_{name};")
+            if direction == "input":
+                output.append("    always @(posedge clk) begin")
+                output.append(f"        if (o_dbus_cyc && o_dbus_we && rio_{name}_sel) begin")
+                output.append(f"            rio_{name} <= o_dbus_dat;")
+                output.append("        end")
+                output.append("    end")
+            output.append("")
+            bus_outs.append(f"rio_{name}")
+
+        output.append("    assign i_dbus_rdt = ")
+        for out in bus_outs:
+            sel = f"{out}_sel"
+            output.append(f"        {sel:16s} ? {out}_out :")
+        output.append("        32'h0;")
+
+        output.append("endmodule")
+        output.append("")
+        return output
+
+    @classmethod
+    def soc_v_top(cls, parent, instance):
+        output = []
         output.append("""
     wire i_rst;
     wire i_timer_irq;
@@ -178,7 +450,13 @@ class Plugin(PluginBase):
         .i_rdata0(i_rdata0),
         .i_rdata1(i_rdata1)
     );
+""")
+        return output
 
+    @classmethod
+    def soc_v_mem(cls, parent, instance):
+        output = []
+        output.append("""
     assign i_rst = !resetn;
     assign i_timer_irq = 0;
     wire [7:0] rf_waddr;
@@ -239,211 +517,4 @@ class Plugin(PluginBase):
         i_dbus_ack <= (!resetn ? 0 : o_dbus_cyc && !i_dbus_ack);
     end
 """)
-
-        outs = []
-        output.append("    // GPIOs")
-        outs.append("gpio")
-        if instance.fpga_toolchain == "icestorm":
-            print("  ------------------------------------------------")
-            print("  WARNING: disable GPIO inputs (bug in icestorm ?)")
-            print("  ------------------------------------------------")
-            output.append("    reg [15:0] gdir = 16'hFFFF;")
-        else:
-            output.append("    reg [15:0] gdir = 16'd0;")
-        output.append("    reg [15:0] gout = 'd0;")
-        for n in range(16):
-            output.append(f"    assign gpio{n} = gdir[{n}] ? gout[{n}] : 1'bz;")
-        output.append("    wire gpio_sel = (o_dbus_adr == 'h80000000);")
-        output.append("    wire [31:0] gpio_out = {gdir, gpio15, gpio14, gpio13, gpio12, gpio11, gpio10, gpio9, gpio8, gpio7, gpio6, gpio5, gpio4, gpio3, gpio2, gpio1, gpio0};")
-        output.append("    always @(posedge clk) begin")
-        output.append("        if (o_dbus_cyc && o_dbus_we && gpio_sel) begin")
-        output.append("            gout <= o_dbus_dat[15:0];")
-        if instance.fpga_toolchain != "icestorm":
-            output.append("            gdir <= o_dbus_dat[31:16];")
-        output.append("        end")
-        output.append("    end")
-        output.append("")
-
-        output.append("    // System-Timer")
-        output.append("    wire utimer_sel = (o_dbus_adr == 'h80000020);")
-        output.append("    wire [31:0] utimer_out = systimer;")
-        output.append("")
-        outs.append("utimer")
-
-        for name, data in instance.variables.items():
-            direction = data.get("dir", "output")
-            ctype = data.get("ctype", "uint32_t")
-            bsize = 32
-            if ctype == "bool":
-                bsize = 1
-            elif ctype.endswith("int8_t"):
-                bsize = 8
-            elif ctype.endswith("int16_t"):
-                bsize = 16
-
-            outs.append(f"rio_{name}")
-            output.append(f"    // RIO-Variable: {name}")
-            output.append(f"    wire rio_{name}_sel = (o_dbus_adr == 'h{data['addr']:x});")
-            output.append(f"    wire [31:0] rio_{name}_out = rio_{name};")
-            if direction == "input":
-                output.append("    always @(posedge clk) begin")
-                output.append(f"        if (o_dbus_cyc && o_dbus_we && rio_{name}_sel) begin")
-                output.append(f"            rio_{name} <= o_dbus_dat;")
-                output.append("        end")
-                output.append("    end")
-            output.append("")
-
-        # i_dbus_rdt
-        output.append("    assign i_dbus_rdt = ")
-        for out in outs:
-            sel = f"{out}_sel"
-            output.append(f"        {sel:16s} ? {out}_out :")
-        output.append("        32'h0;")
-
-        output.append("endmodule")
-        output.append("")
         return output
-
-    @classmethod
-    def rio_h(cls, instance):
-        uid = instance.plugin_setup["uid"]
-        output = []
-        output.append("#ifndef RIO_H")
-        output.append("#define RIO_H")
-        output.append("")
-        output.append("#include <stdint.h>")
-        output.append("")
-        output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
-        output.append(f'#define SYSNAME        "{uid}"')
-        output.append(f"#define MEMBYTES       {instance.ramsize}")
-        output.append('#define CPU_TYPE       "SERV"')
-        if instance.fpga_toolchain:
-            output.append(f'#define FPGA_TOOLCHAIN "{instance.fpga_toolchain}"')
-        if instance.fpga_family:
-            output.append(f'#define FPGA_FAMILY    "{instance.fpga_family}"')
-        if instance.fpga_type:
-            output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
-        output.append("")
-        if instance.gpios:
-            output.append("#define INPUT  0")
-            output.append("#define OUTPUT 1")
-            output.append("#define LOW    0")
-            output.append("#define HIGH   1")
-            output.append("#define TOGGLE 2")
-            output.append("#define GPIOS ((volatile unsigned int *) 0x80000000)")
-            gpio_n = 0
-            for gpio in instance.gpios:
-                output.append(f"#define GPIO_{gpio.upper()}  {gpio_n}")
-                gpio_n += 1
-            output.append("extern void pinMode(uint8_t num, uint8_t dir);")
-            output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
-            output.append("extern uint8_t digitalRead(uint8_t num);")
-            output.append("")
-        for iname, idata in instance.variables.items():
-            ctype = idata.get("ctype", "uint32_t")
-            output.append(f"#define RIO_{iname.upper():10s} *((volatile {ctype} *) 0x{idata['addr']:x})")
-        output.append("")
-        output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
-        output.append("")
-        output.append("extern uint32_t mills(void);")
-        output.append("extern void delay_nop(uint32_t delay);")
-        output.append("")
-        output.append("#endif")
-        output.append("")
-        return output
-
-    @classmethod
-    def extra_files(cls, parent, instances):
-        for instance in instances:
-            uid = instance.plugin_setup["uid"]
-            os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
-
-            addr = 0x80000100
-            for iname, idata in instance.variables.items():
-                idata["addr"] = addr
-                addr += 0x04
-
-            serv_v = cls.serv_v(instance)
-            target = os.path.join(parent.gateware_path, f"serv_{uid}.v")
-            open(target, "w").write("\n".join(serv_v))
-
-            rio_h = cls.rio_h(instance)
-            target = os.path.join(parent.gateware_path, "src", f"inc_{uid}", "rio.h")
-            open(target, "w").write("\n".join(rio_h))
-
-            startup = []
-            startup.append("")
-            startup.append(".text")
-            startup.append(".global _start")
-            startup.append("_start:")
-            startup.append(f"	li x2, {instance.ramsize}")
-            startup.append("	call main")
-            startup.append("")
-            target = os.path.join(parent.gateware_path, "src", f"startup_{uid}.s")
-            open(target, "w").write("\n".join(startup))
-
-            main_c = ""
-            if instance.source:
-                if len(instance.source.split("\n")) == 1 and os.path.isfile(instance.source):
-                    print(f"  INFO: {uid}: using c-file {instance.source}")
-                    main_c = open(instance.source, "r").read()
-                else:
-                    main_c = instance.source
-            if parent.configuration_path:
-                if not main_c:
-                    cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
-                    if os.path.isfile(cpath):
-                        print(f"  INFO: {uid}: using c-file {cpath}")
-                        main_c = open(cpath, "r").read()
-                if not main_c:
-                    cpath = os.path.join(parent.project.config["json_path"], f"{uid}.c")
-                    if os.path.isfile(cpath):
-                        print(f"  INFO: {uid}: using c-file {cpath}")
-                        main_c = open(cpath, "r").read()
-            if not main_c:
-                main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
-            open(os.path.join(parent.gateware_path, "src", f"main_{uid}.c"), "w").write(main_c)
-
-            instance.march = "rv32i"
-            instance.mabi = "ilp32"
-            instance.gcc_options = ""
-
-            output = []
-            output.append(f"""#!/bin/sh
-#
-# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
-#
-set -x
-set -e
-
-RISCV_BIN="riscv64-unknown-elf"
-RISCV_BIN="riscv-none-elf"
-
-cd src/
-
-echo "compile prog_{uid}.hex"
-rm -f prog_{uid}.elf prog_{uid}.bin prog_{uid}.hex
-
-FLAGS="-nostartfiles -nostdlib -static -Os"
-
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio.o
-$RISCV_BIN-size -G -d prog_{uid}.elf
-
-$RISCV_BIN-objcopy -O binary prog_{uid}.elf prog_{uid}.bin
-python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
-#rm -rf prog_{uid}.bin prog_{uid}.elf
-""")
-
-            target = os.path.join(parent.gateware_path, f"compile_{uid}.sh")
-            open(target, "w").write("\n".join(output))
-
-            log = os.path.join(parent.gateware_path, f"compile_{uid}.log")
-            print(f"  INFO: {uid}: running compiler script: {log}")
-            ret = os.system(f"cd {parent.gateware_path} ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
-            if ret != 0:
-                print("  ERROR: {uid}: running compiler script")
-                for line in open(log, "r").read().split("\n"):
-                    print(f"    {line}")
-                exit(1)
