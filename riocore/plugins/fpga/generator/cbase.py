@@ -1111,12 +1111,13 @@ class cbase:
                 iface_data = iface_data.replace("errno", "1")
             output.append(iface_data)
 
+        if protocol == "UART":
+            output.append("    char serialPort[1024];")
         output.append("int interface_init(int argc, char **argv) {")
         if modbus_n:
             output.append("    modbus_init();")
 
         if protocol == "UART":
-            output.append("    char serialPort[1024];")
             output.append("    if (argc > 1) {")
             output.append("        strncpy(serialPort, argv[1], 1023);")
             output.append("    } else {")
@@ -1294,6 +1295,11 @@ class cbase:
         output.append("                    }")
         output.append("                    if (err_counter > 3) {")
         output.append(f'                        {self.printf}("too many errors..\\n");')
+        if protocol == "UART_":
+            output.append(f'                        {self.printf}("reconnect..\\n");')
+            output.append("                        uart_close(serialPort);")
+            output.append("                        uart_init(serialPort);")
+            output.append("                        err_counter = 0;")
         output.append("                        *data->sys_status = 0;")
         output.append("                        *data->sys_error = 1;")
         output.append("                    }")

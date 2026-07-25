@@ -235,8 +235,16 @@ fi
 python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
 
 """)
-        target = os.path.join(parent.gateware_path, "prepare.sh")
+        target = os.path.join(parent.gateware_path, f"compile_{uid}.sh")
         open(target, "w").write("\n".join(output))
+
+        log = os.path.join(parent.gateware_path, f"compile_{uid}.log")
+        print(f"  INFO: running compiler script: {log}")
+        ret = os.system(f"cd {parent.gateware_path} ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
+        if ret != 0:
+            print("  ERROR: running compiler script")
+            for line in open(log, "r").read().split("\n"):
+                print(f"    {line}")
 
     @classmethod
     def rio_h(cls, instance):
@@ -406,8 +414,8 @@ uint32_t mills(void) {
     @classmethod
     def soc(cls, instance):
         output = []
-        addr = 0x80000100
         uid = instance.plugin_setup["uid"]
+        addr = 0x80000100
         for iname, idata in instance.variables.items():
             idata["addr"] = addr
             addr += 0x04

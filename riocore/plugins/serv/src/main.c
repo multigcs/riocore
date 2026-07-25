@@ -1,73 +1,35 @@
 
-#include <stdint.h>
-
-#define GPIOS ((volatile unsigned int *) 0x80000000)
-#define INPUT  0
-#define OUTPUT 1
-#define LOW    0
-#define HIGH   1
-#define TOGGLE 2
-
-// GPIO functions
-void pinMode(uint8_t num, uint8_t dir) {
-    if (dir == OUTPUT) {
-        *GPIOS |= (1<<(num + 16));
-    } else {
-        *GPIOS &= ~(1<<(num + 16));
-    }
-}
-
-void digitalWrite(uint8_t num, uint8_t value) {
-    if (value == HIGH) {
-        *GPIOS |= (1<<num);
-    } else if (value == LOW) {
-        *GPIOS &= ~(1<<num);
-    } else if (TOGGLE) {
-        if ((*GPIOS & (1<<num)) != 0) {
-            *GPIOS &= ~(1<<num);
-        } else {
-            *GPIOS |= (1<<num);
-        }
-    }
-}
-
-uint8_t digitalRead(uint8_t num) {
-    if ((*GPIOS & (1<<num)) != 0) {
-        return HIGH;
-    }
-    return LOW;
-}
-
-static inline void delay(uint32_t delay) {
-    for (int i = 0; i < delay; i++) {
-        asm("nop");
-    }
-}
+#include <rio.h>
 
 int main() {
-    pinMode(0, OUTPUT);
-    pinMode(1, OUTPUT);
-    digitalWrite(0, HIGH);
-    digitalWrite(1, LOW);
+    pinMode(GPIO_LED0, OUTPUT);
+    pinMode(GPIO_LED1, OUTPUT);
+    pinMode(GPIO_LED2, OUTPUT);
+    digitalWrite(GPIO_LED0, LOW);
+    digitalWrite(GPIO_LED1, LOW);
+    digitalWrite(GPIO_LED2, LOW);
+
     while (1) {
-        digitalWrite(0, LOW);
-        digitalWrite(1, HIGH);
-        delay(0x20000);
-        digitalWrite(0, HIGH);
-        digitalWrite(1, HIGH);
-        delay(0x20000);
-        digitalWrite(0, HIGH);
-        digitalWrite(1, LOW);
-        delay(0x20000);
-        digitalWrite(0, HIGH);
-        digitalWrite(1, HIGH);
-        delay(0x20000);
-        digitalWrite(0, LOW);
-        digitalWrite(1, LOW);
-        delay(0x20000);
-        digitalWrite(0, HIGH);
-        digitalWrite(1, HIGH);
-        delay(0x20000);
+
+        RIO_SWIN = 1 - digitalRead(GPIO_SW1);
+
+        digitalWrite(GPIO_LED0, LOW);
+        if (RIO_SET > RIO_GET) {
+            RIO_DONE = 0;
+            digitalWrite(GPIO_LED1, LOW);
+            RIO_GET = RIO_GET + 1;
+        } else if (RIO_SET < RIO_GET) {
+            RIO_DONE = 0;
+            digitalWrite(GPIO_LED2, LOW);
+            RIO_GET = RIO_GET - 1;
+        } else {
+            RIO_DONE = 1;
+        }
+        delay(0x1000);
+        digitalWrite(GPIO_LED0, HIGH);
+        digitalWrite(GPIO_LED1, HIGH);
+        digitalWrite(GPIO_LED2, HIGH);
+        delay(0x1000);
     }
     return 0;
 }

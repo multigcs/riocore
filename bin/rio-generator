@@ -29,6 +29,7 @@ parser.add_argument("--flash", "-f", help="flash gateware", default=False, actio
 parser.add_argument("--ram", "-r", help="flash gateware to sram", default=False, action="store_true")
 if sys.platform == "linux":
     parser.add_argument("--start", "-s", help="start linuxcnc", default=False, action="store_true")
+    parser.add_argument("--test", "-t", help="start python test-gui", default=False, action="store_true")
     parser.add_argument("--ngc", "-g", help="ngc-file if start linuxcnc", type=str, default=None)
     parser.add_argument("--simulator", "-S", help="start in simulator mode", default=False, action="store_true")
     parser.add_argument("--verilator", "-v", help="start in verilator simulator mode", default=False, action="store_true")
@@ -223,7 +224,7 @@ if args.config:
                     if ret != 0:
                         print(f"ERROR: code {ret}")
                         sys.exit(1)
-        if sys.platform == "linux" and (args.start or args.simulator or args.udpsim or args.verilator):
+        if sys.platform == "linux" and (args.start or args.test or args.simulator or args.udpsim or args.verilator):
             proc_sims = {}
             if args.udpsim:
                 for plugin_instance in project.plugin_instances:
@@ -253,6 +254,11 @@ if args.config:
                             print(f"  {cmd}")
                             print()
                             proc_sims[plugin_instance.instances_name] = subprocess.Popen(cmd, shell=True)
+
+            if args.test:
+                for plugin_instance in project.plugin_instances:
+                    if plugin_instance.BUILDER and plugin_instance.BUILDER_PATH and plugin_instance.BUILDER:
+                        startsh_path = os.path.join(output_path, config_name, "PYLIB", plugin_instance.instances_name, "start.sh")
 
             if startsh_path:
                 if args.ngc:

@@ -23,8 +23,20 @@ int uart_set_interface_attribs (int fd, int speed) {
     return 0;
 }
 
+void uart_close() {
+    close(uart_serial_fd);
+    uart_serial_fd = -1;
+}
+
 int uart_init(char *serialPort) {
     rtapi_print("Info: Initialize serial connection: %s\n", serialPort);
+    uart_serial_fd = open (serialPort, O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY);
+    if (uart_serial_fd < 0) {
+        rtapi_print_msg(RTAPI_MSG_ERR,"uart setup error: '%s'\n", serialPort);
+        return errno;
+    }
+    uart_close();
+    // close and reconnect (workaround for TangNano bug)
     uart_serial_fd = open (serialPort, O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY);
     if (uart_serial_fd < 0) {
         rtapi_print_msg(RTAPI_MSG_ERR,"uart setup error: '%s'\n", serialPort);
