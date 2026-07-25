@@ -10,31 +10,52 @@ class Plugin(PluginBase):
         self.INFO = "minimal risc-v softcore"
         self.DESCRIPTION = "minimal risc-v cpu for testing"
         self.KEYWORDS = "risc-v softcore cpu"
-        self.ORIGIN = ""
+        self.ORIGIN = "https://github.com/olofk/serv"
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v", "serv_params.vh"]
         self.SRCFILES = [f"src/makehex.py:src_{uid}/makehex.py", f"src/link.ld:src_{uid}/link.ld", f"src/main.c:src_{uid}/main.c", f"src/rio.c:src_{uid}/rio.c"]
         self.VERILOGS_GEN = [f"serv_{uid}.v"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True
+        self.cpu_type = "SERV"
+        self.ofiles = "main.o rio.o"
+        self.v_parameter_bool = {}
         self.RESET = True
-        self.OPTIONS = {
-            "ramsize": {
-                "type": "select",
-                "options": ["512", "768", "1024", "2048", "4096", "8192"],
-                "default": "512",
-                "description": "size of ram in bytes",
-            },
+        self.OPTIONS = {}
+        for param, default in self.v_parameter_bool.items():
+            self.OPTIONS[param] = {
+                "type": bool,
+                "default": default,
+            }
+        """
+        self.OPTIONS["uarts"] = {
+            "type": int,
+            "min": 0,
+            "max": 1,
+            "default": 0,
+            "description": "number of uarts",
+        }
+        self.OPTIONS["pwms"] = {
+            "type": int,
+            "min": 0,
+            "max": 1,
+            "default": 0,
+            "description": "number of pwms",
+        }
+        """
+        self.OPTIONS["ramsize"] = {
+            "type": "select",
+            "options": ["512", "768", "1024", "2048", "4096", "8192"],
+            "default": "1024",
+            "description": "size of ram in bytes",
         }
         self.fpga_toolchain = None
-        self.cpu_type = "SERV"
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
         self.source = self.plugin_setup.get("source", "")
-        self.ofiles = "main.o rio.o"
         # set pins
         self.PINDEFAULTS = {}
         for gpio in self.gpios:
@@ -125,6 +146,9 @@ class Plugin(PluginBase):
                 var = instance_arguments[iname]
                 del instance_arguments[iname]
                 instance_arguments[f"rio_{iname}"] = var
+        instance_parameter = instance["parameter"]
+        for param in self.v_parameter_bool:
+            instance_parameter[param] = str(int(self.plugin_setup.get(param, self.OPTIONS[param]["default"])))
         return instances
 
     @classmethod
@@ -178,6 +202,10 @@ class Plugin(PluginBase):
         if instance.fpga_type:
             output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
         output.append("")
+        for param in instance.v_parameter_bool:
+            if instance.plugin_setup.get(param, instance.OPTIONS[param]["default"]):
+                output.append(f"#define {param}")
+        output.append("")
 
         # GPIOS
         if instance.gpios:
@@ -207,6 +235,56 @@ class Plugin(PluginBase):
         output.append("extern uint32_t mills(void);")
         output.append("extern void delay_nop(uint32_t delay);")
         output.append("")
+
+        # PWMS
+        if instance.pwms:
+            output.append("#ifdef ENABLE_MUL")
+            output.append("#ifdef ENABLE_DIV")
+            pbase = 0x80000030
+            output.append(f"#define PWM_BASE ((volatile unsigned int *) 0x{pbase:x})")
+            output.append(f"#define PWM_MAX  {instance.pwms}")
+            for pwms_n in range(instance.pwms):
+                output.append(f"#define PWM{pwms_n}_PULSE ((volatile unsigned int *) 0x{pbase:x})")
+                output.append(f"#define PWM{pwms_n}_TOTAL ((volatile unsigned int *) 0x{pbase + 4:x})")
+                pbase += 8
+            output.append("#endif")
+            output.append("#endif")
+            output.append("")
+            output.append("void pwm_set_total(unsigned int pwm, unsigned int total);")
+            output.append("void pwm_set_pulse(unsigned int pwm, unsigned int pulse);")
+            output.append("")
+
+        # UARTS
+        if instance.uarts:
+            for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
+                output.append(f"#define UART_B{baud!s:7s} {instance.gateware.jdata['speed'] * instance.uart_baud_scale // baud}")
+            ubase = 0x80000018
+            for uart_n in range(instance.uarts):
+                output.append(f"#define UART{uart_n}_DIV  ((volatile unsigned int *) 0x{ubase:x})")
+                output.append(f"#define UART{uart_n}_DATA ((volatile unsigned int *) 0x{ubase + 4:x})")
+                ubase += 0x10
+            output.append("")
+            output.append("#ifdef ENABLE_MUL")
+            output.append("#ifdef ENABLE_DIV")
+            output.append("extern void uart_set_baud(unsigned int uart, unsigned int baud);")
+            output.append("#endif")
+            output.append("#endif")
+            output.append("extern void uart_set_div(unsigned int uart, unsigned int div);")
+            output.append("extern void uart_print_hex(unsigned int uart, unsigned int val);")
+            output.append("extern void uart_print_dec(unsigned int uart, unsigned int val);")
+            output.append("extern char uart_getchar(unsigned int uart);")
+            output.append("extern char uart_available(unsigned int uart);")
+            output.append("extern void uart_putc(unsigned int uart, char ch);")
+            output.append("extern void uart_puts(unsigned int uart, char *s);")
+            output.append("")
+
+        # SPIs
+        """
+        output.append("#ifdef GPIO_SPI0_SCLK")
+        output.append("extern unsigned char spi0_transfer_byte(unsigned char send_val);")
+        output.append("#endif")
+        output.append("")
+        """
 
         output.append("#endif")
         output.append("")

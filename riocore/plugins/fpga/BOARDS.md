@@ -33,6 +33,7 @@
 | [TangPrimer20K](boards/TangPrimer20K.md) | GW2A-18C | GW2A-LV18PG256C8/I7 | 27.00Mhz | gowin (icestorm) | TangPrimer20K-Devboard on Dock ext-board | <img width="300" src="boards/TangPrimer20K.png"> |
 | [TangPrimer25K](boards/TangPrimer25K.md) | GW5A-25A | GW5A-LV25MG121NC1/I0 | 100.00Mhz | gowin (icestorm) | TangPrimer25K-Devboard on Dev-Board | <img width="300" src="boards/TangPrimer25K.png"> |
 | [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
+| [Tangbob](boards/Tangbob.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | TangNano9K - cheap GW1NR-9 Devboard | <img width="300" src="boards/Tangbob.png"> |
 | [Tangoboard](boards/Tangoboard.md) | GW1N-9C | GW1NR-LV9QN88PC6/I5 | 27.00Mhz | gowin (icestorm) | based on TangNano9k | <img width="300" src="boards/Tangoboard.png"> |
 | [XC9536XL](boards/XC9536XL.md) | xc9500xl |  | 50.00Mhz | ise | XC9536XL - minimal CPLD-Devboard | <img width="300" src="boards/XC9536XL.png"> |
 | [iCESugar1.5](boards/iCESugar1.5.md) | ice40 | up5k | 30.00Mhz | icestorm | MuseLab iCESugar 1.5 is based on Lattice iCE40UP5k<BR/>open source FPGA development board | <img width="300" src="boards/iCESugar1.5.png"> |

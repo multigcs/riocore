@@ -25,6 +25,11 @@ hardware type
  * type: imgselect
  * default: generic
 
+### BARREL_SHIFTER:
+
+ * type: bool
+ * default: False
+
 ### ENABLE_MUL:
 
  * type: bool
@@ -35,7 +40,17 @@ hardware type
  * type: bool
  * default: True
 
+### ENABLE_FAST_MUL:
+
+ * type: bool
+ * default: False
+
 ### ENABLE_COMPRESSED:
+
+ * type: bool
+ * default: False
+
+### ENABLE_IRQ_QREGS:
 
  * type: bool
  * default: False
@@ -58,10 +73,9 @@ number of pwms
 
 ### ramsize:
 size of ram in bytes
-for uart demo, you need >= 1024 Bytes
 
  * type: select
- * default: 2048
+ * default: 1024
  * options: 512, 768, 1024, 2048, 4096, 8192
 
 

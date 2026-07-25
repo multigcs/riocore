@@ -8,17 +8,6 @@ minimal risc-v cpu for testing
 
 ## Pins:
 *FPGA-pins*
-### gpio0:
-
- * direction: output
-
-### gpio1:
-
- * direction: output
-
-### gpio2:
-
- * direction: output
 
 
 ## Options:
@@ -36,13 +25,11 @@ hardware type
  * default: generic
 
 ### ramsize:
-memory size in bytes
+size of ram in bytes
 
- * type: int
- * min: 64
- * max: 2048
- * default: 256
- * unit: byte
+ * type: select
+ * default: 1024
+ * options: 512, 768, 1024, 2048, 4096, 8192
 
 
 ## Signals:
@@ -54,7 +41,6 @@ memory size in bytes
 
 
 ## Verilogs:
- * [serv.v](serv.v)
  * [ram32.v](ram32.v)
  * [ser_add.v](ser_add.v)
  * [ser_lt.v](ser_lt.v)
@@ -72,3 +58,4 @@ memory size in bytes
  * [serv_state.v](serv_state.v)
  * [serv_top.v](serv_top.v)
  * [shift_reg.v](shift_reg.v)
+ * [serv_params.vh](serv_params.vh)

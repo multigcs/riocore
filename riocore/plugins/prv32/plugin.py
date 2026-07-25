@@ -10,7 +10,7 @@ class Plugin(PluginBase):
         self.INFO = "picorv32 based risc-v softcore"
         self.DESCRIPTION = "picorv32 risc-v cpu for testing\ni using this riscv-toolchain: https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1"
         self.KEYWORDS = "risc-v softcore cpu"
-        self.ORIGIN = ""
+        self.ORIGIN = "https://github.com/YosysHQ/picorv32"
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = [
@@ -28,49 +28,42 @@ class Plugin(PluginBase):
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True
         # self.RESET = True
-        self.OPTIONS = {
-            "ENABLE_MUL": {
+        self.cpu_type = "PicoRV32"
+        self.ofiles = "main.o rio.o timer.o uart.o pwm.o spi.o"
+        self.v_parameter_bool = {"BARREL_SHIFTER": False, "ENABLE_MUL": True, "ENABLE_DIV": True, "ENABLE_FAST_MUL": False, "ENABLE_COMPRESSED": False, "ENABLE_IRQ_QREGS": False}
+        self.OPTIONS = {}
+        for param, default in self.v_parameter_bool.items():
+            self.OPTIONS[param] = {
                 "type": bool,
-                "default": True,
-            },
-            "ENABLE_DIV": {
-                "type": bool,
-                "default": True,
-            },
-            "ENABLE_COMPRESSED": {
-                "type": bool,
-                "default": False,
-            },
-            "uarts": {
-                "type": int,
-                "min": 0,
-                "max": 1,
-                "default": 0,
-                "description": "number of uarts",
-            },
-            "pwms": {
-                "type": int,
-                "min": 0,
-                "max": 1,
-                "default": 0,
-                "description": "number of pwms",
-            },
-            "ramsize": {
-                "type": "select",
-                "options": ["512", "768", "1024", "2048", "4096", "8192"],
-                "default": "2048",
-                "description": "size of ram in bytes\nfor uart demo, you need >= 1024 Bytes",
-            },
+                "default": default,
+            }
+        self.OPTIONS["uarts"] = {
+            "type": int,
+            "min": 0,
+            "max": 1,
+            "default": 0,
+            "description": "number of uarts",
+        }
+        self.OPTIONS["pwms"] = {
+            "type": int,
+            "min": 0,
+            "max": 1,
+            "default": 0,
+            "description": "number of pwms",
+        }
+        self.OPTIONS["ramsize"] = {
+            "type": "select",
+            "options": ["512", "768", "1024", "2048", "4096", "8192"],
+            "default": "1024",
+            "description": "size of ram in bytes",
         }
         self.fpga_toolchain = None
-        self.cpu_type = "PicoRV32"
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
         self.source = self.plugin_setup.get("source", "")
-        self.ofiles = "main.o rio.o timer.o uart.o pwm.o spi.o"
         # set pins
         self.PINDEFAULTS = {}
         for gpio in self.gpios:
@@ -165,12 +158,8 @@ class Plugin(PluginBase):
                 del instance_arguments[iname]
                 instance_arguments[f"rio_{iname}"] = var
         instance_parameter = instance["parameter"]
-        instance_parameter["BARREL_SHIFTER"] = "0"
-        instance_parameter["ENABLE_MUL"] = str(int(self.plugin_setup.get("ENABLE_MUL", self.OPTIONS["ENABLE_MUL"]["default"])))
-        instance_parameter["ENABLE_DIV"] = str(int(self.plugin_setup.get("ENABLE_DIV", self.OPTIONS["ENABLE_DIV"]["default"])))
-        instance_parameter["ENABLE_FAST_MUL"] = "0"
-        instance_parameter["ENABLE_COMPRESSED"] = str(int(self.plugin_setup.get("ENABLE_COMPRESSED", self.OPTIONS["ENABLE_COMPRESSED"]["default"])))
-        instance_parameter["ENABLE_IRQ_QREGS"] = "0"
+        for param in self.v_parameter_bool:
+            instance_parameter[param] = str(int(self.plugin_setup.get(param, self.OPTIONS[param]["default"])))
         return instances
 
     @classmethod
@@ -232,13 +221,9 @@ class Plugin(PluginBase):
         if instance.fpga_type:
             output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
         output.append("")
-
-        if instance.plugin_setup.get("ENABLE_MUL", instance.OPTIONS["ENABLE_MUL"]["default"]):
-            output.append("#define ENABLE_MUL")
-        if instance.plugin_setup.get("ENABLE_DIV", instance.OPTIONS["ENABLE_DIV"]["default"]):
-            output.append("#define ENABLE_DIV")
-        if instance.plugin_setup.get("ENABLE_COMPRESSED", instance.OPTIONS["ENABLE_COMPRESSED"]["default"]):
-            output.append("#define ENABLE_COMPRESSED")
+        for param in instance.v_parameter_bool:
+            if instance.plugin_setup.get(param, instance.OPTIONS[param]["default"]):
+                output.append(f"#define {param}")
         output.append("")
 
         # GPIOS
@@ -333,10 +318,12 @@ class Plugin(PluginBase):
             output.append("")
 
         # SPIs
+        """
         output.append("#ifdef GPIO_SPI0_SCLK")
         output.append("extern unsigned char spi0_transfer_byte(unsigned char send_val);")
         output.append("#endif")
         output.append("")
+        """
 
         output.append("#endif")
         output.append("")
