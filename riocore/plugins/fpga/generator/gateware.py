@@ -144,14 +144,17 @@ class gateware(generator_base):
                     continue
                 self.parent.verilogs.append(verilog)
 
-            for srcfile in plugin_instance.gateware_srcfiles():
+            for src in plugin_instance.gateware_srcfiles():
+                srcfile = src
+                dstfile = src
+                if ":" in srcfile:
+                    srcfile, dstfile = srcfile.split(":", 1)
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, srcfile)
                 if not os.path.isfile(ipv_path):
                     riocore.log(f"ERROR: can not found srcfile file: {srcfile}")
                     sys.exit(1)
-                target_dir = os.path.join(self.jdata["output_path"], os.path.dirname(srcfile))
-                os.makedirs(target_dir, exist_ok=True)
-                target = os.path.join(self.jdata["output_path"], srcfile)
+                target = os.path.join(self.jdata["output_path"], dstfile)
+                os.makedirs(os.path.dirname(target), exist_ok=True)
                 shutil.copy(ipv_path, target)
 
             for verilog, data in plugin_instance.gateware_virtual_files().items():
@@ -777,36 +780,6 @@ class gateware(generator_base):
             output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
             output.append("")
 
-            if gen_reset:
-                output.append("    // reset counter")
-                output.append("    reg resetn = 0;")
-                output.append("    reg [7:0] counter = 8'hFF;")
-                output.append("    always @(posedge sysclk) begin")
-                output.append("        if (counter == 0) begin")
-                output.append("            resetn <= 1;")
-                output.append("        end else begin")
-                output.append("            counter <= counter - 1;")
-                output.append("        end")
-                output.append("    end")
-                output.append("")
-
-            if gen_systimer:
-                sysclk_speed = self.jdata["speed"]
-                timeout = sysclk_speed // 1000
-                timeout_bits = self.clog2(timeout)
-                output.append("    // systimer counter")
-                output.append("    reg [31:0] systimer = 32'd0;")
-                output.append(f"    reg [{timeout_bits - 1}:0] st_counter = {timeout_bits}'d0;")
-                output.append("    always @(posedge sysclk) begin")
-                output.append(f"        if (st_counter == {timeout}) begin")
-                output.append("            systimer <= systimer + 32'd1;")
-                output.append(f"            st_counter <= {timeout_bits}'d0;")
-                output.append("        end else begin")
-                output.append(f"            st_counter <= st_counter + {timeout_bits}'d1;")
-                output.append("        end")
-                output.append("    end")
-                output.append("")
-
             if gen_timestamp:
                 output.append("    // timestamp counter")
                 output.append("    reg [31:0] timestamp = 32'd0;")
@@ -814,6 +787,36 @@ class gateware(generator_base):
                 output.append("        timestamp <= timestamp + 32'd1;")
                 output.append("    end")
                 output.append("")
+
+        if gen_reset:
+            output.append("    // reset counter")
+            output.append("    reg resetn = 0;")
+            output.append("    reg [7:0] counter = 8'hFF;")
+            output.append("    always @(posedge sysclk) begin")
+            output.append("        if (counter == 0) begin")
+            output.append("            resetn <= 1;")
+            output.append("        end else begin")
+            output.append("            counter <= counter - 1;")
+            output.append("        end")
+            output.append("    end")
+            output.append("")
+
+        if gen_systimer:
+            sysclk_speed = self.jdata["speed"]
+            timeout = sysclk_speed // 1000
+            timeout_bits = self.clog2(timeout)
+            output.append("    // systimer counter")
+            output.append("    reg [31:0] systimer = 32'd0;")
+            output.append(f"    reg [{timeout_bits - 1}:0] st_counter = {timeout_bits}'d0;")
+            output.append("    always @(posedge sysclk) begin")
+            output.append(f"        if (st_counter == {timeout}) begin")
+            output.append("            systimer <= systimer + 32'd1;")
+            output.append(f"            st_counter <= {timeout_bits}'d0;")
+            output.append("        end else begin")
+            output.append(f"            st_counter <= st_counter + {timeout_bits}'d1;")
+            output.append("        end")
+            output.append("    end")
+            output.append("")
 
         if double_pins:
             output.append("    // linking double used input pins")

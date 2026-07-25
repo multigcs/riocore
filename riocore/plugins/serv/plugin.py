@@ -12,8 +12,8 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
-        self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v"]
-        self.SRCFILES = ["src/makehex.py", "src/link.ld", "src/serv_params.vh", "src/main.c", "src/rio.c"]
+        self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v", "serv_params.vh"]
+        self.SRCFILES = [f"src/makehex.py:src_{uid}/makehex.py", f"src/link.ld:src_{uid}/link.ld", f"src/main.c:src_{uid}/main.c", f"src/rio.c:src_{uid}/rio.c"]
         self.VERILOGS_GEN = [f"serv_{uid}.v"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True
@@ -27,12 +27,14 @@ class Plugin(PluginBase):
             },
         }
         self.fpga_toolchain = None
+        self.cpu_type = "SERV"
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
         self.source = self.plugin_setup.get("source", "")
+        self.ofiles = "main.o rio.o"
         # set pins
         self.PINDEFAULTS = {}
         for gpio in self.gpios:
@@ -41,22 +43,18 @@ class Plugin(PluginBase):
                 "optional": True,
             }
         for uart_n in range(self.uarts):
-            self.PINDEFAULTS = {
-                f"uart{uart_n}_rx": {
-                    "direction": "input",
-                    "optional": True,
-                },
-                f"uart{uart_n}_tx": {
-                    "direction": "output",
-                    "optional": True,
-                },
+            self.PINDEFAULTS[f"uart{uart_n}_rx"] = {
+                "direction": "input",
+                "optional": True,
+            }
+            self.PINDEFAULTS[f"uart{uart_n}_tx"] = {
+                "direction": "output",
+                "optional": True,
             }
         for pwm_n in range(self.pwms):
-            self.PINDEFAULTS = {
-                f"pwm{pwm_n}": {
-                    "direction": "output",
-                    "optional": True,
-                },
+            self.PINDEFAULTS[f"pwm{pwm_n}"] = {
+                "direction": "output",
+                "optional": True,
             }
         # set interface/signals
         self.INTERFACE = {}
@@ -113,7 +111,7 @@ class Plugin(PluginBase):
                 self.uart_baud_scale = 1
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["module"] = f"serv_{uid}"
+        instance["module"] = f"{self.NAME}_{uid}"
         instance_arguments = instance["arguments"]
         gpio_n = 0
         for gpio in self.gpios:
@@ -133,17 +131,17 @@ class Plugin(PluginBase):
     def extra_files(cls, parent, instances):
         for instance in instances:
             uid = instance.plugin_setup["uid"]
-            os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
+            os.makedirs(os.path.join(parent.gateware_path, f"src_{uid}"), exist_ok=True)
 
             instance.mabi = "ilp32"
             instance.march = "rv32i"
             instance.gcc_options = ""
 
-            open(os.path.join(parent.gateware_path, "src", f"inc_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
-            open(os.path.join(parent.gateware_path, "src", f"startup_{uid}.s"), "w").write("\n".join(cls.startup_s(parent, instance)))
-            open(os.path.join(parent.gateware_path, "src", f"main_{uid}.c"), "w").write(cls.main_c(parent, instance))
-            open(os.path.join(parent.gateware_path, f"serv_{uid}.v"), "w").write("\n".join(cls.soc_v(parent, instance)))
-            open(os.path.join(parent.gateware_path, "src", f"compile_{uid}.sh"), "w").write("\n".join(cls.compile_sh(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "startup.s"), "w").write("\n".join(cls.startup_s(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "main.c"), "w").write(cls.main_c(parent, instance))
+            open(os.path.join(parent.gateware_path, f"{instance.NAME}_{uid}.v"), "w").write("\n".join(cls.soc_v(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "compile.sh"), "w").write("\n".join(cls.compile_sh(parent, instance)))
             cls.compile_run(parent, instance)
 
     @classmethod
@@ -170,7 +168,7 @@ class Plugin(PluginBase):
         output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
         output.append(f"#define MEMBYTES       {instance.ramsize}")
-        output.append('#define CPU_TYPE       "SERV"')
+        output.append('#define CPU_TYPE       "{instance.cpu_type}"')
         output.append(f'#define CPU_MABI       "{instance.mabi}"')
         output.append(f'#define CPU_MARCH      "{instance.march}"')
         if instance.fpga_toolchain:
@@ -226,7 +224,7 @@ class Plugin(PluginBase):
                 main_c = instance.source
         if parent.configuration_path:
             if not main_c:
-                cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
+                cpath = os.path.join(parent.project.config["json_path"], "main.c")
                 if os.path.isfile(cpath):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
@@ -236,12 +234,11 @@ class Plugin(PluginBase):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
         if not main_c:
-            main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+            main_c = open(os.path.join(os.path.dirname(__file__), f"src_{uid}", "main.c"), "r").read()
         return main_c
 
     @classmethod
     def compile_sh(cls, parent, instance):
-        uid = instance.plugin_setup["uid"]
         output = []
         output.append(f"""#!/bin/sh
 #
@@ -250,25 +247,31 @@ class Plugin(PluginBase):
 set -x
 set -e
 
+WORKING_DIR=`dirname "$0"`
+cd $WORKING_DIR
+
 # RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
 FPGA_TOOLCHAIN="{instance.fpga_toolchain}"
 FLAGS="-nostartfiles -nostdlib -static -Os"
-FILES="main_{uid}.o rio.o"
+FILES="{instance.ofiles}"
 
 # clean
-rm -f $FILES prog_{uid}.elf prog_{uid}.bin prog_{uid}.hex
+rm -f $FILES prog.elf prog.bin prog.hex
 
 # build
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog_{uid}.elf startup_{uid}.s $FILES
-$RISCV_BIN-strip prog_{uid}.elf
-$RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
-$RISCV_BIN-size -G -d prog_{uid}.elf
+for O_FILE in $FILES
+do
+    C_FILE=`echo $O_FILE | sed "s|o$|c|g"`
+    $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c $C_FILE -I.
+done
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog.elf startup.s $FILES
+$RISCV_BIN-strip prog.elf
+$RISCV_BIN-objcopy prog.elf -O binary prog.bin
+$RISCV_BIN-size -G -d prog.elf
 
 # convert
-python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
+python3 makehex.py prog.bin {instance.ramsize // 4} > prog.hex
 
 """)
         return output
@@ -276,9 +279,9 @@ python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
     @classmethod
     def compile_run(cls, parent, instance):
         uid = instance.plugin_setup["uid"]
-        log = os.path.join(parent.gateware_path, "src", f"compile_{uid}.log")
+        log = os.path.join(parent.gateware_path, f"src_{uid}", "compile.log")
         print(f"  INFO: {uid}: running compiler script: {log}")
-        ret = os.system(f"cd {parent.gateware_path}/src ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
+        ret = os.system(f"cd {parent.gateware_path}/src_{uid} ; bash compile.sh > compile.log 2>&1")
         if ret != 0:
             print(f"  ERROR: {uid}: running compiler script")
             for line in open(log, "r").read().split("\n"):
@@ -292,6 +295,9 @@ python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
         output.append(f"module serv_{uid} (")
         output.append("    input wire clk,")
         output.append("    input wire resetn,")
+        for uart_n in range(instance.uarts):
+            output.append(f"    input wire  uart{uart_n}_rx,")
+            output.append(f"    output wire uart{uart_n}_tx,")
         gpio_n = 0
         for gpio in instance.gpios:
             output.append(f"    inout wire gpio{gpio_n},")
@@ -318,7 +324,7 @@ python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
         output.append("    input wire [31:0] systimer")
         output.append(");")
         output.append(f"    parameter RAM_SIZE = {instance.ramsize};")
-        output.append(f'    parameter INITIAL_FILE = "src/prog_{uid}.hex";')
+        output.append(f'    parameter INITIAL_FILE = "src_{uid}/prog.hex";')
         output.append("")
 
         for gn in range(gpio_n, 16):

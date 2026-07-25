@@ -13,7 +13,17 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
-        self.SRCFILES = ["src/link.ld", "src/main.c", "src/uart.c", "src/pwm.c", "src/spi.c", "src/conv_to_init.c", "src/timer.c", "src/rio.c", "src/makehex.py"]
+        self.SRCFILES = [
+            f"src/link.ld:src_{uid}/link.ld",
+            f"src/main.c:src_{uid}/main.c",
+            f"src/uart.c:src_{uid}/uart.c",
+            f"src/pwm.c:src_{uid}/pwm.c",
+            f"src/spi.c:src_{uid}/spi.c",
+            f"src/conv_to_init.c:src_{uid}/conv_to_init.c",
+            f"src/timer.c:src_{uid}/timer.c",
+            f"src/rio.c:src_{uid}/rio.c",
+            f"src/makehex.py:src_{uid}/makehex.py",
+        ]
         self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True
@@ -53,12 +63,14 @@ class Plugin(PluginBase):
             },
         }
         self.fpga_toolchain = None
+        self.cpu_type = "PicoRV32"
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
         self.source = self.plugin_setup.get("source", "")
+        self.ofiles = "main.o rio.o timer.o uart.o pwm.o spi.o"
         # set pins
         self.PINDEFAULTS = {}
         for gpio in self.gpios:
@@ -67,22 +79,18 @@ class Plugin(PluginBase):
                 "optional": True,
             }
         for uart_n in range(self.uarts):
-            self.PINDEFAULTS = {
-                f"uart{uart_n}_rx": {
-                    "direction": "input",
-                    "optional": True,
-                },
-                f"uart{uart_n}_tx": {
-                    "direction": "output",
-                    "optional": True,
-                },
+            self.PINDEFAULTS[f"uart{uart_n}_rx"] = {
+                "direction": "input",
+                "optional": True,
+            }
+            self.PINDEFAULTS[f"uart{uart_n}_tx"] = {
+                "direction": "output",
+                "optional": True,
             }
         for pwm_n in range(self.pwms):
-            self.PINDEFAULTS = {
-                f"pwm{pwm_n}": {
-                    "direction": "output",
-                    "optional": True,
-                },
+            self.PINDEFAULTS[f"pwm{pwm_n}"] = {
+                "direction": "output",
+                "optional": True,
             }
         # set interface/signals
         self.INTERFACE = {}
@@ -136,13 +144,13 @@ class Plugin(PluginBase):
                 elif self.fpga_family == "GW5A-25A":
                     self.uart_baud_scale = 4
                 self.VERILOGS.append("prv32_mem_gowin.v")
-                self.SRCFILES.append("src/sram_gowin.v")
+                self.SRCFILES.append(f"src/sram_gowin.v:src_{uid}/sram_gowin.v")
             else:
                 self.uart_baud_scale = 1
-                self.SRCFILES.append("src/sram_bram.v")
+                self.SRCFILES.append(f"src/sram_bram.v:src_{uid}/sram_bram.v")
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
-        instance["module"] = f"prv32_{uid}"
+        instance["module"] = f"{self.NAME}_{uid}"
         instance_arguments = instance["arguments"]
         gpio_n = 0
         for gpio in self.gpios:
@@ -169,7 +177,7 @@ class Plugin(PluginBase):
     def extra_files(cls, parent, instances):
         for instance in instances:
             uid = instance.plugin_setup["uid"]
-            os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
+            os.makedirs(os.path.join(parent.gateware_path, f"src_{uid}"), exist_ok=True)
             if instance.fpga_toolchain == "gowin" and instance.ramsize != 8192:
                 instance.ramsize = 8192
                 print(f"  INFO: set ram size to {instance.ramsize} (gowin)")
@@ -183,11 +191,11 @@ class Plugin(PluginBase):
                 instance.march += "c"
             instance.march += "2p0"
 
-            open(os.path.join(parent.gateware_path, "src", f"inc_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
-            open(os.path.join(parent.gateware_path, "src", f"startup_{uid}.s"), "w").write("\n".join(cls.startup_s(parent, instance)))
-            open(os.path.join(parent.gateware_path, "src", f"main_{uid}.c"), "w").write(cls.main_c(parent, instance))
-            open(os.path.join(parent.gateware_path, f"prv32_{uid}.v"), "w").write("\n".join(cls.soc_v(parent, instance)))
-            open(os.path.join(parent.gateware_path, "src", f"compile_{uid}.sh"), "w").write("\n".join(cls.compile_sh(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "startup.s"), "w").write("\n".join(cls.startup_s(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "main.c"), "w").write(cls.main_c(parent, instance))
+            open(os.path.join(parent.gateware_path, f"{instance.NAME}_{uid}.v"), "w").write("\n".join(cls.soc_v(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "compile.sh"), "w").write("\n".join(cls.compile_sh(parent, instance)))
             cls.compile_run(parent, instance)
 
     @classmethod
@@ -214,7 +222,7 @@ class Plugin(PluginBase):
         output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
         output.append(f"#define MEMBYTES       {instance.ramsize}")
-        output.append('#define CPU_TYPE       "PicoRV32"')
+        output.append('#define CPU_TYPE       "{instance.cpu_type}"')
         output.append(f'#define CPU_MABI       "{instance.mabi}"')
         output.append(f'#define CPU_MARCH      "{instance.march}"')
         if instance.fpga_toolchain:
@@ -304,9 +312,11 @@ class Plugin(PluginBase):
         if instance.uarts:
             for baud in (1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600, 1000000, 2500000):
                 output.append(f"#define UART_B{baud!s:7s} {instance.gateware.jdata['speed'] * instance.uart_baud_scale // baud}")
+            ubase = 0x80000018
             for uart_n in range(instance.uarts):
-                output.append(f"#define UART{uart_n}_DIV  ((volatile unsigned int *) 0x80000008)")
-                output.append(f"#define UART{uart_n}_DATA ((volatile unsigned int *) 0x8000000c)")
+                output.append(f"#define UART{uart_n}_DIV  ((volatile unsigned int *) 0x{ubase:x})")
+                output.append(f"#define UART{uart_n}_DATA ((volatile unsigned int *) 0x{ubase + 4:x})")
+                ubase += 0x10
             output.append("")
             output.append("#ifdef ENABLE_MUL")
             output.append("#ifdef ENABLE_DIV")
@@ -344,7 +354,7 @@ class Plugin(PluginBase):
                 main_c = instance.source
         if parent.configuration_path:
             if not main_c:
-                cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
+                cpath = os.path.join(parent.project.config["json_path"], "main.c")
                 if os.path.isfile(cpath):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
@@ -354,7 +364,7 @@ class Plugin(PluginBase):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
         if not main_c:
-            main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+            main_c = open(os.path.join(os.path.dirname(__file__), f"src_{uid}", "main.c"), "r").read()
         return main_c
 
     @classmethod
@@ -368,37 +378,39 @@ class Plugin(PluginBase):
 set -x
 set -e
 
+WORKING_DIR=`dirname "$0"`
+cd $WORKING_DIR
+
 # RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
 FPGA_TOOLCHAIN="{instance.fpga_toolchain}"
 FLAGS="-nostartfiles -nostdlib -static -Os"
-FILES="main_{uid}.o rio.o timer.o uart.o pwm.o spi.o"
+FILES="{instance.ofiles}"
 
 # clean
-rm -f $FILES prog_{uid}.elf prog_{uid}.bin prog_{uid}.hex ../mem_init_{uid}.v
+rm -f $FILES prog.elf prog.bin prog.hex ../mem_init_{uid}.v
 
 # build
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c timer.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c uart.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c pwm.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c spi.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog_{uid}.elf startup_{uid}.s $FILES
-$RISCV_BIN-strip prog_{uid}.elf
-$RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
-$RISCV_BIN-size -G -d prog_{uid}.elf
+for O_FILE in $FILES
+do
+    C_FILE=`echo $O_FILE | sed "s|o$|c|g"`
+    $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c $C_FILE -I.
+done
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog.elf startup.s $FILES
+$RISCV_BIN-strip prog.elf
+$RISCV_BIN-objcopy prog.elf -O binary prog.bin
+$RISCV_BIN-size -G -d prog.elf
 
 # convert
-python3 makehex.py prog_{uid}.bin {instance.ramsize // 4} > prog_{uid}.hex
+python3 makehex.py prog.bin {instance.ramsize // 4} > prog.hex
 
 if test "$FPGA_TOOLCHAIN" = "gowin"
 then
     gcc -o conv_to_init conv_to_init.c
-    ./conv_to_init prog_{uid}.bin > ../mem_init_{uid}.v
+    ./conv_to_init prog.bin > ../mem_init_{uid}.v
     sed "s|include .*|include \\"mem_init_{uid}.v\\"|g" sram_gowin.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
 else
-    sed "s|src/prog.hex|src/prog_{uid}.hex|g" sram_bram.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
+    sed "s|src/prog.hex|src_{uid}/prog.hex|g" sram_bram.v | sed "s|module prv32_sram|module prv32_sram_{uid}|g" > ../prv32_sram_{uid}.v
 fi
 
 """)
@@ -407,9 +419,9 @@ fi
     @classmethod
     def compile_run(cls, parent, instance):
         uid = instance.plugin_setup["uid"]
-        log = os.path.join(parent.gateware_path, "src", f"compile_{uid}.log")
+        log = os.path.join(parent.gateware_path, f"src_{uid}", "compile.log")
         print(f"  INFO: {uid}: running compiler script: {log}")
-        ret = os.system(f"cd {parent.gateware_path}/src ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
+        ret = os.system(f"cd {parent.gateware_path}/src_{uid} ; bash compile.sh > compile.log 2>&1")
         if ret != 0:
             print(f"  ERROR: {uid}: running compiler script")
             for line in open(log, "r").read().split("\n"):
@@ -420,13 +432,12 @@ fi
     def soc_v(cls, parent, instance):
         uid = instance.plugin_setup["uid"]
         output = []
-        addrbits = instance.clog2(instance.ramsize)
         output.append(f"module prv32_{uid} (")
         output.append("    input wire clk,")
         # output.append("    input wire resetn,")
-        output.append("    input wire  uart0_rx,")
-        output.append("    output wire uart0_tx,")
-
+        for uart_n in range(instance.uarts):
+            output.append(f"    input wire  uart{uart_n}_rx,")
+            output.append(f"    output wire uart{uart_n}_tx,")
         gpio_n = 0
         for gpio in instance.gpios:
             output.append(f"    inout wire gpio{gpio_n},")
@@ -460,10 +471,10 @@ fi
         output.append("    parameter [0:0] ENABLE_COMPRESSED = 0;")
         output.append("    parameter [0:0] ENABLE_IRQ_QREGS = 0;")
         output.append(f"    parameter MEMBYTES = {instance.ramsize};")
-        output.append(f"    parameter ADDRWIDTH = {addrbits};")
+        output.append(f"    parameter ADDRWIDTH = {instance.clog2(instance.ramsize)};")
         output.append(f"    parameter UART_DIV = {instance.gateware.jdata['speed'] * instance.uart_baud_scale // 115200};")
         output.append("""
-    parameter [31:0] STACKADDR = (MEMBYTES); // Grows down. Software should set it.
+    parameter [31:0] STACKADDR = (MEMBYTES);
     parameter [31:0] PROGADDR_RESET = 32'h0000_0000;
     parameter [31:0] PROGADDR_IRQ = 32'h0000_0000;
 
@@ -493,10 +504,6 @@ fi
     wire                       cdt_ready;
     wire [31:0]                cdt_data_o;
 
-    wire                       uart0_sel;
-    wire [31:0]                uart0_data_o;
-    wire                       uart0_ready;
-
     wire                       utimer_sel;
     wire                       utimer_ready;
     wire [31:0]                utimer_data_o;
@@ -506,6 +513,12 @@ fi
     wire [31:0]                gpios_data_o;
 """)
 
+        for uart_n in range(instance.uarts):
+            output.append(f"    wire                       uart{uart_n}_sel;")
+            output.append(f"    wire                       uart{uart_n}_ready;")
+            output.append(f"    wire [31:0]                uart{uart_n}_data_o;")
+            output.append("")
+
         for pwm_n in range(instance.pwms):
             output.append(f"    wire                       pwm{pwm_n}_sel;")
             output.append(f"    wire                       pwm{pwm_n}_ready;")
@@ -513,33 +526,28 @@ fi
             output.append("")
 
         for iname, idata in instance.variables.items():
-            output.append(f"    wire                       {iname}_sel;")
-            output.append(f"    wire                       {iname}_ready;")
-            output.append(f"    wire [31:0]                {iname}_data_o;")
+            output.append(f"    wire                       rio_{iname}_sel;")
+            output.append(f"    wire                       rio_{iname}_ready;")
+            output.append(f"    wire [31:0]                rio_{iname}_data_o;")
             output.append("")
-
-        output.append("    // Establish memory map for all slaves:")
-        output.append("    //   SRAM       0x00000000 - 0x0001ffff")
-        output.append("    //   GPIO       0x80000000")
-        output.append("    //   UART       0x80000008 - 0x8000000f")
-        output.append("    //   CDT        0x80000010 - 0x80000014")
-        output.append("    //   UTIMER     0x80000020 - 0x80000024")
-        for iname, idata in instance.variables.items():
-            output.append(f"    //   RIO_{iname.upper():10s} 0x{idata['addr']:x} - 0x{idata['addr'] + 3:x}")
-        output.append("")
 
         output.append("    assign sram_sel         = mem_valid && (mem_addr < 32'h00002000);")
         output.append("    assign gpios_sel        = mem_valid && (mem_addr == 32'h80000000);")
-        output.append("    assign uart0_sel        = mem_valid && ((mem_addr & 32'hfffffff8) == 32'h80000008);")
         output.append("    assign cdt_sel          = mem_valid && (mem_addr == 32'h80000010);")
         output.append("    assign utimer_sel       = mem_valid && (mem_addr == 32'h80000020);")
+
+        ubase = 0x80000018
+        for uart_n in range(instance.uarts):
+            output.append(f"    assign uart{uart_n}_sel        = mem_valid && ((mem_addr & 32'hffffff{ubase & 0xFF:x}) == 32'h{ubase:x});")
+            ubase += 0x10
+
         pbase = 0x80000030
         for pwm_n in range(instance.pwms):
             sel = f"pwm{pwm_n}_sel"
             output.append(f"    assign {sel:16s} = mem_valid && (mem_addr == 32'h{pbase:x} || mem_addr == 32'h{pbase + 4:x});")
             pbase += 8
         for iname, idata in instance.variables.items():
-            sel = f"{iname}_sel"
+            sel = f"rio_{iname}_sel"
             output.append(f"    assign {sel:16s} = mem_valid && (mem_addr == 32'h{idata['addr']:x});")
         output.append("")
 
@@ -547,13 +555,14 @@ fi
         output.append("    assign mem_ready = mem_valid & (")
         output.append("        sram_ready |")
         output.append("        gpios_ready |")
-        output.append("        uart0_ready |")
         output.append("        cdt_ready |")
         output.append("        utimer_ready |")
+        for uart_n in range(instance.uarts):
+            output.append(f"        uart{uart_n}_ready |")
         for pwm_n in range(instance.pwms):
             output.append(f"        pwm{pwm_n}_ready |")
         for iname, idata in instance.variables.items():
-            output.append(f"        {iname}_ready |")
+            output.append(f"        rio_{iname}_ready |")
         output.append("        0);")
         output.append("")
 
@@ -561,48 +570,36 @@ fi
         output.append("    assign mem_rdata = ")
         output.append("        sram_sel         ? sram_data_o :")
         output.append("        gpios_sel        ? gpios_data_o :")
-        output.append("        uart0_sel        ? uart0_data_o :")
         output.append("        cdt_sel          ? cdt_data_o  :")
         output.append("        utimer_sel       ? utimer_data_o :")
+        for uart_n in range(instance.uarts):
+            output.append(f"        uart{uart_n}_sel        ? uart{uart_n}_data_o :")
         for pwm_n in range(instance.pwms):
             sel = f"pwm{pwm_n}_sel"
             output.append(f"        {sel:16s} ? pwm{pwm_n}_data_o  :")
         for iname, idata in instance.variables.items():
-            sel = f"{iname}_sel"
-            output.append(f"        {sel:16s} ? {iname}_data_o  :")
+            sel = f"rio_{iname}_sel"
+            output.append(f"        {sel:16s} ? rio_{iname}_data_o  :")
         output.append("        32'h0;")
         output.append("")
 
-        output.append("""
-    prv32_reset_control reset_controller (
-        .clk(clk),
-        .reset_button_n(reset_button_n),
-        .reset_n(reset_n)
-    );
+        output.append("    prv32_reset_control reset_controller (")
+        output.append("        .clk(clk),")
+        output.append("        .reset_button_n(reset_button_n),")
+        output.append("        .reset_n(reset_n)")
+        output.append("    );")
+        output.append("")
 
-    prv32_uart_wrap #(.DEFAULT_DIV(UART_DIV)) uart0 (
-        .clk(clk),
-        .reset_n(reset_n),
-        .uart_tx(uart0_tx),
-        .uart_rx(uart0_rx),
-        .uart_sel(uart0_sel),
-        .addr(mem_addr[3:0]),
-        .uart_wstrb(mem_wstrb),
-        .uart_di(mem_wdata),
-        .uart_do(uart0_data_o),
-        .uart_ready(uart0_ready)
-    );
-
-    prv32_timer cdt (
-        .clk(clk),
-        .reset_n(reset_n),
-        .cdt_sel(cdt_sel),
-        .cdt_data_i(mem_wdata),
-        .we(mem_wstrb),
-        .cdt_ready(cdt_ready),
-        .cdt_data_o(cdt_data_o)
-    );
-""")
+        output.append("    prv32_timer cdt (")
+        output.append("        .clk(clk),")
+        output.append("        .reset_n(reset_n),")
+        output.append("        .cdt_sel(cdt_sel),")
+        output.append("        .cdt_data_i(mem_wdata),")
+        output.append("        .we(mem_wstrb),")
+        output.append("        .cdt_ready(cdt_ready),")
+        output.append("        .cdt_data_o(cdt_data_o)")
+        output.append("    );")
+        output.append("")
 
         output.append(f"    prv32_sram_{uid} #(.ADDRWIDTH(ADDRWIDTH), .MEMBYTES(MEMBYTES)) memory (")
         output.append("        .clk(clk),")
@@ -615,6 +612,21 @@ fi
         output.append("        .sram_data_o(sram_data_o)")
         output.append("    );")
         output.append("")
+
+        for uart_n in range(instance.uarts):
+            output.append(f"    prv32_uart_wrap #(.DEFAULT_DIV(UART_DIV)) uart{uart_n} (")
+            output.append("        .clk(clk),")
+            output.append("        .reset_n(reset_n),")
+            output.append(f"        .uart_tx(uart{uart_n}_tx),")
+            output.append(f"        .uart_rx(uart{uart_n}_rx),")
+            output.append(f"        .uart_sel(uart{uart_n}_sel),")
+            output.append("        .addr(mem_addr[3:0]),")
+            output.append("        .uart_wstrb(mem_wstrb),")
+            output.append("        .uart_di(mem_wdata),")
+            output.append(f"        .uart_do(uart{uart_n}_data_o),")
+            output.append(f"        .uart_ready(uart{uart_n}_ready)")
+            output.append("    );")
+            output.append("")
 
         gpio_n = 0
         gpio_pins = []
@@ -637,15 +649,15 @@ fi
 
         for iname, idata in instance.variables.items():
             direction = {"output": "out", "input": "in"}.get(idata.get("dir", "output"))
-            output.append(f"    prv32_rio_v{direction} soc_val_{iname} (")
+            output.append(f"    prv32_rio_v{direction} soc_val_rio_{iname} (")
             output.append("        .clk(clk),")
             output.append("        .reset_n(reset_n),")
-            output.append(f"        .v{direction}_sel({iname}_sel),")
+            output.append(f"        .v{direction}_sel(rio_{iname}_sel),")
             output.append(f"        .v{direction}_data_i(mem_wdata),")
             output.append("        .we(mem_wstrb[0]),")
-            output.append(f"        .v{direction}_ready({iname}_ready),")
-            output.append(f"        .v{direction}_data_o({iname}_data_o),")
-            output.append(f"        .v{direction}({iname})")
+            output.append(f"        .v{direction}_ready(rio_{iname}_ready),")
+            output.append(f"        .v{direction}_data_o(rio_{iname}_data_o),")
+            output.append(f"        .v{direction}(rio_{iname})")
             output.append("    );")
             output.append("")
 
@@ -699,7 +711,11 @@ fi
         .mem_wdata   (mem_wdata),
         .mem_wstrb   (mem_wstrb),
         .mem_rdata   (mem_rdata),
-        .irq         ('b0)
+        .irq         ('b0),
+        .pcpi_wr     ('b0),
+        .pcpi_rd     ('b0),
+        .pcpi_wait   ('b0),
+        .pcpi_ready  ('b0)
     );
 
 endmodule

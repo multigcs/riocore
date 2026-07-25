@@ -26,7 +26,7 @@ module serv_csr
    input wire 	    i_d,
    output wire 	    o_q);
 
-`include "src/serv_params.vh"
+`include "serv_params.vh"
 
    reg 		    mstatus;
    reg 		    mstatus_mie;

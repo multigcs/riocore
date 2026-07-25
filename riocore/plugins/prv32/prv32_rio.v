@@ -45,7 +45,7 @@ module prv32_utimer (
         input wire         we,
         output wire        utimer_ready,
         output wire [31:0] utimer_data_o,
-        output wire [31:0] systimer
+        input wire [31:0] systimer
     );
 
     assign utimer_ready = utimer_sel;
