@@ -380,7 +380,11 @@ class Plugin(PluginBase):
             open(target, "w").write("\n".join(startup))
 
             target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
-            open(target, "w").write(instance.source)
+            if instance.source and len(instance.source.split("\n")) == 1:
+                source = open(instance.source, "r").read()
+                open(target, "w").write(source)
+            else:
+                open(target, "w").write(instance.source)
 
             instance.march = "rv32i"
             instance.mabi = "ilp32"
