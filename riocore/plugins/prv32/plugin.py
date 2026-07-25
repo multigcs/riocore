@@ -139,19 +139,6 @@ class Plugin(PluginBase):
     @classmethod
     def extra_files(cls, parent, instances):
         output = []
-        output.append("""#!/bin/sh
-#
-# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
-#
-set -x
-set -e
-
-# RISCV_BIN="riscv64-unknown-elf"
-RISCV_BIN="riscv-none-elf"
-
-cd src/
-
-""")
         for instance in instances:
             uid = instance.plugin_setup["uid"]
             os.makedirs(os.path.join(parent.gateware_path, "src", f"inc_{uid}"), exist_ok=True)
@@ -200,7 +187,17 @@ cd src/
             target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
             open(target, "w").write(instance.source)
 
-            output.append(f"""
+            output.append(f"""#!/bin/sh
+#
+# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
+#
+set -x
+set -e
+
+# RISCV_BIN="riscv64-unknown-elf"
+RISCV_BIN="riscv-none-elf"
+
+cd src/
 
 TOOLCHAIN="{instance.fpga_toolchain}"
 
@@ -222,7 +219,6 @@ $RISCV_BIN-size -G -d prog_{uid}.elf
 
 rm -f ../mem_init_{uid}.v
 
-
 if test "$TOOLCHAIN" = "gowin"
 then
     # od -v -Ax -t x4 prog_{uid}.bin > prog_{uid}.hex
@@ -235,16 +231,17 @@ fi
 python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
 
 """)
-        target = os.path.join(parent.gateware_path, f"compile_{uid}.sh")
-        open(target, "w").write("\n".join(output))
+            target = os.path.join(parent.gateware_path, f"compile_{uid}.sh")
+            open(target, "w").write("\n".join(output))
 
-        log = os.path.join(parent.gateware_path, f"compile_{uid}.log")
-        print(f"  INFO: running compiler script: {log}")
-        ret = os.system(f"cd {parent.gateware_path} ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
-        if ret != 0:
-            print("  ERROR: running compiler script")
-            for line in open(log, "r").read().split("\n"):
-                print(f"    {line}")
+            log = os.path.join(parent.gateware_path, f"compile_{uid}.log")
+            print(f"  INFO: {uid}: running compiler script: {log}")
+            ret = os.system(f"cd {parent.gateware_path} ; bash compile_{uid}.sh > compile_{uid}.log 2>&1")
+            if ret != 0:
+                print("  ERROR: {uid}: running compiler script")
+                for line in open(log, "r").read().split("\n"):
+                    print(f"    {line}")
+                exit(1)
 
     @classmethod
     def rio_h(cls, instance):
