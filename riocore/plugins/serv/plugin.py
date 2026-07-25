@@ -13,7 +13,12 @@ class Plugin(PluginBase):
         self.ORIGIN = "https://github.com/olofk/serv"
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v", "serv_params.vh"]
-        self.SRCFILES = [f"src/makehex.py:src_{uid}/makehex.py", f"src/link.ld:src_{uid}/link.ld", f"src/main.c:src_{uid}/main.c", f"src/rio.c:src_{uid}/rio.c"]
+        self.SRCFILES = [
+            f"src/makehex.py:src_{uid}/makehex.py",
+            f"src/link.ld:src_{uid}/link.ld",
+            f"src/main.c:src_{uid}/main.c",
+            f"src/rio.c:src_{uid}/rio.c",
+        ]
         self.VERILOGS_GEN = [f"serv_{uid}.v"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True

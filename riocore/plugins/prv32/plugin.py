@@ -14,15 +14,15 @@ class Plugin(PluginBase):
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = [
+            f"src/makehex.py:src_{uid}/makehex.py",
             f"src/link.ld:src_{uid}/link.ld",
             f"src/main.c:src_{uid}/main.c",
+            f"src/rio.c:src_{uid}/rio.c",
             f"src/uart.c:src_{uid}/uart.c",
             f"src/pwm.c:src_{uid}/pwm.c",
             f"src/spi.c:src_{uid}/spi.c",
             f"src/conv_to_init.c:src_{uid}/conv_to_init.c",
             f"src/timer.c:src_{uid}/timer.c",
-            f"src/rio.c:src_{uid}/rio.c",
-            f"src/makehex.py:src_{uid}/makehex.py",
         ]
         self.VERILOGS_GEN = [f"prv32_sram_{uid}.v", f"prv32_{uid}.v"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}

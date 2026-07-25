@@ -68,6 +68,10 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
     def generate(self, path):
         pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.cst")
         pins_generator.Pins(self.config).generate(path)
+        loader_options = ""
+        firmware_file = self.config.get("firmware_file")
+        if firmware_file:
+            loader_options = f"--mcufw {firmware_file}"
 
         if sys.platform == "linux":
             gw_sh = shutil.which("gw_sh")
@@ -89,6 +93,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
             board_id = "tangnano9k"
 
         flashcmd = self.config.get("flashcmd")
+        flashcmd_ram = self.config.get("flashcmd_ram")
 
         makefile_data = []
         makefile_data.append("")
@@ -158,12 +163,14 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
             if flashcmd:
                 makefile_data.append(f"	{flashcmd}")
             else:
-                makefile_data.append(f"	openFPGALoader -b {board_id} -f impl\\pnr\\project.fs")
+                makefile_data.append(f"	openFPGALoader -b {board_id} -f impl\\pnr\\project.fs {loader_options}")
             makefile_data.append("	copy hash_new.txt hash_flashed.txt")
             makefile_data.append("")
             makefile_data.append("sload:")
-            makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs")
-            makefile_data.append("	copy hash_new.txt hash_flashed.txt")
+            if flashcmd_ram:
+                makefile_data.append(f"	{flashcmd_ram}")
+            else:
+                makefile_data.append(f"	openFPGALoader -b {board_id} impl\\pnr\\project.fs {loader_options}")
         else:
             makefile_data.append('	@echo "set_device -name $(FAMILY_GOWIN) $(DEVICE)" > $(PROJECT).tcl')
             makefile_data.append(r'	@for VAR in $?; do echo $$VAR | grep -s -q "\.v$$" && echo "add_file $$VAR" >> $(PROJECT).tcl; done')
@@ -206,12 +213,14 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
             if flashcmd:
                 makefile_data.append(f"	{flashcmd}")
             else:
-                makefile_data.append(f"	openFPGALoader -b {board_id} -f impl/pnr/project.fs")
+                makefile_data.append(f"	openFPGALoader -b {board_id} -f impl/pnr/project.fs {loader_options}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
             makefile_data.append("sload:")
-            makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs")
-            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            if flashcmd_ram:
+                makefile_data.append(f"	{flashcmd_ram}")
+            else:
+                makefile_data.append(f"	openFPGALoader -b {board_id} impl/pnr/project.fs {loader_options}")
 
         makefile_data.append("")
         makefile_data.append("")
@@ -262,7 +271,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
 
             flash_data = []
             flash_data.append("")
-            flash_data.append(f"openFPGALoader -b {board_id} impl\\pnr\\project.fs -f")
+            flash_data.append(f"openFPGALoader -b {board_id} -f impl\\pnr\\project.fs {loader_options}")
             flash_data.append("copy hash_new.txt hash_flashed.txt")
             flash_data.append("")
             flash_data.append("")

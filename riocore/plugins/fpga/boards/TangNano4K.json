@@ -9,6 +9,7 @@
         "gowin",
         "icestorm"
     ],
+    "provides": ["gowin_empu"],
     "toolchain": "gowin",
     "package": "",
     "clock": {

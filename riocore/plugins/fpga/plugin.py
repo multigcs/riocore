@@ -124,7 +124,12 @@ class Plugin(PluginBase):
                     "default": "",
                     "type": str,
                     "description": "overwrite flash command for this instance",
-                }
+                },
+                "flashcmd_ram": {
+                    "default": "",
+                    "type": str,
+                    "description": "overwrite flash command for this instance",
+                },
             }
         )
 
@@ -331,6 +336,7 @@ class Plugin(PluginBase):
             firmware_path = os.path.join(parent.project.config["output_path"], "Firmware", instance.instances_name)
             parent.gateware_path = gateware_path
             instance.jdata["flashcmd"] = instance.plugin_setup.get("flashcmd", instance.jdata.get("flashcmd"))
+            instance.jdata["flashcmd_ram"] = instance.plugin_setup.get("flashcmd_ram", instance.jdata.get("flashcmd_ram"))
             instance.jdata["name"] = instance.plugin_setup.get("node_type", instance.option_default("node_type"))
             instance.jdata["json_path"] = parent.project.config["json_path"]
             instance.jdata["riocore_path"] = riocore_path
