@@ -7,13 +7,15 @@
 # binary, for any purpose, commercial or non-commercial, and by any
 # means.
 
-from sys import argv
+import sys
 
-binfile = argv[1]
-nwords = int(argv[2])
+binfile = sys.argv[1]
+nwords = int(sys.argv[2])
 
 with open(binfile, "rb") as f:
     bindata = f.read()
+
+# print("############", len(bindata), 4 * nwords, file=sys.stderr)
 
 while len(bindata) % 4 != 0:
     bindata += bytes([0])

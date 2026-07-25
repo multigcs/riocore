@@ -1,18 +1,12 @@
-OUTPUT_ARCH( "riscv" )
-ENTRY(_start)
-
+ENTRY( _start )
 SECTIONS
 {
-  . = 0x00000000;
-  .text.init : { *(.text.init) }
-  . = ALIGN(0x1000);
-  .tohost : { *(.tohost) }
-  . = ALIGN(0x1000);
-  .text : { *(.text) }
-  . = ALIGN(0x1000);
-  .data : { *(.data) }
-  .data.string : { *(.data.string)}
-  .bss : { *(.bss) }
-  _end = .;
+ . = 0x0;
+ .text : { *(.text) }
+ .sbss : { *(.sbss) }
+ .bss : { *(.bss) }
+ .rodata : { *(.rodata) }
+ .srodata :{ *(.srodata) }
+ .data : { *(.data) }
+ _end = .;
 }
-
