@@ -473,7 +473,6 @@ class Project:
 
         if output_path is None:
             output_path = "Output"
-
         # project["config"] = configuration
         if isinstance(configuration, dict):
             project = {"jdata": configuration}

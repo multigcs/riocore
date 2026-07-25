@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QHeaderView,
     QLabel,
+    QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QTextEdit,
@@ -106,9 +107,13 @@ class config:
 
         self.variable_table.setRowCount(variable_n + 1)
         self.variable_table.setItem(variable_n, 0, QTableWidgetItem(""))
-        source_text = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
+        source_text = self.plugin_setup.get("source", "")
         self.source.setText(source_text)
         self.update_flag = False
+
+    def load_sample(self):
+        sample_source = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+        self.source.setText(sample_source)
 
     def run(self):
         dialog = QDialog()
@@ -151,6 +156,11 @@ class config:
         hlayout.addLayout(right_layout, stretch=3)
 
         right_layout.addWidget(QLabel("Source:"))
+        right_layout.addWidget(QLabel("Source:"))
+        if not self.plugin_setup.get("source"):
+            load_button = QPushButton("load sample:")
+            load_button.clicked.connect(self.load_sample)
+            right_layout.addWidget(load_button)
 
         self.source = editor_widget()
         if editor_widget != QTextEdit:

@@ -54,7 +54,7 @@ class Plugin(PluginBase):
         self.pwms = self.plugin_setup.get("pwms", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
-        self.source = self.plugin_setup.get("source", open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read())
+        self.source = self.plugin_setup.get("source", "")
         for uart_n in range(self.uarts):
             self.PINDEFAULTS = {
                 f"uart{uart_n}_rx": {
@@ -184,12 +184,27 @@ class Plugin(PluginBase):
             target = os.path.join(parent.gateware_path, "src", f"rio_{uid}.c")
             open(target, "w").write("\n".join(rio_c))
 
-            target = os.path.join(parent.gateware_path, "src", f"main_{uid}.c")
-            if instance.source and len(instance.source.split("\n")) == 1:
-                source = open(instance.source, "r").read()
-                open(target, "w").write(source)
-            else:
-                open(target, "w").write(instance.source)
+            main_c = ""
+            if instance.source:
+                if len(instance.source.split("\n")) == 1 and os.path.isfile(instance.source):
+                    print(f"  INFO: {uid}: using c-file {instance.source}")
+                    main_c = open(instance.source, "r").read()
+                else:
+                    main_c = instance.source
+            if parent.configuration_path:
+                if not main_c:
+                    cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
+                    if os.path.isfile(cpath):
+                        print(f"  INFO: {uid}: using c-file {cpath}")
+                        main_c = open(cpath, "r").read()
+                if not main_c:
+                    cpath = os.path.join(parent.project.config["json_path"], f"{uid}.c")
+                    if os.path.isfile(cpath):
+                        print(f"  INFO: {uid}: using c-file {cpath}")
+                        main_c = open(cpath, "r").read()
+            if not main_c:
+                main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+            open(os.path.join(parent.gateware_path, "src", f"main_{uid}.c"), "w").write(main_c)
 
             output.append(f"""#!/bin/sh
 #
