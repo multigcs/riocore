@@ -63,6 +63,9 @@ class PluginBase:
         self.SUB_OPTIONS = {}
         self.KICAD_FOLDER = "kicad"
         self.USED_MODIFIERS = set()
+        self.TIMESTAMP = False
+        self.SYSTIMER = False
+        self.RESET = False
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -485,6 +488,10 @@ class PluginBase:
         pin_varname = None
         if direct is False:
             instance_arguments["clk"] = "sysclk"
+        if self.SYSTIMER:
+            instance_arguments["systimer"] = "systimer"
+        if self.RESET:
+            instance_arguments["resetn"] = "resetn"
         for pin_name, pin_config in self.pins().items():
             pin_varname = pin_config["varname"]
             if pin_config.get("bus"):

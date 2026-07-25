@@ -44,26 +44,12 @@ module prv32_utimer (
         input wire [31:0]  utimer_data_i,
         input wire         we,
         output wire        utimer_ready,
-        output wire [31:0] utimer_data_o
+        output wire [31:0] utimer_data_o,
+        output wire [31:0] systimer
     );
-    parameter MS_DIVIDER = 'd27000;
 
-    reg [31:0] utimer;
     assign utimer_ready = utimer_sel;
-    assign utimer_data_o = utimer;
-
-    reg [31:0] clk_counter;
-    always @(posedge clk or negedge reset_n) begin
-        if (!reset_n) begin
-            utimer <= 'd0;
-            clk_counter <= MS_DIVIDER;
-        end else if (clk_counter == 0) begin
-            utimer <= utimer + 'd1;
-            clk_counter <= MS_DIVIDER;
-        end else begin
-            clk_counter <= clk_counter - 'd1;
-        end
-    end
+    assign utimer_data_o = systimer;
 endmodule
 
 module prv32_pwm (

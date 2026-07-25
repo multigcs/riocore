@@ -15,6 +15,8 @@ class Plugin(PluginBase):
         self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v"]
         self.SRCFILES = ["src/makehex.py", "src/link.ld", "src/serv_params.vh", "src/main.c", "src/rio.c"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
+        self.SYSTIMER = True
+        self.RESET = True
         self.OPTIONS = {
             "ramsize": {
                 "type": "select",
@@ -84,6 +86,8 @@ class Plugin(PluginBase):
         uid = instance.plugin_setup["uid"]
         output = []
         output.append(f"module serv_{uid} (")
+        output.append("    input wire clk,")
+        output.append("    input wire resetn,")
         gpio_n = 0
         for gpio in instance.gpios:
             output.append(f"    inout wire gpio{gpio_n},")
@@ -108,7 +112,7 @@ class Plugin(PluginBase):
             else:
                 output.append(f"    {direction} {ptype} rio_{iname},")
 
-        output.append("    input wire clk")
+        output.append("    input wire [31:0] systimer")
         output.append(");")
         output.append(f"    parameter RAM_SIZE = {instance.ramsize};")
         output.append(f'    parameter INITIAL_FILE = "src/prog_{uid}.hex";')
@@ -118,16 +122,6 @@ class Plugin(PluginBase):
             output.append(f"    wire gpio{gn};")
 
         output.append("""
-    reg resetn = 0;
-    reg [1:0] counter = 1;
-    always @(posedge clk) begin
-        if (counter == 0) begin
-            resetn <= 1;
-        end else begin
-            counter <= counter - 1;
-        end
-    end
-
     wire i_rst;
     wire i_timer_irq;
     wire [31:0] o_ibus_adr;
@@ -270,6 +264,12 @@ class Plugin(PluginBase):
         output.append("    end")
         output.append("")
 
+        output.append("    // System-Timer")
+        output.append("    wire utimer_sel = (o_dbus_adr == 'h80000020);")
+        output.append("    wire [31:0] utimer_out = systimer;")
+        output.append("")
+        outs.append("utimer")
+
         for name, data in instance.variables.items():
             direction = data.get("dir", "output")
             ctype = data.get("ctype", "uint32_t")
@@ -343,7 +343,10 @@ class Plugin(PluginBase):
             ctype = idata.get("ctype", "uint32_t")
             output.append(f"#define RIO_{iname.upper():10s} *((volatile {ctype} *) 0x{idata['addr']:x})")
         output.append("")
-        output.append("extern void delay(uint32_t delay);")
+        output.append("#define UTIMER ((volatile unsigned int *) 0x80000020)")
+        output.append("")
+        output.append("extern uint32_t mills(void);")
+        output.append("extern void delay_nop(uint32_t delay);")
         output.append("")
         output.append("#endif")
         output.append("")

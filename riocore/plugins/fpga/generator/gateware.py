@@ -345,12 +345,27 @@ class gateware(generator_base):
         return output
 
     def top(self):
+        gen_reset = False
+        gen_systimer = False
+        gen_timestamp = False
         use_timestamp = True
         use_header = True
         if self.instance.frame in {"no_timestamp", "minimum"}:
             use_timestamp = False
         if self.instance.frame in {"no_header", "minimum"}:
             use_header = False
+        if use_timestamp:
+            gen_timestamp = True
+
+        for plugin_instance in self.parent.project.plugin_instances:
+            if plugin_instance.master != self.instance.instances_name:
+                continue
+            if plugin_instance.TIMESTAMP:
+                gen_timestamp = True
+            if plugin_instance.SYSTIMER:
+                gen_systimer = True
+            if plugin_instance.RESET:
+                gen_reset = True
 
         header_size = 0
         if use_header:
@@ -762,7 +777,37 @@ class gateware(generator_base):
             output.append(f"    assign ERROR = ({' | '.join(error_signals)});")
             output.append("")
 
-            if use_timestamp:
+            if gen_reset:
+                output.append("    // reset counter")
+                output.append("    reg resetn = 0;")
+                output.append("    reg [7:0] counter = 8'hFF;")
+                output.append("    always @(posedge sysclk) begin")
+                output.append("        if (counter == 0) begin")
+                output.append("            resetn <= 1;")
+                output.append("        end else begin")
+                output.append("            counter <= counter - 1;")
+                output.append("        end")
+                output.append("    end")
+                output.append("")
+
+            if gen_systimer:
+                sysclk_speed = self.jdata["speed"]
+                timeout = sysclk_speed // 1000
+                timeout_bits = self.clog2(timeout)
+                output.append("    // systimer counter")
+                output.append("    reg [31:0] systimer = 32'd0;")
+                output.append(f"    reg [{timeout_bits - 1}:0] st_counter = {timeout_bits}'d0;")
+                output.append("    always @(posedge sysclk) begin")
+                output.append(f"        if (st_counter == {timeout}) begin")
+                output.append("            systimer <= systimer + 32'd1;")
+                output.append(f"            st_counter <= {timeout_bits}'d0;")
+                output.append("        end else begin")
+                output.append(f"            st_counter <= st_counter + {timeout_bits}'d1;")
+                output.append("        end")
+                output.append("    end")
+                output.append("")
+
+            if gen_timestamp:
                 output.append("    // timestamp counter")
                 output.append("    reg [31:0] timestamp = 32'd0;")
                 output.append("    always @(posedge sysclk) begin")

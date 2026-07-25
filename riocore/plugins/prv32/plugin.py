@@ -12,8 +12,10 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
-        self.SRCFILES = ["src/link_cmd.ld", "src/main.c", "src/uart.c", "src/pwm.c", "src/spi.c", "src/conv_to_init.c", "src/timer.c", "src/makehex.py"]
+        self.SRCFILES = ["src/link.ld", "src/main.c", "src/uart.c", "src/pwm.c", "src/spi.c", "src/conv_to_init.c", "src/timer.c", "src/rio.c", "src/makehex.py"]
         self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
+        self.SYSTIMER = True
+        # self.RESET = True
         self.OPTIONS = {
             "ENABLE_MUL": {
                 "type": bool,
@@ -180,10 +182,6 @@ class Plugin(PluginBase):
             target = os.path.join(parent.gateware_path, "src", f"inc_{uid}", "rio.h")
             open(target, "w").write("\n".join(rio_h))
 
-            rio_c = cls.rio_c(instance)
-            target = os.path.join(parent.gateware_path, "src", f"rio_{uid}.c")
-            open(target, "w").write("\n".join(rio_c))
-
             main_c = ""
             if instance.source:
                 if len(instance.source.split("\n")) == 1 and os.path.isfile(instance.source):
@@ -229,9 +227,9 @@ $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c uart.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c pwm.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c spi.c -Iinc_{uid}
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio.c -Iinc_{uid}
 $RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c main_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -c rio_{uid}.c -Iinc_{uid}
-$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink_cmd.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio_{uid}.o timer.o uart.o pwm.o spi.o
+$RISCV_BIN-gcc -mno-save-restore -march={instance.march} -mabi={instance.mabi} {instance.gcc_options} $FLAGS -Tlink.ld -o prog_{uid}.elf startup_{uid}.s main_{uid}.o rio.o timer.o uart.o pwm.o spi.o
 $RISCV_BIN-strip prog_{uid}.elf
 $RISCV_BIN-objcopy prog_{uid}.elf -O binary prog_{uid}.bin
 $RISCV_BIN-size -G -d prog_{uid}.elf
@@ -307,7 +305,9 @@ python3 makehex.py prog_{uid}.bin {(instance.ramsize + 3) // 4} > prog_{uid}.hex
             output.append("extern void pinMode(uint8_t num, uint8_t dir);")
             output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
             output.append("extern uint8_t digitalRead(uint8_t num);")
+            output.append("")
             output.append("extern uint32_t mills(void);")
+            output.append("extern void delay_nop(uint32_t delay);")
             output.append("")
         output.append("")
         output.append("#define CDT_COUNTER ((volatile unsigned int *) 0x80000010)")
@@ -438,6 +438,7 @@ uint32_t mills(void) {
 
         output.append(f"module prv32_{uid} (")
         output.append("        input wire  clk,")
+        output.append("        input wire [31:0] systimer,")
         output.append("        input wire  uart0_rx,")
         output.append("        output wire uart0_tx,")
         for iname, idata in instance.variables.items():
@@ -675,14 +676,15 @@ uint32_t mills(void) {
             output.append("")
             pbase += 8
 
-        output.append(f"    prv32_utimer #(.MS_DIVIDER({instance.gateware.jdata['speed'] // 1000})) soc_utimer (")
+        output.append(f"    prv32_utimer soc_utimer (")
         output.append("        .clk(clk),")
         output.append("        .reset_n(reset_n),")
         output.append("        .utimer_sel(utimer_sel),")
         output.append("        .utimer_data_i(mem_wdata),")
         output.append("        .we(mem_wstrb[0]),")
         output.append("        .utimer_ready(utimer_ready),")
-        output.append("        .utimer_data_o(utimer_data_o)")
+        output.append("        .utimer_data_o(utimer_data_o),")
+        output.append("        .systimer(systimer)")
         output.append("    );")
         output.append("")
 
