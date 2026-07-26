@@ -9,7 +9,7 @@ class Plugin(PluginBase):
         self.NAME = "gowin_empu"
         self.INFO = "TangNano4K ARM core"
         self.DESCRIPTION = "Cortex M3 ARM core inside TangNano4K"
-        self._INFO = "EMPU: GPIO / APB2-Master1 / UART0"
+        self.EMPU_INFO = "EMPU: GPIO / APB2-Master1 / UART0"
         self.KEYWORDS = "arm hardcore cpu"
         self.ORIGIN = "https://github.com/grughuhler/tang_4k_getting_started/tree/main"
         self.NEEDS = ["fpga", "gowin_empu"]
