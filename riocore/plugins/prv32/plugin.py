@@ -211,7 +211,7 @@ class Plugin(PluginBase):
         output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
         output.append(f"#define MEMBYTES       {instance.ramsize}")
-        output.append('#define CPU_TYPE       "{instance.cpu_type}"')
+        output.append(f'#define CPU_TYPE       "{instance.cpu_type}"')
         output.append(f'#define CPU_MABI       "{instance.mabi}"')
         output.append(f'#define CPU_MARCH      "{instance.march}"')
         if instance.fpga_toolchain:
