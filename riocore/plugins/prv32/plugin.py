@@ -225,6 +225,8 @@ class Plugin(PluginBase):
             if instance.plugin_setup.get(param, instance.OPTIONS[param]["default"]):
                 output.append(f"#define {param}")
         output.append("")
+        output.append("extern void sysinit();")
+        output.append("")
 
         # GPIOS
         if instance.gpios:

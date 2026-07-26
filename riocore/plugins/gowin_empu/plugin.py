@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.NAME = "gowin_empu"
         self.INFO = "TangNano4K ARM core"
         self.DESCRIPTION = "Cortex M3 ARM core inside TangNano4K"
+        self._INFO = "EMPU: GPIO / APB2-Master1 / UART0"
         self.KEYWORDS = "arm hardcore cpu"
         self.ORIGIN = "https://github.com/grughuhler/tang_4k_getting_started/tree/main"
         self.NEEDS = ["fpga", "gowin_empu"]
@@ -23,8 +24,10 @@ class Plugin(PluginBase):
             f"src/main.c:src_{uid}/main.c",
             f"src/uart.c:src_{uid}/uart.c",
             f"src/uart.h:src_{uid}/uart.h",
+            f"src/rio.c:src_{uid}/rio.c",
         ]
         self.VERILOGS_GEN = ["gowin_empu.v"]
+        self.SYSTIMER = True
         self.RESET = True
         self.cpu_type = "Cortex M3"
         self.OPTIONS = {}
@@ -87,6 +90,8 @@ class Plugin(PluginBase):
         for iname, idata in self.variables.items():
             idata["addr"] = addr
             addr += 0x04
+        self.systimer_addr = addr
+        addr += 0x04
 
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
@@ -114,6 +119,8 @@ class Plugin(PluginBase):
                 var = instance_arguments[iname]
                 del instance_arguments[iname]
                 instance_arguments[f"rio_{iname}"] = var
+        if self.SYSTIMER:
+            instance_arguments["systimer"] = "systimer"
 
         return instances
 
@@ -148,10 +155,8 @@ class Plugin(PluginBase):
         output.append("")
         output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
-        # output.append(f"#define MEMBYTES       {instance.ramsize}")
+        output.append("#define MEMBYTES       16384")
         output.append(f'#define CPU_TYPE       "{instance.cpu_type}"')
-        # output.append(f'#define CPU_MABI       "{instance.mabi}"')
-        # output.append(f'#define CPU_MARCH      "{instance.march}"')
         if instance.fpga_toolchain:
             output.append(f'#define FPGA_TOOLCHAIN "{instance.fpga_toolchain}"')
         if instance.fpga_family:
@@ -159,12 +164,35 @@ class Plugin(PluginBase):
         if instance.fpga_type:
             output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
         output.append("")
+        output.append("extern void sysinit();")
+        output.append("")
+
+        # GPIOS
+        if instance.gpios:
+            output.append("#define INPUT  0")
+            output.append("#define OUTPUT 1")
+            output.append("#define LOW    0")
+            output.append("#define HIGH   1")
+            output.append("#define TOGGLE 2")
+            gpio_n = 0
+            for gpio in instance.gpios:
+                output.append(f"#define GPIO_{gpio.upper()}  {gpio_n}")
+                gpio_n += 1
+            output.append("extern void pinMode(uint8_t num, uint8_t dir);")
+            output.append("extern void digitalWrite(uint8_t num, uint8_t value);")
+            output.append("extern uint8_t digitalRead(uint8_t num);")
+            output.append("")
 
         # VARIABLES
         for iname, idata in instance.variables.items():
             ctype = idata.get("ctype", "uint32_t")
             output.append(f"#define RIO_{iname.upper():10s} (*((volatile {ctype} *) (0x{idata['addr']:x})))")
         output.append("")
+
+        if instance.SYSTIMER:
+            output.append(f"#define UTIMER ((volatile unsigned int *) 0x{instance.systimer_addr:x})")
+            output.append("extern uint32_t mills(void);")
+            output.append("")
 
         output.append("#endif")
         output.append("")
@@ -197,10 +225,11 @@ class Plugin(PluginBase):
                 output.append(f"    {direction} {ptype} [{bsize - 1}:0] rio_{iname},")
             else:
                 output.append(f"    {direction} {ptype} rio_{iname},")
+        if instance.SYSTIMER:
+            output.append("    input wire [31:0] systimer,")
         output.append("    input wire resetn")
         output.append(");")
         output.append("")
-
         for gn in range(gpio_n, 16):
             output.append(f"    wire gpio{gn};")
         output.append("")
@@ -259,6 +288,8 @@ class Plugin(PluginBase):
         output.append("        .pready(pready1),")
         for iname, idata in instance.variables.items():
             output.append(f"        .rio_{iname}(rio_{iname}),")
+        if instance.SYSTIMER:
+            output.append("        .systimer(systimer),")
         output.append("        .preset_n(preset_n)")
         output.append("    );")
         output.append("endmodule")
@@ -292,6 +323,8 @@ class Plugin(PluginBase):
                 output.append(f"    {direction} {ptype} [{bsize - 1}:0] rio_{iname},")
             else:
                 output.append(f"    {direction} {ptype} rio_{iname},")
+        if instance.SYSTIMER:
+            output.append("    input wire [31:0] systimer,")
         output.append("    input wire        preset_n")
         output.append(");")
         output.append("")
@@ -327,6 +360,11 @@ class Plugin(PluginBase):
         for iname, idata in instance.variables.items():
             output.append(f"                    if (wordaddr == {var_n}) prdata <= rio_{iname};")
             var_n += 1
+
+        if instance.SYSTIMER:
+            output.append(f"                    if (wordaddr == {var_n}) prdata <= systimer;")
+            var_n += 1
+
         output.append("                end")
         output.append("                pready <= 1'b1;")
         output.append("            end else begin ")

@@ -2,33 +2,31 @@
 #include <rio.h>
 
 void sysinit() {
+    gpio_init();
+    uart_init(UART0, F_CPU / 115200);
 }
 
 // GPIO functions
 void pinMode(uint8_t num, uint8_t dir) {
-    if (dir == OUTPUT) {
-        *GPIOS |= (1<<(num + 16));
-    } else {
-        *GPIOS &= ~(1<<(num + 16));
-    }
+    gpio_set_dir(num, dir);
 }
 
 void digitalWrite(uint8_t num, uint8_t value) {
     if (value == HIGH) {
-        *GPIOS |= (1<<num);
+        gpio_out_set_val(num, value);
     } else if (value == LOW) {
-        *GPIOS &= ~(1<<num);
+        gpio_out_set_val(num, value);
     } else if (TOGGLE) {
-        if ((*GPIOS & (1<<num)) != 0) {
-            *GPIOS &= ~(1<<num);
+        if (gpio_in_get_val(num)) {
+            gpio_out_set_val(num, 0);
         } else {
-            *GPIOS |= (1<<num);
+            gpio_out_set_val(num, 1);
         }
     }
 }
 
 uint8_t digitalRead(uint8_t num) {
-    if ((*GPIOS & (1<<num)) != 0) {
+    if (gpio_in_get_val(num)) {
         return HIGH;
     }
     return LOW;

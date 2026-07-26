@@ -1,6 +1,9 @@
 
 #include <rio.h>
 
+void sysinit() {
+}
+
 // GPIO functions
 void pinMode(uint8_t num, uint8_t dir) {
     if (dir == OUTPUT) {

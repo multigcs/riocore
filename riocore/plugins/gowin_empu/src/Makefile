@@ -1,7 +1,7 @@
 # Copyright 2024 Grug Huhler.  License SPDX BSD-2-Clause.
 
 COMMONFLAGS = -mthumb -mcpu=cortex-m3
-CFLAGS = $(COMMONFLAGS) -nostartfiles -nostdlib -static -O1
+CFLAGS = $(COMMONFLAGS) -nostartfiles -nostdlib -static -O1 -I.
 CPPFLAGS = 
 ASFLAGS = $(COMMONFLAGS)
 LIBS = -lgcc
@@ -11,7 +11,7 @@ OBJCOPY = arm-none-eabi-objcopy
 OBJDUMP = arm-none-eabi-objdump
 AS = arm-none-eabi-as
 
-ALL_CSRCS = cont_startup.c main.c uart.c gpio.c
+ALL_CSRCS = cont_startup.c main.c uart.c gpio.c rio.c
 
 %.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
