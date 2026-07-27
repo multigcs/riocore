@@ -326,6 +326,16 @@ class Plugin(PluginBase):
         output.append("")
         """
 
+        output.append("""
+static inline void delay_ms(uint32_t ms) {
+    uint32_t start = mills();
+    while (mills() - start < ms) {
+        asm("nop");
+    }
+    return;
+}
+""")
+
         output.append("#endif")
         output.append("")
         return output
@@ -342,7 +352,7 @@ class Plugin(PluginBase):
                 main_c = instance.source
         if parent.configuration_path:
             if not main_c:
-                cpath = os.path.join(parent.project.config["json_path"], "main.c")
+                cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
                 if os.path.isfile(cpath):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
@@ -372,7 +382,8 @@ cd $WORKING_DIR
 # RISCV_BIN="riscv64-unknown-elf"
 RISCV_BIN="riscv-none-elf"
 FPGA_TOOLCHAIN="{instance.fpga_toolchain}"
-FLAGS="-nostartfiles -nostdlib -static -Os"
+# FLAGS="-nostartfiles -nostdlib -static -Os"
+FLAGS="-nostartfiles -static -Os"
 FILES="{instance.ofiles}"
 
 # clean
