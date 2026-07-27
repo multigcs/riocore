@@ -1,0 +1,161 @@
+{
+    "name": "TangNano9K",
+    "description": "TangNano9K testing PicoRV32 + SERV",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "TangNano9K",
+            "uid": "board0",
+            "pos": [
+                380.0,
+                -150.0
+            ],
+            "rotate": 90
+        },
+        {
+            "type": "uart",
+            "uid": "uart0",
+            "pos": [
+                560.0,
+                -170.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "board0:UART:RX"
+                },
+                "tx": {
+                    "pin": "board0:UART:TX"
+                }
+            },
+            "uart": "/dev/ttyUSB1"
+        },
+        {
+            "type": "prv32",
+            "uid": "prv320",
+            "pos": [
+                560.0,
+                130.0
+            ],
+            "pins": {
+                "LED0": {
+                    "pin": "board0:LED:L5"
+                },
+                "LED1": {
+                    "pin": "board0:LED:L6"
+                }
+            },
+            "name": "",
+            "gpios": {
+                "led0": {
+                    "name": "led0"
+                },
+                "led1": {
+                    "name": "led1"
+                }
+            },
+            "riovars": {
+                "out": {
+                    "ctype": "uint32_t",
+                    "dir": "output"
+                },
+                "in": {
+                    "ctype": "uint32_t",
+                    "dir": "input"
+                }
+            },
+            "spis": 1,
+            "source": "\n#include \"rio.h\"\n\nint main() {\n    sysinit();\n\n    pinMode(GPIO_LED0, OUTPUT);\n    pinMode(GPIO_LED1, OUTPUT);\n    digitalWrite(GPIO_LED0, HIGH);\n    digitalWrite(GPIO_LED1, LOW);\n\n    uint32_t last = mills();\n    while (1) {\n        uint32_t now = mills();\n        if (now - last > 100) {\n            last = now;\n            digitalWrite(GPIO_LED0, TOGGLE);\n            digitalWrite(GPIO_LED1, TOGGLE);\n        }\n\n        RIO_IN = RIO_OUT / 2;\n    }\n\n    return 0;\n}\n"
+        },
+        {
+            "type": "serv",
+            "uid": "serv0",
+            "pos": [
+                560.0,
+                -50.0
+            ],
+            "pins": {
+                "LED0": {
+                    "pin": "board0:LED:L1"
+                },
+                "LED1": {
+                    "pin": "board0:LED:L2"
+                }
+            },
+            "gpios": {
+                "led0": {
+                    "name": "led0"
+                },
+                "led1": {
+                    "name": "led1"
+                }
+            },
+            "source": "\n#include \"rio.h\"\n\nint main() {\n    sysinit();\n\n    pinMode(GPIO_LED0, OUTPUT);\n    pinMode(GPIO_LED1, OUTPUT);\n    digitalWrite(GPIO_LED0, HIGH);\n    digitalWrite(GPIO_LED1, LOW);\n\n    uint32_t last = mills();\n    while (1) {\n        uint32_t now = mills();\n        if (now - last > 100) {\n            last = now;\n            digitalWrite(GPIO_LED0, TOGGLE);\n            digitalWrite(GPIO_LED1, TOGGLE);\n        }\n\n        RIO_IN = RIO_OUT / 2;\n    }\n\n    return 0;\n}\n",
+            "riovars": {
+                "out": {
+                    "ctype": "uint32_t",
+                    "dir": "output"
+                },
+                "in": {
+                    "ctype": "uint32_t",
+                    "dir": "input"
+                }
+            }
+        },
+        {
+            "type": "serv",
+            "uid": "serv1",
+            "pos": [
+                560.0,
+                40.0
+            ],
+            "pins": {
+                "LED0": {
+                    "pin": "board0:LED:L3"
+                },
+                "LED1": {
+                    "pin": "board0:LED:L4"
+                }
+            },
+            "gpios": {
+                "led0": {
+                    "name": "led0"
+                },
+                "led1": {
+                    "name": "led1"
+                }
+            },
+            "source": "\n#include \"rio.h\"\n\nint main() {\n    sysinit();\n\n    pinMode(GPIO_LED0, OUTPUT);\n    pinMode(GPIO_LED1, OUTPUT);\n    digitalWrite(GPIO_LED0, HIGH);\n    digitalWrite(GPIO_LED1, LOW);\n\n    uint32_t last = mills();\n    while (1) {\n        uint32_t now = mills();\n        if (now - last > 100) {\n            last = now;\n            digitalWrite(GPIO_LED0, TOGGLE);\n            digitalWrite(GPIO_LED1, TOGGLE);\n        }\n\n        RIO_IN = RIO_OUT / 2;\n    }\n\n    return 0;\n}\n",
+            "riovars": {
+                "out": {
+                    "ctype": "uint32_t",
+                    "dir": "output"
+                },
+                "in": {
+                    "ctype": "uint32_t",
+                    "dir": "input"
+                }
+            },
+            "name": ""
+        }
+    ],
+    "toolchain": "icestorm",
+    "flow": {
+        "view": {
+            "scale": 1.13,
+            "pos": [
+                185,
+                -263
+            ]
+        },
+        "board": {
+            "pos": [
+                330.0,
+                170.0
+            ],
+            "rotate": 90
+        }
+    },
+    "linuxcnc": {
+        "debug_info": true
+    }
+}
