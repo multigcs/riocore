@@ -443,8 +443,8 @@ fi
             elif ctype.endswith("int16_t"):
                 bsize = 16
             ptype = "wire"
-            if direction == "output":
-                ptype = "reg "
+            #if direction == "output":
+            #    ptype = "reg "
             if bsize > 1:
                 output.append(f"    {direction} {ptype} [{bsize - 1}:0] rio_{iname},")
             else:
