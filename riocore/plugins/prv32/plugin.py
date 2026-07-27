@@ -116,16 +116,15 @@ class Plugin(PluginBase):
         if self.ramsize % 4:
             print("ERROR: ramsize must be multiple of 4")
 
-        addr = 0x80000100
-        for iname, idata in self.variables.items():
-            idata["addr"] = addr
-            addr += 0x04
-
         # uart baudrate scale (ice40 = 1 / tangnano = 12) ????
         self.uart_baud_scale = 1
 
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
+        addr = 0x80000100
+        for iname, idata in self.variables.items():
+            idata["addr"] = addr
+            addr += 0x04
         if gateware:
             self.gateware = gateware
             self.fpga_toolchain = gateware.jdata["toolchain"]
@@ -443,7 +442,7 @@ fi
             elif ctype.endswith("int16_t"):
                 bsize = 16
             ptype = "wire"
-            #if direction == "output":
+            # if direction == "output":
             #    ptype = "reg "
             if bsize > 1:
                 output.append(f"    {direction} {ptype} [{bsize - 1}:0] rio_{iname},")
@@ -473,7 +472,7 @@ fi
 		if (counter == 0) begin
 			reset_button_n <= 1;
 		end else begin
-			counter <= counter - 1;
+			counter <= counter - 16'd1;
         end
     end
 
@@ -638,16 +637,21 @@ fi
 
         for iname, idata in instance.variables.items():
             direction = {"output": "out", "input": "in"}.get(idata.get("dir", "output"))
-            output.append(f"    prv32_rio_v{direction} soc_val_rio_{iname} (")
-            output.append("        .clk(clk),")
-            output.append("        .reset_n(reset_n),")
-            output.append(f"        .v{direction}_sel(rio_{iname}_sel),")
-            output.append(f"        .v{direction}_data_i(mem_wdata),")
-            output.append("        .we(mem_wstrb[0]),")
-            output.append(f"        .v{direction}_ready(rio_{iname}_ready),")
-            output.append(f"        .v{direction}_data_o(rio_{iname}_data_o),")
-            output.append(f"        .v{direction}(rio_{iname})")
-            output.append("    );")
+            if direction == "out":
+                output.append(f"    // prv32_rio_v{direction}")
+                output.append(f"    assign rio_{iname}_ready = rio_{iname}_sel;")
+                output.append(f"    assign rio_{iname}_data_o = rio_{iname};")
+            else:
+                output.append(f"    prv32_rio_v{direction} soc_val_rio_{iname} (")
+                output.append("        .clk(clk),")
+                output.append("        .reset_n(reset_n),")
+                output.append(f"        .v{direction}_sel(rio_{iname}_sel),")
+                output.append(f"        .v{direction}_data_i(mem_wdata),")
+                output.append("        .we(mem_wstrb[0]),")
+                output.append(f"        .v{direction}_ready(rio_{iname}_ready),")
+                output.append(f"        .v{direction}_data_o(rio_{iname}_data_o),")
+                output.append(f"        .v{direction}(rio_{iname})")
+                output.append("    );")
             output.append("")
 
         pbase = 0x80000030
@@ -666,16 +670,19 @@ fi
             output.append("")
             pbase += 8
 
-        output.append("    prv32_utimer soc_utimer (")
-        output.append("        .clk(clk),")
-        output.append("        .reset_n(reset_n),")
-        output.append("        .utimer_sel(utimer_sel),")
-        output.append("        .utimer_data_i(mem_wdata),")
-        output.append("        .we(mem_wstrb[0]),")
-        output.append("        .utimer_ready(utimer_ready),")
-        output.append("        .utimer_data_o(utimer_data_o),")
-        output.append("        .systimer(systimer)")
-        output.append("    );")
+        # output.append("    prv32_utimer soc_utimer (")
+        # output.append("        .clk(clk),")
+        # output.append("        .reset_n(reset_n),")
+        # output.append("        .utimer_sel(utimer_sel),")
+        # output.append("        .utimer_data_i(mem_wdata),")
+        # output.append("        .we(mem_wstrb[0]),")
+        # output.append("        .utimer_ready(utimer_ready),")
+        # output.append("        .utimer_data_o(utimer_data_o),")
+        # output.append("        .systimer(systimer)")
+        # output.append("    );")
+        output.append("    // prv32_utimer;")
+        output.append("    assign utimer_ready = utimer_sel;")
+        output.append("    assign utimer_data_o = systimer;")
         output.append("")
 
         output.append("""

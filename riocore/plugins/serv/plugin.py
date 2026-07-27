@@ -114,16 +114,15 @@ class Plugin(PluginBase):
         if self.ramsize % 4:
             print("ERROR: ramsize must be multiple of 4")
 
-        addr = 0x80000100
-        for iname, idata in self.variables.items():
-            idata["addr"] = addr
-            addr += 0x04
-
         # uart baudrate scale (ice40 = 1 / tangnano = 12) ????
         self.uart_baud_scale = 1
 
     def gateware_instances(self, gateware=None):
         uid = self.plugin_setup["uid"]
+        addr = 0x80000100
+        for iname, idata in self.variables.items():
+            idata["addr"] = addr
+            addr += 0x04
         if gateware:
             self.gateware = gateware
             self.fpga_toolchain = gateware.jdata["toolchain"]

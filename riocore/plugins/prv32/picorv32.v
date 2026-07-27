@@ -1847,7 +1847,7 @@ module picorv32 #(
 						instr_srli || instr_srl: reg_op1 <= reg_op1 >> 1;
 						instr_srai || instr_sra: reg_op1 <= $signed(reg_op1) >>> 1;
 					endcase
-					reg_sh <= reg_sh - 1;
+					reg_sh <= reg_sh - 5'd1;
 				end
 			end
 
@@ -2195,7 +2195,7 @@ endmodule
  ***************************************************************/
 
 module picorv32_pcpi_mul #(
-	parameter STEPS_AT_ONCE = 1,
+	parameter STEPS_AT_ONCE = 7'd1,
 	parameter CARRY_CHAIN = 4
 ) (
 	input clk, resetn,
