@@ -1730,13 +1730,14 @@ class Window(QMainWindow):
         run_action.triggered.connect(self.generator_run_udpsim)
         toolbar.addAction(run_action)
 
-        run_action = QAction(self.icon("kicad"), "&generate and run kicad (F10)", self)
-        run_action.setStatusTip("generate and run kicad")
-        run_action.setShortcut("F10")
-        run_action.triggered.connect(self.generator_run_kicad)
-        toolbar.addAction(run_action)
+        if shutil.which("kicad"):
+            run_action = QAction(self.icon("kicad"), "&generate and run kicad (F10)", self)
+            run_action.setStatusTip("generate and run kicad")
+            run_action.setShortcut("F10")
+            run_action.triggered.connect(self.generator_run_kicad)
+            toolbar.addAction(run_action)
 
-        toolbar.addSeparator()
+            toolbar.addSeparator()
 
         run_action = QAction(self.icon("doc"), "&Documentation (F12)", self)
         run_action.setStatusTip("Documentation")
