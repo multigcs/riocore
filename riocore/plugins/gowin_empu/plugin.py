@@ -27,6 +27,7 @@ class Plugin(PluginBase):
             f"src/rio.c:src_{uid}/rio.c",
         ]
         self.VERILOGS_GEN = ["gowin_empu.v"]
+        self.PLUGIN_CONFIGS = {"Source-Editor": "config.py"}
         self.SYSTIMER = True
         self.RESET = True
         self.cpu_type = "Cortex M3"
@@ -41,6 +42,7 @@ class Plugin(PluginBase):
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})
+        self.source = self.plugin_setup.get("source", "")
         # set pins
         self.PINDEFAULTS = {}
         for gpio in self.gpios:
@@ -86,15 +88,14 @@ class Plugin(PluginBase):
                 self.SIGNALS[name]["min"] = -127
                 self.SIGNALS[name]["max"] = 127
 
+    def gateware_instances(self, gateware=None):
+        uid = self.plugin_setup["uid"]
         addr = 0x40002400
         for iname, idata in self.variables.items():
             idata["addr"] = addr
             addr += 0x04
         self.systimer_addr = addr
         addr += 0x04
-
-    def gateware_instances(self, gateware=None):
-        uid = self.plugin_setup["uid"]
         if gateware:
             self.gateware = gateware
             self.fpga_toolchain = gateware.jdata["toolchain"]
@@ -131,6 +132,7 @@ class Plugin(PluginBase):
             os.makedirs(os.path.join(parent.gateware_path, f"src_{uid}"), exist_ok=True)
 
             open(os.path.join(parent.gateware_path, f"src_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
+            open(os.path.join(parent.gateware_path, f"src_{uid}", "main.c"), "w").write(cls.main_c(parent, instance))
             open(os.path.join(parent.gateware_path, "gowin_empu.v"), "w").write("\n".join(cls.soc_v(parent, instance)))
 
             log = os.path.join(parent.gateware_path, f"src_{uid}", "compile.log")
@@ -141,6 +143,31 @@ class Plugin(PluginBase):
                 for line in open(log, "r").read().split("\n"):
                     print(f"    {line}")
                 exit(1)
+
+    @classmethod
+    def main_c(cls, parent, instance):
+        uid = instance.plugin_setup["uid"]
+        main_c = ""
+        if instance.source:
+            if len(instance.source.split("\n")) == 1 and os.path.isfile(instance.source):
+                print(f"  INFO: {uid}: using c-file {instance.source}")
+                main_c = open(instance.source, "r").read()
+            else:
+                main_c = instance.source
+        if parent.configuration_path:
+            if not main_c:
+                cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
+                if os.path.isfile(cpath):
+                    print(f"  INFO: {uid}: using c-file {cpath}")
+                    main_c = open(cpath, "r").read()
+            if not main_c:
+                cpath = os.path.join(parent.project.config["json_path"], f"{uid}.c")
+                if os.path.isfile(cpath):
+                    print(f"  INFO: {uid}: using c-file {cpath}")
+                    main_c = open(cpath, "r").read()
+        if not main_c:
+            main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
+        return main_c
 
     @classmethod
     def rio_h(cls, parent, instance):
