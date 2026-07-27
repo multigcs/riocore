@@ -1,16 +1,20 @@
 
-#include <rio.h>
+#include "rio.h"
 
 int main() {
+    sysinit();
+
     pinMode(GPIO_LED0, OUTPUT);
-    digitalWrite(GPIO_LED0, LOW);
+    digitalWrite(GPIO_LED0, HIGH);
 
+    uint32_t last = mills();
     while (1) {
-
-        digitalWrite(GPIO_LED0, LOW);
-        delay(0x1000);
-        digitalWrite(GPIO_LED0, HIGH);
-        delay(0x1000);
+        uint32_t now = mills();
+        if (now - last > 100) {
+            last = now;
+            digitalWrite(GPIO_LED0, TOGGLE);
+        }
     }
+
     return 0;
 }

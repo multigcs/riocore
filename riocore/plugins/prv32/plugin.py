@@ -353,7 +353,7 @@ class Plugin(PluginBase):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
         if not main_c:
-            main_c = open(os.path.join(os.path.dirname(__file__), f"src_{uid}", "main.c"), "r").read()
+            main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
         return main_c
 
     @classmethod

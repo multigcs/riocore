@@ -12,8 +12,9 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = "https://github.com/olofk/serv"
         self.NEEDS = ["fpga"]
-        self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v", "serv_params.vh"]
+        self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v"]
         self.SRCFILES = [
+            "serv_params.vh",
             f"src/makehex.py:src_{uid}/makehex.py",
             f"src/link.ld:src_{uid}/link.ld",
             f"src/main.c:src_{uid}/main.c",
@@ -194,7 +195,7 @@ class Plugin(PluginBase):
         output.append("")
         output.append("#include <stdint.h>")
         output.append("")
-        output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
+        # output.append(f"#define F_CPU          {instance.gateware.jdata['speed']}")
         output.append(f'#define SYSNAME        "{uid}"')
         output.append(f"#define MEMBYTES       {instance.ramsize}")
         output.append(f'#define CPU_TYPE       "{instance.cpu_type}"')
@@ -319,7 +320,7 @@ class Plugin(PluginBase):
                     print(f"  INFO: {uid}: using c-file {cpath}")
                     main_c = open(cpath, "r").read()
         if not main_c:
-            main_c = open(os.path.join(os.path.dirname(__file__), f"src_{uid}", "main.c"), "r").read()
+            main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
         return main_c
 
     @classmethod
