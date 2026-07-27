@@ -790,13 +790,13 @@ class gateware(generator_base):
 
         if gen_reset:
             output.append("    // reset counter")
-            output.append("    reg resetn = 0;")
+            output.append("    reg resetn = 1'd0;")
             output.append("    reg [7:0] counter = 8'hFF;")
             output.append("    always @(posedge sysclk) begin")
             output.append("        if (counter == 0) begin")
-            output.append("            resetn <= 1;")
+            output.append("            resetn <= 1'd1;")
             output.append("        end else begin")
-            output.append("            counter <= counter - 1;")
+            output.append("            counter <= counter - 8'd1;")
             output.append("        end")
             output.append("    end")
             output.append("")

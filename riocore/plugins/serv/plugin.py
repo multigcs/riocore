@@ -596,7 +596,7 @@ python3 makehex.py prog.bin {instance.ramsize // 4} > prog.hex
         .resetn(resetn),
         .addr(o_ibus_adr[9:2]),
         .ce(o_ibus_cyc),
-        .we(0),
+        .we(1'd0),
         .data_in(0),
         .data_out(i_ibus_rdt)
     );
