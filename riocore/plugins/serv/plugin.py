@@ -12,6 +12,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = "https://github.com/olofk/serv"
         self.NEEDS = ["fpga"]
+        self.ICON = True
         self.VERILOGS = ["ram32.v", "ser_add.v", "ser_lt.v", "ser_shift.v", "serv_alu.v", "serv_bufreg.v", "serv_csr.v", "serv_ctrl.v", "serv_decode.v", "serv_mem_if.v", "serv_rf_if.v", "serv_rf_ram_if.v", "serv_rf_ram.v", "serv_rf_top.v", "serv_state.v", "serv_top.v", "shift_reg.v"]
         self.SRCFILES = [
             "serv_params.vh",
@@ -56,6 +57,12 @@ class Plugin(PluginBase):
             "description": "size of ram in bytes",
         }
         self.fpga_toolchain = None
+        if not self.plugin_setup.get("gpios"):
+            self.plugin_setup["gpios"] = {
+                "led0": {
+                    "name": "led0",
+                }
+            }
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.pwms = self.plugin_setup.get("pwms", 0)
