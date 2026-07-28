@@ -39,6 +39,13 @@ class Plugin(PluginBase):
             "default": 0,
             "description": "number of uarts",
         }
+        self.fpga_toolchain = None
+        if not self.plugin_setup.get("gpios"):
+            self.plugin_setup["gpios"] = {
+                "led0": {
+                    "name": "led0",
+                }
+            }
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.gpios = self.plugin_setup.get("gpios", {})
         self.variables = self.plugin_setup.get("riovars", {})

@@ -295,6 +295,9 @@ class MyNode(QGraphicsItem):
         self.height = grid(50)
         self.scene = scene
         self.pixmap = None
+        self.ipixmap = None
+        self.iwidth = 0
+        self.iheight = 0
         self.ports = {}
         self.selected_port = None
         self.hover = False
@@ -373,6 +376,21 @@ class MyNode(QGraphicsItem):
         else:
             self.pixmap = None
 
+    def load_icon(self, image):
+        if os.path.exists(image):
+            rotate = self.flow_cfg.get("rotate", 0)
+            if master_node := self.master_node():
+                rotate += master_node.flow_cfg.get("rotate", 0)
+            pixmap = QPixmap.fromImage(QImage(image))
+            pixmap = pixmap.transformed(QTransform().rotate(rotate))
+            pixmap_width = pixmap.width()
+            pixmap_height = pixmap.height()
+            self.iwidth = pixmap_width
+            self.iheight = pixmap_height
+            self.ipixmap = pixmap.scaled(int(self.iwidth), int(self.iheight), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            self.pixmap = None
+
     def port_pos(self, port):
         pos = self.pos()
         pos_x = pos.x()
@@ -433,6 +451,9 @@ class MyNode(QGraphicsItem):
 
         if not self.pixmap:
             self.height = grid(self.port_top + (max(np_left, np_right) * self.port_diff) + self.port_bottom)
+
+        if self.ipixmap and self.height < self.iheight + 10:
+            self.height = self.iheight + 10
 
     def boundingRect(self):
         self.update_size()
@@ -565,6 +586,9 @@ class MyNode(QGraphicsItem):
                         name,
                     )
 
+        if self.ipixmap:
+            painter.drawPixmap(self.width - self.iwidth - 5, 5, self.ipixmap)
+
         if hasattr(self, "plugin_instance") and hasattr(self.plugin_instance, "paint_overlay"):
             painter.setPen(QPen(Qt.GlobalColor.black, 1))
             try:
@@ -679,6 +703,9 @@ class PluginNode(MyNode):
             else:
                 image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "image.png")
                 self.load_image(image)
+        elif self.plugin_instance.ICON:
+            image = os.path.join(riocore_path, "plugins", self.plugin_instance.NAME, "icon.png")
+            self.load_icon(image)
 
     def reload(self):
         self.master_pos()

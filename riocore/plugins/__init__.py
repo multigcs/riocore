@@ -55,6 +55,7 @@ class PluginBase:
         self.KEYWORDS = ""  # plugin keywords for better search
         self.ORIGIN = ""  # code based on this source
         self.IMAGE = ""  # image to show in flow gui
+        self.ICON = False  # icon to show in flow gui
         self.IMAGES = []  # list of selectable images
         self.IMAGE_SHOW = False  # show plugin as image in flow gui
         self.BUILDER = []  # make commands for this plugin (if needed)

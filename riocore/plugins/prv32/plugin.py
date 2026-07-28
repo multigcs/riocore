@@ -12,6 +12,7 @@ class Plugin(PluginBase):
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = "https://github.com/YosysHQ/picorv32"
         self.NEEDS = ["fpga"]
+        self.ICON = True
         self.VERILOGS = ["prv32_timer.v", "prv32_reset.v", "prv32_gpio.v", "prv32_rio.v", "prv32_uart_wrap.v", "prv32_simpleuart.v", "picorv32.v"]
         self.SRCFILES = [
             f"src/makehex.py:src_{uid}/makehex.py",
@@ -58,6 +59,12 @@ class Plugin(PluginBase):
             "description": "size of ram in bytes",
         }
         self.fpga_toolchain = None
+        if not self.plugin_setup.get("gpios"):
+            self.plugin_setup["gpios"] = {
+                "led0": {
+                    "name": "led0",
+                }
+            }
         self.ramsize = int(self.plugin_setup.get("ramsize", self.OPTIONS["ramsize"]["default"]))
         self.uarts = self.plugin_setup.get("uarts", 0)
         self.pwms = self.plugin_setup.get("pwms", 0)
