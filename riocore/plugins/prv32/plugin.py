@@ -163,8 +163,9 @@ class Plugin(PluginBase):
 
     @classmethod
     def extra_files(cls, parent, instances):
-        for instance in instances:
+        for ins_n, instance in enumerate(instances):
             uid = instance.plugin_setup["uid"]
+            instance.instance_num = ins_n
             os.makedirs(os.path.join(parent.gateware_path, f"src_{uid}"), exist_ok=True)
             if instance.fpga_toolchain == "gowin" and instance.ramsize != 8192:
                 instance.ramsize = 8192
@@ -219,6 +220,7 @@ class Plugin(PluginBase):
             output.append(f'#define FPGA_FAMILY    "{instance.fpga_family}"')
         if instance.fpga_type:
             output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
+        output.append(f'#define INSTANCE_N     {instance.instance_num}')
         output.append("")
         for param in instance.v_parameter_bool:
             if instance.plugin_setup.get(param, instance.OPTIONS[param]["default"]):
@@ -351,16 +353,12 @@ static inline void delay_ms(uint32_t ms) {
             else:
                 main_c = instance.source
         if parent.configuration_path:
-            if not main_c:
-                cpath = os.path.join(parent.project.config["json_path"], f"main_{uid}.c")
-                if os.path.isfile(cpath):
-                    print(f"  INFO: {uid}: using c-file {cpath}")
-                    main_c = open(cpath, "r").read()
-            if not main_c:
-                cpath = os.path.join(parent.project.config["json_path"], f"{uid}.c")
-                if os.path.isfile(cpath):
-                    print(f"  INFO: {uid}: using c-file {cpath}")
-                    main_c = open(cpath, "r").read()
+            for main_name in (f"main_{uid}.c", f"main_{instance.NAME}.c"):
+                if not main_c:
+                    cpath = os.path.join(parent.project.config["json_path"], main_name)
+                    if os.path.isfile(cpath):
+                        print(f"  INFO: {uid}: using c-file {cpath}")
+                        main_c = open(cpath, "r").read()
         if not main_c:
             main_c = open(os.path.join(os.path.dirname(__file__), "src", "main.c"), "r").read()
         return main_c
