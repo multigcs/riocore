@@ -11,8 +11,8 @@ class Plugin(PluginBase):
         self.NAME = "mtconnect"
         self.INFO = "mtconnect support"
         self.DESCRIPTION = "mtconnect agent"
-        self.URL = "https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent"
-        self.ORIGIN = "https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent"
+        self.URL = "https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent/configs/sim/axis/mtconnect"
+        self.ORIGIN = "https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent/configs/sim/axis/mtconnect"
         self.NEEDS = []
         self.KEYWORDS = "log mqtt mtconnect digital-twin"
         self.TYPE = "base"

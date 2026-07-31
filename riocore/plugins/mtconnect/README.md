@@ -7,7 +7,7 @@
 mtconnect agent
 
 * Keywords: log mqtt mtconnect digital-twin
-* URL: https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent
+* URL: https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent/configs/sim/axis/mtconnect
 
 ## Pins:
 *FPGA-pins*
