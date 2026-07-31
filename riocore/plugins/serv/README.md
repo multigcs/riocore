@@ -1,4 +1,7 @@
 # serv
+
+<img align="right" width="320" src="image.png">
+
 **minimal risc-v softcore**
 
 minimal risc-v cpu for testing
@@ -8,6 +11,10 @@ minimal risc-v cpu for testing
 
 ## Pins:
 *FPGA-pins*
+### LED0:
+
+ * direction: inout
+ * optional: True
 
 
 ## Options:
@@ -58,4 +65,3 @@ size of ram in bytes
  * [serv_state.v](serv_state.v)
  * [serv_top.v](serv_top.v)
  * [shift_reg.v](shift_reg.v)
- * [serv_params.vh](serv_params.vh)

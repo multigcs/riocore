@@ -1,13 +1,17 @@
-# serv
-**minimal risc-v softcore**
+# gowin_empu
+**TangNano4K ARM core**
 
-minimal risc-v cpu for testing
+Cortex M3 ARM core inside TangNano4K
 
-* Keywords: risc-v softcore cpu
-* NEEDS: fpga
+* Keywords: arm hardcore cpu
+* NEEDS: fpga, gowin_empu
 
 ## Pins:
 *FPGA-pins*
+### LED0:
+
+ * direction: inout
+ * optional: True
 
 
 ## Options:
@@ -24,12 +28,13 @@ hardware type
  * type: imgselect
  * default: generic
 
-### ramsize:
-size of ram in bytes
+### uarts:
+number of uarts
 
- * type: select
- * default: 1024
- * options: 512, 768, 1024, 2048, 4096, 8192
+ * type: int
+ * min: 0
+ * max: 1
+ * default: 0
 
 
 ## Signals:
@@ -41,21 +46,4 @@ size of ram in bytes
 
 
 ## Verilogs:
- * [ram32.v](ram32.v)
- * [ser_add.v](ser_add.v)
- * [ser_lt.v](ser_lt.v)
- * [ser_shift.v](ser_shift.v)
- * [serv_alu.v](serv_alu.v)
- * [serv_bufreg.v](serv_bufreg.v)
- * [serv_csr.v](serv_csr.v)
- * [serv_ctrl.v](serv_ctrl.v)
- * [serv_decode.v](serv_decode.v)
- * [serv_mem_if.v](serv_mem_if.v)
- * [serv_rf_if.v](serv_rf_if.v)
- * [serv_rf_ram_if.v](serv_rf_ram_if.v)
- * [serv_rf_ram.v](serv_rf_ram.v)
- * [serv_rf_top.v](serv_rf_top.v)
- * [serv_state.v](serv_state.v)
- * [serv_top.v](serv_top.v)
- * [shift_reg.v](shift_reg.v)
- * [serv_params.vh](serv_params.vh)
+ * [gowin_empu_top.v](gowin_empu_top.v)

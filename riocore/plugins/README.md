@@ -55,6 +55,7 @@
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
+|  | [gowin_empu](gowin_empu/README.md) | TangNano4K ARM core |  |  |
 |  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> |  |
 |  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
@@ -64,19 +65,18 @@
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
 |  | [keymatrix](keymatrix/README.md) | Matix-Keyboard | <img src="keymatrix/image.png" height="48"> |  |
-|  | [lcd114](lcd114/README.md) | tangnano9k 1.44inch display | <img src="lcd114/image.png" height="48"> |  |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
 |  | [mcuio](mcuio/README.md) | mcu based io's | <img src="mcuio/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
-|  | [prv32](prv32/README.md) | picorv32 based risc-v softcore |  |  |
+|  | [prv32](prv32/README.md) | picorv32 based risc-v softcore | <img src="prv32/image.png" height="48"> |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> |  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
-|  | [serv](serv/README.md) | minimal risc-v softcore |  |  |
+|  | [serv](serv/README.md) | minimal risc-v softcore | <img src="serv/image.png" height="48"> |  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
@@ -106,6 +106,7 @@
 |  | [flipflop_out](flipflop_out/README.md) | flipflop output | <img src="flipflop_out/image.png" height="48"> |  |
 |  | [freqin](freqin/README.md) | frequency input | <img src="freqin/image.png" height="48"> |  |
 |  | [freqout](freqout/README.md) | frequency output | <img src="freqout/image.png" height="48"> |  |
+|  | [gowin_empu](gowin_empu/README.md) | TangNano4K ARM core |  |  |
 |  | [gpioin](gpioin/README.md) | gpio input | <img src="gpioin/image.png" height="48"> |  |
 |  | [gpioout](gpioout/README.md) | gpio output | <img src="gpioout/image.png" height="48"> |  |
 |  | [hallsensor](hallsensor/README.md) | bldc hallsensor | <img src="hallsensor/image.png" height="48"> |  |
@@ -115,19 +116,18 @@
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
 |  | [keymatrix](keymatrix/README.md) | Matix-Keyboard | <img src="keymatrix/image.png" height="48"> |  |
-|  | [lcd114](lcd114/README.md) | tangnano9k 1.44inch display | <img src="lcd114/image.png" height="48"> |  |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
 |  | [max7219](max7219/README.md) | 7segment display based on max7219 | <img src="max7219/image.png" height="48"> |  |
 |  | [mcuio](mcuio/README.md) | mcu based io's | <img src="mcuio/image.png" height="48"> |  |
 |  | [mux](mux/README.md) | binary multiplexer | <img src="mux/image.png" height="48"> |  |
 |  | [pinroute](pinroute/README.md) | routing one output pin to multiple inputs | <img src="pinroute/image.png" height="48"> |  |
-|  | [prv32](prv32/README.md) | picorv32 based risc-v softcore |  |  |
+|  | [prv32](prv32/README.md) | picorv32 based risc-v softcore | <img src="prv32/image.png" height="48"> |  |
 |  | [pwmgen](pwmgen/README.md) | software PWM/PDM generation | <img src="pwmgen/image.png" height="48"> |  |
 |  | [pwmin](pwmin/README.md) | pwm input | <img src="pwmin/image.png" height="48"> |  |
 |  | [quadencoder](quadencoder/README.md) | quadencoder | <img src="quadencoder/image.png" height="48"> |  |
 |  | [quadencoderz](quadencoderz/README.md) | quadencoder with index pin | <img src="quadencoderz/image.png" height="48"> |  |
-|  | [serv](serv/README.md) | minimal risc-v softcore |  |  |
+|  | [serv](serv/README.md) | minimal risc-v softcore | <img src="serv/image.png" height="48"> |  |
 |  | [signal](signal/README.md) | virtual signal | <img src="signal/image.png" height="48"> |  |
 |  | [sinepwm](sinepwm/README.md) | sine pwm output | <img src="sinepwm/image.png" height="48"> |  |
 |  | [sonar](sonar/README.md) | sonar sensor for distance measurement | <img src="sonar/image.png" height="48"> |  |
@@ -159,6 +159,7 @@
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
 |  | [mqtt](mqtt/README.md) | mqtt to hal | <img src="mqtt/image.png" height="48"> |  |
+|  | [mtconnect](mtconnect/README.md) | mtconnect support | <img src="mtconnect/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> |  |
 |  | [rmpg](rmpg/README.md) | remote mpg server | <img src="rmpg/image.png" height="48"> |  |
@@ -177,6 +178,7 @@
 |  | [mbus_device](mbus_device/README.md) | modbus device |  |  |
 |  | [mbus_hy](mbus_hy/README.md) | modbus hy vfd | <img src="mbus_hy/image.png" height="48"> |  |
 |  | [mqtt](mqtt/README.md) | mqtt to hal | <img src="mqtt/image.png" height="48"> |  |
+|  | [mtconnect](mtconnect/README.md) | mtconnect support | <img src="mtconnect/image.png" height="48"> |  |
 |  | [ninja](ninja/README.md) | stepgen-ninja | <img src="ninja/image.png" height="48"> |  |
 |  | [parport](parport/README.md) | gpio support over parallel port | <img src="parport/image.png" height="48"> |  |
 |  | [rmpg](rmpg/README.md) | remote mpg server | <img src="rmpg/image.png" height="48"> |  |

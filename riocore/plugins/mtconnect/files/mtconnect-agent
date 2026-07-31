@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+#
+# Copyright (C) 2026 LinuxCNC contributors
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# MTConnect agent for LinuxCNC.
+#
+# A userspace, non-realtime component that reads machine status, kinematics and
+# tool data via the linuxcnc Python module and exposes them over MTConnect: an
+# embedded HTTP agent (/probe /current /sample /assets) and/or the standard
+# MTConnect MQTT binding.  Configured from the [MTCONNECT] section of the INI.
+#
+# Typical use, from a config's HAL file:
+#     loadusr -W mtconnect-agent
+# or from the INI:
+#     [APPLICATIONS]
+#     APP = mtconnect-agent
+
+import argparse
+import os
+import sys
+import time
+
+# Ensure the bundled package is importable when run from the config directory.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from mtc.agent import AgentState
+from mtc.http_agent import HttpAgent
+
+
+def read_options(ini):
+    def first_token(v, default):
+        # LinuxCNC keeps everything after '=', so tolerate a stray inline
+        # comment / trailing text by taking the first whitespace-delimited token.
+        tok = (str(v).strip().split() or [default])[0]
+        return tok.split(";")[0].split("#")[0]
+
+    def truthy(v):
+        return first_token(v, "0").lower() in ("1", "true", "yes", "on")
+    return {
+        "enable": truthy(ini.find("MTCONNECT", "ENABLE", "1")),
+        "http_port": ini.find_int("MTCONNECT", "HTTP_PORT", 5000),
+        "transport": first_token(ini.find("MTCONNECT", "TRANSPORT", "http"), "http").lower(),
+        "sample_hz": ini.find_float("MTCONNECT", "SAMPLE_HZ", 10.0) or 10.0,
+        "mqtt_broker": ini.find("MTCONNECT", "MQTT_BROKER", "localhost"),
+        "mqtt_port": ini.find_int("MTCONNECT", "MQTT_PORT", 1883),
+        "mqtt_prefix": ini.find("MTCONNECT", "MQTT_PREFIX", "MTConnect"),
+        "mqtt_username": (ini.find("MTCONNECT", "MQTT_USERNAME")
+                          or ini.find("MTCONNECT", "MQTT_USER")),
+        "mqtt_password": (ini.find("MTCONNECT", "MQTT_PASSWORD")
+                          or ini.find("MTCONNECT", "MQTT_PASS")),
+        "ha_discovery": truthy(ini.find("MTCONNECT", "HA_DISCOVERY", "0")),
+        "ha_prefix": ini.find("MTCONNECT", "HA_PREFIX", "homeassistant"),
+    }
+
+
+def make_hal_pins():
+    """Create the HAL component; returns it or None if HAL is unavailable."""
+    try:
+        import hal
+    except ImportError:
+        return None
+    comp = hal.component("mtconnect-agent")
+    comp.newpin("enable", hal.HAL_BIT, hal.HAL_IN)
+    comp["enable"] = True
+    comp.newpin("sample-hz", hal.HAL_U32, hal.HAL_IN)
+    comp.newpin("heartbeat", hal.HAL_U32, hal.HAL_OUT)
+    comp.ready()
+    return comp
+
+
+def running(comp):
+    if comp is None:
+        return True
+    try:
+        import hal
+        return hal.component_exists("halui")
+    except ImportError:
+        return True
+
+
+def main():
+    parser = argparse.ArgumentParser(description="MTConnect agent for LinuxCNC")
+    parser.add_argument("ini", nargs="?", default=os.environ.get("INI_FILE_NAME"),
+                        help="LinuxCNC INI file (default: $INI_FILE_NAME)")
+    parser.add_argument("--dump-probe", action="store_true",
+                        help="print the MTConnectDevices document and exit")
+    parser.add_argument("--port", type=int, help="override [MTCONNECT]HTTP_PORT")
+    args = parser.parse_args()
+
+    if not args.ini:
+        parser.error("no INI file (set INI_FILE_NAME or pass one)")
+
+    state = AgentState(args.ini)
+    opts = read_options(state.ini)
+    if args.port:
+        opts["http_port"] = args.port
+
+    if args.dump_probe:
+        sys.stdout.write(state.probe_document())
+        return 0
+
+    if not opts["enable"]:
+        print("info: [MTCONNECT]ENABLE is off; mtconnect-agent exiting.")
+        return 0
+
+    state.config.instance_id = str(int(time.time()))
+    comp = make_hal_pins()
+    state.poll_once()  # prime the buffer so /current has data immediately
+
+    http_agent = None
+    mqtt_agent = None
+    if opts["transport"] in ("http", "both"):
+        http_agent = HttpAgent(state, port=opts["http_port"])
+        http_agent.start()
+        print("info: MTConnect HTTP agent on :%d (/probe /current /sample /assets)"
+              % http_agent.port)
+    if opts["transport"] in ("mqtt", "both"):
+        from mtc.mqtt_agent import MqttAgent
+        mqtt_agent = MqttAgent(state, broker=opts["mqtt_broker"],
+                               port=opts["mqtt_port"], prefix=opts["mqtt_prefix"],
+                               username=opts["mqtt_username"],
+                               password=opts["mqtt_password"],
+                               ha_discovery=opts["ha_discovery"],
+                               ha_prefix=opts["ha_prefix"])
+        print("info: MTConnect MQTT publishing to %s/*/%s"
+              % (opts["mqtt_prefix"], state.config.uuid))
+
+    beat = 0
+    try:
+        while running(comp):
+            hz = opts["sample_hz"]
+            if comp is not None:
+                if not comp["enable"]:
+                    time.sleep(0.2)
+                    continue
+                if comp["sample-hz"]:
+                    hz = comp["sample-hz"]
+            state.poll_once()
+            if mqtt_agent is not None:
+                mqtt_agent.publish_current()
+                mqtt_agent.publish_sample()
+                mqtt_agent.publish_assets()
+                mqtt_agent.publish_ha()
+            beat = (beat + 1) & 0xFFFFFFFF
+            if comp is not None:
+                comp["heartbeat"] = beat
+            time.sleep(1.0 / max(hz, 0.1))
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if http_agent is not None:
+            http_agent.stop()
+        if mqtt_agent is not None:
+            mqtt_agent.stop()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

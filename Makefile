@@ -8,13 +8,19 @@ clean:
 	rm -rf dist *.egg-info
 
 format:
-	ruff format bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/
+	ruff format bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins \
+	 --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/ \
+	 --exclude riocore/plugins/*/files/
 
 check:
-	ruff check bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/
+	ruff check bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins \
+	 --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/ \
+	 --exclude riocore/plugins/*/files/
 
 check_fix:
-	ruff check --fix bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/
+	ruff check --fix bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins \
+	 --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/ \
+	 --exclude riocore/plugins/*/files/
 
 unittests:
 	python3 -m pytest -vv -v tests/unit/
