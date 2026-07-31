@@ -1,4 +1,7 @@
 # prv32
+
+<img align="right" width="320" src="image.png">
+
 **picorv32 based risc-v softcore**
 
 picorv32 risc-v cpu for testing
@@ -9,6 +12,10 @@ i using this riscv-toolchain: https://github.com/xpack-dev-tools/riscv-none-elf-
 
 ## Pins:
 *FPGA-pins*
+### LED0:
+
+ * direction: inout
+ * optional: True
 
 
 ## Options:
