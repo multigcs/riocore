@@ -80,6 +80,15 @@ class AgentState:
         with open(path, "r") as fh:
             return fh.read()
 
+    def stat_html(self):
+        """Return the bundled three.js stat viewer HTML, or None if absent."""
+        path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            "stat.html")
+        if not os.path.isfile(path):
+            return None
+        with open(path, "r") as fh:
+            return fh.read()
+
     def model_file(self, name):
         """Return (bytes, content_type) for a served mesh, or None."""
         ref = self.models.served.get(name)

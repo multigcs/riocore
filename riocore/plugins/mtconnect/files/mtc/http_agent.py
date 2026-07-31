@@ -64,6 +64,13 @@ def make_handler(agent):
                                    status=404)
                     else:
                         self._send(html, content_type="text/html; charset=utf-8")
+                elif route == "/stat":
+                    html = agent.stat_html()
+                    if html is None:
+                        self._send(_error_document("NOT_FOUND", "stat viewer not bundled"),
+                                   status=404)
+                    else:
+                        self._send(html, content_type="text/html; charset=utf-8")
                 elif route.startswith("/models/"):
                     result = agent.model_file(route[len("/models/"):])
                     if result is None:
