@@ -11,6 +11,7 @@ class Plugin(PluginBase):
         self.NAME = "mtconnect"
         self.INFO = "mtconnect support"
         self.DESCRIPTION = "mtconnect agent"
+        self.URL = "https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent"
         self.ORIGIN = "https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent"
         self.NEEDS = []
         self.KEYWORDS = "log mqtt mtconnect digital-twin"
@@ -43,8 +44,8 @@ class Plugin(PluginBase):
             },
             "http_port": {
                 "type": int,
-                "min": 10,
-                "max": 65535,
+                "min": 1024,
+                "max": 49151,
                 "default": 5000,
             },
             "mqtt_broker": {

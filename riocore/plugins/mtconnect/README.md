@@ -7,6 +7,7 @@
 mtconnect agent
 
 * Keywords: log mqtt mtconnect digital-twin
+* URL: https://github.com/sliptonic/linuxcnc/tree/feature/mtconnect-agent
 
 ## Pins:
 *FPGA-pins*
@@ -52,8 +53,8 @@ hardware type
 ### http_port:
 
  * type: int
- * min: 10
- * max: 65535
+ * min: 1024
+ * max: 49151
  * default: 5000
 
 ### mqtt_broker:
