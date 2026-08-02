@@ -37,7 +37,7 @@ class config:
         halpin_widget = QComboBox()
         halpin_widget.addItem("")
         for idx, option in enumerate(options):
-            halpin_widget.addItem(f"{option[0]} ({option[1]}")
+            halpin_widget.addItem(f"{option[0]} ({option[1]})")
             if net == option[1]:
                 halpin_widget.setCurrentIndex(idx + 1)
 
@@ -51,9 +51,9 @@ class config:
                 halpin = halpin.split("(")[1].split(")")[0]
             if halpin:
                 if "signals" not in self.plugin_setup:
-                    self.self.plugin_setup["signals"] = {}
+                    self.plugin_setup["signals"] = {}
                 if "bit" not in self.plugin_setup["signals"]:
-                    self.self.plugin_setup["signals"]["bit"] = {}
+                    self.plugin_setup["signals"]["bit"] = {}
             self.plugin_setup["signals"]["bit"]["net"] = halpin
 
 

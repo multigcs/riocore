@@ -14,6 +14,7 @@ class Plugin(PluginBase):
         self.IMAGES = PluginImages.pwmout
         # a link to the orign sources of the verilog code (empty for own code)
         self.ORIGIN = ""
+        self.PLUGIN_CONFIGS = {"Wizard": "config.py"}
         self.NEEDS = ["fpga"]
         # list of verilog files in the plugin folder to copy to the GATEWARE folder while generate the Output
         self.VERILOGS = ["pwmout.v"]
