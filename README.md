@@ -74,7 +74,7 @@ There are multiple ways of getting started.
 
  1. Installer-Script (tested on debian bookworm and trixie)  [installer](#installer).
  2. Install riocore on the linux  [host](#host).
- 3. Use [docker](DOCKER.md).
+ 3. Use [docker](doc/DOCKER.md).
 
 ### Installer-Script (debian-bookworm only) <a name = "installer"></a>
 if you have a Debian-Bookworm installation (e.g. from the LinuxCNC ISO or the LinuxCNC raspberry image)
@@ -111,9 +111,9 @@ than copy a config file that is near to your setup:
 cp riocore/configs/Tangoboard/config-spi.json my_config.json
 ```
 
-## [DOCKER](DOCKER.md) (alternative)
+## [DOCKER](doc/DOCKER.md) (alternative)
 
-Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](DOCKER.md)
+Using a TangNano9k or other board supported by the open-cad-suite? Check out the docker setup for an easy to use all in one way to run the riocore ui and generator, including flashing: [DOCKER](doc/DOCKER.md)
 
 
 ## Usage <a name="usage"></a>

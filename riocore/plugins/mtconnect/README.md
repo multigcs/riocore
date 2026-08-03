@@ -30,7 +30,7 @@ hardware type
 ### device_name:
 
  * type: str
- * default: mtconnect_demo
+ * default: rio
 
 ### uuid:
 
