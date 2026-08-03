@@ -8,7 +8,8 @@ class Plugin(PluginBase):
         uid = self.plugin_setup["uid"]
         self.NAME = "serv"
         self.INFO = "minimal risc-v softcore"
-        self.DESCRIPTION = "minimal risc-v cpu for testing"
+        self.DESCRIPTION = "minimal risc-v cpu for testing - have some issues"
+        self.EXPERIMENTAL = True
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = "https://github.com/olofk/serv"
         self.NEEDS = ["fpga"]

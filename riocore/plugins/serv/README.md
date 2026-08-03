@@ -2,9 +2,13 @@
 
 <img align="right" width="320" src="image.png">
 
+
+| :warning: EXPERIMENTAL |
+|:-----------------------|
+
 **minimal risc-v softcore**
 
-minimal risc-v cpu for testing
+minimal risc-v cpu for testing - have some issues
 
 * Keywords: risc-v softcore cpu
 * NEEDS: fpga
@@ -35,7 +39,7 @@ hardware type
 size of ram in bytes
 
  * type: select
- * default: 1024
+ * default: 512
  * options: 512, 768, 1024, 2048, 4096, 8192
 
 

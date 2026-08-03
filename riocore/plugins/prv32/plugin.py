@@ -9,6 +9,7 @@ class Plugin(PluginBase):
         self.NAME = "prv32"
         self.INFO = "picorv32 based risc-v softcore"
         self.DESCRIPTION = "picorv32 risc-v cpu for testing\ni using this riscv-toolchain: https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1"
+        self.EXPERIMENTAL = True
         self.KEYWORDS = "risc-v softcore cpu"
         self.ORIGIN = "https://github.com/YosysHQ/picorv32"
         self.NEEDS = ["fpga"]
