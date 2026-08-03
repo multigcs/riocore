@@ -194,7 +194,7 @@ class Plugin(PluginBase):
             output.append(f'#define FPGA_FAMILY    "{instance.fpga_family}"')
         if instance.fpga_type:
             output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
-        output.append(f'#define INSTANCE_N     {instance.instance_num}')
+        output.append(f"#define INSTANCE_N     {instance.instance_num}")
         output.append("")
         output.append("extern void sysinit();")
         output.append("")

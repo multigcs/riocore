@@ -2,7 +2,6 @@ import glob
 import os
 import shutil
 import stat
-import sys
 
 from .base import generator_base
 from .cclient import cclient
@@ -298,8 +297,8 @@ class simulator(generator_base):
         elif protocol == "UDP":
             output.append('    udp_init("0.0.0.0", DST_PORT, SRC_PORT);')
         else:
-            print("ERROR: unsupported interface")
-            sys.exit(1)
+            print("WARNING: unsupported interface")
+            # sys.exit(1)
         output.append("}")
         output.append("")
 

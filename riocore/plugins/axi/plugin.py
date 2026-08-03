@@ -10,10 +10,36 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.NEEDS = ["fpga"]
         self.TYPE = "interface"
+        self.HOST_INTERFACE = "UDP"
         self.VERILOGS = []
-        self.PINDEFAULTS = {}
+        self.PINDEFAULTS = {
+            "led1": {
+                "direction": "output",
+            }
+        }
         self.EXPERIMENTAL = True
-        self.OPTIONS = {}
+        self.OPTIONS = {
+            "ip": {
+                "default": "192.168.10.119",
+                "type": str,
+                "description": "IP-Address",
+            },
+            "mask": {
+                "default": "255.255.255.0",
+                "type": str,
+                "description": "Network-Mask",
+            },
+            "gw": {
+                "default": "192.168.10.1",
+                "type": str,
+                "description": "Gateway IP-Address",
+            },
+            "port": {
+                "default": 2390,
+                "type": int,
+                "description": "UDP-Port",
+            },
+        }
         self.PASSTHROUGH = {
             "S_AXI_ACLK": {"direction": "input", "size": 1},
             "S_AXI_ARESETN": {"direction": "input", "size": 1},
@@ -38,14 +64,20 @@ class Plugin(PluginBase):
             "S_AXI_RREADY": {"direction": "input", "size": 1},
         }
 
-    def post_setup(self, project):
-        verilog_data = [
-            """
+    @classmethod
+    def update_prefixes(cls, parent, instances):
+        parent.project.buffer_size_in = None
+
+        for instance in instances:
+            verilog_data = [
+                """
 module axi
     #(
-         parameter BUFFER_SIZE=16'd64
+         parameter BUFFER_SIZE_RX=16'd64,
+         parameter BUFFER_SIZE_TX=16'd64
      )
      (
+        output reg led1 = 0,
         // AXI
         input wire S_AXI_ACLK,
         input wire S_AXI_ARESETN,
@@ -69,13 +101,13 @@ module axi
         output wire S_AXI_RVALID,
         input wire S_AXI_RREADY,
         input wire clk,
-        input wire [BUFFER_SIZE-1:0] tx_data,
-        output reg [BUFFER_SIZE-1:0] rx_data = 0,
+        input wire [BUFFER_SIZE_TX-1:0] tx_data,
+        output reg [BUFFER_SIZE_RX-1:0] rx_data = 0,
         output reg sync = 0
     );
 
-    reg [BUFFER_SIZE-1:0] rx_data_buffer = 0;
-    reg [BUFFER_SIZE-1:0] tx_data_buffer = 0;
+    reg [BUFFER_SIZE_RX-1:0] rx_data_buffer = 0;
+    reg [BUFFER_SIZE_TX-1:0] tx_data_buffer = 0;
 
     // AXI4LITE signals
     reg [6:0] axi_awaddr;
@@ -156,24 +188,26 @@ module axi
         end else begin
             if (slv_reg_wren) begin
                 case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
-        ]
+            ]
+            if parent.project.buffer_size_in:
+                flen = parent.project.buffer_size_in // 8 // 4
+                flen32 = (flen * 8 + 31) // 32 * 4
+                pos = parent.project.buffer_size_in
+                for n in range(flen32):
+                    verilog_data.append(f"                    5'h{n:02x}:")
+                    end = pos - 32
+                    size = 32
+                    if end < 0:
+                        size += end
+                        end = 0
+                    verilog_data.append(f"                        rx_data_buffer[{pos - 1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
+                    pos -= 32
 
-        flen = project.buffer_size // 8 // 4
-        flen32 = (flen * 8 + 31) // 32 * 4
-        pos = project.buffer_size
-        for n in range(flen32):
-            verilog_data.append(f"                    5'h{n:02x}:")
-            end = pos - 32
-            size = 32
-            if end < 0:
-                size += end
-                end = 0
-            verilog_data.append(f"                        rx_data_buffer[{pos - 1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
-            pos -= 32
-
-        verilog_data.append(f"                    5'h{flen32:02x}: begin")
-        verilog_data += [
-            """                        rx_data <= rx_data_buffer;
+                verilog_data.append(f"                    5'h{flen32:02x}: begin")
+            else:
+                verilog_data.append("                    5'h01: begin")
+            verilog_data += [
+                """                        rx_data <= rx_data_buffer;
                         tx_data_buffer <= tx_data;
                         sync <= 1;
                     end
@@ -232,23 +266,24 @@ module axi
 
     always @(*) begin
         case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
-        ]
-        flen = project.buffer_size // 8 // 4
-        flen32 = (flen * 8 + 31) // 32 * 4
-        pos = project.buffer_size
-        for n in range(flen32):
-            end = pos - 32
-            size = 32
-            if end < 0:
-                size += end
-                end = 0
-                verilog_data.append(f"            5'h{n:02x}: reg_data_out <= {{tx_data_buffer[{pos - 1}:{end}], {32 - size}'h00}};")
-            else:
-                verilog_data.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos - 1}:{end}];")
-            pos -= 32
+            ]
+            if parent.project.buffer_size_in:
+                flen = parent.project.buffer_size_in // 8 // 4
+                flen32 = (flen * 8 + 31) // 32 * 4
+                pos = parent.project.buffer_size_in
+                for n in range(flen32):
+                    end = pos - 32
+                    size = 32
+                    if end < 0:
+                        size += end
+                        end = 0
+                        verilog_data.append(f"            5'h{n:02x}: reg_data_out <= {{tx_data_buffer[{pos - 1}:{end}], {32 - size}'h00}};")
+                    else:
+                        verilog_data.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos - 1}:{end}];")
+                    pos -= 32
 
-        verilog_data += [
-            """            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+            verilog_data += [
+                """            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
         endcase
     end
 
@@ -264,12 +299,13 @@ module axi
 
 endmodule
 """
-        ]
-        self.VERILOGS_DATA = {"axi.v": "\n".join(verilog_data)}
+            ]
+        instance.VERILOGS_DATA = {"axi.v": "\n".join(verilog_data)}
 
     def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        instance_parameter["BUFFER_SIZE"] = "BUFFER_SIZE"
+        instance_parameter["BUFFER_SIZE_RX"] = "BUFFER_SIZE_RX"
+        instance_parameter["BUFFER_SIZE_TX"] = "BUFFER_SIZE_TX"
         return instances

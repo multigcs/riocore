@@ -2,7 +2,6 @@ import os
 import sys
 
 from PyQt5.QtWidgets import (
-    QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
@@ -33,7 +32,6 @@ class config:
         options.append(("Spindle1", "spindle.1.speed-out"))
         dialog.layout = QVBoxLayout()
         dialog.layout.addWidget(QLabel("Easy quick selection for the most frequently used functions\n"))
-
 
         dialog.layout.addWidget(QLabel("Function:"))
         halpin_widget = QComboBox()
@@ -85,10 +83,12 @@ if __name__ == "__main__":
     class mock_instance:
         def __init__(self):
             self.instances_name = "pwm0"
-            self.plugin_setup = {"signals": {
-                "dty": {"net": "spindle.0.speed-out", "scale": 0.016666666},
-                "enable": {"net": "spindle.0.on"},
-            }}
+            self.plugin_setup = {
+                "signals": {
+                    "dty": {"net": "spindle.0.speed-out", "scale": 0.016666666},
+                    "enable": {"net": "spindle.0.on"},
+                }
+            }
 
     instance = mock_instance()
     config_gui = config(instance)

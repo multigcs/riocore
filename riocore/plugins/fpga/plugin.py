@@ -222,6 +222,7 @@ class Plugin(PluginBase):
     @classmethod
     def update_prefixes(cls, parent, instances):
         for instance in instances:
+            instance.protocol = None
             for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=instance.instances_name):
                 instance.hal_prefix = instance.instances_name
                 if connected_pin["instance"].TYPE == "interface":

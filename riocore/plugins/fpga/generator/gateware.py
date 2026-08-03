@@ -387,6 +387,8 @@ class gateware(generator_base):
         self.calc_buffersize(self.parent.project, timestamp_size=timestamp_size, header_size=header_size, sym_io=sym_io)
         self.jdata["buffer_size_in"] = self.buffer_size_in
         self.jdata["buffer_size_out"] = self.buffer_size_out
+        self.parent.project.buffer_size_in = self.buffer_size_in
+        self.parent.project.buffer_size_out = self.buffer_size_out
 
         output = []
         input_variables_list = []

@@ -1,6 +1,5 @@
 import glob
 import os
-import sys
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -1154,8 +1153,8 @@ class cbase:
             output.append("    }")
             output.append("    return -1;")
         elif protocol is not None:
-            print("ERROR: unsupported interface")
-            sys.exit(1)
+            print("WARNING: unsupported interface")
+            # sys.exit(1)
         else:
             output.append("    return 0;")
 
@@ -1250,8 +1249,8 @@ class cbase:
             output.append("            ret = udp_rx(rxBuffer, BUFFER_SIZE_RX, 0);")
             output.append("#endif")
         elif protocol is not None:
-            print("ERROR: unsupported interface")
-            sys.exit(1)
+            print("WARNING: unsupported interface")
+            # sys.exit(1)
 
         if protocol in {"UDP", "UART", "SPI", "SPI_RPI5", "SPI_VERILATOR"}:
             if self.use_header:
@@ -1262,8 +1261,8 @@ class cbase:
             output.append("            if (rxBuffer[0] == 97 && rxBuffer[1] == 116 && rxBuffer[2] == 97 && rxBuffer[3] == 100) {")
         else:
             output.append("            if (1) {")
-            print("ERROR: unsupported interface for use_header == False")
-            sys.exit(1)
+            print("WARNING: unsupported interface for use_header == False")
+            # sys.exit(1)
         output.append("                if (err_counter > 0) {")
         output.append("                    err_counter = 0;")
         output.append(f'                    {self.printf}("recovered..\\n");')

@@ -237,6 +237,11 @@ class Toolchain:
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
 
+            makefile_data.append("xc3sprog:")
+            makefile_data.append("	xc3sprog -c nexys4 $(PROJECT).bit")
+            makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
+
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
 

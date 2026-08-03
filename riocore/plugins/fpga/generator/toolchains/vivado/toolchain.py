@@ -4,6 +4,8 @@ import shutil
 import subprocess
 import sys
 
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
 
 class Toolchain:
     def __init__(self, config):
@@ -11,9 +13,11 @@ class Toolchain:
         self.gateware_path = self.config["output_path"]
         self.riocore_path = config["riocore_path"]
         self.toolchain_path = self.config.get("toolchains_json", {}).get("vivado", "")
+        self.vitis_path = self.config.get("toolchains_json", {}).get("vitis", "")
         if self.toolchain_path and not self.toolchain_path.endswith("bin"):
             self.toolchain_path = os.path.join(self.toolchain_path, "bin")
-        self.toolchain_source = os.path.join(self.riocore_path, "generator", "toolchains", "vivado")
+        if not self.vitis_path and self.toolchain_path:
+            self.vitis_path = self.toolchain_path.replace("Vivado", "Vitis")
         self.armcore = self.config.get("armcore", False)
         self.clock = int(self.config["speed"])
 
@@ -26,7 +30,7 @@ class Toolchain:
         }
 
     def pll(self, clock_in, clock_out):
-        if self.config["family"] == "xc7":
+        if self.config["family"] == "XC7":
             if float(clock_out) == 125000000.0 and float(clock_in) == 100000000.0:
                 result = subprocess.check_output(
                     f"{self.riocore_path}/files/vivado-pll.sh \"{self.config['jdata']['family']}\" {float(clock_in) / 1000000} {float(clock_out) / 1000000} '{self.gateware_path}/pll.v'",
@@ -56,7 +60,9 @@ class Toolchain:
         makefile_data.append("")
         makefile_data.append("# Toolchain: Vivado")
         makefile_data.append("")
-        if self.toolchain_path:
+        if self.vitis_path and self.toolchain_path:
+            makefile_data.append(f"PATH     := {self.toolchain_path}:{self.vitis_path}:$(PATH)")
+        elif self.toolchain_path:
             makefile_data.append(f"PATH     := {self.toolchain_path}:$(PATH)")
             makefile_data.append("")
 
@@ -64,10 +70,8 @@ class Toolchain:
             for filename in ("ps7.xdc", "ps7.tcl"):
                 source = os.path.join(self.config["json_path"], filename)
                 if not os.path.exists(source):
-                    source = os.path.join(self.config["boardcfg_path"], filename)
-                if not os.path.exists(source):
-                    source = os.path.join(self.toolchain_source, filename)
-                shutil.copy(os.path.join(self.toolchain_source, filename), os.path.join(path, filename))
+                    source = os.path.join(os.path.dirname(__file__), filename)
+                shutil.copy(source, os.path.join(path, filename))
 
             tcl_data = []
             tcl_data.append("")
@@ -158,6 +162,32 @@ class Toolchain:
             makefile_data.append("	vivado -mode batch -source rio.tcl")
             makefile_data.append("")
 
+            if self.config["family"] == "XC7":
+                makefile_data.append("app_create: rio-rtl/bd_rio_wrapper.xsa")
+                makefile_data.append("	rm -rf _vitis/")
+                makefile_data.append("	echo 'setw _vitis' > app_create.tcl")
+                makefile_data.append("	echo 'app create -name riolwip -hw {rio-rtl/bd_rio_wrapper.xsa} -proc ps7_cortexa9_0 -os standalone -template \"lwIP UDP Perf Server\"' >> app_create.tcl")
+                makefile_data.append("	xsct app_create.tcl")
+                makefile_data.append("")
+                makefile_data.append("app_build: _vitis/riolwip_system")
+                makefile_data.append("	echo 'setw _vitis' > app_build.tcl")
+                makefile_data.append("	echo 'sysproj build -name riolwip_system' >> app_build.tcl")
+                makefile_data.append("	echo '#bootgen -image riolwip_system.bif -arch zynq -o _vitis/riolwip_system/_ide/bootimage/BOOT.bin' >> app_build.tcl")
+                makefile_data.append("	xsct app_build.tcl")
+                makefile_data.append("	realpath _vitis/riolwip_system/Debug/sd_card/BOOT.BIN")
+                makefile_data.append("")
+                makefile_data.append("app:")
+                makefile_data.append("	rm -rf _vitis/")
+                makefile_data.append("	echo 'setw _vitis' > app.tcl")
+                # makefile_data.append("	echo 'repo -set {repo}' >> app.tcl")
+                # makefile_data.append("	echo 'repo -apps' >> app.tcl")
+                makefile_data.append("	echo 'app create -name riolwip -hw {rio-rtl/bd_rio_wrapper.xsa} -proc ps7_cortexa9_0 -os standalone -template \"lwIP UDP Perf Server\"' >> app.tcl")
+                # makefile_data.append("	echo 'app create -name riolwip -hw {rio-rtl/bd_rio_wrapper.xsa} -proc ps7_cortexa9_0 -os standalone -template \"RIO UDP Server\"' >> app.tcl")
+                makefile_data.append("	echo 'sysproj build -name riolwip_system' >> app.tcl")
+                makefile_data.append("	xsct app.tcl")
+                makefile_data.append("	realpath _vitis/riolwip_system/Debug/sd_card/BOOT.BIN")
+                makefile_data.append("")
+
         else:
             bitfileName = "build/$(PROJECT).bit"
             makefile_data.append("PROJECT  := rio")
@@ -237,5 +267,29 @@ class Toolchain:
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
 
+        if self.toolchain_path:
+            makefile_data.append("hw_server:")
+            makefile_data.append(f"	sudo {self.toolchain_path}/vivado -mode batch -source flash.tcl")
+            makefile_data.append("")
+
+            makefile_data.append("ssh:")
+            makefile_data.append("	scp -oHostKeyAlgorithms=+ssh-rsa rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit root@192.168.10.205:/tmp/rio.bit")
+            makefile_data.append('	ssh -oHostKeyAlgorithms=+ssh-rsa root@192.168.10.205 "cat /tmp/rio.bit > /dev/xdevcfg"')
+            makefile_data.append("")
+
         makefile_data.append("")
         open(os.path.join(path, "Makefile"), "w").write("\n".join(makefile_data))
+
+        flash = []
+        flash.append("open_hw_manager")
+        flash.append("connect_hw_server -allow_non_jtag")
+        flash.append("open_hw_target")
+        flash.append("current_hw_device [get_hw_devices xc7z010_1]")
+        flash.append("refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xc7z010_1] 0]")
+        flash.append("set_property PROBES.FILE {} [get_hw_devices xc7z010_1]")
+        flash.append("set_property FULL_PROBES.FILE {} [get_hw_devices xc7z010_1]")
+        flash.append("set_property PROGRAM.FILE {rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit} [get_hw_devices xc7z010_1]")
+        flash.append("program_hw_devices [get_hw_devices xc7z010_1]")
+        flash.append("refresh_hw_device [lindex [get_hw_devices xc7z010_1] 0]")
+        flash.append("")
+        open(os.path.join(path, "flash.tcl"), "w").write("\n".join(flash))
