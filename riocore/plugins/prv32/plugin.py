@@ -227,7 +227,7 @@ class Plugin(PluginBase):
             output.append(f'#define FPGA_FAMILY    "{instance.fpga_family}"')
         if instance.fpga_type:
             output.append(f'#define FPGA_TYPE      "{instance.fpga_type}"')
-        output.append(f'#define INSTANCE_N     {instance.instance_num}')
+        output.append(f"#define INSTANCE_N     {instance.instance_num}")
         output.append("")
         for param in instance.v_parameter_bool:
             if instance.plugin_setup.get(param, instance.OPTIONS[param]["default"]):
