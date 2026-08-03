@@ -1,0 +1,58 @@
+{
+  "name": "Core3S250E",
+  "description": "Waveshare Core3S250E",
+  "url": "https://www.waveshare.com/wiki/Core3S250E",
+  "pinimage": "board.png",
+  "toolchain": "ise",
+  "family": "xc3",
+  "type": "xc3s250e-tq144-4",
+  "package": "tq144",
+  "provides": [
+    "pmod"
+  ],
+  "clock": {
+    "speed": "50000000",
+    "startup": "jtagclk",
+    "pin": "P129"
+  },
+  "slots": [
+    {
+      "name": "LEDS",
+      "comment": "LEDS",
+      "pins": {
+        "LED1": {
+          "pin": "P52",
+          "pos": [
+            67,
+            261
+          ],
+          "direction": "output"
+        },
+        "LED2": {
+          "pin": "P53",
+          "pos": [
+            97,
+            261
+          ],
+          "direction": "output"
+        },
+        "LED3": {
+          "pin": "P54",
+          "pos": [
+            126,
+            261
+          ],
+          "direction": "output"
+        },
+        "LED4": {
+          "pin": "P58",
+          "pos": [
+            156,
+            261
+          ],
+          "direction": "output"
+        }
+      }
+    }
+  ]
+}
