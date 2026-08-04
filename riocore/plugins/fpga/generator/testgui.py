@@ -218,7 +218,7 @@ class WinForm(QWidget):
         self.errors = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.runTimer)
-        self.timer.start(2)
+        self.timer.start(args.interval)
 
     def add_tab(self, title):
         tab_widget = QWidget()
@@ -359,6 +359,7 @@ if __name__ == "__main__":
     parser.add_argument("--fullscreen", "-f", help="fullscreen mode", default=False, action="store_true")
     parser.add_argument("--nobox", "-n", help="no plugin group-boxes", default=False, action="store_true")
     parser.add_argument("--blink", "-b", help="let blink all output bool values", default=False, action="store_true")
+    parser.add_argument("--interval", "-i", help="update interval in ms", type=int, default="10")
     args = parser.parse_args()
     form = WinForm(args)
     form.show()

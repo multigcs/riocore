@@ -36,6 +36,7 @@ class Plugin(PluginBase):
         }
         self.TYPE = "interface"
         self.HOST_INTERFACE = "UDP"
+        self.SYM_IO = True
         self.OPTIONS = {
             "ip": {
                 "default": "192.168.10.194",

@@ -1,3 +1,10 @@
+#
+# write
+# for n in 0 1 2 3 4 5 6 7 8 9 a b c d e f; do devmem 0x4000000$n 8 255; done
+# read
+# for n in 0 1 2 3 4 5 6 7 8 9 a b c d e f; do devmem 0x4000000$n 8; done
+#
+
 from riocore.plugins import PluginBase
 
 
@@ -11,6 +18,7 @@ class Plugin(PluginBase):
         self.NEEDS = ["fpga"]
         self.TYPE = "interface"
         self.HOST_INTERFACE = "UDP"
+        self.SYM_IO = True
         self.VERILOGS = []
         self.PINDEFAULTS = {
             "led1": {
@@ -191,35 +199,57 @@ module axi
                 case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
             ]
             if self.gateware.buffer_size_out:
-                flen = self.gateware.buffer_size_out // 8 // 4
-                flen32 = (flen * 8 + 31) // 32 * 4
+                flen = (self.gateware.buffer_size_out + 31) // 32
                 pos = self.gateware.buffer_size_out
-                for n in range(flen32):
-                    if pos < 1:
-                        break
+                for n in range(flen):
                     end = pos - 32
                     size = 32
                     if end < 0:
                         size += end
                         end = 0
-                    verilog_data.append(f"                    5'h{n:02x}:")
-                    verilog_data.append(f"                        rx_data_buffer[{pos - 1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
+                    values = []
+                    for bn in range(1, size // 8 + 1):
+                        values.append(f"S_AXI_WDATA[{bn * 8 - 1}:{bn * 8 - 8}]")
+                    verilog_data.append(f"                    5'h{n:02x}: begin")
+                    verilog_data.append(f"                        rx_data_buffer[{pos - 1}:{end}] <= {{{', '.join(values)}}};")
+                    if n == flen - 1:
+                        verilog_data.append("                        rx_data <= rx_data_buffer;")
+                        verilog_data.append("                        tx_data_buffer <= tx_data;")
+                        verilog_data.append("                        sync <= 1;")
+                    verilog_data.append("                    end")
                     pos -= 32
-                verilog_data.append(f"                    5'h{n:02x}: begin")
             else:
                 verilog_data.append("                    5'h01: begin")
-            verilog_data += [
-                """                        rx_data <= rx_data_buffer;
-                        tx_data_buffer <= tx_data;
-                        sync <= 1;
-                    end
 
+            verilog_data += [
+                """
                     default : begin
                         slv_reg0 <= slv_reg0;
                     end
                 endcase
             end
         end
+    end
+
+    always @(*) begin
+        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
+            ]
+            if self.gateware.buffer_size_in:
+                flen = (self.gateware.buffer_size_in + 31) // 32
+                pos = self.gateware.buffer_size_in
+                for n in range(flen):
+                    values = []
+                    for bn in range(4):
+                        if pos > 0:
+                            values.append(f"tx_data_buffer[{pos - 1}:{pos - 8}]")
+                        else:
+                            values.append("8'd0")
+                        pos -= 8
+                    verilog_data.append(f"            5'h{n:02x}: reg_data_out <= {{{', '.join(reversed(values))}}};")
+
+            verilog_data += [
+                """            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
+        endcase
     end
 
     always @( posedge S_AXI_ACLK ) begin
@@ -264,31 +294,6 @@ module axi
                 axi_rvalid <= 1'b0;
             end
         end
-    end
-
-    always @(*) begin
-        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
-            ]
-            if self.gateware.buffer_size_in:
-                flen = self.gateware.buffer_size_in // 8 // 4
-                flen32 = (flen * 8 + 31) // 32 * 4
-                pos = self.gateware.buffer_size_in
-                for n in range(flen32):
-                    if pos < 1:
-                        break
-                    end = pos - 32
-                    size = 32
-                    if end < 0:
-                        size += end
-                        end = 0
-                        verilog_data.append(f"            5'h{n:02x}: reg_data_out <= {{tx_data_buffer[{pos - 1}:{end}], {32 - size}'h00}};")
-                    else:
-                        verilog_data.append(f"            5'h{n:02x}: reg_data_out <= tx_data_buffer[{pos - 1}:{end}];")
-                    pos -= 32
-
-            verilog_data += [
-                """            default : reg_data_out <= axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB];
-        endcase
     end
 
     always @( posedge S_AXI_ACLK ) begin

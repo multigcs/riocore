@@ -232,7 +232,7 @@ class gateware(generator_base):
 
     def subcon(self, subname, subnumber):
         sym_io = False
-        if self.instance.protocol and self.instance.protocol.startswith("SPI"):
+        if self.instance.protocol and (self.instance.protocol.startswith("SPI") or self.instance.interface_instance.SYM_IO):
             # input and output frames with has same size
             sym_io = True
 
@@ -380,7 +380,7 @@ class gateware(generator_base):
             timestamp_size = 32
 
         sym_io = False
-        if self.instance.protocol and self.instance.protocol.startswith("SPI"):
+        if self.instance.protocol and (self.instance.protocol.startswith("SPI") or self.instance.interface_instance.SYM_IO):
             # input and output frames with has same size
             sym_io = True
 

@@ -67,6 +67,7 @@ class PluginBase:
         self.TIMESTAMP = False
         self.SYSTIMER = False
         self.RESET = False
+        self.SYM_IO = False
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
