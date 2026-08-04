@@ -1,6 +1,9 @@
 import os
+import platform
 
 from riocore.plugins import PluginBase
+
+riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 class Plugin(PluginBase):
@@ -175,6 +178,9 @@ class Plugin(PluginBase):
             instance.march = "rv32i"
             instance.gcc_options = ""
 
+            instance.riscv_toolchain = os.path.join(riocore_path, "toolchains", "xpack-riscv-none-elf-gcc-15.2.0-1")
+            cls.install_toolchain(parent, instance)
+
             open(os.path.join(parent.gateware_path, f"src_{uid}", "rio.h"), "w").write("\n".join(cls.rio_h(parent, instance)))
             open(os.path.join(parent.gateware_path, f"src_{uid}", "startup.s"), "w").write("\n".join(cls.startup_s(parent, instance)))
             open(os.path.join(parent.gateware_path, f"src_{uid}", "main.c"), "w").write(cls.main_c(parent, instance))
@@ -338,20 +344,43 @@ static inline void delay_ms(uint32_t ms) {
         return main_c
 
     @classmethod
+    def install_toolchain(cls, parent, instance):
+        if not os.path.exists(instance.riscv_toolchain):
+            base_path = os.path.join(riocore_path, "toolchains")
+            print("  installing riscv toolchain...")
+            os.makedirs(base_path, exist_ok=True)
+            if platform.machine() == "x86_64":
+                filename = "xpack-riscv-none-elf-gcc-15.2.0-1-linux-x64.tar.gz"
+            else:
+                filename = "xpack-riscv-none-elf-gcc-15.2.0-1-linux-arm64.tar.gz"
+            print(f"    INFO: downloading {filename}")
+            ret = os.system(f'cd "{base_path}" && wget https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v15.2.0-1/{filename}')
+            if ret != 0:
+                print("    ERROR: getting riscv-toolchain")
+                print("    INFO: cleaning")
+                os.system(f'rm -f "{base_path}/{filename}"')
+                exit(1)
+            print(f"    INFO: extracting {filename}")
+            ret = os.system(f'cd "{base_path}" && tar xzvpf {filename}')
+            if ret != 0:
+                print("    ERROR: extracting riscv-toolchain")
+                os.system(f'rm -f "{base_path}/{filename}"')
+                exit(1)
+            print("    INFO: cleaning")
+            os.system(f'rm -f "{base_path}/{filename}"')
+
+    @classmethod
     def compile_sh(cls, parent, instance):
         output = []
         output.append(f"""#!/bin/sh
-#
-# https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/tag/v15.2.0-1
-#
 set -x
 set -e
 
+RISCV_TOOLCHAIN_PATH="{instance.riscv_toolchain}"
 WORKING_DIR=`dirname "$0"`
 cd $WORKING_DIR
 
-# RISCV_BIN="riscv64-unknown-elf"
-RISCV_BIN="riscv-none-elf"
+RISCV_BIN="$RISCV_TOOLCHAIN_PATH/bin/riscv-none-elf"
 FPGA_TOOLCHAIN="{instance.fpga_toolchain}"
 # FLAGS="-nostartfiles -nostdlib -static -Os"
 FLAGS="-nostartfiles -static -Os"
