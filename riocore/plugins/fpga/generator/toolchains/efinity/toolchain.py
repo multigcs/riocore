@@ -32,7 +32,7 @@ class Toolchain:
         if sys.platform == "linux":
             efinity_sh = shutil.which("efx_run")
             if efinity_sh is None:
-                print("WARNING: can not found toolchain installation in PATH: efx_run")
+                print("WARNING: toolchain installation not found in PATH: efx_run")
                 print("  example: export PATH=$PATH:/opt/efinity/2024.2/bin/")
 
         verilogs = " ".join(self.config["verilog_files"])

@@ -76,7 +76,7 @@ rm -rf Gowin_V*_Education_Linux.tar.gz
         if sys.platform == "linux":
             gw_sh = shutil.which("gw_sh")
             if gw_sh is None:
-                print("WARNING: can not found toolchain installation in PATH: gowin (gw_sh)")
+                print("WARNING: toolchain installation not found in PATH: gowin (gw_sh)")
                 print("  example: export PATH=$PATH:/opt/gowin/IDE/bin")
 
         verilogs = " ".join(self.config["verilog_files"])

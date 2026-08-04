@@ -61,7 +61,7 @@ class Toolchain:
         if sys.platform == "linux":
             ngdbuild = shutil.which("ngdbuild")
             if ngdbuild is None:
-                print("WARNING: can not found toolchain installation in PATH: ise (ngdbuild)")
+                print("WARNING: toolchain installation not found in PATH: ise (ngdbuild)")
                 print("  example: export PATH=$PATH:/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64/")
 
         verilogs = " ".join(self.config["verilog_files"])

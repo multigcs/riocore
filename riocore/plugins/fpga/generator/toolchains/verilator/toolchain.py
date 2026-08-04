@@ -30,7 +30,7 @@ class Toolchain:
         if sys.platform == "linux":
             verilator = shutil.which("verilator")
             if verilator is None:
-                print("WARNING: can not found toolchain installation in PATH: verilator")
+                print("WARNING: toolchain installation not found in PATH: verilator")
 
         verilogs = " ".join(self.config["verilog_files"])
 

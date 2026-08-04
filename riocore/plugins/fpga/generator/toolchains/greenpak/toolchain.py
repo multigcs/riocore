@@ -41,7 +41,7 @@ Many Thanks to 'trholding'
         if sys.platform == "linux":
             ngdbuild = shutil.which("GPLauncher")
             if ngdbuild is None:
-                print("WARNING: can not found toolchain installation in PATH: GreenPack (GPLauncher)")
+                print("WARNING: toolchain installation not found in PATH: GreenPack (GPLauncher)")
                 print("  example: export PATH=$PATH:/opt/GreenPack/bin/")
 
         ffpga_data = """<?xml version="1.0" encoding="UTF-8"?>

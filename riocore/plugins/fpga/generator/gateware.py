@@ -134,7 +134,7 @@ class gateware(generator_base):
                     # fallback to shared files
                     ipv_path = os.path.join(riocore_path, "files", "verilog", verilog)
                 if not os.path.isfile(ipv_path):
-                    riocore.log(f"ERROR: can not found verilog file: {verilog}")
+                    riocore.log(f"ERROR: verilog file not found: {verilog}")
                     sys.exit(1)
                 target = os.path.join(self.jdata["output_path"], verilog)
                 shutil.copy(ipv_path, target)
@@ -151,7 +151,7 @@ class gateware(generator_base):
                     srcfile, dstfile = srcfile.split(":", 1)
                 ipv_path = os.path.join(riocore_path, "plugins", plugin_instance.NAME, srcfile)
                 if not os.path.isfile(ipv_path):
-                    riocore.log(f"ERROR: can not found srcfile file: {srcfile}")
+                    riocore.log(f"ERROR: srcfile file not found: {srcfile}")
                     sys.exit(1)
                 target = os.path.join(self.jdata["output_path"], dstfile)
                 os.makedirs(os.path.dirname(target), exist_ok=True)

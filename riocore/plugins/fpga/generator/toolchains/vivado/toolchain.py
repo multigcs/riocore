@@ -51,7 +51,7 @@ class Toolchain:
         if sys.platform == "linux":
             vivado = shutil.which("vivado")
             if vivado is None:
-                print("WARNING: can not found toolchain installation in PATH: vivado")
+                print("WARNING: toolchain installation not found in PATH: vivado")
                 print("  example: export PATH=$PATH:/opt/Xilinx/Vivado/2023.1/bin")
 
         verilogs = " ".join(self.config["verilog_files"])

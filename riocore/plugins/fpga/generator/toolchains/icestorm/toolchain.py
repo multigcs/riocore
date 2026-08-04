@@ -77,7 +77,7 @@ rm -rf oss-cad-suite-linux-arm64-20240910.tgz
         if sys.platform == "linux":
             nextpnr = shutil.which(f"{prefix}nextpnr-{family}")
             if nextpnr is None:
-                print(f"WARNING: can not found toolchain installation in PATH: nextpnr (nextpnr-{family})")
+                print(f"WARNING: toolchain not found installation in PATH: nextpnr (nextpnr-{family})")
                 print("  example: export PATH=$PATH:/opt/oss-cad-suite/bin")
 
         if family == "ecp5":

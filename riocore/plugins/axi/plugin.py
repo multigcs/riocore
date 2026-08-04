@@ -64,11 +64,12 @@ class Plugin(PluginBase):
             "S_AXI_RREADY": {"direction": "input", "size": 1},
         }
 
-    @classmethod
-    def update_prefixes(cls, parent, instances):
-        parent.project.buffer_size_in = None
+    #    @classmethod
+    #    def update_prefixes(cls, parent, instances):
 
-        for instance in instances:
+    def gateware_instances(self, gateware=None):
+        if gateware:
+            self.gateware = gateware
             verilog_data = [
                 """
 module axi
@@ -189,21 +190,22 @@ module axi
             if (slv_reg_wren) begin
                 case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
             ]
-            if parent.project.buffer_size_in:
-                flen = parent.project.buffer_size_in // 8 // 4
+            if self.gateware.buffer_size_out:
+                flen = self.gateware.buffer_size_out // 8 // 4
                 flen32 = (flen * 8 + 31) // 32 * 4
-                pos = parent.project.buffer_size_in
+                pos = self.gateware.buffer_size_out
                 for n in range(flen32):
-                    verilog_data.append(f"                    5'h{n:02x}:")
+                    if pos < 1:
+                        break
                     end = pos - 32
                     size = 32
                     if end < 0:
                         size += end
                         end = 0
+                    verilog_data.append(f"                    5'h{n:02x}:")
                     verilog_data.append(f"                        rx_data_buffer[{pos - 1}:{end}] <= S_AXI_WDATA[31:{32 - size}];")
                     pos -= 32
-
-                verilog_data.append(f"                    5'h{flen32:02x}: begin")
+                verilog_data.append(f"                    5'h{n:02x}: begin")
             else:
                 verilog_data.append("                    5'h01: begin")
             verilog_data += [
@@ -267,11 +269,13 @@ module axi
     always @(*) begin
         case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )"""
             ]
-            if parent.project.buffer_size_in:
-                flen = parent.project.buffer_size_in // 8 // 4
+            if self.gateware.buffer_size_in:
+                flen = self.gateware.buffer_size_in // 8 // 4
                 flen32 = (flen * 8 + 31) // 32 * 4
-                pos = parent.project.buffer_size_in
+                pos = self.gateware.buffer_size_in
                 for n in range(flen32):
+                    if pos < 1:
+                        break
                     end = pos - 32
                     size = 32
                     if end < 0:
@@ -300,9 +304,8 @@ module axi
 endmodule
 """
             ]
-        instance.VERILOGS_DATA = {"axi.v": "\n".join(verilog_data)}
+            self.VERILOGS_DATA = {"axi.v": "\n".join(verilog_data)}
 
-    def gateware_instances(self, gateware=None):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]

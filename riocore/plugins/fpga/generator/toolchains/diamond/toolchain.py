@@ -28,7 +28,7 @@ class Toolchain:
         if sys.platform == "linux":
             diamondc = shutil.which("diamondc")
             if diamondc is None:
-                print("WARNING: can not found toolchain installation in PATH: diamondc")
+                print("WARNING: toolchain installation not found in PATH: diamondc")
 
         verilogs = " ".join(self.config["verilog_files"])
 

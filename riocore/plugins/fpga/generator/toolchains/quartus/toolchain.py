@@ -61,7 +61,7 @@ https://downloads.intel.com/akdlm/software/acdsinst/17.0std/595/ib_tar/Quartus-l
         if sys.platform == "linux" and not self.toolchain_path:
             quartus_sh = shutil.which("quartus_sh")
             if quartus_sh is None:
-                print("WARNING: can not found toolchain installation in PATH: quartus")
+                print("WARNING: toolchain installation not found in PATH: quartus")
                 print("  example: export PATH=$PATH:/opt/intelFPGA_lite/22.1std/quartus/bin/")
 
         verilogs = " ".join(self.config["verilog_files"])
