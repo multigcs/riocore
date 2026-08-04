@@ -117,7 +117,7 @@ def main():
     if opts["transport"] in ("http", "both"):
         http_agent = HttpAgent(state, port=opts["http_port"])
         http_agent.start()
-        print("info: MTConnect HTTP agent on :%d (/probe /current /sample /assets)"
+        print("info: MTConnect HTTP agent on http://127.0.0.1:%d/stat (/probe /current /sample /assets /stat /twin)"
               % http_agent.port)
     if opts["transport"] in ("mqtt", "both"):
         from mtc.mqtt_agent import MqttAgent
