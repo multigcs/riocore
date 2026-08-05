@@ -5,14 +5,15 @@
   "pinimage": "board.png",
   "toolchain": "ise",
   "family": "xc3",
-  "type": "xc3s250e-tq144-4",
+  "type": "xc3s250e-4-tq144",
   "package": "tq144",
   "provides": [
     "pmod"
   ],
   "clock": {
     "speed": "50000000",
-    "startup": "jtagclk",
+    "_startup": "jtagclk",
+    "startup": "CClk",
     "pin": "P129"
   },
   "slots": [
@@ -21,36 +22,36 @@
       "comment": "LEDS",
       "pins": {
         "L1": {
-          "pin": "P52",
+          "pin": "P58",
           "pos": [
             156,
             261
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "L2": {
-          "pin": "P53",
+          "pin": "P54",
           "pos": [
             126,
             261
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "L3": {
-          "pin": "P54",
+          "pin": "P53",
           "pos": [
             97,
             261
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "L4": {
-          "pin": "P58",
+          "pin": "P52",
           "pos": [
             67,
             261
           ],
-          "direction": "output"
+          "direction": "all"
         }
       }
     },
@@ -65,7 +66,7 @@
             9,
             54
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P3": {
           "pin": "P131",
@@ -73,7 +74,7 @@
             9,
             65
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P5": {
           "pin": "P134",
@@ -81,7 +82,7 @@
             9,
             76
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P7": {
           "pin": "P139",
@@ -89,7 +90,7 @@
             9,
             87
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P9": {
           "pin": "P142",
@@ -97,7 +98,7 @@
             9,
             98
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P11": {
           "pin": "P2",
@@ -105,7 +106,7 @@
             9,
             109
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P13": {
           "pin": "P4",
@@ -113,7 +114,7 @@
             9,
             120
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P15": {
           "pin": "P7",
@@ -121,7 +122,7 @@
             9,
             131
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P17": {
           "pin": "P14",
@@ -129,7 +130,7 @@
             9,
             142
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P19": {
           "pin": "P16",
@@ -137,7 +138,7 @@
             9,
             153
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P21": {
           "pin": "P20",
@@ -145,7 +146,7 @@
             9,
             164
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "GND_2": {
           "pin": "GND",
@@ -154,7 +155,7 @@
             9,
             175
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P25": {
           "pin": "P22",
@@ -162,7 +163,7 @@
             9,
             186
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P27": {
           "pin": "P25",
@@ -170,7 +171,7 @@
             9,
             197
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P29": {
           "pin": "P31",
@@ -178,7 +179,7 @@
             9,
             208
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P31": {
           "pin": "P33",
@@ -186,7 +187,7 @@
             9,
             219
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P33": {
           "pin": "P35",
@@ -194,7 +195,7 @@
             9,
             230
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P35": {
           "pin": "P40",
@@ -202,7 +203,7 @@
             9,
             241
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P37": {
           "pin": "P44",
@@ -210,7 +211,7 @@
             9,
             252
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P39": {
           "pin": "P51",
@@ -218,23 +219,27 @@
             9,
             263
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P41": {
           "pin": "P53",
+          "special": true,
+          "comment": "shared with LED:L3",
           "pos": [
             9,
             274
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P43": {
           "pin": "P58",
+          "special": true,
+          "comment": "shared with LED:L1",
           "pos": [
             9,
             285
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "3V3": {
           "pin": "3V3",
@@ -243,7 +248,7 @@
             20,
             54
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P4": {
           "pin": "P130",
@@ -251,7 +256,7 @@
             20,
             65
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P6": {
           "pin": "P132",
@@ -259,7 +264,7 @@
             20,
             76
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P8": {
           "pin": "P135",
@@ -267,7 +272,7 @@
             20,
             87
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P10": {
           "pin": "P140",
@@ -275,7 +280,7 @@
             20,
             98
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P12": {
           "pin": "P143",
@@ -283,7 +288,7 @@
             20,
             109
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P14": {
           "pin": "P3",
@@ -291,7 +296,7 @@
             20,
             120
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P16": {
           "pin": "P5",
@@ -299,7 +304,7 @@
             20,
             131
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P18": {
           "pin": "P8",
@@ -307,7 +312,7 @@
             20,
             142
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P20": {
           "pin": "P15",
@@ -315,7 +320,7 @@
             20,
             153
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P22": {
           "pin": "P17",
@@ -323,7 +328,7 @@
             20,
             164
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "5V": {
           "pin": "5V",
@@ -332,7 +337,7 @@
             20,
             175
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P26": {
           "pin": "P21",
@@ -340,7 +345,7 @@
             20,
             186
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P28": {
           "pin": "P23",
@@ -348,7 +353,7 @@
             20,
             197
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P30": {
           "pin": "P26",
@@ -356,7 +361,7 @@
             20,
             208
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P32": {
           "pin": "P32",
@@ -364,7 +369,7 @@
             20,
             219
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P34": {
           "pin": "P34",
@@ -372,7 +377,7 @@
             20,
             230
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P36": {
           "pin": "P39",
@@ -380,7 +385,7 @@
             20,
             241
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P38": {
           "pin": "P43",
@@ -388,7 +393,7 @@
             20,
             252
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P40": {
           "pin": "P50",
@@ -396,23 +401,27 @@
             20,
             263
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P42": {
           "pin": "P52",
+          "special": true,
+          "comment": "shared with LED:L4",
           "pos": [
             20,
             274
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P44": {
           "pin": "P54",
+          "special": true,
+          "comment": "shared with LED:L2",
           "pos": [
             20,
             285
           ],
-          "direction": "output"
+          "direction": "all"
         }
       }
     },
@@ -427,7 +436,7 @@
             200,
             54
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P3": {
           "pin": "P125",
@@ -435,7 +444,7 @@
             200,
             65
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P5": {
           "pin": "P123",
@@ -443,7 +452,7 @@
             200,
             76
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P7": {
           "pin": "P117",
@@ -451,7 +460,7 @@
             200,
             87
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P9": {
           "pin": "P113",
@@ -459,7 +468,7 @@
             200,
             98
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P11": {
           "pin": "P106",
@@ -467,7 +476,7 @@
             200,
             109
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P13": {
           "pin": "P104",
@@ -475,7 +484,7 @@
             200,
             120
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P15": {
           "pin": "P98",
@@ -483,7 +492,7 @@
             200,
             131
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P17": {
           "pin": "P96",
@@ -491,7 +500,7 @@
             200,
             142
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P19": {
           "pin": "P93",
@@ -499,7 +508,7 @@
             200,
             153
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P21": {
           "pin": "P91",
@@ -507,7 +516,7 @@
             200,
             164
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "5V": {
           "pin": "5V",
@@ -516,7 +525,7 @@
             200,
             175
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P25": {
           "pin": "P87",
@@ -524,7 +533,7 @@
             200,
             186
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P27": {
           "pin": "P85",
@@ -532,7 +541,7 @@
             200,
             197
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P29": {
           "pin": "P82",
@@ -540,7 +549,7 @@
             200,
             208
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P31": {
           "pin": "P77",
@@ -548,7 +557,7 @@
             200,
             219
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P33": {
           "pin": "P75",
@@ -556,7 +565,7 @@
             200,
             230
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P35": {
           "pin": "P71",
@@ -564,7 +573,7 @@
             200,
             241
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P37": {
           "pin": "P68",
@@ -572,7 +581,7 @@
             200,
             252
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P39": {
           "pin": "P66",
@@ -580,7 +589,7 @@
             200,
             263
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P41": {
           "pin": "P62",
@@ -588,7 +597,7 @@
             200,
             274
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P43": {
           "pin": "P59",
@@ -596,7 +605,7 @@
             200,
             285
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "GND_1": {
           "pin": "GND",
@@ -605,7 +614,7 @@
             211,
             54
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P4": {
           "pin": "P126",
@@ -613,7 +622,7 @@
             211,
             65
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P6": {
           "pin": "P124",
@@ -621,7 +630,7 @@
             211,
             76
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P8": {
           "pin": "P122",
@@ -629,7 +638,7 @@
             211,
             87
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P10": {
           "pin": "P116",
@@ -637,7 +646,7 @@
             211,
             98
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P12": {
           "pin": "P112",
@@ -645,7 +654,7 @@
             211,
             109
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P14": {
           "pin": "P105",
@@ -653,7 +662,7 @@
             211,
             120
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P16": {
           "pin": "P103",
@@ -661,7 +670,7 @@
             211,
             131
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P18": {
           "pin": "P97",
@@ -669,7 +678,7 @@
             211,
             142
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P20": {
           "pin": "P94",
@@ -677,7 +686,7 @@
             211,
             153
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P22": {
           "pin": "P92",
@@ -685,7 +694,7 @@
             211,
             164
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "GND_2": {
           "pin": "GND",
@@ -694,7 +703,7 @@
             211,
             175
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P26": {
           "pin": "P88",
@@ -702,7 +711,7 @@
             211,
             186
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P28": {
           "pin": "P86",
@@ -710,7 +719,7 @@
             211,
             197
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P30": {
           "pin": "P83",
@@ -718,7 +727,7 @@
             211,
             208
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P32": {
           "pin": "P81",
@@ -726,7 +735,7 @@
             211,
             219
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P34": {
           "pin": "P76",
@@ -734,7 +743,7 @@
             211,
             230
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P36": {
           "pin": "P74",
@@ -742,7 +751,7 @@
             211,
             241
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P38": {
           "pin": "P70",
@@ -750,7 +759,7 @@
             211,
             252
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P40": {
           "pin": "P67",
@@ -758,7 +767,7 @@
             211,
             263
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P42": {
           "pin": "P63",
@@ -766,7 +775,7 @@
             211,
             274
           ],
-          "direction": "output"
+          "direction": "all"
         },
         "P44": {
           "pin": "P60",
@@ -774,7 +783,7 @@
             211,
             285
           ],
-          "direction": "output"
+          "direction": "all"
         }
       }
     }

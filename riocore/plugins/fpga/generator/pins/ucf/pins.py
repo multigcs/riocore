@@ -23,7 +23,7 @@ class Pins:
                 options.append(f"LOC = {pinstr:6s}")
                 if not cpld:
                     options.append(f"IOSTANDARD = {iostandard:5s}")
-                    if pin_config["direction"] == "input":
+                    if pin_config["direction"] in {"input", "inout"}:
                         if pin_config.get("pullup", False):
                             print('WARNING: please change your pin-config to : "pull": "up"')
                             options.append("PULLUP")

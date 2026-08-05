@@ -49,11 +49,17 @@ class Toolchain:
         USING_XSTFILE = True
         XISE_PROJECT = False
         CPLD = False
+        jtag_options = ""
 
         if self.config["type"].startswith(("xa9", "xc9")):
             CPLD = True
             USING_XSTFILE = True
             XISE_PROJECT = False
+
+        if self.config["type"].startswith("xc3"):
+            USING_XSTFILE = True
+            XISE_PROJECT = True
+            jtag_options = "--index-chain 1"
 
         pins_generator = importlib.import_module(".pins", "riocore.plugins.fpga.generator.pins.ucf")
         pins_generator.Pins(self.config).generate(path, cpld=CPLD)
@@ -71,7 +77,8 @@ class Toolchain:
 
         prj_data = []
         for verilog in self.config["verilog_files"]:
-            if CPLD and verilog in {"globals.v"}:
+            # if CPLD and verilog in {"globals.v"}:
+            if verilog in {"globals.v"}:
                 continue
             prj_data.append(f'verilog work "{verilog}"')
         prj_data.append("")
@@ -140,7 +147,7 @@ class Toolchain:
             makefile_data.append("build: prepare")
             makefile_data.append("	mkdir -p xst/projnav.tmp/")
             makefile_data.append('	xst -intstyle ise -ifn "$(PROJECT).xst" -ofn "$(PROJECT).syr"')
-            makefile_data.append(f"	ngdbuild -intstyle ise -dd _ngo -p {self.config['type']} -uc pins.ucf $(PROJECT).ngc $(PROJECT).ngd")
+            makefile_data.append(f"	ngdbuild -intstyle ise -dd _ngo -p {self.config['type']} -uc pins.ucf $(PROJECT).n $(PROJECT).ngd")
             if CPLD:
                 makefile_data.append(f"	cpldfit -intstyle ise -p {self.config['type']} -ofmt vhdl -optimize density -htmlrpt -loc on -slew fast -init low -inputs 54 -pterms 25 -terminate keeper $(PROJECT).ngd")
                 makefile_data.append("	XSLTProcess $(PROJECT)_build.xml")
@@ -151,7 +158,7 @@ class Toolchain:
                 if flashcmd:
                     makefile_data.append(f"	{flashcmd}")
                 else:
-                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).jed -f")
+                    makefile_data.append(f"	openFPGALoader -v -c usb-blaster $(PROJECT).jed -f {jtag_options}")
                 makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
                 makefile_data.append("")
                 makefile_data.append("sload:")
@@ -159,7 +166,7 @@ class Toolchain:
                 if sflashcmd:
                     makefile_data.append(f"	{sflashcmd}")
                 else:
-                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).jed")
+                    makefile_data.append(f"	openFPGALoader -v -c usb-blaster $(PROJECT).jed {jtag_options}")
                 makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
                 makefile_data.append("")
 
@@ -178,7 +185,7 @@ class Toolchain:
                 if flashcmd:
                     makefile_data.append(f"	{flashcmd}")
                 else:
-                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
+                    makefile_data.append(f"	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f {jtag_options}")
                 makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
                 makefile_data.append("")
                 makefile_data.append("sload:")
@@ -186,7 +193,7 @@ class Toolchain:
                 if sflashcmd:
                     makefile_data.append(f"	{sflashcmd}")
                 else:
-                    makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).jed")
+                    makefile_data.append(f"	openFPGALoader -v -c usb-blaster $(PROJECT).jed {jtag_options}")
                 makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
                 makefile_data.append("")
 
@@ -225,7 +232,7 @@ class Toolchain:
             if flashcmd:
                 makefile_data.append(f"	{flashcmd}")
             else:
-                makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f")
+                makefile_data.append(f"	openFPGALoader -v -c usb-blaster $(PROJECT).bit -f {jtag_options}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
             makefile_data.append("sload: $(PROJECT).bit")
@@ -233,7 +240,7 @@ class Toolchain:
             if sflashcmd:
                 makefile_data.append(f"	{sflashcmd}")
             else:
-                makefile_data.append("	openFPGALoader -v -c usb-blaster $(PROJECT).bit")
+                makefile_data.append(f"	openFPGALoader -v -c usb-blaster $(PROJECT).bit {jtag_options}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
             makefile_data.append("")
 

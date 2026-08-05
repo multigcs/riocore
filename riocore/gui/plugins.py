@@ -105,7 +105,7 @@ class GuiPlugins:
             pin_cols.addWidget(QLabel("Pin:"), stretch=2)
 
             pin_cols.addWidget(self.parent.edit_item(pin_config, "pin", {"type": "select", "options": self.parent.pinlist, "default": ""}, cb=update), stretch=6)
-            if direction == "input":
+            if direction in {"input", "inout"}:
                 pin_cols.addWidget(QLabel("Pull:"), stretch=1)
                 pin_cols.addWidget(self.parent.edit_item(pin_config, "pull", {"type": "select", "options": [None, "up", "down"], "default": None}, cb=update), stretch=3)
             else:

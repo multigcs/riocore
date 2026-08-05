@@ -129,6 +129,8 @@ class Plugin(PluginBase):
         instance_parameter["MSGID"] = "32'h74697277"
 
         divider = self.system_setup["speed"] // speed // 5
+        divider_bits = self.clog2(divider + 1)
         instance_parameter["DIVIDER"] = divider
+        instance_parameter["DIVIDER_BITS"] = divider_bits
 
         return instances
