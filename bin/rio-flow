@@ -1580,7 +1580,10 @@ class Window(QMainWindow):
         project = riocore.Project(copy.deepcopy(self.config), output_dir)
         project.generator(preview=False)
 
-        subprocess.run(f"open {index_html} &", check=False, shell=True, close_fds=True)
+        if shutil.which("firefox"):
+            subprocess.run(f"firefox {index_html} &", check=False, shell=True, close_fds=True)
+        else:
+            subprocess.run(f"open {index_html} &", check=False, shell=True, close_fds=True)
 
     def generator_run(self):
         if not self.save_check():
