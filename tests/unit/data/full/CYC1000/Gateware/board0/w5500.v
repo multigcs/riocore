@@ -12,7 +12,8 @@ module w5500
          parameter GW_ADDR={8'd192, 8'd168, 8'd10, 8'd1},
          parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
          parameter PORT=2390,
-         parameter DIVIDER=3
+         parameter DIVIDER=3,
+         parameter DIVIDER_BITS=31
      )
      (
          input clk, // clock signal
@@ -27,7 +28,6 @@ module w5500
          output reg sync = 0 // sync flag (new package received)
      );
 
-    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] clk_counter = 0;
     reg mclk = 0;
     always @(posedge clk) begin

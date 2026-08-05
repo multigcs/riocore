@@ -146,7 +146,8 @@ module rio (
         .BUFFER_SIZE_RX(BUFFER_SIZE_RX),
         .BUFFER_SIZE_TX(BUFFER_SIZE_TX),
         .MSGID(32'h74697277),
-        .DIVIDER(0)
+        .DIVIDER(0),
+        .DIVIDER_BITS(0)
     ) board0_w5500 (
         .clk(sysclk),
         .mosi(PINOUT_BOARD0_W5500_MOSI_RAW),

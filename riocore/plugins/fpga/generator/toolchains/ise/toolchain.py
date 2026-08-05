@@ -77,8 +77,7 @@ class Toolchain:
 
         prj_data = []
         for verilog in self.config["verilog_files"]:
-            # if CPLD and verilog in {"globals.v"}:
-            if verilog in {"globals.v"}:
+            if (CPLD or self.config["type"].startswith("xc3")) and verilog in {"globals.v"}:
                 continue
             prj_data.append(f'verilog work "{verilog}"')
         prj_data.append("")
