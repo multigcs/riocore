@@ -9,7 +9,7 @@
   "package": "csg324",
   "armcore": true,
   "clock": {
-    "speed": "150000000"
+    "speed": "100000000"
   },
   "slots": [
     {

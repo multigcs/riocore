@@ -22,6 +22,7 @@ set ENET0_GMII_TX_EN_0 [ create_bd_port -dir O -from 0 -to 0 ENET0_GMII_TX_EN_0 
 # Create instance: processing_system7_0, and set properties
 set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
 set_property -dict [ list \
+CONFIG.PCW_FPGA0_PERIPHERAL_FREQMHZ {100} \
 CONFIG.PCW_UART1_PERIPHERAL_ENABLE {1} \
 CONFIG.PCW_UART1_UART1_IO {MIO 24 .. 25} \
 CONFIG.PCW_SD0_PERIPHERAL_ENABLE {1} \
