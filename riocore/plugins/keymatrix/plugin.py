@@ -31,7 +31,7 @@ class Plugin(PluginBase):
                 "type": float,
                 "unit": "ms",
                 "min": 0.0,
-                "max": 100.0,
+                "max": 200.0,
                 "description": "delay between scans",
             },
             "sendkeys": {
@@ -103,7 +103,7 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        divider = int(self.system_setup["speed"] / 1000 / delay)
+        divider = int(self.system_setup["speed"] / 1000 * delay)
 
         instance_parameter["DIVIDER"] = divider
         instance_parameter["DIVIDER_BITS"] = self.clog2(divider + 1)
