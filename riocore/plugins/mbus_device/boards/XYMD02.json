@@ -1,8 +1,8 @@
 {
   "comment": "temperature and humidity sensor",
   "address": 1,
-  "timeout": 160,
-  "delay": 60,
+  "timeout": 200,
+  "delay": 100,
   "pins": {
     "MODBUS": {"direction": "output", "edge": "target", "pos": [95, 256], "type": ["MODBUS"], "bus": true},
     "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [113, 256], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
