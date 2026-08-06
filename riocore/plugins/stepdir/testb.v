@@ -47,7 +47,7 @@ module testb;
         # 1000 $finish;
     end
 
-    stepdir #(.PULSE_LEN(30), .DIR_DELAY(10)) stepdirstepdir (
+    stepdir #(.PULSE_LEN(30), .DIR_DELAY(20)) stepdirstepdir (
         .clk(clk),
         .velocity(velocity),
         .enable(enable),
@@ -57,7 +57,7 @@ module testb;
         .en(en)
     );
 
-    stepdir #(.PULSE_LEN(10), .DIR_DELAY(5)) stepdirstepdir2 (
+    stepdir #(.PULSE_LEN(10), .DIR_DELAY(151)) stepdirstepdir2 (
         .clk(clk),
         .velocity(velocity),
         .enable(enable),
