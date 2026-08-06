@@ -10,66 +10,66 @@ class i2c_device:
         self.name = parent.instances_name
         self.address = parent.plugin_setup.get("address", "0x48")
         self.INTERFACE = {
-            f"{self.name}_dac": {
+            f"dac": {
                 "size": 8,
                 "direction": "output",
                 "multiplexed": True,
             },
-            f"{self.name}_adc1": {
+            f"adc1": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_adc2": {
+            f"adc2": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_adc3": {
+            f"adc3": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_adc4": {
+            f"adc4": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"{self.name}_valid": {
+            f"valid": {
                 "size": 1,
                 "direction": "input",
                 "multiplexed": True,
             },
         }
         self.SIGNALS = {
-            f"{self.name}_dac": {
+            f"dac": {
                 "direction": "output",
                 "min": 0,
                 "max": 255,
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_adc1": {
+            f"adc1": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_adc2": {
+            f"adc2": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_adc3": {
+            f"adc3": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_adc4": {
+            f"adc4": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"{self.name}_valid": {
+            f"valid": {
                 "direction": "input",
                 "bool": True,
             },
@@ -89,7 +89,7 @@ class i2c_device:
         self.STEPS = [
             {
                 "mode": "write",
-                "value": f"{{8'd{PCF8591_DAC_FLAG}, {self.name}_{self.name}_dac}}",
+                "value": f"{{8'd{PCF8591_DAC_FLAG}, {self.name}_dac}}",
                 "bytes": 2,
             },
             {
@@ -99,7 +99,7 @@ class i2c_device:
             },
             {
                 "mode": "read",
-                "data_in": [f"                                {self.name}_{self.name}_adc1 <= data_in[31:24]; {self.name}_{self.name}_adc2 <= data_in[23:16]; {self.name}_{self.name}_adc3 <= data_in[15:8]; {self.name}_{self.name}_adc4 <= data_in[7:0];"],
+                "data_in": [f"                                {self.name}_adc1 <= data_in[31:24]; {self.name}_adc2 <= data_in[23:16]; {self.name}_adc3 <= data_in[15:8]; {self.name}_adc4 <= data_in[7:0];"],
                 "bytes": 4,
             },
         ]

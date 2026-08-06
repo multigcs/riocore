@@ -27,6 +27,7 @@ class Plugin(PluginBase):
             "temperature": {
                 "direction": "input",
                 "unit": "°C",
+                "format": "03.1f",
             },
         }
 
