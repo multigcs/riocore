@@ -1,14 +1,14 @@
 
 module ds18b20
-    #(parameter SPEED = 24)
+    #(parameter SPEED = 25)
      (
          input clk,
          inout one_wire,
-         output reg signed [15:0] temperature
+         output reg signed [15:0] temperature = 0
      );
 
-    reg clk_1us;
-    reg [31:0]counter;
+    reg clk_1us = 0;
+    reg [31:0]counter = 0;
     always @(posedge clk) begin
         if (counter == 0) begin
             counter <= SPEED;
@@ -18,8 +18,8 @@ module ds18b20
         end
     end
 
-    reg [19:0] cnt_1us;
-    reg cnt_1us_clear;
+    reg [19:0] cnt_1us = 0;
+    reg cnt_1us_clear = 0;
     always @ (posedge clk_1us) begin
         if (cnt_1us_clear) begin
             cnt_1us <= 0;
@@ -46,11 +46,11 @@ module ds18b20
     parameter READ2   = 5'h08;
     parameter READ3   = 5'h18;
 
-    reg [4:0] state;
-    reg [15:0] temperature_buf;
-    reg [5:0] step;
-    reg [3:0] bit_valid;
-    reg one_wire_buf;
+    reg [4:0] state = 0;
+    reg [15:0] temperature_buf = 0;
+    reg [5:0] step = 0;
+    reg [3:0] bit_valid = 0;
+    reg one_wire_buf = 0;
 
     assign one_wire = one_wire_buf;
 
@@ -219,9 +219,7 @@ module ds18b20
                 end else if (step == 50) begin
                     step <= 0;
                     state <= S0;
-
                     temperature <= temperature_buf;
-
                 end
             end
             WRITE0 : begin

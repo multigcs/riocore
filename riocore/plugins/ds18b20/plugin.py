@@ -26,7 +26,7 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "temperature": {
                 "direction": "input",
-                "unit": "Hz",
+                "unit": "°C",
             },
         }
 
@@ -42,3 +42,8 @@ class Plugin(PluginBase):
         instance_parameter["SPEED"] = speed
 
         return instances
+
+    def convert_c(self, signal_name, signal_setup):
+        return """
+        value = value / 16.0;
+        """
