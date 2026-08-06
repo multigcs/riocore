@@ -10,12 +10,12 @@ module keymatrix
         parameter DIVIDER_BITS = 31
     ) (
          input clk,
-         output reg [COLS - 1:0] cols,
+         output reg [COLS - 1:0] cols = 0,
          input [ROWS - 1:0] rows,
-         output reg [VALUE_BITS - 1:0] value
+         output reg [VALUE_BITS - 1:0] value = 0
      );
 
-    reg [DIVIDER_BITS - 1:0] delay;
+    reg [DIVIDER_BITS - 1:0] delay = 0;
     reg [1:0] step = 0;
     reg [ROW_BITS - 1:0] row = 0;
     reg [COL_BITS - 1:0] col = 0;
