@@ -6,7 +6,7 @@ module mbus
         input rx, // rx pin
         output tx, // tx pin
         output wire tx_enable, // tx enable pin for rs485
-        output reg [RX_BUFFERSIZE-1:0] rxdata, // received data
+        output reg [RX_BUFFERSIZE-1:0] rxdata = 0, // received data
         input [TX_BUFFERSIZE-1:0] txdata // data to send
     );
 

@@ -2,10 +2,10 @@
 module dis7seg (
         input clk,
         input signed [31:0] value,
-        output reg en1,
-        output reg en2,
-        output reg en3,
-        output reg en4,
+        output reg en1 = 'd0,
+        output reg en2 = 'd0,
+        output reg en3 = 'd0,
+        output reg en4 = 'd0,
         output wire seg_a,
         output wire seg_b,
         output wire seg_c,
@@ -42,7 +42,7 @@ module dis7seg (
     assign int1000 = 8'd48 + {4'd0, bcd[15:12]};
     // assign int10000 = 8'd48 + {4'd0, bcd[19:16]};
 
-    reg [3:0] digit;
+    reg [3:0] digit = 'd0;
 
     reg [7:0] digit_delay = 0;
     reg [1:0] digit_n = 0;
@@ -98,7 +98,7 @@ endmodule
 
 module bin2bcd(
         input [15:0] bin,
-        output reg [19:0] bcd
+        output reg [19:0] bcd = 'd0
     );
     integer i;
     always @(bin) begin
@@ -120,7 +120,7 @@ endmodule
 module seven_segments (
         input wire clk,
         input wire [3:0] binary,
-        output reg [6:0] display
+        output reg [6:0] display = 'd0
     );
 
     always @(binary) begin

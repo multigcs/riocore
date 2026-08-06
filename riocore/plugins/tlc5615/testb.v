@@ -10,7 +10,7 @@ module testb;
     wire sclk;
     wire sel;
     // interface
-    reg [9:0] value;
+    reg [9:0] value = 0;
 
     initial begin
         $dumpfile("testb.vcd");

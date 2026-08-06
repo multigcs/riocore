@@ -4,7 +4,7 @@ module pwmin
      (
          input clk,
          input pwm,
-         output reg valid,
+         output reg valid = 0,
          output reg [31:0] width = 0
      );
     reg [31:0] width_cnt = 0;

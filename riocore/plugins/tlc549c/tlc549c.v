@@ -5,17 +5,17 @@ module tlc549c
          input		clk,
          input		miso,
          output 	sclk,
-         output reg	sel,
-         output reg	[7:0] value
+         output reg	sel = 0,
+         output reg	[7:0] value = 0
      );
 
-    reg	[7:0] value_buf;
-    reg	[3:0] cnt;
-    reg sclk_valid;
-    reg sel_valid;
+    reg	[7:0] value_buf = 0;
+    reg	[3:0] cnt = 0;
+    reg sclk_valid = 0;
+    reg sel_valid = 0;
 
-    reg clk_1m;
-    reg [31:0]counter_1m;
+    reg clk_1m = 0;
+    reg [31:0]counter_1m = 0;
     always @(posedge clk) begin
         if (counter_1m == 0) begin
             counter_1m <= DIVIDER;
@@ -25,8 +25,8 @@ module tlc549c
         end
     end
 
-    reg clk_40k;
-    reg [31:0]counter_40k;
+    reg clk_40k = 0;
+    reg [31:0]counter_40k = 0;
     always @(posedge clk_1m) begin
         if (counter_40k == 0) begin
             counter_40k <= 12;

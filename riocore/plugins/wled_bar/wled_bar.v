@@ -12,7 +12,7 @@ module wled_bar
      );
 
     // Green, Red, Blue
-    reg [23:0] rgb_data;
+    reg [23:0] rgb_data = 0;
     reg [7:0] led_num = 0;
     reg write = 0;
 

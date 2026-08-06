@@ -213,7 +213,7 @@ endmodule
 module seven_segments (
         input wire clk,
         input wire [3:0] binary,
-        output reg [6:0] display
+        output reg [6:0] display = 0
     );
 
     always @(binary) begin
@@ -241,7 +241,7 @@ endmodule
 
 module bin2bcd(
         input [15:0] bin,
-        output reg [23:0] bcd
+        output reg [23:0] bcd = 0
     );
     integer i;
     always @(bin) begin

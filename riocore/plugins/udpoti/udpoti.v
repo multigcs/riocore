@@ -12,7 +12,7 @@ module udpoti
      );
 
     reg ctrl_clk = 0;
-    reg [31:0] counter;
+    reg [31:0] counter = 0;
     reg init = 0;
     always @(posedge clk) begin
         if (counter == 0) begin

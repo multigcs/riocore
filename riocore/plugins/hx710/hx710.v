@@ -5,7 +5,7 @@ module hx710
         input clk,
         input miso,
         output reg sclk = 0,
-        output reg [23:0] pressure
+        output reg [23:0] pressure = 'd0
     );
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);

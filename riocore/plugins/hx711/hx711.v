@@ -5,7 +5,7 @@ module hx711
         input clk,
         input miso,
         output reg sclk = 0,
-        output reg [23:0] weight
+        output reg [23:0] weight = 'd0
     );
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);

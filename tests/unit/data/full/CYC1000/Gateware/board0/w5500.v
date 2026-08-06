@@ -111,11 +111,11 @@ module wiznet5500
          input miso,
          input data_input_valid,
          input [BUFFER_SIZE_TX-1:0] data_input,
-         output reg [BUFFER_SIZE_RX-1:0] data_output,
+         output reg [BUFFER_SIZE_RX-1:0] data_output = 0,
          input flush_requested,
-         output reg mosi,
+         output reg mosi = 1'd0,
          output reg spi_clk = 1'b0,
-         output reg spi_chip_select_n,
+         output reg spi_chip_select_n = 1'd0,
          output reg data_output_valid = 0,
          output is_available
      );

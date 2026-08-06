@@ -6,7 +6,7 @@ module uartbridge
         input rx,
         output tx,
         output wire tx_enable,
-        output reg [RX_BUFFERSIZE-1:0] rxdata,
+        output reg [RX_BUFFERSIZE-1:0] rxdata = 0,
         input [TX_BUFFERSIZE-1:0] txdata
     );
 

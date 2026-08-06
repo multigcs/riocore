@@ -3,7 +3,7 @@ module uart
     #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter CSUM=0, parameter DEBUG=0)
      (
          input clk, // clock signal
-         output reg [BUFFER_SIZE_RX-1:0] rx_data, // received data
+         output reg [BUFFER_SIZE_RX-1:0] rx_data = 0, // received data
          input [BUFFER_SIZE_TX-1:0] tx_data, // data to send
          output reg sync = 0, // new pkg received
          output reg tx_enable = 0, // tx enable pin for rs485
@@ -14,13 +14,13 @@ module uart
     localparam BUFFER_SIZE_RX2 = BUFFER_SIZE_RX + (CSUM * 8);
     localparam BUFFER_SIZE_TX2 = BUFFER_SIZE_TX + (CSUM * 8);
 
-    reg [BUFFER_SIZE_TX2-1:0] tx_data_buffer;
-    reg [BUFFER_SIZE_RX2-1:0] rx_data_buffer;
+    reg [BUFFER_SIZE_TX2-1:0] tx_data_buffer = 0;
+    reg [BUFFER_SIZE_RX2-1:0] rx_data_buffer = 0;
 
     reg TxD_start = 0;
     wire TxD_busy;
 
-    reg [7:0] TxD_data;
+    reg [7:0] TxD_data = 0;
     wire [7:0] RxD_data;
     wire RxD_data_ready;
     wire RxD_idle;

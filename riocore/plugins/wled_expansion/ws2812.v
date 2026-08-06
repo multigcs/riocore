@@ -24,8 +24,8 @@ module ws2812 (
     reg [LED_BITS-1:0] led_counter = NUM_LEDS - 1;
     reg [COUNT_BITS-1:0] bit_counter = 0;
     reg [4:0] rgb_counter = 23;
-    reg [1:0] state;
-    reg [23:0] led_color;
+    reg [1:0] state = 0;
+    reg [23:0] led_color = 0;
 
     always @(posedge clk) begin
         if(write)

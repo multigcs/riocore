@@ -15,7 +15,7 @@ module i2c_master
         input wire wakeup,
         input wire [4:0] set_bytes, // data size
         input wire [MAX_BITS-1:0] set_data_out, // send data
-        output reg [MAX_DIN-1:0] data_in, // received data
+        output reg [MAX_DIN-1:0] data_in = 'd0, // received data
         output reg error = 0
     );
 
@@ -37,8 +37,8 @@ module i2c_master
     reg [12:0] delay = 0;
     reg [DIVIDER_BITS-1:0] divider = 0;
 
-    reg clk_bus;
-    reg [DIVIDER_BITS-1:0]counter_bus;
+    reg clk_bus = 'd0;
+    reg [DIVIDER_BITS-1:0] counter_bus = 'd0;
     always @(posedge clk) begin
         if (counter_bus == 0) begin
             counter_bus <= divider;

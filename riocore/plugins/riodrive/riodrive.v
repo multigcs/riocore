@@ -13,10 +13,10 @@ module riodrive
         output reg [15:0] power = 'd0,
         output reg [7:0] temp = 'd0,
         output reg [3:0] state = 'd0,
-        output reg traj,
-        output reg mot,
-        output reg enc,
-        output reg ctrl
+        output reg traj = 'd0,
+        output reg mot = 'd0,
+        output reg enc = 'd0,
+        output reg ctrl = 'd0
     );
 
     localparam IDIVIDER_BITS = clog2(IDIVIDER + 1);

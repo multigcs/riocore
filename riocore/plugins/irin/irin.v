@@ -4,13 +4,13 @@ module irin
      (
          input  clk,
          input  ir,
-         output reg [7:0] code
+         output reg [7:0] code = 'd0
      );
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
-    reg [DIVIDER_BITS:0]counter;
+    reg [DIVIDER_BITS:0] counter = 'd0;
 
-    reg clk_1us;
+    reg clk_1us = 'd0;
     always @(posedge clk) begin
         if (counter == 0) begin
             counter <= DIVIDER;
@@ -20,7 +20,7 @@ module irin
         end
     end
 
-    reg [2:0]IR_reg;
+    reg [2:0] IR_reg = 'd0;
     initial IR_reg = 3'b0;
     always @ (posedge clk_1us)
     begin
@@ -41,25 +41,25 @@ module irin
     localparam CODE_0 	= 16'd512  + 16'd512;
     localparam CODE_1 	= 16'd1536 + 16'd512;
 
-    reg   [2:0]state;
+    reg [2:0] state = 'd0;
     initial state = ST_START_L;
-    reg	[15:0]cnt_h;
+    reg	[15:0] cnt_h = 'd0;
     initial cnt_h = 16'b0;
-    reg	[15:0]cnt_l;
+    reg	[15:0] cnt_l = 'd0;
     initial cnt_l = 16'b0;
-    reg 	[31:0]T_Value;
+    reg 	[31:0] T_Value = 'd0;
     initial T_Value = 32'b0;
 
-    reg 	[31:0]IR_Value;
+    reg 	[31:0] IR_Value = 'd0;
     initial IR_Value = 32'b0;
 
-    reg	[15:0]cnt_val;
+    reg	[15:0] cnt_val = 'd0;
     initial cnt_val = 16'b0;
 
-    reg   Flag_LVL;
+    reg   Flag_LVL = 'd0;
     initial Flag_LVL = 1'b0;
 
-    reg   Flag_HVL;
+    reg   Flag_HVL = 'd0;
     initial Flag_HVL = 1'b0;
 
     always @ (posedge clk_1us or posedge ir) begin
@@ -96,7 +96,7 @@ module irin
             Flag_HVL <= 1'b0;
     end
 
-    reg [15:0]IR_code;
+    reg [15:0] IR_code = 'd0;
     always @ (posedge clk_1us or posedge IR_neg) begin
         if(IR_neg)
         begin
@@ -121,7 +121,7 @@ module irin
 
 
     wire fault = cnt_h[15] | cnt_l[15];
-    reg [5:0] cnt_num;
+    reg [5:0] cnt_num = 'd0;
     initial cnt_num = 6'b0;
 
     always @ (posedge clk_1us) begin

@@ -154,7 +154,7 @@ endmodule
 module max7_seven_segments (
         input wire clk,
         input wire [3:0] binary,
-        output reg [6:0] display
+        output reg [6:0] display = 'd0
     );
     /*
             6
@@ -192,7 +192,7 @@ endmodule
 
 module max7_bin2bcd(
         input [19:0] bin,
-        output reg [23:0] bcd
+        output reg [23:0] bcd = 'd0
     );
     integer i;
     always @(bin) begin
