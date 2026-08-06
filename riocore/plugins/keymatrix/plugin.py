@@ -104,9 +104,13 @@ class Plugin(PluginBase):
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
         divider = int(self.system_setup["speed"] / 1000 / delay)
+
         instance_parameter["DIVIDER"] = divider
+        instance_parameter["DIVIDER_BITS"] = self.clog2(divider + 1)
         instance_parameter["ROWS"] = rows
+        instance_parameter["ROW_BITS"] = self.clog2(rows + 1)
         instance_parameter["COLS"] = cols
+        instance_parameter["COL_BITS"] = self.clog2(rows + 1)
         instance_parameter["VALUE_BITS"] = self.clog2(rows * cols + 1)
         for key in list(instance["arguments"]):
             if key in {"clk", "value"}:

@@ -973,6 +973,8 @@ class gateware(generator_base):
                             default = data_config.get("default", 0)
                             if size == 1:
                                 if variable not in used_expansion_outputs:
+                                    if size == 1 and default > 0:
+                                        default = 1
                                     output_exp.append(f"        {variable} <= {size}'d{default};")
                             else:
                                 for bit_num in range(size):

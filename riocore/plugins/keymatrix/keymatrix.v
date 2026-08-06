@@ -1,18 +1,21 @@
 
 module keymatrix
-    #(parameter COLS = 4, parameter ROWS = 4, parameter VALUE_BITS = 4, parameter DIVIDER = 1000)
-     (
+    #(
+        parameter COLS = 4,
+        parameter ROWS = 4,
+        parameter VALUE_BITS = 4,
+        parameter DIVIDER = 1000,
+        parameter ROW_BITS = 8,
+        parameter COL_BITS = 8,
+        parameter DIVIDER_BITS = 31
+    ) (
          input clk,
          output reg [COLS - 1:0] cols,
          input [ROWS - 1:0] rows,
          output reg [VALUE_BITS - 1:0] value
      );
 
-    localparam ROW_BITS = clog2(ROWS + 1);
-    localparam COL_BITS = clog2(COLS + 1);
-    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS - 1:0] delay;
-
     reg [1:0] step = 0;
     reg [ROW_BITS - 1:0] row = 0;
     reg [COL_BITS - 1:0] col = 0;
