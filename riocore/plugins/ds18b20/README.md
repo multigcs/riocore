@@ -37,7 +37,7 @@ hardware type
 
  * type: float
  * direction: input
- * unit: Hz
+ * unit: °C
 
 
 ## Interfaces:

@@ -15,6 +15,9 @@ axi driver for the interface communication to an embedded arm-core
 
 ## Pins:
 *FPGA-pins*
+### led1:
+
+ * direction: output
 
 
 ## Options:
@@ -30,6 +33,30 @@ hardware type
 
  * type: imgselect
  * default: generic
+
+### ip:
+IP-Address
+
+ * type: str
+ * default: 192.168.10.119
+
+### mask:
+Network-Mask
+
+ * type: str
+ * default: 255.255.255.0
+
+### gw:
+Gateway IP-Address
+
+ * type: str
+ * default: 192.168.10.1
+
+### port:
+UDP-Port
+
+ * type: int
+ * default: 2390
 
 
 ## Signals:

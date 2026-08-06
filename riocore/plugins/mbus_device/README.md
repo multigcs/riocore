@@ -18,6 +18,7 @@ modbus device
 | N4DAC02 | <img height="48" src="boards/N4DAC02.png"> |
 | N4DOK32 | <img height="48" src="boards/N4DOK32.png"> |
 | NT18B07 | <img height="48" src="boards/NT18B07.png"> |
+| XYMD02 | <img height="48" src="boards/XYMD02.png"> |
 
 ## Pins:
 *FPGA-pins*
@@ -45,7 +46,7 @@ device type
 
  * type: select
  * default: generic
- * options: generic, 303E32DC812, DDS519MR, MA01_AXCX4020, MA01_XACX0440, N4DAC02, N4DOK32, NT18B07
+ * options: generic, 303E32DC812, DDS519MR, MA01_AXCX4020, MA01_XACX0440, N4DAC02, N4DOK32, NT18B07, XYMD02
 
 ### address:
 device address

@@ -1,0 +1,32 @@
+{
+  "comment": "temperature and humidity sensor",
+  "address": 1,
+  "timeout": 160,
+  "delay": 60,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [95, 256], "type": ["MODBUS"], "bus": true},
+    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [113, 256], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
+  },
+  "commands": {
+    "temp": {
+        "type": 4,
+        "register": 0,
+        "values": 1,
+        "scale": 0.1,
+        "error_values": "",
+        "datatype": "int",
+        "unit": "°C",
+        "format": "0.1f"
+    },
+    "humidity": {
+        "type": 4,
+        "register": 1,
+        "values": 1,
+        "scale": 0.1,
+        "error_values": "",
+        "datatype": "int",
+        "unit": "%RH",
+        "format": "0.1f"
+    }
+  }
+}
