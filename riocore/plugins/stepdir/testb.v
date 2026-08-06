@@ -39,7 +39,7 @@ module testb;
         velocity = 0;
         #100
         velocity = -100;
-        #1000
+        #870
         velocity = -50;
         #1000
         velocity = 50;
@@ -47,7 +47,7 @@ module testb;
         # 1000 $finish;
     end
 
-    stepdir #(.PULSE_LEN(0), .DIR_DELAY(10)) stepdirstepdir (
+    stepdir #(.PULSE_LEN(30), .DIR_DELAY(10)) stepdirstepdir (
         .clk(clk),
         .velocity(velocity),
         .enable(enable),

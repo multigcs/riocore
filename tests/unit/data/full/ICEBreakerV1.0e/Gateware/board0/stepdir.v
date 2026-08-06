@@ -37,7 +37,7 @@ module stepdir
     end
 
     always @ (posedge clk) begin
-        if (velocity != 0 && enable == 1 && jointCounter < velocityAbs) begin
+        if ((velocity != 0 && enable == 1 && jointCounter < velocityAbs) || step) begin
             if (step == 0 && dir != dirFlag) begin
                 dir <= dirFlag;
                 dir_changed <= 1;
@@ -58,17 +58,13 @@ module stepdir
                         position <= position - 1;
                     end
                 end
-
                 if (jointCounter < pulseEnd) begin
                     step <= 1;
                 end else begin
                     step <= 0;
                 end
-
                 jointCounter <= jointCounter + 1;
-
             end
-
         end else begin
             jointCounter <= 0;
         end
