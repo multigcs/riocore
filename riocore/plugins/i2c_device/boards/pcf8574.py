@@ -52,8 +52,11 @@ class i2c_device:
         setup_value = None
         if expansion is True:
             self.default = 255
+            bitvar = False
+            setup["bitvar"] = bitvar
         if self.bitvar:
             # write single bits into data_out byte
+            self.default = 1
             bitlist = []
             for bit in range(8):
                 if (1 << bit) & self.outputs:

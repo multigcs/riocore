@@ -97,7 +97,7 @@ class Plugin(PluginBase):
         cols_list = []
         rows_list = []
         for col in range(cols - 1, -1, -1):
-            cols_list.append(f"PINOUT_{self.instances_name.upper()}_COL{col}")
+            cols_list.append(f"PINOUT_{self.instances_name.upper()}_COL{col}_RAW")
         for row in range(rows - 1, -1, -1):
             rows_list.append(f"PININ_{self.instances_name.upper()}_ROW{row}")
         instances = self.gateware_instances_base()
