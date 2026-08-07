@@ -86,7 +86,6 @@ class LinuxCNC:
             "ICON": None,
             "EDITOR": "gedit",
             "POSITION_OFFSET": "RELATIVE",
-            # "POSITION_FEEDBACK": "ACTUAL",
             "POSITION_FEEDBACK": "COMMANDED",
             "PREFERENCE_FILE_PATH": None,
             "ARCDIVISION": 64,
