@@ -21,6 +21,47 @@
     },
     "slots": [
         {
+            "name": "JTAG",
+            "pins": {
+                "TCK": {
+                    "pin": "TCK",
+                    "pos": [
+                        30,
+                        6
+                    ],
+                    "special": true,
+                    "direction": "all"
+                },
+                "TDI": {
+                    "pin": "TDI",
+                    "pos": [
+                        30,
+                        17
+                    ],
+                    "special": true,
+                    "direction": "all"
+                },
+                "TMS": {
+                    "pin": "TMS",
+                    "pos": [
+                        30,
+                        89
+                    ],
+                    "special": true,
+                    "direction": "all"
+                },
+                "TDO": {
+                    "pin": "TDO",
+                    "pos": [
+                        30,
+                        78
+                    ],
+                    "special": true,
+                    "direction": "all"
+                }
+            }
+        },
+        {
             "name": "PIN",
             "pins": {
                 "44": {
@@ -34,6 +75,40 @@
                     "comment": "KEY_B / JTAG_SEL",
                     "direction": "all"
                 },
+
+
+                "BL_IO27": {
+                    "pin": "BL_IO27",
+                    "pos": [
+                        97,
+                        6
+                    ],
+                    "special": true,
+                    "comment": "BL_IO27",
+                    "direction": "all"
+                },
+                "BL_IO26": {
+                    "pin": "BL_IO26",
+                    "pos": [
+                        108,
+                        6
+                    ],
+                    "special": true,
+                    "comment": "BL_IO26",
+                    "direction": "all"
+                },
+                "BL_IO23": {
+                    "pin": "BL_IO23",
+                    "pos": [
+                        119,
+                        6
+                    ],
+                    "special": true,
+                    "comment": "BL_IO23",
+                    "direction": "all"
+                },
+
+
                 "40": {
                     "pin": "40",
                     "pos": [
@@ -163,6 +238,16 @@
                     "comment": "KEY_A",
                     "direction": "all"
                 },
+                "47": {
+                    "pin": "47",
+                    "pos": [
+                        96,
+                        89
+                    ],
+                    "special": true,
+                    "comment": "XTAL27MHz",
+                    "direction": "output"
+                },
                 "45": {
                     "pin": "45",
                     "pos": [
@@ -253,7 +338,7 @@
                     "rotate": true,
                     "special": true,
                     "direction": "all",
-                    "comment": "UART-RX"
+                    "comment": ""
                 },
                 "17": {
                     "pin": "17",
@@ -264,7 +349,7 @@
                     "rotate": true,
                     "special": true,
                     "direction": "all",
-                    "comment": "UART-TX"
+                    "comment": ""
                 },
                 "16": {
                     "pin": "16",
@@ -304,28 +389,6 @@
                     ],
                     "rotate": true,
                     "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "UART",
-            "comment": "over USB",
-            "pins": {
-                "RX": {
-                    "pin": "18",
-                    "pos": [
-                        13,
-                        42
-                    ],
-                    "direction": "input"
-                },
-                "TX": {
-                    "pin": "17",
-                    "pos": [
-                        13,
-                        51
-                    ],
-                    "direction": "output"
                 }
             }
         },
@@ -397,7 +460,7 @@
                     "pin": "GND",
                     "marker": true,
                     "pos": [
-                        52,
+                        74,
                         89
                     ],
                     "direction": "input"
@@ -406,7 +469,7 @@
                     "pin": "GND",
                     "marker": true,
                     "pos": [
-                        63,
+                        85,
                         89
                     ],
                     "direction": "input"
@@ -415,7 +478,7 @@
                     "pin": "5V",
                     "marker": true,
                     "pos": [
-                        74,
+                        52,
                         89
                     ],
                     "direction": "input"
@@ -424,7 +487,7 @@
                     "pin": "5V",
                     "marker": true,
                     "pos": [
-                        85,
+                        63,
                         89
                     ],
                     "direction": "input"
