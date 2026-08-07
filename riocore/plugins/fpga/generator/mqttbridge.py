@@ -69,65 +69,164 @@ class mqttbridge(cbase):
 
     def mqtt_page(self):
         output = []
-        output.append("<html>")
-        output.append("  <head>")
-        output.append("    <title>RIO MQTT</title>")
-        output.append('    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>')
-        output.append("  </head>")
-        output.append("  <style>")
-        output.append("""
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-.container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 20px;
-}
+        output.append("""<html>
+  <head>
+    <title>RIO MQTT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+  </head>
+  <style>
 
-.item {
-    background-color: #f4f4f4;
-    padding: 20px;
-    text-align: center;
-    border: 1px solid #ccc;
-}
+  :root{
+    --bg:#0e1117;
+    --panel:#161b27;
+    --panel-2:#1c2330;
+    --border:#262d3a;
+    --text:#e6edf3;
+    --muted:#8b949e;
+    --accent:#4f8cff;
+    --accent-2:#22c55e;
+    --warn:#f59e0b;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",Inter,system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:24px;
+  }
 
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-}
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:40px;height:40px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),#8b5cf6);
+    display:grid;place-items:center;font-weight:700;font-size:18px;color:#fff;
+  }
+  .brand h1{font-size:19px;font-weight:600;letter-spacing:.2px}
+  .brand p{font-size:12.5px;color:var(--muted)}
+  .head-actions{display:flex;align-items:center;gap:10px}
+  .search{
+    background:var(--panel);border:1px solid var(--border);
+    color:var(--text);padding:9px 14px;border-radius:9px;font-size:13.5px;width:220px;outline:none;
+  }
+  .search:focus{border-color:var(--accent)}
+  .btn{
+    background:var(--accent);border:none;color:#fff;font-size:13.5px;font-weight:600;
+    padding:9px 16px;border-radius:9px;cursor:pointer;transition:.2s;
+  }
+  .btn:hover{background:#3b78ec}
+  .avatar{
+    width:38px;height:38px;border-radius:50%;background:var(--panel-2);
+    border:1px solid var(--border);display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--muted);
+  }
 
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
+  /* ---------- Grid: 5 containers ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-template-areas:
+      "a a b b c c"
+      "d d d d e e";
+    gap:18px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+    border-color:#3741af;
+    transition: border-color .2s, transform .2s;
+  }
+  .card: hover{border-color:#37414f;}
 
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1;
-}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;margin-bottom:14px}
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
+  .stat{
+    font-size:27px;
+    font-weight:700;
+    line-height:1.1;
+   }
+  .delta{font-size:12.5px;margin-top:6px;color:var(--accent-2)}
+  .delta.down{color:var(--danger)}
 
+  .bar-track{height:7px;background:var(--panel-2);border-radius:99px;overflow:hidden;margin-top:12px}
+  .bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#8b5cf6)}
+
+  /* chart */
+  .chart{display:flex;align-items:flex-end;gap:10px;height:170px;margin-top:8px}
+  .chart div{
+    flex:1;border-radius:6px 6px 3px 3px;
+    background:linear-gradient(180deg,var(--accent),#2a4b8d);
+  }
+  .chart-legend{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:10px}
+
+  /* list */
+  ul{list-style:none}
+  li{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px;
+  }
+  li:last-child{border-bottom:none}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .t{color:var(--muted);margin-left:auto;font-size:11.5px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{
+    text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:.6px;padding:8px 10px;border-bottom:1px solid var(--border);
+  }
+  td{
+    font-size:9px;
+    padding:0px 0px;
+    border-bottom:1px solid var(--border);
+
+  }
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--panel-2)}
+  .tag{padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:600}
+  .ok{background:rgba(34,197,94,.14);color:var(--accent-2)}
+  .pending{background:rgba(245,158,11,.14);color:var(--warn)}
+  .fail{background:rgba(239,68,68,.14);color:var(--danger)}
+
+  footer{margin-top:22px;text-align:center;color:var(--muted);font-size:12.5px}
+
+  @media(max-width:980px){
+    .grid{grid-template-columns:repeat(2,1fr);
+      grid-template-areas:"a b" "c c" "d d" "e e";}
+  }
+  @media(max-width:600px){
+    body{padding:16px}
+    .grid{grid-template-columns:1fr;grid-template-areas:"a" "b" "c" "d" "e";}
+    .search{width:100%}
+  }
+
+  </style>
+
+
+  <header>
+    <div class="brand">
+      <div class="logo">RIO</div>
+      <div>
+        <h1>RIO - MQTT</h1>
+        <p>Overview</p>
+      </div>
+    </div>
+    <div class="head-actions">
+    </div>
+  </header>
+
+  <main class="grid">
 """)
-
-        output.append("  </style>")
-        output.append("  <body>")
-
-        output.append('    <div class="container">')
 
         for plugin_instance in self.project.plugin_instances:
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
@@ -142,9 +241,12 @@ body {
                 signal_found = True
             if not signal_found:
                 continue
-            output.append('        <div class="item">')
-            output.append(f"    <B>{plugin_instance.instances_name}</B>")
-            output.append('    <table border="0" width="100%">')
+
+            output.append('    <section class="card">')
+            output.append(f"      <h2>{plugin_instance.instances_name}</h2>")
+
+            bits = {}
+            floats = {}
             for signal_name, signal_config in signals.items():
                 if signal_config.get("no_convert") is True:
                     continue
@@ -158,38 +260,60 @@ body {
                 virtual = signal_config.get("virtual")
                 if virtual:
                     continue
+
+                if boolean:
+                    bits[signal_name] = {
+                        "halname": halname,
+                        "signal_config": signal_config,
+                    }
+                else:
+                    floats[signal_name] = {
+                        "halname": halname,
+                        "signal_config": signal_config,
+                    }
+
+            for signal_name, data in floats.items():
+                halname = data["halname"]
+                signal_config = data["signal_config"]
+                direction = signal_config["direction"]
+                output.append("      <td></td>")
+
                 if direction == "output":
                     vmin = signal_config.get("min", 0)
                     vmax = signal_config.get("max", 1000)
-                    if boolean:
-                        vmax = 1
-                    output.append("      <tr>")
-                    if description:
-                        output.append(f'        <td width="20%"><div class="tooltip">{signal_name}<span class="tooltiptext">{description}</span></div>:</td>')
-                    else:
-                        output.append(f'        <td width="20%">{signal_name}</td>')
-                    if boolean:
-                        output.append(f'        <td align="right" width="30%"><input type="checkbox" id="{self.mqttname(halname)}" /></td>')
-                        output.append('        <td width="40%">&nbsp;</td>')
-                    else:
-                        output.append(f'        <td align="right" width="30%"><b id="{self.mqttname(halname)}_fb">0</b>{unit or ""}</td>')
-                        output.append(f'        <td width="40%"><input width="100%" type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}" value="0" /></td>')
-                    if vmin < 0:
-                        output.append(f'        <td width="1%"><button onclick="document.getElementById(\'{self.mqttname(halname)}\').value = 0;" id="{self.mqttname(halname)}_zero" type="button">0</button></td>')
-                    output.append("      </tr>")
-                elif direction == "input":
-                    output.append("      <tr>")
-                    if description:
-                        output.append(f'        <td width="30%"><div class="tooltip">{signal_name}<span class="tooltiptext">{description}</span></div>:</td>')
-                    else:
-                        output.append(f'        <td width="30%">{signal_name}</td>')
-                    output.append(f'        <td align="right" width="30%"><b id="{self.mqttname(halname)}">0</b> {unit or ""}</td>')
-                    output.append('        <td width="30%">&nbsp;</td>')
-                    output.append("      </tr>")
-            output.append("    </table>")
-            output.append("        </div>")
+                    output.append(f'      <div class="delta">{signal_name}</div>')
+                    output.append(f'      <div class="stat"><b id="{self.mqttname(halname)}_fb">0</b>{unit or ""}</div>')
+                    output.append(f'      <div class="range"><input width="100%" type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}" value="0" /></div>')
+                else:
+                    output.append(f'      <div class="delta">{signal_name}</div>')
+                    output.append(f'      <div class="stat"><b id="{self.mqttname(halname)}">0</b>{unit or ""}</div>')
+                    output.append(f'      <div class="bar-track"><div id="{self.mqttname(halname)}_p" class="bar-fill" style="width:68%"></div></div>')
 
-        output.append("    </div>")
+            output.append('      <div class="delta">')
+            for vdir in ("input", "output"):
+                output.append("      <table><tr>")
+                for signal_name, data in bits.items():
+                    halname = data["halname"]
+                    signal_config = data["signal_config"]
+                    direction = signal_config["direction"]
+                    if direction != vdir:
+                        continue
+                    output.append(f"      <td>{signal_name}</td>")
+                output.append("      </tr><tr>")
+                for signal_name, data in bits.items():
+                    halname = data["halname"]
+                    signal_config = data["signal_config"]
+                    direction = signal_config["direction"]
+                    if direction != vdir:
+                        continue
+                    if direction == "output":
+                        output.append(f'      <td><input type="checkbox" id="{self.mqttname(halname)}" /></td>')
+                    else:
+                        output.append(f'      <td><p id="{self.mqttname(halname)}">0</p></td>')
+                output.append("      </tr></table>")
+            output.append("</div>")
+
+            output.append("    </section>")
 
         output.append("")
         output.append('    <script type="text/javascript">')
@@ -219,8 +343,8 @@ body {
                     vmax = signal_config.get("max", 1000)
                     output.append(f'        document.getElementById("{self.mqttname(halname)}").addEventListener("change", publish, false);')
                     output.append(f'        document.getElementById("{self.mqttname(halname)}").addEventListener("input", publish, false);')
-                    if vmin < 0:
-                        output.append(f'        document.getElementById("{self.mqttname(halname)}_zero").addEventListener("click", publish, false);')
+                    # if vmin < 0:
+                    #    output.append(f'        document.getElementById("{self.mqttname(halname)}_zero").addEventListener("click", publish, false);')
 
         output.append("        client.connect({onSuccess:onConnect});")
         output.append("        client.onMessageArrived = onMessage;")
@@ -304,6 +428,15 @@ body {
                         output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = parseFloat(message.payloadString).toFixed({digits});')
                     else:
                         output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = message.payloadString;')
+                    if not boolean:
+                        vmin = 0
+                        vmax = 255
+                        vmin = signal_config.get("min", vmin)
+                        vmax = signal_config.get("max", vmax)
+                        scale = 100 / 255
+                        print("#", vmin, vmax, signal_config)
+                        output.append(f'                document.getElementById("{self.mqttname(halname)}_p").style.width = (parseFloat(message.payloadString) * {scale}).toString() + "%";')
+
                     output.append("            }")
         output.append("        }")
         output.append("")
