@@ -1,6 +1,6 @@
+import json
 import os
 import stat
-import json
 
 from .cbase import cbase
 
@@ -40,7 +40,7 @@ class mqttbridge(cbase):
     def __init__(self, project, instance):
         self.project = project
         self.instance = instance
-        #self.prefix = instance.hal_prefix
+        # self.prefix = instance.hal_prefix
         self.mqtt_path = os.path.join(self.project.config["output_path"], "MQTT", instance.instances_name)
         os.makedirs(self.mqtt_path, exist_ok=True)
 
@@ -359,7 +359,7 @@ body {
         )
         py_in = 200
         py_out = 200
-        nid = 0x370fd489cad2511e
+        nid = 0x370FD489CAD2511E
         for plugin_instance in self.project.plugin_instances:
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
@@ -373,7 +373,6 @@ body {
                     continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
-                boolean = signal_config.get("bool")
                 virtual = signal_config.get("virtual")
                 if virtual:
                     continue
