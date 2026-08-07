@@ -47,7 +47,7 @@ class mqttbridge(cbase):
         self.mqtt_startscript()
         self.mqtt_page()
 
-        output = self.mainc()
+        output = self.mainc(autostart=True)
         output += self.mqtt_functions()
 
         open(os.path.join(self.mqtt_path, "mqttbridge.c"), "w").write("\n".join(output))
@@ -131,12 +131,23 @@ body {
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             signals = plugin_instance.signals()
-            if not signals:
+            signal_found = False
+            for signal_name, signal_config in signals.items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
+                signal_found = True
+            if not signal_found:
                 continue
             output.append('        <div class="item">')
             output.append(f"    <B>{plugin_instance.instances_name}</B>")
-            output.append("    <table>")
+            output.append('    <table border="0" width="100%">')
             for signal_name, signal_config in signals.items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
@@ -152,28 +163,26 @@ body {
                         vmax = 1
                     output.append("      <tr>")
                     if description:
-                        output.append(f'        <td><div class="tooltip">{signal_name}<span class="tooltiptext">{description}</span></div>:</td>')
+                        output.append(f'        <td width="20%"><div class="tooltip">{signal_name}<span class="tooltiptext">{description}</span></div>:</td>')
                     else:
-                        output.append(f"        <td>{signal_name}</td>")
+                        output.append(f'        <td width="20%">{signal_name}</td>')
                     if boolean:
-                        output.append(f'        <td><input type="checkbox" id="{self.mqttname(halname)}" /></td>')
+                        output.append(f'        <td align="right" width="30%"><input type="checkbox" id="{self.mqttname(halname)}" /></td>')
+                        output.append('        <td width="40%">&nbsp;</td>')
                     else:
-                        output.append(f'        <td><b id="{self.mqttname(halname)}_fb">0</b></td>')
-                        if unit:
-                            output.append(f"        <td>{unit}</td>")
-                        output.append(f'        <td><input type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}" value="0" /></td>')
+                        output.append(f'        <td align="right" width="30%"><b id="{self.mqttname(halname)}_fb">0</b>{unit or ""}</td>')
+                        output.append(f'        <td width="40%"><input width="100%" type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}" value="0" /></td>')
                     if vmin < 0:
-                        output.append(f'        <td><button onclick="document.getElementById(\'{self.mqttname(halname)}\').value = 0;" id="{self.mqttname(halname)}_zero" type="button">0</button></td>')
+                        output.append(f'        <td width="1%"><button onclick="document.getElementById(\'{self.mqttname(halname)}\').value = 0;" id="{self.mqttname(halname)}_zero" type="button">0</button></td>')
                     output.append("      </tr>")
                 elif direction == "input":
                     output.append("      <tr>")
                     if description:
-                        output.append(f'        <td><div class="tooltip">{signal_name}<span class="tooltiptext">{description}</span></div>:</td>')
+                        output.append(f'        <td width="30%"><div class="tooltip">{signal_name}<span class="tooltiptext">{description}</span></div>:</td>')
                     else:
-                        output.append(f"        <td>{signal_name}</td>")
-                    output.append(f'        <td><b id="{self.mqttname(halname)}">0</b></td>')
-                    if unit:
-                        output.append(f"        <td>{unit}</td>")
+                        output.append(f'        <td width="30%">{signal_name}</td>')
+                    output.append(f'        <td align="right" width="30%"><b id="{self.mqttname(halname)}">0</b> {unit or ""}</td>')
+                    output.append('        <td width="30%">&nbsp;</td>')
                     output.append("      </tr>")
             output.append("    </table>")
             output.append("        </div>")
@@ -193,6 +202,10 @@ body {
             if not signals:
                 continue
             for signal_name, signal_config in signals.items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
@@ -220,6 +233,10 @@ body {
             if not signals:
                 continue
             for signal_name, signal_config in signals.items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
@@ -267,6 +284,10 @@ body {
             if not signals:
                 continue
             for signal_name, signal_config in signals.items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
@@ -275,9 +296,13 @@ body {
                     continue
                 if direction == "input":
                     output.append(f'            if (message.destinationName == "{self.mqttname(halname)}") {{')
-                    output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = message.payloadString;')
+                    fformat = signal_config.get("format")
+                    if fformat and "." in fformat and fformat[-1] == "f":
+                        digits = fformat[:-1].split(".")[-1].lstrip("0")
+                        output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = parseFloat(message.payloadString).toFixed({digits});')
+                    else:
+                        output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = message.payloadString;')
                     output.append("            }")
-
         output.append("        }")
         output.append("")
         output.append("    </script>")
@@ -309,6 +334,10 @@ body {
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 direction = signal_config["direction"]
@@ -344,6 +373,32 @@ body {
         output.append("    register_signals();")
         output.append("    interface_init(argc, argv);")
         output.append("")
+
+        for direction in ("input", "output"):
+            mapping = {
+                "input": "sub",
+                "output": "pub",
+            }
+            output.append(f'    printf("{mapping.get(direction)}:\\n");')
+            for plugin_instance in self.project.plugin_instances:
+                if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                    continue
+                if plugin_instance.TYPE == "frameio":
+                    continue
+                for signal_name, signal_config in plugin_instance.signals().items():
+                    if signal_config.get("no_convert") is True:
+                        continue
+                    if signal_config.get("expansion") is True:
+                        continue
+                    halname = signal_config["halname"]
+                    varname = signal_config["varname"]
+                    boolean = signal_config.get("bool")
+                    virtual = signal_config.get("virtual")
+                    if virtual:
+                        continue
+                    if direction == signal_config["direction"]:
+                        output.append(f'    printf("  {varname}\\n");')
+            output.append('    printf("\\n");')
 
         output.append("")
         output.append("    MQTTClient client;")
@@ -382,6 +437,10 @@ body {
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 direction = signal_config["direction"]
@@ -402,7 +461,13 @@ body {
         for plugin_instance in self.project.plugin_instances:
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
+            if plugin_instance.TYPE == "frameio":
+                continue
             for signal_name, signal_config in plugin_instance.signals().items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
                 halname = signal_config["halname"]
                 varname = signal_config["varname"]
                 direction = signal_config["direction"]
@@ -425,7 +490,8 @@ body {
                     output.append("        }")
                     output.append("")
         output.append("")
-        output.append("        rtapi_delay(100000000);")
+        output.append("        // 10ms interval")
+        output.append("        rtapi_delay(10 * 1000000);")
         output.append("    }")
         output.append("")
         output.append("    if ((rc = MQTTClient_disconnect(client, 10000)) != MQTTCLIENT_SUCCESS) {")

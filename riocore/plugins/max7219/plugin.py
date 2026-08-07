@@ -21,12 +21,12 @@ class Plugin(PluginBase):
             "sclk": {
                 "direction": "output",
                 "pull": None,
-                "pos": (32, 46),
+                "pos": (32, 57),
             },
             "sel": {
                 "direction": "output",
                 "pull": None,
-                "pos": (32, 57),
+                "pos": (32, 46),
             },
         }
         self.OPTIONS = {

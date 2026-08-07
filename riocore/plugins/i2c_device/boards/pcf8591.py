@@ -10,66 +10,66 @@ class i2c_device:
         self.name = parent.instances_name
         self.address = parent.plugin_setup.get("address", "0x48")
         self.INTERFACE = {
-            f"dac": {
+            "dac": {
                 "size": 8,
                 "direction": "output",
                 "multiplexed": True,
             },
-            f"adc1": {
+            "adc1": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"adc2": {
+            "adc2": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"adc3": {
+            "adc3": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"adc4": {
+            "adc4": {
                 "size": 8,
                 "direction": "input",
                 "multiplexed": True,
             },
-            f"valid": {
+            "valid": {
                 "size": 1,
                 "direction": "input",
                 "multiplexed": True,
             },
         }
         self.SIGNALS = {
-            f"dac": {
+            "dac": {
                 "direction": "output",
                 "min": 0,
                 "max": 255,
                 "format": "0.1f",
                 "unit": "",
             },
-            f"adc1": {
+            "adc1": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"adc2": {
+            "adc2": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"adc3": {
+            "adc3": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"adc4": {
+            "adc4": {
                 "direction": "input",
                 "format": "0.1f",
                 "unit": "",
             },
-            f"valid": {
+            "valid": {
                 "direction": "input",
                 "bool": True,
             },

@@ -73,11 +73,13 @@ class Plugin(PluginBase):
         self.SIGNALS = {
             "value": {
                 "direction": "input",
+                "format": "0.0f",
             },
             "scancode": {
                 "direction": "input",
                 "hal_type": "u32",
                 "interface": "value",
+                "format": "0.0f",
             },
         }
         bitout = self.plugin_setup.get("bitout", self.OPTIONS["bitout"]["default"])
