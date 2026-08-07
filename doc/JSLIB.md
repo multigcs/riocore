@@ -1,6 +1,6 @@
 # JS-Lib
 
-Javascript library
+Javascript library, will only generate if you have an UDP interface configured
 
 you can found the generated files in 'Output/[CONFIG_NAME]/JSLIB'
 

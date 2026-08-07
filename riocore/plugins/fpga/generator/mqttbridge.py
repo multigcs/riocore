@@ -1,5 +1,6 @@
 import os
 import stat
+import json
 
 from .cbase import cbase
 
@@ -16,7 +17,7 @@ class mqttbridge(cbase):
         "u32": "uint32_t",
     }
     printf = "printf"
-    prefix = "/rio"
+    prefix = "rio"
     header_list = [
         "MQTTClient.h",
         "time.h",
@@ -39,13 +40,14 @@ class mqttbridge(cbase):
     def __init__(self, project, instance):
         self.project = project
         self.instance = instance
-        self.prefix = instance.hal_prefix
+        #self.prefix = instance.hal_prefix
         self.mqtt_path = os.path.join(self.project.config["output_path"], "MQTT", instance.instances_name)
         os.makedirs(self.mqtt_path, exist_ok=True)
 
         self.mqtt_makefile()
         self.mqtt_startscript()
         self.mqtt_page()
+        self.nodered_template()
 
         output = self.mainc(autostart=True)
         output += self.mqtt_functions()
@@ -310,6 +312,116 @@ body {
         output.append("</html>")
         output.append("")
         open(os.path.join(self.mqtt_path, "test.html"), "w").write("\n".join(output))
+
+    def nodered_template(self):
+        template = [
+            {
+                "id": "1a46187fa5abebc0",
+                "type": "tab",
+                "label": "RIO-MQTT",
+                "disabled": False,
+                "info": "",
+                "env": [],
+            }
+        ]
+        template.append(
+            {
+                "id": "0ae84448796161ae",
+                "type": "mqtt-broker",
+                "name": "",
+                "broker": "192.168.10.23",
+                "port": 1883,
+                "clientid": "",
+                "autoConnect": True,
+                "usetls": False,
+                "protocolVersion": 4,
+                "keepalive": 60,
+                "cleansession": True,
+                "autoUnsubscribe": True,
+                "birthTopic": "",
+                "birthQos": "0",
+                "birthRetain": "false",
+                "birthPayload": "",
+                "birthMsg": {},
+                "closeTopic": "",
+                "closeQos": "0",
+                "closeRetain": "false",
+                "closePayload": "",
+                "closeMsg": {},
+                "willTopic": "",
+                "willQos": "0",
+                "willRetain": "false",
+                "willPayload": "",
+                "willMsg": {},
+                "userProps": "",
+                "sessionExpiry": "",
+            }
+        )
+        py_in = 200
+        py_out = 200
+        nid = 0x370fd489cad2511e
+        for plugin_instance in self.project.plugin_instances:
+            if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
+                continue
+            signals = plugin_instance.signals()
+            if not signals:
+                continue
+            for signal_name, signal_config in signals.items():
+                if signal_config.get("no_convert") is True:
+                    continue
+                if signal_config.get("expansion") is True:
+                    continue
+                halname = signal_config["halname"]
+                direction = signal_config["direction"]
+                boolean = signal_config.get("bool")
+                virtual = signal_config.get("virtual")
+                if virtual:
+                    continue
+                if direction == "input":
+                    template.append(
+                        {
+                            "id": f"{nid:x}",
+                            "type": "mqtt in",
+                            "z": "1a46187fa5abebc0",
+                            "name": "",
+                            "topic": self.mqttname(halname),
+                            "qos": "2",
+                            "datatype": "auto-detect",
+                            "broker": "0ae84448796161ae",
+                            "nl": False,
+                            "rap": True,
+                            "rh": 0,
+                            "inputs": 0,
+                            "x": 400,
+                            "y": py_in,
+                            "wires": [],
+                        }
+                    )
+                    py_in += 60
+                else:
+                    template.append(
+                        {
+                            "id": f"{nid:x}",
+                            "type": "mqtt out",
+                            "z": "1a46187fa5abebc0",
+                            "name": "",
+                            "topic": self.mqttname(halname),
+                            "qos": "",
+                            "retain": "",
+                            "respTopic": "",
+                            "contentType": "",
+                            "userProps": "",
+                            "correl": "",
+                            "expiry": "",
+                            "broker": "0ae84448796161ae",
+                            "x": 2000,
+                            "y": py_out,
+                            "wires": [],
+                        }
+                    )
+                    py_out += 60
+                nid += 1
+        open(os.path.join(self.mqtt_path, "node-red.json"), "w").write(json.dumps(template, indent=2))
 
     def mqtt_functions(self):
         output = []
