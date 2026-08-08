@@ -137,24 +137,35 @@ class mqttbridge(cbase):
     grid-template-areas:
       "a a b b c c"
       "d d d d e e";
-    gap:18px;
+    gap:9px;
   }
   .card{
     background:var(--panel);
     border:1px solid var(--border);
     border-radius:14px;
-    padding:20px;
+    padding:10px;
     border-color:#3741af;
     transition: border-color .2s, transform .2s;
   }
   .card: hover{border-color:#37414f;}
 
-  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600;margin-bottom:14px}
+  .card h2{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:14px;
+  }
 
   .stat{
     font-size:27px;
     font-weight:700;
     line-height:1.1;
+
+    display: flex;
+    justify-content: right;
+    align-items: right;
    }
   .delta{font-size:12.5px;margin-top:6px;color:var(--accent-2)}
   .delta.down{color:var(--danger)}
@@ -210,9 +221,83 @@ class mqttbridge(cbase):
     .search{width:100%}
   }
 
+  input[type=range] {
+    width: 100%;
+    margin: 5px 0px;
+  }
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #336;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #33F;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.led-blue {
+  width: 24px;
+  height: 24px;
+  opacity: 1.0;
+  background-color: #24E0EE;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
+}
+
+
   </style>
-
-
   <header>
     <div class="brand">
       <div class="logo">RIO</div>
@@ -242,78 +327,39 @@ class mqttbridge(cbase):
             if not signal_found:
                 continue
 
-            output.append('    <section class="card">')
-            output.append(f"      <h2>{plugin_instance.instances_name}</h2>")
-
-            bits = {}
-            floats = {}
             for signal_name, signal_config in signals.items():
                 if signal_config.get("no_convert") is True:
                     continue
                 if signal_config.get("expansion") is True:
                     continue
+                virtual = signal_config.get("virtual")
+                if virtual:
+                    continue
                 halname = signal_config["halname"]
                 direction = signal_config["direction"]
                 boolean = signal_config.get("bool")
                 unit = signal_config.get("unit")
-                description = signal_config.get("description")
-                virtual = signal_config.get("virtual")
-                if virtual:
-                    continue
+                vmin = signal_config.get("min", 0)
+                vmax = signal_config.get("max", 1000)
 
-                if boolean:
-                    bits[signal_name] = {
-                        "halname": halname,
-                        "signal_config": signal_config,
-                    }
-                else:
-                    floats[signal_name] = {
-                        "halname": halname,
-                        "signal_config": signal_config,
-                    }
-
-            for signal_name, data in floats.items():
-                halname = data["halname"]
-                signal_config = data["signal_config"]
-                direction = signal_config["direction"]
-                output.append("      <td></td>")
+                output.append('    <section class="card">')
+                output.append(f"      <h2>{plugin_instance.instances_name} - {signal_name}</h2>")
 
                 if direction == "output":
-                    vmin = signal_config.get("min", 0)
-                    vmax = signal_config.get("max", 1000)
-                    output.append(f'      <div class="delta">{signal_name}</div>')
-                    output.append(f'      <div class="stat"><b id="{self.mqttname(halname)}_fb">0</b>{unit or ""}</div>')
-                    output.append(f'      <div class="range"><input width="100%" type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}" value="0" /></div>')
+                    if boolean:
+                        output.append('      <div class="stat">&nbsp;</div>')
+                        output.append(f'      <div class="stat"><label class="switch"><input type="checkbox" id="{self.mqttname(halname)}_set" /><span class="slider round"></span></label></div>')
+                    else:
+                        output.append(f'      <div class="stat"><b id="{self.mqttname(halname)}">0</b>{unit or ""}</div>')
+                        output.append(f'      <div class="range"><input width="100%" type="range" min="{vmin}" max="{vmax}" id="{self.mqttname(halname)}_set" value="0" /></div>')
+                elif boolean:
+                    output.append('      <div class="stat">&nbsp;</div>')
+                    output.append(f'      <div class="stat"><div class="led-blue" id="{self.mqttname(halname)}"></div></div>')
                 else:
-                    output.append(f'      <div class="delta">{signal_name}</div>')
                     output.append(f'      <div class="stat"><b id="{self.mqttname(halname)}">0</b>{unit or ""}</div>')
                     output.append(f'      <div class="bar-track"><div id="{self.mqttname(halname)}_p" class="bar-fill" style="width:68%"></div></div>')
 
-            output.append('      <div class="delta">')
-            for vdir in ("input", "output"):
-                output.append("      <table><tr>")
-                for signal_name, data in bits.items():
-                    halname = data["halname"]
-                    signal_config = data["signal_config"]
-                    direction = signal_config["direction"]
-                    if direction != vdir:
-                        continue
-                    output.append(f"      <td>{signal_name}</td>")
-                output.append("      </tr><tr>")
-                for signal_name, data in bits.items():
-                    halname = data["halname"]
-                    signal_config = data["signal_config"]
-                    direction = signal_config["direction"]
-                    if direction != vdir:
-                        continue
-                    if direction == "output":
-                        output.append(f'      <td><input type="checkbox" id="{self.mqttname(halname)}" /></td>')
-                    else:
-                        output.append(f'      <td><p id="{self.mqttname(halname)}">0</p></td>')
-                output.append("      </tr></table>")
-            output.append("</div>")
-
-            output.append("    </section>")
+                output.append("    </section>")
 
         output.append("")
         output.append('    <script type="text/javascript">')
@@ -340,9 +386,8 @@ class mqttbridge(cbase):
                     continue
                 if direction == "output":
                     vmin = signal_config.get("min", 0)
-                    vmax = signal_config.get("max", 1000)
-                    output.append(f'        document.getElementById("{self.mqttname(halname)}").addEventListener("change", publish, false);')
-                    output.append(f'        document.getElementById("{self.mqttname(halname)}").addEventListener("input", publish, false);')
+                    output.append(f'        document.getElementById("{self.mqttname(halname)}_set").addEventListener("change", publish, false);')
+                    output.append(f'        document.getElementById("{self.mqttname(halname)}_set").addEventListener("input", publish, false);')
                     # if vmin < 0:
                     #    output.append(f'        document.getElementById("{self.mqttname(halname)}_zero").addEventListener("click", publish, false);')
 
@@ -377,8 +422,9 @@ class mqttbridge(cbase):
         output.append("")
         output.append("""
         function publish() {
-            var topic = this.attributes.id.value.replace("_zero", "");
-            element = document.getElementById(topic);
+            var eid = this.attributes.id.value.replace("_zero", "");
+            var topic = eid.replace("_set", "");
+            element = document.getElementById(eid);
             var value = "0";
             if (element.attributes.type.value == "checkbox") {
                 if (element.checked) {
@@ -389,7 +435,7 @@ class mqttbridge(cbase):
             }
             console.log("publish", topic, value);
 
-            fb_element = document.getElementById(topic + "_fb");
+            fb_element = document.getElementById(topic);
             if (fb_element) {
                 fb_element.innerHTML = value;
             }
@@ -426,16 +472,23 @@ class mqttbridge(cbase):
                     if fformat and "." in fformat and fformat[-1] == "f":
                         digits = fformat[:-1].split(".")[-1].lstrip("0")
                         output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = parseFloat(message.payloadString).toFixed({digits});')
+                    elif boolean:
+                        output.append('                if (message.payloadString == "1") {')
+                        output.append(f'                    document.getElementById("{self.mqttname(halname)}").style.opacity = "1.0";')
+                        output.append(f'                    document.getElementById("{self.mqttname(halname)}").style.boxShadow = "rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px";')
+                        output.append("                } else {")
+                        output.append(f'                    document.getElementById("{self.mqttname(halname)}").style.opacity = "0.2";')
+                        output.append(f'                    document.getElementById("{self.mqttname(halname)}").style.boxShadow = "";')
+
+                        output.append("                }")
                     else:
                         output.append(f'                document.getElementById("{self.mqttname(halname)}").innerHTML = message.payloadString;')
+
                     if not boolean:
-                        vmin = 0
-                        vmax = 255
-                        vmin = signal_config.get("min", vmin)
-                        vmax = signal_config.get("max", vmax)
-                        scale = 100 / 255
-                        print("#", vmin, vmax, signal_config)
-                        output.append(f'                document.getElementById("{self.mqttname(halname)}_p").style.width = (parseFloat(message.payloadString) * {scale}).toString() + "%";')
+                        vmin = signal_config.get("min", 0)
+                        vmax = signal_config.get("max", 1000)
+                        scale = 100 / (vmax - vmin)
+                        output.append(f'                document.getElementById("{self.mqttname(halname)}_p").style.width = ((parseFloat(message.payloadString) - {vmin}) * {scale}).toString() + "%";')
 
                     output.append("            }")
         output.append("        }")

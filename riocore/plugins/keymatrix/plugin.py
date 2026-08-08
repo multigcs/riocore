@@ -74,6 +74,8 @@ class Plugin(PluginBase):
             "value": {
                 "direction": "input",
                 "format": "0.0f",
+                "min": 0,
+                "max": rows * cols,
             },
             "scancode": {
                 "direction": "input",

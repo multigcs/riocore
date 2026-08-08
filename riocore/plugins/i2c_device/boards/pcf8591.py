@@ -46,28 +46,36 @@ class i2c_device:
                 "direction": "output",
                 "min": 0,
                 "max": 255,
-                "format": "0.1f",
+                "format": "0.0f",
                 "unit": "",
             },
             "adc1": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.0f",
                 "unit": "",
+                "min": 0,
+                "max": 255,
             },
             "adc2": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.0f",
                 "unit": "",
+                "min": 0,
+                "max": 255,
             },
             "adc3": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.0f",
                 "unit": "",
+                "min": 0,
+                "max": 255,
             },
             "adc4": {
                 "direction": "input",
-                "format": "0.1f",
+                "format": "0.0f",
                 "unit": "",
+                "min": 0,
+                "max": 255,
             },
             "valid": {
                 "direction": "input",
@@ -112,5 +120,8 @@ class i2c_device:
         if signal_name == "valid":
             return ""
         return """
-        value = value;
+        // to unsigned
+        if (value < 0) {
+            value += 255;
+        }
         """
