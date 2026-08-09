@@ -9,6 +9,7 @@ module yaskawa_abs
         output reg debug_bit = 0,
         output rx_synced,
         output reg batt_error = 0,
+        // input wire [7:0] delay,
         output reg [7:0] temp = 0,
         // output reg [7:0] scounter = 0,
         // output reg [15:0] fcounter = 0,
@@ -58,6 +59,7 @@ module yaskawa_abs
                     bit_pos <= 0;
                  end
                 delay_counter <= DELAY;
+                // delay_counter <= delay;
             end else begin
                 delay_counter <= delay_counter - 1;
             end

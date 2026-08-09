@@ -25,11 +25,16 @@ Motor-Setup:
     }
 ```
 
+Unitec DTBL-2714A: 4pol
+Rexroth MSM031C-0300-NN-M0-CH0: 4pol
+Yas: 3pol
+
         """
         self.KEYWORDS = "joint brushless"
         self.NEEDS = ["fpga"]
         self.ORIGIN = ""
         self.EXPERIMENTAL = True
+        self.IMAGES = ["mv-vfd-350p-48.png", "simplefoc-mini.png"]
         self.TYPE = "joint"
         self.VERILOGS = ["bldc.v"]
         self.OPTIONS = {
@@ -57,26 +62,26 @@ Motor-Setup:
                 "description": "motor poles",
             },
             "sine_len": {
-                "default": 6,
+                "default": 0,
                 "type": int,
-                "min": 4,
+                "min": 0,
                 "max": 12,
                 "unit": "bits",
-                "description": "sinus table lenght in bits",
+                "description": "sinus table lenght in bits (0 = auto)",
             },
             "sine_res": {
-                "default": 12,
+                "default": 8,
                 "type": int,
                 "min": 8,
                 "max": 16,
                 "unit": "bits",
-                "description": "sinus table lenght in bits (0 = auto)",
+                "description": "sinus table lenght in bits",
             },
             "feedback_res": {
                 "default": 4096,
                 "type": int,
                 "min": 10,
-                "max": 100000,
+                "max": 65536,
                 "unit": "",
                 "description": "encoder resolution",
             },
@@ -90,8 +95,7 @@ Motor-Setup:
         self.SINE_RES_BITS = int(self.plugin_setup.get("sine_res", self.OPTIONS["sine_res"]["default"]))
 
         if self.SINE_LEN_BITS == 0:
-            optimum_sine_len = self.feedback_res / self.poles
-            self.SINE_LEN_BITS = int(math.log(optimum_sine_len, 2))
+            self.SINE_LEN_BITS = self.poles * 2
 
         # building sinus table
         self.sine_len = 1 << (self.SINE_LEN_BITS)
@@ -137,6 +141,21 @@ Motor-Setup:
                 "optional": True,
             },
         }
+
+        image = self.plugin_setup.get("image")
+        if image == "mv-vfd-350p-48.png":
+            self.PINDEFAULTS["u_p"]["pos"] = (138, 130)
+            self.PINDEFAULTS["v_p"]["pos"] = (127, 130)
+            self.PINDEFAULTS["w_p"]["pos"] = (116, 130)
+            self.PINDEFAULTS["u_n"]["pos"] = (127, 141)
+            self.PINDEFAULTS["v_n"]["pos"] = (116, 141)
+            self.PINDEFAULTS["w_n"]["pos"] = (105, 141)
+        elif image == "simplefoc-mini.png":
+            self.PINDEFAULTS["en"]["pos"] = (21, 7)
+            self.PINDEFAULTS["u_p"]["pos"] = (32, 7)
+            self.PINDEFAULTS["v_p"]["pos"] = (43, 7)
+            self.PINDEFAULTS["w_p"]["pos"] = (54, 7)
+
         self.INTERFACE = {
             "velocity": {
                 "size": 16,

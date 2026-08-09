@@ -16,6 +16,7 @@
   "toolchain": "gowin",
   "package": "",
   "clock": {
+    "osc": "27000000",
     "speed": "27000000",
     "pin": "52"
   },

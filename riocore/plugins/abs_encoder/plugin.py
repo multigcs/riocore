@@ -94,6 +94,9 @@ TODO: csum, pos/revs, cleanup
 for Panasonic and some Bosch/Rexroth Servos with
 mfe0017 encoder
 
+angle scale: 16bit (65536)
+position scale: 17bit (131072)
+
 FG      Shield
 VCC-    GND     Black
 VCC+    5V      White
@@ -353,15 +356,26 @@ angle scale: 16bit (65536)
 position scale: 17bit (131072)
 
 protocol in short:
-    * RS485
+    * RS485 - 4Mbit
     * manchester code
     * stuffing bit (after 5x1)
     * 16bit checksum
 
 very time critical
 on TangNano9k:
- "speed": "32400000",
- parameter DELAY=3, parameter DELAY_NEXT=4
+ "speed": "40000000",
+ parameter DELAY=4, parameter DELAY_NEXT=6
+
+Red             +5V
+gray            GND
+Orange          ???
+
+Yellow          Bat+
+Yellow/Black    Bat- / GND
+
+Blue            RS485 +A
+Blue/Black      RS485 -B
+
 
 """
             self.OPTIONS.update(
@@ -444,8 +458,17 @@ on TangNano9k:
                     "size": 32,
                     "direction": "input",
                 },
+                # "delay": {
+                #     "size": 8,
+                #     "direction": "output",
+                # },
             }
             self.SIGNALS = {
+                # "delay": {
+                #     "direction": "output",
+                #     "min": 0,
+                #     "max": 255,
+                # },
                 "batt_error": {
                     "direction": "input",
                     "bool": True,
@@ -574,4 +597,34 @@ on TangNano9k:
                 return f"""
     value = *data->{varname_pos} / 131072;
                 """
+
+        if node_type == "yaskawa":
+            if signal_name == "angle":
+                return """
+    value = value * 360.0 / 65536.0 + 360.0;
+    if (value >= 360.0) {
+        value -= 360.0;
+    }
+                """
+            if signal_name == "position":
+                return """
+    static float revs = 0;
+    static float last_position = 60000;
+    int32_t position_diff = 0;
+    position_diff = value - last_position;
+    if (position_diff > 65000) {
+        revs--;
+    } else if (position_diff < -65000) {
+        revs++;
+    }
+    last_position = value;
+    value += revs * 131072;
+                """
+            if signal_name == "revs":
+                varname_pos = self.SIGNALS["position"]["varname"]
+
+                return f"""
+    value = *data->{varname_pos} / 131072;
+                """
+
         return ""

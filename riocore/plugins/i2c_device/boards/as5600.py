@@ -4,7 +4,7 @@ import time
 class i2c_device:
     options = {
         "info": "magnetic rotary position sensor",
-        "description": "",
+        "description": "resolution: 12bit / 4096",
         "addresses": ["0x36"],
     }
 
@@ -90,33 +90,8 @@ class i2c_device:
             "I2C:OUT": {"direction": "output", "edge": "source", "pos": [80, 60], "type": ["PASSTHROUGH"], "bus": True, "pintype": "PASSTHROUGH", "source": "I2C"},
         }
 
-    def convert(self, signal_name, signal_setup, value):
-        if signal_name.endswith("_angle"):
-            new = value
-            diff = new - self.last
-            if diff < -2048:
-                self.revs += 1
-                diff += 4096
-            elif diff > 2048:
-                self.revs -= 1
-                diff -= 4096
-            self.SIGNALS["position"]["value"] = (self.revs * 4096) + new
-            self.last = new
-
-            # calc rps/rpm
-            timer_new = time.time()
-            timer_diff = timer_new - self.timer_last
-            rps = diff / timer_diff / 4096
-            self.timer_last = timer_new
-            self.SIGNALS["rps"]["value"] = rps
-            self.SIGNALS["rpm"]["value"] = rps * 60
-
-            # calc angle
-            return value * 360 / 4096
-        return value
-
     def convert_c(self, signal_name, signal_setup):
-        if signal_name.endswith("_angle"):
+        if signal_name.endswith("angle"):
             varname = self.SIGNALS["position"]["varname"]
             varname_rps = self.SIGNALS["rps"]["varname"]
             varname_rpm = self.SIGNALS["rpm"]["varname"]
