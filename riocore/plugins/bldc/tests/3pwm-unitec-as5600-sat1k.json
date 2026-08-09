@@ -1,0 +1,126 @@
+{
+    "name": "Empty",
+    "plugins": [
+        {
+            "type": "bldc",
+            "uid": "bldc0",
+            "is_joint": true,
+            "pos": [
+                230.0,
+                280.0
+            ],
+            "pins": {
+                "u_p": {
+                    "pin": "TangNano1K0:PIN:15"
+                },
+                "v_p": {
+                    "pin": "TangNano1K0:PIN:27"
+                },
+                "w_p": {
+                    "pin": "TangNano1K0:PIN:28"
+                },
+                "en": {
+                    "pin": "TangNano1K0:PIN:16"
+                }
+            },
+            "halsensor": "as56000:angle",
+            "joint": {
+                "feedback": "as56000:position",
+                "max_acceleration": 500.0,
+                "pid_maxoutput": 100.0,
+                "pid_deadband": 0.0001,
+                "ferror": 5.0,
+                "min_ferror": 0.4,
+                "scale": 1.0,
+                "pid_p": 600.0
+            },
+            "image": "simplefoc-mini.png",
+            "signals": {
+                "preset": {
+                    "setp": "15"
+                }
+            },
+            "sine_len": 7
+        },
+        {
+            "type": "i2c",
+            "uid": "i2c0",
+            "pos": [
+                320.0,
+                60.0
+            ],
+            "pins": {
+                "sda": {
+                    "pin": "TangNano1K0:PIN:30"
+                },
+                "scl": {
+                    "pin": "TangNano1K0:PIN:31"
+                }
+            }
+        },
+        {
+            "type": "i2c_device",
+            "node_type": "as5600",
+            "uid": "as56000",
+            "pos": [
+                550.0,
+                50.0
+            ],
+            "pins": {
+                "I2C": {
+                    "pin": "i2c0:BUS:IO"
+                }
+            },
+            "rotate": 180,
+            "signals": {
+                "position": {
+                    "scale": -1024.0
+                }
+            },
+            "speed": 1000000
+        },
+        {
+            "type": "fpga",
+            "node_type": "TangNano1K",
+            "uid": "TangNano1K0",
+            "pos": [
+                20.0,
+                150.0
+            ]
+        },
+        {
+            "type": "uart",
+            "uid": "uart0",
+            "pos": [
+                320.0,
+                -70.0
+            ],
+            "pins": {
+                "rx": {
+                    "pin": "TangNano1K0:PIN:40"
+                },
+                "tx": {
+                    "pin": "TangNano1K0:PIN:41"
+                }
+            },
+            "uart": "/dev/ttyUSB2"
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 2.74,
+            "pos": [
+                -31,
+                -216
+            ]
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "POSITION_FEEDBACK": "ACTUAL"
+            }
+        },
+        "debug_info": true
+    }
+}

@@ -1,0 +1,126 @@
+{
+    "name": "Empty",
+    "plugins": [
+        {
+            "type": "bldc",
+            "uid": "bldc0",
+            "is_joint": true,
+            "pos": [
+                10.0,
+                380.0
+            ],
+            "pins": {
+                "u_p": {
+                    "pin": "TangNano9K0:PIN:37"
+                },
+                "v_p": {
+                    "pin": "TangNano9K0:PIN:36"
+                },
+                "w_p": {
+                    "pin": "TangNano9K0:PIN:39"
+                },
+                "en": {
+                    "pin": "TangNano9K0:PIN:38"
+                }
+            },
+            "halsensor": "as56000:angle",
+            "joint": {
+                "feedback": "as56000:position",
+                "max_acceleration": 500.0,
+                "pid_maxoutput": 100.0,
+                "pid_deadband": 0.0001,
+                "ferror": 5.0,
+                "min_ferror": 0.4,
+                "scale": 1.0,
+                "pid_p": 600.0
+            },
+            "image": "simplefoc-mini.png"
+        },
+        {
+            "type": "i2c",
+            "uid": "i2c0",
+            "pos": [
+                330.0,
+                110.0
+            ],
+            "pins": {
+                "sda": {
+                    "pin": "TangNano9K0:PIN:31"
+                },
+                "scl": {
+                    "pin": "TangNano9K0:PIN:32"
+                }
+            }
+        },
+        {
+            "type": "i2c_device",
+            "node_type": "as5600",
+            "uid": "as56000",
+            "pos": [
+                540.0,
+                100.0
+            ],
+            "pins": {
+                "I2C": {
+                    "pin": "i2c0:BUS:IO"
+                }
+            },
+            "rotate": 180,
+            "speed": 500000,
+            "signals": {
+                "position": {
+                    "scale": -1024.0
+                }
+            }
+        },
+        {
+            "type": "fpga",
+            "node_type": "TangNano9K",
+            "uid": "TangNano9K0",
+            "pos": [
+                20.0,
+                210.0
+            ]
+        },
+        {
+            "type": "w5500",
+            "uid": "w55000",
+            "pos": [
+                120.0,
+                -100.0
+            ],
+            "pins": {
+                "mosi": {
+                    "pin": "TangNano9K0:PIN:71"
+                },
+                "miso": {
+                    "pin": "TangNano9K0:PIN:70"
+                },
+                "sclk": {
+                    "pin": "TangNano9K0:PIN:73"
+                },
+                "sel": {
+                    "pin": "TangNano9K0:PIN:72"
+                }
+            },
+            "image": "w5500",
+            "rotate": -90
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 2.11,
+            "pos": [
+                -261,
+                -236
+            ]
+        }
+    },
+    "linuxcnc": {
+        "ini": {
+            "DISPLAY": {
+                "POSITION_FEEDBACK": "ACTUAL"
+            }
+        }
+    }
+}

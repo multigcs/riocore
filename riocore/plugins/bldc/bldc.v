@@ -4,6 +4,7 @@ module bldc
          parameter START = 0,
          parameter VEL_RANGE = 256,
          parameter PWM_DIVIDER = 1000,
+         parameter PWM_DIVIDER_BITS = 31,
          parameter FEEDBACK_DIVIDER = 16,
          parameter SINE_LEN_BITS = 6,
          parameter SINE_RES_BITS = 8,
@@ -16,6 +17,7 @@ module bldc
          input signed [15:0] velocity,
          input signed [15:0] offset,
          input [15:0] feedback,
+         input [7:0] preset,
          output en,
          output u_p,
          output v_p,
@@ -32,22 +34,21 @@ module bldc
     localparam TABLE_LEN = (1<<(SINE_LEN_BITS-1));
     localparam THALF = SINE_LEN / 2;
     localparam TMAX = SINE_LEN / 4 - 1;
-    localparam TOFF_V = SINE_LEN / 3 - 1;
-    localparam TOFF_W = SINE_LEN / 3 * 2 - 1;
+    localparam TOFF_V = (SINE_LEN - 1) / 3;
+    localparam TOFF_W = (SINE_LEN - 1) / 3 * 2;
 
     reg direction = 0;
-    reg [SINE_RES_BITS:0] voltage = 0;
+    reg [SINE_RES_BITS-1:0] voltage = 0;
     reg [SINE_LEN_BITS-1:0] tpos_u = 0;
     reg [SINE_LEN_BITS-1:0] tpos_v = 0;
     reg [SINE_LEN_BITS-1:0] tpos_w = 0;
     reg signed [7:0] tangle = 0;
 
-    reg [31:0] clk_cnt = 0;
     reg [SINE_RES_BITS:0] dty_u = 0;
     reg [SINE_RES_BITS:0] dty_v = 0;
     reg [SINE_RES_BITS:0] dty_w = 0;
 
-    reg [31:0] counter = 0;
+    reg [PWM_DIVIDER_BITS-1:0] counter = 0;
     reg pwmclk = 0;
     always @(posedge clk) begin
         if (counter == 0) begin
@@ -58,7 +59,7 @@ module bldc
         end
     end
 
-    always@ (posedge(clk)) begin
+    always @(posedge(clk)) begin
         if (mode == 1) begin
             // position mode (no feedback)
             tpos_u <= offset;
@@ -69,9 +70,9 @@ module bldc
                 // calibration mode (to find offset)
                 tangle <= 0;
             end else if (velocity > 0) begin
-                tangle <= -TMAX;
+                tangle <= -TMAX - preset;
             end else if (velocity < 0) begin
-                tangle <= TMAX;
+                tangle <= TMAX + preset;
             end else begin
                 tangle <= 0;
             end
@@ -94,21 +95,21 @@ module bldc
         $readmemh(SINE_TBL, sine_tbl);
     end
 
-    reg [7:0] calc_stat = 0;
+    reg [1:0] calc_stat = 0;
     reg [15:0] in_a = 0;
     reg [15:0] in_b = 0;
     reg load = 0;
     wire out_valid;
     wire [31:0] out_prod;
     multiplier multiplier0 (
-      .clk (clk),
-      .in_a (in_a),
-      .in_b (in_b),
-      .load (load),
-      .out_valid (out_valid),
-      .out_prod (out_prod)
+      .clk(clk),
+      .in_a(in_a),
+      .in_b(in_b),
+      .load(load),
+      .out_valid(out_valid),
+      .out_prod(out_prod)
     );
-    always@ (posedge(clk)) begin
+    always @(posedge(clk)) begin
         // do serial calculation to not use DSP blocks
         // dty_u <= sine_tbl[tpos_u] * voltage / VEL_RANGE;
         // dty_v <= sine_tbl[tpos_v] * voltage / VEL_RANGE;
@@ -221,8 +222,8 @@ module multiplier
         input [15:0] in_b,
         input clk,
         input load,
-        output reg out_valid,
-        output reg [31:0] out_prod
+        output reg out_valid = 1'd0,
+        output reg [31:0] out_prod = 32'd0
     );
 
     always @ (posedge clk) begin

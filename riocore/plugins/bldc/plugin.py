@@ -176,6 +176,11 @@ Yas: 3pol
                 "direction": "output",
                 "multiplexed": True,
             },
+            "preset": {
+                "size": 8,
+                "direction": "output",
+                "multiplexed": True,
+            },
         }
         self.vel_range = 256
         self.SIGNALS = {
@@ -201,6 +206,11 @@ Yas: 3pol
                 "min": 0,
                 "max": 2,
             },
+            "preset": {
+                "direction": "output",
+                "min": 0,
+                "max": 255,
+            },
         }
 
     def gateware_instances(self, gateware=None):
@@ -217,6 +227,10 @@ Yas: 3pol
         frequency = int(self.plugin_setup.get("frequency", self.OPTIONS["frequency"]["default"]))
         divider = self.system_setup["speed"] // frequency // ((1 << self.SINE_RES_BITS) * 2)
         instance_parameter["PWM_DIVIDER"] = int(divider)
+        if divider == 0:
+            instance_parameter["PWM_DIVIDER_BITS"] = 0
+        else:
+            instance_parameter["PWM_DIVIDER_BITS"] = self.clog2(int(divider))
 
         instance_parameter["SINE_TBL"] = f'"{self.SINE_TBL}"'
         instance_parameter["SINE_LEN_BITS"] = self.SINE_LEN_BITS
