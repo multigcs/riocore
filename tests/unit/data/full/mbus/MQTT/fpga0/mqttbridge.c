@@ -16,7 +16,7 @@
 #include <termios.h>
 
 #define MODNAME "riocomp-fpga0"
-#define PREFIX "fpga0"
+#define PREFIX "rio"
 #define JOINTS 3
 #define BUFFER_SIZE_RX 40
 #define BUFFER_SIZE_TX 34
@@ -3259,7 +3259,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     fpga_stamp_last = timestamp;
     stamp_last = stamp_new;
     servo_period = period;
-    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
+    if (1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {
@@ -3325,209 +3325,65 @@ void delivered(void *context, MQTTClient_deliveryToken dt) {
 }
 
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/0_green") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/fpga0/fpga0_wled/0_green") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/0_blue") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/fpga0_wled/0_blue") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 28 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/0_red") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/fpga0/fpga0_wled/0_red") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/1_green") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/fpga0/fpga0_wled/1_green") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_1_GREEN = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/1_blue") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/fpga0_wled/1_blue") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_1_BLUE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 28 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/1_red") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/fpga0/fpga0_wled/1_red") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_1_RED = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/2_green") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/fpga0/fpga0_wled/2_green") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_2_GREEN = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/2_blue") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/fpga0_wled/2_blue") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_2_BLUE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 28 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/2_red") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/fpga0/fpga0_wled/2_red") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_2_RED = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/stepdir0/velocity") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/stepdir0/velocity") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 27 && strcmp(topicName, "fpga0/fpga0/stepdir0/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/fpga0/stepdir0/enable") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR0_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/stepdir1/velocity") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/stepdir1/velocity") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 27 && strcmp(topicName, "fpga0/fpga0/stepdir1/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/fpga0/stepdir1/enable") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR1_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/stepdir2/velocity") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/stepdir2/velocity") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 27 && strcmp(topicName, "fpga0/fpga0/stepdir2/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/fpga0/stepdir2/enable") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR2_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev1/do_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV1_DO_0 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev1/do_1") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV1_DO_1 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev1/do_2") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV1_DO_2 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev1/do_3") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV1_DO_3 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_0 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_1") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_1 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_2") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_2 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_3") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_3 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_4") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_4 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_5") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_5 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_6") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_6 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_7") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_7 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_8") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_8 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_9") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_9 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_10") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_10 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_11") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_11 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_12") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_12 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_13") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_13 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_14") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_14 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do1_16_15") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO1_16_15 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_0 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_1") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_1 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_2") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_2 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_3") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_3 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_4") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_4 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_5") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_5 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_6") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_6 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_7") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_7 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_8") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_8 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_9") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_9 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 32 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_10") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_10 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 32 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_11") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_11 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 32 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_12") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_12 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 32 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_13") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_13 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 32 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_14") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_14 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 32 && strcmp(topicName, "fpga0/fpga0/mbus_dev2/do17_32_15") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV2_DO17_32_15 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/mbus_dev3/aout1_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV3_AOUT1_0 = atof((char*)message->payload);
-    }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/mbus_dev3/aout2_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV3_AOUT2_0 = atof((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev5/do_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV5_DO_0 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev5/do_1") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV5_DO_1 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 34 && strcmp(topicName, "fpga0/fpga0/mbus_hy0/speed_command") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/fpga0/mbus_hy0/speed_command") == 0) {
         *data->SIGOUT_FPGA0_MBUS_HY0_SPEED_COMMAND = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 47 && strcmp(topicName, "fpga0/fpga0/mbus_hy0/spindle_at_speed_tolerance") == 0) {
+    if (strlen(topicName) == 45 && strcmp(topicName, "rio/fpga0/mbus_hy0/spindle_at_speed_tolerance") == 0) {
         *data->SIGOUT_FPGA0_MBUS_HY0_SPINDLE_AT_SPEED_TOLERANCE = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 36 && strcmp(topicName, "fpga0/fpga0/mbus_hy0/spindle_forward") == 0) {
+    if (strlen(topicName) == 34 && strcmp(topicName, "rio/fpga0/mbus_hy0/spindle_forward") == 0) {
         *data->SIGOUT_FPGA0_MBUS_HY0_SPINDLE_FORWARD = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 36 && strcmp(topicName, "fpga0/fpga0/mbus_hy0/spindle_reverse") == 0) {
+    if (strlen(topicName) == 34 && strcmp(topicName, "rio/fpga0/mbus_hy0/spindle_reverse") == 0) {
         *data->SIGOUT_FPGA0_MBUS_HY0_SPINDLE_REVERSE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 31 && strcmp(topicName, "fpga0/fpga0/mbus_hy0/spindle_on") == 0) {
+    if (strlen(topicName) == 29 && strcmp(topicName, "rio/fpga0/mbus_hy0/spindle_on") == 0) {
         *data->SIGOUT_FPGA0_MBUS_HY0_SPINDLE_ON = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_0") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_0 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_1") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_1 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_2") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_2 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_3") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_3 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_4") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_4 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_5") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_5 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_6") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_6 = atoi((char*)message->payload);
-    }
-    if (strlen(topicName) == 26 && strcmp(topicName, "fpga0/fpga0/mbus_dev4/do_7") == 0) {
-        *data->SIGOUT_FPGA0_MBUS_DEV4_DO_7 = atoi((char*)message->payload);
     }
 
     MQTTClient_freeMessage(&message);
@@ -3547,6 +3403,38 @@ int main(int argc, char **argv) {
     register_signals();
     interface_init(argc, argv);
 
+    printf("sub:\n");
+    printf("  SIGIN_FPGA0_STEPDIR0_POSITION\n");
+    printf("  SIGIN_FPGA0_STEPDIR1_POSITION\n");
+    printf("  SIGIN_FPGA0_STEPDIR2_POSITION\n");
+    printf("  SIGIN_FPGA0_BITIN0_BIT\n");
+    printf("  SIGIN_FPGA0_BITIN1_BIT\n");
+    printf("  SIGIN_FPGA0_BITIN2_BIT\n");
+    printf("  SIGIN_FPGA0_I2C_LM75_0_TEMP\n");
+    printf("  SIGIN_FPGA0_I2C_LM75_0_VALID\n");
+    printf("\n");
+    printf("pub:\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_0_GREEN\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_0_BLUE\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_0_RED\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_1_GREEN\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_1_BLUE\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_1_RED\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_2_GREEN\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_2_BLUE\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_2_RED\n");
+    printf("  SIGOUT_FPGA0_STEPDIR0_VELOCITY\n");
+    printf("  SIGOUT_FPGA0_STEPDIR0_ENABLE\n");
+    printf("  SIGOUT_FPGA0_STEPDIR1_VELOCITY\n");
+    printf("  SIGOUT_FPGA0_STEPDIR1_ENABLE\n");
+    printf("  SIGOUT_FPGA0_STEPDIR2_VELOCITY\n");
+    printf("  SIGOUT_FPGA0_STEPDIR2_ENABLE\n");
+    printf("  SIGOUT_FPGA0_MBUS_HY0_SPEED_COMMAND\n");
+    printf("  SIGOUT_FPGA0_MBUS_HY0_SPINDLE_AT_SPEED_TOLERANCE\n");
+    printf("  SIGOUT_FPGA0_MBUS_HY0_SPINDLE_FORWARD\n");
+    printf("  SIGOUT_FPGA0_MBUS_HY0_SPINDLE_REVERSE\n");
+    printf("  SIGOUT_FPGA0_MBUS_HY0_SPINDLE_ON\n");
+    printf("\n");
 
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
@@ -3577,342 +3465,102 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/0_green", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/0_green", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/0_blue", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/0_blue", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/0_red", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/0_red", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/1_green", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/1_green", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/1_blue", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/1_blue", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/1_red", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/1_red", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/2_green", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/2_green", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/2_blue", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/2_blue", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/2_red", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/2_red", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir0/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir0/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir0/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir0/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir1/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir1/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir1/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir1/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir2/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir2/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir2/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir2/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev1/do_0", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/mbus_hy0/speed_command", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev1/do_1", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/mbus_hy0/spindle_at_speed_tolerance", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev1/do_2", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/mbus_hy0/spindle_forward", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev1/do_3", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/mbus_hy0/spindle_reverse", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_0", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_1", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_2", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_3", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_4", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_5", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_6", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_7", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_8", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_9", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_10", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_11", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_12", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_13", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_14", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do1_16_15", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_0", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_1", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_2", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_3", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_4", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_5", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_6", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_7", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_8", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_9", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_10", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_11", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_12", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_13", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_14", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev2/do17_32_15", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev3/aout1_0", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev3/aout2_0", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev5/do_0", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev5/do_1", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_hy0/speed_command", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_hy0/spindle_at_speed_tolerance", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_hy0/spindle_forward", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_hy0/spindle_reverse", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_hy0/spindle_on", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_0", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_1", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_2", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_3", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_4", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_5", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_6", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/mbus_dev4/do_7", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/mbus_hy0/spindle_on", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
@@ -3925,7 +3573,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -3935,7 +3583,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -3945,7 +3593,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -3955,7 +3603,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -3965,7 +3613,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/bitin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/bitin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -3975,727 +3623,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev0/temp_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_1);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev0/temp_1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_2);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev0/temp_2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_3);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev0/temp_3", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev0/temp_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev0/temp_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV1_DO_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/do_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV1_AI_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/ai_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV1_AI_1);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/ai_1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV1_AI_2);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/ai_2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV1_AI_3);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/ai_3", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV1_AI_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/ai_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV1_AI_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev1/ai_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV2_DO1_16_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev2/do1_16_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV2_DO17_32_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev2/do17_32_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV3_AOUT1_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev3/aout1_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV3_AOUT2_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev3/aout2_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV5_DO_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/do_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV5_DI_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/di_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV5_DI_1);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/di_1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV5_DI_2);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/di_2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV5_DI_3);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/di_3", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV5_DI_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/di_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV5_DI_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev5/di_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_SPEED_FB_RPS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/speed_fb_rps", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_HY0_AT_SPEED);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/at_speed", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_MAX_FREQ);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/max_freq", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_BASE_FREQ);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/base_freq", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_FREQ_LOWER_LIMIT);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/freq_lower_limit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_RATED_MOTOR_VOLTAGE);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/rated_motor_voltage", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_RATED_MOTOR_CURRENT);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/rated_motor_current", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_RPM_AT_50HZ);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/rpm_at_50hz", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_RATED_MOTOR_REV);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/rated_motor_rev", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_SPEED_FB);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/speed_fb", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_ERROR_COUNT);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/error_count", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_HY0_HYCOMM_OK);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/hycomm_ok", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_FRQ_SET);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/frq_set", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_FRQ_GET);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/frq_get", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_AMPERE);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/ampere", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_RPM);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/rpm", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_DC_VOLT);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/dc_volt", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_AC_VOLT);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/ac_volt", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_HY0_VFD_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_hy0/vfd_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV4_DO_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/do_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_1);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_2);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_3);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_3", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_4);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_4", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_5);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_5", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_6);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_6", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_7);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_7", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEV4_DI_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEV4_DI_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_dev4/di_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_VOLTAGE_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/voltage_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEVICE0_VOLTAGE_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/voltage_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_VOLTAGE_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/voltage_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_CURRENT_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/current_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEVICE0_CURRENT_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/current_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_CURRENT_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/current_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_FACTOR_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_factor_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_FACTOR_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_factor_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_FACTOR_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_factor_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_FREQ_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/freq_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEVICE0_FREQ_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/freq_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_FREQ_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/freq_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_0);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_total_0", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_VALID);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_total_valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%f", *data->SIGIN_FPGA0_MBUS_DEVICE0_POWER_TOTAL_ERRORS);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/mbus_device0/power_total_errors", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -4705,7 +3633,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2c_lm75_0/temp", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/i2c_lm75_0/temp", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -4715,13 +3643,14 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2c_lm75_0/valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/i2c_lm75_0/valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
 
-        rtapi_delay(100000000);
+        // 10ms interval
+        rtapi_delay(10 * 1000000);
     }
 
     if ((rc = MQTTClient_disconnect(client, 10000)) != MQTTCLIENT_SUCCESS) {

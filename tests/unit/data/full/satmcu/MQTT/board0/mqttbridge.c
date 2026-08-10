@@ -16,7 +16,7 @@
 #include <termios.h>
 
 #define MODNAME "riocomp-board0"
-#define PREFIX "board0"
+#define PREFIX "rio"
 #define JOINTS 3
 #define BUFFER_SIZE_RX 28
 #define BUFFER_SIZE_TX 20
@@ -1301,7 +1301,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     fpga_stamp_last = timestamp;
     stamp_last = stamp_new;
     servo_period = period;
-    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
+    if (1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {
@@ -1367,52 +1367,52 @@ void delivered(void *context, MQTTClient_deliveryToken dt) {
 }
 
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-    if (strlen(topicName) == 31 && strcmp(topicName, "board0/board0/stepdir0/velocity") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/board0/stepdir0/velocity") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR0_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "board0/board0/stepdir0/enable") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/board0/stepdir0/enable") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR0_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 31 && strcmp(topicName, "board0/board0/stepdir1/velocity") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/board0/stepdir1/velocity") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR1_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "board0/board0/stepdir1/enable") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/board0/stepdir1/enable") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR1_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 31 && strcmp(topicName, "board0/board0/stepdir2/velocity") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/board0/stepdir2/velocity") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR2_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "board0/board0/stepdir2/enable") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/board0/stepdir2/enable") == 0) {
         *data->SIGOUT_BOARD0_STEPDIR2_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 25 && strcmp(topicName, "board0/board0/pwmout0/dty") == 0) {
+    if (strlen(topicName) == 22 && strcmp(topicName, "rio/board0/pwmout0/dty") == 0) {
         *data->SIGOUT_BOARD0_PWMOUT0_DTY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 28 && strcmp(topicName, "board0/board0/pwmout0/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/board0/pwmout0/enable") == 0) {
         *data->SIGOUT_BOARD0_PWMOUT0_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 25 && strcmp(topicName, "board0/board0/bitout0/bit") == 0) {
+    if (strlen(topicName) == 22 && strcmp(topicName, "rio/board0/bitout0/bit") == 0) {
         *data->SIGOUT_BOARD0_BITOUT0_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 25 && strcmp(topicName, "board0/board0/bitout1/bit") == 0) {
+    if (strlen(topicName) == 22 && strcmp(topicName, "rio/board0/bitout1/bit") == 0) {
         *data->SIGOUT_BOARD0_BITOUT1_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/ledscale0/bit") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/board0/satmcu0/ledscale0/bit") == 0) {
         *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/ledscale1/bit") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/board0/satmcu0/ledscale1/bit") == 0) {
         *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/ledscale2/bit") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/board0/satmcu0/ledscale2/bit") == 0) {
         *data->SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/selectedx/bit") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/board0/satmcu0/selectedx/bit") == 0) {
         *data->SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/selectedy/bit") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/board0/satmcu0/selectedy/bit") == 0) {
         *data->SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 35 && strcmp(topicName, "board0/board0/satmcu0/selectedz/bit") == 0) {
+    if (strlen(topicName) == 32 && strcmp(topicName, "rio/board0/satmcu0/selectedz/bit") == 0) {
         *data->SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT = atoi((char*)message->payload);
     }
 
@@ -1433,6 +1433,54 @@ int main(int argc, char **argv) {
     register_signals();
     interface_init(argc, argv);
 
+    printf("sub:\n");
+    printf("  SIGIN_BOARD0_BITIN0_BIT\n");
+    printf("  SIGIN_BOARD0_BITIN1_BIT\n");
+    printf("  SIGIN_BOARD0_BITIN2_BIT\n");
+    printf("  SIGIN_BOARD0_STEPDIR0_POSITION\n");
+    printf("  SIGIN_BOARD0_STEPDIR1_POSITION\n");
+    printf("  SIGIN_BOARD0_STEPDIR2_POSITION\n");
+    printf("  SIGIN_BOARD0_BITIN3_BIT\n");
+    printf("  SIGIN_BOARD0_BITIN4_BIT\n");
+    printf("  SIGIN_BOARD0_BITIN5_BIT\n");
+    printf("  SIGIN_BOARD0_BITIN6_BIT\n");
+    printf("  SIGIN_BOARD0_BITIN7_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_FEED_POSITION\n");
+    printf("  SIGIN_BOARD0_SATUART0_TIMEOUT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SPINDLE_POSITION\n");
+    printf("  SIGIN_BOARD0_SATMCU0_RAPID_POSITION\n");
+    printf("  SIGIN_BOARD0_SATMCU0_JOGWHEEL_POSITION\n");
+    printf("  SIGIN_BOARD0_SATMCU0_MPGESTOP_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SCALE0_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SCALE1_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SCALE2_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SELECTX_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SELECTY_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_SELECTZ_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_LBUTTON_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_SHORT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_CBUTTON_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_RBUTTON_BIT\n");
+    printf("  SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_SHORT\n");
+    printf("\n");
+    printf("pub:\n");
+    printf("  SIGOUT_BOARD0_STEPDIR0_VELOCITY\n");
+    printf("  SIGOUT_BOARD0_STEPDIR0_ENABLE\n");
+    printf("  SIGOUT_BOARD0_STEPDIR1_VELOCITY\n");
+    printf("  SIGOUT_BOARD0_STEPDIR1_ENABLE\n");
+    printf("  SIGOUT_BOARD0_STEPDIR2_VELOCITY\n");
+    printf("  SIGOUT_BOARD0_STEPDIR2_ENABLE\n");
+    printf("  SIGOUT_BOARD0_PWMOUT0_DTY\n");
+    printf("  SIGOUT_BOARD0_PWMOUT0_ENABLE\n");
+    printf("  SIGOUT_BOARD0_BITOUT0_BIT\n");
+    printf("  SIGOUT_BOARD0_BITOUT1_BIT\n");
+    printf("  SIGOUT_BOARD0_SATMCU0_LEDSCALE0_BIT\n");
+    printf("  SIGOUT_BOARD0_SATMCU0_LEDSCALE1_BIT\n");
+    printf("  SIGOUT_BOARD0_SATMCU0_LEDSCALE2_BIT\n");
+    printf("  SIGOUT_BOARD0_SATMCU0_SELECTEDX_BIT\n");
+    printf("  SIGOUT_BOARD0_SATMCU0_SELECTEDY_BIT\n");
+    printf("  SIGOUT_BOARD0_SATMCU0_SELECTEDZ_BIT\n");
+    printf("\n");
 
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
@@ -1463,82 +1511,82 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/stepdir0/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/stepdir0/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/stepdir0/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/stepdir0/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/stepdir1/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/stepdir1/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/stepdir1/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/stepdir1/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/stepdir2/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/stepdir2/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/stepdir2/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/stepdir2/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/pwmout0/dty", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/pwmout0/dty", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/pwmout0/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/pwmout0/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/bitout0/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/bitout0/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/bitout1/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/bitout1/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/ledscale0/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/satmcu0/ledscale0/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/ledscale1/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/satmcu0/ledscale1/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/ledscale2/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/satmcu0/ledscale2/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/selectedx/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/satmcu0/selectedx/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/selectedy/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/satmcu0/selectedy/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "board0/board0/satmcu0/selectedz/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/board0/satmcu0/selectedz/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
@@ -1551,7 +1599,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1561,7 +1609,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1571,7 +1619,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1581,7 +1629,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1591,7 +1639,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1601,7 +1649,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1611,7 +1659,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin3/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin3/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1621,7 +1669,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin4/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin4/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1631,7 +1679,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin5/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin5/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1641,7 +1689,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin6/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin6/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1651,7 +1699,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/bitin7/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/bitin7/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1661,7 +1709,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/feed/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/feed/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1671,7 +1719,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satuart0/timeout", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satuart0/timeout", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1681,7 +1729,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/spindle/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/spindle/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1691,7 +1739,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rapid/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/rapid/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1701,7 +1749,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/jogwheel/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/jogwheel/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1711,7 +1759,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/mpgestop/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/mpgestop/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1721,7 +1769,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/scale0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/scale0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1731,7 +1779,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/scale1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/scale1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1741,7 +1789,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/scale2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/scale2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1751,7 +1799,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/selectx/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/selectx/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1761,7 +1809,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/selecty/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/selecty/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1771,7 +1819,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/selectz/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/selectz/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1781,7 +1829,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/lbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1791,27 +1839,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit_short", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG1);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit_long1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_LBUTTON_BIT_LONG2);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/lbutton/bit_long2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/lbutton/bit_short", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1821,7 +1849,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/cbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/cbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1831,7 +1859,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/rbutton/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1841,33 +1869,14 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit_short", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG1);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit_long1", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
-             printf("Failed to publish message, return code %d\n", rc);
-             exit(EXIT_FAILURE);
-        }
-
-        sprintf(tmp_str, "%i", *data->SIGIN_BOARD0_SATMCU0_RBUTTON_BIT_LONG2);
-        pubmsg.payload = tmp_str;
-        pubmsg.payloadlen = (int)strlen(tmp_str);
-        pubmsg.qos = 0;
-        pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "board0/board0/satmcu0/rbutton/bit_long2", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/board0/satmcu0/rbutton/bit_short", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
 
-        rtapi_delay(100000000);
+        // 10ms interval
+        rtapi_delay(10 * 1000000);
     }
 
     if ((rc = MQTTClient_disconnect(client, 10000)) != MQTTCLIENT_SUCCESS) {

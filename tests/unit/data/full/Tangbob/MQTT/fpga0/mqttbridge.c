@@ -16,7 +16,7 @@
 #include <termios.h>
 
 #define MODNAME "riocomp-fpga0"
-#define PREFIX "fpga0"
+#define PREFIX "rio"
 #define JOINTS 3
 #define BUFFER_SIZE_RX 40
 #define BUFFER_SIZE_TX 33
@@ -849,7 +849,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     fpga_stamp_last = timestamp;
     stamp_last = stamp_new;
     servo_period = period;
-    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
+    if (1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {
@@ -915,34 +915,34 @@ void delivered(void *context, MQTTClient_deliveryToken dt) {
 }
 
 int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *message) {
-    if (strlen(topicName) == 30 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/0_green") == 0) {
+    if (strlen(topicName) == 28 && strcmp(topicName, "rio/fpga0/fpga0_wled/0_green") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_0_GREEN = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/0_blue") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/fpga0_wled/0_blue") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_0_BLUE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 28 && strcmp(topicName, "fpga0/fpga0/fpga0_wled/0_red") == 0) {
+    if (strlen(topicName) == 26 && strcmp(topicName, "rio/fpga0/fpga0_wled/0_red") == 0) {
         *data->SIGOUT_FPGA0_FPGA0_WLED_0_RED = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/stepdir0/velocity") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/stepdir0/velocity") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR0_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 27 && strcmp(topicName, "fpga0/fpga0/stepdir0/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/fpga0/stepdir0/enable") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR0_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/stepdir1/velocity") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/stepdir1/velocity") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR1_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 27 && strcmp(topicName, "fpga0/fpga0/stepdir1/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/fpga0/stepdir1/enable") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR1_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 29 && strcmp(topicName, "fpga0/fpga0/stepdir2/velocity") == 0) {
+    if (strlen(topicName) == 27 && strcmp(topicName, "rio/fpga0/stepdir2/velocity") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR2_VELOCITY = atof((char*)message->payload);
     }
-    if (strlen(topicName) == 27 && strcmp(topicName, "fpga0/fpga0/stepdir2/enable") == 0) {
+    if (strlen(topicName) == 25 && strcmp(topicName, "rio/fpga0/stepdir2/enable") == 0) {
         *data->SIGOUT_FPGA0_STEPDIR2_ENABLE = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 23 && strcmp(topicName, "fpga0/fpga0/bitout0/bit") == 0) {
+    if (strlen(topicName) == 21 && strcmp(topicName, "rio/fpga0/bitout0/bit") == 0) {
         *data->SIGOUT_FPGA0_BITOUT0_BIT = atoi((char*)message->payload);
     }
 
@@ -963,6 +963,28 @@ int main(int argc, char **argv) {
     register_signals();
     interface_init(argc, argv);
 
+    printf("sub:\n");
+    printf("  SIGIN_FPGA0_STEPDIR0_POSITION\n");
+    printf("  SIGIN_FPGA0_STEPDIR1_POSITION\n");
+    printf("  SIGIN_FPGA0_STEPDIR2_POSITION\n");
+    printf("  SIGIN_FPGA0_BITIN0_BIT\n");
+    printf("  SIGIN_FPGA0_BITIN1_BIT\n");
+    printf("  SIGIN_FPGA0_BITIN2_BIT\n");
+    printf("  SIGIN_FPGA0_I2C_LM75_0_TEMP\n");
+    printf("  SIGIN_FPGA0_I2C_LM75_0_VALID\n");
+    printf("\n");
+    printf("pub:\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_0_GREEN\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_0_BLUE\n");
+    printf("  SIGOUT_FPGA0_FPGA0_WLED_0_RED\n");
+    printf("  SIGOUT_FPGA0_STEPDIR0_VELOCITY\n");
+    printf("  SIGOUT_FPGA0_STEPDIR0_ENABLE\n");
+    printf("  SIGOUT_FPGA0_STEPDIR1_VELOCITY\n");
+    printf("  SIGOUT_FPGA0_STEPDIR1_ENABLE\n");
+    printf("  SIGOUT_FPGA0_STEPDIR2_VELOCITY\n");
+    printf("  SIGOUT_FPGA0_STEPDIR2_ENABLE\n");
+    printf("  SIGOUT_FPGA0_BITOUT0_BIT\n");
+    printf("\n");
 
     MQTTClient client;
     MQTTClient_connectOptions conn_opts = MQTTClient_connectOptions_initializer;
@@ -993,52 +1015,52 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/0_green", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/0_green", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/0_blue", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/0_blue", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/fpga0_wled/0_red", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/fpga0_wled/0_red", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir0/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir0/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir0/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir0/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir1/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir1/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir1/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir1/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir2/velocity", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir2/velocity", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/stepdir2/enable", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/stepdir2/enable", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
 
-    if ((rc = MQTTClient_subscribe(client, "fpga0/fpga0/bitout0/bit", 0)) != MQTTCLIENT_SUCCESS) {
+    if ((rc = MQTTClient_subscribe(client, "rio/fpga0/bitout0/bit", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }
@@ -1051,7 +1073,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/stepdir0/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1061,7 +1083,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/stepdir1/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1071,7 +1093,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/stepdir2/position", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1081,7 +1103,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/bitin0/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1091,7 +1113,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/bitin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/bitin1/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1101,7 +1123,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/bitin2/bit", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1111,7 +1133,7 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2c_lm75_0/temp", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/i2c_lm75_0/temp", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
@@ -1121,13 +1143,14 @@ int main(int argc, char **argv) {
         pubmsg.payloadlen = (int)strlen(tmp_str);
         pubmsg.qos = 0;
         pubmsg.retained = 0;
-        if ((rc = MQTTClient_publishMessage(client, "fpga0/fpga0/i2c_lm75_0/valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
+        if ((rc = MQTTClient_publishMessage(client, "rio/fpga0/i2c_lm75_0/valid", &pubmsg, &token)) != MQTTCLIENT_SUCCESS) {
              printf("Failed to publish message, return code %d\n", rc);
              exit(EXIT_FAILURE);
         }
 
 
-        rtapi_delay(100000000);
+        // 10ms interval
+        rtapi_delay(10 * 1000000);
     }
 
     if ((rc = MQTTClient_disconnect(client, 10000)) != MQTTCLIENT_SUCCESS) {

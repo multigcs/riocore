@@ -5,186 +5,339 @@
   </head>
   <style>
 
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-.container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 20px;
-}
+  :root{
+    --bg:#0e1117;
+    --panel:#161b27;
+    --panel-2:#1c2330;
+    --border:#262d3a;
+    --text:#e6edf3;
+    --muted:#8b949e;
+    --accent:#4f8cff;
+    --accent-2:#22c55e;
+    --warn:#f59e0b;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",Inter,system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:24px;
+  }
 
-.item {
-    background-color: #f4f4f4;
-    padding: 20px;
-    text-align: center;
-    border: 1px solid #ccc;
-}
+  /* ---------- Header ---------- */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:40px;height:40px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),#8b5cf6);
+    display:grid;place-items:center;font-weight:700;font-size:18px;color:#fff;
+  }
+  .brand h1{font-size:19px;font-weight:600;letter-spacing:.2px}
+  .brand p{font-size:12.5px;color:var(--muted)}
+  .head-actions{display:flex;align-items:center;gap:10px}
+  .search{
+    background:var(--panel);border:1px solid var(--border);
+    color:var(--text);padding:9px 14px;border-radius:9px;font-size:13.5px;width:220px;outline:none;
+  }
+  .search:focus{border-color:var(--accent)}
+  .btn{
+    background:var(--accent);border:none;color:#fff;font-size:13.5px;font-weight:600;
+    padding:9px 16px;border-radius:9px;cursor:pointer;transition:.2s;
+  }
+  .btn:hover{background:#3b78ec}
+  .avatar{
+    width:38px;height:38px;border-radius:50%;background:var(--panel-2);
+    border:1px solid var(--border);display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--muted);
+  }
 
-.tooltip {
+  /* ---------- Grid: 5 containers ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-template-areas:
+      "a a b b c c"
+      "d d d d e e";
+    gap:9px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:10px;
+    border-color:#3741af;
+    transition: border-color .2s, transform .2s;
+  }
+  .card: hover{border-color:#37414f;}
+
+  .card h2{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    color:var(--muted);
+    font-weight:600;
+    margin-bottom:14px;
+  }
+
+  .stat{
+    font-size:27px;
+    font-weight:700;
+    line-height:1.1;
+
+    display: flex;
+    justify-content: right;
+    align-items: right;
+   }
+  .delta{font-size:12.5px;margin-top:6px;color:var(--accent-2)}
+  .delta.down{color:var(--danger)}
+
+  .bar-track{height:7px;background:var(--panel-2);border-radius:99px;overflow:hidden;margin-top:12px}
+  .bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#8b5cf6)}
+
+  /* chart */
+  .chart{display:flex;align-items:flex-end;gap:10px;height:170px;margin-top:8px}
+  .chart div{
+    flex:1;border-radius:6px 6px 3px 3px;
+    background:linear-gradient(180deg,var(--accent),#2a4b8d);
+  }
+  .chart-legend{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:10px}
+
+  /* list */
+  ul{list-style:none}
+  li{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 0;border-bottom:1px solid var(--border);font-size:13.5px;
+  }
+  li:last-child{border-bottom:none}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .t{color:var(--muted);margin-left:auto;font-size:11.5px}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{
+    text-align:left;color:var(--muted);font-weight:600;font-size:11.5px;
+    text-transform:uppercase;letter-spacing:.6px;padding:8px 10px;border-bottom:1px solid var(--border);
+  }
+  td{
+    font-size:9px;
+    padding:0px 0px;
+    border-bottom:1px solid var(--border);
+
+  }
+  tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--panel-2)}
+  .tag{padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:600}
+  .ok{background:rgba(34,197,94,.14);color:var(--accent-2)}
+  .pending{background:rgba(245,158,11,.14);color:var(--warn)}
+  .fail{background:rgba(239,68,68,.14);color:var(--danger)}
+
+  footer{margin-top:22px;text-align:center;color:var(--muted);font-size:12.5px}
+
+  @media(max-width:980px){
+    .grid{grid-template-columns:repeat(2,1fr);
+      grid-template-areas:"a b" "c c" "d d" "e e";}
+  }
+  @media(max-width:600px){
+    body{padding:16px}
+    .grid{grid-template-columns:1fr;grid-template-areas:"a" "b" "c" "d" "e";}
+    .search{width:100%}
+  }
+
+  input[type=range] {
+    width: 100%;
+    margin: 5px 0px;
+  }
+
+
+.switch {
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  width: 50px;
+  height: 24px;
 }
 
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
-  /* Position the tooltip text - see examples below! */
+.slider {
   position: absolute;
-  z-index: 1;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #336;
+  -webkit-transition: .4s;
+  transition: .4s;
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #33F;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.led-blue {
+  width: 24px;
+  height: 24px;
+  opacity: 1.0;
+  background-color: #24E0EE;
+  border-radius: 50%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px;
 }
 
 
   </style>
-  <body>
-    <div class="container">
-        <div class="item">
-    <B>bitout0</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><input type="checkbox" id="board0/board0/bitout0/bit" /></td>
-      </tr>
-    </table>
-        </div>
-        <div class="item">
-    <B>bitin0</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><b id="board0/board0/bitin0/bit">0</b></td>
-      </tr>
-    </table>
-        </div>
-        <div class="item">
-    <B>bitin1</B>
-    <table>
-      <tr>
-        <td>bit</td>
-        <td><b id="board0/board0/bitin1/bit">0</b></td>
-      </tr>
-    </table>
-        </div>
-        <div class="item">
-    <B>stepdir0</B>
-    <table>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
-        <td><b id="board0/board0/stepdir0/velocity_fb">0</b></td>
-        <td>Hz</td>
-        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir0/velocity" value="0" /></td>
-        <td><button onclick="document.getElementById('board0/board0/stepdir0/velocity').value = 0;" id="board0/board0/stepdir0/velocity_zero" type="button">0</button></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
-        <td><b id="board0/board0/stepdir0/position">0</b></td>
-        <td>steps</td>
-      </tr>
-      <tr>
-        <td>enable</td>
-        <td><input type="checkbox" id="board0/board0/stepdir0/enable" /></td>
-      </tr>
-    </table>
-        </div>
-        <div class="item">
-    <B>stepdir1</B>
-    <table>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
-        <td><b id="board0/board0/stepdir1/velocity_fb">0</b></td>
-        <td>Hz</td>
-        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir1/velocity" value="0" /></td>
-        <td><button onclick="document.getElementById('board0/board0/stepdir1/velocity').value = 0;" id="board0/board0/stepdir1/velocity_zero" type="button">0</button></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
-        <td><b id="board0/board0/stepdir1/position">0</b></td>
-        <td>steps</td>
-      </tr>
-      <tr>
-        <td>enable</td>
-        <td><input type="checkbox" id="board0/board0/stepdir1/enable" /></td>
-      </tr>
-    </table>
-        </div>
-        <div class="item">
-    <B>stepdir2</B>
-    <table>
-      <tr>
-        <td><div class="tooltip">velocity<span class="tooltiptext">speed in steps per second</span></div>:</td>
-        <td><b id="board0/board0/stepdir2/velocity_fb">0</b></td>
-        <td>Hz</td>
-        <td><input type="range" min="-100000" max="100000" id="board0/board0/stepdir2/velocity" value="0" /></td>
-        <td><button onclick="document.getElementById('board0/board0/stepdir2/velocity').value = 0;" id="board0/board0/stepdir2/velocity_zero" type="button">0</button></td>
-      </tr>
-      <tr>
-        <td><div class="tooltip">position<span class="tooltiptext">position feedback</span></div>:</td>
-        <td><b id="board0/board0/stepdir2/position">0</b></td>
-        <td>steps</td>
-      </tr>
-      <tr>
-        <td>enable</td>
-        <td><input type="checkbox" id="board0/board0/stepdir2/enable" /></td>
-      </tr>
-    </table>
-        </div>
+  <header>
+    <div class="brand">
+      <div class="logo">RIO</div>
+      <div>
+        <h1>RIO - MQTT</h1>
+        <p>Overview</p>
+      </div>
     </div>
+    <div class="head-actions">
+    </div>
+  </header>
+
+  <main class="grid">
+
+    <section class="card">
+      <h2>bitout0 - bit</h2>
+      <div class="stat">&nbsp;</div>
+      <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/bitout0/bit_set" /><span class="slider round"></span></label></div>
+    </section>
+    <section class="card">
+      <h2>bitin0 - bit</h2>
+      <div class="stat">&nbsp;</div>
+      <div class="stat"><div class="led-blue" id="rio/board0/bitin0/bit"></div></div>
+    </section>
+    <section class="card">
+      <h2>bitin1 - bit</h2>
+      <div class="stat">&nbsp;</div>
+      <div class="stat"><div class="led-blue" id="rio/board0/bitin1/bit"></div></div>
+    </section>
+    <section class="card">
+      <h2>stepdir0 - velocity</h2>
+      <div class="stat"><b id="rio/board0/stepdir0/velocity">0</b>Hz</div>
+      <div class="range"><input width="100%" type="range" min="-100000" max="100000" id="rio/board0/stepdir0/velocity_set" value="0" /></div>
+    </section>
+    <section class="card">
+      <h2>stepdir0 - position</h2>
+      <div class="stat"><b id="rio/board0/stepdir0/position">0</b>steps</div>
+      <div class="bar-track"><div id="rio/board0/stepdir0/position_p" class="bar-fill" style="width:68%"></div></div>
+    </section>
+    <section class="card">
+      <h2>stepdir0 - enable</h2>
+      <div class="stat">&nbsp;</div>
+      <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/stepdir0/enable_set" /><span class="slider round"></span></label></div>
+    </section>
+    <section class="card">
+      <h2>stepdir1 - velocity</h2>
+      <div class="stat"><b id="rio/board0/stepdir1/velocity">0</b>Hz</div>
+      <div class="range"><input width="100%" type="range" min="-100000" max="100000" id="rio/board0/stepdir1/velocity_set" value="0" /></div>
+    </section>
+    <section class="card">
+      <h2>stepdir1 - position</h2>
+      <div class="stat"><b id="rio/board0/stepdir1/position">0</b>steps</div>
+      <div class="bar-track"><div id="rio/board0/stepdir1/position_p" class="bar-fill" style="width:68%"></div></div>
+    </section>
+    <section class="card">
+      <h2>stepdir1 - enable</h2>
+      <div class="stat">&nbsp;</div>
+      <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/stepdir1/enable_set" /><span class="slider round"></span></label></div>
+    </section>
+    <section class="card">
+      <h2>stepdir2 - velocity</h2>
+      <div class="stat"><b id="rio/board0/stepdir2/velocity">0</b>Hz</div>
+      <div class="range"><input width="100%" type="range" min="-100000" max="100000" id="rio/board0/stepdir2/velocity_set" value="0" /></div>
+    </section>
+    <section class="card">
+      <h2>stepdir2 - position</h2>
+      <div class="stat"><b id="rio/board0/stepdir2/position">0</b>steps</div>
+      <div class="bar-track"><div id="rio/board0/stepdir2/position_p" class="bar-fill" style="width:68%"></div></div>
+    </section>
+    <section class="card">
+      <h2>stepdir2 - enable</h2>
+      <div class="stat">&nbsp;</div>
+      <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/stepdir2/enable_set" /><span class="slider round"></span></label></div>
+    </section>
 
     <script type="text/javascript">
         var clientID = "ID-" + Math.round(Math.random() * 1000);
         var client = new Paho.MQTT.Client("127.0.0.1", 9001, clientID);
 
-        document.getElementById("board0/board0/bitout0/bit").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/bitout0/bit").addEventListener("input", publish, false);
-        document.getElementById("board0/board0/stepdir0/velocity").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/stepdir0/velocity").addEventListener("input", publish, false);
-        document.getElementById("board0/board0/stepdir0/velocity_zero").addEventListener("click", publish, false);
-        document.getElementById("board0/board0/stepdir0/enable").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/stepdir0/enable").addEventListener("input", publish, false);
-        document.getElementById("board0/board0/stepdir1/velocity").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/stepdir1/velocity").addEventListener("input", publish, false);
-        document.getElementById("board0/board0/stepdir1/velocity_zero").addEventListener("click", publish, false);
-        document.getElementById("board0/board0/stepdir1/enable").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/stepdir1/enable").addEventListener("input", publish, false);
-        document.getElementById("board0/board0/stepdir2/velocity").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/stepdir2/velocity").addEventListener("input", publish, false);
-        document.getElementById("board0/board0/stepdir2/velocity_zero").addEventListener("click", publish, false);
-        document.getElementById("board0/board0/stepdir2/enable").addEventListener("change", publish, false);
-        document.getElementById("board0/board0/stepdir2/enable").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/bitout0/bit_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/bitout0/bit_set").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/stepdir0/velocity_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/stepdir0/velocity_set").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/stepdir0/enable_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/stepdir0/enable_set").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/stepdir1/velocity_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/stepdir1/velocity_set").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/stepdir1/enable_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/stepdir1/enable_set").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/stepdir2/velocity_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/stepdir2/velocity_set").addEventListener("input", publish, false);
+        document.getElementById("rio/board0/stepdir2/enable_set").addEventListener("change", publish, false);
+        document.getElementById("rio/board0/stepdir2/enable_set").addEventListener("input", publish, false);
         client.connect({onSuccess:onConnect});
         client.onMessageArrived = onMessage;
 
         function onConnect() {
             console.log("connected");
-            client.subscribe("board0/board0/bitin0/bit");
-            client.subscribe("board0/board0/bitin1/bit");
-            client.subscribe("board0/board0/stepdir0/position");
-            client.subscribe("board0/board0/stepdir1/position");
-            client.subscribe("board0/board0/stepdir2/position");
+            client.subscribe("rio/board0/bitin0/bit");
+            client.subscribe("rio/board0/bitin1/bit");
+            client.subscribe("rio/board0/stepdir0/position");
+            client.subscribe("rio/board0/stepdir1/position");
+            client.subscribe("rio/board0/stepdir2/position");
             console.log("connected");
         }
 
 
         function publish() {
-            var topic = this.attributes.id.value.replace("_zero", "");
-            element = document.getElementById(topic);
+            var eid = this.attributes.id.value.replace("_zero", "");
+            var topic = eid.replace("_set", "");
+            element = document.getElementById(eid);
             var value = "0";
             if (element.attributes.type.value == "checkbox") {
                 if (element.checked) {
@@ -195,7 +348,7 @@ body {
             }
             console.log("publish", topic, value);
 
-            fb_element = document.getElementById(topic + "_fb");
+            fb_element = document.getElementById(topic);
             if (fb_element) {
                 fb_element.innerHTML = value;
             }
@@ -208,20 +361,35 @@ body {
 
         function onMessage(message) {
             // console.log("msg", message.destinationName, message.payloadString);
-            if (message.destinationName == "board0/board0/bitin0/bit") {
-                document.getElementById("board0/board0/bitin0/bit").innerHTML = message.payloadString;
+            if (message.destinationName == "rio/board0/bitin0/bit") {
+                if (message.payloadString == "1") {
+                    document.getElementById("rio/board0/bitin0/bit").style.opacity = "1.0";
+                    document.getElementById("rio/board0/bitin0/bit").style.boxShadow = "rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px";
+                } else {
+                    document.getElementById("rio/board0/bitin0/bit").style.opacity = "0.2";
+                    document.getElementById("rio/board0/bitin0/bit").style.boxShadow = "";
+                }
             }
-            if (message.destinationName == "board0/board0/bitin1/bit") {
-                document.getElementById("board0/board0/bitin1/bit").innerHTML = message.payloadString;
+            if (message.destinationName == "rio/board0/bitin1/bit") {
+                if (message.payloadString == "1") {
+                    document.getElementById("rio/board0/bitin1/bit").style.opacity = "1.0";
+                    document.getElementById("rio/board0/bitin1/bit").style.boxShadow = "rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px";
+                } else {
+                    document.getElementById("rio/board0/bitin1/bit").style.opacity = "0.2";
+                    document.getElementById("rio/board0/bitin1/bit").style.boxShadow = "";
+                }
             }
-            if (message.destinationName == "board0/board0/stepdir0/position") {
-                document.getElementById("board0/board0/stepdir0/position").innerHTML = message.payloadString;
+            if (message.destinationName == "rio/board0/stepdir0/position") {
+                document.getElementById("rio/board0/stepdir0/position").innerHTML = message.payloadString;
+                document.getElementById("rio/board0/stepdir0/position_p").style.width = ((parseFloat(message.payloadString) - 0) * 0.1).toString() + "%";
             }
-            if (message.destinationName == "board0/board0/stepdir1/position") {
-                document.getElementById("board0/board0/stepdir1/position").innerHTML = message.payloadString;
+            if (message.destinationName == "rio/board0/stepdir1/position") {
+                document.getElementById("rio/board0/stepdir1/position").innerHTML = message.payloadString;
+                document.getElementById("rio/board0/stepdir1/position_p").style.width = ((parseFloat(message.payloadString) - 0) * 0.1).toString() + "%";
             }
-            if (message.destinationName == "board0/board0/stepdir2/position") {
-                document.getElementById("board0/board0/stepdir2/position").innerHTML = message.payloadString;
+            if (message.destinationName == "rio/board0/stepdir2/position") {
+                document.getElementById("rio/board0/stepdir2/position").innerHTML = message.payloadString;
+                document.getElementById("rio/board0/stepdir2/position_p").style.width = ((parseFloat(message.payloadString) - 0) * 0.1).toString() + "%";
             }
         }
 
