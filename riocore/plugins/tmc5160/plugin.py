@@ -102,7 +102,7 @@ This drivers have enabled SPI, but only for configuration.
             "tmc_status": {
                 "direction": "input",
                 "description": "TMC5160 SPI status byte",
-                "format": "032b",
+                "format": "08b",
             },
             "fault": {
                 "direction": "input",
