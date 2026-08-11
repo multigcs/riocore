@@ -79,20 +79,28 @@ MRES
  * default: 256
  * options: 256, 128, 64, 32, 16, 8, 4, 2, FULL
 
+### rsense:
+current sense resistor in Ohm
+
+ * type: float
+ * min: 0.01
+ * max: 0.5
+ * default: 0.075
+
 ### global_scaler:
-TMC5160 GLOBAL_SCALER
+Global scaling of Motor current - Hint: Values >128 recommended for best results
 
  * type: int
- * min: 0
+ * min: 32
  * max: 256
- * default: 0
+ * default: 130
 
 ### irun:
 
  * type: int
  * min: 0
  * max: 31
- * default: 15
+ * default: 16
 
 ### ihold:
 
@@ -106,7 +114,13 @@ TMC5160 GLOBAL_SCALER
  * type: int
  * min: 0
  * max: 15
- * default: 5
+ * default: 4
+
+### debug:
+add debug signals
+
+ * type: bool
+ * default: False
 
 
 ## Signals:
@@ -133,18 +147,6 @@ XACTUAL position / Feedback
  * direction: input
  * unit: unit
 
-### drv_status:
-Raw TMC5160 DRV_STATUS register
-
- * type: float
- * direction: input
-
-### tmc_status:
-TMC5160 SPI status byte
-
- * type: float
- * direction: input
-
 ### fault:
 TMC5160 driver error or short/overtemperature
 
@@ -167,16 +169,6 @@ TMC5160 driver error or short/overtemperature
 ### position:
 
  * size: 32 bit
- * direction: input
-
-### drv_status:
-
- * size: 32 bit
- * direction: input
-
-### tmc_status:
-
- * size: 8 bit
  * direction: input
 
 ### fault:

@@ -68,6 +68,7 @@
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
 |  | [keymatrix](keymatrix/README.md) | Matix-Keyboard | <img src="keymatrix/image.png" height="48"> |  |
 |  | [ksz8851](ksz8851/README.md) | udp interface for host comunication |  |  |
+|  | [ksz8851](ksz8851/README.md) | udp interface for host comunication |  |  |
 |  | [lcd114](lcd114/README.md) | tangnano9k 1.44inch display | <img src="lcd114/image.png" height="48"> |  |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
 |  | [max6675](max6675/README.md) | SPI temperature sensor | <img src="max6675/image.png" height="48"> |  |
@@ -120,6 +121,7 @@
 |  | [interval](interval/README.md) | interval timer | <img src="interval/image.png" height="48"> | Experimental  |
 |  | [irin](irin/README.md) | IR-Remote input | <img src="irin/image.png" height="48"> |  |
 |  | [keymatrix](keymatrix/README.md) | Matix-Keyboard | <img src="keymatrix/image.png" height="48"> |  |
+|  | [ksz8851](ksz8851/README.md) | udp interface for host comunication |  |  |
 |  | [ksz8851](ksz8851/README.md) | udp interface for host comunication |  |  |
 |  | [lcd114](lcd114/README.md) | tangnano9k 1.44inch display | <img src="lcd114/image.png" height="48"> |  |
 |  | [max10adc](max10adc/README.md) | MAX10 ADC inputs | <img src="max10adc/image.png" height="48"> |  |
