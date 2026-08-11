@@ -26,20 +26,36 @@ module tmc5160 #(
     parameter [31:0] XACTUAL_INIT   = 32'h00000000
 ) (
     input  wire                    clk,
-
     input  wire signed [31:0]      velocity,
     input  wire                    enable,
+    output reg  signed [31:0]      position = 'd0,
+    output wire [9:0]  sg_result,
+    output wire [4:0]  cs_actual,
 
-    output reg  signed [31:0]      position,
-    output reg         [31:0]      drv_status,
-    output reg         [7:0]       tmc_status,
-    output wire                    fault,
+    output wire stat_swr,
+    output wire stat_swl,
+    output wire stat_standstill,
+    output wire stat_sg2,
+    output wire stat_driver_error,
+    output wire stat_reset,
 
-    output reg                     sck,
-    output reg                     mosi,
-    input  wire                    miso,
-    output reg                     cs_n,
-    output wire                    enable_n
+    output wire stat_olb,
+    output wire stat_ola,
+    output wire stat_2gb,
+    output wire stat_2ga,
+    output wire stat_otpw,
+    output wire stat_ot,
+    output wire stat_fsactive,
+    output wire stat_stealth,
+    output wire stat_s2vsb,
+    output wire stat_s2vsa,
+    output wire fault,
+
+    output reg  sck = 'd0,
+    output reg  mosi = 'd0,
+    input  wire miso,
+    output reg  cs_n = 'd0,
+    output wire enable_n
 );
 
     /*
@@ -367,7 +383,8 @@ module tmc5160 #(
      * enable_n remains inactive until initialization has completed.
      */
     assign enable_n = ~(enable && init_done);
-
+    reg [7:0]  tmc_status = 'd0;
+    reg [31:0] drv_status = 32'd0;
     /*
      * Critical fault indication:
      *   tmc_status[1]  driver_error
@@ -384,6 +401,26 @@ module tmc5160 #(
         drv_status[25] |
         drv_status[27] |
         drv_status[28];
+
+    assign stat_swr = tmc_status[7];
+    assign stat_swl = tmc_status[6];
+    assign stat_standstill = tmc_status[3];
+    assign stat_sg2 = tmc_status[2];
+    assign stat_driver_error = tmc_status[1];
+    assign stat_reset = tmc_status[0];
+
+    assign stat_olb = drv_status[30];
+    assign stat_ola = drv_status[29];
+    assign stat_2gb = drv_status[28];
+    assign stat_2ga = drv_status[27];
+    assign stat_otpw = drv_status[26];
+    assign stat_ot = drv_status[25];
+    assign cs_actual = drv_status[20:16];
+    assign stat_fsactive = drv_status[15];
+    assign stat_stealth = drv_status[14];
+    assign stat_s2vsb = drv_status[13];
+    assign stat_s2vsa = drv_status[12];
+    assign sg_result = drv_status[9:0];
 
     initial begin
         sck               = 1'b1;

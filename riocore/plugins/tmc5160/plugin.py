@@ -68,12 +68,78 @@ This drivers have enabled SPI, but only for configuration.
                 "size": 32,
                 "direction": "input",
             },
-            "drv_status": {
-                "size": 32,
+            "cs_actual": {
+                "size": 8,
+                "direction": "input",
+                # "multiplexed": True,
+            },
+            "stat_olb": {
+                "size": 1,
                 "direction": "input",
             },
-            "tmc_status": {
-                "size": 8,
+            "stat_ola": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_2gb": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_2ga": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_otpw": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_ot": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_fsactive": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_stealth": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_s2vsb": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_s2vsa": {
+                "size": 1,
+                "direction": "input",
+            },
+            "sg_result": {
+                "size": 16,
+                "direction": "input",
+                # "multiplexed": True,
+            },
+            "stat_swr": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_swl": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_standstill": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_sg2": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_driver_error": {
+                "size": 1,
+                "direction": "input",
+            },
+            "stat_reset": {
+                "size": 1,
                 "direction": "input",
             },
             "fault": {
@@ -101,15 +167,95 @@ This drivers have enabled SPI, but only for configuration.
                 "unit": "unit",
                 "description": "XACTUAL position / Feedback",
             },
-            "drv_status": {
+            "cs_actual": {
                 "direction": "input",
-                "description": "Raw TMC5160 DRV_STATUS register",
-                "format": "032b",
+                "description": "actual motor current",
+                "unit": "A",
+                "format": "0.2f",
             },
-            "tmc_status": {
+            "stat_olb": {
                 "direction": "input",
-                "description": "TMC5160 SPI status byte",
-                "format": "08b",
+                "bool": True,
+                "description": "open load indicator phase B",
+            },
+            "stat_ola": {
+                "direction": "input",
+                "bool": True,
+                "description": "open load indicator phase A",
+            },
+            "stat_2gb": {
+                "direction": "input",
+                "bool": True,
+                "description": "short to ground indicator phase B",
+            },
+            "stat_2ga": {
+                "direction": "input",
+                "bool": True,
+                "description": "short to ground indicator phase A",
+            },
+            "stat_otpw": {
+                "direction": "input",
+                "bool": True,
+                "description": "overtemperature pre-warning flag",
+            },
+            "stat_ot": {
+                "direction": "input",
+                "bool": True,
+                "description": "overtemperature flag",
+            },
+            "stat_fsactive": {
+                "direction": "input",
+                "bool": True,
+                "description": "full step active indicator",
+            },
+            "stat_stealth": {
+                "direction": "input",
+                "bool": True,
+                "description": "StealthChop indicator",
+            },
+            "stat_s2vsb": {
+                "direction": "input",
+                "bool": True,
+                "description": "short to supply indicator phase B",
+            },
+            "stat_s2vsa": {
+                "direction": "input",
+                "bool": True,
+                "description": "short to supply indicator phase A",
+            },
+            "sg_result": {
+                "direction": "input",
+                "description": "StallGuard2: Mechanical load measurement",
+            },
+            "stat_swr": {
+                "direction": "input",
+                "bool": True,
+                "description": "short to supply indicator phase A",
+            },
+            "stat_swl": {
+                "direction": "input",
+                "bool": True,
+                "description": "",
+            },
+            "stat_standstill": {
+                "direction": "input",
+                "bool": True,
+                "description": "",
+            },
+            "stat_sg2": {
+                "direction": "input",
+                "bool": True,
+                "description": "",
+            },
+            "stat_driver_error": {
+                "direction": "input",
+                "bool": True,
+                "description": "",
+            },
+            "stat_reset": {
+                "direction": "input",
+                "bool": True,
+                "description": "",
             },
             "fault": {
                 "direction": "input",
@@ -141,14 +287,14 @@ This drivers have enabled SPI, but only for configuration.
                 "description": "Global scaling of Motor current - Hint: Values >128 recommended for best results",
             },
             "irun": {
-                "default": 18,
+                "default": 16,
                 "type": int,
                 "min": 0,
                 "max": 31,
                 "description": "",
             },
             "ihold": {
-                "default": 6,
+                "default": 5,
                 "type": int,
                 "min": 0,
                 "max": 31,
@@ -162,23 +308,23 @@ This drivers have enabled SPI, but only for configuration.
                 "description": "",
             },
         }
+        self.vfs = 0.325  # Vrst
+        self.clock = 12000000  # internal osc
 
     def recalc(self):
-        vfs = 0.325  # Vrst
-        clock = 12000000  # internal osc
         rsense = self.option("rsense")
+        global_scaler = self.option("global_scaler")
         irun = self.option("irun")
         ihold = self.option("ihold")
         ihold_delay = self.option("ihold_delay")
-        global_scaler = self.option("global_scaler")
-        i_scaler = (global_scaler / 256) * (vfs / rsense) * (1 / 1.4142135623730951)
+        i_scaler = (global_scaler / 256) * (self.vfs / rsense) * (1 / 1.4142135623730951)
         i_run = i_scaler * ((irun + 1) / 32)
         i_hold = i_scaler * ((ihold + 1) / 32)
         if i_run < i_hold:
             print(f"{self.NAME}: WARNING: irun is lower than ihold: {i_run}A < {i_hold}A")
         delay = 0
         if ihold_delay > 0 and (irun - ihold) > 0:
-            delay = int((ihold_delay * (irun - ihold) * (2**18)) / clock * 1000)
+            delay = int((ihold_delay * (irun - ihold) * (2**18)) / self.clock * 1000)
         self.calclabel_update(f"IRMS: {i_scaler:0.2f}A / IRUN: {i_run:0.2f}A / IHOLD: {i_hold:0.2f}A\nIDELAY: {delay}ms\n")
 
     def _option_int(self, name, default):
@@ -197,7 +343,7 @@ This drivers have enabled SPI, but only for configuration.
         parameters = instance.setdefault("parameter", {})
 
         system_clock = int(self.system_setup["speed"])
-        spi_hz = self._option_int("spi_hz", 1000000)
+        spi_hz = self._option_int("spi_hz", 3000000)
         startup_ms = self._option_int("startup_ms", 100)
 
         # SPI_DIVIDER is the number of FPGA clocks per half SPI period.
@@ -215,11 +361,11 @@ This drivers have enabled SPI, but only for configuration.
             "COOLCONF": ("coolconf", 0),
             "PWMCONF": ("pwmconf", 0xC40C001E),
             "VSTART": ("vstart", 4),
-            "A1": ("a1", 5000),
-            "V1": ("v1", 1000),
-            "AMAX": ("amax", 5000),
-            "DMAX": ("dmax", 5000),
-            "D1": ("d1", 1000),
+            "A1": ("a1", 100),
+            "V1": ("v1", 0),
+            "AMAX": ("amax", 50000),
+            "DMAX": ("dmax", 50000),
+            "D1": ("d1", 1),
             "VSTOP": ("vstop", 100),
             "TZEROWAIT": ("tzerowait", 0),
             "SW_MODE": ("sw_mode", 0),
@@ -253,3 +399,15 @@ This drivers have enabled SPI, but only for configuration.
         parameters["GLOBAL_SCALER"] = f"32'b00000000_00000000_00000000_{global_scaler:08b}"
 
         return instances
+
+    def convert_c(self, signal_name, signal_setup):
+        if signal_name == "cs_actual":
+            rsense = self.option("rsense")
+            global_scaler = self.option("global_scaler")
+            i_scaler = (global_scaler / 256) * (self.vfs / rsense) * (1 / 1.4142135623730951)
+            return f"""
+    if (value != 0) {{
+        value = {i_scaler} * ((value + 1) / 32);
+    }}
+            """
+        return ""
