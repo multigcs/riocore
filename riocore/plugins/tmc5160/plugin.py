@@ -16,7 +16,7 @@ This drivers have enabled SPI, but only for configuration.
         self.KEYWORDS = "joint stepper tmc5160 spi trinamic"
         self.ORIGIN = "https://www.analog.com/en/products/tmc5160.html"
         self.VERILOGS = ["tmc5160.v"]
-        self.IMAGES = ["image.png"]
+        self.IMAGES = ["image.png", "tmc5160tplus.png"]
         self.EXPERIMENTAL = True
 
         self.PINDEFAULTS = {
@@ -46,6 +46,13 @@ This drivers have enabled SPI, but only for configuration.
                 "pos": (6, 6),
             },
         }
+        image = self.plugin_setup.get("image")
+        if image == "tmc5160tplus.png":
+            self.PINDEFAULTS["cs_n"]["pos"] = (69, 208)
+            self.PINDEFAULTS["sck"]["pos"] = (80, 208)
+            self.PINDEFAULTS["mosi"]["pos"] = (91, 208)
+            self.PINDEFAULTS["miso"]["pos"] = (102, 208)
+            self.PINDEFAULTS["enable_n"]["pos"] = (113, 208)
 
         self.INTERFACE = {
             "velocity": {
