@@ -525,6 +525,8 @@ class GuiPlugins:
                 self.dialog.close()
                 return
 
+            plugin_instance.recalc()
+
             plugin_instance.update_title()
             title_label.setText(plugin_instance.title)
             iname_label.setText(plugin_instance.instances_name)
@@ -584,8 +586,15 @@ class GuiPlugins:
                 button_config.setMaximumSize(button_config.sizeHint())
                 options.addWidget(button_config)
 
+        plugin_instance.calclabel = QLabel("")
+        options.addWidget(plugin_instance.calclabel)
+        plugin_instance.recalc()
+
         descriptiontext = plugin_instance.DESCRIPTION
-        label = QLabel(f"{textwrap.fill(descriptiontext, 50)}\n")
+        lines = []
+        for line in descriptiontext.split("\n"):
+            lines.append(textwrap.fill(line, 50))
+        label = QLabel("\n".join(lines))
         options.addWidget(label)
 
         if plugin_instance.URL:

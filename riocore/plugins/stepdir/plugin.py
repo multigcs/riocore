@@ -83,11 +83,11 @@ class Plugin(PluginBase):
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]
         instance_parameter = instance["parameter"]
-        pulse_len = self.plugin_setup.get("pulse_len", self.OPTIONS["pulse_len"]["default"])
+        pulse_len = self.option("pulse_len")
         instance_parameter["PULSE_LEN"] = int(self.system_setup["speed"] * pulse_len / 1000000)
         if instance_parameter["PULSE_LEN"] == 0 and pulse_len > 0:
             instance_parameter["PULSE_LEN"] = 1
-        dir_delay = self.plugin_setup.get("dir_delay", self.OPTIONS["dir_delay"]["default"])
+        dir_delay = self.option("dir_delay")
         instance_parameter["DIR_DELAY"] = int(self.system_setup["speed"] * dir_delay / 1000000)
         return instances
 

@@ -125,35 +125,61 @@ This drivers have enabled SPI, but only for configuration.
                 "options": ["256", "128", "64", "32", "16", "8", "4", "2", "FULL"],
                 "description": "MRES",
             },
+            "rsense": {
+                "default": 0.075,
+                "type": float,
+                "min": 0.01,
+                "max": 0.5,
+                "decimals": 3,
+                "description": "current sense resistor in Ohm",
+            },
             "global_scaler": {
-                "default": 0,
-                "min": 0,
+                "default": 130,
+                "min": 32,
                 "max": 256,
                 "type": int,
-                "description": "TMC5160 GLOBAL_SCALER",
+                "description": "Global scaling of Motor current - Hint: Values >128 recommended for best results",
             },
             "irun": {
-                "default": 15,
+                "default": 18,
                 "type": int,
                 "min": 0,
                 "max": 31,
                 "description": "",
             },
             "ihold": {
-                "default": 5,
+                "default": 6,
                 "type": int,
                 "min": 0,
                 "max": 31,
                 "description": "",
             },
             "ihold_delay": {
-                "default": 5,
+                "default": 4,
                 "type": int,
                 "min": 0,
                 "max": 15,
                 "description": "",
             },
         }
+
+    def recalc(self):
+        vfs = 0.325  # Vrst
+        clock = 12000000  # internal osc
+        rsense = self.option("rsense")
+        irun = self.option("irun")
+        ihold = self.option("ihold")
+        ihold_delay = self.option("ihold_delay")
+        global_scaler = self.option("global_scaler")
+        i_scaler = (global_scaler / 256) * (vfs / rsense) * (1 / 1.4142135623730951)
+        i_run = i_scaler * ((irun + 1) / 32)
+        i_hold = i_scaler * ((ihold + 1) / 32)
+        if i_run < i_hold:
+            print(f"{self.NAME}: WARNING: irun is lower than ihold: {i_run}A < {i_hold}A")
+        delay = 0
+        if ihold_delay > 0 and (irun - ihold) > 0:
+            delay = int((ihold_delay * (irun - ihold) * (2**18)) / clock * 1000)
+        self.calclabel_update(f"IRMS: {i_scaler:0.2f}A / IRUN: {i_run:0.2f}A / IHOLD: {i_hold:0.2f}A\nIDELAY: {delay}ms\n")
 
     def _option_int(self, name, default):
         value = self.plugin_setup.get(name, default)
@@ -171,21 +197,13 @@ This drivers have enabled SPI, but only for configuration.
         parameters = instance.setdefault("parameter", {})
 
         system_clock = int(self.system_setup["speed"])
-        spi_hz = self._option_int("spi_hz", 1_000_000)
-        startup_ms = self._option_int("startup_ms", 50)
+        spi_hz = self._option_int("spi_hz", 1000000)
+        startup_ms = self._option_int("startup_ms", 100)
 
         # SPI_DIVIDER is the number of FPGA clocks per half SPI period.
-        spi_divider = max(
-            1,
-            (system_clock + 2 * spi_hz - 1) // (2 * spi_hz),
-        )
-
-        startup_cycles = max(
-            0,
-            int(system_clock * startup_ms / 1000),
-        )
-
+        spi_divider = max(1, (system_clock + 2 * spi_hz - 1) // (2 * spi_hz))
         parameters["SPI_DIVIDER"] = spi_divider
+        startup_cycles = max(0, int(system_clock * startup_ms / 1000))
         parameters["STARTUP_CYCLES"] = startup_cycles
 
         register_parameters = {
@@ -211,7 +229,7 @@ This drivers have enabled SPI, but only for configuration.
         for parameter, (option, default) in register_parameters.items():
             parameters[parameter] = self._u32_parameter(option, default)
 
-        microsteps = self.plugin_setup.get("microsteps", "256")
+        microsteps = self.option("microsteps")
         microsteps_mapping = {
             "256": "0000",
             "128": "0001",
@@ -225,31 +243,13 @@ This drivers have enabled SPI, but only for configuration.
         }
         parameters["CHOPCONF"] = f"32'b0000_{microsteps_mapping[microsteps]}_000000010000000011000011"
 
-        ihold_delay = self.plugin_setup.get("ihold_delay", 5)
-        irun = self.plugin_setup.get("irun", 20)
-        ihold = self.plugin_setup.get("ihold", 10)
+        ihold_delay = self.option("ihold_delay")
+        irun = self.option("irun")
+        ihold = self.option("ihold")
         parameters["IHOLD_IRUN"] = f"32'b{ihold_delay:04b}_{irun:05b}_{ihold:05b}"
-        global_scaler = self.plugin_setup.get("global_scaler", 200)
+        global_scaler = self.option("global_scaler")
         if global_scaler == 256:
             global_scaler = 0
         parameters["GLOBAL_SCALER"] = f"32'b00000000_00000000_00000000_{global_scaler:08b}"
 
         return instances
-
-    def convert_c(self, signal_name, signal_setup):
-        return ""
-        """
-        scale = float(self.plugin_setup.get("scale", 1.0))
-        tmc_clock = float(
-            self.plugin_setup.get("tmc_clock_hz", 12_000_000)
-        )
-
-        if signal_name == "velocity":
-            factor = scale * (2**24) / tmc_clock
-            return f"((int32_t)(({value}) * {factor:.12g}))"
-
-        if signal_name == "position":
-            return f"((float)({value}) / {scale:.12g})"
-
-        return value
-        """

@@ -68,6 +68,7 @@ class PluginBase:
         self.SYSTIMER = False
         self.RESET = False
         self.SYM_IO = False
+        self.calclabel = None
 
         if "uid" not in self.plugin_setup:
             if node_type := self.plugin_setup.get("node_type"):
@@ -148,6 +149,13 @@ class PluginBase:
 
     def cfg_info(self):
         return ""
+
+    def recalc(self):
+        pass
+
+    def calclabel_update(self, text):
+        if self.calclabel is not None:
+            self.calclabel.setText(text)
 
     def image_update(self):
         self.plugin_images = riocore.PluginImages()
@@ -547,6 +555,9 @@ class PluginBase:
 
     def option_default(self, name, default=None):
         return self.OPTIONS.get(name, {}).get("default", default)
+
+    def option(self, name):
+        return self.plugin_setup.get(name, self.OPTIONS[name]["default"])
 
     def show_pins(self):
         output = []
