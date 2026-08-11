@@ -54,216 +54,8 @@ This drivers have enabled SPI, but only for configuration.
             self.PINDEFAULTS["miso"]["pos"] = (102, 208)
             self.PINDEFAULTS["enable_n"]["pos"] = (113, 208)
 
-        self.INTERFACE = {
-            "velocity": {
-                "size": 32,
-                "direction": "output",
-            },
-            "enable": {
-                "size": 1,
-                "direction": "output",
-                "on_error": False,
-            },
-            "position": {
-                "size": 32,
-                "direction": "input",
-            },
-            "cs_actual": {
-                "size": 8,
-                "direction": "input",
-                # "multiplexed": True,
-            },
-            "stat_olb": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_ola": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_2gb": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_2ga": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_otpw": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_ot": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_fsactive": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_stealth": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_s2vsb": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_s2vsa": {
-                "size": 1,
-                "direction": "input",
-            },
-            "sg_result": {
-                "size": 16,
-                "direction": "input",
-                # "multiplexed": True,
-            },
-            "stat_swr": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_swl": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_standstill": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_sg2": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_driver_error": {
-                "size": 1,
-                "direction": "input",
-            },
-            "stat_reset": {
-                "size": 1,
-                "direction": "input",
-            },
-            "fault": {
-                "size": 1,
-                "direction": "input",
-            },
-        }
-
-        self.SIGNALS = {
-            "velocity": {
-                "direction": "output",
-                "min": -100000,
-                "max": 100000,
-                "unit": "Hz",
-                "absolute": False,
-                "description": "speed in steps per second",
-            },
-            "enable": {
-                "direction": "output",
-                "bool": True,
-                "description": "Joint amplifier enable",
-            },
-            "position": {
-                "direction": "input",
-                "unit": "unit",
-                "description": "XACTUAL position / Feedback",
-            },
-            "cs_actual": {
-                "direction": "input",
-                "description": "actual motor current",
-                "unit": "A",
-                "format": "0.2f",
-            },
-            "stat_olb": {
-                "direction": "input",
-                "bool": True,
-                "description": "open load indicator phase B",
-            },
-            "stat_ola": {
-                "direction": "input",
-                "bool": True,
-                "description": "open load indicator phase A",
-            },
-            "stat_2gb": {
-                "direction": "input",
-                "bool": True,
-                "description": "short to ground indicator phase B",
-            },
-            "stat_2ga": {
-                "direction": "input",
-                "bool": True,
-                "description": "short to ground indicator phase A",
-            },
-            "stat_otpw": {
-                "direction": "input",
-                "bool": True,
-                "description": "overtemperature pre-warning flag",
-            },
-            "stat_ot": {
-                "direction": "input",
-                "bool": True,
-                "description": "overtemperature flag",
-            },
-            "stat_fsactive": {
-                "direction": "input",
-                "bool": True,
-                "description": "full step active indicator",
-            },
-            "stat_stealth": {
-                "direction": "input",
-                "bool": True,
-                "description": "StealthChop indicator",
-            },
-            "stat_s2vsb": {
-                "direction": "input",
-                "bool": True,
-                "description": "short to supply indicator phase B",
-            },
-            "stat_s2vsa": {
-                "direction": "input",
-                "bool": True,
-                "description": "short to supply indicator phase A",
-            },
-            "sg_result": {
-                "direction": "input",
-                "description": "StallGuard2: Mechanical load measurement",
-            },
-            "stat_swr": {
-                "direction": "input",
-                "bool": True,
-                "description": "short to supply indicator phase A",
-            },
-            "stat_swl": {
-                "direction": "input",
-                "bool": True,
-                "description": "",
-            },
-            "stat_standstill": {
-                "direction": "input",
-                "bool": True,
-                "description": "",
-            },
-            "stat_sg2": {
-                "direction": "input",
-                "bool": True,
-                "description": "",
-            },
-            "stat_driver_error": {
-                "direction": "input",
-                "bool": True,
-                "description": "",
-            },
-            "stat_reset": {
-                "direction": "input",
-                "bool": True,
-                "description": "",
-            },
-            "fault": {
-                "direction": "input",
-                "bool": True,
-                "description": "TMC5160 driver error or short/overtemperature",
-            },
-        }
-
+        self.vfs = 0.325  # Vrst
+        self.clock = 12000000  # internal osc
         self.OPTIONS = {
             "microsteps": {
                 "default": "256",
@@ -307,9 +99,248 @@ This drivers have enabled SPI, but only for configuration.
                 "max": 15,
                 "description": "",
             },
+            "debug": {
+                "default": False,
+                "type": bool,
+                "description": "add debug signals",
+            },
         }
-        self.vfs = 0.325  # Vrst
-        self.clock = 12000000  # internal osc
+
+        self.INTERFACE = {
+            "velocity": {
+                "size": 32,
+                "direction": "output",
+            },
+            "enable": {
+                "size": 1,
+                "direction": "output",
+                "on_error": False,
+            },
+            "position": {
+                "size": 32,
+                "direction": "input",
+            },
+            "fault": {
+                "size": 1,
+                "direction": "input",
+            },
+        }
+
+        self.SIGNALS = {
+            "velocity": {
+                "direction": "output",
+                "min": -100000,
+                "max": 100000,
+                "unit": "Hz",
+                "absolute": False,
+                "description": "speed in steps per second",
+            },
+            "enable": {
+                "direction": "output",
+                "bool": True,
+                "description": "Joint amplifier enable",
+            },
+            "position": {
+                "direction": "input",
+                "unit": "unit",
+                "description": "XACTUAL position / Feedback",
+            },
+            "fault": {
+                "direction": "input",
+                "bool": True,
+                "description": "TMC5160 driver error or short/overtemperature",
+            },
+        }
+        if self.option("debug"):
+            self.INTERFACE.update(
+                {
+                    "cs_actual": {
+                        "size": 8,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_olb": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_ola": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_2gb": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_2ga": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_otpw": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_ot": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_fsactive": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_stealth": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_s2vsb": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_s2vsa": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "sg_result": {
+                        "size": 16,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_swr": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_swl": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_standstill": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_sg2": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_driver_error": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                    "stat_reset": {
+                        "size": 1,
+                        "direction": "input",
+                        "multiplexed": True,
+                    },
+                }
+            )
+
+            self.SIGNALS.update(
+                {
+                    "cs_actual": {
+                        "direction": "input",
+                        "description": "actual motor current",
+                        "unit": "A",
+                        "format": "0.2f",
+                    },
+                    "stat_olb": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "open load indicator phase B",
+                    },
+                    "stat_ola": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "open load indicator phase A",
+                    },
+                    "stat_2gb": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "short to ground indicator phase B",
+                    },
+                    "stat_2ga": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "short to ground indicator phase A",
+                    },
+                    "stat_otpw": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "overtemperature pre-warning flag",
+                    },
+                    "stat_ot": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "overtemperature flag",
+                    },
+                    "stat_fsactive": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "full step active indicator",
+                    },
+                    "stat_stealth": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "StealthChop indicator",
+                    },
+                    "stat_s2vsb": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "short to supply indicator phase B",
+                    },
+                    "stat_s2vsa": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "short to supply indicator phase A",
+                    },
+                    "sg_result": {
+                        "direction": "input",
+                        "description": "StallGuard2: Mechanical load measurement",
+                    },
+                    "stat_swr": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "short to supply indicator phase A",
+                    },
+                    "stat_swl": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "",
+                    },
+                    "stat_standstill": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "",
+                    },
+                    "stat_sg2": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "",
+                    },
+                    "stat_driver_error": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "",
+                    },
+                    "stat_reset": {
+                        "direction": "input",
+                        "bool": True,
+                        "description": "",
+                    },
+                }
+            )
 
     def recalc(self):
         rsense = self.option("rsense")

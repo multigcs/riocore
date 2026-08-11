@@ -174,7 +174,7 @@ module tmc5160 #(
                             spi_div_count <= SAFE_SPI_DIVIDER - 1;
                             spi_state <= 2'd2;
                         end else begin
-                            spi_bit_count <= spi_bit_count - 1;
+                            spi_bit_count <= spi_bit_count - 6'd1;
                         end
                     end
                 end
@@ -503,7 +503,7 @@ module tmc5160 #(
                 if (init_index == INIT_LAST) begin
                     init_done <= 1'b1;
                 end else begin
-                    init_index <= init_index + 1;
+                    init_index <= init_index + 5'd1;
                 end
             end
         end
@@ -553,7 +553,7 @@ module tmc5160 #(
                     launched_read     <= 1'b0;
                     launched_address  <= REG_VMAX;
                     sent_vmax         <= 32'd0;
-                    writes_since_poll <= writes_since_poll + 1;
+                    writes_since_poll <= writes_since_poll + 2'd1;
                     spi_start         <= 1'b1;
                 end else if (enable &&
                              requested_vmax != 0 &&
@@ -580,7 +580,7 @@ module tmc5160 #(
                     end
 
                     launched_read     <= 1'b0;
-                    writes_since_poll <= writes_since_poll + 1;
+                    writes_since_poll <= writes_since_poll + 2'd1;
                     spi_start         <= 1'b1;
                 end else if (enable &&
                              requested_vmax != sent_vmax) begin
@@ -590,7 +590,7 @@ module tmc5160 #(
                     launched_read     <= 1'b0;
                     launched_address  <= REG_VMAX;
                     sent_vmax         <= requested_vmax;
-                    writes_since_poll <= writes_since_poll + 1;
+                    writes_since_poll <= writes_since_poll + 2'd1;
                     spi_start         <= 1'b1;
                 end else begin
                     /*
