@@ -14,15 +14,25 @@ angle scale: 16bit (65536)
 position scale: 17bit (131072)
 
 protocol in short:
-    * RS485
+    * RS485 - 4Mbit
     * manchester code
     * stuffing bit (after 5x1)
     * 16bit checksum
 
 very time critical
 on TangNano9k:
- "speed": "32400000",
- parameter DELAY=3, parameter DELAY_NEXT=4
+ "speed": "40000000",
+ parameter DELAY=4, parameter DELAY_NEXT=6
+
+Red             +5V
+gray            GND
+Orange          ???
+
+Yellow          Bat+
+Yellow/Black    Bat- / GND
+
+Blue            RS485 +A
+Blue/Black      RS485 -B
 
 * Keywords: absolute angle encoder
 * NEEDS: fpga

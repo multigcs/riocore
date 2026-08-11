@@ -13,12 +13,25 @@ TangNano1K - cheap GW1NR-1 Devboard - usable as sat only
 | URL | [link](https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-1K/Nano-1k.html) |
 
 ## Slots
+### JTAG
+
+
+| Name | Pin | Direction |
+| --- | --- | --- |
+| TCK | TCK | all |
+| TDI | TDI | all |
+| TMS | TMS | all |
+| TDO | TDO | all |
+
 ### PIN
 
 
 | Name | Pin | Direction |
 | --- | --- | --- |
 | 44 | 44 | all |
+| BL_IO27 | BL_IO27 | all |
+| BL_IO26 | BL_IO26 | all |
+| BL_IO23 | BL_IO23 | all |
 | 40 | 40 | all |
 | 41 | 41 | all |
 | 38 | 38 | all |
@@ -32,6 +45,7 @@ TangNano1K - cheap GW1NR-1 Devboard - usable as sat only
 | 30 | 30 | all |
 | 31 | 31 | all |
 | 13 | 13 | all |
+| 47 | 47 | output |
 | 45 | 45 | all |
 | 46 | 46 | all |
 | 11 | 11 | all |
@@ -46,14 +60,6 @@ TangNano1K - cheap GW1NR-1 Devboard - usable as sat only
 | 15 | 15 | all |
 | 27 | 27 | all |
 | 28 | 28 | all |
-
-### UART
-over USB
-
-| Name | Pin | Direction |
-| --- | --- | --- |
-| RX | 18 | input |
-| TX | 17 | output |
 
 ### SW
 

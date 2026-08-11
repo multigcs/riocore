@@ -39,6 +39,12 @@ minimum measured frequency (for faster updates)
  * default: 10
  * unit: Hz
 
+### servo_mode:
+servo-mode 1/2ms -> -100/100%
+
+ * type: bool
+ * default: False
+
 
 ## Signals:
 *signals/pins in LinuxCNC*

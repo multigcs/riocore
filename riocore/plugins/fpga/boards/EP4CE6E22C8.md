@@ -115,18 +115,18 @@ EP4CE6E22C8 devboard
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| B1 | 114 | input |
-| B2 | 89 | input |
-| B3 | 88 | input |
-| B4 | 80 | input |
-| B5 | 73 | input |
+| B1 | PIN_114 | input |
+| B2 | PIN_89 | input |
+| B3 | PIN_88 | input |
+| B4 | PIN_80 | input |
+| B5 | PIN_73 | input |
 
 ### UART
 
 
 | Name | Pin | Direction |
 | --- | --- | --- |
-| RX | 23 | input |
-| TX | 10 | output |
+| RX | PIN_23 | input |
+| TX | PIN_10 | output |
 
 

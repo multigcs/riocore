@@ -83,7 +83,7 @@ delay between scans
 
  * type: float
  * min: 0.0
- * max: 100.0
+ * max: 200.0
  * default: 1.0
  * unit: ms
 
@@ -112,6 +112,8 @@ generate single bit signals
 
  * type: float
  * direction: input
+ * min: 0
+ * max: 16
 
 ### scancode:
 

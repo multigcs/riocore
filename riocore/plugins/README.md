@@ -27,6 +27,7 @@
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |  |
 |  | [stepgen](stepgen/README.md) | software step pulse generation | <img src="stepgen/image.png" height="48"> |  |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |  |
+|  | [tmc5160](tmc5160/README.md) | TMC5160 SPI joint | <img src="tmc5160/image.png" height="48"> | Experimental  |
 |  | [bldc](bldc/README.md) | BLDC FOC | <img src="bldc/image.png" height="48"> | Experimental  |
 |  | [hbridge](hbridge/README.md) | hbridge output | <img src="hbridge/image.png" height="48"> |  |
 |  | [pdmout](pdmout/README.md) | pdm output | <img src="pdmout/image.png" height="48"> |  |
@@ -36,6 +37,7 @@
 |  | [stepdir](stepdir/README.md) | step/dir output for stepper drivers | <img src="stepdir/image.png" height="48"> |  |
 |  | [stepgen](stepgen/README.md) | software step pulse generation | <img src="stepgen/image.png" height="48"> |  |
 |  | [stepper](stepper/README.md) | stepper driver output for H-Bridges like L298 | <img src="stepper/image.png" height="48"> |  |
+|  | [tmc5160](tmc5160/README.md) | TMC5160 SPI joint | <img src="tmc5160/image.png" height="48"> | Experimental  |
 | IO | [abs_encoder](abs_encoder/README.md) | serial abs-encoder | <img src="abs_encoder/image.png" height="48"> | Experimental  |
 |  | [as5600pwm](as5600pwm/README.md) | as5600 pwm input | <img src="as5600pwm/image.png" height="48"> |  |
 |  | [binin](binin/README.md) | binary to decimal input | <img src="binin/image.png" height="48"> |  |

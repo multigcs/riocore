@@ -26,6 +26,10 @@ Motor-Setup:
     }
 ```
 
+Unitec DTBL-2714A: 4pol
+Rexroth MSM031C-0300-NN-M0-CH0: 4pol
+Yas: 3pol
+
 * Keywords: joint brushless
 * NEEDS: fpga
 
@@ -117,21 +121,21 @@ motor poles
  * unit: 
 
 ### sine_len:
-sinus table lenght in bits
+sinus table lenght in bits (0 = auto)
 
  * type: int
- * min: 4
+ * min: 0
  * max: 12
- * default: 6
+ * default: 0
  * unit: bits
 
 ### sine_res:
-sinus table lenght in bits (0 = auto)
+sinus table lenght in bits
 
  * type: int
  * min: 8
  * max: 16
- * default: 12
+ * default: 8
  * unit: bits
 
 ### feedback_res:
@@ -139,7 +143,7 @@ encoder resolution
 
  * type: int
  * min: 10
- * max: 100000
+ * max: 65536
  * default: 4096
  * unit: 
 
@@ -158,8 +162,8 @@ encoder resolution
 
  * type: float
  * direction: output
- * min: -64
- * max: 64
+ * min: -256
+ * max: 256
  * unit: 
 
 ### enable:
@@ -173,6 +177,13 @@ encoder resolution
  * direction: output
  * min: 0
  * max: 2
+
+### preset:
+
+ * type: float
+ * direction: output
+ * min: 0
+ * max: 255
 
 
 ## Interfaces:
@@ -194,6 +205,12 @@ encoder resolution
  * direction: output
 
 ### mode:
+
+ * size: 8 bit
+ * direction: output
+ * multiplexed: True
+
+### preset:
 
  * size: 8 bit
  * direction: output
