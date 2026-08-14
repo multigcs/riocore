@@ -13,6 +13,18 @@ if len(sys.argv) == 5 and sys.argv[4] == "run":
 else:
     print("DEBUG_MODE")
 
+if filename.startswith("riocore/files/images/"):
+    print("image rescale only")
+    png_file = filename
+    res = subprocess.check_output(["identify", filename]).decode()
+    size = res.split()[2].split("x")
+    size_x = int(size[0])
+    size_y = int(size[1])
+    cmd = f"convert -scale {int(size_x * xscale)}x {filename} {filename}"
+    print(cmd)
+    if run:
+        os.system(cmd)
+    exit(0)
 
 board_name = filename.split("/")[4].replace(".png", "").replace(".json", "")
 btype = filename.split("/")[2]
@@ -20,12 +32,11 @@ btype = filename.split("/")[2]
 
 if btype == "i2c_device":
     print("image rescale only")
-    png_file = f"riocore/plugins/{btype}/boards/{board_name}.png"
-    res = subprocess.check_output(["identify", png_file]).decode()
+    res = subprocess.check_output(["identify", filename]).decode()
     size = res.split()[2].split("x")
     size_x = int(size[0])
     size_y = int(size[1])
-    cmd = f"convert -scale {int(size_x * xscale)}x {png_file} {png_file}"
+    cmd = f"convert -scale {int(size_x * xscale)}x {filename} {filename}"
     print(cmd)
     if run:
         os.system(cmd)
