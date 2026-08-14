@@ -43,12 +43,21 @@ else:
 jdata = json.loads(open(json_file, "r").read())
 
 if btype == "fpga":
-    for slot in jdata["slots"]:
+    for slot in jdata.get("slots", []):
         for pin, data in slot["pins"].items():
             pos = data.get("pos")
             if pos:
                 print(pin, pos)
                 data["pos"] = [int(pos[0] * xscale), int(pos[1] * yscale)]
+
+    for slot in jdata.get("plugins", []):
+        for pin, data in slot["pins"].items():
+            pos = data.get("pos")
+            if pos:
+                print(pin, pos)
+                data["pos"] = [int(pos[0] * xscale), int(pos[1] * yscale)]
+
+
 elif btype == "breakout":
     for slot in jdata.get("slots", []):
         for pin, data in slot["pins"].items():
