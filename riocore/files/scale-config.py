@@ -16,6 +16,22 @@ else:
 
 jdata = json.loads(open(filename, "r").read())
 
+if filename == "riocore/files/images/pins.json":
+    for img, data in jdata.items():
+        for pin in data.get("pins", []):
+            pin[0] *= xscale
+            pin[1] *= xscale
+        for signal in data.get("signals", []):
+            signal[0] *= xscale
+            signal[1] *= xscale
+
+    print(json.dumps(jdata, indent=2))
+    if run:
+        open(filename, "w").write(json.dumps(jdata, indent=2))
+    exit(0)
+
+
+
 for plugin in jdata.get("plugins", []):
     pos = plugin.get("pos")
     if pos:
