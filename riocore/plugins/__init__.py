@@ -177,7 +177,7 @@ class PluginBase:
                         if pn < signals_max:
                             self.SIGNALS[pin]["pos"] = image_setup["signals"][pn]
                 elif image not in {"generic", "kicad"}:
-                    riocore.log(f"ERROR: image-config not found for: ({image})")
+                    riocore.log(f"ERROR: image-config not found for: {image}")
             elif image:
                 self.IMAGE_SHOW = True
                 self.IMAGE = image
