@@ -3,11 +3,18 @@ import os
 import subprocess
 import sys
 
+run = False
 filename = sys.argv[1]
 xscale = float(sys.argv[2])
 yscale = float(sys.argv[3])
+if len(sys.argv) == 5 and sys.argv[4] == "run":
+    print("run")
+    run = True
+else:
+    print("DEBUG_MODE")
 
-board_name = filename.split("/")[4].split(".", 1)[0]
+
+board_name = filename.split("/")[4].replace(".png", "").replace(".json", "")
 btype = filename.split("/")[2]
 
 
@@ -20,7 +27,8 @@ if btype == "i2c_device":
     size_y = int(size[1])
     cmd = f"convert -scale {int(size_x * xscale)}x {png_file} {png_file}"
     print(cmd)
-    os.system(cmd)
+    if run:
+        os.system(cmd)
     exit(0)
 
 
@@ -42,7 +50,7 @@ if btype == "fpga":
                 print(pin, pos)
                 data["pos"] = [int(pos[0] * xscale), int(pos[1] * yscale)]
 elif btype == "breakout":
-    for slot in jdata["slots"]:
+    for slot in jdata.get("slots", []):
         for pin, data in slot["pins"].items():
             pos = data.get("pos")
             if pos:
@@ -80,6 +88,7 @@ size_x = int(size[0])
 size_y = int(size[1])
 cmd = f"convert -scale {int(size_x * xscale)}x {png_file} {png_file}"
 print(cmd)
-os.system(cmd)
-print(json.dumps(jdata, indent=2))
-open(json_file, "w").write(json.dumps(jdata, indent=2))
+if run:
+    os.system(cmd)
+    print(json.dumps(jdata, indent=2))
+    open(json_file, "w").write(json.dumps(jdata, indent=2))
