@@ -40,6 +40,7 @@ def test_generator(config):
         f"{target}/PYLIB/*/rio.py",
         f"{target}/Simulator",
         f"{target}/KICAD",
+        f"{target}/MQTT/*/node-red.json",
     ):
         os.system(f'rm -rf tests/unit/data/full/{path}')
         os.system(f'rm -rf tests/unit/output/{path}')
