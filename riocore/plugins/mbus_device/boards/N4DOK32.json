@@ -4,61 +4,405 @@
   "timeout": 160,
   "delay": 100,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [20, 260], "type": ["MODBUS"], "bus": true},
-    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [20, 280], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"},
-    "do1_16:0": {"direction": "output", "edge": "source", "pos": [1259, 490], "type": ["GPIO"]},
-    "do1_16:1": {"direction": "output", "edge": "source", "pos": [1177, 490], "type": ["GPIO"]},
-    "do1_16:2": {"direction": "output", "edge": "source", "pos": [1096, 490], "type": ["GPIO"]},
-    "do1_16:3": {"direction": "output", "edge": "source", "pos": [1015, 490], "type": ["GPIO"]},
-    "do1_16:4": {"direction": "output", "edge": "source", "pos": [934, 490], "type": ["GPIO"]},
-    "do1_16:5": {"direction": "output", "edge": "source", "pos": [853, 490], "type": ["GPIO"]},
-    "do1_16:6": {"direction": "output", "edge": "source", "pos": [771, 490], "type": ["GPIO"]},
-    "do1_16:7": {"direction": "output", "edge": "source", "pos": [690, 490], "type": ["GPIO"]},
-    "do1_16:8": {"direction": "output", "edge": "source", "pos": [609, 490], "type": ["GPIO"]},
-    "do1_16:9": {"direction": "output", "edge": "source", "pos": [528, 490], "type": ["GPIO"]},
-    "do1_16:10": {"direction": "output", "edge": "source", "pos": [447, 490], "type": ["GPIO"]},
-    "do1_16:11": {"direction": "output", "edge": "source", "pos": [365, 490], "type": ["GPIO"]},
-    "do1_16:12": {"direction": "output", "edge": "source", "pos": [284, 490], "type": ["GPIO"]},
-    "do1_16:13": {"direction": "output", "edge": "source", "pos": [203, 490], "type": ["GPIO"]},
-    "do1_16:14": {"direction": "output", "edge": "source", "pos": [122, 490], "type": ["GPIO"]},
-    "do1_16:15": {"direction": "output", "edge": "source", "pos": [41, 490], "type": ["GPIO"]},
-    "do17_32:0": {"direction": "output", "edge": "source", "pos": [41, 50], "type": ["GPIO"]},
-    "do17_32:1": {"direction": "output", "edge": "source", "pos": [122, 50], "type": ["GPIO"]},
-    "do17_32:2": {"direction": "output", "edge": "source", "pos": [203, 50], "type": ["GPIO"]},
-    "do17_32:3": {"direction": "output", "edge": "source", "pos": [284, 50], "type": ["GPIO"]},
-    "do17_32:4": {"direction": "output", "edge": "source", "pos": [365, 50], "type": ["GPIO"]},
-    "do17_32:5": {"direction": "output", "edge": "source", "pos": [447, 50], "type": ["GPIO"]},
-    "do17_32:6": {"direction": "output", "edge": "source", "pos": [528, 50], "type": ["GPIO"]},
-    "do17_32:7": {"direction": "output", "edge": "source", "pos": [609, 50], "type": ["GPIO"]},
-    "do17_32:8": {"direction": "output", "edge": "source", "pos": [690, 50], "type": ["GPIO"]},
-    "do17_32:9": {"direction": "output", "edge": "source", "pos": [771, 50], "type": ["GPIO"]},
-    "do17_32:10": {"direction": "output", "edge": "source", "pos": [853, 50], "type": ["GPIO"]},
-    "do17_32:11": {"direction": "output", "edge": "source", "pos": [934, 50], "type": ["GPIO"]},
-    "do17_32:12": {"direction": "output", "edge": "source", "pos": [1015, 50], "type": ["GPIO"]},
-    "do17_32:13": {"direction": "output", "edge": "source", "pos": [1096, 50], "type": ["GPIO"]},
-    "do17_32:14": {"direction": "output", "edge": "source", "pos": [1177, 50], "type": ["GPIO"]},
-    "do17_32:15": {"direction": "output", "edge": "source", "pos": [1259, 50], "type": ["GPIO"]}
+    "MODBUS": {
+      "direction": "output",
+      "edge": "target",
+      "pos": [
+        36,
+        473
+      ],
+      "type": [
+        "MODBUS"
+      ],
+      "bus": true
+    },
+    "MODBUS:OUT": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        36,
+        509
+      ],
+      "type": [
+        "PASSTHROUGH"
+      ],
+      "bus": true,
+      "pintype": "PASSTHROUGH",
+      "source": "MODBUS"
+    },
+    "do1_16:0": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        2291,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:1": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        2142,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:2": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1994,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:3": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1847,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:4": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1699,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:5": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1552,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:6": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1403,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:7": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1255,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:8": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1108,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:9": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        960,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:10": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        813,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:11": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        664,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:12": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        516,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:13": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        369,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:14": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        222,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do1_16:15": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        74,
+        891
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:0": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        74,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:1": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        222,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:2": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        369,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:3": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        516,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:4": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        664,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:5": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        813,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:6": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        960,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:7": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1108,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:8": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1255,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:9": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1403,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:10": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1552,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:11": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1699,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:12": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1847,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:13": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        1994,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:14": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        2142,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    },
+    "do17_32:15": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        2291,
+        91
+      ],
+      "type": [
+        "GPIO"
+      ]
+    }
   },
   "commands": {
     "do1_16": {
-        "type": 6,
-        "register": 112,
-        "values": 16,
-        "scale": 1.0,
-        "unit": "",
-        "error_values": "",
-        "format": "d",
-        "datatype": "bool"
+      "type": 6,
+      "register": 112,
+      "values": 16,
+      "scale": 1.0,
+      "unit": "",
+      "error_values": "",
+      "format": "d",
+      "datatype": "bool"
     },
     "do17_32": {
-        "type": 6,
-        "register": 113,
-        "values": 16,
-        "scale": 1.0,
-        "unit": "",
-        "error_values": "",
-        "format": "d",
-        "datatype": "bool"
+      "type": 6,
+      "register": 113,
+      "values": 16,
+      "scale": 1.0,
+      "unit": "",
+      "error_values": "",
+      "format": "d",
+      "datatype": "bool"
     }
   }
 }

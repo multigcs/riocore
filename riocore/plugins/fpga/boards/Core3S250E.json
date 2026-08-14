@@ -24,32 +24,32 @@
         "L1": {
           "pin": "P58",
           "pos": [
-            156,
-            261
+            283,
+            475
           ],
           "direction": "all"
         },
         "L2": {
           "pin": "P54",
           "pos": [
-            126,
-            261
+            229,
+            475
           ],
           "direction": "all"
         },
         "L3": {
           "pin": "P53",
           "pos": [
-            97,
-            261
+            176,
+            475
           ],
           "direction": "all"
         },
         "L4": {
           "pin": "P52",
           "pos": [
-            67,
-            261
+            121,
+            475
           ],
           "direction": "all"
         }
@@ -63,88 +63,88 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            9,
-            54
+            16,
+            98
           ],
           "direction": "all"
         },
         "P3": {
           "pin": "P131",
           "pos": [
-            9,
-            65
+            16,
+            118
           ],
           "direction": "all"
         },
         "P5": {
           "pin": "P134",
           "pos": [
-            9,
-            76
+            16,
+            138
           ],
           "direction": "all"
         },
         "P7": {
           "pin": "P139",
           "pos": [
-            9,
-            87
+            16,
+            158
           ],
           "direction": "all"
         },
         "P9": {
           "pin": "P142",
           "pos": [
-            9,
-            98
+            16,
+            178
           ],
           "direction": "all"
         },
         "P11": {
           "pin": "P2",
           "pos": [
-            9,
-            109
+            16,
+            198
           ],
           "direction": "all"
         },
         "P13": {
           "pin": "P4",
           "pos": [
-            9,
-            120
+            16,
+            218
           ],
           "direction": "all"
         },
         "P15": {
           "pin": "P7",
           "pos": [
-            9,
-            131
+            16,
+            238
           ],
           "direction": "all"
         },
         "P17": {
           "pin": "P14",
           "pos": [
-            9,
-            142
+            16,
+            258
           ],
           "direction": "all"
         },
         "P19": {
           "pin": "P16",
           "pos": [
-            9,
-            153
+            16,
+            278
           ],
           "direction": "all"
         },
         "P21": {
           "pin": "P20",
           "pos": [
-            9,
-            164
+            16,
+            298
           ],
           "direction": "all"
         },
@@ -152,72 +152,72 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            9,
-            175
+            16,
+            318
           ],
           "direction": "all"
         },
         "P25": {
           "pin": "P22",
           "pos": [
-            9,
-            186
+            16,
+            338
           ],
           "direction": "all"
         },
         "P27": {
           "pin": "P25",
           "pos": [
-            9,
-            197
+            16,
+            358
           ],
           "direction": "all"
         },
         "P29": {
           "pin": "P31",
           "pos": [
-            9,
-            208
+            16,
+            378
           ],
           "direction": "all"
         },
         "P31": {
           "pin": "P33",
           "pos": [
-            9,
-            219
+            16,
+            398
           ],
           "direction": "all"
         },
         "P33": {
           "pin": "P35",
           "pos": [
-            9,
-            230
+            16,
+            418
           ],
           "direction": "all"
         },
         "P35": {
           "pin": "P40",
           "pos": [
-            9,
-            241
+            16,
+            438
           ],
           "direction": "all"
         },
         "P37": {
           "pin": "P44",
           "pos": [
-            9,
-            252
+            16,
+            458
           ],
           "direction": "all"
         },
         "P39": {
           "pin": "P51",
           "pos": [
-            9,
-            263
+            16,
+            478
           ],
           "direction": "all"
         },
@@ -226,8 +226,8 @@
           "special": true,
           "comment": "shared with LED:L3",
           "pos": [
-            9,
-            274
+            16,
+            498
           ],
           "direction": "all"
         },
@@ -236,8 +236,8 @@
           "special": true,
           "comment": "shared with LED:L1",
           "pos": [
-            9,
-            285
+            16,
+            518
           ],
           "direction": "all"
         },
@@ -245,88 +245,88 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            20,
-            54
+            36,
+            98
           ],
           "direction": "all"
         },
         "P4": {
           "pin": "P130",
           "pos": [
-            20,
-            65
+            36,
+            118
           ],
           "direction": "all"
         },
         "P6": {
           "pin": "P132",
           "pos": [
-            20,
-            76
+            36,
+            138
           ],
           "direction": "all"
         },
         "P8": {
           "pin": "P135",
           "pos": [
-            20,
-            87
+            36,
+            158
           ],
           "direction": "all"
         },
         "P10": {
           "pin": "P140",
           "pos": [
-            20,
-            98
+            36,
+            178
           ],
           "direction": "all"
         },
         "P12": {
           "pin": "P143",
           "pos": [
-            20,
-            109
+            36,
+            198
           ],
           "direction": "all"
         },
         "P14": {
           "pin": "P3",
           "pos": [
-            20,
-            120
+            36,
+            218
           ],
           "direction": "all"
         },
         "P16": {
           "pin": "P5",
           "pos": [
-            20,
-            131
+            36,
+            238
           ],
           "direction": "all"
         },
         "P18": {
           "pin": "P8",
           "pos": [
-            20,
-            142
+            36,
+            258
           ],
           "direction": "all"
         },
         "P20": {
           "pin": "P15",
           "pos": [
-            20,
-            153
+            36,
+            278
           ],
           "direction": "all"
         },
         "P22": {
           "pin": "P17",
           "pos": [
-            20,
-            164
+            36,
+            298
           ],
           "direction": "all"
         },
@@ -334,72 +334,72 @@
           "pin": "5V",
           "marker": true,
           "pos": [
-            20,
-            175
+            36,
+            318
           ],
           "direction": "all"
         },
         "P26": {
           "pin": "P21",
           "pos": [
-            20,
-            186
+            36,
+            338
           ],
           "direction": "all"
         },
         "P28": {
           "pin": "P23",
           "pos": [
-            20,
-            197
+            36,
+            358
           ],
           "direction": "all"
         },
         "P30": {
           "pin": "P26",
           "pos": [
-            20,
-            208
+            36,
+            378
           ],
           "direction": "all"
         },
         "P32": {
           "pin": "P32",
           "pos": [
-            20,
-            219
+            36,
+            398
           ],
           "direction": "all"
         },
         "P34": {
           "pin": "P34",
           "pos": [
-            20,
-            230
+            36,
+            418
           ],
           "direction": "all"
         },
         "P36": {
           "pin": "P39",
           "pos": [
-            20,
-            241
+            36,
+            438
           ],
           "direction": "all"
         },
         "P38": {
           "pin": "P43",
           "pos": [
-            20,
-            252
+            36,
+            458
           ],
           "direction": "all"
         },
         "P40": {
           "pin": "P50",
           "pos": [
-            20,
-            263
+            36,
+            478
           ],
           "direction": "all"
         },
@@ -408,8 +408,8 @@
           "special": true,
           "comment": "shared with LED:L4",
           "pos": [
-            20,
-            274
+            36,
+            498
           ],
           "direction": "all"
         },
@@ -418,8 +418,8 @@
           "special": true,
           "comment": "shared with LED:L2",
           "pos": [
-            20,
-            285
+            36,
+            518
           ],
           "direction": "all"
         }
@@ -433,88 +433,88 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            200,
-            54
+            364,
+            98
           ],
           "direction": "all"
         },
         "P3": {
           "pin": "P125",
           "pos": [
-            200,
-            65
+            364,
+            118
           ],
           "direction": "all"
         },
         "P5": {
           "pin": "P123",
           "pos": [
-            200,
-            76
+            364,
+            138
           ],
           "direction": "all"
         },
         "P7": {
           "pin": "P117",
           "pos": [
-            200,
-            87
+            364,
+            158
           ],
           "direction": "all"
         },
         "P9": {
           "pin": "P113",
           "pos": [
-            200,
-            98
+            364,
+            178
           ],
           "direction": "all"
         },
         "P11": {
           "pin": "P106",
           "pos": [
-            200,
-            109
+            364,
+            198
           ],
           "direction": "all"
         },
         "P13": {
           "pin": "P104",
           "pos": [
-            200,
-            120
+            364,
+            218
           ],
           "direction": "all"
         },
         "P15": {
           "pin": "P98",
           "pos": [
-            200,
-            131
+            364,
+            238
           ],
           "direction": "all"
         },
         "P17": {
           "pin": "P96",
           "pos": [
-            200,
-            142
+            364,
+            258
           ],
           "direction": "all"
         },
         "P19": {
           "pin": "P93",
           "pos": [
-            200,
-            153
+            364,
+            278
           ],
           "direction": "all"
         },
         "P21": {
           "pin": "P91",
           "pos": [
-            200,
-            164
+            364,
+            298
           ],
           "direction": "all"
         },
@@ -522,88 +522,88 @@
           "pin": "5V",
           "marker": true,
           "pos": [
-            200,
-            175
+            364,
+            318
           ],
           "direction": "all"
         },
         "P25": {
           "pin": "P87",
           "pos": [
-            200,
-            186
+            364,
+            338
           ],
           "direction": "all"
         },
         "P27": {
           "pin": "P85",
           "pos": [
-            200,
-            197
+            364,
+            358
           ],
           "direction": "all"
         },
         "P29": {
           "pin": "P82",
           "pos": [
-            200,
-            208
+            364,
+            378
           ],
           "direction": "all"
         },
         "P31": {
           "pin": "P77",
           "pos": [
-            200,
-            219
+            364,
+            398
           ],
           "direction": "all"
         },
         "P33": {
           "pin": "P75",
           "pos": [
-            200,
-            230
+            364,
+            418
           ],
           "direction": "all"
         },
         "P35": {
           "pin": "P71",
           "pos": [
-            200,
-            241
+            364,
+            438
           ],
           "direction": "all"
         },
         "P37": {
           "pin": "P68",
           "pos": [
-            200,
-            252
+            364,
+            458
           ],
           "direction": "all"
         },
         "P39": {
           "pin": "P66",
           "pos": [
-            200,
-            263
+            364,
+            478
           ],
           "direction": "all"
         },
         "P41": {
           "pin": "P62",
           "pos": [
-            200,
-            274
+            364,
+            498
           ],
           "direction": "all"
         },
         "P43": {
           "pin": "P59",
           "pos": [
-            200,
-            285
+            364,
+            518
           ],
           "direction": "all"
         },
@@ -611,88 +611,88 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            211,
-            54
+            384,
+            98
           ],
           "direction": "all"
         },
         "P4": {
           "pin": "P126",
           "pos": [
-            211,
-            65
+            384,
+            118
           ],
           "direction": "all"
         },
         "P6": {
           "pin": "P124",
           "pos": [
-            211,
-            76
+            384,
+            138
           ],
           "direction": "all"
         },
         "P8": {
           "pin": "P122",
           "pos": [
-            211,
-            87
+            384,
+            158
           ],
           "direction": "all"
         },
         "P10": {
           "pin": "P116",
           "pos": [
-            211,
-            98
+            384,
+            178
           ],
           "direction": "all"
         },
         "P12": {
           "pin": "P112",
           "pos": [
-            211,
-            109
+            384,
+            198
           ],
           "direction": "all"
         },
         "P14": {
           "pin": "P105",
           "pos": [
-            211,
-            120
+            384,
+            218
           ],
           "direction": "all"
         },
         "P16": {
           "pin": "P103",
           "pos": [
-            211,
-            131
+            384,
+            238
           ],
           "direction": "all"
         },
         "P18": {
           "pin": "P97",
           "pos": [
-            211,
-            142
+            384,
+            258
           ],
           "direction": "all"
         },
         "P20": {
           "pin": "P94",
           "pos": [
-            211,
-            153
+            384,
+            278
           ],
           "direction": "all"
         },
         "P22": {
           "pin": "P92",
           "pos": [
-            211,
-            164
+            384,
+            298
           ],
           "direction": "all"
         },
@@ -700,88 +700,88 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            211,
-            175
+            384,
+            318
           ],
           "direction": "all"
         },
         "P26": {
           "pin": "P88",
           "pos": [
-            211,
-            186
+            384,
+            338
           ],
           "direction": "all"
         },
         "P28": {
           "pin": "P86",
           "pos": [
-            211,
-            197
+            384,
+            358
           ],
           "direction": "all"
         },
         "P30": {
           "pin": "P83",
           "pos": [
-            211,
-            208
+            384,
+            378
           ],
           "direction": "all"
         },
         "P32": {
           "pin": "P81",
           "pos": [
-            211,
-            219
+            384,
+            398
           ],
           "direction": "all"
         },
         "P34": {
           "pin": "P76",
           "pos": [
-            211,
-            230
+            384,
+            418
           ],
           "direction": "all"
         },
         "P36": {
           "pin": "P74",
           "pos": [
-            211,
-            241
+            384,
+            438
           ],
           "direction": "all"
         },
         "P38": {
           "pin": "P70",
           "pos": [
-            211,
-            252
+            384,
+            458
           ],
           "direction": "all"
         },
         "P40": {
           "pin": "P67",
           "pos": [
-            211,
-            263
+            384,
+            478
           ],
           "direction": "all"
         },
         "P42": {
           "pin": "P63",
           "pos": [
-            211,
-            274
+            384,
+            498
           ],
           "direction": "all"
         },
         "P44": {
           "pin": "P60",
           "pos": [
-            211,
-            285
+            384,
+            518
           ],
           "direction": "all"
         }

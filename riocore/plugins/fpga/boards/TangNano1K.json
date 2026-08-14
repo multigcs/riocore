@@ -1,498 +1,494 @@
 {
-    "name": "TangNano1K",
-    "description": "TangNano1K - cheap GW1NR-1 Devboard - usable as sat only",
-    "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-1K/Nano-1k.html",
-    "size": [
-        59,
-        22
-    ],
-    "board": "TangNano1K",
-    "type": "GW1NZ-LV1QN48C6/I5",
-    "family": "GW1NZ-1",
-    "toolchains": [
-        "gowin",
-        "icestorm"
-    ],
-    "toolchain": "gowin",
-    "package": "",
-    "clock": {
-        "speed": "27000000",
-        "pin": "47"
-    },
-    "slots": [
-        {
-            "name": "JTAG",
-            "pins": {
-                "TCK": {
-                    "pin": "TCK",
-                    "pos": [
-                        30,
-                        6
-                    ],
-                    "special": true,
-                    "direction": "all"
-                },
-                "TDI": {
-                    "pin": "TDI",
-                    "pos": [
-                        30,
-                        17
-                    ],
-                    "special": true,
-                    "direction": "all"
-                },
-                "TMS": {
-                    "pin": "TMS",
-                    "pos": [
-                        30,
-                        89
-                    ],
-                    "special": true,
-                    "direction": "all"
-                },
-                "TDO": {
-                    "pin": "TDO",
-                    "pos": [
-                        30,
-                        78
-                    ],
-                    "special": true,
-                    "direction": "all"
-                }
-            }
+  "name": "TangNano1K",
+  "description": "TangNano1K - cheap GW1NR-1 Devboard - usable as sat only",
+  "url": "https://wiki.sipeed.com/hardware/en/tang/Tang-Nano-1K/Nano-1k.html",
+  "size": [
+    59,
+    22
+  ],
+  "board": "TangNano1K",
+  "type": "GW1NZ-LV1QN48C6/I5",
+  "family": "GW1NZ-1",
+  "toolchains": [
+    "gowin",
+    "icestorm"
+  ],
+  "toolchain": "gowin",
+  "package": "",
+  "clock": {
+    "speed": "27000000",
+    "pin": "47"
+  },
+  "slots": [
+    {
+      "name": "JTAG",
+      "pins": {
+        "TCK": {
+          "pin": "TCK",
+          "pos": [
+            54,
+            10
+          ],
+          "special": true,
+          "direction": "all"
         },
-        {
-            "name": "PIN",
-            "pins": {
-                "44": {
-                    "pin": "44",
-                    "pos": [
-                        41,
-                        6
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "comment": "KEY_B / JTAG_SEL",
-                    "direction": "all"
-                },
-
-
-                "BL_IO27": {
-                    "pin": "BL_IO27",
-                    "pos": [
-                        97,
-                        6
-                    ],
-                    "special": true,
-                    "comment": "BL_IO27",
-                    "direction": "all"
-                },
-                "BL_IO26": {
-                    "pin": "BL_IO26",
-                    "pos": [
-                        108,
-                        6
-                    ],
-                    "special": true,
-                    "comment": "BL_IO26",
-                    "direction": "all"
-                },
-                "BL_IO23": {
-                    "pin": "BL_IO23",
-                    "pos": [
-                        119,
-                        6
-                    ],
-                    "special": true,
-                    "comment": "BL_IO23",
-                    "direction": "all"
-                },
-
-
-                "40": {
-                    "pin": "40",
-                    "pos": [
-                        130,
-                        6
-                    ],
-                    "rotate": true,
-                    "comment": "PSRAM D0",
-                    "direction": "all"
-                },
-                "41": {
-                    "pin": "41",
-                    "pos": [
-                        143,
-                        6
-                    ],
-                    "rotate": true,
-                    "comment": "PSRAM D2",
-                    "direction": "all"
-                },
-                "38": {
-                    "pin": "38",
-                    "pos": [
-                        154,
-                        6
-                    ],
-                    "rotate": true,
-                    "comment": "PSRAM D2",
-                    "direction": "all"
-                },
-                "39": {
-                    "pin": "39",
-                    "pos": [
-                        166,
-                        6
-                    ],
-                    "rotate": true,
-                    "comment": "PSRAM D1",
-                    "direction": "all"
-                },
-                "42": {
-                    "pin": "42",
-                    "pos": [
-                        177,
-                        6
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "comment": "PSRAM CE / MODE1",
-                    "direction": "all"
-                },
-                "35": {
-                    "pin": "35",
-                    "pos": [
-                        188,
-                        6
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "34": {
-                    "pin": "34",
-                    "pos": [
-                        199,
-                        6
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "20": {
-                    "pin": "20",
-                    "pos": [
-                        210,
-                        6
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "19": {
-                    "pin": "19",
-                    "pos": [
-                        222,
-                        6
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "29": {
-                    "pin": "29",
-                    "pos": [
-                        235,
-                        6
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "30": {
-                    "pin": "30",
-                    "pos": [
-                        246,
-                        6
-                    ],
-                    "rotate": true,
-                    "special": false,
-                    "comment": "MCSN",
-                    "direction": "all"
-                },
-                "31": {
-                    "pin": "31",
-                    "pos": [
-                        258,
-                        6
-                    ],
-                    "rotate": true,
-                    "special": false,
-                    "comment": "MI",
-                    "direction": "all"
-                },
-                "13": {
-                    "pin": "13",
-                    "pos": [
-                        41,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "comment": "KEY_A",
-                    "direction": "all"
-                },
-                "47": {
-                    "pin": "47",
-                    "pos": [
-                        96,
-                        89
-                    ],
-                    "special": true,
-                    "comment": "XTAL27MHz",
-                    "direction": "output"
-                },
-                "45": {
-                    "pin": "45",
-                    "pos": [
-                        107,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "comment": "READY",
-                    "direction": "all"
-                },
-                "46": {
-                    "pin": "46",
-                    "pos": [
-                        118,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "comment": "DONE",
-                    "direction": "all"
-                },
-                "11": {
-                    "pin": "11",
-                    "pos": [
-                        130,
-                        89
-                    ],
-                    "rotate": true,
-                    "comment": "LED_G",
-                    "direction": "all"
-                },
-                "9": {
-                    "pin": "9",
-                    "pos": [
-                        143,
-                        89
-                    ],
-                    "rotate": true,
-                    "comment": "LED_R",
-                    "direction": "all"
-                },
-                "10": {
-                    "pin": "10",
-                    "pos": [
-                        154,
-                        89
-                    ],
-                    "rotate": true,
-                    "comment": "LED_B",
-                    "direction": "all"
-                },
-                "24": {
-                    "pin": "24",
-                    "pos": [
-                        166,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": false,
-                    "comment": "SO",
-                    "direction": "all"
-                },
-                "23": {
-                    "pin": "23",
-                    "pos": [
-                        177,
-                        89
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "22": {
-                    "pin": "22",
-                    "pos": [
-                        188,
-                        89
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "18": {
-                    "pin": "18",
-                    "pos": [
-                        199,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "direction": "all",
-                    "comment": ""
-                },
-                "17": {
-                    "pin": "17",
-                    "pos": [
-                        211,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": true,
-                    "direction": "all",
-                    "comment": ""
-                },
-                "16": {
-                    "pin": "16",
-                    "pos": [
-                        222,
-                        89
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "15": {
-                    "pin": "15",
-                    "pos": [
-                        235,
-                        89
-                    ],
-                    "rotate": true,
-                    "special": false,
-                    "comment": "MCLK",
-                    "direction": "all"
-                },
-                "27": {
-                    "pin": "27",
-                    "pos": [
-                        246,
-                        89
-                    ],
-                    "rotate": true,
-                    "comment": "GCLKT_3",
-                    "direction": "all"
-                },
-                "28": {
-                    "pin": "28",
-                    "pos": [
-                        258,
-                        89
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
+        "TDI": {
+          "pin": "TDI",
+          "pos": [
+            54,
+            30
+          ],
+          "special": true,
+          "direction": "all"
         },
-        {
-            "name": "SW",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "B": {
-                    "pin": "44",
-                    "pos": [
-                        13,
-                        13
-                    ],
-                    "direction": "input"
-                },
-                "A": {
-                    "pin": "13",
-                    "pos": [
-                        13,
-                        83
-                    ],
-                    "direction": "input"
-                }
-            }
+        "TMS": {
+          "pin": "TMS",
+          "pos": [
+            54,
+            161
+          ],
+          "special": true,
+          "direction": "all"
         },
-        {
-            "name": "PWR",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "GND_1": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        52,
-                        6
-                    ],
-                    "direction": "input"
-                },
-                "GND_2": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        63,
-                        6
-                    ],
-                    "direction": "input"
-                },
-                "3V3_1": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        74,
-                        6
-                    ],
-                    "direction": "input"
-                },
-                "3V3_2": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        85,
-                        6
-                    ],
-                    "direction": "input"
-                },
-                "GND_3": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        74,
-                        89
-                    ],
-                    "direction": "input"
-                },
-                "GND_4": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        85,
-                        89
-                    ],
-                    "direction": "input"
-                },
-                "5V_1": {
-                    "pin": "5V",
-                    "marker": true,
-                    "pos": [
-                        52,
-                        89
-                    ],
-                    "direction": "input"
-                },
-                "5V_2": {
-                    "pin": "5V",
-                    "marker": true,
-                    "pos": [
-                        63,
-                        89
-                    ],
-                    "direction": "input"
-                }
-            }
+        "TDO": {
+          "pin": "TDO",
+          "pos": [
+            54,
+            141
+          ],
+          "special": true,
+          "direction": "all"
         }
-    ]
+      }
+    },
+    {
+      "name": "PIN",
+      "pins": {
+        "44": {
+          "pin": "44",
+          "pos": [
+            74,
+            10
+          ],
+          "rotate": true,
+          "special": true,
+          "comment": "KEY_B / JTAG_SEL",
+          "direction": "all"
+        },
+        "BL_IO27": {
+          "pin": "BL_IO27",
+          "pos": [
+            176,
+            10
+          ],
+          "special": true,
+          "comment": "BL_IO27",
+          "direction": "all"
+        },
+        "BL_IO26": {
+          "pin": "BL_IO26",
+          "pos": [
+            196,
+            10
+          ],
+          "special": true,
+          "comment": "BL_IO26",
+          "direction": "all"
+        },
+        "BL_IO23": {
+          "pin": "BL_IO23",
+          "pos": [
+            216,
+            10
+          ],
+          "special": true,
+          "comment": "BL_IO23",
+          "direction": "all"
+        },
+        "40": {
+          "pin": "40",
+          "pos": [
+            236,
+            10
+          ],
+          "rotate": true,
+          "comment": "PSRAM D0",
+          "direction": "all"
+        },
+        "41": {
+          "pin": "41",
+          "pos": [
+            260,
+            10
+          ],
+          "rotate": true,
+          "comment": "PSRAM D2",
+          "direction": "all"
+        },
+        "38": {
+          "pin": "38",
+          "pos": [
+            280,
+            10
+          ],
+          "rotate": true,
+          "comment": "PSRAM D2",
+          "direction": "all"
+        },
+        "39": {
+          "pin": "39",
+          "pos": [
+            302,
+            10
+          ],
+          "rotate": true,
+          "comment": "PSRAM D1",
+          "direction": "all"
+        },
+        "42": {
+          "pin": "42",
+          "pos": [
+            322,
+            10
+          ],
+          "rotate": true,
+          "special": true,
+          "comment": "PSRAM CE / MODE1",
+          "direction": "all"
+        },
+        "35": {
+          "pin": "35",
+          "pos": [
+            342,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "34": {
+          "pin": "34",
+          "pos": [
+            362,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "20": {
+          "pin": "20",
+          "pos": [
+            382,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "19": {
+          "pin": "19",
+          "pos": [
+            404,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "29": {
+          "pin": "29",
+          "pos": [
+            427,
+            10
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "30": {
+          "pin": "30",
+          "pos": [
+            447,
+            10
+          ],
+          "rotate": true,
+          "special": false,
+          "comment": "MCSN",
+          "direction": "all"
+        },
+        "31": {
+          "pin": "31",
+          "pos": [
+            469,
+            10
+          ],
+          "rotate": true,
+          "special": false,
+          "comment": "MI",
+          "direction": "all"
+        },
+        "13": {
+          "pin": "13",
+          "pos": [
+            74,
+            161
+          ],
+          "rotate": true,
+          "special": true,
+          "comment": "KEY_A",
+          "direction": "all"
+        },
+        "47": {
+          "pin": "47",
+          "pos": [
+            174,
+            161
+          ],
+          "special": true,
+          "comment": "XTAL27MHz",
+          "direction": "output"
+        },
+        "45": {
+          "pin": "45",
+          "pos": [
+            194,
+            161
+          ],
+          "rotate": true,
+          "special": true,
+          "comment": "READY",
+          "direction": "all"
+        },
+        "46": {
+          "pin": "46",
+          "pos": [
+            214,
+            161
+          ],
+          "rotate": true,
+          "special": true,
+          "comment": "DONE",
+          "direction": "all"
+        },
+        "11": {
+          "pin": "11",
+          "pos": [
+            236,
+            161
+          ],
+          "rotate": true,
+          "comment": "LED_G",
+          "direction": "all"
+        },
+        "9": {
+          "pin": "9",
+          "pos": [
+            260,
+            161
+          ],
+          "rotate": true,
+          "comment": "LED_R",
+          "direction": "all"
+        },
+        "10": {
+          "pin": "10",
+          "pos": [
+            280,
+            161
+          ],
+          "rotate": true,
+          "comment": "LED_B",
+          "direction": "all"
+        },
+        "24": {
+          "pin": "24",
+          "pos": [
+            302,
+            161
+          ],
+          "rotate": true,
+          "special": false,
+          "comment": "SO",
+          "direction": "all"
+        },
+        "23": {
+          "pin": "23",
+          "pos": [
+            322,
+            161
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "22": {
+          "pin": "22",
+          "pos": [
+            342,
+            161
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "18": {
+          "pin": "18",
+          "pos": [
+            362,
+            161
+          ],
+          "rotate": true,
+          "special": true,
+          "direction": "all",
+          "comment": ""
+        },
+        "17": {
+          "pin": "17",
+          "pos": [
+            384,
+            161
+          ],
+          "rotate": true,
+          "special": true,
+          "direction": "all",
+          "comment": ""
+        },
+        "16": {
+          "pin": "16",
+          "pos": [
+            404,
+            161
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "15": {
+          "pin": "15",
+          "pos": [
+            427,
+            161
+          ],
+          "rotate": true,
+          "special": false,
+          "comment": "MCLK",
+          "direction": "all"
+        },
+        "27": {
+          "pin": "27",
+          "pos": [
+            447,
+            161
+          ],
+          "rotate": true,
+          "comment": "GCLKT_3",
+          "direction": "all"
+        },
+        "28": {
+          "pin": "28",
+          "pos": [
+            469,
+            161
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "SW",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "B": {
+          "pin": "44",
+          "pos": [
+            23,
+            23
+          ],
+          "direction": "input"
+        },
+        "A": {
+          "pin": "13",
+          "pos": [
+            23,
+            151
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "PWR",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            94,
+            10
+          ],
+          "direction": "input"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            114,
+            10
+          ],
+          "direction": "input"
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            134,
+            10
+          ],
+          "direction": "input"
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            154,
+            10
+          ],
+          "direction": "input"
+        },
+        "GND_3": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            134,
+            161
+          ],
+          "direction": "input"
+        },
+        "GND_4": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            154,
+            161
+          ],
+          "direction": "input"
+        },
+        "5V_1": {
+          "pin": "5V",
+          "marker": true,
+          "pos": [
+            94,
+            161
+          ],
+          "direction": "input"
+        },
+        "5V_2": {
+          "pin": "5V",
+          "marker": true,
+          "pos": [
+            114,
+            161
+          ],
+          "direction": "input"
+        }
+      }
+    }
+  ]
 }

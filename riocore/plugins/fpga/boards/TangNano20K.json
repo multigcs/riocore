@@ -1,517 +1,517 @@
 {
-    "name": "TangNano20K",
-    "description": "TangNano20K - GW2AR-18 devboard",
-    "url": "https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html",
-    "size": [
-        55,
-        23
-    ],
-    "type": "GW2AR-LV18QN88C8/I7",
-    "family": "GW2AR-18C",
-    "toolchains": [
-        "gowin",
-        "icestorm"
-    ],
-    "toolchain": "gowin",
-    "package": "QN88",
-    "clock": {
-        "speed": "27000000",
-        "pin": "4"
-    },
-    "slots": [
-        {
-            "name": "PWR",
-            "pins": {
-                "5V": {
-                    "pin": "5V",
-                    "marker": true,
-                    "pos": [
-                        11,
-                        5
-                    ],
-                    "direction": "all"
-                },
-                "GND_1": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        23,
-                        5
-                    ],
-                    "direction": "all"
-                },
-                "GND_2": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        175,
-                        5
-                    ],
-                    "direction": "all"
-                },
-                "3V3_1": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        187,
-                        5
-                    ],
-                    "direction": "all"
-                },
-                "3V3_2": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        222,
-                        97
-                    ],
-                    "direction": "all"
-                },
-                "GND_3": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        233,
-                        97
-                    ],
-                    "direction": "all"
-                }
-            }
+  "name": "TangNano20K",
+  "description": "TangNano20K - GW2AR-18 devboard",
+  "url": "https://wiki.sipeed.com/hardware/en/tang/tang-nano-20k/nano-20k.html",
+  "size": [
+    55,
+    23
+  ],
+  "type": "GW2AR-LV18QN88C8/I7",
+  "family": "GW2AR-18C",
+  "toolchains": [
+    "gowin",
+    "icestorm"
+  ],
+  "toolchain": "gowin",
+  "package": "QN88",
+  "clock": {
+    "speed": "27000000",
+    "pin": "4"
+  },
+  "slots": [
+    {
+      "name": "PWR",
+      "pins": {
+        "5V": {
+          "pin": "5V",
+          "marker": true,
+          "pos": [
+            20,
+            9
+          ],
+          "direction": "all"
         },
-        {
-            "name": "PIN",
-            "pins": {
-                "76": {
-                    "pin": "76",
-                    "pos": [
-                        35,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "80": {
-                    "pin": "80",
-                    "pos": [
-                        46,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "42": {
-                    "pin": "42",
-                    "pos": [
-                        58,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "41": {
-                    "pin": "41",
-                    "pos": [
-                        70,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "56": {
-                    "pin": "56",
-                    "pos": [
-                        82,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "54": {
-                    "pin": "54",
-                    "pos": [
-                        94,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "51": {
-                    "pin": "51",
-                    "pos": [
-                        104,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "48": {
-                    "pin": "48",
-                    "pos": [
-                        116,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "55": {
-                    "pin": "55",
-                    "pos": [
-                        128,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "49": {
-                    "pin": "49",
-                    "pos": [
-                        140,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "86": {
-                    "pin": "86",
-                    "pos": [
-                        152,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "79": {
-                    "pin": "79",
-                    "pos": [
-                        163,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "72": {
-                    "pin": "72",
-                    "pos": [
-                        198,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "71": {
-                    "pin": "71",
-                    "pos": [
-                        210,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "53": {
-                    "pin": "53",
-                    "pos": [
-                        222,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "52": {
-                    "pin": "52",
-                    "pos": [
-                        233,
-                        5
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "73": {
-                    "pin": "73",
-                    "pos": [
-                        11,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "74": {
-                    "pin": "74",
-                    "pos": [
-                        23,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "75": {
-                    "pin": "75",
-                    "pos": [
-                        35,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "85": {
-                    "pin": "85",
-                    "pos": [
-                        46,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "77": {
-                    "pin": "77",
-                    "pos": [
-                        58,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "15": {
-                    "pin": "15",
-                    "comment": "LED0",
-                    "pos": [
-                        70,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "16": {
-                    "pin": "16",
-                    "comment": "LED1",
-                    "pos": [
-                        82,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "27": {
-                    "pin": "27",
-                    "pos": [
-                        94,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "28": {
-                    "pin": "28",
-                    "pos": [
-                        104,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "25": {
-                    "pin": "25",
-                    "pos": [
-                        116,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "26": {
-                    "pin": "26",
-                    "pos": [
-                        128,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "29": {
-                    "pin": "29",
-                    "pos": [
-                        140,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "30": {
-                    "pin": "30",
-                    "pos": [
-                        152,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "31": {
-                    "pin": "31",
-                    "pos": [
-                        163,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "17": {
-                    "pin": "17",
-                    "comment": "LED2",
-                    "pos": [
-                        176,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "20": {
-                    "pin": "20",
-                    "comment": "LED5",
-                    "pos": [
-                        187,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "19": {
-                    "pin": "19",
-                    "comment": "LED4",
-                    "pos": [
-                        198,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "18": {
-                    "pin": "18",
-                    "comment": "LED3",
-                    "pos": [
-                        210,
-                        97
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            41,
+            9
+          ],
+          "direction": "all"
         },
-        {
-            "name": "LED",
-            "pins": {
-                "L0": {
-                    "pin": "15",
-                    "pos": [
-                        35,
-                        83
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "L1": {
-                    "pin": "16",
-                    "pos": [
-                        45,
-                        83
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "L2": {
-                    "pin": "17",
-                    "pos": [
-                        55,
-                        83
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "L3": {
-                    "pin": "18",
-                    "pos": [
-                        65,
-                        83
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "L4": {
-                    "pin": "19",
-                    "pos": [
-                        75,
-                        83
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                },
-                "L5": {
-                    "pin": "20",
-                    "pos": [
-                        85,
-                        83
-                    ],
-                    "rotate": true,
-                    "direction": "all"
-                }
-            }
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            318,
+            9
+          ],
+          "direction": "all"
         },
-        {
-            "name": "SW",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "S1": {
-                    "pin": "88",
-                    "pos": [
-                        15,
-                        86
-                    ],
-                    "direction": "input"
-                },
-                "S2": {
-                    "pin": "87",
-                    "pos": [
-                        15,
-                        19
-                    ],
-                    "direction": "input"
-                }
-            }
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            340,
+            9
+          ],
+          "direction": "all"
         },
-        {
-            "name": "UART",
-            "pins": {
-                "RX": {
-                    "pin": "70",
-                    "pos": [
-                        11,
-                        46
-                    ],
-                    "direction": "input"
-                },
-                "TX": {
-                    "pin": "69",
-                    "pos": [
-                        11,
-                        55
-                    ],
-                    "direction": "output"
-                }
-            }
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            404,
+            176
+          ],
+          "direction": "all"
         },
-        {
-            "name": "WLED",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "DATA": {
-                    "pin": "79",
-                    "pos": [
-                        176,
-                        27
-                    ],
-                    "direction": "all"
-                }
-            }
+        "GND_3": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            424,
+            176
+          ],
+          "direction": "all"
         }
-    ]
+      }
+    },
+    {
+      "name": "PIN",
+      "pins": {
+        "76": {
+          "pin": "76",
+          "pos": [
+            63,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "80": {
+          "pin": "80",
+          "pos": [
+            83,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "42": {
+          "pin": "42",
+          "pos": [
+            105,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "41": {
+          "pin": "41",
+          "pos": [
+            127,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "56": {
+          "pin": "56",
+          "pos": [
+            149,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "54": {
+          "pin": "54",
+          "pos": [
+            171,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "51": {
+          "pin": "51",
+          "pos": [
+            189,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "48": {
+          "pin": "48",
+          "pos": [
+            211,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "55": {
+          "pin": "55",
+          "pos": [
+            232,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "49": {
+          "pin": "49",
+          "pos": [
+            254,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "86": {
+          "pin": "86",
+          "pos": [
+            276,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "79": {
+          "pin": "79",
+          "pos": [
+            296,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "72": {
+          "pin": "72",
+          "pos": [
+            360,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "71": {
+          "pin": "71",
+          "pos": [
+            382,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "53": {
+          "pin": "53",
+          "pos": [
+            404,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "52": {
+          "pin": "52",
+          "pos": [
+            424,
+            9
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "73": {
+          "pin": "73",
+          "pos": [
+            20,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "74": {
+          "pin": "74",
+          "pos": [
+            41,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "75": {
+          "pin": "75",
+          "pos": [
+            63,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "85": {
+          "pin": "85",
+          "pos": [
+            83,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "77": {
+          "pin": "77",
+          "pos": [
+            105,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "15": {
+          "pin": "15",
+          "comment": "LED0",
+          "pos": [
+            127,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "16": {
+          "pin": "16",
+          "comment": "LED1",
+          "pos": [
+            149,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "27": {
+          "pin": "27",
+          "pos": [
+            171,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "28": {
+          "pin": "28",
+          "pos": [
+            189,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "25": {
+          "pin": "25",
+          "pos": [
+            211,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "26": {
+          "pin": "26",
+          "pos": [
+            232,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "29": {
+          "pin": "29",
+          "pos": [
+            254,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "30": {
+          "pin": "30",
+          "pos": [
+            276,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "31": {
+          "pin": "31",
+          "pos": [
+            296,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "17": {
+          "pin": "17",
+          "comment": "LED2",
+          "pos": [
+            320,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "20": {
+          "pin": "20",
+          "comment": "LED5",
+          "pos": [
+            340,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "19": {
+          "pin": "19",
+          "comment": "LED4",
+          "pos": [
+            360,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "18": {
+          "pin": "18",
+          "comment": "LED3",
+          "pos": [
+            382,
+            176
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "LED",
+      "pins": {
+        "L0": {
+          "pin": "15",
+          "pos": [
+            63,
+            151
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "L1": {
+          "pin": "16",
+          "pos": [
+            81,
+            151
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "L2": {
+          "pin": "17",
+          "pos": [
+            100,
+            151
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "L3": {
+          "pin": "18",
+          "pos": [
+            118,
+            151
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "L4": {
+          "pin": "19",
+          "pos": [
+            136,
+            151
+          ],
+          "rotate": true,
+          "direction": "all"
+        },
+        "L5": {
+          "pin": "20",
+          "pos": [
+            154,
+            151
+          ],
+          "rotate": true,
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "SW",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "S1": {
+          "pin": "88",
+          "pos": [
+            27,
+            156
+          ],
+          "direction": "input"
+        },
+        "S2": {
+          "pin": "87",
+          "pos": [
+            27,
+            34
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "UART",
+      "pins": {
+        "RX": {
+          "pin": "70",
+          "pos": [
+            20,
+            83
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "69",
+          "pos": [
+            20,
+            100
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "WLED",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "DATA": {
+          "pin": "79",
+          "pos": [
+            320,
+            49
+          ],
+          "direction": "all"
+        }
+      }
+    }
+  ]
 }

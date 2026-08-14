@@ -26,16 +26,16 @@
         "A": {
           "pin": "A10",
           "pos": [
-            47,
-            39
+            85,
+            70
           ],
           "direction": "input"
         },
         "B": {
           "pin": "D10",
           "pos": [
-            47,
-            49
+            85,
+            89
           ],
           "direction": "input"
         }
@@ -49,16 +49,16 @@
         "A": {
           "pin": "C10",
           "pos": [
-            75,
-            39
+            136,
+            70
           ],
           "direction": "input"
         },
         "B": {
           "pin": "C11",
           "pos": [
-            75,
-            49
+            136,
+            89
           ],
           "direction": "input"
         }
@@ -72,16 +72,16 @@
         "A": {
           "pin": "A11",
           "pos": [
-            105,
-            39
+            191,
+            70
           ],
           "direction": "input"
         },
         "B": {
           "pin": "A12",
           "pos": [
-            105,
-            49
+            191,
+            89
           ],
           "direction": "input"
         }
@@ -95,16 +95,16 @@
         "A": {
           "pin": "B14",
           "pos": [
-            132,
-            39
+            240,
+            70
           ],
           "direction": "input"
         },
         "B": {
           "pin": "C14",
           "pos": [
-            132,
-            49
+            240,
+            89
           ],
           "direction": "input"
         }
@@ -118,16 +118,16 @@
         "A": {
           "pin": "C12",
           "pos": [
-            160,
-            39
+            291,
+            70
           ],
           "direction": "input"
         },
         "B": {
           "pin": "D14",
           "pos": [
-            160,
-            49
+            291,
+            89
           ],
           "direction": "input"
         }
@@ -141,16 +141,16 @@
         "A": {
           "pin": "D12",
           "pos": [
-            187,
-            39
+            340,
+            70
           ],
           "direction": "input"
         },
         "B": {
           "pin": "E14",
           "pos": [
-            187,
-            49
+            340,
+            89
           ],
           "direction": "input"
         }
@@ -164,8 +164,8 @@
         "IN": {
           "pin": "F14",
           "pos": [
-            232,
-            58
+            422,
+            105
           ],
           "direction": "input"
         }
@@ -179,8 +179,8 @@
         "IN": {
           "pin": "E12",
           "pos": [
-            232,
-            24
+            422,
+            43
           ],
           "direction": "input"
         }
@@ -194,8 +194,8 @@
         "IN": {
           "pin": "G14",
           "pos": [
-            260,
-            58
+            473,
+            105
           ],
           "direction": "input"
         }
@@ -209,8 +209,8 @@
         "IN": {
           "pin": "F12",
           "pos": [
-            260,
-            24
+            473,
+            43
           ],
           "direction": "input"
         }
@@ -224,8 +224,8 @@
         "IN": {
           "pin": "H12",
           "pos": [
-            287,
-            58
+            522,
+            105
           ],
           "direction": "input"
         }
@@ -239,8 +239,8 @@
         "IN": {
           "pin": "G12",
           "pos": [
-            287,
-            24
+            522,
+            43
           ],
           "direction": "input"
         }
@@ -254,8 +254,8 @@
         "IN": {
           "pin": "K14",
           "pos": [
-            317,
-            58
+            576,
+            105
           ],
           "direction": "input"
         }
@@ -269,8 +269,8 @@
         "IN": {
           "pin": "J12",
           "pos": [
-            317,
-            24
+            576,
+            43
           ],
           "direction": "input"
         }
@@ -284,8 +284,8 @@
         "IN": {
           "pin": "L14",
           "pos": [
-            345,
-            58
+            627,
+            105
           ],
           "direction": "input"
         }
@@ -299,8 +299,8 @@
         "IN": {
           "pin": "H11",
           "pos": [
-            345,
-            24
+            627,
+            43
           ],
           "direction": "input"
         }
@@ -314,16 +314,16 @@
         "TX": {
           "pin": "P4",
           "pos": [
-            245,
-            140
+            445,
+            254
           ],
           "direction": "output"
         },
         "RX": {
           "pin": "P5",
           "pos": [
-            245,
-            150
+            445,
+            273
           ],
           "direction": "input"
         }
@@ -336,16 +336,16 @@
         "G": {
           "pin": "M4",
           "pos": [
-            275,
-            140
+            500,
+            254
           ],
           "direction": "output"
         },
         "R": {
           "pin": "A5",
           "pos": [
-            275,
-            150
+            500,
+            273
           ],
           "direction": "output"
         }
@@ -359,8 +359,8 @@
         "DIR": {
           "pin": "E1",
           "pos": [
-            35,
-            240
+            63,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -368,8 +368,8 @@
         "PWM": {
           "pin": "D1",
           "pos": [
-            42,
-            240
+            76,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -384,8 +384,8 @@
         "DIR": {
           "pin": "C1",
           "pos": [
-            70,
-            240
+            127,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -393,8 +393,8 @@
         "PWM": {
           "pin": "D3",
           "pos": [
-            77,
-            240
+            140,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -409,8 +409,8 @@
         "DIR": {
           "pin": "C3",
           "pos": [
-            105,
-            240
+            191,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -418,8 +418,8 @@
         "PWM": {
           "pin": "B1",
           "pos": [
-            112,
-            240
+            203,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -434,8 +434,8 @@
         "DIR": {
           "pin": "A1",
           "pos": [
-            140,
-            240
+            254,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -443,8 +443,8 @@
         "PWM": {
           "pin": "A2",
           "pos": [
-            147,
-            240
+            267,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -459,8 +459,8 @@
         "DIR": {
           "pin": "A3",
           "pos": [
-            175,
-            240
+            318,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -468,8 +468,8 @@
         "PWM": {
           "pin": "C4",
           "pos": [
-            182,
-            240
+            331,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -484,8 +484,8 @@
         "DIR": {
           "pin": "A4",
           "pos": [
-            210,
-            240
+            382,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -493,8 +493,8 @@
         "PWM": {
           "pin": "C5",
           "pos": [
-            217,
-            240
+            394,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -509,8 +509,8 @@
         "OUT": {
           "pin": "G3",
           "pos": [
-            242,
-            240
+            440,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -525,8 +525,8 @@
         "OUT": {
           "pin": "H1",
           "pos": [
-            272,
-            240
+            495,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -541,8 +541,8 @@
         "OUT": {
           "pin": "F3",
           "pos": [
-            302,
-            240
+            549,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -557,8 +557,8 @@
         "OUT": {
           "pin": "G1",
           "pos": [
-            332,
-            240
+            604,
+            436
           ],
           "rotate": true,
           "direction": "all"
@@ -573,8 +573,8 @@
         "SCL": {
           "pin": "M1",
           "pos": [
-            355,
-            240
+            646,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -582,8 +582,8 @@
         "SDA": {
           "pin": "M3",
           "pos": [
-            365,
-            240
+            664,
+            436
           ],
           "rotate": true,
           "direction": "output"
@@ -598,8 +598,8 @@
         "DAT": {
           "pin": "L12",
           "pos": [
-            377,
-            155
+            686,
+            282
           ],
           "direction": "output"
         }
@@ -613,8 +613,8 @@
         "SEL": {
           "pin": "P8",
           "pos": [
-            355,
-            122
+            646,
+            222
           ],
           "rotate": true,
           "direction": "output"
@@ -622,8 +622,8 @@
         "SCLK": {
           "pin": "M12",
           "pos": [
-            365,
-            122
+            664,
+            222
           ],
           "rotate": true,
           "direction": "output"
@@ -631,8 +631,8 @@
         "MOSI": {
           "pin": "P14",
           "pos": [
-            375,
-            122
+            682,
+            222
           ],
           "rotate": true,
           "direction": "output"
@@ -640,8 +640,8 @@
         "MISO": {
           "pin": "N14",
           "pos": [
-            355,
-            175
+            646,
+            318
           ],
           "rotate": true,
           "direction": "input"
@@ -656,24 +656,24 @@
         "RX": {
           "pin": "M6",
           "pos": [
-            382,
-            195
+            695,
+            354
           ],
           "direction": "input"
         },
         "TX": {
           "pin": "P2",
           "pos": [
-            382,
-            205
+            695,
+            373
           ],
           "direction": "output"
         },
         "RW": {
           "pin": "P3",
           "pos": [
-            382,
-            215
+            695,
+            391
           ],
           "direction": "output"
         }

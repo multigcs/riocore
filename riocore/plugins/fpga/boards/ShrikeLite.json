@@ -17,8 +17,8 @@
         "5V_1": {
           "pin": "5V",
           "pos": [
-            71,
-            7
+            129,
+            12
           ],
           "comment": "",
           "direction": "all",
@@ -27,8 +27,8 @@
         "3V3_1": {
           "pin": "3V3",
           "pos": [
-            85.5,
-            7
+            155,
+            12
           ],
           "comment": "",
           "direction": "all",
@@ -37,8 +37,8 @@
         "IO29": {
           "pin": "RP:IO29",
           "pos": [
-            100.0,
-            7
+            182,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -46,8 +46,8 @@
         "IO28": {
           "pin": "RP:IO28",
           "pos": [
-            114.5,
-            7
+            208,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -55,8 +55,8 @@
         "IO27": {
           "pin": "RP:IO27",
           "pos": [
-            129.0,
-            7
+            234,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -64,8 +64,8 @@
         "IO26": {
           "pin": "RP:IO26",
           "pos": [
-            143.5,
-            7
+            261,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -73,8 +73,8 @@
         "GND_1": {
           "pin": "GND",
           "pos": [
-            158.0,
-            7
+            287,
+            12
           ],
           "comment": "",
           "direction": "all",
@@ -83,8 +83,8 @@
         "IO25": {
           "pin": "RP:IO25",
           "pos": [
-            172.5,
-            7
+            313,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -92,8 +92,8 @@
         "IO24": {
           "pin": "RP:IO24",
           "pos": [
-            187.0,
-            7
+            340,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -101,8 +101,8 @@
         "IO23": {
           "pin": "RP:IO23",
           "pos": [
-            201.5,
-            7
+            366,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -110,8 +110,8 @@
         "IO22": {
           "pin": "RP:IO22",
           "pos": [
-            216.0,
-            7
+            393,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -119,8 +119,8 @@
         "IO21": {
           "pin": "RP:IO21",
           "pos": [
-            230.5,
-            7
+            419,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -128,8 +128,8 @@
         "GND_2": {
           "pin": "GND",
           "pos": [
-            245.0,
-            7
+            445,
+            12
           ],
           "comment": "",
           "direction": "all",
@@ -138,8 +138,8 @@
         "IO20": {
           "pin": "RP:IO20",
           "pos": [
-            259.5,
-            7
+            472,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -147,8 +147,8 @@
         "IO19": {
           "pin": "RP:IO19",
           "pos": [
-            274.0,
-            7
+            498,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -156,8 +156,8 @@
         "IO18": {
           "pin": "RP:IO18",
           "pos": [
-            288.5,
-            7
+            525,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -165,8 +165,8 @@
         "IO17": {
           "pin": "RP:IO17",
           "pos": [
-            303.0,
-            7
+            551,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -174,8 +174,8 @@
         "IO16": {
           "pin": "RP:IO16",
           "pos": [
-            317.5,
-            7
+            577,
+            12
           ],
           "comment": "",
           "direction": "all"
@@ -183,8 +183,8 @@
         "GND_3": {
           "pin": "GND",
           "pos": [
-            332.0,
-            7
+            604,
+            12
           ],
           "comment": "",
           "direction": "all",
@@ -193,8 +193,8 @@
         "5V_2": {
           "pin": "5V",
           "pos": [
-            71,
-            137
+            129,
+            249
           ],
           "comment": "",
           "direction": "all",
@@ -203,8 +203,8 @@
         "3V3_2": {
           "pin": "3V3",
           "pos": [
-            85.5,
-            137
+            155,
+            249
           ],
           "comment": "",
           "direction": "all",
@@ -213,8 +213,8 @@
         "IO5": {
           "pin": "RP:IO5",
           "pos": [
-            100.0,
-            137
+            182,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -222,8 +222,8 @@
         "IO6": {
           "pin": "RP:IO6",
           "pos": [
-            114.5,
-            137
+            208,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -231,8 +231,8 @@
         "IO7": {
           "pin": "RP:IO7",
           "pos": [
-            129.0,
-            137
+            234,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -240,8 +240,8 @@
         "IO8": {
           "pin": "RP:IO8",
           "pos": [
-            143.5,
-            137
+            261,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -249,8 +249,8 @@
         "IO9": {
           "pin": "RP:IO9",
           "pos": [
-            158.0,
-            137
+            287,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -258,8 +258,8 @@
         "GND_4": {
           "pin": "GND",
           "pos": [
-            172.5,
-            137
+            313,
+            249
           ],
           "comment": "",
           "direction": "all",
@@ -268,8 +268,8 @@
         "IO10": {
           "pin": "RP:IO10",
           "pos": [
-            187.0,
-            137
+            340,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -277,8 +277,8 @@
         "IO11": {
           "pin": "RP:IO11",
           "pos": [
-            201.5,
-            137
+            366,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -286,8 +286,8 @@
         "IO14": {
           "pin": "RP:IO14",
           "pos": [
-            216.0,
-            137
+            393,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -295,8 +295,8 @@
         "IO15": {
           "pin": "RP:IO15",
           "pos": [
-            230.5,
-            137
+            419,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -304,8 +304,8 @@
         "GND_5": {
           "pin": "GND",
           "pos": [
-            245.0,
-            137
+            445,
+            249
           ],
           "comment": "",
           "direction": "all",
@@ -314,8 +314,8 @@
         "F17": {
           "pin": "PIN_8",
           "pos": [
-            259.5,
-            137
+            472,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -323,8 +323,8 @@
         "F18": {
           "pin": "PIN_9",
           "pos": [
-            274.0,
-            137
+            498,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -332,8 +332,8 @@
         "F0": {
           "pin": "PIN_13",
           "pos": [
-            288.5,
-            137
+            525,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -341,8 +341,8 @@
         "F1": {
           "pin": "PIN_14",
           "pos": [
-            303.0,
-            137
+            551,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -350,8 +350,8 @@
         "F2": {
           "pin": "PIN_15",
           "pos": [
-            317.5,
-            137
+            577,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -359,8 +359,8 @@
         "F7": {
           "pin": "PIN_20",
           "pos": [
-            332.0,
-            137
+            604,
+            249
           ],
           "comment": "",
           "direction": "all"
@@ -373,8 +373,8 @@
         "F14": {
           "pin": "PIN_5",
           "pos": [
-            317,
-            37
+            576,
+            67
           ],
           "comment": "",
           "direction": "all"
@@ -382,8 +382,8 @@
         "F12": {
           "pin": "PIN_3",
           "pos": [
-            317,
-            51.5
+            576,
+            93
           ],
           "comment": "",
           "direction": "all"
@@ -391,8 +391,8 @@
         "F10": {
           "pin": "PIN_1",
           "pos": [
-            317,
-            66.0
+            576,
+            120
           ],
           "comment": "",
           "direction": "all"
@@ -400,8 +400,8 @@
         "F8": {
           "pin": "PIN_23",
           "pos": [
-            317,
-            80.5
+            576,
+            146
           ],
           "comment": "",
           "direction": "all"
@@ -409,8 +409,8 @@
         "GND_1": {
           "pin": "GND",
           "pos": [
-            317,
-            95.0
+            576,
+            172
           ],
           "comment": "",
           "direction": "all",
@@ -419,8 +419,8 @@
         "3V2_1": {
           "pin": "3V2",
           "pos": [
-            317,
-            109.5
+            576,
+            199
           ],
           "comment": "",
           "direction": "all",
@@ -429,8 +429,8 @@
         "F15": {
           "pin": "PIN_6",
           "pos": [
-            332,
-            37
+            604,
+            67
           ],
           "comment": "",
           "direction": "all"
@@ -438,8 +438,8 @@
         "F13": {
           "pin": "PIN_4",
           "pos": [
-            332,
-            51.5
+            604,
+            93
           ],
           "comment": "",
           "direction": "all"
@@ -447,8 +447,8 @@
         "F11": {
           "pin": "PIN_2",
           "pos": [
-            332,
-            66.0
+            604,
+            120
           ],
           "comment": "",
           "direction": "all"
@@ -456,8 +456,8 @@
         "F9": {
           "pin": "PIN_24",
           "pos": [
-            332,
-            80.5
+            604,
+            146
           ],
           "comment": "",
           "direction": "all"
@@ -465,8 +465,8 @@
         "GND_2": {
           "pin": "GND",
           "pos": [
-            332,
-            95.0
+            604,
+            172
           ],
           "comment": "",
           "direction": "all",
@@ -475,8 +475,8 @@
         "3V2_2": {
           "pin": "3V2",
           "pos": [
-            332,
-            109.5
+            604,
+            199
           ],
           "comment": "",
           "direction": "all",
@@ -490,8 +490,8 @@
         "L1": {
           "pin": "PIN_7",
           "pos": [
-            262,
-            65
+            476,
+            118
           ],
           "comment": "F_GPIO16",
           "direction": "all"

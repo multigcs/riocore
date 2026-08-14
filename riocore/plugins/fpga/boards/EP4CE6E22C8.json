@@ -3,7 +3,10 @@
   "description": "EP4CE6E22C8 devboard",
   "comment": "cheap devboard from china (6K)",
   "url": "https://de.aliexpress.com/item/1005009306876743.html",
-  "size": [88, 51],
+  "size": [
+    88,
+    51
+  ],
   "toolchain": "quartus",
   "family": "Cyclone IV E",
   "type": "EP4CE6E22C8",
@@ -24,8 +27,8 @@
           "pin": "PIN_144",
           "rotate": true,
           "pos": [
-            140,
-            7
+            254,
+            12
           ],
           "direction": "all"
         },
@@ -33,8 +36,8 @@
           "pin": "PIN_142",
           "rotate": true,
           "pos": [
-            151,
-            7
+            274,
+            12
           ],
           "direction": "all"
         },
@@ -42,8 +45,8 @@
           "pin": "PIN_138",
           "rotate": true,
           "pos": [
-            162,
-            7
+            294,
+            12
           ],
           "direction": "all"
         },
@@ -51,8 +54,8 @@
           "pin": "PIN_136",
           "rotate": true,
           "pos": [
-            173,
-            7
+            314,
+            12
           ],
           "direction": "all"
         },
@@ -60,8 +63,8 @@
           "pin": "PIN_133",
           "rotate": true,
           "pos": [
-            184,
-            7
+            334,
+            12
           ],
           "direction": "all"
         },
@@ -69,8 +72,8 @@
           "pin": "PIN_129",
           "rotate": true,
           "pos": [
-            195,
-            7
+            354,
+            12
           ],
           "direction": "all"
         },
@@ -78,8 +81,8 @@
           "pin": "PIN_127",
           "rotate": true,
           "pos": [
-            206,
-            7
+            374,
+            12
           ],
           "direction": "all"
         },
@@ -87,8 +90,8 @@
           "pin": "PIN_125",
           "rotate": true,
           "pos": [
-            217,
-            7
+            394,
+            12
           ],
           "direction": "all"
         },
@@ -96,8 +99,8 @@
           "pin": "PIN_121",
           "rotate": true,
           "pos": [
-            228,
-            7
+            414,
+            12
           ],
           "direction": "all"
         },
@@ -105,8 +108,8 @@
           "pin": "PIN_119",
           "rotate": true,
           "pos": [
-            239,
-            7
+            434,
+            12
           ],
           "direction": "all"
         },
@@ -114,8 +117,8 @@
           "pin": "PIN_113",
           "rotate": true,
           "pos": [
-            250,
-            7
+            455,
+            12
           ],
           "direction": "all"
         },
@@ -123,8 +126,8 @@
           "pin": "PIN_111",
           "rotate": true,
           "pos": [
-            261,
-            7
+            475,
+            12
           ],
           "direction": "all"
         },
@@ -132,8 +135,8 @@
           "pin": "PIN_143",
           "rotate": true,
           "pos": [
-            140,
-            18
+            254,
+            32
           ],
           "direction": "all"
         },
@@ -141,8 +144,8 @@
           "pin": "PIN_141",
           "rotate": true,
           "pos": [
-            151,
-            18
+            274,
+            32
           ],
           "direction": "all"
         },
@@ -150,8 +153,8 @@
           "pin": "PIN_137",
           "rotate": true,
           "pos": [
-            162,
-            18
+            294,
+            32
           ],
           "direction": "all"
         },
@@ -159,8 +162,8 @@
           "pin": "PIN_135",
           "rotate": true,
           "pos": [
-            173,
-            18
+            314,
+            32
           ],
           "direction": "all"
         },
@@ -168,8 +171,8 @@
           "pin": "PIN_132",
           "rotate": true,
           "pos": [
-            184,
-            18
+            334,
+            32
           ],
           "direction": "all"
         },
@@ -177,8 +180,8 @@
           "pin": "PIN_128",
           "rotate": true,
           "pos": [
-            195,
-            18
+            354,
+            32
           ],
           "direction": "all"
         },
@@ -186,8 +189,8 @@
           "pin": "PIN_126",
           "rotate": true,
           "pos": [
-            206,
-            18
+            374,
+            32
           ],
           "direction": "all"
         },
@@ -195,8 +198,8 @@
           "pin": "PIN_124",
           "rotate": true,
           "pos": [
-            217,
-            18
+            394,
+            32
           ],
           "direction": "all"
         },
@@ -204,8 +207,8 @@
           "pin": "PIN_120",
           "rotate": true,
           "pos": [
-            228,
-            18
+            414,
+            32
           ],
           "direction": "all"
         },
@@ -213,8 +216,8 @@
           "pin": "PIN_115",
           "rotate": true,
           "pos": [
-            239,
-            18
+            434,
+            32
           ],
           "direction": "all"
         },
@@ -222,8 +225,8 @@
           "pin": "PIN_112",
           "rotate": true,
           "pos": [
-            250,
-            18
+            455,
+            32
           ],
           "direction": "all"
         },
@@ -231,8 +234,8 @@
           "pin": "PIN_110",
           "rotate": true,
           "pos": [
-            261,
-            18
+            475,
+            32
           ],
           "direction": "all"
         }
@@ -247,8 +250,8 @@
           "pin": "PIN_38",
           "rotate": true,
           "pos": [
-            140,
-            201
+            254,
+            365
           ],
           "direction": "all"
         },
@@ -256,8 +259,8 @@
           "pin": "PIN_42",
           "rotate": true,
           "pos": [
-            151,
-            201
+            274,
+            365
           ],
           "direction": "all"
         },
@@ -265,8 +268,8 @@
           "pin": "PIN_44",
           "rotate": true,
           "pos": [
-            162,
-            201
+            294,
+            365
           ],
           "direction": "all"
         },
@@ -274,8 +277,8 @@
           "pin": "PIN_49",
           "rotate": true,
           "pos": [
-            173,
-            201
+            314,
+            365
           ],
           "direction": "all"
         },
@@ -283,8 +286,8 @@
           "pin": "PIN_51",
           "rotate": true,
           "pos": [
-            184,
-            201
+            334,
+            365
           ],
           "direction": "all"
         },
@@ -292,8 +295,8 @@
           "pin": "PIN_53",
           "rotate": true,
           "pos": [
-            195,
-            201
+            354,
+            365
           ],
           "direction": "all"
         },
@@ -301,8 +304,8 @@
           "pin": "PIN_55",
           "rotate": true,
           "pos": [
-            206,
-            201
+            374,
+            365
           ],
           "direction": "all"
         },
@@ -310,8 +313,8 @@
           "pin": "PIN_59",
           "rotate": true,
           "pos": [
-            217,
-            201
+            394,
+            365
           ],
           "direction": "all"
         },
@@ -319,8 +322,8 @@
           "pin": "PIN_64",
           "rotate": true,
           "pos": [
-            228,
-            201
+            414,
+            365
           ],
           "direction": "all"
         },
@@ -328,8 +331,8 @@
           "pin": "PIN_66",
           "rotate": true,
           "pos": [
-            239,
-            201
+            434,
+            365
           ],
           "direction": "all"
         },
@@ -337,8 +340,8 @@
           "pin": "PIN_68",
           "rotate": true,
           "pos": [
-            250,
-            201
+            455,
+            365
           ],
           "direction": "all"
         },
@@ -346,8 +349,8 @@
           "pin": "PIN_70",
           "rotate": true,
           "pos": [
-            261,
-            201
+            475,
+            365
           ],
           "direction": "all"
         },
@@ -355,8 +358,8 @@
           "pin": "PIN_72",
           "rotate": true,
           "pos": [
-            272,
-            201
+            495,
+            365
           ],
           "direction": "all"
         },
@@ -364,8 +367,8 @@
           "pin": "PIN_39",
           "rotate": true,
           "pos": [
-            140,
-            212
+            254,
+            385
           ],
           "direction": "all"
         },
@@ -373,8 +376,8 @@
           "pin": "PIN_43",
           "rotate": true,
           "pos": [
-            151,
-            212
+            274,
+            385
           ],
           "direction": "all"
         },
@@ -382,8 +385,8 @@
           "pin": "PIN_46",
           "rotate": true,
           "pos": [
-            162,
-            212
+            294,
+            385
           ],
           "direction": "all"
         },
@@ -391,8 +394,8 @@
           "pin": "PIN_50",
           "rotate": true,
           "pos": [
-            173,
-            212
+            314,
+            385
           ],
           "direction": "all"
         },
@@ -400,8 +403,8 @@
           "pin": "PIN_52",
           "rotate": true,
           "pos": [
-            184,
-            212
+            334,
+            385
           ],
           "direction": "all"
         },
@@ -409,8 +412,8 @@
           "pin": "PIN_54",
           "rotate": true,
           "pos": [
-            195,
-            212
+            354,
+            385
           ],
           "direction": "all"
         },
@@ -418,8 +421,8 @@
           "pin": "PIN_58",
           "rotate": true,
           "pos": [
-            206,
-            212
+            374,
+            385
           ],
           "direction": "all"
         },
@@ -427,8 +430,8 @@
           "pin": "PIN_60",
           "rotate": true,
           "pos": [
-            217,
-            212
+            394,
+            385
           ],
           "direction": "all"
         },
@@ -436,8 +439,8 @@
           "pin": "PIN_65",
           "rotate": true,
           "pos": [
-            228,
-            212
+            414,
+            385
           ],
           "direction": "all"
         },
@@ -445,8 +448,8 @@
           "pin": "PIN_67",
           "rotate": true,
           "pos": [
-            239,
-            212
+            434,
+            385
           ],
           "direction": "all"
         },
@@ -454,8 +457,8 @@
           "pin": "PIN_69",
           "rotate": true,
           "pos": [
-            250,
-            212
+            455,
+            385
           ],
           "direction": "all"
         },
@@ -463,8 +466,8 @@
           "pin": "PIN_71",
           "rotate": true,
           "pos": [
-            261,
-            212
+            475,
+            385
           ],
           "direction": "all"
         }
@@ -479,8 +482,8 @@
           "pin": "PIN_106",
           "rotate": true,
           "pos": [
-            338,
-            47
+            615,
+            85
           ],
           "direction": "all"
         },
@@ -488,8 +491,8 @@
           "pin": "PIN_104",
           "rotate": true,
           "pos": [
-            338,
-            58
+            615,
+            105
           ],
           "direction": "all"
         },
@@ -497,8 +500,8 @@
           "pin": "PIN_101",
           "rotate": true,
           "pos": [
-            338,
-            69
+            615,
+            125
           ],
           "direction": "all"
         },
@@ -506,8 +509,8 @@
           "pin": "PIN_99",
           "rotate": true,
           "pos": [
-            338,
-            80
+            615,
+            145
           ],
           "direction": "all"
         },
@@ -515,8 +518,8 @@
           "pin": "PIN_86",
           "rotate": true,
           "pos": [
-            338,
-            91
+            615,
+            165
           ],
           "direction": "all"
         },
@@ -524,8 +527,8 @@
           "pin": "PIN_83",
           "rotate": true,
           "pos": [
-            338,
-            102
+            615,
+            185
           ],
           "direction": "all"
         },
@@ -533,8 +536,8 @@
           "pin": "PIN_28",
           "rotate": true,
           "pos": [
-            338,
-            113
+            615,
+            205
           ],
           "direction": "all"
         },
@@ -542,8 +545,8 @@
           "pin": "PIN_31",
           "rotate": true,
           "pos": [
-            338,
-            124
+            615,
+            225
           ],
           "direction": "all"
         },
@@ -551,8 +554,8 @@
           "pin": "PIN_33",
           "rotate": true,
           "pos": [
-            338,
-            135
+            615,
+            245
           ],
           "direction": "all"
         },
@@ -560,8 +563,8 @@
           "pin": "PIN_105",
           "rotate": true,
           "pos": [
-            327,
-            47
+            595,
+            85
           ],
           "direction": "all"
         },
@@ -569,8 +572,8 @@
           "pin": "PIN_103",
           "rotate": true,
           "pos": [
-            327,
-            58
+            595,
+            105
           ],
           "direction": "all"
         },
@@ -578,8 +581,8 @@
           "pin": "PIN_100",
           "rotate": true,
           "pos": [
-            327,
-            69
+            595,
+            125
           ],
           "direction": "all"
         },
@@ -587,8 +590,8 @@
           "pin": "PIN_98",
           "rotate": true,
           "pos": [
-            327,
-            80
+            595,
+            145
           ],
           "direction": "all"
         },
@@ -596,8 +599,8 @@
           "pin": "PIN_85",
           "rotate": true,
           "pos": [
-            327,
-            91
+            595,
+            165
           ],
           "direction": "all"
         },
@@ -605,8 +608,8 @@
           "pin": "PIN_77",
           "rotate": true,
           "pos": [
-            327,
-            102
+            595,
+            185
           ],
           "direction": "all"
         },
@@ -614,8 +617,8 @@
           "pin": "PIN_76",
           "rotate": true,
           "pos": [
-            327,
-            113
+            595,
+            205
           ],
           "direction": "all"
         },
@@ -623,8 +626,8 @@
           "pin": "PIN_30",
           "rotate": true,
           "pos": [
-            327,
-            124
+            595,
+            225
           ],
           "direction": "all"
         },
@@ -632,8 +635,8 @@
           "pin": "PIN_32",
           "rotate": true,
           "pos": [
-            327,
-            135
+            595,
+            245
           ],
           "direction": "all"
         },
@@ -641,8 +644,8 @@
           "pin": "PIN_34",
           "rotate": true,
           "pos": [
-            327,
-            146
+            595,
+            265
           ],
           "direction": "all"
         }
@@ -657,8 +660,8 @@
           "pin": "PIN_1",
           "rotate": true,
           "pos": [
-            127,
-            61
+            231,
+            111
           ],
           "direction": "output"
         },
@@ -666,8 +669,8 @@
           "pin": "PIN_2",
           "rotate": true,
           "pos": [
-            127,
-            71
+            231,
+            129
           ],
           "direction": "output"
         },
@@ -675,8 +678,8 @@
           "pin": "PIN_3",
           "rotate": true,
           "pos": [
-            127,
-            81
+            231,
+            147
           ],
           "direction": "output"
         },
@@ -684,8 +687,8 @@
           "pin": "PIN_7",
           "rotate": true,
           "pos": [
-            127,
-            91
+            231,
+            165
           ],
           "direction": "output"
         },
@@ -693,8 +696,8 @@
           "pin": "PIN_11",
           "rotate": true,
           "pos": [
-            127,
-            101
+            231,
+            183
           ],
           "direction": "output"
         }
@@ -708,16 +711,16 @@
         "B1": {
           "pin": "PIN_114",
           "pos": [
-            359,
-            32
+            653,
+            58
           ],
           "direction": "input"
         },
         "B2": {
           "pin": "PIN_89",
           "pos": [
-            359,
-            79
+            653,
+            143
           ],
           "direction": "input"
         },
@@ -725,24 +728,24 @@
           "pin": "PIN_88",
           "comment": "RESET",
           "pos": [
-            360,
-            108
+            655,
+            196
           ],
           "direction": "input"
         },
         "B4": {
           "pin": "PIN_80",
           "pos": [
-            359,
-            137
+            653,
+            249
           ],
           "direction": "input"
         },
         "B5": {
           "pin": "PIN_73",
           "pos": [
-            359,
-            184
+            653,
+            334
           ],
           "direction": "input"
         }
@@ -756,16 +759,16 @@
         "RX": {
           "pin": "PIN_23",
           "pos": [
-            109,
-            50
+            198,
+            91
           ],
           "direction": "input"
         },
         "TX": {
           "pin": "PIN_10",
           "pos": [
-            120,
-            50
+            218,
+            91
           ],
           "direction": "output"
         }

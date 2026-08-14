@@ -2,8 +2,8 @@
   "IO:LED": {
     "pin": "GP25",
     "pos": [
-      320,
-      22
+      582,
+      40
     ],
     "direction": "all",
     "edge": "source",
@@ -14,8 +14,8 @@
   "IO:GP15": {
     "pin": "GP15",
     "pos": [
-      129,
-      7
+      234,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -29,8 +29,8 @@
   "IO:GP14": {
     "pin": "GP14",
     "pos": [
-      140,
-      7
+      254,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -45,8 +45,8 @@
   "IO:GP13": {
     "pin": "GP13",
     "pos": [
-      162,
-      7
+      294,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -61,8 +61,8 @@
   "IO:GP12": {
     "pin": "GP12",
     "pos": [
-      173,
-      7
+      314,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -76,8 +76,8 @@
   "IO:GP11": {
     "pin": "GP11",
     "pos": [
-      184,
-      7
+      334,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -91,8 +91,8 @@
   "IO:GP10": {
     "pin": "GP10",
     "pos": [
-      195,
-      7
+      354,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -106,8 +106,8 @@
   "IO:GP9": {
     "pin": "GP09",
     "pos": [
-      217,
-      7
+      394,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -121,8 +121,8 @@
   "IO:GP8": {
     "pin": "GP08",
     "pos": [
-      228,
-      7
+      414,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -136,8 +136,8 @@
   "IO:GP7": {
     "pin": "GP07",
     "pos": [
-      239,
-      7
+      434,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -151,8 +151,8 @@
   "IO:GP6": {
     "pin": "GP06",
     "pos": [
-      250,
-      7
+      455,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -166,8 +166,8 @@
   "IO:GP5": {
     "pin": "GP05",
     "pos": [
-      272,
-      7
+      495,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -181,8 +181,8 @@
   "IO:GP4": {
     "pin": "GP04",
     "pos": [
-      283,
-      7
+      515,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -196,8 +196,8 @@
   "IO:GP3": {
     "pin": "GP03",
     "pos": [
-      294,
-      7
+      535,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -211,8 +211,8 @@
   "IO:GP2": {
     "pin": "GP02",
     "pos": [
-      305,
-      7
+      555,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -226,8 +226,8 @@
   "IO:GP1": {
     "pin": "GP01",
     "pos": [
-      327,
-      7
+      595,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -241,8 +241,8 @@
   "IO:GP0": {
     "pin": "GP00",
     "pos": [
-      338,
-      7
+      615,
+      12
     ],
     "direction": "all",
     "edge": "source",
@@ -256,8 +256,8 @@
   "IO:GP16": {
     "pin": "GP16",
     "pos": [
-      129,
-      83
+      234,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -267,8 +267,8 @@
   "IO:GP17": {
     "pin": "GP17",
     "pos": [
-      140,
-      83
+      254,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -278,8 +278,8 @@
   "IO:GP18": {
     "pin": "GP18",
     "pos": [
-      162,
-      83
+      294,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -289,8 +289,8 @@
   "IO:GP19": {
     "pin": "GP19",
     "pos": [
-      173,
-      83
+      314,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -300,8 +300,8 @@
   "IO:GP20": {
     "pin": "GP20",
     "pos": [
-      184,
-      83
+      334,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -311,8 +311,8 @@
   "IO:GP21": {
     "pin": "GP21",
     "pos": [
-      195,
-      83
+      354,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -322,8 +322,8 @@
   "IO:GP22": {
     "pin": "GP22",
     "pos": [
-      217,
-      83
+      394,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -336,8 +336,8 @@
   "IO:GP26": {
     "pin": "GP26",
     "pos": [
-      239,
-      83
+      434,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -350,8 +350,8 @@
   "IO:GP27": {
     "pin": "GP27",
     "pos": [
-      250,
-      83
+      455,
+      151
     ],
     "direction": "all",
     "edge": "source",
@@ -364,8 +364,8 @@
   "IO:GP28": {
     "pin": "GP28",
     "pos": [
-      272,
-      83
+      495,
+      151
     ],
     "direction": "all",
     "edge": "source",

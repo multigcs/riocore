@@ -14,7 +14,10 @@
     "serial": {
       "default": "Serial1",
       "type": "select",
-      "options": ["Serial", "Serial1"],
+      "options": [
+        "Serial",
+        "Serial1"
+      ],
       "description": "mcu serial port (Serial == USB)"
     }
   },
@@ -570,13 +573,18 @@
   ],
   "pins": {
     "SAT": {
-        "direction": "output",
-        "pin": "",
-        "pos": [20, 20],
-        "edge": "target",
-        "type": ["SATCON"],
-        "optional": true,
-        "bus": true
+      "direction": "output",
+      "pin": "",
+      "pos": [
+        36,
+        36
+      ],
+      "edge": "target",
+      "type": [
+        "SATCON"
+      ],
+      "optional": true,
+      "bus": true
     },
     "IO:2": {
       "pin": "2",

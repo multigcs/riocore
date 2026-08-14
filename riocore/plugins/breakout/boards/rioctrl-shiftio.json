@@ -6,74 +6,74 @@
   "main": {
     "S0": {
       "pos": [
-        10,
-        255
+        18,
+        464
       ]
     },
     "S1": {
       "pos": [
-        10,
-        240
+        18,
+        436
       ]
     },
     "S2": {
       "pos": [
-        10,
-        225
+        18,
+        409
       ]
     },
     "S3": {
       "pos": [
-        10,
-        210
+        18,
+        382
       ]
     },
     "S4": {
       "pos": [
-        10,
-        195
+        18,
+        354
       ]
     },
     "S5": {
       "pos": [
-        10,
-        180
+        18,
+        327
       ]
     },
     "S6": {
       "pos": [
-        20,
-        255
+        36,
+        464
       ]
     },
     "S7": {
       "pos": [
-        20,
-        240
+        36,
+        436
       ]
     },
     "S8": {
       "pos": [
-        20,
-        225
+        36,
+        409
       ]
     },
     "S9": {
       "pos": [
-        20,
-        210
+        36,
+        382
       ]
     },
     "S10": {
       "pos": [
-        20,
-        195
+        36,
+        354
       ]
     },
     "S11": {
       "pos": [
-        20,
-        180
+        36,
+        327
       ]
     }
   },
@@ -153,128 +153,128 @@
         "I0": {
           "pin": "shiftin:INPUT:0",
           "pos": [
-            37,
-            46
+            67,
+            83
           ],
           "direction": "input"
         },
         "I2": {
           "pin": "shiftin:INPUT:2",
           "pos": [
-            37,
-            66
+            67,
+            120
           ],
           "direction": "input"
         },
         "I4": {
           "pin": "shiftin:INPUT:4",
           "pos": [
-            37,
-            86
+            67,
+            156
           ],
           "direction": "input"
         },
         "I6": {
           "pin": "shiftin:INPUT:6",
           "pos": [
-            37,
-            106
+            67,
+            192
           ],
           "direction": "input"
         },
         "I1": {
           "pin": "shiftin:INPUT:1",
           "pos": [
-            62,
-            46
+            112,
+            83
           ],
           "direction": "input"
         },
         "I3": {
           "pin": "shiftin:INPUT:3",
           "pos": [
-            62,
-            66
+            112,
+            120
           ],
           "direction": "input"
         },
         "I5": {
           "pin": "shiftin:INPUT:5",
           "pos": [
-            62,
-            86
+            112,
+            156
           ],
           "direction": "input"
         },
         "I7": {
           "pin": "shiftin:INPUT:7",
           "pos": [
-            62,
-            106
+            112,
+            192
           ],
           "direction": "input"
         },
         "I8": {
           "pin": "shiftin:INPUT:8",
           "pos": [
-            37,
-            143
+            67,
+            260
           ],
           "direction": "input"
         },
         "I10": {
           "pin": "shiftin:INPUT:10",
           "pos": [
-            37,
-            163
+            67,
+            296
           ],
           "direction": "input"
         },
         "I12": {
           "pin": "shiftin:INPUT:12",
           "pos": [
-            37,
-            183
+            67,
+            333
           ],
           "direction": "input"
         },
         "I14": {
           "pin": "shiftin:INPUT:14",
           "pos": [
-            37,
-            203
+            67,
+            369
           ],
           "direction": "input"
         },
         "I9": {
           "pin": "shiftin:INPUT:9",
           "pos": [
-            62,
-            143
+            112,
+            260
           ],
           "direction": "input"
         },
         "I11": {
           "pin": "shiftin:INPUT:11",
           "pos": [
-            62,
-            163
+            112,
+            296
           ],
           "direction": "input"
         },
         "I13": {
           "pin": "shiftin:INPUT:13",
           "pos": [
-            62,
-            183
+            112,
+            333
           ],
           "direction": "input"
         },
         "I15": {
           "pin": "shiftin:INPUT:15",
           "pos": [
-            62,
-            203
+            112,
+            369
           ],
           "direction": "input"
         }
@@ -288,128 +288,128 @@
         "O0": {
           "pin": "shiftout:OUTPUT:0",
           "pos": [
-            37,
-            239
+            67,
+            434
           ],
           "direction": "output"
         },
         "O2": {
           "pin": "shiftout:OUTPUT:2",
           "pos": [
-            37,
-            259
+            67,
+            471
           ],
           "direction": "output"
         },
         "O4": {
           "pin": "shiftout:OUTPUT:4",
           "pos": [
-            37,
-            279
+            67,
+            507
           ],
           "direction": "output"
         },
         "O6": {
           "pin": "shiftout:OUTPUT:5",
           "pos": [
-            37,
-            299
+            67,
+            544
           ],
           "direction": "output"
         },
         "O1": {
           "pin": "shiftout:OUTPUT:1",
           "pos": [
-            62,
-            239
+            112,
+            434
           ],
           "direction": "output"
         },
         "O3": {
           "pin": "shiftout:OUTPUT:3",
           "pos": [
-            62,
-            259
+            112,
+            471
           ],
           "direction": "output"
         },
         "O5": {
           "pin": "shiftout:OUTPUT:5",
           "pos": [
-            62,
-            279
+            112,
+            507
           ],
           "direction": "output"
         },
         "O7": {
           "pin": "shiftout:OUTPUT:7",
           "pos": [
-            62,
-            299
+            112,
+            544
           ],
           "direction": "output"
         },
         "O8": {
           "pin": "shiftout:OUTPUT:8",
           "pos": [
-            37,
-            334
+            67,
+            607
           ],
           "direction": "output"
         },
         "O10": {
           "pin": "shiftout:OUTPUT:10",
           "pos": [
-            37,
-            354
+            67,
+            644
           ],
           "direction": "output"
         },
         "O12": {
           "pin": "shiftout:OUTPUT:12",
           "pos": [
-            37,
-            374
+            67,
+            680
           ],
           "direction": "output"
         },
         "O14": {
           "pin": "shiftout:OUTPUT:14",
           "pos": [
-            37,
-            394
+            67,
+            717
           ],
           "direction": "output"
         },
         "O9": {
           "pin": "shiftout:OUTPUT:9",
           "pos": [
-            62,
-            334
+            112,
+            607
           ],
           "direction": "output"
         },
         "O11": {
           "pin": "shiftout:OUTPUT:11",
           "pos": [
-            62,
-            354
+            112,
+            644
           ],
           "direction": "output"
         },
         "O13": {
           "pin": "shiftout:OUTPUT:13",
           "pos": [
-            62,
-            374
+            112,
+            680
           ],
           "direction": "output"
         },
         "O15": {
           "pin": "shiftout:OUTPUT:15",
           "pos": [
-            62,
-            394
+            112,
+            717
           ],
           "direction": "output"
         }

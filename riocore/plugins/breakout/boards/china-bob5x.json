@@ -6,104 +6,104 @@
   "main": {
     "P1": {
       "pos": [
-        10,
-        187
+        18,
+        340
       ]
     },
     "P2": {
       "pos": [
-        10,
-        197
+        18,
+        358
       ]
     },
     "P3": {
       "pos": [
-        10,
-        206
+        18,
+        374
       ]
     },
     "P4": {
       "pos": [
-        10,
-        216
+        18,
+        393
       ]
     },
     "P5": {
       "pos": [
-        10,
-        225
+        18,
+        409
       ]
     },
     "P6": {
       "pos": [
-        10,
-        235
+        18,
+        427
       ]
     },
     "P7": {
       "pos": [
-        10,
-        244
+        18,
+        444
       ]
     },
     "P8": {
       "pos": [
-        10,
-        254
+        18,
+        462
       ]
     },
     "P9": {
       "pos": [
-        10,
-        263
+        18,
+        478
       ]
     },
     "P10": {
       "pos": [
-        10,
-        273
+        18,
+        496
       ]
     },
     "P11": {
       "pos": [
-        10,
-        282
+        18,
+        513
       ]
     },
     "P12": {
       "pos": [
-        10,
-        292
+        18,
+        531
       ]
     },
     "P13": {
       "pos": [
-        10,
-        301
+        18,
+        547
       ]
     },
     "P14": {
       "pos": [
-        20,
-        187
+        36,
+        340
       ]
     },
     "P15": {
       "pos": [
-        20,
-        197
+        36,
+        358
       ]
     },
     "P16": {
       "pos": [
-        20,
-        206
+        36,
+        374
       ]
     },
     "P17": {
       "pos": [
-        20,
-        216
+        36,
+        393
       ]
     }
   },
@@ -116,40 +116,40 @@
         "in0": {
           "pin": "P10",
           "pos": [
-            106,
-            385
+            192,
+            700
           ],
           "direction": "input"
         },
         "in1": {
           "pin": "P11",
           "pos": [
-            128,
-            385
+            232,
+            700
           ],
           "direction": "input"
         },
         "in2": {
           "pin": "P12",
           "pos": [
-            151,
-            385
+            274,
+            700
           ],
           "direction": "input"
         },
         "in3": {
           "pin": "P13",
           "pos": [
-            173,
-            385
+            314,
+            700
           ],
           "direction": "input"
         },
         "in4": {
           "pin": "P15",
           "pos": [
-            196,
-            385
+            356,
+            700
           ],
           "direction": "input"
         }
@@ -164,8 +164,8 @@
           "pin": "P17",
           "comment": "shared with B dir",
           "pos": [
-            95,
-            14
+            172,
+            25
           ],
           "direction": "output"
         }
@@ -178,8 +178,8 @@
         "5V_1": {
           "pin": "5V",
           "pos": [
-            297,
-            41
+            540,
+            74
           ],
           "marker": true,
           "direction": "none"
@@ -187,8 +187,8 @@
         "5V_2": {
           "pin": "5V",
           "pos": [
-            297,
-            64
+            540,
+            116
           ],
           "marker": true,
           "direction": "none"
@@ -196,18 +196,17 @@
         "GND": {
           "pin": "GND",
           "pos": [
-            297,
-            86
+            540,
+            156
           ],
           "marker": true,
           "direction": "none"
         },
-
         "F_GND_1": {
           "pin": "GND",
           "pos": [
-            140,
-            14
+            254,
+            25
           ],
           "marker": true,
           "direction": "none"
@@ -215,8 +214,8 @@
         "F_GND_2": {
           "pin": "GND",
           "pos": [
-            208,
-            14
+            378,
+            25
           ],
           "marker": true,
           "direction": "none"
@@ -224,8 +223,8 @@
         "F_24V": {
           "pin": "24V",
           "pos": [
-            163,
-            14
+            296,
+            25
           ],
           "marker": true,
           "direction": "none"
@@ -233,8 +232,8 @@
         "F_GND_3": {
           "pin": "GND",
           "pos": [
-            220,
-            384
+            400,
+            698
           ],
           "marker": true,
           "direction": "none"
@@ -249,16 +248,16 @@
         "analog": {
           "pin": "P1",
           "pos": [
-            185,
-            14
+            336,
+            25
           ],
           "direction": "output"
         },
         "digital": {
           "pin": "P1",
           "pos": [
-            296,
-            111
+            538,
+            202
           ],
           "direction": "output"
         }
@@ -272,8 +271,8 @@
         "dir": {
           "pin": "P17",
           "pos": [
-            296,
-            134
+            538,
+            243
           ],
           "comment": "shared with relais",
           "direction": "output"
@@ -281,8 +280,8 @@
         "step": {
           "pin": "P16",
           "pos": [
-            296,
-            156
+            538,
+            283
           ],
           "direction": "output"
         }
@@ -296,8 +295,8 @@
         "en": {
           "pin": "P14",
           "pos": [
-            296,
-            179
+            538,
+            325
           ],
           "direction": "output"
         }
@@ -311,16 +310,16 @@
         "dir": {
           "pin": "P9",
           "pos": [
-            296,
-            201
+            538,
+            365
           ],
           "direction": "output"
         },
         "step": {
           "pin": "P8",
           "pos": [
-            296,
-            224
+            538,
+            407
           ],
           "direction": "output"
         }
@@ -334,16 +333,16 @@
         "dir": {
           "pin": "P7",
           "pos": [
-            296,
-            246
+            538,
+            447
           ],
           "direction": "output"
         },
         "step": {
           "pin": "P6",
           "pos": [
-            296,
-            269
+            538,
+            489
           ],
           "direction": "output"
         }
@@ -357,16 +356,16 @@
         "dir": {
           "pin": "P5",
           "pos": [
-            296,
-            291
+            538,
+            529
           ],
           "direction": "output"
         },
         "step": {
           "pin": "P4",
           "pos": [
-            296,
-            314
+            538,
+            571
           ],
           "direction": "output"
         }
@@ -380,16 +379,16 @@
         "dir": {
           "pin": "P3",
           "pos": [
-            296,
-            336
+            538,
+            611
           ],
           "direction": "output"
         },
         "step": {
           "pin": "P2",
           "pos": [
-            296,
-            359
+            538,
+            653
           ],
           "direction": "output"
         }

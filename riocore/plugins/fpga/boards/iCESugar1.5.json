@@ -1,720 +1,720 @@
 {
-    "name": "iCESugar1.5",
-    "description": "MuseLab iCESugar 1.5 is based on Lattice iCE40UP5k\nopen source FPGA development board",
-    "url": "https://github.com/wuxx/icesugar",
-    "pinimage": "board.png",
-    "toolchain": "icestorm",
-    "family": "ice40",
-    "type": "up5k",
-    "package": "sg48",
-    "flashcmd": "icesprog rio.bin",
-    "provides": [
-        "pmod",
-        "pmod2",
-        "pmod3"
-    ],
-    "_flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
-    "clock": {
-        "osc": 12000000,
-        "speed": 30000000,
-        "pin": "35",
-        "internal": [
-            "48000000",
-            "24000000",
-            "12000000",
-            "6000000"
-        ]
-    },
-    "slots": [
-        {
-            "name": "UART",
-            "comment": "USB UART",
-            "pins": {
-                "RX": {
-                    "pin": "4",
-                    "comment": "shared with PMOD1:P8",
-                    "pos": [
-                        11,
-                        159
-                    ],
-                    "direction": "input"
-                },
-                "TX": {
-                    "pin": "6",
-                    "comment": "shared with PMOD1:P2",
-                    "pos": [
-                        11,
-                        147
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "USB",
-            "comment": "Micro-USB",
-            "pins": {
-                "DATA_P": {
-                    "pin": "10",
-                    "comment": "shared with PMOD1:P1",
-                    "pos": [
-                        185,
-                        50
-                    ],
-                    "direction": "all"
-                },
-                "DATA_N": {
-                    "pin": "9",
-                    "comment": "shared with PMOD1:P7",
-                    "pos": [
-                        197,
-                        50
-                    ],
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "RGB",
-            "comment": "",
-            "default": "",
-            "pins": {
-                "GRN": {
-                    "pin": "39",
-                    "pos": [
-                        239,
-                        209
-                    ],
-                    "direction": "output"
-                },
-                "RED": {
-                    "pin": "40",
-                    "pos": [
-                        251,
-                        209
-                    ],
-                    "direction": "output"
-                },
-                "BLU": {
-                    "pin": "41",
-                    "pos": [
-                        263,
-                        209
-                    ],
-                    "direction": "output"
-                }
-            }
-        },
-        {
-            "name": "J6",
-            "comment": "RGB-Pins",
-            "default": "",
-            "pins": {
-                "B": {
-                    "pin": "41",
-                    "comment": "JUMPER",
-                    "pos": [
-                        239,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "G": {
-                    "pin": "39",
-                    "comment": "JUMPER",
-                    "pos": [
-                        251,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "R": {
-                    "pin": "40",
-                    "comment": "JUMPER",
-                    "pos": [
-                        263,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "LED_B": {
-                    "pin": "RGB_B",
-                    "comment": "JUMPER",
-                    "marker": true,
-                    "pos": [
-                        239,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "LED_G": {
-                    "pin": "RGB_G",
-                    "comment": "JUMPER",
-                    "marker": true,
-                    "pos": [
-                        251,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "LED_R": {
-                    "pin": "RGB_R",
-                    "comment": "JUMPER",
-                    "marker": true,
-                    "pos": [
-                        263,
-                        262
-                    ],
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD1",
-            "comment": "PMOD 1",
-            "pins": {
-                "P1": {
-                    "pin": "10",
-                    "comment": "shared with USB:DATA_P",
-                    "pos": [
-                        239,
-                        65
-                    ]
-                },
-                "P2": {
-                    "pin": "6",
-                    "comment": "shared with UART:RX",
-                    "pos": [
-                        252,
-                        65
-                    ]
-                },
-                "P3": {
-                    "pin": "3",
-                    "comment": "shared with J7:P3",
-                    "pos": [
-                        264,
-                        65
-                    ]
-                },
-                "P4": {
-                    "pin": "48",
-                    "comment": "shared with J7:P1",
-                    "pos": [
-                        276,
-                        65
-                    ]
-                },
-                "3V3_1": {
-                    "pin": "3V3",
-                    "comment": "3V3",
-                    "marker": true,
-                    "pos": [
-                        288,
-                        65
-                    ]
-                },
-                "3V3_2": {
-                    "pin": "3V3",
-                    "comment": "3V3",
-                    "marker": true,
-                    "pos": [
-                        288,
-                        53
-                    ]
-                },
-                "GND_1": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        302,
-                        65
-                    ]
-                },
-                "GND_2": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        302,
-                        53
-                    ]
-                },
-                "P7": {
-                    "pin": "9",
-                    "comment": "shared with USB:DATA_M",
-                    "pos": [
-                        239,
-                        53
-                    ]
-                },
-                "P8": {
-                    "pin": "4",
-                    "comment": "shared with UART:TX",
-                    "pos": [
-                        252,
-                        53
-                    ]
-                },
-                "P9": {
-                    "pin": "2",
-                    "comment": "shared with J7:P4",
-                    "pos": [
-                        264,
-                        53
-                    ]
-                },
-                "P10": {
-                    "pin": "47",
-                    "comment": "shared with J7:P2",
-                    "pos": [
-                        276,
-                        53
-                    ]
-                }
-            }
-        },
-        {
-            "name": "PMOD2",
-            "comment": "PMOD 2",
-            "pins": {
-                "P1": {
-                    "pin": "46",
-                    "pos": [
-                        332,
-                        71
-                    ]
-                },
-                "P2": {
-                    "pin": "44",
-                    "pos": [
-                        332,
-                        83
-                    ]
-                },
-                "P3": {
-                    "pin": "42",
-                    "pos": [
-                        332,
-                        95
-                    ]
-                },
-                "P4": {
-                    "pin": "37",
-                    "pos": [
-                        332,
-                        107
-                    ]
-                },
-                "3V3_1": {
-                    "pin": "3V3",
-                    "comment": "3V3",
-                    "marker": true,
-                    "pos": [
-                        332,
-                        119
-                    ]
-                },
-                "3V3_2": {
-                    "pin": "3V3",
-                    "comment": "3V3",
-                    "marker": true,
-                    "pos": [
-                        344,
-                        119
-                    ]
-                },
-                "GND_1": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        344,
-                        130
-                    ]
-                },
-                "GND_2": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        332,
-                        130
-                    ]
-                },
-                "P7": {
-                    "pin": "45",
-                    "pos": [
-                        344,
-                        71
-                    ]
-                },
-                "P8": {
-                    "pin": "43",
-                    "pos": [
-                        344,
-                        83
-                    ]
-                },
-                "P9": {
-                    "pin": "38",
-                    "pos": [
-                        344,
-                        95
-                    ]
-                },
-                "P10": {
-                    "pin": "36",
-                    "pos": [
-                        344,
-                        107
-                    ]
-                }
-            }
-        },
-        {
-            "name": "PMOD3",
-            "comment": "PMOD 3",
-            "default": "",
-            "pins": {
-                "P1": {
-                    "pin": "34",
-                    "pos": [
-                        332,
-                        183
-                    ]
-                },
-                "P2": {
-                    "pin": "31",
-                    "pos": [
-                        332,
-                        195
-                    ]
-                },
-                "P3": {
-                    "pin": "27",
-                    "pos": [
-                        332,
-                        207
-                    ]
-                },
-                "P4": {
-                    "pin": "25",
-                    "pos": [
-                        332,
-                        219
-                    ]
-                },
-                "3V3_1": {
-                    "pin": "3V3",
-                    "comment": "3V3",
-                    "marker": true,
-                    "pos": [
-                        332,
-                        231
-                    ]
-                },
-                "3V3_2": {
-                    "pin": "3V3",
-                    "comment": "3V3",
-                    "marker": true,
-                    "pos": [
-                        344,
-                        231
-                    ]
-                },
-                "GND_1": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        344,
-                        242
-                    ]
-                },
-                "GND_2": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        332,
-                        242
-                    ]
-                },
-                "P7": {
-                    "pin": "32",
-                    "pos": [
-                        344,
-                        183
-                    ]
-                },
-                "P8": {
-                    "pin": "28",
-                    "pos": [
-                        344,
-                        195
-                    ]
-                },
-                "P9": {
-                    "pin": "26",
-                    "pos": [
-                        344,
-                        207
-                    ]
-                },
-                "P10": {
-                    "pin": "23",
-                    "pos": [
-                        344,
-                        219
-                    ]
-                }
-            }
-        },
-        {
-            "name": "J7",
-            "comment": "shared with PMOD1",
-            "pins": {
-                "P1": {
-                    "pin": "48",
-                    "comment": "shared with PMOD1:P4",
-                    "pos": [
-                        332,
-                        143
-                    ]
-                },
-                "P2": {
-                    "pin": "47",
-                    "comment": "shared with PMOD1:P10",
-                    "pos": [
-                        344,
-                        143
-                    ]
-                },
-                "5V": {
-                    "pin": "5V",
-                    "comment": "5V",
-                    "marker": true,
-                    "pos": [
-                        332,
-                        155
-                    ]
-                },
-                "GND": {
-                    "pin": "GND",
-                    "comment": "GND",
-                    "marker": true,
-                    "pos": [
-                        344,
-                        155
-                    ]
-                },
-                "P3": {
-                    "pin": "3",
-                    "comment": "shared with PMOD1:P3",
-                    "pos": [
-                        332,
-                        167
-                    ]
-                },
-                "P4": {
-                    "pin": "2",
-                    "comment": "shared with PMOD1:P9",
-                    "pos": [
-                        344,
-                        167
-                    ]
-                }
-            }
-        },
-        {
-            "name": "J2",
-            "comment": "JTAG",
-            "pins": {
-                "TDO": {
-                    "pin": "TDO",
-                    "marker": true,
-                    "pos": [
-                        110,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "nRST": {
-                    "pin": "nRST",
-                    "marker": true,
-                    "pos": [
-                        110,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "TDI": {
-                    "pin": "TDI",
-                    "marker": true,
-                    "pos": [
-                        122,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "5V": {
-                    "pin": "5V",
-                    "marker": true,
-                    "pos": [
-                        122,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "TMS": {
-                    "pin": "TDI",
-                    "marker": true,
-                    "pos": [
-                        134,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "3V3": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        134,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "TCK": {
-                    "pin": "TCK",
-                    "marker": true,
-                    "pos": [
-                        146,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "GND": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        146,
-                        262
-                    ],
-                    "direction": "all"
-                }
-            }
-        },
-        {
-            "name": "PMOD4",
-            "comment": "PMOD4",
-            "pins": {
-                "3V3_1": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        164,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "3V3_2": {
-                    "pin": "3V3",
-                    "marker": true,
-                    "pos": [
-                        164,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "GND_1": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        176,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "GND_2": {
-                    "pin": "GND",
-                    "marker": true,
-                    "pos": [
-                        176,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "P4": {
-                    "pin": "S1-1",
-                    "marker": true,
-                    "pos": [
-                        188,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "P10": {
-                    "pin": "18",
-                    "pos": [
-                        188,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "P3": {
-                    "pin": "S1-2",
-                    "marker": true,
-                    "pos": [
-                        200,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "P9": {
-                    "pin": "19",
-                    "pos": [
-                        200,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "P2": {
-                    "pin": "S1-3",
-                    "marker": true,
-                    "pos": [
-                        212,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "P8": {
-                    "pin": "20",
-                    "pos": [
-                        212,
-                        262
-                    ],
-                    "direction": "all"
-                },
-                "P1": {
-                    "pin": "S1-4",
-                    "marker": true,
-                    "pos": [
-                        224,
-                        250
-                    ],
-                    "direction": "all"
-                },
-                "P7": {
-                    "pin": "21",
-                    "pos": [
-                        224,
-                        262
-                    ],
-                    "direction": "all"
-                }
-            }
-        }
+  "name": "iCESugar1.5",
+  "description": "MuseLab iCESugar 1.5 is based on Lattice iCE40UP5k\nopen source FPGA development board",
+  "url": "https://github.com/wuxx/icesugar",
+  "pinimage": "board.png",
+  "toolchain": "icestorm",
+  "family": "ice40",
+  "type": "up5k",
+  "package": "sg48",
+  "flashcmd": "icesprog rio.bin",
+  "provides": [
+    "pmod",
+    "pmod2",
+    "pmod3"
+  ],
+  "_flashcmd": "openFPGALoader -b ice40_generic rio.bin -f",
+  "clock": {
+    "osc": 12000000,
+    "speed": 30000000,
+    "pin": "35",
+    "internal": [
+      "48000000",
+      "24000000",
+      "12000000",
+      "6000000"
     ]
+  },
+  "slots": [
+    {
+      "name": "UART",
+      "comment": "USB UART",
+      "pins": {
+        "RX": {
+          "pin": "4",
+          "comment": "shared with PMOD1:P8",
+          "pos": [
+            20,
+            289
+          ],
+          "direction": "input"
+        },
+        "TX": {
+          "pin": "6",
+          "comment": "shared with PMOD1:P2",
+          "pos": [
+            20,
+            267
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "USB",
+      "comment": "Micro-USB",
+      "pins": {
+        "DATA_P": {
+          "pin": "10",
+          "comment": "shared with PMOD1:P1",
+          "pos": [
+            336,
+            91
+          ],
+          "direction": "all"
+        },
+        "DATA_N": {
+          "pin": "9",
+          "comment": "shared with PMOD1:P7",
+          "pos": [
+            358,
+            91
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "RGB",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "GRN": {
+          "pin": "39",
+          "pos": [
+            434,
+            380
+          ],
+          "direction": "output"
+        },
+        "RED": {
+          "pin": "40",
+          "pos": [
+            456,
+            380
+          ],
+          "direction": "output"
+        },
+        "BLU": {
+          "pin": "41",
+          "pos": [
+            478,
+            380
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "J6",
+      "comment": "RGB-Pins",
+      "default": "",
+      "pins": {
+        "B": {
+          "pin": "41",
+          "comment": "JUMPER",
+          "pos": [
+            434,
+            455
+          ],
+          "direction": "all"
+        },
+        "G": {
+          "pin": "39",
+          "comment": "JUMPER",
+          "pos": [
+            456,
+            455
+          ],
+          "direction": "all"
+        },
+        "R": {
+          "pin": "40",
+          "comment": "JUMPER",
+          "pos": [
+            478,
+            455
+          ],
+          "direction": "all"
+        },
+        "LED_B": {
+          "pin": "RGB_B",
+          "comment": "JUMPER",
+          "marker": true,
+          "pos": [
+            434,
+            476
+          ],
+          "direction": "all"
+        },
+        "LED_G": {
+          "pin": "RGB_G",
+          "comment": "JUMPER",
+          "marker": true,
+          "pos": [
+            456,
+            476
+          ],
+          "direction": "all"
+        },
+        "LED_R": {
+          "pin": "RGB_R",
+          "comment": "JUMPER",
+          "marker": true,
+          "pos": [
+            478,
+            476
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD1",
+      "comment": "PMOD 1",
+      "pins": {
+        "P1": {
+          "pin": "10",
+          "comment": "shared with USB:DATA_P",
+          "pos": [
+            434,
+            118
+          ]
+        },
+        "P2": {
+          "pin": "6",
+          "comment": "shared with UART:RX",
+          "pos": [
+            458,
+            118
+          ]
+        },
+        "P3": {
+          "pin": "3",
+          "comment": "shared with J7:P3",
+          "pos": [
+            480,
+            118
+          ]
+        },
+        "P4": {
+          "pin": "48",
+          "comment": "shared with J7:P1",
+          "pos": [
+            502,
+            118
+          ]
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "comment": "3V3",
+          "marker": true,
+          "pos": [
+            524,
+            118
+          ]
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "comment": "3V3",
+          "marker": true,
+          "pos": [
+            524,
+            96
+          ]
+        },
+        "GND_1": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            549,
+            118
+          ]
+        },
+        "GND_2": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            549,
+            96
+          ]
+        },
+        "P7": {
+          "pin": "9",
+          "comment": "shared with USB:DATA_M",
+          "pos": [
+            434,
+            96
+          ]
+        },
+        "P8": {
+          "pin": "4",
+          "comment": "shared with UART:TX",
+          "pos": [
+            458,
+            96
+          ]
+        },
+        "P9": {
+          "pin": "2",
+          "comment": "shared with J7:P4",
+          "pos": [
+            480,
+            96
+          ]
+        },
+        "P10": {
+          "pin": "47",
+          "comment": "shared with J7:P2",
+          "pos": [
+            502,
+            96
+          ]
+        }
+      }
+    },
+    {
+      "name": "PMOD2",
+      "comment": "PMOD 2",
+      "pins": {
+        "P1": {
+          "pin": "46",
+          "pos": [
+            604,
+            129
+          ]
+        },
+        "P2": {
+          "pin": "44",
+          "pos": [
+            604,
+            151
+          ]
+        },
+        "P3": {
+          "pin": "42",
+          "pos": [
+            604,
+            172
+          ]
+        },
+        "P4": {
+          "pin": "37",
+          "pos": [
+            604,
+            194
+          ]
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "comment": "3V3",
+          "marker": true,
+          "pos": [
+            604,
+            216
+          ]
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "comment": "3V3",
+          "marker": true,
+          "pos": [
+            626,
+            216
+          ]
+        },
+        "GND_1": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            626,
+            236
+          ]
+        },
+        "GND_2": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            604,
+            236
+          ]
+        },
+        "P7": {
+          "pin": "45",
+          "pos": [
+            626,
+            129
+          ]
+        },
+        "P8": {
+          "pin": "43",
+          "pos": [
+            626,
+            151
+          ]
+        },
+        "P9": {
+          "pin": "38",
+          "pos": [
+            626,
+            172
+          ]
+        },
+        "P10": {
+          "pin": "36",
+          "pos": [
+            626,
+            194
+          ]
+        }
+      }
+    },
+    {
+      "name": "PMOD3",
+      "comment": "PMOD 3",
+      "default": "",
+      "pins": {
+        "P1": {
+          "pin": "34",
+          "pos": [
+            604,
+            333
+          ]
+        },
+        "P2": {
+          "pin": "31",
+          "pos": [
+            604,
+            354
+          ]
+        },
+        "P3": {
+          "pin": "27",
+          "pos": [
+            604,
+            376
+          ]
+        },
+        "P4": {
+          "pin": "25",
+          "pos": [
+            604,
+            398
+          ]
+        },
+        "3V3_1": {
+          "pin": "3V3",
+          "comment": "3V3",
+          "marker": true,
+          "pos": [
+            604,
+            420
+          ]
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "comment": "3V3",
+          "marker": true,
+          "pos": [
+            626,
+            420
+          ]
+        },
+        "GND_1": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            626,
+            440
+          ]
+        },
+        "GND_2": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            604,
+            440
+          ]
+        },
+        "P7": {
+          "pin": "32",
+          "pos": [
+            626,
+            333
+          ]
+        },
+        "P8": {
+          "pin": "28",
+          "pos": [
+            626,
+            354
+          ]
+        },
+        "P9": {
+          "pin": "26",
+          "pos": [
+            626,
+            376
+          ]
+        },
+        "P10": {
+          "pin": "23",
+          "pos": [
+            626,
+            398
+          ]
+        }
+      }
+    },
+    {
+      "name": "J7",
+      "comment": "shared with PMOD1",
+      "pins": {
+        "P1": {
+          "pin": "48",
+          "comment": "shared with PMOD1:P4",
+          "pos": [
+            604,
+            260
+          ]
+        },
+        "P2": {
+          "pin": "47",
+          "comment": "shared with PMOD1:P10",
+          "pos": [
+            626,
+            260
+          ]
+        },
+        "5V": {
+          "pin": "5V",
+          "comment": "5V",
+          "marker": true,
+          "pos": [
+            604,
+            282
+          ]
+        },
+        "GND": {
+          "pin": "GND",
+          "comment": "GND",
+          "marker": true,
+          "pos": [
+            626,
+            282
+          ]
+        },
+        "P3": {
+          "pin": "3",
+          "comment": "shared with PMOD1:P3",
+          "pos": [
+            604,
+            303
+          ]
+        },
+        "P4": {
+          "pin": "2",
+          "comment": "shared with PMOD1:P9",
+          "pos": [
+            626,
+            303
+          ]
+        }
+      }
+    },
+    {
+      "name": "J2",
+      "comment": "JTAG",
+      "pins": {
+        "TDO": {
+          "pin": "TDO",
+          "marker": true,
+          "pos": [
+            200,
+            455
+          ],
+          "direction": "all"
+        },
+        "nRST": {
+          "pin": "nRST",
+          "marker": true,
+          "pos": [
+            200,
+            476
+          ],
+          "direction": "all"
+        },
+        "TDI": {
+          "pin": "TDI",
+          "marker": true,
+          "pos": [
+            222,
+            455
+          ],
+          "direction": "all"
+        },
+        "5V": {
+          "pin": "5V",
+          "marker": true,
+          "pos": [
+            222,
+            476
+          ],
+          "direction": "all"
+        },
+        "TMS": {
+          "pin": "TDI",
+          "marker": true,
+          "pos": [
+            243,
+            455
+          ],
+          "direction": "all"
+        },
+        "3V3": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            243,
+            476
+          ],
+          "direction": "all"
+        },
+        "TCK": {
+          "pin": "TCK",
+          "marker": true,
+          "pos": [
+            265,
+            455
+          ],
+          "direction": "all"
+        },
+        "GND": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            265,
+            476
+          ],
+          "direction": "all"
+        }
+      }
+    },
+    {
+      "name": "PMOD4",
+      "comment": "PMOD4",
+      "pins": {
+        "3V3_1": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            298,
+            455
+          ],
+          "direction": "all"
+        },
+        "3V3_2": {
+          "pin": "3V3",
+          "marker": true,
+          "pos": [
+            298,
+            476
+          ],
+          "direction": "all"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            320,
+            455
+          ],
+          "direction": "all"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            320,
+            476
+          ],
+          "direction": "all"
+        },
+        "P4": {
+          "pin": "S1-1",
+          "marker": true,
+          "pos": [
+            342,
+            455
+          ],
+          "direction": "all"
+        },
+        "P10": {
+          "pin": "18",
+          "pos": [
+            342,
+            476
+          ],
+          "direction": "all"
+        },
+        "P3": {
+          "pin": "S1-2",
+          "marker": true,
+          "pos": [
+            364,
+            455
+          ],
+          "direction": "all"
+        },
+        "P9": {
+          "pin": "19",
+          "pos": [
+            364,
+            476
+          ],
+          "direction": "all"
+        },
+        "P2": {
+          "pin": "S1-3",
+          "marker": true,
+          "pos": [
+            385,
+            455
+          ],
+          "direction": "all"
+        },
+        "P8": {
+          "pin": "20",
+          "pos": [
+            385,
+            476
+          ],
+          "direction": "all"
+        },
+        "P1": {
+          "pin": "S1-4",
+          "marker": true,
+          "pos": [
+            407,
+            455
+          ],
+          "direction": "all"
+        },
+        "P7": {
+          "pin": "21",
+          "pos": [
+            407,
+            476
+          ],
+          "direction": "all"
+        }
+      }
+    }
+  ]
 }

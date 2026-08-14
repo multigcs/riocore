@@ -26,32 +26,32 @@
         "MOSI": {
           "pin": "P16",
           "pos": [
-            223,
-            285
+            405,
+            518
           ],
           "direction": "all"
         },
         "MISO": {
           "pin": "P15",
           "pos": [
-            213,
-            285
+            387,
+            518
           ],
           "direction": "all"
         },
         "SCLK": {
           "pin": "P14",
           "pos": [
-            204,
-            285
+            371,
+            518
           ],
           "direction": "all"
         },
         "SEL": {
           "pin": "P56",
           "pos": [
-            204,
-            295
+            371,
+            536
           ],
           "direction": "all"
         }
@@ -65,48 +65,48 @@
         "GPIO14": {
           "pin": "P29",
           "pos": [
-            280,
-            295
+            509,
+            536
           ],
           "direction": "all"
         },
         "GPIO15": {
           "pin": "P27",
           "pos": [
-            270,
-            295
+            491,
+            536
           ],
           "direction": "all"
         },
         "GPIO18": {
           "pin": "P24",
           "pos": [
-            261,
-            295
+            475,
+            536
           ],
           "direction": "all"
         },
         "GPIO23": {
           "pin": "P21",
           "pos": [
-            242,
-            295
+            440,
+            536
           ],
           "direction": "all"
         },
         "GPIO24": {
           "pin": "P17",
           "pos": [
-            232,
-            295
+            422,
+            536
           ],
           "direction": "all"
         },
         "GPIO25": {
           "pin": "P12",
           "pos": [
-            213,
-            295
+            387,
+            536
           ],
           "direction": "all"
         }
@@ -120,40 +120,40 @@
         "REBOOT": {
           "pin": "P67",
           "pos": [
-            255,
-            210
+            464,
+            382
           ],
           "direction": "output"
         },
         "MOSI": {
           "pin": "P64",
           "pos": [
-            270,
-            210
+            491,
+            382
           ],
           "direction": "output"
         },
         "MISO": {
           "pin": "P65",
           "pos": [
-            280,
-            210
+            509,
+            382
           ],
           "direction": "input"
         },
         "SCLK": {
           "pin": "P70",
           "pos": [
-            290,
-            210
+            527,
+            382
           ],
           "direction": "output"
         },
         "SEL": {
           "pin": "P38",
           "pos": [
-            300,
-            210
+            546,
+            382
           ],
           "direction": "output"
         }
@@ -167,32 +167,32 @@
         "L0": {
           "pin": "P48",
           "pos": [
-            340,
-            131
+            618,
+            238
           ],
           "direction": "output"
         },
         "L1": {
           "pin": "P47",
           "pos": [
-            350,
-            131
+            637,
+            238
           ],
           "direction": "output"
         },
         "L2": {
           "pin": "P46",
           "pos": [
-            360,
-            131
+            655,
+            238
           ],
           "direction": "output"
         },
         "L3": {
           "pin": "P45",
           "pos": [
-            370,
-            131
+            673,
+            238
           ],
           "direction": "output"
         }
@@ -206,8 +206,8 @@
         "RX": {
           "pin": "P34",
           "pos": [
-            225,
-            350
+            409,
+            637
           ],
           "direction": "input",
           "comment": "IO55"
@@ -215,8 +215,8 @@
         "TX": {
           "pin": "P35",
           "pos": [
-            235,
-            350
+            427,
+            637
           ],
           "direction": "output",
           "comment": "IO17"
@@ -224,8 +224,8 @@
         "TX_EN": {
           "pin": "P40",
           "pos": [
-            245,
-            350
+            445,
+            637
           ],
           "direction": "output",
           "comment": "IO36"
@@ -240,8 +240,8 @@
         "RX": {
           "pin": "P41",
           "pos": [
-            325,
-            350
+            591,
+            637
           ],
           "direction": "input",
           "comment": "IO56"
@@ -249,8 +249,8 @@
         "TX": {
           "pin": "P43",
           "pos": [
-            335,
-            350
+            609,
+            637
           ],
           "direction": "output",
           "comment": "IO18"
@@ -258,8 +258,8 @@
         "TX_EN": {
           "pin": "P44",
           "pos": [
-            345,
-            350
+            627,
+            637
           ],
           "direction": "output",
           "comment": "IO37"
@@ -274,8 +274,8 @@
         "P1": {
           "pin": "P119",
           "pos": [
-            57,
-            29
+            103,
+            52
           ],
           "direction": "all",
           "comment": "IO0"
@@ -283,8 +283,8 @@
         "P2": {
           "pin": "P117",
           "pos": [
-            67,
-            29
+            121,
+            52
           ],
           "direction": "all",
           "comment": "IO2"
@@ -292,8 +292,8 @@
         "P3": {
           "pin": "P115",
           "pos": [
-            76,
-            29
+            138,
+            52
           ],
           "direction": "all",
           "comment": "IO4"
@@ -301,8 +301,8 @@
         "P4": {
           "pin": "P112",
           "pos": [
-            86,
-            29
+            156,
+            52
           ],
           "direction": "all",
           "comment": "IO6"
@@ -310,8 +310,8 @@
         "P5": {
           "pin": "P105",
           "pos": [
-            95,
-            29
+            172,
+            52
           ],
           "direction": "all",
           "comment": "IO8"
@@ -319,8 +319,8 @@
         "P6": {
           "pin": "P104",
           "pos": [
-            105,
-            29
+            191,
+            52
           ],
           "direction": "all",
           "comment": "IO9"
@@ -328,8 +328,8 @@
         "P7": {
           "pin": "P102",
           "pos": [
-            114,
-            29
+            207,
+            52
           ],
           "direction": "all",
           "comment": "IO10"
@@ -337,8 +337,8 @@
         "P8": {
           "pin": "P101",
           "pos": [
-            124,
-            29
+            225,
+            52
           ],
           "direction": "all",
           "comment": "IO11"
@@ -346,8 +346,8 @@
         "P9": {
           "pin": "P100",
           "pos": [
-            133,
-            29
+            242,
+            52
           ],
           "direction": "all",
           "comment": "IO12"
@@ -355,8 +355,8 @@
         "P10": {
           "pin": "P99",
           "pos": [
-            143,
-            29
+            260,
+            52
           ],
           "direction": "all",
           "comment": "IO13"
@@ -364,8 +364,8 @@
         "P11": {
           "pin": "P98",
           "pos": [
-            152,
-            29
+            276,
+            52
           ],
           "direction": "all",
           "comment": "IO14"
@@ -373,8 +373,8 @@
         "P12": {
           "pin": "P97",
           "pos": [
-            162,
-            29
+            294,
+            52
           ],
           "direction": "all",
           "comment": "IO15"
@@ -382,8 +382,8 @@
         "P13": {
           "pin": "P95",
           "pos": [
-            171,
-            29
+            311,
+            52
           ],
           "direction": "all",
           "comment": "IO16"
@@ -391,8 +391,8 @@
         "P14": {
           "pin": "P118",
           "pos": [
-            57,
-            20
+            103,
+            36
           ],
           "direction": "all",
           "comment": "IO1"
@@ -400,8 +400,8 @@
         "P15": {
           "pin": "P116",
           "pos": [
-            67,
-            20
+            121,
+            36
           ],
           "direction": "all",
           "comment": "IO3"
@@ -409,8 +409,8 @@
         "P16": {
           "pin": "P114",
           "pos": [
-            76,
-            20
+            138,
+            36
           ],
           "direction": "all",
           "comment": "IO5"
@@ -418,8 +418,8 @@
         "P17": {
           "pin": "P111",
           "pos": [
-            86,
-            20
+            156,
+            36
           ],
           "direction": "all",
           "comment": "IO7"
@@ -434,8 +434,8 @@
         "P1": {
           "pin": "P143",
           "pos": [
-            172,
-            366
+            313,
+            666
           ],
           "direction": "all",
           "comment": "IO38"
@@ -443,8 +443,8 @@
         "P2": {
           "pin": "P141",
           "pos": [
-            163,
-            366
+            296,
+            666
           ],
           "direction": "all",
           "comment": "IO40"
@@ -452,8 +452,8 @@
         "P3": {
           "pin": "P139",
           "pos": [
-            153,
-            366
+            278,
+            666
           ],
           "direction": "all",
           "comment": "IO42"
@@ -461,8 +461,8 @@
         "P4": {
           "pin": "P137",
           "pos": [
-            144,
-            366
+            262,
+            666
           ],
           "direction": "all",
           "comment": "IO44"
@@ -470,8 +470,8 @@
         "P5": {
           "pin": "P133",
           "pos": [
-            134,
-            366
+            243,
+            666
           ],
           "direction": "all",
           "comment": "IO46"
@@ -479,8 +479,8 @@
         "P6": {
           "pin": "P132",
           "pos": [
-            125,
-            366
+            227,
+            666
           ],
           "direction": "all",
           "comment": "IO47"
@@ -488,8 +488,8 @@
         "P7": {
           "pin": "P131",
           "pos": [
-            115,
-            366
+            209,
+            666
           ],
           "direction": "all",
           "comment": "IO48"
@@ -497,8 +497,8 @@
         "P8": {
           "pin": "P127",
           "pos": [
-            106,
-            366
+            192,
+            666
           ],
           "direction": "all",
           "comment": "IO49"
@@ -506,8 +506,8 @@
         "P9": {
           "pin": "P126",
           "pos": [
-            96,
-            366
+            174,
+            666
           ],
           "direction": "all",
           "comment": "IO50"
@@ -515,8 +515,8 @@
         "P10": {
           "pin": "P124",
           "pos": [
-            87,
-            366
+            158,
+            666
           ],
           "direction": "all",
           "comment": "IO51"
@@ -524,8 +524,8 @@
         "P11": {
           "pin": "P123",
           "pos": [
-            77,
-            366
+            140,
+            666
           ],
           "direction": "all",
           "comment": "IO52"
@@ -533,8 +533,8 @@
         "P12": {
           "pin": "P121",
           "pos": [
-            68,
-            366
+            123,
+            666
           ],
           "direction": "all",
           "comment": "IO53"
@@ -542,8 +542,8 @@
         "P13": {
           "pin": "P120",
           "pos": [
-            58,
-            366
+            105,
+            666
           ],
           "direction": "all",
           "comment": "IO54"
@@ -551,8 +551,8 @@
         "P14": {
           "pin": "P142",
           "pos": [
-            172,
-            376
+            313,
+            684
           ],
           "direction": "all",
           "comment": "IO39"
@@ -560,8 +560,8 @@
         "P15": {
           "pin": "P140",
           "pos": [
-            163,
-            376
+            296,
+            684
           ],
           "direction": "all",
           "comment": "IO41"
@@ -569,8 +569,8 @@
         "P16": {
           "pin": "P138",
           "pos": [
-            153,
-            376
+            278,
+            684
           ],
           "direction": "all",
           "comment": "IO43"
@@ -578,8 +578,8 @@
         "P17": {
           "pin": "P134",
           "pos": [
-            144,
-            376
+            262,
+            684
           ],
           "direction": "all",
           "comment": "IO45"
@@ -594,8 +594,8 @@
         "P1": {
           "pin": "P94",
           "pos": [
-            232,
-            29
+            422,
+            52
           ],
           "direction": "all",
           "comment": "IO19"
@@ -603,8 +603,8 @@
         "P2": {
           "pin": "P92",
           "pos": [
-            241,
-            29
+            438,
+            52
           ],
           "direction": "all",
           "comment": "IO21"
@@ -612,8 +612,8 @@
         "P3": {
           "pin": "P87",
           "pos": [
-            251,
-            29
+            456,
+            52
           ],
           "direction": "all",
           "comment": "IO23"
@@ -621,8 +621,8 @@
         "P4": {
           "pin": "P84",
           "pos": [
-            260,
-            29
+            473,
+            52
           ],
           "direction": "all",
           "comment": "IO25"
@@ -630,8 +630,8 @@
         "P5": {
           "pin": "P82",
           "pos": [
-            270,
-            29
+            491,
+            52
           ],
           "direction": "all",
           "comment": "IO27"
@@ -639,8 +639,8 @@
         "P6": {
           "pin": "P81",
           "pos": [
-            279,
-            29
+            507,
+            52
           ],
           "direction": "all",
           "comment": "IO28"
@@ -648,8 +648,8 @@
         "P7": {
           "pin": "P80",
           "pos": [
-            289,
-            29
+            525,
+            52
           ],
           "direction": "all",
           "comment": "IO29"
@@ -657,8 +657,8 @@
         "P8": {
           "pin": "P79",
           "pos": [
-            298,
-            29
+            542,
+            52
           ],
           "direction": "all",
           "comment": "IO30"
@@ -666,8 +666,8 @@
         "P9": {
           "pin": "P78",
           "pos": [
-            308,
-            29
+            560,
+            52
           ],
           "direction": "all",
           "comment": "IO31"
@@ -675,8 +675,8 @@
         "P10": {
           "pin": "P75",
           "pos": [
-            317,
-            29
+            576,
+            52
           ],
           "direction": "all",
           "comment": "IO32"
@@ -684,8 +684,8 @@
         "P11": {
           "pin": "P62",
           "pos": [
-            327,
-            29
+            595,
+            52
           ],
           "direction": "all",
           "comment": "IO33"
@@ -693,8 +693,8 @@
         "P12": {
           "pin": "P61",
           "pos": [
-            336,
-            29
+            611,
+            52
           ],
           "direction": "all",
           "comment": "IO34"
@@ -702,8 +702,8 @@
         "P13": {
           "pin": "P59",
           "pos": [
-            346,
-            29
+            629,
+            52
           ],
           "direction": "all",
           "comment": "IO35"
@@ -711,8 +711,8 @@
         "P14": {
           "pin": "P93",
           "pos": [
-            232,
-            20
+            422,
+            36
           ],
           "direction": "all",
           "comment": "IO20"
@@ -720,8 +720,8 @@
         "P15": {
           "pin": "P88",
           "pos": [
-            241,
-            20
+            438,
+            36
           ],
           "direction": "all",
           "comment": "IO22"
@@ -729,8 +729,8 @@
         "P16": {
           "pin": "P85",
           "pos": [
-            251,
-            20
+            456,
+            36
           ],
           "direction": "all",
           "comment": "IO24"
@@ -738,8 +738,8 @@
         "P17": {
           "pin": "P83",
           "pos": [
-            260,
-            20
+            473,
+            36
           ],
           "direction": "all",
           "comment": "IO26"

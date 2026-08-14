@@ -2,7 +2,10 @@
   "name": "TangPrimer20K",
   "description": "TangPrimer20K-Devboard on Dock ext-board",
   "url": "https://wiki.sipeed.com/hardware/en/tang/tang-primer-20k/primer-20k.html",
-  "size": [95, 74],
+  "size": [
+    95,
+    74
+  ],
   "type": "GW2A-LV18PG256C8/I7",
   "family": "GW2A-18C",
   "toolchains": [
@@ -26,48 +29,48 @@
         "L1": {
           "pin": "C13",
           "pos": [
-            375,
-            168
+            682,
+            305
           ],
           "direction": "output"
         },
         "L2": {
           "pin": "A13",
           "pos": [
-            375,
-            174
+            682,
+            316
           ],
           "direction": "output"
         },
         "L3": {
           "pin": "N16",
           "pos": [
-            375,
-            181
+            682,
+            329
           ],
           "direction": "output"
         },
         "L4": {
           "pin": "N14",
           "pos": [
-            375,
-            187
+            682,
+            340
           ],
           "direction": "output"
         },
         "L5": {
           "pin": "L14",
           "pos": [
-            375,
-            194
+            682,
+            353
           ],
           "direction": "output"
         },
         "L6": {
           "pin": "L16",
           "pos": [
-            375,
-            200
+            682,
+            364
           ],
           "direction": "output"
         }
@@ -80,40 +83,40 @@
         "S0": {
           "pin": "T10",
           "pos": [
-            10,
-            71
+            18,
+            129
           ],
           "direction": "input"
         },
         "S1": {
           "pin": "T3",
           "pos": [
-            10,
-            107
+            18,
+            194
           ],
           "direction": "input"
         },
         "S2": {
           "pin": "T2",
           "pos": [
-            10,
-            143
+            18,
+            260
           ],
           "direction": "input"
         },
         "S3": {
           "pin": "D7",
           "pos": [
-            10,
-            180
+            18,
+            327
           ],
           "direction": "input"
         },
         "S4": {
           "pin": "C7",
           "pos": [
-            10,
-            215
+            18,
+            391
           ],
           "direction": "input"
         }
@@ -132,8 +135,8 @@
           "pin": "T9",
           "direction": "output",
           "pos": [
-            385,
-            40
+            700,
+            72
           ]
         }
       }
@@ -266,16 +269,16 @@
         "TX": {
           "pin": "M11",
           "pos": [
-            340,
-            300
+            618,
+            546
           ],
           "direction": "output"
         },
         "RX": {
           "pin": "T13",
           "pos": [
-            355,
-            300
+            646,
+            546
           ],
           "direction": "input"
         }
@@ -288,72 +291,72 @@
         "TXD0": {
           "pin": "D16",
           "pos": [
-            80,
-            250
+            145,
+            455
           ],
           "direction": "all"
         },
         "TXD1": {
           "pin": "E14",
           "pos": [
-            100,
-            250
+            182,
+            455
           ],
           "direction": "all"
         },
         "TXEN": {
           "pin": "E16",
           "pos": [
-            120,
-            250
+            218,
+            455
           ],
           "direction": "all"
         },
         "RXD0": {
           "pin": "F15",
           "pos": [
-            80,
-            270
+            145,
+            491
           ],
           "direction": "all"
         },
         "RXD1": {
           "pin": "C9",
           "pos": [
-            100,
-            270
+            182,
+            491
           ],
           "direction": "all"
         },
         "RXCRS": {
           "pin": "M6",
           "pos": [
-            120,
-            270
+            218,
+            491
           ],
           "direction": "all"
         },
         "MDC": {
           "pin": "F14",
           "pos": [
-            80,
-            270
+            145,
+            491
           ],
           "direction": "all"
         },
         "CLK50M": {
           "pin": "A9",
           "pos": [
-            100,
-            270
+            182,
+            491
           ],
           "direction": "all"
         },
         "MDIO": {
           "pin": "F16",
           "pos": [
-            120,
-            270
+            218,
+            491
           ],
           "direction": "all"
         }

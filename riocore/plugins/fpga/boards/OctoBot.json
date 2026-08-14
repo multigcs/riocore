@@ -2,7 +2,10 @@
   "name": "OctoBot",
   "description": "RIO-OctoBot board",
   "url": "https://github.com/multigcs/rio-octobot",
-  "size": [100, 100],
+  "size": [
+    100,
+    100
+  ],
   "pinimage": "board.png",
   "toolchain": "icestorm",
   "family": "ice40",
@@ -27,29 +30,29 @@
         "MOSI": {
           "pin": "H1",
           "pos": [
-            125,
-            292
+            227,
+            531
           ]
         },
         "SCLK": {
           "pin": "G3",
           "pos": [
-            125,
-            303
+            227,
+            551
           ]
         },
         "MISO": {
           "pin": "J1",
           "pos": [
-            125,
-            313
+            227,
+            569
           ]
         },
         "SEL": {
           "pin": "H3",
           "pos": [
-            125,
-            324
+            227,
+            589
           ]
         }
       }
@@ -62,16 +65,16 @@
         "TX": {
           "pin": "P4",
           "pos": [
-            232,
-            335
+            422,
+            609
           ],
           "direction": "output"
         },
         "RX": {
           "pin": "P5",
           "pos": [
-            247,
-            335
+            449,
+            609
           ],
           "direction": "input"
         }
@@ -84,16 +87,16 @@
         "G": {
           "pin": "M4",
           "pos": [
-            247,
-            257
+            449,
+            467
           ],
           "direction": "output"
         },
         "R": {
           "pin": "A5",
           "pos": [
-            232,
-            257
+            422,
+            467
           ],
           "direction": "output"
         }
@@ -107,16 +110,16 @@
         "STEP": {
           "pin": "J3",
           "pos": [
-            32,
-            121
+            58,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "K3",
           "pos": [
-            32,
-            107
+            58,
+            194
           ],
           "direction": "output"
         }
@@ -130,16 +133,16 @@
         "STEP": {
           "pin": "F3",
           "pos": [
-            67,
-            121
+            121,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "G1",
           "pos": [
-            67,
-            107
+            121,
+            194
           ],
           "direction": "output"
         }
@@ -153,16 +156,16 @@
         "STEP": {
           "pin": "D1",
           "pos": [
-            101,
-            121
+            183,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "E1",
           "pos": [
-            101,
-            107
+            183,
+            194
           ],
           "direction": "output"
         }
@@ -176,16 +179,16 @@
         "STEP": {
           "pin": "D3",
           "pos": [
-            135,
-            121
+            245,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "C1",
           "pos": [
-            135,
-            107
+            245,
+            194
           ],
           "direction": "output"
         }
@@ -199,16 +202,16 @@
         "STEP": {
           "pin": "A7",
           "pos": [
-            170,
-            121
+            309,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "A6",
           "pos": [
-            170,
-            107
+            309,
+            194
           ],
           "direction": "output"
         }
@@ -222,16 +225,16 @@
         "STEP": {
           "pin": "C7",
           "pos": [
-            204,
-            121
+            371,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "C6",
           "pos": [
-            204,
-            107
+            371,
+            194
           ],
           "direction": "output"
         }
@@ -245,16 +248,16 @@
         "STEP": {
           "pin": "D7",
           "pos": [
-            239,
-            121
+            434,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "D6",
           "pos": [
-            239,
-            107
+            434,
+            194
           ],
           "direction": "output"
         }
@@ -268,16 +271,16 @@
         "STEP": {
           "pin": "A10",
           "pos": [
-            273,
-            121
+            496,
+            220
           ],
           "direction": "output"
         },
         "DIR": {
           "pin": "D10",
           "pos": [
-            273,
-            107
+            496,
+            194
           ],
           "direction": "output"
         }
@@ -291,8 +294,8 @@
         "BIT": {
           "pin": "A3",
           "pos": [
-            32,
-            81
+            58,
+            147
           ],
           "direction": "output"
         }
@@ -306,8 +309,8 @@
         "BIT": {
           "pin": "C5",
           "pos": [
-            67,
-            81
+            121,
+            147
           ],
           "direction": "output"
         }
@@ -321,8 +324,8 @@
         "BIT": {
           "pin": "A4",
           "pos": [
-            101,
-            81
+            183,
+            147
           ],
           "direction": "output"
         }
@@ -336,8 +339,8 @@
         "BIT": {
           "pin": "C4",
           "pos": [
-            135,
-            81
+            245,
+            147
           ],
           "direction": "output"
         }
@@ -351,8 +354,8 @@
         "BIT": {
           "pin": "A1",
           "pos": [
-            170,
-            81
+            309,
+            147
           ],
           "direction": "output"
         }
@@ -366,8 +369,8 @@
         "BIT": {
           "pin": "C3",
           "pos": [
-            204,
-            81
+            371,
+            147
           ],
           "direction": "output"
         }
@@ -381,8 +384,8 @@
         "BIT": {
           "pin": "B1",
           "pos": [
-            239,
-            81
+            434,
+            147
           ],
           "direction": "output"
         }
@@ -396,8 +399,8 @@
         "BIT": {
           "pin": "A2",
           "pos": [
-            273,
-            81
+            496,
+            147
           ],
           "direction": "output"
         }
@@ -411,8 +414,8 @@
         "BIT": {
           "pin": "D14",
           "pos": [
-            32,
-            33
+            58,
+            60
           ],
           "direction": "input"
         }
@@ -426,8 +429,8 @@
         "BIT": {
           "pin": "C12",
           "pos": [
-            67,
-            33
+            121,
+            60
           ],
           "direction": "input"
         }
@@ -441,8 +444,8 @@
         "BIT": {
           "pin": "C14",
           "pos": [
-            101,
-            33
+            183,
+            60
           ],
           "direction": "input"
         }
@@ -456,8 +459,8 @@
         "BIT": {
           "pin": "B14",
           "pos": [
-            135,
-            33
+            245,
+            60
           ],
           "direction": "input"
         }
@@ -471,8 +474,8 @@
         "BIT": {
           "pin": "A12",
           "pos": [
-            170,
-            33
+            309,
+            60
           ],
           "direction": "input"
         }
@@ -486,8 +489,8 @@
         "BIT": {
           "pin": "A11",
           "pos": [
-            204,
-            33
+            371,
+            60
           ],
           "direction": "input"
         }
@@ -501,8 +504,8 @@
         "BIT": {
           "pin": "C11",
           "pos": [
-            239,
-            33
+            434,
+            60
           ],
           "direction": "input"
         }
@@ -516,8 +519,8 @@
         "BIT": {
           "pin": "C10",
           "pos": [
-            273,
-            33
+            496,
+            60
           ],
           "direction": "input"
         }
@@ -576,57 +579,57 @@
         "P1": {
           "pin": "M1",
           "pos": [
-            151,
-            321
+            274,
+            584
           ]
         },
         "P2": {
           "pin": "M3",
           "pos": [
-            151,
-            331
+            274,
+            602
           ]
         },
         "P3": {
           "pin": "P2",
           "pos": [
-            151,
-            342
+            274,
+            622
           ]
         },
         "P4": {
           "pin": "P3",
           "pos": [
-            151,
-            352
+            274,
+            640
           ]
         },
         "P7": {
           "pin": "L1",
           "pos": [
-            164,
-            321
+            298,
+            584
           ]
         },
         "P8": {
           "pin": "N1",
           "pos": [
-            164,
-            331
+            298,
+            602
           ]
         },
         "P9": {
           "pin": "P1",
           "pos": [
-            164,
-            342
+            298,
+            622
           ]
         },
         "P10": {
           "pin": "M6",
           "pos": [
-            164,
-            352
+            298,
+            640
           ]
         }
       }
@@ -639,15 +642,15 @@
         "SCL": {
           "pin": "D12",
           "pos": [
-            327,
-            81
+            595,
+            147
           ]
         },
         "SDA": {
           "pin": "E14",
           "pos": [
-            327,
-            91
+            595,
+            165
           ]
         }
       }
@@ -660,15 +663,15 @@
         "SCL": {
           "pin": "K14",
           "pos": [
-            359,
-            81
+            653,
+            147
           ]
         },
         "SDA": {
           "pin": "J12",
           "pos": [
-            359,
-            91
+            653,
+            165
           ]
         }
       }
@@ -681,24 +684,24 @@
         "Z": {
           "pin": "E12",
           "pos": [
-            316,
-            128
+            575,
+            232
           ],
           "direction": "input"
         },
         "B": {
           "pin": "F14",
           "pos": [
-            316,
-            139
+            575,
+            252
           ],
           "direction": "input"
         },
         "A": {
           "pin": "F12",
           "pos": [
-            316,
-            149
+            575,
+            271
           ],
           "direction": "input"
         }
@@ -712,24 +715,24 @@
         "Z": {
           "pin": "G14",
           "pos": [
-            345,
-            128
+            627,
+            232
           ],
           "direction": "input"
         },
         "B": {
           "pin": "G12",
           "pos": [
-            344,
-            139
+            626,
+            252
           ],
           "direction": "input"
         },
         "A": {
           "pin": "H12",
           "pos": [
-            345,
-            149
+            627,
+            271
           ],
           "direction": "input"
         }
@@ -743,24 +746,24 @@
         "Z": {
           "pin": "H11",
           "pos": [
-            369,
-            128
+            671,
+            232
           ],
           "direction": "input"
         },
         "B": {
           "pin": "L14",
           "pos": [
-            369,
-            139
+            671,
+            252
           ],
           "direction": "input"
         },
         "A": {
           "pin": "K12",
           "pos": [
-            369,
-            149
+            671,
+            271
           ],
           "direction": "input"
         }

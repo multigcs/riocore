@@ -18,8 +18,8 @@
           "pin": "V15",
           "comment": "",
           "pos": [
-            445,
-            85
+            809,
+            154
           ],
           "direction": "all"
         },
@@ -27,8 +27,8 @@
           "pin": "U16",
           "comment": "",
           "pos": [
-            434,
-            85
+            789,
+            154
           ],
           "direction": "all"
         },
@@ -36,8 +36,8 @@
           "pin": "P14",
           "comment": "",
           "pos": [
-            423,
-            85
+            769,
+            154
           ],
           "direction": "all"
         },
@@ -45,8 +45,8 @@
           "pin": "T11",
           "comment": "",
           "pos": [
-            412,
-            85
+            749,
+            154
           ],
           "direction": "all"
         },
@@ -54,8 +54,8 @@
           "pin": "R12",
           "comment": "",
           "pos": [
-            401,
-            85
+            729,
+            154
           ],
           "direction": "all"
         },
@@ -63,8 +63,8 @@
           "pin": "T14",
           "comment": "",
           "pos": [
-            390,
-            85
+            709,
+            154
           ],
           "direction": "all"
         },
@@ -72,8 +72,8 @@
           "pin": "T15",
           "comment": "",
           "pos": [
-            379,
-            85
+            689,
+            154
           ],
           "direction": "all"
         },
@@ -81,8 +81,8 @@
           "pin": "T16",
           "comment": "",
           "pos": [
-            368,
-            85
+            669,
+            154
           ],
           "direction": "all"
         },
@@ -90,8 +90,8 @@
           "pin": "N15",
           "comment": "",
           "pos": [
-            349,
-            85
+            635,
+            154
           ],
           "direction": "all"
         },
@@ -99,8 +99,8 @@
           "pin": "M16",
           "comment": "",
           "pos": [
-            338,
-            85
+            615,
+            154
           ],
           "direction": "all"
         },
@@ -108,8 +108,8 @@
           "pin": "V17",
           "comment": "",
           "pos": [
-            327,
-            85
+            595,
+            154
           ],
           "direction": "all"
         },
@@ -117,8 +117,8 @@
           "pin": "U18",
           "comment": "",
           "pos": [
-            316,
-            85
+            575,
+            154
           ],
           "direction": "all"
         },
@@ -126,8 +126,8 @@
           "pin": "R17",
           "comment": "",
           "pos": [
-            305,
-            85
+            555,
+            154
           ],
           "direction": "all"
         },
@@ -135,8 +135,8 @@
           "pin": "P17",
           "comment": "",
           "pos": [
-            294,
-            85
+            535,
+            154
           ],
           "direction": "all"
         },
@@ -144,8 +144,8 @@
           "pin": "F5",
           "comment": "",
           "pos": [
-            389,
-            295
+            707,
+            536
           ],
           "direction": "all"
         },
@@ -153,8 +153,8 @@
           "pin": "D8",
           "comment": "",
           "pos": [
-            400,
-            295
+            728,
+            536
           ],
           "direction": "all"
         },
@@ -162,8 +162,8 @@
           "pin": "C7",
           "comment": "",
           "pos": [
-            411,
-            295
+            748,
+            536
           ],
           "direction": "all"
         },
@@ -171,8 +171,8 @@
           "pin": "E7",
           "comment": "",
           "pos": [
-            422,
-            295
+            768,
+            536
           ],
           "direction": "all"
         },
@@ -180,8 +180,8 @@
           "pin": "D7",
           "comment": "",
           "pos": [
-            433,
-            295
+            788,
+            536
           ],
           "direction": "all"
         },
@@ -189,8 +189,8 @@
           "pin": "D5",
           "comment": "",
           "pos": [
-            444,
-            295
+            808,
+            536
           ],
           "direction": "all"
         },
@@ -198,8 +198,8 @@
           "pin": "C2",
           "comment": "",
           "pos": [
-            308,
-            295
+            560,
+            536
           ],
           "direction": "all"
         },
@@ -207,8 +207,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            319,
-            295
+            580,
+            536
           ],
           "direction": "all"
         },
@@ -216,8 +216,8 @@
           "pin": "5V",
           "marker": true,
           "pos": [
-            330,
-            295
+            600,
+            536
           ],
           "direction": "all"
         },
@@ -225,8 +225,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            341,
-            295
+            620,
+            536
           ],
           "direction": "all"
         },
@@ -234,8 +234,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            352,
-            295
+            640,
+            536
           ],
           "direction": "all"
         },
@@ -243,8 +243,8 @@
           "pin": "VIN",
           "marker": true,
           "pos": [
-            363,
-            295
+            660,
+            536
           ],
           "direction": "all"
         },
@@ -252,8 +252,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            352,
-            284
+            640,
+            516
           ],
           "direction": "all"
         },
@@ -261,8 +261,8 @@
           "pin": "XVREF",
           "marker": true,
           "pos": [
-            363,
-            284
+            660,
+            516
           ],
           "direction": "all"
         },
@@ -270,8 +270,8 @@
           "pin": "V_N",
           "marker": true,
           "pos": [
-            341,
-            284
+            620,
+            516
           ],
           "direction": "all"
         },
@@ -279,8 +279,8 @@
           "pin": "V_P",
           "marker": true,
           "pos": [
-            330,
-            284
+            600,
+            516
           ],
           "direction": "all"
         },
@@ -288,8 +288,8 @@
           "pin": "G",
           "marker": true,
           "pos": [
-            283,
-            85
+            515,
+            154
           ],
           "direction": "all"
         },
@@ -297,24 +297,24 @@
           "pin": "A",
           "marker": true,
           "pos": [
-            272,
-            85
+            495,
+            154
           ],
           "direction": "all"
         },
         "SDA": {
           "pin": "M18",
           "pos": [
-            261,
-            85
+            475,
+            154
           ],
           "direction": "all"
         },
         "SCL": {
           "pin": "L18",
           "pos": [
-            250,
-            85
+            455,
+            154
           ],
           "direction": "all"
         }
@@ -328,8 +328,8 @@
           "pin": "U11",
           "comment": "",
           "pos": [
-            445,
-            96
+            809,
+            174
           ],
           "direction": "all"
         },
@@ -337,8 +337,8 @@
           "pin": "V16",
           "comment": "",
           "pos": [
-            434,
-            96
+            789,
+            174
           ],
           "direction": "all"
         },
@@ -346,8 +346,8 @@
           "pin": "M13",
           "comment": "",
           "pos": [
-            423,
-            96
+            769,
+            174
           ],
           "direction": "all"
         },
@@ -355,8 +355,8 @@
           "pin": "R10",
           "comment": "",
           "pos": [
-            412,
-            96
+            749,
+            174
           ],
           "direction": "all"
         },
@@ -364,8 +364,8 @@
           "pin": "R11",
           "comment": "",
           "pos": [
-            401,
-            96
+            729,
+            174
           ],
           "direction": "all"
         },
@@ -373,8 +373,8 @@
           "pin": "R13",
           "comment": "",
           "pos": [
-            390,
-            96
+            709,
+            174
           ],
           "direction": "all"
         },
@@ -382,8 +382,8 @@
           "pin": "R15",
           "comment": "",
           "pos": [
-            379,
-            96
+            689,
+            174
           ],
           "direction": "all"
         },
@@ -391,8 +391,8 @@
           "pin": "P15",
           "comment": "",
           "pos": [
-            368,
-            96
+            669,
+            174
           ],
           "direction": "all"
         },
@@ -400,8 +400,8 @@
           "pin": "R16",
           "comment": "",
           "pos": [
-            349,
-            96
+            635,
+            174
           ],
           "direction": "all"
         },
@@ -409,8 +409,8 @@
           "pin": "N16",
           "comment": "",
           "pos": [
-            338,
-            96
+            615,
+            174
           ],
           "direction": "all"
         },
@@ -418,8 +418,8 @@
           "pin": "N14",
           "comment": "",
           "pos": [
-            327,
-            96
+            595,
+            174
           ],
           "direction": "all"
         },
@@ -427,8 +427,8 @@
           "pin": "U17",
           "comment": "",
           "pos": [
-            316,
-            96
+            575,
+            174
           ],
           "direction": "all"
         },
@@ -436,8 +436,8 @@
           "pin": "T18",
           "comment": "",
           "pos": [
-            305,
-            96
+            555,
+            174
           ],
           "direction": "all"
         },
@@ -445,8 +445,8 @@
           "pin": "R18",
           "comment": "",
           "pos": [
-            294,
-            96
+            535,
+            174
           ],
           "direction": "all"
         },
@@ -454,8 +454,8 @@
           "pin": "P18",
           "comment": "",
           "pos": [
-            283,
-            96
+            515,
+            174
           ],
           "direction": "all"
         },
@@ -463,8 +463,8 @@
           "pin": "N17",
           "comment": "",
           "pos": [
-            272,
-            96
+            495,
+            174
           ],
           "direction": "all"
         },
@@ -472,8 +472,8 @@
           "pin": "A3",
           "comment": "",
           "pos": [
-            444,
-            284
+            808,
+            516
           ],
           "direction": "all"
         },
@@ -481,8 +481,8 @@
           "pin": "A4",
           "comment": "",
           "pos": [
-            433,
-            284
+            788,
+            516
           ],
           "direction": "all"
         },
@@ -490,8 +490,8 @@
           "pin": "E5",
           "comment": "",
           "pos": [
-            422,
-            284
+            768,
+            516
           ],
           "direction": "all"
         },
@@ -499,8 +499,8 @@
           "pin": "E6",
           "comment": "",
           "pos": [
-            411,
-            284
+            748,
+            516
           ],
           "direction": "all"
         },
@@ -508,8 +508,8 @@
           "pin": "B6",
           "comment": "",
           "pos": [
-            400,
-            284
+            728,
+            516
           ],
           "direction": "all"
         },
@@ -517,8 +517,8 @@
           "pin": "B7",
           "comment": "",
           "pos": [
-            389,
-            284
+            707,
+            516
           ],
           "direction": "all"
         }
@@ -532,8 +532,8 @@
           "pin": "G13",
           "comment": "",
           "pos": [
-            59,
-            53
+            107,
+            96
           ],
           "direction": "all"
         },
@@ -541,8 +541,8 @@
           "pin": "B11",
           "comment": "",
           "pos": [
-            70,
-            53
+            127,
+            96
           ],
           "direction": "all"
         },
@@ -550,8 +550,8 @@
           "pin": "A11",
           "comment": "",
           "pos": [
-            81,
-            53
+            147,
+            96
           ],
           "direction": "all"
         },
@@ -559,8 +559,8 @@
           "pin": "D12",
           "comment": "",
           "pos": [
-            92,
-            53
+            167,
+            96
           ],
           "direction": "all"
         },
@@ -568,8 +568,8 @@
           "pin": "D13",
           "comment": "",
           "pos": [
-            59,
-            42
+            107,
+            76
           ],
           "direction": "all"
         },
@@ -577,8 +577,8 @@
           "pin": "B18",
           "comment": "",
           "pos": [
-            70,
-            42
+            127,
+            76
           ],
           "direction": "all"
         },
@@ -586,8 +586,8 @@
           "pin": "A18",
           "comment": "",
           "pos": [
-            81,
-            42
+            147,
+            76
           ],
           "direction": "all"
         },
@@ -595,8 +595,8 @@
           "pin": "K16",
           "comment": "",
           "pos": [
-            92,
-            42
+            167,
+            76
           ],
           "direction": "all"
         },
@@ -604,8 +604,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            101,
-            42
+            183,
+            76
           ],
           "direction": "all"
         },
@@ -613,8 +613,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            101,
-            53
+            183,
+            96
           ],
           "direction": "all"
         },
@@ -622,8 +622,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            112,
-            42
+            203,
+            76
           ],
           "direction": "all"
         },
@@ -631,8 +631,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            112,
-            53
+            203,
+            96
           ],
           "direction": "all"
         }
@@ -646,8 +646,8 @@
           "pin": "E15",
           "comment": "",
           "pos": [
-            158,
-            53
+            287,
+            96
           ],
           "direction": "all"
         },
@@ -655,8 +655,8 @@
           "pin": "E16",
           "comment": "",
           "pos": [
-            169,
-            53
+            307,
+            96
           ],
           "direction": "all"
         },
@@ -664,8 +664,8 @@
           "pin": "D15",
           "comment": "",
           "pos": [
-            180,
-            53
+            327,
+            96
           ],
           "direction": "all"
         },
@@ -673,8 +673,8 @@
           "pin": "C15",
           "comment": "",
           "pos": [
-            191,
-            53
+            347,
+            96
           ],
           "direction": "all"
         },
@@ -682,8 +682,8 @@
           "pin": "J17",
           "comment": "",
           "pos": [
-            158,
-            42
+            287,
+            76
           ],
           "direction": "all"
         },
@@ -691,8 +691,8 @@
           "pin": "J18",
           "comment": "",
           "pos": [
-            169,
-            42
+            307,
+            76
           ],
           "direction": "all"
         },
@@ -700,8 +700,8 @@
           "pin": "K15",
           "comment": "",
           "pos": [
-            180,
-            42
+            327,
+            76
           ],
           "direction": "all"
         },
@@ -709,8 +709,8 @@
           "pin": "J15",
           "comment": "",
           "pos": [
-            191,
-            42
+            347,
+            76
           ],
           "direction": "all"
         },
@@ -718,8 +718,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            202,
-            42
+            367,
+            76
           ],
           "direction": "all"
         },
@@ -727,8 +727,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            202,
-            53
+            367,
+            96
           ],
           "direction": "all"
         },
@@ -736,8 +736,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            213,
-            42
+            387,
+            76
           ],
           "direction": "all"
         },
@@ -745,8 +745,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            213,
-            53
+            387,
+            96
           ],
           "direction": "all"
         }
@@ -760,8 +760,8 @@
           "pin": "U12",
           "comment": "",
           "pos": [
-            257,
-            53
+            467,
+            96
           ],
           "direction": "all"
         },
@@ -769,8 +769,8 @@
           "pin": "V12",
           "comment": "",
           "pos": [
-            268,
-            53
+            487,
+            96
           ],
           "direction": "all"
         },
@@ -778,8 +778,8 @@
           "pin": "V10",
           "comment": "",
           "pos": [
-            279,
-            53
+            507,
+            96
           ],
           "direction": "all"
         },
@@ -787,8 +787,8 @@
           "pin": "V11",
           "comment": "",
           "pos": [
-            290,
-            53
+            527,
+            96
           ],
           "direction": "all"
         },
@@ -796,8 +796,8 @@
           "pin": "U14",
           "comment": "",
           "pos": [
-            257,
-            42
+            467,
+            76
           ],
           "direction": "all"
         },
@@ -805,8 +805,8 @@
           "pin": "V14",
           "comment": "",
           "pos": [
-            268,
-            42
+            487,
+            76
           ],
           "direction": "all"
         },
@@ -814,8 +814,8 @@
           "pin": "T13",
           "comment": "",
           "pos": [
-            279,
-            42
+            507,
+            76
           ],
           "direction": "all"
         },
@@ -823,8 +823,8 @@
           "pin": "U13",
           "comment": "",
           "pos": [
-            290,
-            42
+            527,
+            76
           ],
           "direction": "all"
         },
@@ -832,8 +832,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            301,
-            42
+            547,
+            76
           ],
           "direction": "all"
         },
@@ -841,8 +841,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            301,
-            53
+            547,
+            96
           ],
           "direction": "all"
         },
@@ -850,8 +850,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            312,
-            42
+            567,
+            76
           ],
           "direction": "all"
         },
@@ -859,8 +859,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            312,
-            53
+            567,
+            96
           ],
           "direction": "all"
         }
@@ -874,8 +874,8 @@
           "pin": "D4",
           "comment": "",
           "pos": [
-            356,
-            53
+            647,
+            96
           ],
           "direction": "all"
         },
@@ -883,8 +883,8 @@
           "pin": "D3",
           "comment": "",
           "pos": [
-            367,
-            53
+            667,
+            96
           ],
           "direction": "all"
         },
@@ -892,8 +892,8 @@
           "pin": "F4",
           "comment": "",
           "pos": [
-            378,
-            53
+            687,
+            96
           ],
           "direction": "all"
         },
@@ -901,8 +901,8 @@
           "pin": "F3",
           "comment": "",
           "pos": [
-            389,
-            53
+            707,
+            96
           ],
           "direction": "all"
         },
@@ -910,8 +910,8 @@
           "pin": "E2",
           "comment": "",
           "pos": [
-            356,
-            42
+            647,
+            76
           ],
           "direction": "all"
         },
@@ -919,8 +919,8 @@
           "pin": "D2",
           "comment": "",
           "pos": [
-            367,
-            42
+            667,
+            76
           ],
           "direction": "all"
         },
@@ -928,8 +928,8 @@
           "pin": "H2",
           "comment": "",
           "pos": [
-            378,
-            42
+            687,
+            76
           ],
           "direction": "all"
         },
@@ -937,8 +937,8 @@
           "pin": "G2",
           "comment": "",
           "pos": [
-            389,
-            42
+            707,
+            76
           ],
           "direction": "all"
         },
@@ -946,8 +946,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            400,
-            42
+            728,
+            76
           ],
           "direction": "all"
         },
@@ -955,8 +955,8 @@
           "pin": "GND",
           "marker": true,
           "pos": [
-            400,
-            53
+            728,
+            96
           ],
           "direction": "all"
         },
@@ -964,8 +964,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            411,
-            42
+            748,
+            76
           ],
           "direction": "all"
         },
@@ -973,8 +973,8 @@
           "pin": "3V3",
           "marker": true,
           "pos": [
-            411,
-            53
+            748,
+            96
           ],
           "direction": "all"
         }
@@ -988,8 +988,8 @@
           "pin": "A9",
           "comment": "",
           "pos": [
-            60,
-            90
+            109,
+            163
           ],
           "direction": "input"
         },
@@ -997,8 +997,8 @@
           "pin": "D10",
           "comment": "",
           "pos": [
-            60,
-            105
+            109,
+            191
           ],
           "direction": "output"
         }
@@ -1012,8 +1012,8 @@
           "pin": "D9",
           "comment": "",
           "pos": [
-            440,
-            343
+            800,
+            624
           ],
           "direction": "input"
         },
@@ -1021,8 +1021,8 @@
           "pin": "C9",
           "comment": "",
           "pos": [
-            405,
-            343
+            737,
+            624
           ],
           "direction": "input"
         },
@@ -1030,8 +1030,8 @@
           "pin": "B9",
           "comment": "",
           "pos": [
-            365,
-            343
+            664,
+            624
           ],
           "direction": "input"
         },
@@ -1039,8 +1039,8 @@
           "pin": "B8",
           "comment": "",
           "pos": [
-            325,
-            343
+            591,
+            624
           ],
           "direction": "input"
         }
@@ -1054,8 +1054,8 @@
           "pin": "A8",
           "comment": "",
           "pos": [
-            278,
-            340
+            505,
+            618
           ],
           "direction": "input"
         },
@@ -1063,8 +1063,8 @@
           "pin": "C11",
           "comment": "",
           "pos": [
-            242,
-            340
+            440,
+            618
           ],
           "direction": "input"
         },
@@ -1072,8 +1072,8 @@
           "pin": "C10",
           "comment": "",
           "pos": [
-            207,
-            340
+            376,
+            618
           ],
           "direction": "input"
         },
@@ -1081,8 +1081,8 @@
           "pin": "A10",
           "comment": "",
           "pos": [
-            170,
-            340
+            309,
+            618
           ],
           "direction": "input"
         }
@@ -1096,8 +1096,8 @@
           "pin": "T10",
           "comment": "",
           "pos": [
-            39,
-            330
+            70,
+            600
           ],
           "direction": "output"
         },
@@ -1105,8 +1105,8 @@
           "pin": "T9",
           "comment": "",
           "pos": [
-            69,
-            330
+            125,
+            600
           ],
           "direction": "output"
         },
@@ -1114,8 +1114,8 @@
           "pin": "J5",
           "comment": "",
           "pos": [
-            99,
-            330
+            180,
+            600
           ],
           "direction": "output"
         },
@@ -1123,8 +1123,8 @@
           "pin": "H5",
           "comment": "",
           "pos": [
-            129,
-            330
+            234,
+            600
           ],
           "direction": "output"
         },
@@ -1132,8 +1132,8 @@
           "pin": "K1",
           "comment": "red",
           "pos": [
-            39,
-            342
+            70,
+            622
           ],
           "direction": "output"
         },
@@ -1141,8 +1141,8 @@
           "pin": "H6",
           "comment": "green",
           "pos": [
-            39,
-            353
+            70,
+            642
           ],
           "direction": "output"
         },
@@ -1150,8 +1150,8 @@
           "pin": "K2",
           "comment": "blue",
           "pos": [
-            39,
-            364
+            70,
+            662
           ],
           "direction": "output"
         },
@@ -1159,8 +1159,8 @@
           "pin": "J3",
           "comment": "red",
           "pos": [
-            69,
-            342
+            125,
+            622
           ],
           "direction": "output"
         },
@@ -1168,8 +1168,8 @@
           "pin": "J2",
           "comment": "green",
           "pos": [
-            69,
-            353
+            125,
+            642
           ],
           "direction": "output"
         },
@@ -1177,8 +1177,8 @@
           "pin": "H4",
           "comment": "blue",
           "pos": [
-            69,
-            364
+            125,
+            662
           ],
           "direction": "output"
         },
@@ -1186,8 +1186,8 @@
           "pin": "G3",
           "comment": "red",
           "pos": [
-            99,
-            342
+            180,
+            622
           ],
           "direction": "output"
         },
@@ -1195,8 +1195,8 @@
           "pin": "J4",
           "comment": "green",
           "pos": [
-            99,
-            353
+            180,
+            642
           ],
           "direction": "output"
         },
@@ -1204,8 +1204,8 @@
           "pin": "G4",
           "comment": "blue",
           "pos": [
-            99,
-            364
+            180,
+            662
           ],
           "direction": "output"
         },
@@ -1213,8 +1213,8 @@
           "pin": "G6",
           "comment": "red",
           "pos": [
-            129,
-            342
+            234,
+            622
           ],
           "direction": "output"
         },
@@ -1222,8 +1222,8 @@
           "pin": "F6",
           "comment": "green",
           "pos": [
-            129,
-            353
+            234,
+            642
           ],
           "direction": "output"
         },
@@ -1231,12 +1231,11 @@
           "pin": "E1",
           "comment": "blue",
           "pos": [
-            129,
-            364
+            234,
+            662
           ],
           "direction": "output"
         }
-
       }
     },
     {
@@ -1247,8 +1246,8 @@
           "pin": "D17",
           "comment": "",
           "pos": [
-            105,
-            150
+            191,
+            273
           ],
           "direction": "all"
         },
@@ -1256,8 +1255,8 @@
           "pin": "G14",
           "comment": "",
           "pos": [
-            105,
-            161
+            191,
+            293
           ],
           "direction": "all"
         },
@@ -1265,8 +1264,8 @@
           "pin": "F16",
           "comment": "",
           "pos": [
-            105,
-            172
+            191,
+            313
           ],
           "direction": "all"
         },
@@ -1274,8 +1273,8 @@
           "pin": "K13",
           "comment": "",
           "pos": [
-            105,
-            183
+            191,
+            333
           ],
           "direction": "all"
         },
@@ -1283,8 +1282,8 @@
           "pin": "G18",
           "comment": "",
           "pos": [
-            105,
-            194
+            191,
+            353
           ],
           "direction": "all"
         },
@@ -1292,8 +1291,8 @@
           "pin": "C16",
           "comment": "",
           "pos": [
-            105,
-            205
+            191,
+            373
           ],
           "direction": "all"
         },
@@ -1301,8 +1300,8 @@
           "pin": "F15",
           "comment": "",
           "pos": [
-            116,
-            150
+            211,
+            273
           ],
           "direction": "all"
         },
@@ -1310,8 +1309,8 @@
           "pin": "G16",
           "comment": "",
           "pos": [
-            116,
-            161
+            211,
+            293
           ],
           "direction": "all"
         },
@@ -1319,8 +1318,8 @@
           "pin": "D18",
           "comment": "",
           "pos": [
-            116,
-            172
+            211,
+            313
           ],
           "direction": "all"
         },
@@ -1328,8 +1327,8 @@
           "pin": "E17",
           "comment": "",
           "pos": [
-            116,
-            183
+            211,
+            333
           ],
           "direction": "all"
         },
@@ -1337,8 +1336,8 @@
           "pin": "E18",
           "comment": "",
           "pos": [
-            116,
-            194
+            211,
+            353
           ],
           "direction": "all"
         },
@@ -1346,8 +1345,8 @@
           "pin": "G17",
           "comment": "",
           "pos": [
-            116,
-            205
+            211,
+            373
           ],
           "direction": "all"
         },
@@ -1355,8 +1354,8 @@
           "pin": "C17",
           "comment": "",
           "pos": [
-            116,
-            216
+            211,
+            393
           ],
           "direction": "all"
         },
@@ -1364,8 +1363,8 @@
           "pin": "H16",
           "comment": "",
           "pos": [
-            127,
-            150
+            231,
+            273
           ],
           "direction": "all"
         },
@@ -1373,8 +1372,8 @@
           "pin": "H15",
           "comment": "",
           "pos": [
-            127,
-            161
+            231,
+            293
           ],
           "direction": "all"
         },
@@ -1382,8 +1381,8 @@
           "pin": "H14",
           "comment": "",
           "pos": [
-            127,
-            172
+            231,
+            313
           ],
           "direction": "all"
         },
@@ -1391,8 +1390,8 @@
           "pin": "J14",
           "comment": "",
           "pos": [
-            127,
-            183
+            231,
+            333
           ],
           "direction": "all"
         },
@@ -1400,8 +1399,8 @@
           "pin": "J13",
           "comment": "",
           "pos": [
-            127,
-            194
+            231,
+            353
           ],
           "direction": "all"
         },
@@ -1409,16 +1408,13 @@
           "pin": "H17",
           "comment": "",
           "pos": [
-            127,
-            205
+            231,
+            373
           ],
           "direction": "all"
         }
-
       }
     },
-
-
     {
       "name": "FLASH",
       "comment": "Quad SPI Flash",
@@ -1427,8 +1423,8 @@
           "pin": "L13",
           "comment": "",
           "pos": [
-            128,
-            80
+            232,
+            145
           ],
           "direction": "output"
         },
@@ -1436,8 +1432,8 @@
           "pin": "K17",
           "comment": "",
           "pos": [
-            128,
-            91
+            232,
+            165
           ],
           "direction": "all"
         },
@@ -1445,8 +1441,8 @@
           "pin": "K18",
           "comment": "",
           "pos": [
-            128,
-            102
+            232,
+            185
           ],
           "direction": "all"
         },
@@ -1454,8 +1450,8 @@
           "pin": "L14",
           "comment": "",
           "pos": [
-            128,
-            113
+            232,
+            205
           ],
           "direction": "all"
         },
@@ -1463,14 +1459,12 @@
           "pin": "M14",
           "comment": "",
           "pos": [
-            128,
-            124
+            232,
+            225
           ],
           "direction": "all"
         }
       }
     }
-
-
   ]
 }

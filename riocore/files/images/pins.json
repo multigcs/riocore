@@ -1,54 +1,1014 @@
 {
-    "relay": {"image": "relay.png", "pins": [[7, 75]], "signals": [[177, 75]]},
-    "relay_min": {"image": "relay_min.png", "pins": [[7, 75]], "signals": [[177, 75]]},
-    "ssr": {"image": "ssr.png", "pins": [[18, 18]], "signals": [[139, 20]]},
-    "ssr2a": {"image": "ssr2a.png", "pins": [[20, 29]], "signals": [[139, 29]]},
-    "led": {"image": "led.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "led_r": {"image": "led_r.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "led_g": {"image": "led_g.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "led_b": {"image": "led_b.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "led_y": {"image": "led_y.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "dot_r": {"image": "dot_r.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "dot_g": {"image": "dot_g.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "dot_b": {"image": "dot_b.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "dot_y": {"image": "dot_y.png", "pins": [[5, 5], [5, 15]], "signals": [[30, 5], [30, 15]]},
-    "smdbutton": {"image": "smdbutton.png", "pins": [[5, 5]], "signals": [[30, 5]]},
-    "mbutton": {"image": "mbutton.png", "pins": [[5, 5]], "signals": [[30, 5]]},
-    "smdled": {"image": "smdled.png", "pins": [[4, 6]], "signals": [[21, 6]]},
-    "smdled_r": {"image": "smdled_r.png", "pins": [[4, 6]], "signals": [[21, 6]]},
-    "smdled_g": {"image": "smdled_g.png", "pins": [[4, 6]], "signals": [[21, 6]]},
-    "smdled_b": {"image": "smdled_b.png", "pins": [[4, 6]], "signals": [[21, 6]]},
-    "smdled_y": {"image": "smdled_y.png", "pins": [[4, 6]], "signals": [[21, 6]]},
-    "proximity": {"image": "proximity.png", "pins": [[5, 30]], "signals": [[180, 30], [170, 30]]},
-    "estop": {"image": "estop.png", "pins": [[5, 80]], "signals": [[180, 80]]},
-    "estop2": {"image": "estop2.png", "pins": [[5, 10]], "signals": [[20, 20]]},
-    "probe": {"image": "probe.png", "pins": [[5, 80]], "signals": [[140, 80]]},
-    "switch": {"image": "switch.png", "pins": [[45, 50]], "signals": [[135, 50]]},
-    "opto": {"image": "opto.png", "pins": [[25, 13]], "signals": [[172, 13]]},
-    "w5500mini": {"image": "w5500-mini.png", "pins": [[100, 63], [7, 30], [100, 52], [100, 41], [7, 41], [100, 30]]},
-    "w5500": {"image": "w5500.png", "pins": [[22, 92], [22, 103], [22, 70], [22, 81], [11, 92], [11, 80]]},
-    "spindle500w": {"image": "spindle500w.png", "pins": [[60, 20], [60, 35], [60, 50]], "signals": [[212, 30], [212, 45]]},
-    "laser": {"image": "laser.png", "pins": [[10, 30], [10, 45], [10, 60]], "signals": [[187, 37], [187, 52]]},
-    "stepper": {"image": "stepper.png", "pins": [[15, 190], [15, 160], [15, 130]], "signals": [[180, 120], [180, 135], [180, 150]]},
-    "servo42": {"image": "servo42.png", "pins": [[186, 117], [186, 130], [186, 105]], "signals": [[80, 120], [80, 135], [80, 150]]},
-    "servo": {"image": "servo.png", "pins": [[45, 135], [45, 145], [45, 155]], "signals": [[45, 170], [45, 180], [45, 195]]},
-    "clstepper": {"image": "clstepper.png", "pins": [[160, 35], [180, 40], [200, 45]], "signals": [[45, 170], [45, 180], [45, 195]]},
-    "rcservo": {"image": "rcservo.png", "pins": [[36, 13]], "signals": [[45, 170], [45, 180]]},
-    "stepstick": {"image": "stepstick.png", "pins": [[70, 17], [70, 5], [70, 93]], "signals": [[35, 5], [35, 17], [35, 27]]},
-    "ethercatservo": {"image": "ethercat-servo.png", "pins": [[45, 135], [85, 135]], "signals": [[80, 120], [80, 135], [80, 150]]},
-    "flow": {"image": "flow.png", "pins": [[50, 50]], "signals": [[87, 10], [87, 25]]},
-    "encoder": {"image": "encoder.png", "pins": [[105, 13], [105, 25], [105, 39]], "signals": [[40, 37], [40, 50], [40, 25]]},
-    "knob1": {"image": "knob1.png", "pins": [[15, 13], [15, 25], [15, 39]], "signals": [[40, 37], [40, 50], [40, 25]]},
-    "encoder_optical": {"image": "encoder_optical.png", "pins": [[6, 60], [6, 71], [6, 82]], "signals": [[56, 60], [56, 71], [56, 82]]},
-    "jogwheel": {"image": "jogwheel.png", "pins": [[6, 60], [6, 71], [6, 82]], "signals": [[56, 60], [56, 71], [56, 82]]},
-    "dinrail": {"image": "dinrail.png", "pins": [], "signals": []},
-    "compressor": {"image": "compressor.png", "pins": [[466, 215]], "signals": []},
-    "vacuum": {"image": "vacuum.png", "pins": [[191, 93]], "signals": []},
-    "valve": {"image": "valve.png", "pins": [[170, 86]], "signals": []},
-    "dinrailplug": {"image": "dinrailplug.png", "pins": [[92, 270]], "signals": []},
-    "touchprobe": {"image": "touchprobe.png", "pins": [[56, 80]], "signals": []},
-    "motor": {"image": "motor.png", "pins": [[220, 57]], "signals": []},
-    "toggleswitch": {"image": "toggleswitch.png", "pins": [[60, 12]], "signals": []},
-    "fuse": {"image": "fuse.png", "pins": [], "signals": []},
-    "potentiometer": {"image": "potentiometer.png", "pins": [[10, 38]], "signals": []}
+  "relay": {
+    "image": "relay.png",
+    "pins": [
+      [
+        12.74,
+        136.5
+      ]
+    ],
+    "signals": [
+      [
+        322.14,
+        136.5
+      ]
+    ]
+  },
+  "relay_min": {
+    "image": "relay_min.png",
+    "pins": [
+      [
+        12.74,
+        136.5
+      ]
+    ],
+    "signals": [
+      [
+        322.14,
+        136.5
+      ]
+    ]
+  },
+  "ssr": {
+    "image": "ssr.png",
+    "pins": [
+      [
+        32.76,
+        32.76
+      ]
+    ],
+    "signals": [
+      [
+        252.98000000000002,
+        36.4
+      ]
+    ]
+  },
+  "ssr2a": {
+    "image": "ssr2a.png",
+    "pins": [
+      [
+        36.4,
+        52.78
+      ]
+    ],
+    "signals": [
+      [
+        252.98000000000002,
+        52.78
+      ]
+    ]
+  },
+  "led": {
+    "image": "led.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "led_r": {
+    "image": "led_r.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "led_g": {
+    "image": "led_g.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "led_b": {
+    "image": "led_b.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "led_y": {
+    "image": "led_y.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "dot_r": {
+    "image": "dot_r.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "dot_g": {
+    "image": "dot_g.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "dot_b": {
+    "image": "dot_b.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "dot_y": {
+    "image": "dot_y.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ],
+      [
+        9.1,
+        27.3
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ],
+      [
+        54.6,
+        27.3
+      ]
+    ]
+  },
+  "smdbutton": {
+    "image": "smdbutton.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ]
+    ]
+  },
+  "mbutton": {
+    "image": "mbutton.png",
+    "pins": [
+      [
+        9.1,
+        9.1
+      ]
+    ],
+    "signals": [
+      [
+        54.6,
+        9.1
+      ]
+    ]
+  },
+  "smdled": {
+    "image": "smdled.png",
+    "pins": [
+      [
+        7.28,
+        10.92
+      ]
+    ],
+    "signals": [
+      [
+        38.22,
+        10.92
+      ]
+    ]
+  },
+  "smdled_r": {
+    "image": "smdled_r.png",
+    "pins": [
+      [
+        7.28,
+        10.92
+      ]
+    ],
+    "signals": [
+      [
+        38.22,
+        10.92
+      ]
+    ]
+  },
+  "smdled_g": {
+    "image": "smdled_g.png",
+    "pins": [
+      [
+        7.28,
+        10.92
+      ]
+    ],
+    "signals": [
+      [
+        38.22,
+        10.92
+      ]
+    ]
+  },
+  "smdled_b": {
+    "image": "smdled_b.png",
+    "pins": [
+      [
+        7.28,
+        10.92
+      ]
+    ],
+    "signals": [
+      [
+        38.22,
+        10.92
+      ]
+    ]
+  },
+  "smdled_y": {
+    "image": "smdled_y.png",
+    "pins": [
+      [
+        7.28,
+        10.92
+      ]
+    ],
+    "signals": [
+      [
+        38.22,
+        10.92
+      ]
+    ]
+  },
+  "proximity": {
+    "image": "proximity.png",
+    "pins": [
+      [
+        9.1,
+        54.6
+      ]
+    ],
+    "signals": [
+      [
+        327.6,
+        54.6
+      ],
+      [
+        309.40000000000003,
+        54.6
+      ]
+    ]
+  },
+  "estop": {
+    "image": "estop.png",
+    "pins": [
+      [
+        9.1,
+        145.6
+      ]
+    ],
+    "signals": [
+      [
+        327.6,
+        145.6
+      ]
+    ]
+  },
+  "estop2": {
+    "image": "estop2.png",
+    "pins": [
+      [
+        9.1,
+        18.2
+      ]
+    ],
+    "signals": [
+      [
+        36.4,
+        36.4
+      ]
+    ]
+  },
+  "probe": {
+    "image": "probe.png",
+    "pins": [
+      [
+        9.1,
+        145.6
+      ]
+    ],
+    "signals": [
+      [
+        254.8,
+        145.6
+      ]
+    ]
+  },
+  "switch": {
+    "image": "switch.png",
+    "pins": [
+      [
+        81.9,
+        91.0
+      ]
+    ],
+    "signals": [
+      [
+        245.70000000000002,
+        91.0
+      ]
+    ]
+  },
+  "opto": {
+    "image": "opto.png",
+    "pins": [
+      [
+        45.5,
+        23.66
+      ]
+    ],
+    "signals": [
+      [
+        313.04,
+        23.66
+      ]
+    ]
+  },
+  "w5500mini": {
+    "image": "w5500-mini.png",
+    "pins": [
+      [
+        182.0,
+        114.66000000000001
+      ],
+      [
+        12.74,
+        54.6
+      ],
+      [
+        182.0,
+        94.64
+      ],
+      [
+        182.0,
+        74.62
+      ],
+      [
+        12.74,
+        74.62
+      ],
+      [
+        182.0,
+        54.6
+      ]
+    ]
+  },
+  "w5500": {
+    "image": "w5500.png",
+    "pins": [
+      [
+        40.04,
+        167.44
+      ],
+      [
+        40.04,
+        187.46
+      ],
+      [
+        40.04,
+        127.4
+      ],
+      [
+        40.04,
+        147.42000000000002
+      ],
+      [
+        20.02,
+        167.44
+      ],
+      [
+        20.02,
+        145.6
+      ]
+    ]
+  },
+  "spindle500w": {
+    "image": "spindle500w.png",
+    "pins": [
+      [
+        109.2,
+        36.4
+      ],
+      [
+        109.2,
+        63.7
+      ],
+      [
+        109.2,
+        91.0
+      ]
+    ],
+    "signals": [
+      [
+        385.84000000000003,
+        54.6
+      ],
+      [
+        385.84000000000003,
+        81.9
+      ]
+    ]
+  },
+  "laser": {
+    "image": "laser.png",
+    "pins": [
+      [
+        18.2,
+        54.6
+      ],
+      [
+        18.2,
+        81.9
+      ],
+      [
+        18.2,
+        109.2
+      ]
+    ],
+    "signals": [
+      [
+        340.34000000000003,
+        67.34
+      ],
+      [
+        340.34000000000003,
+        94.64
+      ]
+    ]
+  },
+  "stepper": {
+    "image": "stepper.png",
+    "pins": [
+      [
+        27.3,
+        345.8
+      ],
+      [
+        27.3,
+        291.2
+      ],
+      [
+        27.3,
+        236.6
+      ]
+    ],
+    "signals": [
+      [
+        327.6,
+        218.4
+      ],
+      [
+        327.6,
+        245.70000000000002
+      ],
+      [
+        327.6,
+        273.0
+      ]
+    ]
+  },
+  "servo42": {
+    "image": "servo42.png",
+    "pins": [
+      [
+        338.52000000000004,
+        212.94
+      ],
+      [
+        338.52000000000004,
+        236.6
+      ],
+      [
+        338.52000000000004,
+        191.1
+      ]
+    ],
+    "signals": [
+      [
+        145.6,
+        218.4
+      ],
+      [
+        145.6,
+        245.70000000000002
+      ],
+      [
+        145.6,
+        273.0
+      ]
+    ]
+  },
+  "servo": {
+    "image": "servo.png",
+    "pins": [
+      [
+        81.9,
+        245.70000000000002
+      ],
+      [
+        81.9,
+        263.90000000000003
+      ],
+      [
+        81.9,
+        282.1
+      ]
+    ],
+    "signals": [
+      [
+        81.9,
+        309.40000000000003
+      ],
+      [
+        81.9,
+        327.6
+      ],
+      [
+        81.9,
+        354.90000000000003
+      ]
+    ]
+  },
+  "clstepper": {
+    "image": "clstepper.png",
+    "pins": [
+      [
+        291.2,
+        63.7
+      ],
+      [
+        327.6,
+        72.8
+      ],
+      [
+        364.0,
+        81.9
+      ]
+    ],
+    "signals": [
+      [
+        81.9,
+        309.40000000000003
+      ],
+      [
+        81.9,
+        327.6
+      ],
+      [
+        81.9,
+        354.90000000000003
+      ]
+    ]
+  },
+  "rcservo": {
+    "image": "rcservo.png",
+    "pins": [
+      [
+        65.52,
+        23.66
+      ]
+    ],
+    "signals": [
+      [
+        81.9,
+        309.40000000000003
+      ],
+      [
+        81.9,
+        327.6
+      ]
+    ]
+  },
+  "stepstick": {
+    "image": "stepstick.png",
+    "pins": [
+      [
+        127.4,
+        30.94
+      ],
+      [
+        127.4,
+        9.1
+      ],
+      [
+        127.4,
+        169.26000000000002
+      ]
+    ],
+    "signals": [
+      [
+        63.7,
+        9.1
+      ],
+      [
+        63.7,
+        30.94
+      ],
+      [
+        63.7,
+        49.14
+      ]
+    ]
+  },
+  "ethercatservo": {
+    "image": "ethercat-servo.png",
+    "pins": [
+      [
+        81.9,
+        245.70000000000002
+      ],
+      [
+        154.70000000000002,
+        245.70000000000002
+      ]
+    ],
+    "signals": [
+      [
+        145.6,
+        218.4
+      ],
+      [
+        145.6,
+        245.70000000000002
+      ],
+      [
+        145.6,
+        273.0
+      ]
+    ]
+  },
+  "flow": {
+    "image": "flow.png",
+    "pins": [
+      [
+        91.0,
+        91.0
+      ]
+    ],
+    "signals": [
+      [
+        158.34,
+        18.2
+      ],
+      [
+        158.34,
+        45.5
+      ]
+    ]
+  },
+  "encoder": {
+    "image": "encoder.png",
+    "pins": [
+      [
+        191.1,
+        23.66
+      ],
+      [
+        191.1,
+        45.5
+      ],
+      [
+        191.1,
+        70.98
+      ]
+    ],
+    "signals": [
+      [
+        72.8,
+        67.34
+      ],
+      [
+        72.8,
+        91.0
+      ],
+      [
+        72.8,
+        45.5
+      ]
+    ]
+  },
+  "knob1": {
+    "image": "knob1.png",
+    "pins": [
+      [
+        27.3,
+        23.66
+      ],
+      [
+        27.3,
+        45.5
+      ],
+      [
+        27.3,
+        70.98
+      ]
+    ],
+    "signals": [
+      [
+        72.8,
+        67.34
+      ],
+      [
+        72.8,
+        91.0
+      ],
+      [
+        72.8,
+        45.5
+      ]
+    ]
+  },
+  "encoder_optical": {
+    "image": "encoder_optical.png",
+    "pins": [
+      [
+        10.92,
+        109.2
+      ],
+      [
+        10.92,
+        129.22
+      ],
+      [
+        10.92,
+        149.24
+      ]
+    ],
+    "signals": [
+      [
+        101.92,
+        109.2
+      ],
+      [
+        101.92,
+        129.22
+      ],
+      [
+        101.92,
+        149.24
+      ]
+    ]
+  },
+  "jogwheel": {
+    "image": "jogwheel.png",
+    "pins": [
+      [
+        10.92,
+        109.2
+      ],
+      [
+        10.92,
+        129.22
+      ],
+      [
+        10.92,
+        149.24
+      ]
+    ],
+    "signals": [
+      [
+        101.92,
+        109.2
+      ],
+      [
+        101.92,
+        129.22
+      ],
+      [
+        101.92,
+        149.24
+      ]
+    ]
+  },
+  "dinrail": {
+    "image": "dinrail.png",
+    "pins": [],
+    "signals": []
+  },
+  "compressor": {
+    "image": "compressor.png",
+    "pins": [
+      [
+        848.12,
+        391.3
+      ]
+    ],
+    "signals": []
+  },
+  "vacuum": {
+    "image": "vacuum.png",
+    "pins": [
+      [
+        347.62,
+        169.26000000000002
+      ]
+    ],
+    "signals": []
+  },
+  "valve": {
+    "image": "valve.png",
+    "pins": [
+      [
+        309.40000000000003,
+        156.52
+      ]
+    ],
+    "signals": []
+  },
+  "dinrailplug": {
+    "image": "dinrailplug.png",
+    "pins": [
+      [
+        167.44,
+        491.40000000000003
+      ]
+    ],
+    "signals": []
+  },
+  "touchprobe": {
+    "image": "touchprobe.png",
+    "pins": [
+      [
+        101.92,
+        145.6
+      ]
+    ],
+    "signals": []
+  },
+  "motor": {
+    "image": "motor.png",
+    "pins": [
+      [
+        400.40000000000003,
+        103.74000000000001
+      ]
+    ],
+    "signals": []
+  },
+  "toggleswitch": {
+    "image": "toggleswitch.png",
+    "pins": [
+      [
+        109.2,
+        21.84
+      ]
+    ],
+    "signals": []
+  },
+  "fuse": {
+    "image": "fuse.png",
+    "pins": [],
+    "signals": []
+  },
+  "potentiometer": {
+    "image": "potentiometer.png",
+    "pins": [
+      [
+        18.2,
+        69.16
+      ]
+    ],
+    "signals": []
+  }
 }

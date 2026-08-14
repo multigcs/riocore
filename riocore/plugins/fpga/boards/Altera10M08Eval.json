@@ -94,40 +94,40 @@
         "D1": {
           "pin": "PIN_132",
           "pos": [
-            63,
-            27
+            114,
+            49
           ],
           "direction": "output"
         },
         "D2": {
           "pin": "PIN_134",
           "pos": [
-            63,
-            36
+            114,
+            65
           ],
           "direction": "output"
         },
         "D3": {
           "pin": "PIN_135",
           "pos": [
-            63,
-            45
+            114,
+            81
           ],
           "direction": "output"
         },
         "D4": {
           "pin": "PIN_140",
           "pos": [
-            63,
-            54
+            114,
+            98
           ],
           "direction": "output"
         },
         "D5": {
           "pin": "PIN_141",
           "pos": [
-            63,
-            63
+            114,
+            114
           ],
           "direction": "output"
         }

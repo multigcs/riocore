@@ -27,8 +27,8 @@
         "GND_1": {
           "pin": "GND",
           "pos": [
-            269,
-            7
+            489,
+            12
           ],
           "marker": true,
           "rotate": true,
@@ -37,8 +37,8 @@
         "3V3_1": {
           "pin": "3V3",
           "pos": [
-            280,
-            7
+            509,
+            12
           ],
           "marker": true,
           "rotate": true,
@@ -47,8 +47,8 @@
         "5V_1": {
           "pin": "5V",
           "pos": [
-            212,
-            7
+            385,
+            12
           ],
           "marker": true,
           "rotate": true,
@@ -57,8 +57,8 @@
         "63": {
           "pin": "63",
           "pos": [
-            15,
-            7
+            27,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -66,8 +66,8 @@
         "86": {
           "pin": "86",
           "pos": [
-            26,
-            7
+            47,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -76,8 +76,8 @@
         "85": {
           "pin": "85",
           "pos": [
-            37,
-            7
+            67,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -86,8 +86,8 @@
         "84": {
           "pin": "84",
           "pos": [
-            49,
-            7
+            89,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -96,8 +96,8 @@
         "83": {
           "pin": "83",
           "pos": [
-            60,
-            7
+            109,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -106,8 +106,8 @@
         "82": {
           "pin": "82",
           "pos": [
-            72,
-            7
+            131,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -116,8 +116,8 @@
         "81": {
           "pin": "81",
           "pos": [
-            84,
-            7
+            152,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -126,8 +126,8 @@
         "80": {
           "pin": "80",
           "pos": [
-            96,
-            7
+            174,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -136,8 +136,8 @@
         "79": {
           "pin": "79",
           "pos": [
-            107,
-            7
+            194,
+            12
           ],
           "rotate": true,
           "comment": "1.8V only",
@@ -146,8 +146,8 @@
         "77": {
           "pin": "77",
           "pos": [
-            119,
-            7
+            216,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -155,8 +155,8 @@
         "76": {
           "pin": "76",
           "pos": [
-            130,
-            7
+            236,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -164,8 +164,8 @@
         "75": {
           "pin": "75",
           "pos": [
-            142,
-            7
+            258,
+            12
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -174,8 +174,8 @@
         "74": {
           "pin": "74",
           "pos": [
-            153,
-            7
+            278,
+            12
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -184,8 +184,8 @@
         "73": {
           "pin": "73",
           "pos": [
-            165,
-            7
+            300,
+            12
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -194,8 +194,8 @@
         "72": {
           "pin": "72",
           "pos": [
-            176,
-            7
+            320,
+            12
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -204,8 +204,8 @@
         "71": {
           "pin": "71",
           "pos": [
-            188,
-            7
+            342,
+            12
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -214,8 +214,8 @@
         "70": {
           "pin": "70",
           "pos": [
-            200,
-            7
+            364,
+            12
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -224,8 +224,8 @@
         "48": {
           "pin": "48",
           "pos": [
-            223,
-            7
+            405,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -233,8 +233,8 @@
         "49": {
           "pin": "49",
           "pos": [
-            235,
-            7
+            427,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -242,8 +242,8 @@
         "31": {
           "pin": "31",
           "pos": [
-            246,
-            7
+            447,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -251,8 +251,8 @@
         "32": {
           "pin": "32",
           "pos": [
-            258,
-            7
+            469,
+            12
           ],
           "rotate": true,
           "direction": "all"
@@ -260,8 +260,8 @@
         "38": {
           "pin": "38",
           "pos": [
-            15,
-            127
+            27,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -269,8 +269,8 @@
         "37": {
           "pin": "37",
           "pos": [
-            26,
-            127
+            47,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -278,8 +278,8 @@
         "36": {
           "pin": "36",
           "pos": [
-            37,
-            127
+            67,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -287,8 +287,8 @@
         "39": {
           "pin": "39",
           "pos": [
-            49,
-            127
+            89,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -296,8 +296,8 @@
         "25": {
           "pin": "25",
           "pos": [
-            60,
-            127
+            109,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -305,8 +305,8 @@
         "26": {
           "pin": "26",
           "pos": [
-            72,
-            127
+            131,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -314,8 +314,8 @@
         "27": {
           "pin": "27",
           "pos": [
-            84,
-            127
+            152,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -323,8 +323,8 @@
         "28": {
           "pin": "28",
           "pos": [
-            96,
-            127
+            174,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -332,8 +332,8 @@
         "29": {
           "pin": "29",
           "pos": [
-            107,
-            127
+            194,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -341,8 +341,8 @@
         "30": {
           "pin": "30",
           "pos": [
-            119,
-            127
+            216,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -350,8 +350,8 @@
         "33": {
           "pin": "33",
           "pos": [
-            130,
-            127
+            236,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -359,8 +359,8 @@
         "34": {
           "pin": "34",
           "pos": [
-            142,
-            127
+            258,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -368,8 +368,8 @@
         "40": {
           "pin": "40",
           "pos": [
-            153,
-            127
+            278,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -377,8 +377,8 @@
         "35": {
           "pin": "35",
           "pos": [
-            165,
-            127
+            300,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -386,8 +386,8 @@
         "41": {
           "pin": "41",
           "pos": [
-            176,
-            127
+            320,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -395,8 +395,8 @@
         "42": {
           "pin": "42",
           "pos": [
-            188,
-            127
+            342,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -404,8 +404,8 @@
         "51": {
           "pin": "51",
           "pos": [
-            200,
-            127
+            364,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -413,8 +413,8 @@
         "53": {
           "pin": "53",
           "pos": [
-            212,
-            127
+            385,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -422,8 +422,8 @@
         "54": {
           "pin": "54",
           "pos": [
-            223,
-            127
+            405,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -431,8 +431,8 @@
         "55": {
           "pin": "55",
           "pos": [
-            235,
-            127
+            427,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -440,8 +440,8 @@
         "56": {
           "pin": "56",
           "pos": [
-            246,
-            127
+            447,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -449,8 +449,8 @@
         "57": {
           "pin": "57",
           "pos": [
-            258,
-            127
+            469,
+            231
           ],
           "rotate": true,
           "direction": "all"
@@ -458,8 +458,8 @@
         "68": {
           "pin": "68",
           "pos": [
-            269,
-            127
+            489,
+            231
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -468,8 +468,8 @@
         "69": {
           "pin": "69",
           "pos": [
-            281,
-            127
+            511,
+            231
           ],
           "rotate": true,
           "comment": "HDMI-Filter",
@@ -483,48 +483,48 @@
         "L1": {
           "pin": "10",
           "pos": [
-            91,
-            48
+            165,
+            87
           ],
           "direction": "output"
         },
         "L2": {
           "pin": "11",
           "pos": [
-            91,
-            56
+            165,
+            101
           ],
           "direction": "output"
         },
         "L3": {
           "pin": "13",
           "pos": [
-            91,
-            64
+            165,
+            116
           ],
           "direction": "output"
         },
         "L4": {
           "pin": "14",
           "pos": [
-            91,
-            72
+            165,
+            131
           ],
           "direction": "output"
         },
         "L5": {
           "pin": "15",
           "pos": [
-            91,
-            80
+            165,
+            145
           ],
           "direction": "output"
         },
         "L6": {
           "pin": "16",
           "pos": [
-            91,
-            88
+            165,
+            160
           ],
           "direction": "output"
         }
@@ -537,16 +537,16 @@
         "RX": {
           "pin": "18",
           "pos": [
-            12,
-            64
+            21,
+            116
           ],
           "direction": "input"
         },
         "TX": {
           "pin": "17",
           "pos": [
-            12,
-            73
+            21,
+            132
           ],
           "direction": "output"
         }
@@ -560,16 +560,16 @@
         "S1": {
           "pin": "4",
           "pos": [
-            20,
-            24
+            36,
+            43
           ],
           "direction": "input"
         },
         "S2": {
           "pin": "3",
           "pos": [
-            20,
-            110
+            36,
+            200
           ],
           "direction": "input"
         }
@@ -583,8 +583,8 @@
         "MOSI": {
           "pin": "77",
           "pos": [
-            230,
-            47
+            418,
+            85
           ],
           "comment": "shared with PIN:77",
           "direction": "output"
@@ -592,8 +592,8 @@
         "RS": {
           "pin": "49",
           "pos": [
-            230,
-            57
+            418,
+            103
           ],
           "comment": "shared with PIN:49",
           "direction": "output"
@@ -601,8 +601,8 @@
         "SEL": {
           "pin": "48",
           "pos": [
-            230,
-            67
+            418,
+            121
           ],
           "comment": "shared with PIN:48",
           "direction": "output"
@@ -610,8 +610,8 @@
         "SCLK": {
           "pin": "76",
           "pos": [
-            230,
-            77
+            418,
+            140
           ],
           "comment": "shared with PIN:76",
           "direction": "output"
@@ -619,8 +619,8 @@
         "RST": {
           "pin": "47",
           "pos": [
-            230,
-            87
+            418,
+            158
           ],
           "comment": "shared with PIN:47",
           "direction": "output"

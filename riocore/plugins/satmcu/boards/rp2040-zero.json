@@ -14,7 +14,10 @@
     "serial": {
       "default": "Serial1",
       "type": "select",
-      "options": ["Serial", "Serial1"],
+      "options": [
+        "Serial",
+        "Serial1"
+      ],
       "description": "mcu serial port (Serial == USB)"
     }
   },
@@ -42,7 +45,6 @@
       "name": "IO",
       "comment": "IO-Pins",
       "pins": {
-
         "29": {
           "pin": "29",
           "direction": "all",
@@ -52,7 +54,8 @@
           ],
           "edge": "source",
           "type": [
-            "MCUIO", "ADC"
+            "MCUIO",
+            "ADC"
           ]
         },
         "28": {
@@ -64,7 +67,8 @@
           ],
           "edge": "source",
           "type": [
-            "MCUIO", "ADC"
+            "MCUIO",
+            "ADC"
           ]
         },
         "27": {
@@ -76,7 +80,8 @@
           ],
           "edge": "source",
           "type": [
-            "MCUIO", "ADC"
+            "MCUIO",
+            "ADC"
           ]
         },
         "26": {
@@ -88,7 +93,8 @@
           ],
           "edge": "source",
           "type": [
-            "MCUIO", "ADC"
+            "MCUIO",
+            "ADC"
           ]
         },
         "15": {
@@ -115,7 +121,6 @@
             "MCUIO"
           ]
         },
-
         "2": {
           "pin": "2",
           "direction": "all",
@@ -128,8 +133,6 @@
             "MCUIO"
           ]
         },
-
-
         "3": {
           "pin": "3",
           "direction": "all",
@@ -202,9 +205,6 @@
             "MCUIO"
           ]
         },
-
-
-
         "9": {
           "pin": "9",
           "direction": "all",
@@ -270,13 +270,18 @@
   ],
   "pins": {
     "SAT": {
-        "direction": "output",
-        "pin": "",
-        "pos": [40, 12],
-        "edge": "target",
-        "type": ["SATCON"],
-        "optional": true,
-        "bus": true
+      "direction": "output",
+      "pin": "",
+      "pos": [
+        72,
+        21
+      ],
+      "edge": "target",
+      "type": [
+        "SATCON"
+      ],
+      "optional": true,
+      "bus": true
     }
   }
 }

@@ -280,11 +280,11 @@ class MyNode(QGraphicsItem):
     text_font = "Times"
     title_color = QColor(255, 255, 255)
     info_color = QColor(200, 200, 200)
-    port_size = 10
+    port_size = 15
     port_border = 2
     port_top = 40
-    port_bottom = 10
-    port_diff = 15
+    port_bottom = 20
+    port_diff = 20
 
     def __init__(self, scene, x=None, y=None):
         super().__init__()
@@ -574,14 +574,14 @@ class MyNode(QGraphicsItem):
                 name = port_data.get("title") or port_name
                 if pos_x < self.width / 2:
                     painter.drawText(
-                        QRectF(pos_x + 10, pos_y - 12, self.width - 20, 20),
+                        QRectF(pos_x + 12, pos_y - 10, self.width - 20, 20),
                         Qt.AlignmentFlag.AlignLeft,
                         name,
                     )
                 else:
-                    px = pos_x - 10
+                    px = pos_x - 12
                     painter.drawText(
-                        QRectF(px - self.width, pos_y - 12, self.width, 20),
+                        QRectF(px - self.width, pos_y - 10, self.width, 20),
                         Qt.AlignmentFlag.AlignRight,
                         name,
                     )

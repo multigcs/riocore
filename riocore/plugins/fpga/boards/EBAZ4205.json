@@ -2,7 +2,10 @@
   "name": "EBAZ4205",
   "description": "EBAZ4205 - WIP",
   "url": "https://github.com/xjtuecho/EBAZ4205",
-  "size": [100, 97],
+  "size": [
+    100,
+    97
+  ],
   "toolchain": "vivado",
   "family": "XC7",
   "type": "xc7z010clg400-1",
@@ -19,8 +22,8 @@
           "comment": "J3_SPEED",
           "pin": "V13",
           "pos": [
-            256,
-            50
+            465,
+            91
           ],
           "direction": "input"
         },
@@ -28,8 +31,8 @@
           "comment": "J3_PWM",
           "pin": "U12",
           "pos": [
-            256,
-            60
+            465,
+            109
           ],
           "direction": "output"
         },
@@ -37,8 +40,8 @@
           "comment": "J5_SPEED",
           "pin": "V15",
           "pos": [
-            306,
-            50
+            556,
+            91
           ],
           "direction": "input"
         },
@@ -46,8 +49,8 @@
           "comment": "J5_PWM",
           "pin": "V12",
           "pos": [
-            306,
-            60
+            556,
+            109
           ],
           "direction": "output"
         }
@@ -60,8 +63,8 @@
           "pin": "K17",
           "rotate": true,
           "pos": [
-            195,
-            315
+            354,
+            573
           ],
           "direction": "all"
         },
@@ -69,8 +72,8 @@
           "pin": "F19",
           "rotate": true,
           "pos": [
-            195,
-            297
+            354,
+            540
           ],
           "direction": "all"
         },
@@ -78,8 +81,8 @@
           "pin": "E19",
           "rotate": true,
           "pos": [
-            202,
-            315
+            367,
+            573
           ],
           "direction": "all"
         },
@@ -87,8 +90,8 @@
           "pin": "F20",
           "rotate": true,
           "pos": [
-            202,
-            297
+            367,
+            540
           ],
           "direction": "all"
         },
@@ -96,8 +99,8 @@
           "pin": "D19",
           "rotate": true,
           "pos": [
-            210,
-            315
+            382,
+            573
           ],
           "direction": "all"
         },
@@ -105,8 +108,8 @@
           "pin": "H18",
           "rotate": true,
           "pos": [
-            210,
-            297
+            382,
+            540
           ],
           "direction": "all"
         },
@@ -114,8 +117,8 @@
           "pin": "D18",
           "rotate": true,
           "pos": [
-            217,
-            315
+            394,
+            573
           ],
           "direction": "all"
         },
@@ -123,8 +126,8 @@
           "pin": "D20",
           "rotate": true,
           "pos": [
-            217,
-            297
+            394,
+            540
           ],
           "direction": "all"
         },
@@ -132,8 +135,8 @@
           "pin": "H17",
           "rotate": true,
           "pos": [
-            225,
-            297
+            409,
+            540
           ],
           "direction": "all"
         },
@@ -141,8 +144,8 @@
           "pin": "C20",
           "rotate": true,
           "pos": [
-            232,
-            297
+            422,
+            540
           ],
           "direction": "all"
         },
@@ -150,8 +153,8 @@
           "pin": "B20",
           "rotate": true,
           "pos": [
-            240,
-            315
+            436,
+            573
           ],
           "direction": "all"
         },
@@ -159,8 +162,8 @@
           "pin": "B19",
           "rotate": true,
           "pos": [
-            240,
-            297
+            436,
+            540
           ],
           "direction": "all"
         },
@@ -168,8 +171,8 @@
           "pin": "H16",
           "rotate": true,
           "pos": [
-            247,
-            315
+            449,
+            573
           ],
           "direction": "all"
         },
@@ -177,8 +180,8 @@
           "pin": "A20",
           "rotate": true,
           "pos": [
-            247,
-            297
+            449,
+            540
           ],
           "direction": "all"
         }
@@ -191,8 +194,8 @@
           "pin": "L17",
           "rotate": true,
           "pos": [
-            110,
-            315
+            200,
+            573
           ],
           "direction": "all"
         },
@@ -200,8 +203,8 @@
           "pin": "M20",
           "rotate": true,
           "pos": [
-            110,
-            297
+            200,
+            540
           ],
           "direction": "all"
         },
@@ -209,8 +212,8 @@
           "pin": "L20",
           "rotate": true,
           "pos": [
-            117,
-            315
+            212,
+            573
           ],
           "direction": "all"
         },
@@ -218,8 +221,8 @@
           "pin": "M18",
           "rotate": true,
           "pos": [
-            117,
-            297
+            212,
+            540
           ],
           "direction": "all"
         },
@@ -227,8 +230,8 @@
           "pin": "L19",
           "rotate": true,
           "pos": [
-            125,
-            315
+            227,
+            573
           ],
           "direction": "all"
         },
@@ -236,8 +239,8 @@
           "pin": "L16",
           "rotate": true,
           "pos": [
-            125,
-            297
+            227,
+            540
           ],
           "direction": "all"
         },
@@ -245,8 +248,8 @@
           "pin": "J20",
           "rotate": true,
           "pos": [
-            132,
-            315
+            240,
+            573
           ],
           "direction": "all"
         },
@@ -254,8 +257,8 @@
           "pin": "K19",
           "rotate": true,
           "pos": [
-            132,
-            297
+            240,
+            540
           ],
           "direction": "all"
         },
@@ -263,8 +266,8 @@
           "pin": "K18",
           "rotate": true,
           "pos": [
-            140,
-            297
+            254,
+            540
           ],
           "direction": "all"
         },
@@ -272,8 +275,8 @@
           "pin": "J19",
           "rotate": true,
           "pos": [
-            147,
-            297
+            267,
+            540
           ],
           "direction": "all"
         },
@@ -281,8 +284,8 @@
           "pin": "H20",
           "rotate": true,
           "pos": [
-            155,
-            315
+            282,
+            573
           ],
           "direction": "all"
         },
@@ -290,8 +293,8 @@
           "pin": "G19",
           "rotate": true,
           "pos": [
-            155,
-            297
+            282,
+            540
           ],
           "direction": "all"
         },
@@ -299,8 +302,8 @@
           "pin": "J18",
           "rotate": true,
           "pos": [
-            162,
-            315
+            294,
+            573
           ],
           "direction": "all"
         },
@@ -308,8 +311,8 @@
           "pin": "G20",
           "rotate": true,
           "pos": [
-            162,
-            297
+            294,
+            540
           ],
           "direction": "all"
         }
@@ -322,8 +325,8 @@
           "pin": "U19",
           "rotate": true,
           "pos": [
-            22,
-            315
+            40,
+            573
           ],
           "direction": "all"
         },
@@ -331,8 +334,8 @@
           "pin": "V20",
           "rotate": true,
           "pos": [
-            22,
-            297
+            40,
+            540
           ],
           "direction": "all"
         },
@@ -340,8 +343,8 @@
           "pin": "T19",
           "rotate": true,
           "pos": [
-            30,
-            315
+            54,
+            573
           ],
           "direction": "all"
         },
@@ -349,8 +352,8 @@
           "pin": "U20",
           "rotate": true,
           "pos": [
-            30,
-            297
+            54,
+            540
           ],
           "direction": "all"
         },
@@ -358,8 +361,8 @@
           "pin": "T20",
           "rotate": true,
           "pos": [
-            37,
-            315
+            67,
+            573
           ],
           "direction": "all"
         },
@@ -367,8 +370,8 @@
           "pin": "P19",
           "rotate": true,
           "pos": [
-            37,
-            297
+            67,
+            540
           ],
           "direction": "all"
         },
@@ -376,8 +379,8 @@
           "pin": "R19",
           "rotate": true,
           "pos": [
-            45,
-            315
+            81,
+            573
           ],
           "direction": "all"
         },
@@ -385,8 +388,8 @@
           "pin": "R18",
           "rotate": true,
           "pos": [
-            45,
-            297
+            81,
+            540
           ],
           "direction": "all"
         },
@@ -394,8 +397,8 @@
           "pin": "P20",
           "rotate": true,
           "pos": [
-            52,
-            297
+            94,
+            540
           ],
           "direction": "all"
         },
@@ -403,8 +406,8 @@
           "pin": "N17",
           "rotate": true,
           "pos": [
-            60,
-            297
+            109,
+            540
           ],
           "direction": "all"
         },
@@ -412,8 +415,8 @@
           "pin": "M17",
           "rotate": true,
           "pos": [
-            67,
-            315
+            121,
+            573
           ],
           "direction": "all"
         },
@@ -421,8 +424,8 @@
           "pin": "P18",
           "rotate": true,
           "pos": [
-            67,
-            297
+            121,
+            540
           ],
           "direction": "all"
         },
@@ -430,8 +433,8 @@
           "pin": "N20",
           "rotate": true,
           "pos": [
-            75,
-            315
+            136,
+            573
           ],
           "direction": "all"
         },
@@ -439,8 +442,8 @@
           "pin": "M19",
           "rotate": true,
           "pos": [
-            75,
-            297
+            136,
+            540
           ],
           "direction": "all"
         }
@@ -454,16 +457,16 @@
         "G": {
           "pin": "W13",
           "pos": [
-            91,
-            13
+            165,
+            23
           ],
           "direction": "output"
         },
         "R": {
           "pin": "W14",
           "pos": [
-            91,
-            23
+            165,
+            41
           ],
           "direction": "output"
         }

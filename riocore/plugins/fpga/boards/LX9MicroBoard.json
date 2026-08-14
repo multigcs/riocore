@@ -2,7 +2,10 @@
   "name": "LX9MicroBoard",
   "description": "LX9MicroBoard - Spartan6 devboard\non my debian12, it works with openFPGAloader - linux usb flashtool: Adept 2",
   "url": "https://www.avnet.com/opasdata/d120001/medias/docus/178/PB-AES-S6MB-LX9-G-V1.pdf",
-  "size": [76, 35],
+  "size": [
+    76,
+    35
+  ],
   "toolchain": "ise",
   "family": "xc6",
   "type": "xc6slx9-csg324",
@@ -36,15 +39,15 @@
         "RX": {
           "pin": "R7",
           "pos": [
-            330,
-            29
+            600,
+            52
           ]
         },
         "TX": {
           "pin": "T7",
           "pos": [
-            330,
-            39
+            600,
+            70
           ]
         }
       }
@@ -57,16 +60,16 @@
           "pin": "P12",
           "comment": "SCL/CDCE913",
           "pos": [
-            190,
-            69
+            345,
+            125
           ]
         },
         "SDA": {
           "pin": "U13",
           "comment": "SDA/CDCE913",
           "pos": [
-            190,
-            80
+            345,
+            145
           ]
         }
       }
@@ -79,32 +82,32 @@
           "pin": "P4",
           "rotate": true,
           "pos": [
-            175,
-            120
+            318,
+            218
           ]
         },
         "D2": {
           "pin": "L6",
           "rotate": true,
           "pos": [
-            184,
-            120
+            334,
+            218
           ]
         },
         "D3": {
           "pin": "F5",
           "rotate": true,
           "pos": [
-            181,
-            7
+            329,
+            12
           ]
         },
         "D4": {
           "pin": "C2",
           "rotate": true,
           "pos": [
-            190,
-            7
+            345,
+            12
           ]
         }
       }
@@ -117,39 +120,39 @@
           "pin": "B3",
           "rotate": true,
           "pos": [
-            125,
-            60
+            227,
+            109
           ]
         },
         "S1": {
           "pin": "A3",
           "rotate": true,
           "pos": [
-            131,
-            60
+            238,
+            109
           ]
         },
         "S2": {
           "pin": "B4",
           "rotate": true,
           "pos": [
-            138,
-            60
+            251,
+            109
           ]
         },
         "S3": {
           "pin": "A4",
           "rotate": true,
           "pos": [
-            144,
-            60
+            262,
+            109
           ]
         },
         "S5": {
           "pin": "V4",
           "pos": [
-            272,
-            40
+            495,
+            72
           ]
         }
       }
@@ -162,8 +165,8 @@
           "pin": "F15",
           "rotate": true,
           "pos": [
-            120,
-            23
+            218,
+            41
           ],
           "direction": "all"
         },
@@ -171,8 +174,8 @@
           "pin": "F16",
           "rotate": true,
           "pos": [
-            130,
-            23
+            236,
+            41
           ],
           "direction": "all"
         },
@@ -180,8 +183,8 @@
           "pin": "C17",
           "rotate": true,
           "pos": [
-            140,
-            23
+            254,
+            41
           ],
           "direction": "all"
         },
@@ -189,8 +192,8 @@
           "pin": "C18",
           "rotate": true,
           "pos": [
-            150,
-            23
+            273,
+            41
           ],
           "direction": "all"
         },
@@ -198,8 +201,8 @@
           "pin": "F14",
           "rotate": true,
           "pos": [
-            120,
-            13
+            218,
+            23
           ],
           "direction": "all"
         },
@@ -207,8 +210,8 @@
           "pin": "G14",
           "rotate": true,
           "pos": [
-            130,
-            13
+            236,
+            23
           ],
           "direction": "all"
         },
@@ -216,8 +219,8 @@
           "pin": "D17",
           "rotate": true,
           "pos": [
-            140,
-            13
+            254,
+            23
           ],
           "direction": "all"
         },
@@ -225,8 +228,8 @@
           "pin": "D18",
           "rotate": true,
           "pos": [
-            150,
-            13
+            273,
+            23
           ],
           "direction": "all"
         }
@@ -240,8 +243,8 @@
           "pin": "H12",
           "rotate": true,
           "pos": [
-            205,
-            23
+            373,
+            41
           ],
           "direction": "all"
         },
@@ -249,8 +252,8 @@
           "pin": "G13",
           "rotate": true,
           "pos": [
-            215,
-            23
+            391,
+            41
           ],
           "direction": "all"
         },
@@ -258,8 +261,8 @@
           "pin": "E16",
           "rotate": true,
           "pos": [
-            225,
-            23
+            409,
+            41
           ],
           "direction": "all"
         },
@@ -267,8 +270,8 @@
           "pin": "E18",
           "rotate": true,
           "pos": [
-            235,
-            23
+            427,
+            41
           ],
           "direction": "all"
         },
@@ -276,8 +279,8 @@
           "pin": "K12",
           "rotate": true,
           "pos": [
-            205,
-            13
+            373,
+            23
           ],
           "direction": "all"
         },
@@ -285,8 +288,8 @@
           "pin": "K13",
           "rotate": true,
           "pos": [
-            215,
-            13
+            391,
+            23
           ],
           "direction": "all"
         },
@@ -294,8 +297,8 @@
           "pin": "F17",
           "rotate": true,
           "pos": [
-            225,
-            13
+            409,
+            23
           ],
           "direction": "all"
         },
@@ -303,8 +306,8 @@
           "pin": "F18",
           "rotate": true,
           "pos": [
-            235,
-            13
+            427,
+            23
           ],
           "direction": "all"
         }

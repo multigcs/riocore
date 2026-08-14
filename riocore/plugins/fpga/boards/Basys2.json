@@ -24,64 +24,64 @@
         "LED1": {
           "pin": "M5",
           "pos": [
-            235,
-            195
+            427,
+            354
           ],
           "direction": "output"
         },
         "LED2": {
           "pin": "M11",
           "pos": [
-            208,
-            195
+            378,
+            354
           ],
           "direction": "output"
         },
         "LED3": {
           "pin": "P7",
           "pos": [
-            182,
-            195
+            331,
+            354
           ],
           "direction": "output"
         },
         "LED4": {
           "pin": "P6",
           "pos": [
-            155,
-            195
+            282,
+            354
           ],
           "direction": "output"
         },
         "LED5": {
           "pin": "N5",
           "pos": [
-            129,
-            195
+            234,
+            354
           ],
           "direction": "output"
         },
         "LED6": {
           "pin": "N4",
           "pos": [
-            102,
-            195
+            185,
+            354
           ],
           "direction": "output"
         },
         "LED7": {
           "pin": "P4",
           "pos": [
-            76,
-            195
+            138,
+            354
           ],
           "direction": "output"
         },
         "LED8": {
           "pin": "G1",
           "pos": [
-            50,
-            195
+            91,
+            354
           ],
           "direction": "output"
         }
@@ -94,32 +94,32 @@
         "BTN1": {
           "pin": "G12",
           "pos": [
-            358,
-            240
+            651,
+            436
           ],
           "direction": "input"
         },
         "BTN2": {
           "pin": "C11",
           "pos": [
-            327,
-            240
+            595,
+            436
           ],
           "direction": "input"
         },
         "BTN3": {
           "pin": "M4",
           "pos": [
-            296,
-            240
+            538,
+            436
           ],
           "direction": "input"
         },
         "BTN4": {
           "pin": "A7",
           "pos": [
-            266,
-            240
+            484,
+            436
           ],
           "direction": "input"
         }
@@ -132,64 +132,64 @@
         "SW1": {
           "pin": "P11",
           "pos": [
-            235,
-            235
+            427,
+            427
           ],
           "direction": "input"
         },
         "SW2": {
           "pin": "L3",
           "pos": [
-            208,
-            235
+            378,
+            427
           ],
           "direction": "input"
         },
         "SW3": {
           "pin": "K3",
           "pos": [
-            182,
-            235
+            331,
+            427
           ],
           "direction": "input"
         },
         "SW4": {
           "pin": "B4",
           "pos": [
-            155,
-            235
+            282,
+            427
           ],
           "direction": "input"
         },
         "SW5": {
           "pin": "G3",
           "pos": [
-            129,
-            235
+            234,
+            427
           ],
           "direction": "input"
         },
         "SW6": {
           "pin": "F3",
           "pos": [
-            102,
-            235
+            185,
+            427
           ],
           "direction": "input"
         },
         "SW7": {
           "pin": "E2",
           "pos": [
-            76,
-            235
+            138,
+            427
           ],
           "direction": "input"
         },
         "SW8": {
           "pin": "N3",
           "pos": [
-            50,
-            235
+            91,
+            427
           ],
           "direction": "input"
         }
@@ -203,32 +203,32 @@
           "pin": "B2",
           "rotate": true,
           "pos": [
-            47,
-            33
+            85,
+            60
           ]
         },
         "P2": {
           "pin": "A3",
           "rotate": true,
           "pos": [
-            57,
-            33
+            103,
+            60
           ]
         },
         "P3": {
           "pin": "J3",
           "rotate": true,
           "pos": [
-            67,
-            33
+            121,
+            60
           ]
         },
         "P4": {
           "pin": "B5",
           "rotate": true,
           "pos": [
-            77,
-            33
+            140,
+            60
           ]
         }
       }
@@ -241,32 +241,32 @@
           "pin": "C6",
           "rotate": true,
           "pos": [
-            135,
-            33
+            245,
+            60
           ]
         },
         "P2": {
           "pin": "B6",
           "rotate": true,
           "pos": [
-            145,
-            33
+            263,
+            60
           ]
         },
         "P3": {
           "pin": "C5",
           "rotate": true,
           "pos": [
-            155,
-            33
+            282,
+            60
           ]
         },
         "P4": {
           "pin": "B7",
           "rotate": true,
           "pos": [
-            165,
-            33
+            300,
+            60
           ]
         }
       }
@@ -279,32 +279,32 @@
           "pin": "A9",
           "rotate": true,
           "pos": [
-            220,
-            33
+            400,
+            60
           ]
         },
         "P2": {
           "pin": "B9",
           "rotate": true,
           "pos": [
-            230,
-            33
+            418,
+            60
           ]
         },
         "P3": {
           "pin": "A10",
           "rotate": true,
           "pos": [
-            240,
-            33
+            436,
+            60
           ]
         },
         "P4": {
           "pin": "C9",
           "rotate": true,
           "pos": [
-            250,
-            33
+            455,
+            60
           ]
         }
       }
@@ -317,32 +317,32 @@
           "pin": "C12",
           "rotate": true,
           "pos": [
-            305,
-            33
+            555,
+            60
           ]
         },
         "P2": {
           "pin": "A13",
           "rotate": true,
           "pos": [
-            315,
-            33
+            573,
+            60
           ]
         },
         "P3": {
           "pin": "C13",
           "rotate": true,
           "pos": [
-            325,
-            33
+            591,
+            60
           ]
         },
         "P4": {
           "pin": "D12",
           "rotate": true,
           "pos": [
-            335,
-            33
+            609,
+            60
           ]
         }
       }
@@ -359,96 +359,96 @@
           "pin": "F12",
           "direction": "output",
           "pos": [
-            380,
-            210
+            691,
+            382
           ]
         },
         "EN2": {
           "pin": "J12",
           "direction": "output",
           "pos": [
-            350,
-            210
+            637,
+            382
           ]
         },
         "EN3": {
           "pin": "M13",
           "direction": "output",
           "pos": [
-            320,
-            210
+            582,
+            382
           ]
         },
         "EN4": {
           "pin": "K14",
           "direction": "output",
           "pos": [
-            290,
-            210
+            527,
+            382
           ]
         },
         "A": {
           "pin": "L14",
           "direction": "output",
           "pos": [
-            385,
-            188
+            700,
+            342
           ]
         },
         "B": {
           "pin": "H12",
           "direction": "output",
           "pos": [
-            375,
-            188
+            682,
+            342
           ]
         },
         "C": {
           "pin": "N14",
           "direction": "output",
           "pos": [
-            365,
-            188
+            664,
+            342
           ]
         },
         "D": {
           "pin": "N11",
           "direction": "output",
           "pos": [
-            355,
-            188
+            646,
+            342
           ]
         },
         "E": {
           "pin": "P12",
           "direction": "output",
           "pos": [
-            345,
-            188
+            627,
+            342
           ]
         },
         "F": {
           "pin": "L13",
           "direction": "output",
           "pos": [
-            335,
-            188
+            609,
+            342
           ]
         },
         "G": {
           "pin": "M12",
           "direction": "output",
           "pos": [
-            325,
-            188
+            591,
+            342
           ]
         },
         "DP": {
           "pin": "N13",
           "direction": "output",
           "pos": [
-            315,
-            188
+            573,
+            342
           ]
         }
       }

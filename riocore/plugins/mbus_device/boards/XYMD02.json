@@ -4,29 +4,53 @@
   "timeout": 200,
   "delay": 100,
   "pins": {
-    "MODBUS": {"direction": "output", "edge": "target", "pos": [95, 256], "type": ["MODBUS"], "bus": true},
-    "MODBUS:OUT": {"direction": "output", "edge": "source", "pos": [113, 256], "type": ["PASSTHROUGH"], "bus": true, "pintype": "PASSTHROUGH", "source": "MODBUS"}
+    "MODBUS": {
+      "direction": "output",
+      "edge": "target",
+      "pos": [
+        172,
+        465
+      ],
+      "type": [
+        "MODBUS"
+      ],
+      "bus": true
+    },
+    "MODBUS:OUT": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        205,
+        465
+      ],
+      "type": [
+        "PASSTHROUGH"
+      ],
+      "bus": true,
+      "pintype": "PASSTHROUGH",
+      "source": "MODBUS"
+    }
   },
   "commands": {
     "temp": {
-        "type": 4,
-        "register": 0,
-        "values": 1,
-        "scale": 0.1,
-        "error_values": "",
-        "datatype": "int",
-        "unit": "°C",
-        "format": "0.1f"
+      "type": 4,
+      "register": 0,
+      "values": 1,
+      "scale": 0.1,
+      "error_values": "",
+      "datatype": "int",
+      "unit": "\u00b0C",
+      "format": "0.1f"
     },
     "humidity": {
-        "type": 4,
-        "register": 1,
-        "values": 1,
-        "scale": 0.1,
-        "error_values": "",
-        "datatype": "int",
-        "unit": "%RH",
-        "format": "0.1f"
+      "type": 4,
+      "register": 1,
+      "values": 1,
+      "scale": 0.1,
+      "error_values": "",
+      "datatype": "int",
+      "unit": "%RH",
+      "format": "0.1f"
     }
   }
 }
