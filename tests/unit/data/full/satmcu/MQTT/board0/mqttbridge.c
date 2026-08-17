@@ -276,9 +276,13 @@ data_t *register_signals(void) {
     data->VARIN1_RBUTTON_BIT = 0;
 
     data->sys_error = (bool*)malloc(sizeof(bool));
+    *data->sys_error = 0;
     data->sys_status = (bool*)malloc(sizeof(bool));
+    *data->sys_status = 0;
     data->sys_enable = (bool*)malloc(sizeof(bool));
+    *data->sys_enable = 0;
     data->sys_enable_request = (bool*)malloc(sizeof(bool));
+    *data->sys_enable_request = 0;
     data->sys_simulation = (bool*)malloc(sizeof(bool));
     *data->sys_simulation = 0;
     data->duration = (float*)malloc(sizeof(float));

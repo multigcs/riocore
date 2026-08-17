@@ -404,9 +404,13 @@ data_t *register_signals(void) {
     data->VARIN1_I2C_LM75_0_VALID = 0;
 
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_error), comp_id, "fpga0.sys-error")) != 0) error_handler(retval);
+    *data->sys_error = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->sys_status), comp_id, "fpga0.sys-status")) != 0) error_handler(retval);
+    *data->sys_status = 0;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable), comp_id, "fpga0.sys-enable")) != 0) error_handler(retval);
+    *data->sys_enable = 0;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_enable_request), comp_id, "fpga0.sys-enable-request")) != 0) error_handler(retval);
+    *data->sys_enable_request = 0;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->sys_simulation), comp_id, "fpga0.sys-simulation")) != 0) error_handler(retval);
     *data->sys_simulation = 0;
     if ((retval = hal_pin_float_newf(HAL_OUT, &(data->duration), comp_id, "fpga0.duration")) != 0) error_handler(retval);
