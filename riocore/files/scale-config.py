@@ -1,6 +1,4 @@
 import json
-import os
-import subprocess
 import sys
 
 run = False
@@ -29,7 +27,6 @@ if filename == "riocore/files/images/pins.json":
     if run:
         open(filename, "w").write(json.dumps(jdata, indent=2))
     exit(0)
-
 
 
 for plugin in jdata.get("plugins", []):

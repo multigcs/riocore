@@ -488,7 +488,7 @@ uint32_t fpga_timestamp = 0;
         open(target, "w").write("\n".join(output))
         os.chmod(target, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
 
-    def vinit(self, vname, vtype, halstr=None, vdir="input", force_mem=False):
+    def vinit(self, vname, vtype, halstr=None, vdir="input", default=0, force_mem=False):
         vtype = self.typemap.get(vtype, vtype)
         if force_mem or vname.endswith("_OFFSET", "_S32", "_ABS"):
             return f"    data->{vname} = ({vtype}*)malloc(sizeof({vtype}));"
@@ -496,4 +496,4 @@ uint32_t fpga_timestamp = 0;
             bdir = "Out"
         else:
             bdir = vdir.title().replace("put", "")
-        return f"    data->{vname} = &EASYCAT.Buffer{bdir}.{vname};"
+        return f"    data->{vname} = &EASYCAT.Buffer{bdir}.{vname};\n    *data->{vname} = {default};"

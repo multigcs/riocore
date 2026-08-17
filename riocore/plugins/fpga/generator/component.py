@@ -8,6 +8,7 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(_
 class component(cbase):
     filename_functions = "hal_functions.c"
     rtapi_mode = True
+    newhal = False
     typemap = {
         "float": "hal_float_t",
         "bool": "hal_bit_t",
@@ -35,6 +36,14 @@ class component(cbase):
     }
 
     def __init__(self, project, instance):
+        if self.newhal:
+            self.typemap = {
+                "float": "hal_float_t",
+                "bool": "hal_bit_t",
+                "s32": "hal_s32_t",
+                "u32": "hal_u32_t",
+            }
+
         self.project = project
         self.instance = instance
         self.prefix = instance.hal_prefix
@@ -44,7 +53,9 @@ class component(cbase):
         output = self.mainc()
         open(os.path.join(self.component_path, f"riocomp-{instance.instances_name}.c"), "w").write("\n".join(output))
 
-    def vinit(self, vname, vtype, halstr=None, vdir="input"):
-        vtype = {"bool": "bit"}.get(vtype, vtype)
+    def vinit(self, vname, vtype, halstr=None, vdir="input", default=0):
         direction = {"output": "IN", "input": "OUT", "inout": "IO"}.get(vdir, vdir)
-        return f'    if ((retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "{halstr}")) != 0) error_handler(retval);'
+        if self.newhal:
+            return f'    if ((retval = hal_pin_new_{vtype}(comp_id, HAL_{direction}, &(data->{vname}), {default}, "{halstr}")) != 0) error_handler(retval);'
+        vtype = {"bool": "bit"}.get(vtype, vtype)
+        return f'    if ((retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "{halstr}")) != 0) error_handler(retval);\n    *data->{vname} = {default};'

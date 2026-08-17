@@ -850,14 +850,12 @@ class cbase:
                 output.append(f"    data->{variable_name} = 0;")
         output.append("")
 
-        output.append(self.vinit("sys_error", "bool", f"{self.prefix}.sys-error", "input"))
-        output.append(self.vinit("sys_status", "bool", f"{self.prefix}.sys-status", "input"))
-        output.append(self.vinit("sys_enable", "bool", f"{self.prefix}.sys-enable", "output"))
-        output.append(self.vinit("sys_enable_request", "bool", f"{self.prefix}.sys-enable-request", "output"))
-        output.append(self.vinit("sys_simulation", "bool", f"{self.prefix}.sys-simulation", "output"))
-        output.append("    *data->sys_simulation = 0;")
-        output.append(self.vinit("duration", "float", f"{self.prefix}.duration", "input"))
-        output.append("    *data->duration = rtapi_get_time();")
+        output.append(self.vinit("sys_error", "bool", f"{self.prefix}.sys-error", "input", 0))
+        output.append(self.vinit("sys_status", "bool", f"{self.prefix}.sys-status", "input", 0))
+        output.append(self.vinit("sys_enable", "bool", f"{self.prefix}.sys-enable", "output", 0))
+        output.append(self.vinit("sys_enable_request", "bool", f"{self.prefix}.sys-enable-request", "output", 0))
+        output.append(self.vinit("sys_simulation", "bool", f"{self.prefix}.sys-simulation", "output", 0))
+        output.append(self.vinit("duration", "float", f"{self.prefix}.duration", "input", "rtapi_get_time()"))
         for plugin_instance in self.project.plugin_instances:
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
@@ -876,30 +874,20 @@ class cbase:
                     continue
                 if not boolean:
                     if not signal_source and not signal_config.get("helper", False) and not virtual and hal_type == "float":
-                        output.append(self.vinit(f"{varname}_SCALE", "float", f"{halname}-scale", "output"))
-                        output.append(f"    *data->{varname}_SCALE = 1.0;")
-                        output.append(self.vinit(f"{varname}_OFFSET", "float", f"{halname}-offset", "output"))
-                        output.append(f"    *data->{varname}_OFFSET = 0.0;")
-                    output.append(self.vinit(varname, hal_type, halname, direction))
-                    output.append(f"    *data->{varname} = 0;")
+                        output.append(self.vinit(f"{varname}_SCALE", "float", f"{halname}-scale", "output", 1.0))
+                        output.append(self.vinit(f"{varname}_OFFSET", "float", f"{halname}-offset", "output", 0.0))
+                    output.append(self.vinit(varname, hal_type, halname, direction, 0))
                     if direction == "input" and hal_type == "float" and not signal_source and not signal_config.get("helper", False):
-                        output.append(self.vinit(f"{varname}_ABS", "float", f"{halname}-abs", direction))
-                        output.append(f"    *data->{varname}_ABS = 0;")
-                        output.append(self.vinit(f"{varname}_S32", "s32", f"{halname}-s32", direction))
-                        output.append(f"    *data->{varname}_S32 = 0;")
-                        output.append(self.vinit(f"{varname}_U32_ABS", "u32", f"{halname}-u32-abs", direction))
-                        output.append(f"    *data->{varname}_U32_ABS = 0;")
+                        output.append(self.vinit(f"{varname}_ABS", "float", f"{halname}-abs", direction, 0))
+                        output.append(self.vinit(f"{varname}_S32", "s32", f"{halname}-s32", direction, 0))
+                        output.append(self.vinit(f"{varname}_U32_ABS", "u32", f"{halname}-u32-abs", direction, 0))
                 else:
-                    output.append(self.vinit(varname, "bool", halname, direction))
-                    output.append(f"    *data->{varname} = 0;")
+                    output.append(self.vinit(varname, "bool", halname, direction, 0))
                     if direction == "input":
-                        output.append(self.vinit(f"{varname}_not", "bool", f"{halname}-not", direction))
-                        output.append(f"    *data->{varname}_not = 1 - *data->{varname};")
+                        output.append(self.vinit(f"{varname}_not", "bool", f"{halname}-not", direction, f"1 - *data->{varname}"))
                     if signal_config.get("is_index_out"):
-                        output.append(self.vinit(f"{var_prefix}_INDEX_RESET", "bool", f"{halname}-reset", direction))
-                        output.append(f"    *data->{var_prefix}_INDEX_RESET = 0;")
-                        output.append(self.vinit(f"{var_prefix}_INDEX_WAIT", "bool", f"{halname}-wait", direction))
-                        output.append(f"    *data->{var_prefix}_INDEX_WAIT = 0;")
+                        output.append(self.vinit(f"{var_prefix}_INDEX_RESET", "bool", f"{halname}-reset", direction, 0))
+                        output.append(self.vinit(f"{var_prefix}_INDEX_WAIT", "bool", f"{halname}-wait", direction, 0))
 
         output.append("    return data;")
         output.append("}")

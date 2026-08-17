@@ -222,6 +222,6 @@ class rosbridge(cbase):
         rosname = halname.replace(".", "/").replace("-", "_")
         return f"{self.prefix}/{rosname}"
 
-    def vinit(self, vname, vtype, halstr=None, vdir="input"):
+    def vinit(self, vname, vtype, halstr=None, vdir="input", default=0):
         vtype = self.typemap.get(vtype, vtype)
-        return f"    data->{vname} = ({vtype}*)malloc(sizeof({vtype}));"
+        return f"    data->{vname} = ({vtype}*)malloc(sizeof({vtype}));\n    *data->{vname} = {default};"
