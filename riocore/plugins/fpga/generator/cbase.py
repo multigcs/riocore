@@ -5,6 +5,8 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(_
 
 
 class cbase:
+    newhal = False
+
     def c_signal_converter(self):
         comp_signals = []
         output = []
@@ -128,7 +130,10 @@ class cbase:
                             if data_name.upper() == check:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
-                                    output.append(f"    float value = *data->{source};")
+                                    if self.newhal:
+                                        output.append(f"    float value = hal_get_real(*data->{source});")
+                                    else:
+                                        output.append(f"    float value = *data->{source};")
                                     output.append(f"    value = value * *data->{source}_SCALE;")
                                     output.append(f"    value = value + *data->{source}_OFFSET;")
                                     if min_limit is not None:
@@ -144,7 +149,10 @@ class cbase:
                                     if convert_c:
                                         output.append("    " + convert_c)
                                 else:
-                                    output.append(f"    bool value = *data->{source};")
+                                    if self.newhal:
+                                        output.append(f"    bool value = hal_get_bool(*data->{source});")
+                                    else:
+                                        output.append(f"    bool value = *data->{source};")
                                     convert_c = plugin_instance.convert_c(data_name, data_config).strip()
                                     if convert_c:
                                         output.append("    " + convert_c)
@@ -305,7 +313,12 @@ class cbase:
                                             new_post = vname.split("_")[-1]
                                             if org_post != new_post:
                                                 source = f"SIGIN_{vname}"
-                                                output.append(f"    float value = *data->{source};")
+                                                if self.newhal:
+                                                    output.append(f"    float value = hal_get_real(*data->{source});")
+                                                else:
+                                                    output.append(f"    float value = *data->{source};")
+                                            elif self.newhal:
+                                                output.append(f"    float value = hal_get_real(data->{source});")
                                             else:
                                                 output.append(f"    float value = data->{source};")
                                             output.append("    int n = 0;")
@@ -373,8 +386,13 @@ class cbase:
                                     convert_c = plugin_instance.convert_c(signal_name, signal_config).strip()
 
                                     if not boolean and direction == "input" and hal_type == "float":
-                                        foutput.append(f"    float offset = *data->{varname}_OFFSET;")
-                                        foutput.append(f"    float scale = *data->{varname}_SCALE;")
+                                        if self.newhal:
+                                            foutput.append(f"    float offset = hal_get_real(*data->{varname}_OFFSET);")
+                                            foutput.append(f"    float scale = hal_get_real(*data->{varname}_SCALE);")
+                                        else:
+                                            foutput.append(f"    float offset = *data->{varname}_OFFSET;")
+                                            foutput.append(f"    float scale = *data->{varname}_SCALE;")
+
                                         if "last_value" in convert_c:
                                             foutput.append(f"    float last_value = *data->{varname};")
                                         if "last_raw_value" in convert_c or "last_raw_value" in str(signal_targets.values()):
@@ -398,7 +416,10 @@ class cbase:
 
                                         if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
                                             foutput.append("    if (*data->sys_simulation == 1) {")
-                                            foutput.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
+                                            if self.newhal:
+                                                foutput.append(f"        value = hal_get_real(*data->{varname}) + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
+                                            else:
+                                                foutput.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
                                             axis = ""
                                             home_sw = ""
                                             home_offset = 0.0
@@ -431,9 +452,14 @@ class cbase:
                                                 foutput.append("        }")
                                             foutput.append("    }")
 
-                                        foutput.append(f"    *data->{varname}_ABS = fabs(value);")
-                                        foutput.append(f"    *data->{varname}_S32 = value;")
-                                        foutput.append(f"    *data->{varname}_U32_ABS = fabs(value);")
+                                        if self.newhal:
+                                            foutput.append(f"    hal_set_real(*data->{varname}_ABS, fabs(value));")
+                                            foutput.append(f"    hal_set_sint(*data->{varname}_S32, value);")
+                                            foutput.append(f"    hal_set_uint(*data->{varname}_U32_ABS, fabs(value));")
+                                        else:
+                                            foutput.append(f"    *data->{varname}_ABS = fabs(value);")
+                                            foutput.append(f"    *data->{varname}_S32 = value;")
+                                            foutput.append(f"    *data->{varname}_U32_ABS = fabs(value);")
                                     if boolean:
                                         in_filter = signal_config.get("filter")
                                         if in_filter == "longpress":
@@ -449,16 +475,28 @@ class cbase:
                                             foutput.append("        reset_timer = servo_period * 100 / 1000000;")
                                             foutput.append("        if ((servo_period * press_timer / 1000000) > 1500) {")
                                             foutput.append("            // long 2")
-                                            foutput.append(f"            *data->{varname}_LONG2 = 1;")
-                                            foutput.append(f"            *data->{varname}_LONG2_not = 0;")
+                                            if self.newhal:
+                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG2, 1);")
+                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG2_not, 0);")
+                                            else:
+                                                foutput.append(f"            *data->{varname}_LONG2 = 1;")
+                                                foutput.append(f"            *data->{varname}_LONG2_not = 0;")
                                             foutput.append("        } else if ((servo_period * press_timer / 1000000) > 500) {")
                                             foutput.append("            // long 1")
-                                            foutput.append(f"            *data->{varname}_LONG1 = 1;")
-                                            foutput.append(f"            *data->{varname}_LONG1_not = 0;")
+                                            if self.newhal:
+                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG1, 1);")
+                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG1_not, 0);")
+                                            else:
+                                                foutput.append(f"            *data->{varname}_LONG1 = 1;")
+                                                foutput.append(f"            *data->{varname}_LONG1_not = 0;")
                                             foutput.append("        } else {")
                                             foutput.append("            // short")
-                                            foutput.append(f"            *data->{varname}_SHORT = 1;")
-                                            foutput.append(f"            *data->{varname}_SHORT_not = 0;")
+                                            if self.newhal:
+                                                foutput.append(f"            hal_set_bool(*data->{varname}_SHORT, 1);")
+                                                foutput.append(f"            hal_set_bool(*data->{varname}_SHORT_not, 0);")
+                                            else:
+                                                foutput.append(f"            *data->{varname}_SHORT = 1;")
+                                                foutput.append(f"            *data->{varname}_SHORT_not = 0;")
                                             foutput.append("        }")
                                             foutput.append("    } else if (reset_timer > 0) {")
                                             foutput.append("        reset_timer--;")
@@ -466,13 +504,23 @@ class cbase:
                                             foutput.append("        // reset all")
                                             foutput.append("        press_timer = 0;")
                                             for suffix in ("SHORT", "LONG1", "LONG2"):
-                                                foutput.append(f"        *data->{varname}_{suffix} = 0;")
-                                                foutput.append(f"        *data->{varname}_{suffix}_not = 1;")
+                                                if self.newhal:
+                                                    foutput.append(f"        hal_set_bool(*data->{varname}_{suffix}, 0);")
+                                                    foutput.append(f"        hal_set_bool(*data->{varname}_{suffix}_not, 1);")
+                                                else:
+                                                    foutput.append(f"        *data->{varname}_{suffix} = 0;")
+                                                    foutput.append(f"        *data->{varname}_{suffix}_not = 1;")
                                             foutput.append("    }")
                                             foutput.append("    last = value;")
+                                        elif self.newhal:
+                                            foutput.append(f"    hal_set_bool(*data->{varname}, value);")
+                                            foutput.append(f"    hal_set_bool(*data->{varname}_not, 1 - value);")
                                         else:
                                             foutput.append(f"    *data->{varname} = value;")
                                             foutput.append(f"    *data->{varname}_not = 1 - value;")
+
+                                    elif self.newhal:
+                                        foutput.append(f"    hal_set_real(*data->{varname}, value);")
                                     else:
                                         foutput.append(f"    *data->{varname} = value;")
 

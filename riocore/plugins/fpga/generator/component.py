@@ -8,7 +8,7 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(_
 class component(cbase):
     filename_functions = "hal_functions.c"
     rtapi_mode = True
-    newhal = False
+    # newhal = True
     typemap = {
         "float": "hal_float_t",
         "bool": "hal_bit_t",
@@ -38,10 +38,10 @@ class component(cbase):
     def __init__(self, project, instance):
         if self.newhal:
             self.typemap = {
-                "float": "hal_float_t",
-                "bool": "hal_bit_t",
-                "s32": "hal_s32_t",
-                "u32": "hal_u32_t",
+                "float": "hal_real_t",
+                "bool": "hal_bool_t",
+                "s32": "hal_sint_t",
+                "u32": "hal_uint_t",
             }
 
         self.project = project
