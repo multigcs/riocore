@@ -131,9 +131,9 @@ class cbase:
                                 source = varname.split()[-1].strip("*")
                                 if variable_size > 1:
                                     if self.newhal:
-                                        output.append(f"    float value = hal_get_real(*data->{source});")
-                                        output.append(f"    value = value * hal_get_real(*data->{source}_SCALE);")
-                                        output.append(f"    value = value + hal_get_real(*data->{source}_OFFSET);")
+                                        output.append(f"    float value = hal_get_real(data->{source});")
+                                        output.append(f"    value = value * hal_get_real(data->{source}_SCALE);")
+                                        output.append(f"    value = value + hal_get_real(data->{source}_OFFSET);")
                                     else:
                                         output.append(f"    float value = *data->{source};")
                                         output.append(f"    value = value * *data->{source}_SCALE;")
@@ -152,7 +152,7 @@ class cbase:
                                         output.append("    " + convert_c)
                                 else:
                                     if self.newhal:
-                                        output.append(f"    bool value = hal_get_bool(*data->{source});")
+                                        output.append(f"    bool value = hal_get_bool(data->{source});")
                                     else:
                                         output.append(f"    bool value = *data->{source};")
                                     convert_c = plugin_instance.convert_c(data_name, data_config).strip()
@@ -316,7 +316,7 @@ class cbase:
                                             if org_post != new_post:
                                                 source = f"SIGIN_{vname}"
                                                 if self.newhal:
-                                                    output.append(f"    float value = hal_get_real(*data->{source});")
+                                                    output.append(f"    float value = hal_get_real(data->{source});")
                                                 else:
                                                     output.append(f"    float value = *data->{source};")
                                             elif self.newhal:
@@ -389,8 +389,8 @@ class cbase:
 
                                     if not boolean and direction == "input" and hal_type == "float":
                                         if self.newhal:
-                                            foutput.append(f"    float offset = hal_get_real(*data->{varname}_OFFSET);")
-                                            foutput.append(f"    float scale = hal_get_real(*data->{varname}_SCALE);")
+                                            foutput.append(f"    float offset = hal_get_real(data->{varname}_OFFSET);")
+                                            foutput.append(f"    float scale = hal_get_real(data->{varname}_SCALE);")
                                         else:
                                             foutput.append(f"    float offset = *data->{varname}_OFFSET;")
                                             foutput.append(f"    float scale = *data->{varname}_SCALE;")
@@ -418,8 +418,8 @@ class cbase:
 
                                         if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
                                             if self.newhal:
-                                                foutput.append("    if (hal_get_bool(*data->sys_simulation) == 1) {")
-                                                foutput.append(f"        value = hal_get_real(*data->{varname}) + hal_get_real(*data->SIGOUT_{var_prefix}_VELOCITY) / 1000.0;")
+                                                foutput.append("    if (hal_get_bool(data->sys_simulation) == 1) {")
+                                                foutput.append(f"        value = hal_get_real(data->{varname}) + hal_get_real(data->SIGOUT_{var_prefix}_VELOCITY) / 1000.0;")
                                             else:
                                                 foutput.append("    if (*data->sys_simulation == 1) {")
                                                 foutput.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
@@ -456,9 +456,9 @@ class cbase:
                                             foutput.append("    }")
 
                                         if self.newhal:
-                                            foutput.append(f"    hal_set_real(*data->{varname}_ABS, fabs(value));")
-                                            foutput.append(f"    hal_set_sint(*data->{varname}_S32, value);")
-                                            foutput.append(f"    hal_set_uint(*data->{varname}_U32_ABS, fabs(value));")
+                                            foutput.append(f"    hal_set_real(data->{varname}_ABS, fabs(value));")
+                                            foutput.append(f"    hal_set_sint(data->{varname}_S32, value);")
+                                            foutput.append(f"    hal_set_uint(data->{varname}_U32_ABS, fabs(value));")
                                         else:
                                             foutput.append(f"    *data->{varname}_ABS = fabs(value);")
                                             foutput.append(f"    *data->{varname}_S32 = value;")
@@ -479,24 +479,24 @@ class cbase:
                                             foutput.append("        if ((servo_period * press_timer / 1000000) > 1500) {")
                                             foutput.append("            // long 2")
                                             if self.newhal:
-                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG2, 1);")
-                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG2_not, 0);")
+                                                foutput.append(f"            hal_set_bool(data->{varname}_LONG2, 1);")
+                                                foutput.append(f"            hal_set_bool(data->{varname}_LONG2_not, 0);")
                                             else:
                                                 foutput.append(f"            *data->{varname}_LONG2 = 1;")
                                                 foutput.append(f"            *data->{varname}_LONG2_not = 0;")
                                             foutput.append("        } else if ((servo_period * press_timer / 1000000) > 500) {")
                                             foutput.append("            // long 1")
                                             if self.newhal:
-                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG1, 1);")
-                                                foutput.append(f"            hal_set_bool(*data->{varname}_LONG1_not, 0);")
+                                                foutput.append(f"            hal_set_bool(data->{varname}_LONG1, 1);")
+                                                foutput.append(f"            hal_set_bool(data->{varname}_LONG1_not, 0);")
                                             else:
                                                 foutput.append(f"            *data->{varname}_LONG1 = 1;")
                                                 foutput.append(f"            *data->{varname}_LONG1_not = 0;")
                                             foutput.append("        } else {")
                                             foutput.append("            // short")
                                             if self.newhal:
-                                                foutput.append(f"            hal_set_bool(*data->{varname}_SHORT, 1);")
-                                                foutput.append(f"            hal_set_bool(*data->{varname}_SHORT_not, 0);")
+                                                foutput.append(f"            hal_set_bool(data->{varname}_SHORT, 1);")
+                                                foutput.append(f"            hal_set_bool(data->{varname}_SHORT_not, 0);")
                                             else:
                                                 foutput.append(f"            *data->{varname}_SHORT = 1;")
                                                 foutput.append(f"            *data->{varname}_SHORT_not = 0;")
@@ -508,22 +508,22 @@ class cbase:
                                             foutput.append("        press_timer = 0;")
                                             for suffix in ("SHORT", "LONG1", "LONG2"):
                                                 if self.newhal:
-                                                    foutput.append(f"        hal_set_bool(*data->{varname}_{suffix}, 0);")
-                                                    foutput.append(f"        hal_set_bool(*data->{varname}_{suffix}_not, 1);")
+                                                    foutput.append(f"        hal_set_bool(data->{varname}_{suffix}, 0);")
+                                                    foutput.append(f"        hal_set_bool(data->{varname}_{suffix}_not, 1);")
                                                 else:
                                                     foutput.append(f"        *data->{varname}_{suffix} = 0;")
                                                     foutput.append(f"        *data->{varname}_{suffix}_not = 1;")
                                             foutput.append("    }")
                                             foutput.append("    last = value;")
                                         elif self.newhal:
-                                            foutput.append(f"    hal_set_bool(*data->{varname}, value);")
-                                            foutput.append(f"    hal_set_bool(*data->{varname}_not, 1 - value);")
+                                            foutput.append(f"    hal_set_bool(data->{varname}, value);")
+                                            foutput.append(f"    hal_set_bool(data->{varname}_not, 1 - value);")
                                         else:
                                             foutput.append(f"    *data->{varname} = value;")
                                             foutput.append(f"    *data->{varname}_not = 1 - value;")
 
                                     elif self.newhal:
-                                        foutput.append(f"    hal_set_real(*data->{varname}, value);")
+                                        foutput.append(f"    hal_set_real(data->{varname}, value);")
                                     else:
                                         foutput.append(f"    *data->{varname} = value;")
 
@@ -795,14 +795,22 @@ class cbase:
         output = []
         output.append("typedef struct {")
         output.append("    // hal variables")
-        output.append(f"    {self.typemap.get('bool')}   *sys_enable;")
-        output.append(f"    {self.typemap.get('bool')}   *sys_enable_request;")
-        output.append(f"    {self.typemap.get('bool')}   *sys_status;")
-        output.append(f"    {self.typemap.get('bool')}   *sys_error;")
-        output.append(f"    {self.typemap.get('bool')}   *sys_simulation;")
-        output.append(f"    {self.typemap.get('u32')}   *fpga_timestamp;")
-        output.append(f"    {self.typemap.get('float')} *duration;")
-
+        if self.newhal:
+            output.append(f"    {self.typemap.get('bool')}   sys_enable;")
+            output.append(f"    {self.typemap.get('bool')}   sys_enable_request;")
+            output.append(f"    {self.typemap.get('bool')}   sys_status;")
+            output.append(f"    {self.typemap.get('bool')}   sys_error;")
+            output.append(f"    {self.typemap.get('bool')}   sys_simulation;")
+            output.append(f"    {self.typemap.get('u32')}    fpga_timestamp;")
+            output.append(f"    {self.typemap.get('float')}  duration;")
+        else:
+            output.append(f"    {self.typemap.get('bool')}   *sys_enable;")
+            output.append(f"    {self.typemap.get('bool')}   *sys_enable_request;")
+            output.append(f"    {self.typemap.get('bool')}   *sys_status;")
+            output.append(f"    {self.typemap.get('bool')}   *sys_error;")
+            output.append(f"    {self.typemap.get('bool')}   *sys_simulation;")
+            output.append(f"    {self.typemap.get('u32')}   *fpga_timestamp;")
+            output.append(f"    {self.typemap.get('float')} *duration;")
         if self.instance.gateware.multiplexed_output:
             output.append("    float MULTIPLEXER_OUTPUT_VALUE;")
             output.append("    uint8_t MULTIPLEXER_OUTPUT_ID;")
@@ -834,23 +842,44 @@ class cbase:
                 elif virtual:
                     continue
                 if not boolean:
-                    output.append(f"    {vtype} *{varname};")
+                    if self.newhal:
+                        output.append(f"    {vtype} {varname};")
+                    else:
+                        output.append(f"    {vtype} *{varname};")
                     if not signal_source and not signal_config.get("helper", False):
                         if direction == "input" and hal_type == "float":
-                            output.append(f"    {vtype} *{varname}_ABS;")
-                            output.append(f"    {self.typemap.get('s32')} *{varname}_S32;")
-                            output.append(f"    {self.typemap.get('u32')} *{varname}_U32_ABS;")
+                            if self.newhal:
+                                output.append(f"    {vtype} {varname}_ABS;")
+                                output.append(f"    {self.typemap.get('s32')} {varname}_S32;")
+                                output.append(f"    {self.typemap.get('u32')} {varname}_U32_ABS;")
+                            else:
+                                output.append(f"    {vtype} *{varname}_ABS;")
+                                output.append(f"    {self.typemap.get('s32')} *{varname}_S32;")
+                                output.append(f"    {self.typemap.get('u32')} *{varname}_U32_ABS;")
                         if not virtual:
-                            output.append(f"    {self.typemap.get('float')} *{varname}_SCALE;")
-                            output.append(f"    {self.typemap.get('float')} *{varname}_OFFSET;")
+                            if self.newhal:
+                                output.append(f"    {self.typemap.get('float')} {varname}_SCALE;")
+                                output.append(f"    {self.typemap.get('float')} {varname}_OFFSET;")
+                            else:
+                                output.append(f"    {self.typemap.get('float')} *{varname}_SCALE;")
+                                output.append(f"    {self.typemap.get('float')} *{varname}_OFFSET;")
                 else:
-                    output.append(f"    {self.typemap.get('bool')}   *{varname};")
+                    if self.newhal:
+                        output.append(f"    {self.typemap.get('bool')}   {varname};")
+                    else:
+                        output.append(f"    {self.typemap.get('bool')}   *{varname};")
                     if direction == "input":
-                        output.append(f"    {self.typemap.get('bool')}   *{varname}_not;")
+                        if self.newhal:
+                            output.append(f"    {self.typemap.get('bool')}   {varname}_not;")
+                        else:
+                            output.append(f"    {self.typemap.get('bool')}   *{varname}_not;")
                     if signal_config.get("is_index_out"):
-                        output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_RESET;")
-                        output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_WAIT;")
-
+                        if self.newhal:
+                            output.append(f"    {self.typemap.get('bool')}   {var_prefix}_INDEX_RESET;")
+                            output.append(f"    {self.typemap.get('bool')}   {var_prefix}_INDEX_WAIT;")
+                        else:
+                            output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_RESET;")
+                            output.append(f"    {self.typemap.get('bool')}   *{var_prefix}_INDEX_WAIT;")
         output.append("    // raw variables")
         for size, plugin_instance, data_name, data_config in self.instance.gateware.get_interface_data(self.project):
             expansion = data_config.get("expansion", False)
@@ -1256,7 +1285,7 @@ class cbase:
         if self.use_timestamp:
             output.append("    float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;")
             if self.newhal:
-                output.append("    hal_set_real(*data->duration, timestamp - fpga_stamp_last);")
+                output.append("    hal_set_real(data->duration, timestamp - fpga_stamp_last);")
             else:
                 output.append("    *data->duration = timestamp - fpga_stamp_last;")
             output.append("    fpga_stamp_last = timestamp;")
@@ -1269,14 +1298,14 @@ class cbase:
             output.append("    if (1) {")
         else:
             if self.newhal:
-                output.append("    if (hal_get_bool(*data->sys_enable) == 1 || hal_get_bool(*data->sys_enable_request) == 1) {")
+                output.append("    if (hal_get_bool(data->sys_enable) == 1 || hal_get_bool(data->sys_enable_request) == 1) {")
             else:
                 output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
 
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         if self.newhal:
-            output.append("        if (hal_get_bool(*data->sys_simulation) != 1) {")
+            output.append("        if (hal_get_bool(data->sys_simulation) != 1) {")
         else:
             output.append("        if (*data->sys_simulation != 1) {")
         output.append("            write_txbuffer(txBuffer);")
@@ -1323,7 +1352,7 @@ class cbase:
         output.append("                read_rxbuffer(rxBuffer);")
         output.append("                convert_inputs();")
         if self.newhal:
-            output.append("                hal_set_bool(*data->sys_status, 1);")
+            output.append("                hal_set_bool(data->sys_status, 1);")
         else:
             output.append("                *data->sys_status = 1;")
         output.append("            } else {")
@@ -1356,8 +1385,8 @@ class cbase:
             output.append("                        uart_init(serialPort);")
             output.append("                        err_counter = 0;")
         if self.newhal:
-            output.append("                        hal_set_bool(*data->sys_status, 0);")
-            output.append("                        hal_set_bool(*data->sys_error, 1);")
+            output.append("                        hal_set_bool(data->sys_status, 0);")
+            output.append("                        hal_set_bool(data->sys_error, 1);")
         else:
             output.append("                        *data->sys_status = 0;")
             output.append("                        *data->sys_error = 1;")
@@ -1372,13 +1401,19 @@ class cbase:
                 variable_name = data_config["variable"]
                 if data_config["direction"] == "output" and plugin_instance.NAME in {"mbus", "modbus"}:
                     output.append("#ifdef MODBUS_SIM")
-                    output.append(f"             if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM) {{")
+                    if self.newhal:
+                        output.append(f"             if (hal_get_bool(data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM)) {{")
+                    else:
+                        output.append(f"             if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_SIM) {{")
                     output.append(f"                static uint8_t frame{modbus_n}_id_last = 255;")
                     output.append(f"                static uint8_t frame{modbus_n}_rx[{size // 8}];")
                     output.append(f"                uint8_t frame{modbus_n}_id = data->{variable_name}[0];")
                     output.append(f"                uint8_t frame{modbus_n}_len = data->{variable_name}[1];")
                     output.append(f"                if (frame{modbus_n}_id_last != frame{modbus_n}_id && frame{modbus_n}_len > 0) {{")
-                    output.append(f"                    if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
+                    if self.newhal:
+                        output.append(f"                    if (hal_get_bool(data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG)) {{")
+                    else:
+                        output.append(f"                    if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
                     output.append(f'                        printf("> {plugin_instance.instances_name}.{data_name} (seq%i) ", frame{modbus_n}_id);')
                     output.append(f"                        for (int i = 0; i < frame{modbus_n}_len; i++) {{")
                     output.append(f'                            printf("%i ", data->{variable_name}[i + 2]);')
@@ -1393,8 +1428,10 @@ class cbase:
                     output.append(f"                        data->{modbus_rx[modbus_n]}[0] = frame{modbus_n}_id;")
                     output.append(f"                        data->{modbus_rx[modbus_n]}[1] = frame{modbus_n}_id;")
                     output.append(f"                        data->{modbus_rx[modbus_n]}[2] = len_rx;")
-
-                    output.append(f"                        if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
+                    if self.newhal:
+                        output.append(f"                        if (hal_get_bool(data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG)) {{")
+                    else:
+                        output.append(f"                        if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
                     output.append('                            printf("                                                        < rxdata ");')
                     output.append("                            for (int i = 0; i < len_rx; i++) {")
                     output.append(f'                                printf("%i ", frame{modbus_n}_rx[i ]);')
@@ -1412,14 +1449,14 @@ class cbase:
 
         output.append("            convert_inputs();")
         if self.newhal:
-            output.append("            hal_set_bool(*data->sys_status, 1);")
+            output.append("            hal_set_bool(data->sys_status, 1);")
         else:
             output.append("            *data->sys_status = 1;")
         output.append("        }")
         output.append("    } else {")
         if self.newhal:
-            output.append("        hal_set_bool(*data->sys_status, 0);")
-            output.append("        hal_set_bool(*data->sys_error, 0);")
+            output.append("        hal_set_bool(data->sys_status, 0);")
+            output.append("        hal_set_bool(data->sys_error, 0);")
         else:
             output.append("        *data->sys_status = 0;")
             output.append("        *data->sys_error = 0;")

@@ -57,6 +57,6 @@ class component(cbase):
         direction = {"output": "IN", "input": "OUT", "inout": "IO"}.get(vdir, vdir)
         if self.newhal:
             vtype = {"s32": "si32", "u32": "ui32", "float": "real"}.get(vtype, vtype)
-            return f'    if ((retval = hal_pin_new_{vtype}(comp_id, HAL_{direction}, data->{vname}, {default}, "{halstr}")) != 0) error_handler(retval);'
+            return f'    if ((retval = hal_pin_new_{vtype}(comp_id, HAL_{direction}, &(data->{vname}), {default}, "{halstr}")) != 0) error_handler(retval);'
         vtype = {"bool": "bit"}.get(vtype, vtype)
         return f'    if ((retval = hal_pin_{vtype}_newf(HAL_{direction}, &(data->{vname}), comp_id, "{halstr}")) != 0) error_handler(retval);\n    *data->{vname} = {default};'
