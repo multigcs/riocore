@@ -8,6 +8,8 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 class Plugin(PluginBase):
     def setup(self):
+        self.version = "2.9"
+        #self.version = "2.10"
         self.NAME = "mtconnect"
         self.INFO = "mtconnect support"
         self.DESCRIPTION = "mtconnect agent"
@@ -111,13 +113,27 @@ class Plugin(PluginBase):
             ini_setup["MTCONNECT"]["MQTT_PORT"] = mqtt_port
             ini_setup["MTCONNECT"]["MQTT_PREFIX"] = mqtt_prefix
 
-        ini_setup["APPLICATIONS"] = {
-            "DELAY": "3",
-            "APP": "./mtconnect-agent",
-        }
+        if self.version == "2.10+":
+            ini_setup["MTCONNECT"]["USER_PAGES"] = "htmlfiles"
+        else:
+            ini_setup["APPLICATIONS"] = {
+                "DELAY": "3",
+                "APP": "./mtconnect-agent",
+            }
+
+    def hal(self, parent):
+        if self.version == "2.10+":
+            parent.halg.add_usrcomp("mtconnect-agent")
 
     @classmethod
     def extra_files(cls, parent, instances):
-        source_path = os.path.join(os.path.dirname(__file__), "files")
-        target_path = os.path.join(parent.configuration_path)
-        shutil.copytree(source_path, target_path, dirs_exist_ok=True)
+        if instances[0].version == "2.10+":
+            os.makedirs(os.path.join(parent.configuration_path, "htmlfiles"), exist_ok=True)
+            for name in ("stat.html", "twin.html"):
+                source_path = os.path.join(os.path.dirname(__file__), "files", name)
+                target_path = os.path.join(parent.configuration_path, "htmlfiles", name)
+                shutil.copyfile(source_path, target_path)
+        else:
+            source_path = os.path.join(os.path.dirname(__file__), "files")
+            target_path = os.path.join(parent.configuration_path)
+            shutil.copytree(source_path, target_path, dirs_exist_ok=True)

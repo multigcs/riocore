@@ -1296,11 +1296,10 @@ class cbase:
 
         if libmode or autostart:
             output.append("    if (1) {")
+        elif self.newhal:
+            output.append("    if (hal_get_bool(data->sys_enable) == 1 || hal_get_bool(data->sys_enable_request) == 1) {")
         else:
-            if self.newhal:
-                output.append("    if (hal_get_bool(data->sys_enable) == 1 || hal_get_bool(data->sys_enable_request) == 1) {")
-            else:
-                output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
+            output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
 
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")

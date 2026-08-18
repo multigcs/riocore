@@ -77,7 +77,7 @@ const links = {};   // componentId -> {group,type,axis:THREE.Vector3,posId,scale
 let posUnitMM = 25.4;
 
 async function build(){
-  const xml = new DOMParser().parseFromString(await (await fetch('probe')).text(), 'text/xml');
+  const xml = new DOMParser().parseFromString(await (await fetch('/probe')).text(), 'text/xml');
   const device = all(xml, 'Device')[0];
   if (!device){ err('no Device in /probe'); return; }
 
@@ -169,7 +169,7 @@ function fit(){
 const tmpQ = new THREE.Quaternion();
 async function poll(){
   try {
-    const xml = new DOMParser().parseFromString(await (await fetch('current')).text(), 'text/xml');
+    const xml = new DOMParser().parseFromString(await (await fetch('/current')).text(), 'text/xml');
     const val = {};
     for (const e of [...xml.getElementsByTagName('*')]){
       const id = e.getAttribute && e.getAttribute('dataItemId');

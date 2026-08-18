@@ -40,6 +40,7 @@ class hal_generator:
         self.function_cache = {}
         self.hal_logics = {}
         self.hal_component = {"logic": []}
+        self.usr_components = []
         self.setps = {}
         self.preformated = []
         self.preformated_top = []
@@ -58,6 +59,12 @@ class hal_generator:
         if component not in self.hal_component:
             self.hal_component[component] = []
         self.hal_component[component].append((name, options))
+
+    def add_usrcomp(self, component):
+        if component not in self.usr_components:
+            self.usr_components.append(component)
+        else:
+            print(f"WARNING: usr_components: '{component}' already added")
 
     def pin2signal(self, pin, target, signal_name=None):
         if pin.startswith("sig:"):
@@ -595,6 +602,18 @@ class hal_generator:
                 else:
                     hal_data.append(f"addf {name} servo-thread")
 
+            hal_data.append("")
+
+        # usr_components
+        if self.usr_components:
+            hal_data.append("#################################################################################")
+            hal_data.append("# usr-components")
+            hal_data.append("#################################################################################")
+            for component in self.usr_components:
+                if component.startswith("loadusr "):
+                    hal_data.append(component)
+                else:
+                    hal_data.append(f"loadusr -W {component}")
             hal_data.append("")
 
         # add networks (sorting/grouping)
