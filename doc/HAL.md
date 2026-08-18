@@ -5,15 +5,8 @@ for output signals like this:
 
 ![pins_virtual](./images/hal-logic.png)
 
-you can start a little demo to play with (-> Tab float/bool):
-```
-rio-generator -S riocore/configs/haldemo/virtual-signals-axis-pyvcp.json
-```
 
-![pins_virtual](./images/hal-demo.png)
-
-
-here are some examples:
+here are a few examples:
 
 # bit/boolean
 ```
@@ -69,3 +62,11 @@ riov.Float1.value > 20
 ```
 riov.Float1.value <> -20,20
 ```
+
+# demo config
+you can start a little demo to play with (-> Tab float/bool):
+```
+rio-generator -S riocore/configs/haldemo/virtual-signals-axis-pyvcp.json
+```
+
+![pins_virtual](./images/hal-demo.png)
