@@ -132,10 +132,12 @@ class cbase:
                                 if variable_size > 1:
                                     if self.newhal:
                                         output.append(f"    float value = hal_get_real(*data->{source});")
+                                        output.append(f"    value = value * hal_get_real(*data->{source}_SCALE);")
+                                        output.append(f"    value = value + hal_get_real(*data->{source}_OFFSET);")
                                     else:
                                         output.append(f"    float value = *data->{source};")
-                                    output.append(f"    value = value * *data->{source}_SCALE;")
-                                    output.append(f"    value = value + *data->{source}_OFFSET;")
+                                        output.append(f"    value = value * *data->{source}_SCALE;")
+                                        output.append(f"    value = value + *data->{source}_OFFSET;")
                                     if min_limit is not None:
                                         output.append(f"    if (value < {min_limit}) {{")
                                         output.append(f"        value = {min_limit};")
@@ -415,10 +417,11 @@ class cbase:
                                                 foutput.append(f"    value += *data->{csource} / {cscale};")
 
                                         if varname.endswith("_POSITION") and f"SIGOUT_{var_prefix}_VELOCITY" in comp_signals:
-                                            foutput.append("    if (*data->sys_simulation == 1) {")
                                             if self.newhal:
-                                                foutput.append(f"        value = hal_get_real(*data->{varname}) + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
+                                                foutput.append("    if (hal_get_bool(*data->sys_simulation) == 1) {")
+                                                foutput.append(f"        value = hal_get_real(*data->{varname}) + hal_get_real(*data->SIGOUT_{var_prefix}_VELOCITY) / 1000.0;")
                                             else:
+                                                foutput.append("    if (*data->sys_simulation == 1) {")
                                                 foutput.append(f"        value = *data->{varname} + *data->SIGOUT_{var_prefix}_VELOCITY / 1000.0;")
                                             axis = ""
                                             home_sw = ""
@@ -903,7 +906,11 @@ class cbase:
         output.append(self.vinit("sys_enable", "bool", f"{self.prefix}.sys-enable", "output", 0))
         output.append(self.vinit("sys_enable_request", "bool", f"{self.prefix}.sys-enable-request", "output", 0))
         output.append(self.vinit("sys_simulation", "bool", f"{self.prefix}.sys-simulation", "output", 0))
-        output.append(self.vinit("duration", "float", f"{self.prefix}.duration", "input", "rtapi_get_time()"))
+        if self.newhal:
+            output.append(self.vinit("duration", "real", f"{self.prefix}.duration", "input", "rtapi_get_time()"))
+        else:
+            output.append(self.vinit("duration", "float", f"{self.prefix}.duration", "input", "rtapi_get_time()"))
+
         for plugin_instance in self.project.plugin_instances:
             if self.instance.instances_name not in {plugin_instance.master, plugin_instance.gmaster}:
                 continue
@@ -932,7 +939,7 @@ class cbase:
                 else:
                     output.append(self.vinit(varname, "bool", halname, direction, 0))
                     if direction == "input":
-                        output.append(self.vinit(f"{varname}_not", "bool", f"{halname}-not", direction, f"1 - *data->{varname}"))
+                        output.append(self.vinit(f"{varname}_not", "bool", f"{halname}-not", direction, 1))
                     if signal_config.get("is_index_out"):
                         output.append(self.vinit(f"{var_prefix}_INDEX_RESET", "bool", f"{halname}-reset", direction, 0))
                         output.append(self.vinit(f"{var_prefix}_INDEX_WAIT", "bool", f"{halname}-wait", direction, 0))
@@ -1248,7 +1255,10 @@ class cbase:
         output.append("    int64_t stamp_new = rtapi_get_time();")
         if self.use_timestamp:
             output.append("    float timestamp = (float)fpga_timestamp / (float)OSC_CLOCK;")
-            output.append("    *data->duration = timestamp - fpga_stamp_last;")
+            if self.newhal:
+                output.append("    hal_set_real(*data->duration, timestamp - fpga_stamp_last);")
+            else:
+                output.append("    *data->duration = timestamp - fpga_stamp_last;")
             output.append("    fpga_stamp_last = timestamp;")
         else:
             output.append("    *data->duration = (float)(stamp_new - stamp_last) / 1000000000.0;")
@@ -1258,10 +1268,17 @@ class cbase:
         if libmode or autostart:
             output.append("    if (1) {")
         else:
-            output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
+            if self.newhal:
+                output.append("    if (hal_get_bool(*data->sys_enable) == 1 || hal_get_bool(*data->sys_enable_request) == 1) {")
+            else:
+                output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
+
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
-        output.append("        if (*data->sys_simulation != 1) {")
+        if self.newhal:
+            output.append("        if (hal_get_bool(*data->sys_simulation) != 1) {")
+        else:
+            output.append("        if (*data->sys_simulation != 1) {")
         output.append("            write_txbuffer(txBuffer);")
 
         if protocol == "UART":
@@ -1305,7 +1322,10 @@ class cbase:
         output.append("                }")
         output.append("                read_rxbuffer(rxBuffer);")
         output.append("                convert_inputs();")
-        output.append("                *data->sys_status = 1;")
+        if self.newhal:
+            output.append("                hal_set_bool(*data->sys_status, 1);")
+        else:
+            output.append("                *data->sys_status = 1;")
         output.append("            } else {")
         output.append("                err_counter += 1;")
         output.append("                err_total += 1;")
@@ -1335,8 +1355,12 @@ class cbase:
             output.append("                        uart_close(serialPort);")
             output.append("                        uart_init(serialPort);")
             output.append("                        err_counter = 0;")
-        output.append("                        *data->sys_status = 0;")
-        output.append("                        *data->sys_error = 1;")
+        if self.newhal:
+            output.append("                        hal_set_bool(*data->sys_status, 0);")
+            output.append("                        hal_set_bool(*data->sys_error, 1);")
+        else:
+            output.append("                        *data->sys_status = 0;")
+            output.append("                        *data->sys_error = 1;")
         output.append("                    }")
         output.append("                }")
         output.append("            }")
@@ -1387,11 +1411,18 @@ class cbase:
                     modbus_n += 1
 
         output.append("            convert_inputs();")
-        output.append("            *data->sys_status = 1;")
+        if self.newhal:
+            output.append("            hal_set_bool(*data->sys_status, 1);")
+        else:
+            output.append("            *data->sys_status = 1;")
         output.append("        }")
         output.append("    } else {")
-        output.append("        *data->sys_status = 0;")
-        output.append("        *data->sys_error = 0;")
+        if self.newhal:
+            output.append("        hal_set_bool(*data->sys_status, 0);")
+            output.append("        hal_set_bool(*data->sys_error, 0);")
+        else:
+            output.append("        *data->sys_status = 0;")
+            output.append("        *data->sys_error = 0;")
         output.append("        err_counter = 0;")
         output.append("    }")
         output.append("}")
