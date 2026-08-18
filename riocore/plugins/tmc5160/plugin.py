@@ -120,6 +120,10 @@ This drivers have enabled SPI, but only for configuration.
                 "size": 32,
                 "direction": "input",
             },
+            "tstep": {
+                "size": 32,
+                "direction": "input",
+            },
             "fault": {
                 "size": 1,
                 "direction": "input",
@@ -144,6 +148,10 @@ This drivers have enabled SPI, but only for configuration.
                 "direction": "input",
                 "unit": "unit",
                 "description": "XACTUAL position / Feedback",
+            },
+            "tstep": {
+                "direction": "input",
+                "description": "tstep",
             },
             "fault": {
                 "direction": "input",
@@ -387,8 +395,8 @@ This drivers have enabled SPI, but only for configuration.
             "GCONF": ("gconf", 0b00000000000000000000000000001100),
             "TPOWERDOWN": ("tpowerdown", 10),
             "TPWMTHRS": ("tpwmthrs", 0x000001F4),
-            "TCOOLTHRS": ("tcoolthrs", 0),
-            "THIGH": ("thigh", 0),
+            "TCOOLTHRS": ("tcoolthrs", 1000),
+            "THIGH": ("thigh", 500),
             "COOLCONF": ("coolconf", 0),
             "PWMCONF": ("pwmconf", 0xC40C001E),
             "VSTART": ("vstart", 4),

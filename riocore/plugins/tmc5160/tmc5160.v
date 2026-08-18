@@ -28,10 +28,11 @@ module tmc5160 #(
     input  wire                    clk,
     input  wire signed [31:0]      velocity,
     input  wire                    enable,
-    output reg  signed [31:0]      position = 'd0,
+    output reg  signed [31:0]      position = 32'd0,
+    output reg [31:0]  tstep = 32'd0,
     output wire [9:0]  sg_result,
     output wire [4:0]  cs_actual,
-
+    
     output wire stat_swr,
     output wire stat_swl,
     output wire stat_standstill,
@@ -66,6 +67,7 @@ module tmc5160 #(
     localparam [6:0] REG_GLOBAL_SCALER = 7'h0B;
     localparam [6:0] REG_IHOLD_IRUN    = 7'h10;
     localparam [6:0] REG_TPOWERDOWN    = 7'h11;
+    localparam [6:0] REG_TSTEP         = 7'h12;
     localparam [6:0] REG_TPWMTHRS      = 7'h13;
     localparam [6:0] REG_TCOOLTHRS     = 7'h14;
     localparam [6:0] REG_THIGH         = 7'h15;
@@ -360,7 +362,7 @@ module tmc5160 #(
 
     reg [31:0] sent_vmax;
     reg [1:0]  sent_mode;
-    reg        poll_drv_status;
+    reg [1:0]  poll_drv_status;
     reg [1:0]  writes_since_poll;
 
     wire [31:0] velocity_magnitude =
@@ -450,7 +452,7 @@ module tmc5160 #(
 
         sent_vmax         = 32'd0;
         sent_mode         = 2'd1;
-        poll_drv_status   = 1'b0;
+        poll_drv_status   = 2'b0;
         writes_since_poll = 2'd0;
 
         position          = 32'sd0;
@@ -486,6 +488,9 @@ module tmc5160 #(
 
                     REG_DRV_STATUS:
                         drv_status <= spi_rx_data[31:0];
+
+                    REG_TSTEP:
+                        tstep <= spi_rx_data[31:0];
 
                     default: begin
                     end
@@ -526,20 +531,27 @@ module tmc5160 #(
                  * changing continuously.
                  */
                 if (writes_since_poll >= 2) begin
-                    if (poll_drv_status) begin
+                    if (poll_drv_status == 1) begin
                         spi_tx_data <= {
                             1'b0, REG_DRV_STATUS, 32'd0
                         };
                         launched_address <= REG_DRV_STATUS;
+                        poll_drv_status   <= 2;
+                    end else if (poll_drv_status == 2) begin
+                        spi_tx_data <= {
+                            1'b0, REG_TSTEP, 32'd0
+                        };
+                        launched_address <= REG_TSTEP;
+                        poll_drv_status   <= 0;
                     end else begin
                         spi_tx_data <= {
                             1'b0, REG_XACTUAL, 32'd0
                         };
                         launched_address <= REG_XACTUAL;
+                        poll_drv_status   <= 1;
                     end
 
                     launched_read     <= 1'b1;
-                    poll_drv_status   <= ~poll_drv_status;
                     writes_since_poll <= 2'd0;
                     spi_start         <= 1'b1;
                 end else if ((!enable || requested_vmax == 0) &&
@@ -597,20 +609,27 @@ module tmc5160 #(
                      * No command update is pending: poll XACTUAL and
                      * DRV_STATUS alternately.
                      */
-                    if (poll_drv_status) begin
+                    if (poll_drv_status == 1) begin
                         spi_tx_data <= {
                             1'b0, REG_DRV_STATUS, 32'd0
                         };
                         launched_address <= REG_DRV_STATUS;
+                        poll_drv_status   <= 2;
+                    end else if (poll_drv_status == 2) begin
+                        spi_tx_data <= {
+                            1'b0, REG_TSTEP, 32'd0
+                        };
+                        launched_address <= REG_TSTEP;
+                        poll_drv_status   <= 0;
                     end else begin
                         spi_tx_data <= {
                             1'b0, REG_XACTUAL, 32'd0
                         };
                         launched_address <= REG_XACTUAL;
+                        poll_drv_status   <= 1;
                     end
 
                     launched_read     <= 1'b1;
-                    poll_drv_status   <= ~poll_drv_status;
                     writes_since_poll <= 2'd0;
                     spi_start         <= 1'b1;
                 end

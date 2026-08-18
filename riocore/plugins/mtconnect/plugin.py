@@ -9,7 +9,7 @@ riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 class Plugin(PluginBase):
     def setup(self):
         self.version = "2.9"
-        #self.version = "2.10"
+        # self.version = "2.10"
         self.NAME = "mtconnect"
         self.INFO = "mtconnect support"
         self.DESCRIPTION = "mtconnect agent"

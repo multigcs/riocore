@@ -23,6 +23,7 @@ class hal_generator:
         "gmoccapy",
         "flexhal",
         "hal_manualtoolchange",
+        "touchy",
     ]
     VIRTUAL_COMPONENTS = [
         "riov",
