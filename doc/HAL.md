@@ -70,3 +70,19 @@ rio-generator -S riocore/configs/haldemo/virtual-signals-axis-pyvcp.json
 ```
 
 ![pins_virtual](./images/hal-demo.png)
+
+
+# adding own additional hal-files
+
+you can add your own .hal files to the call_list's:
+```
+$ cat Output/Tangbob/LinuxCNC/pregui_call_list.hal
+source my_own_pregui.hal
+```
+```
+$ cat Output/Tangbob/LinuxCNC/postgui_call_list.hal
+source custom_postgui.hal
+source my_own_postgui.hal
+```
+
+these extra source entries are not removed during generation
