@@ -375,6 +375,11 @@ class LinuxCNC:
         self.ini()
         os.makedirs(self.configuration_path, exist_ok=True)
 
+        # add user defined postgui_prefixes
+        postgui_prefixes = self.project.config["jdata"].get("linuxcnc", {}).get("postgui_prefixes", "")
+        for prefix in postgui_prefixes.split(","):
+            self.halg.postgui_components_add(prefix.strip())
+
         # add user defined networks
         for pin_from, pin_to in linuxcnc_config.get("halsignals", {}).items():
             self.halg.net_add(pin_from, pin_to)
