@@ -92,9 +92,9 @@
         "uid": "shiftreg0",
         "pinpos": {
             "INPUT:0": [18, 10],
-            "INPUT:1": [218, 160],
-            "INPUT:2": [218, 260],
-            "INPUT:3": [218, 360]
+            "INPUT:1": [18, 20],
+            "INPUT:2": [18, 30],
+            "INPUT:3": [18, 40]
         },
         "rsize": [
             150,
@@ -108,8 +108,7 @@
   ],
   "slots": [
     {
-      "name": "JOINT1",
-      "comment": "JOINT1",
+      "name": "JOINT0",
       "default": "stepdir",
       "pins": {
         "STEP": {
@@ -127,6 +126,124 @@
             485
           ],
           "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT1",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "42",
+          "pos": [
+            275,
+            485
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "45",
+          "pos": [
+            215,
+            485
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT2",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "48",
+          "pos": [
+            405,
+            485
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "47",
+          "pos": [
+            345,
+            485
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT3",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "46",
+          "pos": [
+            530,
+            485
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "2",
+          "pos": [
+            470,
+            485
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "JOINT4",
+      "default": "stepdir",
+      "pins": {
+        "STEP": {
+          "pin": "4",
+          "pos": [
+            660,
+            485
+          ],
+          "direction": "output"
+        },
+        "DIR": {
+          "pin": "3",
+          "pos": [
+            600,
+            485
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
+      "name": "ENC0",
+      "default": "quadencoderz",
+      "pins": {
+        "A": {
+          "pin": "39",
+          "pos": [
+            790,
+            490
+          ],
+          "direction": "input"
+        },
+        "B": {
+          "pin": "40",
+          "pos": [
+            815,
+            490
+          ],
+          "direction": "input"
+        },
+        "Z": {
+          "pin": "41",
+          "pos": [
+            840,
+            490
+          ],
+          "direction": "input"
         }
       }
     }
