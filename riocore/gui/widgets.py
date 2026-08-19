@@ -384,7 +384,7 @@ class edit_avgfilter(QSpinBox):
 
 
 class edit_text(QLineEdit):
-    def __init__(self, win, obj, key, cb=None, help_text=None, default=None):
+    def __init__(self, win, obj, key, cb=None, help_text=None, default=None, need_enter=False):
         super().__init__()
         # self.setMaxLength(150)
         self.win = win
@@ -399,7 +399,10 @@ class edit_text(QLineEdit):
             self.setText(str(obj[key]))
         elif default is not None:
             self.setText(str(default))
-        self.textChanged.connect(self.change)
+        if need_enter:
+            self.editingFinished.connect(self.change)
+        else:
+            self.textChanged.connect(self.change)
 
     def update(self, obj=None):
         if obj is not None:

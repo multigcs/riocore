@@ -3029,7 +3029,7 @@ class Window(QMainWindow):
             if default not in options:
                 options.append(default)
             return edit_combobox(self, obj, key, options, cb=cb, help_text=help_text, default=default)
-        return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"))
+        return edit_text(self, obj, key, cb=cb, help_text=help_text, default=var_setup.get("default"), need_enter=need_enter)
 
     def edit_selection(self):
         for item in self.scene.selectedItems():

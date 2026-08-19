@@ -1739,7 +1739,7 @@ class TabOptions:
         row = QHBoxLayout()
         vbox.addLayout(row)
         row.addWidget(QLabel("Name"))
-        self.item_name = self.parent.edit_item(self.config, "name", {"type": str, "default": "Empty", "help_text": "config name"}, cb=self.updated)
+        self.item_name = self.parent.edit_item(self.config, "name", {"type": str, "default": "Empty", "help_text": "config name"}, cb=self.updated, need_enter=True)
         row.addWidget(self.item_name)
 
         for key, var_setup in {
@@ -1757,6 +1757,7 @@ class TabOptions:
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
             "scurve": {"type": bool, "help_text": "enable scurve support (linuxcnc >= v2.10)", "default": False},
             "debug_info": {"type": bool, "help_text": "Displays some debug infos in VCP", "default": False},
+            "postgui_prefixes": {"type": str, "help_text": "comma seperatedlist of postgui_prefixes", "default": "", "need_enter": False},
         }.items():
             row = QHBoxLayout()
             vbox.addLayout(row)
@@ -1764,7 +1765,7 @@ class TabOptions:
             if "help_text" in var_setup:
                 label.setToolTip(var_setup["help_text"])
             row.addWidget(label)
-            item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup, cb=self.updated)
+            item = self.parent.edit_item(self.config["linuxcnc"], key, var_setup, cb=self.updated, need_enter=var_setup.get("need_enter", False))
             row.addWidget(item)
             self.items[key] = {"item": item}
         vbox.addStretch()
