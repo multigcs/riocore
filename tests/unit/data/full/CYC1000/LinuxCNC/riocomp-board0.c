@@ -112,7 +112,7 @@ data_t *register_signals(void) {
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_BITIN0_BIT), comp_id, "board0.bitin0.bit")) != 0) error_handler(retval);
     *data->SIGIN_BOARD0_BITIN0_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_BITIN0_BIT_not), comp_id, "board0.bitin0.bit-not")) != 0) error_handler(retval);
-    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN0_BIT;
+    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_BOARD0_BITOUT0_BIT), comp_id, "board0.bitout0.bit")) != 0) error_handler(retval);
     *data->SIGOUT_BOARD0_BITOUT0_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_BOARD0_BITOUT1_BIT), comp_id, "board0.bitout1.bit")) != 0) error_handler(retval);

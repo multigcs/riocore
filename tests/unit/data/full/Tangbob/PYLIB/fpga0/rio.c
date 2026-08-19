@@ -164,15 +164,15 @@ data_t *register_signals(void) {
     data->SIGIN_FPGA0_BITIN0_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_FPGA0_BITIN0_BIT = 0;
     data->SIGIN_FPGA0_BITIN0_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_FPGA0_BITIN0_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN0_BIT;
+    *data->SIGIN_FPGA0_BITIN0_BIT_not = 1;
     data->SIGIN_FPGA0_BITIN1_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_FPGA0_BITIN1_BIT = 0;
     data->SIGIN_FPGA0_BITIN1_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_FPGA0_BITIN1_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN1_BIT;
+    *data->SIGIN_FPGA0_BITIN1_BIT_not = 1;
     data->SIGIN_FPGA0_BITIN2_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_FPGA0_BITIN2_BIT = 0;
     data->SIGIN_FPGA0_BITIN2_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_FPGA0_BITIN2_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN2_BIT;
+    *data->SIGIN_FPGA0_BITIN2_BIT_not = 1;
     data->SIGOUT_FPGA0_BITOUT0_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_FPGA0_BITOUT0_BIT = 0;
     data->SIGIN_FPGA0_I2C_LM75_0_TEMP_SCALE = (float*)malloc(sizeof(float));
@@ -190,7 +190,7 @@ data_t *register_signals(void) {
     data->SIGIN_FPGA0_I2C_LM75_0_VALID = (bool*)malloc(sizeof(bool));
     *data->SIGIN_FPGA0_I2C_LM75_0_VALID = 0;
     data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2C_LM75_0_VALID;
+    *data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = 1;
     return data;
 }
 

@@ -86,7 +86,7 @@ data_t *register_signals(void) {
     data->SIGIN_BOARD0_BITIN0_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN0_BIT = 0;
     data->SIGIN_BOARD0_BITIN0_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN0_BIT;
+    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1;
     data->SIGOUT_BOARD0_BITOUT0_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_BITOUT0_BIT = 0;
     data->SIGOUT_BOARD0_BITOUT1_BIT = (bool*)malloc(sizeof(bool));

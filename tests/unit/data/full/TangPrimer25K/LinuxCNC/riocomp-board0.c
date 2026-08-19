@@ -139,11 +139,11 @@ data_t *register_signals(void) {
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_BITIN0_BIT), comp_id, "board0.bitin0.bit")) != 0) error_handler(retval);
     *data->SIGIN_BOARD0_BITIN0_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_BITIN0_BIT_not), comp_id, "board0.bitin0.bit-not")) != 0) error_handler(retval);
-    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN0_BIT;
+    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_BITIN1_BIT), comp_id, "board0.bitin1.bit")) != 0) error_handler(retval);
     *data->SIGIN_BOARD0_BITIN1_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_BOARD0_BITIN1_BIT_not), comp_id, "board0.bitin1.bit-not")) != 0) error_handler(retval);
-    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN1_BIT;
+    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1;
     if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE), comp_id, "board0.stepdir0.velocity-scale")) != 0) error_handler(retval);
     *data->SIGOUT_BOARD0_STEPDIR0_VELOCITY_SCALE = 1.0;
     if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGOUT_BOARD0_STEPDIR0_VELOCITY_OFFSET), comp_id, "board0.stepdir0.velocity-offset")) != 0) error_handler(retval);

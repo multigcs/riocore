@@ -135,7 +135,7 @@ data_t *register_signals(void) {
     data->SIGIN_BOARD0_BITIN0_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN0_BIT = 0;
     data->SIGIN_BOARD0_BITIN0_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN0_BIT;
+    *data->SIGIN_BOARD0_BITIN0_BIT_not = 1;
     data->SIGOUT_BOARD0_STEPDIR2_VELOCITY_SCALE = (float*)malloc(sizeof(float));
     *data->SIGOUT_BOARD0_STEPDIR2_VELOCITY_SCALE = 1.0;
     data->SIGOUT_BOARD0_STEPDIR2_VELOCITY_OFFSET = (float*)malloc(sizeof(float));
@@ -163,23 +163,23 @@ data_t *register_signals(void) {
     data->SIGIN_BOARD0_BITIN1_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN1_BIT = 0;
     data->SIGIN_BOARD0_BITIN1_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN1_BIT;
+    *data->SIGIN_BOARD0_BITIN1_BIT_not = 1;
     data->SIGIN_BOARD0_BITIN2_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN2_BIT = 0;
     data->SIGIN_BOARD0_BITIN2_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN2_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN2_BIT;
+    *data->SIGIN_BOARD0_BITIN2_BIT_not = 1;
     data->SIGIN_BOARD0_BITIN3_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN3_BIT = 0;
     data->SIGIN_BOARD0_BITIN3_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN3_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN3_BIT;
+    *data->SIGIN_BOARD0_BITIN3_BIT_not = 1;
     data->SIGIN_BOARD0_BITIN4_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN4_BIT = 0;
     data->SIGIN_BOARD0_BITIN4_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN4_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN4_BIT;
+    *data->SIGIN_BOARD0_BITIN4_BIT_not = 1;
     data->SIGIN_BOARD0_BITIN5_BIT = (bool*)malloc(sizeof(bool));
     *data->SIGIN_BOARD0_BITIN5_BIT = 0;
     data->SIGIN_BOARD0_BITIN5_BIT_not = (bool*)malloc(sizeof(bool));
-    *data->SIGIN_BOARD0_BITIN5_BIT_not = 1 - *data->SIGIN_BOARD0_BITIN5_BIT;
+    *data->SIGIN_BOARD0_BITIN5_BIT_not = 1;
     return data;
 }
 

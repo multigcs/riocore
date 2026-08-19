@@ -234,15 +234,15 @@ data_t *register_signals(void) {
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN0_BIT), comp_id, "fpga0.bitin0.bit")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN0_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN0_BIT_not), comp_id, "fpga0.bitin0.bit-not")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_BITIN0_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN0_BIT;
+    *data->SIGIN_FPGA0_BITIN0_BIT_not = 1;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN1_BIT), comp_id, "fpga0.bitin1.bit")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN1_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN1_BIT_not), comp_id, "fpga0.bitin1.bit-not")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_BITIN1_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN1_BIT;
+    *data->SIGIN_FPGA0_BITIN1_BIT_not = 1;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT), comp_id, "fpga0.bitin2.bit")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_BITIN2_BIT = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_BITIN2_BIT_not), comp_id, "fpga0.bitin2.bit-not")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_BITIN2_BIT_not = 1 - *data->SIGIN_FPGA0_BITIN2_BIT;
+    *data->SIGIN_FPGA0_BITIN2_BIT_not = 1;
     if ((retval = hal_pin_bit_newf(HAL_IN, &(data->SIGOUT_FPGA0_BITOUT0_BIT), comp_id, "fpga0.bitout0.bit")) != 0) error_handler(retval);
     *data->SIGOUT_FPGA0_BITOUT0_BIT = 0;
     if ((retval = hal_pin_float_newf(HAL_IN, &(data->SIGIN_FPGA0_I2C_LM75_0_TEMP_SCALE), comp_id, "fpga0.i2c_lm75_0.temp-scale")) != 0) error_handler(retval);
@@ -260,7 +260,7 @@ data_t *register_signals(void) {
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_VALID), comp_id, "fpga0.i2c_lm75_0.valid")) != 0) error_handler(retval);
     *data->SIGIN_FPGA0_I2C_LM75_0_VALID = 0;
     if ((retval = hal_pin_bit_newf(HAL_OUT, &(data->SIGIN_FPGA0_I2C_LM75_0_VALID_not), comp_id, "fpga0.i2c_lm75_0.valid-not")) != 0) error_handler(retval);
-    *data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = 1 - *data->SIGIN_FPGA0_I2C_LM75_0_VALID;
+    *data->SIGIN_FPGA0_I2C_LM75_0_VALID_not = 1;
     return data;
 }
 
