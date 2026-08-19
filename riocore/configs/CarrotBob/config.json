@@ -1,0 +1,342 @@
+{
+    "name": "CarrotBob",
+    "plugins": [
+        {
+            "type": "fpga",
+            "node_type": "CarrotBob",
+            "uid": "CarrotBob0",
+            "pos": [
+                -40.0,
+                180.0
+            ],
+            "sub": {
+                "CarrotBob0_w5500": {
+                    "name": "w5500"
+                },
+                "CarrotBob0_pwm": {
+                    "name": "pwm",
+                    "frequency": 1000
+                },
+                "CarrotBob0_shiftreg": {
+                    "name": "shiftreg",
+                    "bits": 16
+                }
+            }
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir0",
+            "is_joint": true,
+            "pos": [
+                -710.0,
+                980.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "CarrotBob0:JOINT0:STEP"
+                },
+                "dir": {
+                    "pin": "CarrotBob0:JOINT0:DIR"
+                }
+            },
+            "image": "stepper",
+            "rotate": 90
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir1",
+            "is_joint": true,
+            "pos": [
+                -230.0,
+                980.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "CarrotBob0:JOINT1:STEP"
+                },
+                "dir": {
+                    "pin": "CarrotBob0:JOINT1:DIR"
+                },
+                "en": {
+                    "pin": ""
+                }
+            },
+            "image": "stepper",
+            "rotate": 90,
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir2",
+            "is_joint": true,
+            "pos": [
+                250.0,
+                980.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "CarrotBob0:JOINT2:STEP"
+                },
+                "dir": {
+                    "pin": "CarrotBob0:JOINT2:DIR"
+                },
+                "en": {
+                    "pin": ""
+                }
+            },
+            "image": "stepper",
+            "rotate": 90,
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir3",
+            "is_joint": true,
+            "pos": [
+                730.0,
+                980.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "CarrotBob0:JOINT3:STEP"
+                },
+                "dir": {
+                    "pin": "CarrotBob0:JOINT3:DIR"
+                },
+                "en": {
+                    "pin": ""
+                }
+            },
+            "image": "stepper",
+            "rotate": 90,
+            "name": ""
+        },
+        {
+            "type": "stepdir",
+            "uid": "stepdir4",
+            "is_joint": true,
+            "pos": [
+                1210.0,
+                980.0
+            ],
+            "pins": {
+                "step": {
+                    "pin": "CarrotBob0:JOINT4:STEP"
+                },
+                "dir": {
+                    "pin": "CarrotBob0:JOINT4:DIR"
+                },
+                "en": {
+                    "pin": ""
+                }
+            },
+            "image": "stepper",
+            "rotate": 90,
+            "name": ""
+        },
+        {
+            "type": "quadencoderz",
+            "uid": "quadencoderz0",
+            "pos": [
+                1300.0,
+                700.0
+            ],
+            "pins": {
+                "a": {
+                    "pin": "CarrotBob0:ENC0:A"
+                },
+                "b": {
+                    "pin": "CarrotBob0:ENC0:B"
+                },
+                "z": {
+                    "pin": "CarrotBob0:ENC0:Z"
+                }
+            },
+            "image": "encoder_optical"
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin0",
+            "pos": [
+                40.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN0"
+                }
+            },
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin1",
+            "pos": [
+                160.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN1"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin2",
+            "pos": [
+                280.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN2"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin3",
+            "pos": [
+                400.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN3"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin4",
+            "pos": [
+                520.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN4"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin5",
+            "pos": [
+                640.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN5"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin6",
+            "pos": [
+                760.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN6"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitin",
+            "uid": "bitin7",
+            "pos": [
+                880.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:IO:IN7"
+                }
+            },
+            "name": "",
+            "image": "proximity",
+            "rotate": -90
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout0",
+            "pos": [
+                -550.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:RELAIS:OUT0"
+                }
+            },
+            "image": "relay",
+            "rotate": -90
+        },
+        {
+            "type": "bitout",
+            "uid": "bitout1",
+            "pos": [
+                -290.0,
+                -460.0
+            ],
+            "pins": {
+                "bit": {
+                    "pin": "CarrotBob0:RELAIS:OUT1"
+                }
+            },
+            "image": "relay",
+            "rotate": -90,
+            "name": ""
+        },
+        {
+            "type": "quadencoder",
+            "uid": "quadencoder0",
+            "pos": [
+                -300.0,
+                500.0
+            ],
+            "pins": {
+                "a": {
+                    "pin": "CarrotBob0:MPG:JOG_A"
+                },
+                "b": {
+                    "pin": "CarrotBob0:MPG:JOG_B"
+                }
+            },
+            "image": "encoder"
+        }
+    ],
+    "flow": {
+        "view": {
+            "scale": 0.64,
+            "pos": [
+                -633,
+                -344
+            ]
+        }
+    }
+}

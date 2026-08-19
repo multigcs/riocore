@@ -147,6 +147,12 @@ XACTUAL position / Feedback
  * direction: input
  * unit: unit
 
+### tstep:
+tstep
+
+ * type: float
+ * direction: input
+
 ### fault:
 TMC5160 driver error or short/overtemperature
 
@@ -167,6 +173,11 @@ TMC5160 driver error or short/overtemperature
  * direction: output
 
 ### position:
+
+ * size: 32 bit
+ * direction: input
+
+### tstep:
 
  * size: 32 bit
  * direction: input
