@@ -23,6 +23,7 @@
     {
       "type": "w5500",
       "uid": "w5500",
+      "name": "w5500",
       "pins": {
         "mosi": {
           "pin": "10"
@@ -40,11 +41,35 @@
           "pin": "9"
         }
       },
+      "visible": false,
+        "rsize": [
+            50,
+            50
+        ],
       "rpos": [
-        1560,
-        338
-      ],
-      "_image": "w5500mini"
+        1600,
+        625
+      ]
+    },
+    {
+        "type": "pwmout",
+        "pins": {
+            "pwm": {
+                "pin": "18"
+            }
+        },
+        "name": "pwm0",
+        "frequency": 1000,
+        "uid": "pwmout0",
+        "visible": false,
+        "rsize": [
+            50,
+            50
+        ],
+        "rpos": [
+            1560,
+            138
+        ]
     },
     {
         "type": "shiftreg",
@@ -65,432 +90,43 @@
         "name": "shiftreg",
         "bits": 24,
         "uid": "shiftreg0",
+        "pinpos": {
+            "INPUT:0": [18, 10],
+            "INPUT:1": [218, 160],
+            "INPUT:2": [218, 260],
+            "INPUT:3": [218, 360]
+        },
+        "rsize": [
+            150,
+            50
+        ],
         "rpos": [
-            2150,
-            18
+            360,
+            450
         ]
     }
   ],
   "slots": [
     {
-      "name": "SPI",
-      "comment": "SPI",
-      "default": "spi",
+      "name": "JOINT1",
+      "comment": "JOINT1",
+      "default": "stepdir",
       "pins": {
-        "FLASH_CS": {
-          "pin": "16",
-          "pos": [
-            20,
-            249
-          ],
-          "direction": "all"
-        },
-        "SCLK": {
-          "pin": "15",
-          "pos": [
-            20,
-            273
-          ],
-          "direction": "all"
-        },
-        "MISO": {
-          "pin": "17",
-          "comment": "IO0",
-          "pos": [
-            20,
-            294
-          ],
-          "direction": "all"
-        },
-        "MOSI": {
-          "pin": "14",
-          "comment": "IO1",
-          "pos": [
-            20,
-            316
-          ],
-          "direction": "all"
-        },
-        "SEL": {
-          "pin": "12",
-          "comment": "IO2",
-          "pos": [
-            20,
-            338
-          ],
-          "direction": "all"
-        },
-        "IO3": {
-          "pin": "13",
-          "comment": "IO3",
-          "pos": [
-            20,
-            358
-          ],
-          "direction": "all"
-        },
-        "GND_1": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            20,
-            380
-          ],
-          "direction": "all"
-        },
-        "GND_2": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            87,
-            380
-          ],
-          "direction": "all"
-        },
-        "RST": {
-          "pin": "RST",
-          "marker": true,
-          "pos": [
-            65,
-            380
-          ],
-          "direction": "all"
-        }
-      }
-    },
-    {
-      "name": "PWR",
-      "pins": {
-        "5V_1": {
-          "pin": "5V",
-          "marker": true,
-          "pos": [
-            65,
-            427
-          ],
-          "direction": "all"
-        },
-        "GND_1": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            65,
-            451
-          ],
-          "direction": "all"
-        },
-        "5V_2": {
-          "pin": "5V",
-          "marker": true,
-          "pos": [
-            294,
-            247
-          ],
-          "direction": "all"
-        },
-        "GND_2": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            318,
-            247
-          ],
-          "direction": "all"
-        }
-      }
-    },
-    {
-      "name": "PMOD1A",
-      "comment": "PMOD 1A",
-      "pins": {
-        "P1": {
-          "pin": "4",
-          "pos": [
-            294,
-            91
-          ]
-        },
-        "P2": {
-          "pin": "2",
-          "pos": [
-            294,
-            112
-          ]
-        },
-        "P3": {
-          "pin": "47",
-          "pos": [
-            294,
-            132
-          ]
-        },
-        "P4": {
-          "pin": "45",
-          "pos": [
-            294,
-            154
-          ]
-        },
-        "P7": {
-          "pin": "3",
-          "pos": [
-            318,
-            91
-          ]
-        },
-        "P8": {
-          "pin": "48",
-          "pos": [
-            318,
-            112
-          ]
-        },
-        "P9": {
-          "pin": "46",
-          "pos": [
-            318,
-            132
-          ]
-        },
-        "P10": {
+        "STEP": {
           "pin": "44",
           "pos": [
-            318,
-            154
-          ]
-        },
-        "GND_1": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            318,
-            176
+            115,
+            485
           ],
-          "direction": "all"
+          "direction": "output"
         },
-        "GND_2": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            294,
-            176
-          ],
-          "direction": "all"
-        },
-        "3V3_1": {
-          "pin": "3V3",
-          "marker": true,
-          "pos": [
-            318,
-            198
-          ],
-          "direction": "all"
-        },
-        "3V3_2": {
-          "pin": "3V3",
-          "marker": true,
-          "pos": [
-            294,
-            198
-          ],
-          "direction": "all"
-        }
-      }
-    },
-    {
-      "name": "PMOD1B",
-      "comment": "PMOD 1B",
-      "pins": {
-        "P1": {
+        "DIR": {
           "pin": "43",
           "pos": [
-            294,
-            294
-          ]
-        },
-        "P2": {
-          "pin": "38",
-          "pos": [
-            294,
-            316
-          ]
-        },
-        "P3": {
-          "pin": "34",
-          "pos": [
-            294,
-            338
-          ]
-        },
-        "P4": {
-          "pin": "31",
-          "pos": [
-            294,
-            360
-          ]
-        },
-        "P7": {
-          "pin": "42",
-          "pos": [
-            318,
-            294
-          ]
-        },
-        "P8": {
-          "pin": "36",
-          "pos": [
-            318,
-            316
-          ]
-        },
-        "P9": {
-          "pin": "32",
-          "pos": [
-            318,
-            338
-          ]
-        },
-        "P10": {
-          "pin": "28",
-          "pos": [
-            318,
-            360
-          ]
-        },
-        "GND_1": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            318,
-            382
+            55,
+            485
           ],
-          "direction": "all"
-        },
-        "GND_2": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            294,
-            382
-          ],
-          "direction": "all"
-        },
-        "3V3_1": {
-          "pin": "3V3",
-          "marker": true,
-          "pos": [
-            318,
-            404
-          ],
-          "direction": "all"
-        },
-        "3V3_2": {
-          "pin": "3V3",
-          "marker": true,
-          "pos": [
-            294,
-            404
-          ],
-          "direction": "all"
-        }
-      }
-    },
-    {
-      "name": "PMOD2",
-      "comment": "PMOD2",
-      "default": "",
-      "pins": {
-        "P1": {
-          "pin": "27",
-          "pos": [
-            227,
-            429
-          ]
-        },
-        "P2": {
-          "pin": "25",
-          "pos": [
-            203,
-            429
-          ]
-        },
-        "P3": {
-          "pin": "21",
-          "pos": [
-            180,
-            429
-          ]
-        },
-        "P4": {
-          "pin": "19",
-          "pos": [
-            156,
-            429
-          ]
-        },
-        "P7": {
-          "pin": "26",
-          "pos": [
-            227,
-            453
-          ]
-        },
-        "P8": {
-          "pin": "23",
-          "pos": [
-            203,
-            453
-          ]
-        },
-        "P9": {
-          "pin": "20",
-          "pos": [
-            180,
-            453
-          ]
-        },
-        "P10": {
-          "pin": "18",
-          "pos": [
-            156,
-            453
-          ]
-        },
-        "GND_1": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            134,
-            453
-          ],
-          "direction": "all"
-        },
-        "GND_2": {
-          "pin": "GND",
-          "marker": true,
-          "pos": [
-            134,
-            429
-          ],
-          "direction": "all"
-        },
-        "3V3_1": {
-          "pin": "3V3",
-          "marker": true,
-          "pos": [
-            112,
-            453
-          ],
-          "direction": "all"
-        },
-        "3V3_2": {
-          "pin": "3V3",
-          "marker": true,
-          "pos": [
-            112,
-            429
-          ],
-          "direction": "all"
+          "direction": "output"
         }
       }
     }

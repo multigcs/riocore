@@ -439,6 +439,12 @@ class MyNode(QGraphicsItem):
     def update_size(self):
         np_left = 0
         np_right = 0
+
+        if rsize := self.flow_cfg.get("rsize"):
+            self.width = rsize[0]
+            self.height = rsize[1]
+            return
+
         for pin_name, pin_data in self.ports.items():
             if pin_data["edge"] == "target":
                 np_left += 1
@@ -515,7 +521,7 @@ class MyNode(QGraphicsItem):
                 return
         else:
             self.flow_cfg["pos"] = (pos_x, pos_y)
-        if self.pixmap:
+        if self.pixmap and self.flow_cfg.get("visible") is not False:
             painter.drawPixmap(0, 0, self.pixmap)
             painter.setRenderHint(QPainter.Antialiasing)
             path = QPainterPath()
@@ -538,13 +544,22 @@ class MyNode(QGraphicsItem):
 
         painted_ports = []
         for port_name, port_data in self.ports.items():
-            # print(port_data)
             if not port_data.get("pos"):
                 continue
-            if port_data.get("visible") is False:
+            rpos = port_data.get("rpos")
+            if port_data.get("visible") is False and not rpos:
                 continue
-            pos_x = port_data["pos"][0]
-            pos_y = port_data["pos"][1]
+
+            if rpos:
+                # TODO: draw on parent board - self.plugin_instance.SUB_OF
+                pos_x = rpos[0]
+                pos_y = rpos[1]
+            else:
+                if self.flow_cfg.get("visible") is False:
+                    continue
+                pos_x = port_data["pos"][0]
+                pos_y = port_data["pos"][1]
+
             rotate = port_data.get("rotate", 0)
             pos_x, pos_y = self.rotate_xy((pos_x, pos_y))
             key = f"{pos_x}-{pos_y}"
@@ -731,6 +746,9 @@ class PluginNode(MyNode):
             if pin_type is None:
                 pin_data["type"] = "FPGA"
             self.ports[pin_name] = pin_data
+            pinpos = self.plugin_instance.plugin_setup.get("pinpos", {}).get(pin_name)
+            if pinpos:
+                self.ports[pin_name]["rpos"] = pinpos
 
         if show_signals:
             for pin_name, pin_data in self.plugin_instance.SIGNALS.items():
@@ -855,7 +873,6 @@ class SubNode(MyNode):
         super().__init__(scene, x, y)
         self.parent = parent
         self.name = title
-        self.ports = {}
         self.ports = ports
         self.width = 200
         self.setZValue(9)
@@ -1841,7 +1858,7 @@ class Window(QMainWindow):
             if "sub" not in plugin:
                 continue
             for sub_uid, sub_config in plugin["sub"].items():
-                for fixed_option in ("image", "rpos", "type", "pins", "rotate", "uid"):
+                for fixed_option in ("image", "rpos", "type", "pins", "rotate", "uid", "pinpos", "visible", "rsize"):
                     if fixed_option in sub_config:
                         del sub_config[fixed_option]
 
