@@ -47,8 +47,8 @@
             50
         ],
       "rpos": [
-        1600,
-        625
+        993,
+        593
       ]
     },
     {
@@ -56,19 +56,22 @@
         "pins": {
             "pwm": {
                 "pin": "18"
+            },
+            "dir": {
+                "pin": "19"
             }
         },
-        "name": "pwm0",
+        "name": "pwm",
         "frequency": 1000,
-        "uid": "pwmout0",
+        "uid": "pwm",
         "visible": false,
         "rsize": [
-            50,
-            50
+            40,
+            40
         ],
         "rpos": [
-            1560,
-            138
+            1180,
+            230
         ]
     },
     {
@@ -88,25 +91,42 @@
             }
         },
         "name": "shiftreg",
-        "bits": 24,
-        "uid": "shiftreg0",
-        "pinpos": {
-            "INPUT:0": [18, 10],
-            "INPUT:1": [18, 20],
-            "INPUT:2": [18, 30],
-            "INPUT:3": [18, 40]
-        },
+        "bits": 16,
+        "uid": "shiftreg",
+        "visible": false,
         "rsize": [
-            150,
-            50
+            75,
+            30
         ],
         "rpos": [
-            360,
-            450
+            375,
+            520
         ]
     }
   ],
   "slots": [
+    {
+      "name": "RELAIS",
+      "default": "bitout",
+      "pins": {
+        "OUT0": {
+          "pin": "36",
+          "pos": [
+            165,
+            60
+          ],
+          "direction": "output"
+        },
+        "OUT1": {
+          "pin": "37",
+          "pos": [
+            225,
+            60
+          ],
+          "direction": "output"
+        }
+      }
+    },
     {
       "name": "JOINT0",
       "default": "stepdir",
@@ -218,6 +238,88 @@
       }
     },
     {
+      "name": "PWR",
+      "pins": {
+        "GND_0": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            683,
+            60
+          ],
+          "direction": "input"
+        },
+        "GND_1": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            713,
+            60
+          ],
+          "direction": "input"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            750,
+            60
+          ],
+          "direction": "input"
+        },
+        "24V": {
+          "pin": "24V",
+          "marker": true,
+          "pos": [
+            780,
+            60
+          ],
+          "direction": "input"
+        },
+        "PE_0": {
+          "pin": "PE",
+          "marker": true,
+          "pos": [
+            810,
+            60
+          ],
+          "direction": "input"
+        },
+        "PE_1": {
+          "pin": "PE",
+          "marker": true,
+          "pos": [
+            840,
+            60
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "SPINDLE",
+      "pins": {
+        "OUT": {
+          "pin": "0-10V",
+          "marker": true,
+          "pos": [
+            623,
+            60
+          ],
+          "direction": "output"
+        },
+        "CW": {
+          "pin": "CW",
+          "marker": true,
+          "pos": [
+            653,
+            60
+          ],
+          "direction": "output"
+        }
+      }
+    },
+    {
       "name": "ENC0",
       "default": "quadencoderz",
       "pins": {
@@ -246,6 +348,212 @@
           "direction": "input"
         }
       }
+    },
+    {
+      "name": "IO",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "IN0": {
+          "pin": "28",
+          "pos": [
+            368,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN1": {
+          "pin": "27",
+          "pos": [
+            398,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN2": {
+          "pin": "26",
+          "pos": [
+            428,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN3": {
+          "pin": "25",
+          "pos": [
+            458,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN4": {
+          "pin": "23",
+          "pos": [
+            498,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN5": {
+          "pin": "21",
+          "pos": [
+            528,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN6": {
+          "pin": "20",
+          "pos": [
+            558,
+            60
+          ],
+          "direction": "input"
+        },
+        "IN7": {
+          "pin": "6",
+          "pos": [
+            588,
+            60
+          ],
+          "direction": "input"
+        }
+      }
+    },
+    {
+      "name": "MPG",
+      "comment": "",
+      "default": "",
+      "pins": {
+        "ESTOP": {
+          "pin": "shiftreg:INPUT:9",
+          "pos": [
+            85,
+            240
+          ],
+          "direction": "input"
+        },
+        "X10": {
+          "pin": "shiftreg:INPUT:0",
+          "pos": [
+            85,
+            260
+          ],
+          "direction": "input"
+        },
+        "6": {
+          "pin": "",
+          "marker": true,
+          "pos": [
+            85,
+            280
+          ],
+          "direction": "input"
+        },
+        "A": {
+          "pin": "shiftreg:INPUT:2",
+          "pos": [
+            85,
+            300
+          ],
+          "direction": "input"
+        },
+        "Y": {
+          "pin": "shiftreg:INPUT:6",
+          "pos": [
+            85,
+            320
+          ],
+          "direction": "input"
+        },
+        "JOG_B": {
+          "pin": "shiftreg:INPUT:5",
+          "pos": [
+            85,
+            340
+          ],
+          "direction": "input"
+        },
+        "JOG_A": {
+          "pin": "shiftreg:INPUT:10",
+          "pos": [
+            85,
+            360
+          ],
+          "direction": "input"
+        },
+
+        "GND": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            65,
+            240
+          ],
+          "direction": "input"
+        },
+
+        "X100": {
+          "pin": "shiftreg:INPUT:1",
+          "pos": [
+            65,
+            260
+          ],
+          "direction": "input"
+        },
+        "X1": {
+          "pin": "shiftreg:INPUT:3",
+          "pos": [
+            65,
+            280
+          ],
+          "direction": "input"
+        },
+        "C": {
+          "pin": "shiftreg:INPUT:7",
+          "pos": [
+            65,
+            300
+          ],
+          "direction": "input"
+        },
+        "Z": {
+          "pin": "shiftreg:INPUT:4",
+          "pos": [
+            65,
+            320
+          ],
+          "direction": "input"
+        },
+        "X": {
+          "pin": "shiftreg:INPUT:11",
+          "pos": [
+            65,
+            340
+          ],
+          "direction": "input"
+        },
+        "GND_2": {
+          "pin": "GND",
+          "marker": true,
+          "pos": [
+            65,
+            360
+          ],
+          "direction": "output"
+        },
+        "ENC_PWR": {
+          "pin": "5V",
+          "marker": true,
+          "pos": [
+            65,
+            380
+          ],
+          "direction": "output"
+        }
+      }
+
     }
+
   ]
 }

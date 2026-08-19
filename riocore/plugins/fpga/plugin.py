@@ -273,6 +273,8 @@ class Plugin(PluginBase):
         for connected_pin in parent.get_all_plugin_pins(configured=True, prefix=self.instances_name):
             psetup = connected_pin["setup"]
             pin = connected_pin["pin"]
+            if ":" in pin:
+                pin = f"{self.plugin_setup['uid']}_{pin}"
             psetup["pin"] = pin
 
     def hal(self, parent):
