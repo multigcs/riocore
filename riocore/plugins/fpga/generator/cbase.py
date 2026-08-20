@@ -1279,6 +1279,11 @@ class cbase:
         output.append("void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) int64_t period) {")
         output.append("    int ret = 0;")
         output.append("    uint8_t i = 0;")
+        autoconnect = self.project.config["jdata"].get("linuxcnc", {}).get("autoconnect", False)
+        if autoconnect:
+            output.append("    static uint8_t autoconnect = 1;")
+        else:
+            output.append("    static uint8_t autoconnect = 0;")
         output.append("    uint8_t rxBuffer[BUFFER_SIZE_RX * 2];")
         output.append("    uint8_t txBuffer[BUFFER_SIZE_TX * 2];")
         output.append("    int64_t stamp_new = rtapi_get_time();")
@@ -1297,10 +1302,12 @@ class cbase:
         if libmode or autostart:
             output.append("    if (1) {")
         elif self.newhal:
-            output.append("    if (hal_get_bool(data->sys_enable) == 1 || hal_get_bool(data->sys_enable_request) == 1) {")
+            output.append("    if (hal_get_bool(data->sys_enable) == 1 || hal_get_bool(data->sys_enable_request) == 1 || autoconnect == 1) {")
         else:
-            output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {")
+            output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1 || autoconnect == 1) {")
 
+        if autoconnect:
+            output.append("        autoconnect = 0;")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         if self.newhal:

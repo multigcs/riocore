@@ -848,6 +848,7 @@ void read_rxbuffer(uint8_t *rxBuffer) {
 void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) int64_t period) {
     int ret = 0;
     uint8_t i = 0;
+    static uint8_t autoconnect = 0;
     uint8_t rxBuffer[BUFFER_SIZE_RX * 2];
     uint8_t txBuffer[BUFFER_SIZE_TX * 2];
     int64_t stamp_new = rtapi_get_time();
@@ -856,7 +857,7 @@ void rio_readwrite(__attribute__((unused)) void *inst, __attribute__((unused)) i
     fpga_stamp_last = timestamp;
     stamp_last = stamp_new;
     servo_period = period;
-    if (*data->sys_enable == 1 || *data->sys_enable_request == 1) {
+    if (*data->sys_enable == 1 || *data->sys_enable_request == 1 || autoconnect == 1) {
         pkg_counter += 1;
         convert_outputs();
         if (*data->sys_simulation != 1) {

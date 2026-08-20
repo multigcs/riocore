@@ -1757,6 +1757,7 @@ class TabOptions:
             "embed_vismach": {"type": "select", "options": ["", "fanuc_200f"], "default": ""},
             "scurve": {"type": bool, "help_text": "enable scurve support (linuxcnc >= v2.10)", "default": False},
             "debug_info": {"type": bool, "help_text": "Displays some debug infos in VCP", "default": False},
+            "autoconnect": {"type": bool, "help_text": "autoconnect at startup (estop)", "default": False},
             "postgui_prefixes": {"type": str, "help_text": "comma separated list of postgui_prefixes", "default": "", "need_enter": False},
         }.items():
             row = QHBoxLayout()
