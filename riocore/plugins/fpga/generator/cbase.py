@@ -1306,8 +1306,8 @@ class cbase:
         else:
             output.append("    if (*data->sys_enable == 1 || *data->sys_enable_request == 1 || autoconnect == 1) {")
 
-        if autoconnect:
-            output.append("        autoconnect = 0;")
+        # if autoconnect:
+        #    output.append("        autoconnect = 0;")
         output.append("        pkg_counter += 1;")
         output.append("        convert_outputs();")
         if self.newhal:
