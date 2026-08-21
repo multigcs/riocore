@@ -1743,7 +1743,7 @@ class TabOptions:
         row.addWidget(self.item_name)
 
         for key, var_setup in {
-            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa"], "help_text": "type of the machine"},
+            "machinetype": {"type": "select", "options": ["mill", "lathe", "corexy", "ldelta", "rdelta", "scara", "puma", "melfa", "xyzac-trt-kins"], "help_text": "type of the machine"},
             "toolchange": {"type": "select", "options": ["manual", "auto"], "default": "manual", "help_text": "type of the toolchanger"},
             "gui": {
                 "type": "select",

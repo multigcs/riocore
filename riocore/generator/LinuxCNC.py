@@ -542,6 +542,17 @@ class LinuxCNC:
             ini_setup["HALUI"]["MDI_COMMAND||Coord|Joint"] = "M429"
             ini_setup["HALUI"]["MDI_COMMAND||Coord|Gensertool"] = "M430"
 
+        elif machinetype in {"xyzac-trt-kins"}:
+            kinematics = "xyzac-trt-kins"
+            kinematics_options = " sparm=identityfirst "
+            ini_setup["RS274NGC"]["HAL_PIN_VARS"] = "1"
+            ini_setup["RS274NGC"]["REMAP|M428"] = "M428 modalgroup=10 ngc=428remap"
+            ini_setup["RS274NGC"]["REMAP|M429"] = "M429 modalgroup=10 ngc=429remap"
+            ini_setup["RS274NGC"]["REMAP|M430"] = "M430 modalgroup=10 ngc=430remap"
+            ini_setup["HALUI"]["MDI_COMMAND||Coord|IDENTITY"] = "M429"
+            ini_setup["HALUI"]["MDI_COMMAND||Coord|XYZAC"] = "M428"
+            ini_setup["HALUI"]["MDI_COMMAND||Coord|USERK"] = "M430"
+
         if embed_vismach:
             ini_setup["DISPLAY"]["EMBED_TAB_NAME|VISMACH"] = "Vismach"
             ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|VISMACH"] = f"halcmd loadusr -Wn qtvcp_embed qtvcp -d -c qtvcp_embed -x {{XID}} vismach_{embed_vismach}"
@@ -1916,6 +1927,13 @@ if __name__ == "__main__":
 
                     gui_gen.draw_hbox_end()
 
+                elif machinetype in {"xyzac-trt-kins"}:
+                    if hasattr(gui_gen, "draw_multilabel"):
+                        pname = gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["IDENTITY", "XYZAC", "USERK"]})
+                        self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
+                        self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
+                        self.halg.net_add("kinstype.is-2", f"{pname}.legend2")
+
                 # buttons
                 gui_gen.draw_frame_begin("MDI-Commands")
                 gui_gen.draw_vbox_begin()
@@ -2311,6 +2329,9 @@ if __name__ == "__main__":
             self.halg.fmt_add_top("# loading rotarydelta gl-view")
             self.halg.fmt_add_top("loadusr -W rotarydelta MIN_JOINT=-420")
             self.halg.fmt_add_top("")
+        elif machinetype in {"xyzac-trt-kins"}:
+            self.halg.fmt_add_top("net :kinstype-select <= motion.analog-out-03 => motion.switchkins-type")
+
         elif machinetype in {"melfa", "melfa_nogl"}:
             if machinetype != "melfa_nogl":
                 self.halg.fmt_add_top("# loading melfa gui")
@@ -2495,6 +2516,8 @@ if __name__ == "__main__":
         axis_names = "XYZACBUVW"
         if machinetype in {"melfa", "melfa_nogl", "puma"}:
             axis_names = "XYZABC"
+        elif machinetype in {"xyzac-trt-kins"}:
+            axis_names = "XYZAC"
 
         axis_config = {}
         for plugin_instance in project.plugin_instances:
