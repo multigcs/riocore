@@ -608,6 +608,8 @@ class edit_bool(QCheckBox):
         if help_text:
             self.setToolTip(help_text)
         if key in obj:
+            if not isinstance(obj[key], bool):
+                obj[key] = bool(obj[key])
             self.setChecked(obj[key])
         elif default is not None:
             self.setChecked(default)
