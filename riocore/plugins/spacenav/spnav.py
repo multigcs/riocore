@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 #
 #
-"""manual hal configuration!!!
+"""
+# install libs:
+
+sudo apt-get install libspnav-dev spacenavd
+git clone https://github.com/mastersign/pyspacenav.git
+cd pyspacenav
+sudo python3 setup.py install
+
+
+# manual hal configuration!!!
 
 loadusr -Wn spacenav ./spnav.py
 
