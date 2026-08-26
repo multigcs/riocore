@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 #
 #
-"""
-# install libs:
+"""# install libs:
 
 sudo apt-get install libspnav-dev spacenavd
 git clone https://github.com/mastersign/pyspacenav.git

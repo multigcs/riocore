@@ -151,8 +151,8 @@ class Plugin(PluginBase):
                     "edge": "source",
                     "optional": True,
                     "pintype": "FPGA",
-                    "type": ["FPGA"],
-                    "pin": f"{self.instances_name}:{pin_data['pin']}",
+                    "type": pin_data.get("type", ["FPGA"]),
+                    "bus": pin_data.get("bus", False),
                     "pos": pin_data.get("pos", (0, 0)),
                     "rotate": pin_data.get("rotate", 0.0),
                     "visible": pin_data.get("visible", True),
@@ -161,6 +161,8 @@ class Plugin(PluginBase):
                     "special": pin_data.get("special", False),
                     "marker": pin_data.get("marker", False),
                 }
+                if not pin_data.get("bus", False):
+                    self.PINDEFAULTS[f"{slot_name}:{pin_name}"]["pin"] = f"{self.instances_name}:{pin_data['pin']}"
 
         self.fpga_num = 0
         self.hal_prefix = ""

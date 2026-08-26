@@ -10,20 +10,18 @@ from riocore.plugins import PluginBase
 
 class Plugin(PluginBase):
     def setup(self):
-        self.NAME = "axi"
-        self.INFO = "axi interface for armcore comunication"
-        self.DESCRIPTION = "axi driver for the interface communication to an embedded arm-core"
+        self.NAME = "udp2axi"
+        self.INFO = "udp2axi interface for armcore comunication"
+        self.DESCRIPTION = "udp2axi driver for the interface communication to an embedded arm-core"
         self.KEYWORDS = "zynq xilinx interface"
         self.ORIGIN = ""
-        self.NEEDS = ["fpga"]
+        self.NEEDS = ["axi"]
         self.TYPE = "interface"
         self.HOST_INTERFACE = "UDP"
         self.SYM_IO = True
         self.VERILOGS = []
         self.PINDEFAULTS = {
-            "led1": {
-                "direction": "output",
-            }
+            "AXI": {"direction": "output", "edge": "target", "pos": [45, 40], "type": ["AXI"], "bus": True},
         }
         self.EXPERIMENTAL = True
         self.OPTIONS = {
@@ -80,7 +78,7 @@ class Plugin(PluginBase):
             self.gateware = gateware
             verilog_data = [
                 """
-module axi
+module udp2axi
     #(
          parameter BUFFER_SIZE_RX=16'd64,
          parameter BUFFER_SIZE_TX=16'd64
@@ -309,7 +307,7 @@ module axi
 endmodule
 """
             ]
-            self.VERILOGS_DATA = {"axi.v": "\n".join(verilog_data)}
+            self.VERILOGS_DATA = {"udp2axi.v": "\n".join(verilog_data)}
 
         instances = self.gateware_instances_base()
         instance = instances[self.instances_name]

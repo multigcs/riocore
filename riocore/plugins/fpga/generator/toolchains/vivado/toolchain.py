@@ -104,6 +104,8 @@ class Toolchain:
                 for pin, pin_config in pins.items():
                     if pin_config["varname"] == "sysclk_in":
                         continue
+                    if pin_config.get("bus"):
+                        continue
                     if pin_config["direction"] == "output":
                         dir_ch = "O"
                     elif pin_config["direction"] == "input":
@@ -275,10 +277,12 @@ class Toolchain:
             makefile_data.append("load:")
             makefile_data.append(f"	{flashcmd}")
             makefile_data.append("	cp -v hash_new.txt hash_flashed.txt")
+            makefile_data.append("")
             flashcmd_ram = self.config.get("flashcmd_ram")
             if flashcmd_ram:
                 makefile_data.append("sload:")
                 makefile_data.append(f"	{flashcmd_ram}")
+                makefile_data.append("")
         else:
             makefile_data.append("xc3sprog:")
             makefile_data.append(f"	xc3sprog -c nexys4 {bitfileName}")

@@ -1,476 +1,499 @@
 {
-  "name": "EBAZ4205",
-  "description": "EBAZ4205 - WIP",
-  "url": "https://github.com/xjtuecho/EBAZ4205",
-  "size": [
-    100,
-    97
-  ],
-  "toolchain": "vivado",
-  "family": "XC7",
-  "type": "xc7z010clg400-1",
-  "package": "csg324",
-  "armcore": true,
-  "clock": {
-    "speed": "100000000"
-  },
-  "slots": [
-    {
-      "name": "OPTO",
-      "pins": {
-        "1": {
-          "comment": "J3_SPEED",
-          "pin": "V13",
-          "pos": [
-            465,
-            91
-          ],
-          "direction": "input"
-        },
-        "2": {
-          "comment": "J3_PWM",
-          "pin": "U12",
-          "pos": [
-            465,
-            109
-          ],
-          "direction": "output"
-        },
-        "3": {
-          "comment": "J5_SPEED",
-          "pin": "V15",
-          "pos": [
-            556,
-            91
-          ],
-          "direction": "input"
-        },
-        "4": {
-          "comment": "J5_PWM",
-          "pin": "V12",
-          "pos": [
-            556,
-            109
-          ],
-          "direction": "output"
-        }
-      }
+    "name": "EBAZ4205",
+    "description": "EBAZ4205 - WIP",
+    "url": "https://github.com/xjtuecho/EBAZ4205",
+    "size": [
+        100,
+        97
+    ],
+    "toolchain": "vivado",
+    "family": "XC7",
+    "type": "xc7z010clg400-1",
+    "package": "csg324",
+    "armcore": true,
+    "provides": [
+        "axi"
+    ],
+    "clock": {
+        "speed": "100000000"
     },
-    {
-      "name": "DATA1",
-      "pins": {
-        "20": {
-          "pin": "K17",
-          "rotate": true,
-          "pos": [
-            354,
-            573
-          ],
-          "direction": "all"
+    "flashcmd": "openFPGALoader -c usb-blaster --unprotect-flash -f rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit",
+    "flashcmd_ram": "openFPGALoader -c usb-blaster rio-rtl/rio-rtl.runs/impl_1/bd_rio_wrapper.bit",
+    "slots": [
+        {
+            "name": "BUS",
+            "pins": {
+                "IO": {
+                    "comment": "AXI",
+                    "type": [
+                        "AXI"
+                    ],
+                    "bus": true,
+                    "pin": "AXI",
+                    "pos": [
+                        90,
+                        30
+                    ],
+                    "direction": "output"
+                }
+            }
         },
-        "19": {
-          "pin": "F19",
-          "rotate": true,
-          "pos": [
-            354,
-            540
-          ],
-          "direction": "all"
+        {
+            "name": "OPTO",
+            "pins": {
+                "1": {
+                    "comment": "J3_SPEED",
+                    "pin": "V13",
+                    "pos": [
+                        475,
+                        100
+                    ],
+                    "direction": "input"
+                },
+                "2": {
+                    "comment": "J3_PWM",
+                    "pin": "U12",
+                    "pos": [
+                        475,
+                        120
+                    ],
+                    "direction": "output"
+                },
+                "3": {
+                    "comment": "J5_SPEED",
+                    "pin": "V15",
+                    "pos": [
+                        556,
+                        100
+                    ],
+                    "direction": "input"
+                },
+                "4": {
+                    "comment": "J5_PWM",
+                    "pin": "V12",
+                    "pos": [
+                        556,
+                        120
+                    ],
+                    "direction": "output"
+                }
+            }
         },
-        "18": {
-          "pin": "E19",
-          "rotate": true,
-          "pos": [
-            367,
-            573
-          ],
-          "direction": "all"
+        {
+            "name": "DATA1",
+            "pins": {
+                "20": {
+                    "pin": "K17",
+                    "rotate": true,
+                    "pos": [
+                        370.0,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "19": {
+                    "pin": "F19",
+                    "rotate": true,
+                    "pos": [
+                        370.0,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "18": {
+                    "pin": "E19",
+                    "rotate": true,
+                    "pos": [
+                        384.3,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "17": {
+                    "pin": "F20",
+                    "rotate": true,
+                    "pos": [
+                        384.3,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "16": {
+                    "pin": "D19",
+                    "rotate": true,
+                    "pos": [
+                        400.8,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "15": {
+                    "pin": "H18",
+                    "rotate": true,
+                    "pos": [
+                        400.8,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "14": {
+                    "pin": "D18",
+                    "rotate": true,
+                    "pos": [
+                        414.0,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "13": {
+                    "pin": "D20",
+                    "rotate": true,
+                    "pos": [
+                        414.0,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "11": {
+                    "pin": "H17",
+                    "rotate": true,
+                    "pos": [
+                        430.5,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "9": {
+                    "pin": "C20",
+                    "rotate": true,
+                    "pos": [
+                        444.8,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "8": {
+                    "pin": "B20",
+                    "rotate": true,
+                    "pos": [
+                        460.2,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "7": {
+                    "pin": "B19",
+                    "rotate": true,
+                    "pos": [
+                        460.2,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "6": {
+                    "pin": "H16",
+                    "rotate": true,
+                    "pos": [
+                        474.5,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "5": {
+                    "pin": "A20",
+                    "rotate": true,
+                    "pos": [
+                        474.5,
+                        553.0
+                    ],
+                    "direction": "all"
+                }
+            }
         },
-        "17": {
-          "pin": "F20",
-          "rotate": true,
-          "pos": [
-            367,
-            540
-          ],
-          "direction": "all"
+        {
+            "name": "DATA2",
+            "pins": {
+                "20": {
+                    "pin": "L17",
+                    "rotate": true,
+                    "pos": [
+                        217.0,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "19": {
+                    "pin": "M20",
+                    "rotate": true,
+                    "pos": [
+                        217.0,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "18": {
+                    "pin": "L20",
+                    "rotate": true,
+                    "pos": [
+                        230.2,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "17": {
+                    "pin": "M18",
+                    "rotate": true,
+                    "pos": [
+                        230.2,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "16": {
+                    "pin": "L19",
+                    "rotate": true,
+                    "pos": [
+                        246.7,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "15": {
+                    "pin": "L16",
+                    "rotate": true,
+                    "pos": [
+                        246.7,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "14": {
+                    "pin": "J20",
+                    "rotate": true,
+                    "pos": [
+                        261.0,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "13": {
+                    "pin": "K19",
+                    "rotate": true,
+                    "pos": [
+                        261.0,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "11": {
+                    "pin": "K18",
+                    "rotate": true,
+                    "pos": [
+                        276.4,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "9": {
+                    "pin": "J19",
+                    "rotate": true,
+                    "pos": [
+                        290.7,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "8": {
+                    "pin": "H20",
+                    "rotate": true,
+                    "pos": [
+                        307.2,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "7": {
+                    "pin": "G19",
+                    "rotate": true,
+                    "pos": [
+                        307.2,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "6": {
+                    "pin": "J18",
+                    "rotate": true,
+                    "pos": [
+                        320.4,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "5": {
+                    "pin": "G20",
+                    "rotate": true,
+                    "pos": [
+                        320.4,
+                        553.0
+                    ],
+                    "direction": "all"
+                }
+            }
         },
-        "16": {
-          "pin": "D19",
-          "rotate": true,
-          "pos": [
-            382,
-            573
-          ],
-          "direction": "all"
+        {
+            "name": "DATA3",
+            "pins": {
+                "20": {
+                    "pin": "U19",
+                    "rotate": true,
+                    "pos": [
+                        64.0,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "19": {
+                    "pin": "V20",
+                    "rotate": true,
+                    "pos": [
+                        64.0,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "18": {
+                    "pin": "T19",
+                    "rotate": true,
+                    "pos": [
+                        79.4,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "17": {
+                    "pin": "U20",
+                    "rotate": true,
+                    "pos": [
+                        79.4,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "16": {
+                    "pin": "T20",
+                    "rotate": true,
+                    "pos": [
+                        93.7,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "15": {
+                    "pin": "P19",
+                    "rotate": true,
+                    "pos": [
+                        93.7,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "14": {
+                    "pin": "R19",
+                    "rotate": true,
+                    "pos": [
+                        109.1,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "13": {
+                    "pin": "R18",
+                    "rotate": true,
+                    "pos": [
+                        109.1,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "11": {
+                    "pin": "P20",
+                    "rotate": true,
+                    "pos": [
+                        123.4,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "9": {
+                    "pin": "N17",
+                    "rotate": true,
+                    "pos": [
+                        139.9,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "8": {
+                    "pin": "M17",
+                    "rotate": true,
+                    "pos": [
+                        153.10000000000002,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "7": {
+                    "pin": "P18",
+                    "rotate": true,
+                    "pos": [
+                        153.10000000000002,
+                        553.0
+                    ],
+                    "direction": "all"
+                },
+                "6": {
+                    "pin": "N20",
+                    "rotate": true,
+                    "pos": [
+                        169.60000000000002,
+                        573.0
+                    ],
+                    "direction": "all"
+                },
+                "5": {
+                    "pin": "M19",
+                    "rotate": true,
+                    "pos": [
+                        169.60000000000002,
+                        553.0
+                    ],
+                    "direction": "all"
+                }
+            }
         },
-        "15": {
-          "pin": "H18",
-          "rotate": true,
-          "pos": [
-            382,
-            540
-          ],
-          "direction": "all"
-        },
-        "14": {
-          "pin": "D18",
-          "rotate": true,
-          "pos": [
-            394,
-            573
-          ],
-          "direction": "all"
-        },
-        "13": {
-          "pin": "D20",
-          "rotate": true,
-          "pos": [
-            394,
-            540
-          ],
-          "direction": "all"
-        },
-        "11": {
-          "pin": "H17",
-          "rotate": true,
-          "pos": [
-            409,
-            540
-          ],
-          "direction": "all"
-        },
-        "9": {
-          "pin": "C20",
-          "rotate": true,
-          "pos": [
-            422,
-            540
-          ],
-          "direction": "all"
-        },
-        "8": {
-          "pin": "B20",
-          "rotate": true,
-          "pos": [
-            436,
-            573
-          ],
-          "direction": "all"
-        },
-        "7": {
-          "pin": "B19",
-          "rotate": true,
-          "pos": [
-            436,
-            540
-          ],
-          "direction": "all"
-        },
-        "6": {
-          "pin": "H16",
-          "rotate": true,
-          "pos": [
-            449,
-            573
-          ],
-          "direction": "all"
-        },
-        "5": {
-          "pin": "A20",
-          "rotate": true,
-          "pos": [
-            449,
-            540
-          ],
-          "direction": "all"
+        {
+            "name": "LED",
+            "comment": "",
+            "default": "",
+            "pins": {
+                "G": {
+                    "pin": "W13",
+                    "pos": [
+                        184,
+                        17
+                    ],
+                    "direction": "output"
+                },
+                "R": {
+                    "pin": "W14",
+                    "pos": [
+                        184,
+                        35
+                    ],
+                    "direction": "output"
+                }
+            }
         }
-      }
-    },
-    {
-      "name": "DATA2",
-      "pins": {
-        "20": {
-          "pin": "L17",
-          "rotate": true,
-          "pos": [
-            200,
-            573
-          ],
-          "direction": "all"
-        },
-        "19": {
-          "pin": "M20",
-          "rotate": true,
-          "pos": [
-            200,
-            540
-          ],
-          "direction": "all"
-        },
-        "18": {
-          "pin": "L20",
-          "rotate": true,
-          "pos": [
-            212,
-            573
-          ],
-          "direction": "all"
-        },
-        "17": {
-          "pin": "M18",
-          "rotate": true,
-          "pos": [
-            212,
-            540
-          ],
-          "direction": "all"
-        },
-        "16": {
-          "pin": "L19",
-          "rotate": true,
-          "pos": [
-            227,
-            573
-          ],
-          "direction": "all"
-        },
-        "15": {
-          "pin": "L16",
-          "rotate": true,
-          "pos": [
-            227,
-            540
-          ],
-          "direction": "all"
-        },
-        "14": {
-          "pin": "J20",
-          "rotate": true,
-          "pos": [
-            240,
-            573
-          ],
-          "direction": "all"
-        },
-        "13": {
-          "pin": "K19",
-          "rotate": true,
-          "pos": [
-            240,
-            540
-          ],
-          "direction": "all"
-        },
-        "11": {
-          "pin": "K18",
-          "rotate": true,
-          "pos": [
-            254,
-            540
-          ],
-          "direction": "all"
-        },
-        "9": {
-          "pin": "J19",
-          "rotate": true,
-          "pos": [
-            267,
-            540
-          ],
-          "direction": "all"
-        },
-        "8": {
-          "pin": "H20",
-          "rotate": true,
-          "pos": [
-            282,
-            573
-          ],
-          "direction": "all"
-        },
-        "7": {
-          "pin": "G19",
-          "rotate": true,
-          "pos": [
-            282,
-            540
-          ],
-          "direction": "all"
-        },
-        "6": {
-          "pin": "J18",
-          "rotate": true,
-          "pos": [
-            294,
-            573
-          ],
-          "direction": "all"
-        },
-        "5": {
-          "pin": "G20",
-          "rotate": true,
-          "pos": [
-            294,
-            540
-          ],
-          "direction": "all"
-        }
-      }
-    },
-    {
-      "name": "DATA3",
-      "pins": {
-        "20": {
-          "pin": "U19",
-          "rotate": true,
-          "pos": [
-            40,
-            573
-          ],
-          "direction": "all"
-        },
-        "19": {
-          "pin": "V20",
-          "rotate": true,
-          "pos": [
-            40,
-            540
-          ],
-          "direction": "all"
-        },
-        "18": {
-          "pin": "T19",
-          "rotate": true,
-          "pos": [
-            54,
-            573
-          ],
-          "direction": "all"
-        },
-        "17": {
-          "pin": "U20",
-          "rotate": true,
-          "pos": [
-            54,
-            540
-          ],
-          "direction": "all"
-        },
-        "16": {
-          "pin": "T20",
-          "rotate": true,
-          "pos": [
-            67,
-            573
-          ],
-          "direction": "all"
-        },
-        "15": {
-          "pin": "P19",
-          "rotate": true,
-          "pos": [
-            67,
-            540
-          ],
-          "direction": "all"
-        },
-        "14": {
-          "pin": "R19",
-          "rotate": true,
-          "pos": [
-            81,
-            573
-          ],
-          "direction": "all"
-        },
-        "13": {
-          "pin": "R18",
-          "rotate": true,
-          "pos": [
-            81,
-            540
-          ],
-          "direction": "all"
-        },
-        "11": {
-          "pin": "P20",
-          "rotate": true,
-          "pos": [
-            94,
-            540
-          ],
-          "direction": "all"
-        },
-        "9": {
-          "pin": "N17",
-          "rotate": true,
-          "pos": [
-            109,
-            540
-          ],
-          "direction": "all"
-        },
-        "8": {
-          "pin": "M17",
-          "rotate": true,
-          "pos": [
-            121,
-            573
-          ],
-          "direction": "all"
-        },
-        "7": {
-          "pin": "P18",
-          "rotate": true,
-          "pos": [
-            121,
-            540
-          ],
-          "direction": "all"
-        },
-        "6": {
-          "pin": "N20",
-          "rotate": true,
-          "pos": [
-            136,
-            573
-          ],
-          "direction": "all"
-        },
-        "5": {
-          "pin": "M19",
-          "rotate": true,
-          "pos": [
-            136,
-            540
-          ],
-          "direction": "all"
-        }
-      }
-    },
-    {
-      "name": "LED",
-      "comment": "",
-      "default": "",
-      "pins": {
-        "G": {
-          "pin": "W13",
-          "pos": [
-            165,
-            23
-          ],
-          "direction": "output"
-        },
-        "R": {
-          "pin": "W14",
-          "pos": [
-            165,
-            41
-          ],
-          "direction": "output"
-        }
-      }
-    }
-  ]
+    ]
 }

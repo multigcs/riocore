@@ -1,0 +1,59 @@
+# Copyright (C) 2023 Advanced Micro Devices, Inc.  All rights reserved.
+# Copyright (c) 2021 Xilinx, Inc.  All rights reserved.
+# SPDX-License-Identifier: MIT
+%YAML 1.2
+---
+title: lwIP UDP Perf Server
+
+maintainers:
+  - Appana Durga Kedareswara Rao <appanad.durga.rao@xilinx.com>
+
+description: The LwIP UDP Perf Server application is used for creating UDP server and measure downlink performance using light-weight IP stack (lwIP). This application sets up the board to use default IP address 192.168.1.10, with MAC address 00:0a:35:00:01:02. The application creates UDP server on board and starts listening for UDP client connections. It will display client connection information with interim and average UDP statistics for data transfer.
+
+type: apps
+
+properties:
+  reg:
+    description: Physical base address and size of the controller register map
+  interrupts:
+    description: Interrupt property of the controller
+
+supported_processors:
+  - psu_cortexa53
+  - psu_cortexr5
+  - psv_cortexa72
+  - psv_cortexr5
+
+supported_os:
+  - standalone
+
+depends_libs:
+    lwip213:
+        lwip213_api_mode: RAW_API
+        lwip213_dhcp_does_arp_check: ON
+        lwip213_dhcp: ON
+        lwip213_ipv6_enable: OFF
+        lwip213_pbuf_pool_size: 16384
+        lwip213_temac_n_rx_descriptors: 512
+        lwip213_memp_n_pbuf: 1024
+        lwip213_mem_size: 524288
+    xiltimer:
+        XILTIMER_en_interval_timer: ON
+
+depends:
+    emaclite:
+        - reg
+        - interrupts
+    axiethernet:
+        - reg
+        - interrupts
+    emacps:
+        - reg
+        - interrupts
+    tmrctr:
+        - reg
+        - interrupts
+    ttcps:
+        - reg
+        - interrupts
+...
