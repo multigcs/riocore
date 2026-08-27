@@ -3,6 +3,7 @@
 #
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -18,19 +19,13 @@ def times_load(filename):
     tooltimes = {}
     if os.path.isfile(filename):
         with open(filename, "r") as timetable:
-            for line in timetable.read().split("\n"):
-                if not line.strip():
-                    continue
-                tool_id, time = line.strip().split()
-                tooltimes[tool_id] = int(time)
+            tooltimes = json.loads(timetable.read())
     return tooltimes
 
 
 def times_save(filename, tooltimes):
     with open(filename, "w") as timetable:
-        for tool_id, tool_time in tooltimes.items():
-            timetable.write(f"{tool_id} {tool_time}")
-            timetable.write("\n")
+        timetable.write(json.dumps(tooltimes, indent=2))
 
 
 def tools_load(filename):
@@ -101,7 +96,10 @@ def main(args):
     tool_map = {}
     for tool_id, tool_data in tools.items():
         if tool_id not in tooltimes:
-            tooltimes[tool_id] = 0
+            tooltimes[tool_id] = {
+                "time": 0,
+                "limit": DEFAULT_LIMIT,
+            }
         tool_map[int(tool_data["T"])] = tool_id
 
     if args.debug:
@@ -122,7 +120,7 @@ def main(args):
 
     h["time"] = 0.0
     h["percent"] = 0.0
-    h["limit"] = 120.0
+    h["limit"] = DEFAULT_LIMIT
     h["num"] = 0
     h.ready()
 
@@ -133,7 +131,6 @@ def main(args):
         tool_num = hal.get_value("halui.tool.number")
         isrunning = hal.get_value("halui.program.is-running")
 
-        h["limit"] = DEFAULT_LIMIT
         h["num"] = tool_num
 
         if tool_num not in tool_map:
@@ -144,14 +141,15 @@ def main(args):
         else:
             tool_id = tool_map[tool_num]
             if isrunning and ison:
-                tooltimes[tool_id] += 1
+                tooltimes[tool_id]["time"] += 1
                 if args.debug:
                     print(ison, tool_num, isrunning, tooltimes[tool_id])
                 changed = True
             elif args.debug:
                 print("not running")
-            h["time"] = tooltimes[tool_id]
-            h["percent"] = tooltimes[tool_id] * 100.0 / h["limit"]
+            h["time"] = tooltimes[tool_id]["time"]
+            h["limit"] = tooltimes[tool_id]["limit"]
+            h["percent"] = h["time"] * 100.0 / h["limit"]
 
         if save_timer >= 10 and changed:
             if args.debug:
@@ -167,8 +165,8 @@ def main(args):
 if __name__ == "__main__":
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("-t", "--tooltable", help="save view to png", type=str, default="tool.tbl")
-        parser.add_argument("-i", "--timetable", help="save view to png", type=str, default="tooltime.tbl")
+        parser.add_argument("-t", "--tooltable", help="tooltable filename", type=str, default="tool.tbl")
+        parser.add_argument("-i", "--timetable", help="tooltime filename", type=str, default="tooltime.json")
         parser.add_argument("-d", "--debug", help="print debug output", default=False, action="store_true")
         args = parser.parse_args()
         main(args)
