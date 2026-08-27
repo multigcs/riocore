@@ -11,6 +11,7 @@ class Plugin(PluginBase):
         self.IMAGE_SHOW = True
         self.NEEDS = []
         self.IMAGE = ""
+        self.EXPERIMENTAL = True
         self.ORIGIN = ""
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
