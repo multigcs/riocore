@@ -395,7 +395,7 @@ class pyvcp:
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0)
         display_range = setup.get("range", setup.get("region", []))
-        display_unit = setup.get("unit").replace("%", "%%")
+        display_unit = setup.get("unit", "").replace("%", "%%")
         display_format = setup.get("format", "05d")
         bar_height = setup.get("height")
         if display_unit and len(display_format) < 5:
