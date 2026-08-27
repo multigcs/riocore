@@ -338,7 +338,7 @@ class pyvcp:
     def draw_meter(self, name, halpin, setup=None, vmin=0, vmax=100):
         if setup is None:
             setup = {}
-        display_unit = setup.get("unit", "")
+        display_unit = setup.get("unit", "").replace("%", "%%")
         if not display_unit and "." in name:
             display_unit = name.split(".")[-1]
             name = ".".join(name.split(".")[:-1])
@@ -395,7 +395,7 @@ class pyvcp:
         display_max = setup.get("max", vmax)
         display_initval = setup.get("initval", 0)
         display_range = setup.get("range", setup.get("region", []))
-        display_unit = setup.get("unit")
+        display_unit = setup.get("unit").replace("%", "%%")
         display_format = setup.get("format", "05d")
         bar_height = setup.get("height")
         if display_unit and len(display_format) < 5:

@@ -1,4 +1,4 @@
-# axi
+# udp2axi
 
 <img align="right" width="320" src="image.png">
 
@@ -6,16 +6,16 @@
 | :warning: EXPERIMENTAL |
 |:-----------------------|
 
-**axi interface for armcore comunication**
+**udp2axi interface for armcore comunication**
 
-axi driver for the interface communication to an embedded arm-core
+udp2axi driver for the interface communication to an embedded arm-core
 
 * Keywords: zynq xilinx interface
-* NEEDS: fpga
+* NEEDS: axi
 
 ## Pins:
 *FPGA-pins*
-### led1:
+### AXI:
 
  * direction: output
 

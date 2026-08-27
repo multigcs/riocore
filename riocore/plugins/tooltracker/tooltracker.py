@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+#
+#
+
+import argparse
+import os
+import re
+import sys
+import time
+import uuid
+
+import hal
+
+DEFAULT_LIMIT = 3600
+
+
+def times_load(filename):
+    tooltimes = {}
+    if os.path.isfile(filename):
+        with open(filename, "r") as timetable:
+            for line in timetable.read().split("\n"):
+                if not line.strip():
+                    continue
+                tool_id, time = line.strip().split()
+                tooltimes[tool_id] = int(time)
+    return tooltimes
+
+
+def times_save(filename, tooltimes):
+    with open(filename, "w") as timetable:
+        for tool_id, tool_time in tooltimes.items():
+            timetable.write(f"{tool_id} {tool_time}")
+            timetable.write("\n")
+
+
+def tools_load(filename):
+    tools = {}
+    updated = False
+    with open(filename, "r") as tooltable:
+        for line in tooltable.read().split("\n"):
+            parts = line.strip().split(";", 1)
+            if parts[0]:
+                comment = ""
+                tool_id = ""
+                if len(parts) > 1:
+                    comment = parts[1]
+                    res = re.findall("ID:[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", comment)
+                    if res:
+                        tool_id = res[0][3:]
+                        comment = comment.replace(res[0], "").strip()
+                if not tool_id:
+                    tool_id = str(uuid.uuid4())
+                    updated = True
+
+                cols = parts[0].split()
+                tool_data = {
+                    "T": 0,  # T: Tool number (unique integer, 0 to 99999)
+                    "P": 0,  # P: Pocket number (integer, 1 to 99999; pocket 0 is the spindle)
+                    "X": 0.0,  # X: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "Y": 0.0,  # Y: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "Z": 0.0,  # Z: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "A": 0.0,  # A: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "B": 0.0,  # B: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "C": 0.0,  # C: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "U": 0.0,  # U: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "V": 0.0,  # V: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "W": 0.0,  # W: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "D": 0.0,  # D: Tool diameter (absolute floating-point value)
+                    "I": 0.0,  # I: Front angle (lathe tools only, floating-point)
+                    "J": 0.0,  # J: Back angle (lathe tools only, floating-point)
+                    "Q": 0,  # Q: Tool orientation (lathe tools only, integer 0–9).
+                    "comment": comment,
+                }
+                for col in cols:
+                    vtype = col[0]
+                    value = col[1:]
+                    tool_data[vtype] = value
+                if tool_data["T"] != 0:
+                    tools[tool_id] = tool_data
+    if updated:
+        tools_save(filename, tools)
+    return tools
+
+
+def tools_save(filename, tools):
+    with open(filename, "w") as tooltable:
+        for tool_id, tool_data in tools.items():
+            line = []
+            for key, value in tool_data.items():
+                if key == "comment":
+                    continue
+                line.append(f"{key}{value}")
+            line.append(f"; {tool_data['comment']} ID:{tool_id}")
+            tooltable.write(" ".join(line))
+            tooltable.write("\n")
+
+
+def main(args):
+    tooltimes = times_load(args.timetable)
+    tools = tools_load(args.tooltable)
+    tool_map = {}
+    for tool_id, tool_data in tools.items():
+        if tool_id not in tooltimes:
+            tooltimes[tool_id] = 0
+        tool_map[int(tool_data["T"])] = tool_id
+
+    if args.debug:
+        print("tools:")
+        for tool_id, tool_data in tools.items():
+            print("   ", tool_id, tool_data)
+        print()
+        print("tooltimes:")
+        for tool_id, tooltime in tooltimes.items():
+            print("   ", tool_id, tooltime)
+        print()
+
+    h = hal.component("tooltracker")
+    h.newpin("time", hal.HAL_FLOAT, hal.HAL_OUT)
+    h.newpin("percent", hal.HAL_FLOAT, hal.HAL_OUT)
+    h.newpin("limit", hal.HAL_FLOAT, hal.HAL_OUT)
+    h.newpin("num", hal.HAL_U32, hal.HAL_OUT)
+
+    h["time"] = 0.0
+    h["percent"] = 0.0
+    h["limit"] = 120.0
+    h["num"] = 0
+    h.ready()
+
+    save_timer = 0
+    changed = False
+    while True:
+        ison = hal.get_value("halui.spindle.0.is-on")
+        tool_num = hal.get_value("halui.tool.number")
+        isrunning = hal.get_value("halui.program.is-running")
+
+        h["limit"] = DEFAULT_LIMIT
+        h["num"] = tool_num
+
+        if tool_num not in tool_map:
+            if args.debug:
+                print("unknown tool:", tool_num)
+            h["time"] = 0.0
+            h["percent"] = 0.0
+        else:
+            tool_id = tool_map[tool_num]
+            if isrunning and ison:
+                tooltimes[tool_id] += 1
+                if args.debug:
+                    print(ison, tool_num, isrunning, tooltimes[tool_id])
+                changed = True
+            elif args.debug:
+                print("not running")
+            h["time"] = tooltimes[tool_id]
+            h["percent"] = tooltimes[tool_id] * 100.0 / h["limit"]
+
+        if save_timer >= 10 and changed:
+            if args.debug:
+                print("save")
+            changed = False
+            times_save(args.timetable, tooltimes)
+            save_timer = 0
+        else:
+            save_timer += 1
+        time.sleep(1)
+
+
+if __name__ == "__main__":
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-t", "--tooltable", help="save view to png", type=str, default="tool.tbl")
+        parser.add_argument("-i", "--timetable", help="save view to png", type=str, default="tooltime.tbl")
+        parser.add_argument("-d", "--debug", help="print debug output", default=False, action="store_true")
+        args = parser.parse_args()
+        main(args)
+    except KeyboardInterrupt:
+        print("exiting tooltracker.py")
+        sys.exit(130)
