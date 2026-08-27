@@ -1,7 +1,7 @@
 {
   "name": "CarrotBob",
-  "description": "ICE40up5k based board from from Taiwan - by DirtyBee",
-  "url": "https://www.ruten.com.tw/item/22418437051883/",
+  "description": "ICE40up5k based board - by DirtyBee",
+  "url": "https://github.com/TimBBB/DirtyBee-Carrot-BOB",
   "pinimage": "board.png",
   "toolchain": "icestorm",
   "family": "ice40",

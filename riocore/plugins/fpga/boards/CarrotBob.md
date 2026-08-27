@@ -1,7 +1,7 @@
 # CarrotBob
 <img align="right" width="400" src="CarrotBob.png">
 
-ICE40up5k based board from from Taiwan - by DirtyBee
+ICE40up5k based board - by DirtyBee
 
 
 | Name | Value |
@@ -10,7 +10,7 @@ ICE40up5k based board from from Taiwan - by DirtyBee
 | Type | up5k |
 | Clock | 30.0 |
 | Toolchain | icestorm |
-| URL | [link](https://www.ruten.com.tw/item/22418437051883/) |
+| URL | [link](https://github.com/TimBBB/DirtyBee-Carrot-BOB) |
 
 ## Slots
 ### RELAIS

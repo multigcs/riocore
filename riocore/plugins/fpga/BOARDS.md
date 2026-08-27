@@ -5,7 +5,7 @@
 | [Arty-a7-35t](boards/Arty-a7-35t.md) | xc7 | xc7a35ticsg324-1l | 100.00Mhz | vivado | Arty a7-35t | <img width="300" src="boards/Arty-a7-35t.png"> |
 | [Basys2](boards/Basys2.md) | xc3 | xc3s100e-4-cp132 | 50.00Mhz | ise | Digilent - Basys2 | <img width="300" src="boards/Basys2.png"> |
 | [CYC1000](boards/CYC1000.md) | Cyclone 10 LP | 10CL025YU256C8G | 48.00Mhz | quartus | TEI0003 | <img width="300" src="boards/CYC1000.png"> |
-| [CarrotBob](boards/CarrotBob.md) | ice40 | up5k | 30.00Mhz | icestorm | ICE40up5k based board from from Taiwan - by DirtyBee | <img width="300" src="boards/CarrotBob.png"> |
+| [CarrotBob](boards/CarrotBob.md) | ice40 | up5k | 30.00Mhz | icestorm | ICE40up5k based board - by DirtyBee | <img width="300" src="boards/CarrotBob.png"> |
 | [Colorlight5A-75B-v8.0](boards/Colorlight5A-75B-v8.0.md) | ecp5 | 25k | 25.00Mhz | icestorm | Lattice ECP5 board | <img width="300" src="boards/Colorlight5A-75B-v8.0.png"> |
 | [Colorlight5A-75E](boards/Colorlight5A-75E.md) | ecp5 | 25k | 25.00Mhz | icestorm | Lattice ECP5 board | <img width="300" src="boards/Colorlight5A-75E.png"> |
 | [Colorlight_i5-v7_0](boards/Colorlight_i5-v7_0.md) | ecp5 | 25k | 25.00Mhz | icestorm | Lattice ECP5 on SODIMM-200P board | <img width="300" src="boards/Colorlight_i5-v7_0.png"> |
