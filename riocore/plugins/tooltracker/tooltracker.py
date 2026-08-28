@@ -145,9 +145,9 @@ def main(args):
     h.newpin("percent", hal.HAL_FLOAT, hal.HAL_OUT)
     h.newpin("limit", hal.HAL_FLOAT, hal.HAL_OUT)
     h.newpin("num", hal.HAL_U32, hal.HAL_OUT)
-    h.newpin("warning", hal.HAL_BOOL, hal.HAL_OUT)
-    h.newpin("critical", hal.HAL_BOOL, hal.HAL_OUT)
-    h.newpin("reload", hal.HAL_BOOL, hal.HAL_OUT)
+    h.newpin("warning", hal.HAL_BIT, hal.HAL_OUT)
+    h.newpin("critical", hal.HAL_BIT, hal.HAL_OUT)
+    h.newpin("reload", hal.HAL_BIT, hal.HAL_OUT)
 
     h["time"] = 0.0
     h["percent"] = 0.0
