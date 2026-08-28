@@ -40,11 +40,16 @@ def tools_load(filename):
                 comment = ""
                 tool_id = ""
                 if len(parts) > 1:
-                    comment = parts[1]
-                    res = re.findall("ID:[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", comment)
+                    comment = parts[1].strip()
+                    res = re.findall("ID:[a-fA-F0-9]{8}", comment)
                     if res:
                         tool_id = res[0][3:]
                         comment = comment.replace(res[0], "").strip()
+                    else:
+                        res = re.findall("ID:[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", comment)
+                        if res:
+                            tool_id = res[0][3:]
+                            comment = comment.replace(res[0], "").strip()
                 if not tool_id:
                     tool_id = str(uuid.uuid4()).split("-", 1)[0]
                     updated = True
