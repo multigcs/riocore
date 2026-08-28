@@ -1890,6 +1890,9 @@ if __name__ == "__main__":
                 vcp_add(signal_config, widgets)
 
         for signal_config in self.vcp_values:
+            section = signal_config.get("userconfig", {}).get("display", {}).get("section")
+            if section and section not in vcp_sections and section not in "status":
+                vcp_sections.append(section)
             vcp_add(signal_config, widgets)
 
         tablist = []

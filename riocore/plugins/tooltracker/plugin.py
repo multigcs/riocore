@@ -26,10 +26,15 @@ class Plugin(PluginBase):
                 "default": "bar",
                 "options": ["off", "bar", "meter"],
             },
+            "section": {
+                "type": str,
+                "default": "tooltracker",
+            },
         }
 
     def hal(self, parent):
         display = self.plugin_setup.get("display", self.option_default("display"))
+        section = self.plugin_setup.get("section", self.option_default("section"))
         if display != "off":
             parent.vcp_values.append(
                 {
@@ -37,7 +42,7 @@ class Plugin(PluginBase):
                     "halname": "tooltracker.num",
                     "userconfig": {
                         "display": {
-                            "section": "status",
+                            "section": section,
                             "group": "Tooltracker",
                             "title": "Number",
                             "type": "number_u32",
@@ -52,7 +57,7 @@ class Plugin(PluginBase):
                     "halname": "tooltracker.time",
                     "userconfig": {
                         "display": {
-                            "section": "status",
+                            "section": section,
                             "group": "Tooltracker",
                             "title": "Time",
                             "type": "number",
@@ -68,7 +73,7 @@ class Plugin(PluginBase):
                     "halname": "tooltracker.limit",
                     "userconfig": {
                         "display": {
-                            "section": "status",
+                            "section": section,
                             "group": "Tooltracker",
                             "title": "Limit",
                             "type": "number",
@@ -84,7 +89,7 @@ class Plugin(PluginBase):
                     "halname": "tooltracker.percent",
                     "userconfig": {
                         "display": {
-                            "section": "status",
+                            "section": section,
                             "group": "Tooltracker",
                             "title": "Livetime",
                             "type": display,
@@ -93,6 +98,38 @@ class Plugin(PluginBase):
                             "min": 0.0,
                             "max": 100.0,
                             "region": [[0, 75, "green"], [75, 90, "yellow"], [90, 100, "red"]],
+                        },
+                    },
+                },
+            )
+            parent.vcp_values.append(
+                {
+                    "direction": "input",
+                    "halname": "tooltracker.warning",
+                    "userconfig": {
+                        "display": {
+                            "section": section,
+                            "group": "Tooltracker",
+                            "title": "Warning",
+                            "type": "rectled",
+                            "color": "yellow",
+                            "off_color": "green",
+                        },
+                    },
+                },
+            )
+            parent.vcp_values.append(
+                {
+                    "direction": "input",
+                    "halname": "tooltracker.critical",
+                    "userconfig": {
+                        "display": {
+                            "section": section,
+                            "group": "Tooltracker",
+                            "title": "Critical",
+                            "type": "rectled",
+                            "color": "red",
+                            "off_color": "green",
                         },
                     },
                 },

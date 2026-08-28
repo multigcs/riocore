@@ -13,6 +13,8 @@ import uuid
 import hal
 
 DEFAULT_LIMIT = 3600
+DEFAULT_WARNING = 75.0
+DEFAULT_CRITICAL = 90.0
 
 
 def times_load(filename):
@@ -44,7 +46,7 @@ def tools_load(filename):
                         tool_id = res[0][3:]
                         comment = comment.replace(res[0], "").strip()
                 if not tool_id:
-                    tool_id = str(uuid.uuid4())
+                    tool_id = str(uuid.uuid4()).split("-", 1)[0]
                     updated = True
 
                 cols = parts[0].split()
@@ -94,13 +96,26 @@ def main(args):
     tooltimes = times_load(args.timetable)
     tools = tools_load(args.tooltable)
     tool_map = {}
+
+    defaults = {
+        "time": 0,
+        "limit": DEFAULT_LIMIT,
+        "warning": DEFAULT_WARNING,
+        "critical": DEFAULT_CRITICAL,
+    }
+
+    changed = False
     for tool_id, tool_data in tools.items():
         if tool_id not in tooltimes:
-            tooltimes[tool_id] = {
-                "time": 0,
-                "limit": DEFAULT_LIMIT,
-            }
+            tooltimes[tool_id] = defaults
+            changed = True
+        for key, value in defaults.items():
+            if key not in tooltimes[tool_id]:
+                tooltimes[tool_id][key] = value
+                changed = True
         tool_map[int(tool_data["T"])] = tool_id
+    if changed:
+        times_save(args.timetable, tooltimes)
 
     if args.debug:
         print("tools:")
@@ -117,10 +132,14 @@ def main(args):
     h.newpin("percent", hal.HAL_FLOAT, hal.HAL_OUT)
     h.newpin("limit", hal.HAL_FLOAT, hal.HAL_OUT)
     h.newpin("num", hal.HAL_U32, hal.HAL_OUT)
+    h.newpin("warning", hal.HAL_BOOL, hal.HAL_OUT)
+    h.newpin("critical", hal.HAL_BOOL, hal.HAL_OUT)
 
     h["time"] = 0.0
     h["percent"] = 0.0
     h["limit"] = DEFAULT_LIMIT
+    h["warning"] = False
+    h["critical"] = False
     h["num"] = 0
     h.ready()
 
@@ -138,6 +157,8 @@ def main(args):
                 print("unknown tool:", tool_num)
             h["time"] = 0.0
             h["percent"] = 0.0
+            h["warning"] = False
+            h["critical"] = False
         else:
             tool_id = tool_map[tool_num]
             if isrunning and ison:
@@ -150,6 +171,16 @@ def main(args):
             h["time"] = tooltimes[tool_id]["time"]
             h["limit"] = tooltimes[tool_id]["limit"]
             h["percent"] = h["time"] * 100.0 / h["limit"]
+            if h["percent"] >= tooltimes[tool_id]["critical"]:
+                h["critical"] = True
+                print(f"tooltracker: CRITICAL: T{tool_num}: {h['percent']}%")
+            else:
+                h["critical"] = False
+            if h["percent"] >= tooltimes[tool_id]["warning"]:
+                h["warning"] = True
+                print(f"tooltracker: WARNING: T{tool_num}: {h['percent']}%")
+            else:
+                h["warning"] = False
 
         if save_timer >= 10 and changed:
             if args.debug:
