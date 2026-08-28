@@ -54,6 +54,20 @@ class Plugin(PluginBase):
             parent.vcp_values.append(
                 {
                     "direction": "input",
+                    "halname": "iocontrol.0.tool-from-pocket",
+                    "userconfig": {
+                        "display": {
+                            "section": section,
+                            "group": "Tooltracker",
+                            "title": "from Pocket",
+                            "type": "number_s32",
+                        },
+                    },
+                },
+            )
+            parent.vcp_values.append(
+                {
+                    "direction": "input",
                     "halname": "tooltracker.time",
                     "userconfig": {
                         "display": {
@@ -130,6 +144,20 @@ class Plugin(PluginBase):
                             "type": "rectled",
                             "color": "red",
                             "off_color": "green",
+                        },
+                    },
+                },
+            )
+            parent.vcp_values.append(
+                {
+                    "direction": "input",
+                    "halname": "tooltracker.reload",
+                    "userconfig": {
+                        "display": {
+                            "section": section,
+                            "group": "Tooltracker",
+                            "title": "Reload",
+                            "type": "led",
                         },
                     },
                 },

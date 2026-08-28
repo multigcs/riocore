@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 #
+# TODO:
+#   if tool time too hight
+#     change to other pocket (sister tool)
+#       load_tool_table()
 #
+
 
 import argparse
 import json
@@ -10,11 +15,17 @@ import sys
 import time
 import uuid
 
+# import linuxcnc
 import hal
 
-DEFAULT_LIMIT = 3600
-DEFAULT_WARNING = 75.0
-DEFAULT_CRITICAL = 90.0
+defaults = {
+    "time": 0,
+    "limit": 30,
+    "warning": 75,
+    "critical": 90,
+    "pocket": "",
+    "sister": "",
+}
 
 
 def times_load(filename):
@@ -102,12 +113,7 @@ def main(args):
     tools = tools_load(args.tooltable)
     tool_map = {}
 
-    defaults = {
-        "time": 0,
-        "limit": DEFAULT_LIMIT,
-        "warning": DEFAULT_WARNING,
-        "critical": DEFAULT_CRITICAL,
-    }
+    reload_tools = False
 
     changed = False
     for tool_id, tool_data in tools.items():
@@ -132,6 +138,8 @@ def main(args):
             print("   ", tool_id, tooltime)
         print()
 
+    # s = linuxcnc.stat()
+    # c = linuxcnc.command()
     h = hal.component("tooltracker")
     h.newpin("time", hal.HAL_FLOAT, hal.HAL_OUT)
     h.newpin("percent", hal.HAL_FLOAT, hal.HAL_OUT)
@@ -139,12 +147,14 @@ def main(args):
     h.newpin("num", hal.HAL_U32, hal.HAL_OUT)
     h.newpin("warning", hal.HAL_BOOL, hal.HAL_OUT)
     h.newpin("critical", hal.HAL_BOOL, hal.HAL_OUT)
+    h.newpin("reload", hal.HAL_BOOL, hal.HAL_OUT)
 
     h["time"] = 0.0
     h["percent"] = 0.0
-    h["limit"] = DEFAULT_LIMIT
+    h["limit"] = 0
     h["warning"] = False
     h["critical"] = False
+    h["reload"] = False
     h["num"] = 0
     h.ready()
 
@@ -156,6 +166,17 @@ def main(args):
         isrunning = hal.get_value("halui.program.is-running")
 
         h["num"] = tool_num
+
+        # wait for the program to the reload tool table
+        if reload_tools and tool_num == 0:
+            new_tool_id, new_tool_num, sister = reload_tools
+            new_pocket = tools[sister]["P"]
+            tools[new_tool_id]["P"] = new_pocket
+            tool_map[new_tool_num] = sister
+            tools_save(args.tooltable, tools)
+            # c.load_tool_table()
+            reload_tools = False
+        h["reload"] = bool(reload_tools)
 
         if tool_num not in tool_map:
             if args.debug:
@@ -184,6 +205,17 @@ def main(args):
             if h["percent"] >= tooltimes[tool_id]["warning"]:
                 h["warning"] = True
                 print(f"tooltracker: WARNING: T{tool_num}: {h['percent']}%")
+
+                if not reload_tools:
+                    sister = tooltimes[tool_id]["sister"]
+                    if sister and sister in tools:
+                        new_pocket = tools[sister]["P"]
+                        print(f"sister is {sister} in pocket {new_pocket}")
+                        print(f"  chaning pocket for tool T{tool_num} to P{new_pocket}")
+                    else:
+                        print("  sister not found:", sister)
+                    reload_tools = (tool_id, tool_num, sister)
+
             else:
                 h["warning"] = False
 
