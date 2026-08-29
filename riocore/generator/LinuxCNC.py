@@ -143,6 +143,7 @@ class LinuxCNC:
             "SUBROUTINE_PATH": "./subroutines/:~/linuxcnc/nc_files/examples/ngcgui_lib:~/linuxcnc/nc_files/examples/ngcgui_lib/utilitysubs;~/linuxcnc/nc_files/examples/probe/basic_probe/macros:~/linuxcnc/nc_files/examples/remap-subroutines:~/linuxcnc/nc_files/examples/ngcgui_lib/remap_lib",
             "USER_M_PATH": "./mcodes/",
         },
+        "PYTHON": {"PATH_PREPEND": "./python", "TOPLEVEL": "./python/toplevel.py"},
         "EMCMOT": {
             "EMCMOT": "motmod",
             "COMM_TIMEOUT": 1.0,
@@ -1051,6 +1052,36 @@ use_auto_skew = True
                         print(f"INFO: copy file: {subroutine} -> {target_path}")
                         shutil.copy(subroutine, target_path)
 
+        python_files = []
+        path_python = ini_setup.get("PYTHON", {}).get("PATH_PREPEND", "")
+        if path_python and path_python.startswith("./"):
+            os.makedirs(os.path.join(self.configuration_path, path_python), exist_ok=True)
+            toplevel = ini_setup["PYTHON"].get("TOPLEVEL", "")
+            for python in glob.glob(os.path.join(json_path, "python", "*")):
+                python_files.append(os.path.basename(python))
+                target_path = os.path.join(self.configuration_path, path_python, os.path.basename(python))
+                if not os.path.isfile(target_path):
+                    print(f"INFO: copy file: {python} -> {target_path}")
+                    shutil.copy(python, target_path)
+
+        toplevel = ini_setup.get("PYTHON", {}).get("TOPLEVEL")
+        if toplevel and not os.path.isfile(os.path.join(self.configuration_path, toplevel)):
+            open(os.path.join(self.configuration_path, toplevel), "w").write("""import glob
+import os
+import importlib
+
+for filename in glob.glob(os.path.join("python", "*.py")):
+    name = os.path.basename(filename)[:-3]
+    if name != "toplevel":
+        globals()[name] = importlib.import_module(name, ".")
+
+def __init__(self):
+    pass
+
+def __delete__(self):
+    pass
+""")
+
         """
         if motion_probe_input:
             if machinetype == "lathe":
@@ -1109,7 +1140,7 @@ o<{oword}> endsub
                 viaconstructor_json = os.path.join(os.path.expanduser("~"), "viaconstructor.json")
                 if os.path.isfile(viaconstructor_json):
                     viaconstructor_data = json.loads(open(viaconstructor_json, "r").read())
-                    for pocket, tool in enumerate(viaconstructor_data.get("tool", {}).get("tooltable", [])):
+                    for pocket, tool in enumerate(viaconstructor_data.get("tool", {}).get("tooltable", []), 1):
                         if tool["number"] == 99:
                             continue
                         tooltbl.append(f"T{tool['number']} P{pocket} D{tool['diameter']} ;{tool['name']}")

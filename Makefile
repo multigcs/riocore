@@ -25,6 +25,10 @@ check_fix:
 unittests:
 	python3 -m pytest -vv -v tests/unit/
 
+reset_tests:
+	ls -d tests/unit/data/full/*/ | xargs -r -l rm -r
+	make unittests
+
 verilator:
 	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
 

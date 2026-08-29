@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from riocore.plugins import PluginBase
 
 
@@ -17,29 +20,52 @@ class Plugin(PluginBase):
         self.PINDEFAULTS = {}
         self.FILES = ["tooltracker.py"]
         self.OPTIONS = {
-            "debug": {
-                "type": bool,
-                "default": False,
+            "section": {
+                "type": str,
+                "default": "tooltracker",
+                "comment": "vcp tab name",
             },
             "display": {
                 "type": "select",
                 "default": "bar",
                 "options": ["off", "bar", "meter"],
+                "comment": "percentage display type",
             },
-            "section": {
-                "type": str,
-                "default": "tooltracker",
+            "sister": {
+                "type": bool,
+                "default": False,
+                "comment": "manage sister tools (remap T)",
             },
         }
+
+    def ini(self, parent, ini_setup):
+        sister = self.plugin_setup.get("sister", self.option_default("sister"))
+        if sister:
+            ini_setup["RS274NGC"]["REMAP|prepare"] = "T python=prepare"
+            # ini_setup["RS274NGC"]["REMAP|M6"] = "M6 modalgroup=6 ngc=change"
+
+    @classmethod
+    def extra_files(cls, parent, instances):
+        filenames = ["tooltable.py"]
+        sister = instances[0].plugin_setup.get("sister", instances[0].option_default("sister"))
+        if sister:
+            filenames.append("remap.py")
+        for filename in filenames:
+            source_path = os.path.join(os.path.dirname(__file__), filename)
+            os.makedirs(os.path.join(parent.configuration_path, "python"), exist_ok=True)
+            target_path = os.path.join(parent.configuration_path, "python", filename)
+            shutil.copy(source_path, target_path)
 
     def hal(self, parent):
         display = self.plugin_setup.get("display", self.option_default("display"))
         section = self.plugin_setup.get("section", self.option_default("section"))
+        parent.halg.net_add("halui.spindle.0.is-on", "tooltracker.running")
+        parent.halg.net_add("halui.tool.number", "tooltracker.tool")
         if display != "off":
             parent.vcp_values.append(
                 {
                     "direction": "input",
-                    "halname": "tooltracker.num",
+                    "halname": "tooltracker.tool",
                     "userconfig": {
                         "display": {
                             "section": section,
@@ -54,26 +80,12 @@ class Plugin(PluginBase):
             parent.vcp_values.append(
                 {
                     "direction": "input",
-                    "halname": "iocontrol.0.tool-from-pocket",
+                    "halname": "tooltracker.timer",
                     "userconfig": {
                         "display": {
                             "section": section,
                             "group": "Tooltracker",
-                            "title": "from Pocket",
-                            "type": "number_s32",
-                        },
-                    },
-                },
-            )
-            parent.vcp_values.append(
-                {
-                    "direction": "input",
-                    "halname": "tooltracker.time",
-                    "userconfig": {
-                        "display": {
-                            "section": section,
-                            "group": "Tooltracker",
-                            "title": "Time",
+                            "title": "Timer",
                             "type": "number",
                             "unit": "s",
                             "format": "0.0f",
@@ -84,12 +96,28 @@ class Plugin(PluginBase):
             parent.vcp_values.append(
                 {
                     "direction": "input",
-                    "halname": "tooltracker.limit",
+                    "halname": "tooltracker.warning_level",
                     "userconfig": {
                         "display": {
                             "section": section,
                             "group": "Tooltracker",
-                            "title": "Limit",
+                            "title": "Warning",
+                            "type": "number",
+                            "unit": "s",
+                            "format": "0.0f",
+                        },
+                    },
+                },
+            )
+            parent.vcp_values.append(
+                {
+                    "direction": "input",
+                    "halname": "tooltracker.critical_level",
+                    "userconfig": {
+                        "display": {
+                            "section": section,
+                            "group": "Tooltracker",
+                            "title": "Critical",
                             "type": "number",
                             "unit": "s",
                             "format": "0.0f",
@@ -111,7 +139,7 @@ class Plugin(PluginBase):
                             "format": "0.1f",
                             "min": 0.0,
                             "max": 100.0,
-                            "region": [[0, 75, "green"], [75, 90, "yellow"], [90, 100, "red"]],
+                            # "region": [[0, 75, "green"], [75, 90, "yellow"], [90, 100, "red"]],
                         },
                     },
                 },
@@ -119,7 +147,7 @@ class Plugin(PluginBase):
             parent.vcp_values.append(
                 {
                     "direction": "input",
-                    "halname": "tooltracker.warning",
+                    "halname": "tooltracker.warning_flag",
                     "userconfig": {
                         "display": {
                             "section": section,
@@ -135,7 +163,7 @@ class Plugin(PluginBase):
             parent.vcp_values.append(
                 {
                     "direction": "input",
-                    "halname": "tooltracker.critical",
+                    "halname": "tooltracker.critical_flag",
                     "userconfig": {
                         "display": {
                             "section": section,
@@ -144,20 +172,6 @@ class Plugin(PluginBase):
                             "type": "rectled",
                             "color": "red",
                             "off_color": "green",
-                        },
-                    },
-                },
-            )
-            parent.vcp_values.append(
-                {
-                    "direction": "input",
-                    "halname": "tooltracker.reload",
-                    "userconfig": {
-                        "display": {
-                            "section": section,
-                            "group": "Tooltracker",
-                            "title": "Reload",
-                            "type": "led",
                         },
                     },
                 },
