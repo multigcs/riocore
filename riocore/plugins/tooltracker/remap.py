@@ -6,6 +6,8 @@ from tttable import tools_load
 
 throw_exceptions = 1
 
+command = linuxcnc.command()
+
 
 def prepare(self, **words):
     cblock = self.blocks[self.remap_level]
@@ -49,7 +51,8 @@ def prepare(self, **words):
                         select = None
             if found:
                 if level == "critical":
-                    print("tooltracker-remap: used tool is in critical state !!!")
+                    print("tooltracker-remap: used tool is in already in warning state !!!")
+                    command.display_msg("tooltracker-remap: used tool is already in warning state !!!")
                 break
 
         if not found:

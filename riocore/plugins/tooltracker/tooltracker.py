@@ -8,6 +8,7 @@ import sys
 import time
 
 import hal
+import linuxcnc
 
 from python.tttable import tools_load, tools_save
 
@@ -39,6 +40,7 @@ def main(args):
     h["critical_flag"] = False
     h["percent"] = 0.0
     h.ready()
+    command = linuxcnc.command()
 
     save_timer = 0
     changed = False
@@ -77,6 +79,7 @@ def main(args):
                 msg = f"tooltracker: CRITICAL: T{tool_num}"
                 if msg != last_msg:
                     print(msg)
+                    command.display_msg(msg)
                     last_msg = msg
                     save_timer = 100
                     changed = True
@@ -87,6 +90,7 @@ def main(args):
                     msg = f"tooltracker: WARNING: T{tool_num}"
                     if msg != last_msg:
                         print(msg)
+                        command.display_msg(msg)
                         last_msg = msg
                         save_timer = 100
                         changed = True
