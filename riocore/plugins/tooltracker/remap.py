@@ -37,23 +37,23 @@ def prepare(self, **words):
                     # found usable tool
                     pocket = int(select["P"])
                     tool = int(select["T"])
-                    print(f"tooltracker: using tool {tool} in pocket {pocket}")
+                    print(f"tooltracker-remap: using tool {tool} in pocket {pocket}")
                     found = True
                     select = None
                 else:
-                    print(f"tooltracker: tool {select['T']} in pocket {select['P']} is in {level} state")
+                    print(f"tooltracker-remap: tool {select['T']} in pocket {select['P']} is in {level} state")
                     if int(select["sister"]):
                         select = tools[int(select["sister"])]
-                        print(f"tooltracker: found sister {select['T']} in pocket {select['P']}")
+                        print(f"tooltracker-remap: found sister {select['T']} in pocket {select['P']}")
                     else:
                         select = None
             if found:
                 if level == "critical":
-                    print("tooltracker: used tool is in critical state !!!")
+                    print("tooltracker-remap: used tool is in critical state !!!")
                 break
 
         if not found:
-            print("tooltracker: no usable tool found")
+            print("tooltracker-remap: no usable tool found")
 
     self.selected_tool = tool
     self.selected_pocket = pocket

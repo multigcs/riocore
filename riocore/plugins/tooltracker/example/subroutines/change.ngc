@@ -1,0 +1,10 @@
+
+o<change> sub
+	(print, _current_tool tool #<_current_tool>)
+	(print, _current_pocket #<_current_pocket>)
+	(print, _selected_tool tool #<_selected_tool>)
+	(print, _selected_pocket #<_selected_pocket>)
+    M61 Q#<_selected_tool>
+o<change> endsub
+
+M2

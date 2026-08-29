@@ -1,0 +1,6 @@
+T1 P1 X0 Y0 Z0 A0 B0 C0 U0 V0 W0 D0.1 I0 J0 Q0 ; wood cutter (small) TT:54/60/90/101
+T2 P2 X0 Y0 Z0 A0 B0 C0 U0 V0 W0 D3.178 I0 J0 Q0 ; wood cutter (big) TT:10/60/90/0
+T3 P3 X0 Y0 Z0 A0 B0 C0 U0 V0 W0 D2 I0 J0 Q0 ; alu cutter (big) TT:0/60/90/0
+T4 P4 X0 Y0 Z0 A0 B0 C0 U0 V0 W0 D6 I0 J0 Q0 ; alu cutter id:5b027c5e TT:0/60/90/0
+T20 P5 X0 Y0 Z0 A0 B0 C0 U0 V0 W0 D0 I0 J0 Q0 ; drag-knife id:66cf80e8 TT:0/60/90/0
+T101 P6 X0 Y0 Z0 A0 B0 C0 U0 V0 W0 D0.1 I0 J0 Q0 ; wood cutter (small) TT:54/60/90/0

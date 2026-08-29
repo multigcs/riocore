@@ -1133,20 +1133,28 @@ o<{oword}> endsub
         open(os.path.join(self.configuration_path, "rio.ini"), "w").write("\n".join(output))
 
     def misc(self):
-        if not os.path.isfile(os.path.join(self.configuration_path, "tool.tbl")):
+        json_path = self.project.config["json_path"]
+        ini_setup = self.ini_defaults(self.project.config["jdata"])
+        tooltable = ini_setup.get("EMCIO", {}).get("TOOL_TABLE")
+        if not os.path.isfile(os.path.join(self.configuration_path, tooltable)):
             tooltbl = []
-            # read tooltable from CAM if exist
-            try:
-                viaconstructor_json = os.path.join(os.path.expanduser("~"), "viaconstructor.json")
-                if os.path.isfile(viaconstructor_json):
-                    viaconstructor_data = json.loads(open(viaconstructor_json, "r").read())
-                    for pocket, tool in enumerate(viaconstructor_data.get("tool", {}).get("tooltable", []), 1):
-                        if tool["number"] == 99:
-                            continue
-                        tooltbl.append(f"T{tool['number']} P{pocket} D{tool['diameter']} ;{tool['name']}")
+            # read tooltable json-config path
+            print("##", os.path.join(json_path, tooltable))
+            if os.path.isfile(os.path.join(json_path, tooltable)):
+                tooltbl = open(os.path.join(json_path, tooltable)).read().split("\n")
+            else:
+                # read tooltable from CAM if exist
+                try:
+                    viaconstructor_json = os.path.join(os.path.expanduser("~"), "viaconstructor.json")
+                    if os.path.isfile(viaconstructor_json):
+                        viaconstructor_data = json.loads(open(viaconstructor_json, "r").read())
+                        for pocket, tool in enumerate(viaconstructor_data.get("tool", {}).get("tooltable", []), 1):
+                            if tool["number"] == 99:
+                                continue
+                            tooltbl.append(f"T{tool['number']} P{pocket} D{tool['diameter']} ;{tool['name']}")
 
-            except Exception as err:
-                print(f"ERROR: reading tooltable from viaconstructor.json: {err}")
+                except Exception as err:
+                    print(f"ERROR: reading tooltable from viaconstructor.json: {err}")
 
             if not tooltbl:
                 tooltbl.append("T1 P1 D0.125000 Z+0.511000 ;1/8 end mill")

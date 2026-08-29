@@ -42,16 +42,17 @@ def main(args):
 
     save_timer = 0
     changed = False
+    last_msg = ""
     while True:
         if tools_lastmod < os.path.getmtime(args.tooltable):
+            print("tooltracker: reloading tooltable")
             tools = tools_load(args.tooltable)
             tools_lastmod = os.path.getmtime(args.tooltable)
-            print("reload...")
 
         tool_num = h["tool"]
         if tool_num not in tools:
             if args.debug:
-                print("unknown tool:", tool_num)
+                print("tooltracker: unknown tool:", tool_num)
             h["timer"] = 0.0
             h["percent"] = 0.0
             h["warning_level"] = 0.0
@@ -71,20 +72,30 @@ def main(args):
             h["timer"] = tools[tool_num]["timer"]
             h["percent"] = h["timer"] * 100.0 / tools[tool_num]["critical"]
             if h["timer"] >= tools[tool_num]["critical"]:
+                h["warning_flag"] = True
                 h["critical_flag"] = True
-                print(f"tooltracker: CRITICAL: T{tool_num}: {h['percent']}%")
+                msg = f"tooltracker: CRITICAL: T{tool_num}"
+                if msg != last_msg:
+                    print(msg)
+                    last_msg = msg
+                    save_timer = 100
+                    changed = True
             else:
                 h["critical_flag"] = False
-
-            if h["timer"] >= tools[tool_num]["warning"]:
-                h["warning_flag"] = True
-                print(f"tooltracker: WARNING: T{tool_num}: {h['percent']}%")
-            else:
-                h["warning_flag"] = False
+                if h["timer"] >= tools[tool_num]["warning"]:
+                    h["warning_flag"] = True
+                    msg = f"tooltracker: WARNING: T{tool_num}"
+                    if msg != last_msg:
+                        print(msg)
+                        last_msg = msg
+                        save_timer = 100
+                        changed = True
+                else:
+                    h["warning_flag"] = False
 
         if save_timer >= 10 and changed:
             if args.debug:
-                print("save")
+                print("tooltracker: save tooltable")
             changed = False
             tools_save(args.tooltable, tools)
             tools_lastmod = os.path.getmtime(args.tooltable)
