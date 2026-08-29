@@ -46,7 +46,7 @@ class Plugin(PluginBase):
 
     @classmethod
     def extra_files(cls, parent, instances):
-        filenames = ["tooltable.py"]
+        filenames = ["tttable.py"]
         sister = instances[0].plugin_setup.get("sister", instances[0].option_default("sister"))
         if sister:
             filenames.append("remap.py")

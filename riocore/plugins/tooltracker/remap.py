@@ -2,7 +2,7 @@ import emccanon
 import linuxcnc
 
 from interpreter import INTERP_OK
-from tooltable import tools_load
+from tttable import tools_load
 
 throw_exceptions = 1
 

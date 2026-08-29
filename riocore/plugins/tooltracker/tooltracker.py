@@ -9,7 +9,7 @@ import time
 
 import hal
 
-from python.tooltable import tools_load, tools_save
+from python.tttable import tools_load, tools_save
 
 
 def main(args):
