@@ -15,6 +15,8 @@ def prepare(self, **words):
         return "T requires a tool number"
     tool = cblock.t_number
     if tool == 0:
+        self.selected_tool = 0
+        self.selected_pocket = 0
         return INTERP_OK
 
     (status, pocket) = self.find_tool_pocket(tool)
