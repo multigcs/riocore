@@ -322,13 +322,17 @@ class Plugin(PluginBase):
             if ctype in {2, 3, 4}:
                 output.append("    // send request frame")
                 register = self.int2list(command["register"])
-                n_values = self.int2list(command["values"])
+                n_values = command["values"]
+                datatype = self.plugin_setup.get("datatype", self.option_default("datatype"))
+                if ctype == 3 and datatype == "bool":
+                    n_values = (n_values + 7) // 8
+                n_values_list = self.int2list(n_values)
                 output.append(f"    frame[0] = {address};")
                 output.append(f"    frame[1] = {ctype};")
                 output.append(f"    frame[2] = {register[0]};")
                 output.append(f"    frame[3] = {register[1]};")
-                output.append(f"    frame[4] = {n_values[0]};")
-                output.append(f"    frame[5] = {n_values[1]};")
+                output.append(f"    frame[4] = {n_values_list[0]};")
+                output.append(f"    frame[5] = {n_values_list[1]};")
                 output.append("    return 6;")
 
             elif ctype == 15:
@@ -395,12 +399,27 @@ class Plugin(PluginBase):
                 output.append("    uint8_t data_addr = frame_data[0];")
                 output.append("    uint8_t data_type = frame_data[1];")
                 output.append("    uint8_t data_len = frame_data[2];")
-                output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype} && data_len == {command['values'] * 2}) {{")
+
+                n_values = command["values"]
+                if ctype == 3 and datatype == "bool":
+                    n_values = (n_values + 7) // 8
+
+                output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype} && data_len == {n_values}) {{")
                 if datatype == "float":
                     output.append("        float value = 0;")
                     output.append("        uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};")
                     output.append("        memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);")
                     output.append(f"        {command['var_prefix']}_0 = value * {command.get('scale', 1.0)};")
+                elif datatype == "bool":
+                    for vn in range(command["values"]):
+                        byte_n = vn // 8
+                        bit_n = vn - byte_n * 8
+                        print(vn, byte_n, bit_n)
+                        output.append(f"        if ((frame_data[{3 + ((n_values - 1) - byte_n)}] & (1<<{bit_n})) > 0) {{")
+                        output.append(f"            {command['var_prefix']}_{vn} = 1;")
+                        output.append("        } else {")
+                        output.append(f"            {command['var_prefix']}_{vn} = 0;")
+                        output.append("        }")
                 else:
                     for vn in range(command["values"]):
                         output.append(f"        {command['var_prefix']}_{vn} = (float)((frame_data[{3 + vn * 2}]<<8) + (frame_data[{4 + vn * 2}] & 0xFF)) * {command.get('scale', 1.0)};")

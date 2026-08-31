@@ -1295,7 +1295,7 @@ void mbus_dev0_temp_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 18 && data_type == 3 && data_len == 8) {
+    if (frame_len && data_addr == 18 && data_type == 3 && data_len == 4) {
         *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_0 = (float)((frame_data[3]<<8) + (frame_data[4] & 0xFF)) * 0.1;
         *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_1 = (float)((frame_data[5]<<8) + (frame_data[6] & 0xFF)) * 0.1;
         *data->SIGIN_FPGA0_MBUS_DEV0_TEMP_2 = (float)((frame_data[7]<<8) + (frame_data[8] & 0xFF)) * 0.1;
@@ -1399,7 +1399,7 @@ void mbus_dev1_ai_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 32 && data_type == 4 && data_len == 8) {
+    if (frame_len && data_addr == 32 && data_type == 4 && data_len == 4) {
         *data->SIGIN_FPGA0_MBUS_DEV1_AI_0 = (float)((frame_data[3]<<8) + (frame_data[4] & 0xFF)) * 0.0061;
         *data->SIGIN_FPGA0_MBUS_DEV1_AI_1 = (float)((frame_data[5]<<8) + (frame_data[6] & 0xFF)) * 0.0061;
         *data->SIGIN_FPGA0_MBUS_DEV1_AI_2 = (float)((frame_data[7]<<8) + (frame_data[8] & 0xFF)) * 0.0061;
@@ -2379,7 +2379,7 @@ void mbus_device0_voltage_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 2) {
+    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 1) {
         float value = 0;
         uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};
         memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);
@@ -2398,7 +2398,7 @@ void mbus_device0_current_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 2) {
+    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 1) {
         float value = 0;
         uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};
         memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);
@@ -2417,7 +2417,7 @@ void mbus_device0_power_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 2) {
+    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 1) {
         float value = 0;
         uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};
         memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);
@@ -2436,7 +2436,7 @@ void mbus_device0_power_factor_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 2) {
+    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 1) {
         float value = 0;
         uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};
         memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);
@@ -2455,7 +2455,7 @@ void mbus_device0_freq_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 2) {
+    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 1) {
         float value = 0;
         uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};
         memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);
@@ -2474,7 +2474,7 @@ void mbus_device0_power_total_rx(uint8_t *frame_data, uint8_t frame_len) {
     uint8_t data_addr = frame_data[0];
     uint8_t data_type = frame_data[1];
     uint8_t data_len = frame_data[2];
-    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 2) {
+    if (frame_len && data_addr == 16 && data_type == 4 && data_len == 1) {
         float value = 0;
         uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};
         memcpy((uint8_t *)&value, (uint8_t *)&farray, 4);

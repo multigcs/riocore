@@ -65,7 +65,7 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             uint16_t daddr = (frame[2]<<8) | frame[3];
             uint16_t ncoils = (frame[4]<<8) | frame[5];
             uint8_t nbytes = frame[6];
-            printf("modbus (%i/%i) set coils: %i %i %i %i: ", channel, len, addr, fcode, daddr, ncoils);
+            printf("modbus (%i/%i) set coils: %i %i %i %i\n", channel, len, addr, fcode, daddr, ncoils);
             for (uint8_t byte = 0; byte < nbytes; byte++) {
                 for (uint8_t bit = 0; bit < 8; bit++) {
                     if ((frame[7 + byte] & (1<<bit)) != 0) {
@@ -77,11 +77,35 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             }
             printf("\n");
             return -1;
+        } else if (fcode == 3) { // Read Holding Registers (Function Code=03)
+            uint16_t crc = 0xFFFF;
+            uint16_t frame_len = 5;
+            uint16_t daddr = (frame[2]<<8) | frame[3];
+            uint16_t nregs = (frame[4]<<8) | frame[5];
+            printf("modbus (%i/%i) get holding reg: %i %i %i %i\n", channel, len, addr, fcode, daddr, nregs);
+            static uint16_t num = 0b0000001101001001;
+            ret_frame[0] = 11;
+            ret_frame[1] = 3;
+            ret_frame[2] = 2;
+            ret_frame[3] = (num>>8);
+            ret_frame[4] = (num & 0xFF);
+            for (uint8_t i = 0; i < frame_len; i++) {
+                crc = crc16_update(crc, ret_frame[i]);
+            }
+            num++;
+            ret_frame[frame_len] = crc & 0xFF;
+            ret_frame[frame_len + 1] = crc>>8 & 0xFF;
+            printf("---ret_frame: ");
+            for (int i = 0; i < frame_len + 2; i++) {
+                printf("%i ", ret_frame[i]);
+            }
+            printf("\n");
+            return frame_len + 2;
         } else if (fcode == 2) { // Read Input Status (Function Code=02)
             uint16_t crc = 0xFFFF;
             uint16_t frame_len = 4;
             uint16_t daddr = (frame[2]<<8) | frame[3];
-            printf("modbus (%i/%i) get reg: %i %i %i %i: ", channel, len, addr, fcode, daddr, frame_len);
+            printf("modbus (%i/%i) read input: %i %i %i %i\n", channel, len, addr, fcode, daddr, frame_len);
             ret_frame[0] = 11;
             ret_frame[1] = 2;
             ret_frame[2] = 1;
@@ -91,11 +115,11 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             }
             ret_frame[frame_len] = crc & 0xFF;
             ret_frame[frame_len + 1] = crc>>8 & 0xFF;
-            // printf("---ret_frame: ");
-            // for (int i = 0; i < frame_len + 2; i++) {
-            //     printf("%i ", ret_frame[i]);
-            // }
-            // printf("\n");
+            printf("---ret_frame: ");
+            for (int i = 0; i < frame_len + 2; i++) {
+                printf("%i ", ret_frame[i]);
+            }
+            printf("\n");
             return frame_len + 2;
         }
     }
