@@ -18,7 +18,7 @@ class Plugin(PluginBase):
         self.ORIGIN = ""
         self.SIGNALS = {}
         self.PINDEFAULTS = {}
-        self.FILES = ["tooltracker.py"]
+        self.FILES = ["tooltracker.py", "tooledit.py"]
         self.OPTIONS = {
             "section": {
                 "type": str,
@@ -43,6 +43,7 @@ class Plugin(PluginBase):
         if sister:
             ini_setup["RS274NGC"]["REMAP|prepare"] = "T python=prepare"
             # ini_setup["RS274NGC"]["REMAP|M6"] = "M6 modalgroup=6 ngc=change"
+        ini_setup["DISPLAY"]["TOOL_EDITOR"] = "./tooledit.py"
 
     @classmethod
     def extra_files(cls, parent, instances):
