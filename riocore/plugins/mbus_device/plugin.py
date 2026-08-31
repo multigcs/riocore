@@ -325,7 +325,7 @@ class Plugin(PluginBase):
                 n_values = command["values"]
                 datatype = self.plugin_setup.get("datatype", self.option_default("datatype"))
                 if ctype == 3 and datatype == "bool":
-                    n_values = (n_values + 7) // 8
+                    n_values = (n_values + 15) // 16
                 n_values_list = self.int2list(n_values)
                 output.append(f"    frame[0] = {address};")
                 output.append(f"    frame[1] = {ctype};")
@@ -402,9 +402,9 @@ class Plugin(PluginBase):
 
                 n_values = command["values"]
                 if ctype == 3 and datatype == "bool":
-                    n_values = (n_values + 7) // 8
+                    n_values = (n_values + 15) // 16
 
-                output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype} && data_len == {n_values}) {{")
+                output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype}) {{")
                 if datatype == "float":
                     output.append("        float value = 0;")
                     output.append("        uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};")
@@ -412,9 +412,12 @@ class Plugin(PluginBase):
                     output.append(f"        {command['var_prefix']}_0 = value * {command.get('scale', 1.0)};")
                 elif datatype == "bool":
                     for vn in range(command["values"]):
-                        byte_n = vn // 8
-                        bit_n = vn - byte_n * 8
-                        output.append(f"        if ((frame_data[{3 + ((n_values - 1) - byte_n)}] & (1<<{bit_n})) > 0) {{")
+                        # for each register
+                        reg_n = vn // 16
+                        byte_n = 1 - (vn - reg_n * 16) // 8
+                        bit_n = vn % 8
+                        byte_pos = (reg_n * 2) + byte_n
+                        output.append(f"        if ((frame_data[{3 + byte_pos}] & (1<<{bit_n})) > 0) {{")
                         output.append(f"            {command['var_prefix']}_{vn} = 1;")
                         output.append("        } else {")
                         output.append(f"            {command['var_prefix']}_{vn} = 0;")

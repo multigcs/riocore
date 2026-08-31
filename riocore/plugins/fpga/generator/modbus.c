@@ -79,18 +79,16 @@ int modbus_sim(uint8_t channel, uint8_t *frame, uint8_t len, uint8_t *ret_frame)
             return -1;
         } else if (fcode == 3) { // Read Holding Registers (Function Code=03)
             uint16_t crc = 0xFFFF;
-            uint16_t frame_len = 5 + 2;
+            uint16_t frame_len = 5;
             uint16_t daddr = (frame[2]<<8) | frame[3];
             uint16_t nregs = (frame[4]<<8) | frame[5];
             printf("modbus (%i/%i) get holding reg: %i %i %i %i\n", channel, len, addr, fcode, daddr, nregs);
-            static uint16_t num = 0b0000001101001001;
+            static uint16_t num = 0;
             ret_frame[0] = 11;
             ret_frame[1] = 3;
             ret_frame[2] = 4;
             ret_frame[3] = (num>>8);
             ret_frame[4] = (num & 0xFF);
-            ret_frame[5] = 0;
-            ret_frame[6] = 0;
             for (uint8_t i = 0; i < frame_len; i++) {
                 crc = crc16_update(crc, ret_frame[i]);
             }
