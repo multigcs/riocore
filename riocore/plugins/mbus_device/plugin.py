@@ -109,7 +109,7 @@ class Plugin(PluginBase):
                         "default": 1,
                         "type": int,
                         "min": 1,
-                        "max": 16,
+                        "max": 32,
                         "description": "number of values",
                     },
                     "datatype": {
