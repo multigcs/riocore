@@ -69,7 +69,6 @@ typedef struct {
     uint32_t   *fpga_timestamp;
     float *duration;
     bool   *SIGOUT_BOARD0_MODBUS_SIM;
-    bool   *SIGOUT_BOARD0_MODBUS_DEBUG;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_GREEN;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_BLUE;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_RED;
@@ -148,8 +147,6 @@ data_t *register_signals(void) {
     *data->duration = rtapi_get_time();
     data->SIGOUT_BOARD0_MODBUS_SIM = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_MODBUS_SIM = 0;
-    data->SIGOUT_BOARD0_MODBUS_DEBUG = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_MODBUS_DEBUG = 0;
     data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = 0;
     data->SIGOUT_BOARD0_BOARD0_WLED_0_BLUE = (bool*)malloc(sizeof(bool));
@@ -659,10 +656,6 @@ void cb_SIGOUT_BOARD0_MODBUS_SIM(const std_msgs::Bool::ConstPtr& msg) {
     *data->SIGOUT_BOARD0_MODBUS_SIM = msg->data;
 }
 
-void cb_SIGOUT_BOARD0_MODBUS_DEBUG(const std_msgs::Bool::ConstPtr& msg) {
-    *data->SIGOUT_BOARD0_MODBUS_DEBUG = msg->data;
-}
-
 void cb_SIGOUT_BOARD0_BOARD0_WLED_0_GREEN(const std_msgs::Bool::ConstPtr& msg) {
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = msg->data;
 }
@@ -710,8 +703,6 @@ int main(int argc, char **argv) {
 
     ros::NodeHandle nSIGOUT_BOARD0_MODBUS_SIM;
     ros::Subscriber sub_SIGOUT_BOARD0_MODBUS_SIM = nSIGOUT_BOARD0_MODBUS_SIM.subscribe("board0/board0/modbus_sim", 1000, cb_SIGOUT_BOARD0_MODBUS_SIM);
-    ros::NodeHandle nSIGOUT_BOARD0_MODBUS_DEBUG;
-    ros::Subscriber sub_SIGOUT_BOARD0_MODBUS_DEBUG = nSIGOUT_BOARD0_MODBUS_DEBUG.subscribe("board0/board0/modbus_debug", 1000, cb_SIGOUT_BOARD0_MODBUS_DEBUG);
     ros::NodeHandle nSIGOUT_BOARD0_BOARD0_WLED_0_GREEN;
     ros::Subscriber sub_SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = nSIGOUT_BOARD0_BOARD0_WLED_0_GREEN.subscribe("board0/board0/board0_wled/0_green", 1000, cb_SIGOUT_BOARD0_BOARD0_WLED_0_GREEN);
     ros::NodeHandle nSIGOUT_BOARD0_BOARD0_WLED_0_BLUE;

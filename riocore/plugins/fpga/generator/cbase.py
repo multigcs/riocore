@@ -39,7 +39,6 @@ class cbase:
                         output.append(f"    static uint8_t frame_io[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append(f"    static uint8_t frame_data[{variable_bytesize}] = {{{', '.join(['0'] * variable_bytesize)}}};")
                         output.append("    float frame_time = 0.0;")
-                        # output.append("    uint8_t frame_id_last = 0;")
                         output.append("    uint8_t frame_id_ack = 0;")
                         output.append("    uint8_t frame_timeout = 0;")
                         output.append("    uint8_t frame_ack = 0;")
@@ -57,7 +56,6 @@ class cbase:
                         output.append("    }")
                         output.append("")
                         output.append(f"    if (timeout == 0 || frame_timeout == 1 || (frame_ack == 1 && (float)(stamp_last - {plugin_instance.instances_name}_last_rx) / 1000000.0 > delay)) {{")
-                        # output.append("        frame_id_last = frame_id;")
                         output.append("        frame_id += 1;")
 
                         output.append("")
@@ -226,7 +224,6 @@ class cbase:
                         output.append("    for (cn = 0; cn < frame_len; cn++) {")
                         output.append(f"        frame_data[cn] = data->{variable_name}[frame_len - cn + 2];")
                         output.append("    }")
-
                         output.append("")
                         output.append("    /*** get plugin vars ***/")
                         for signal_name, signal_config in plugin_instance.signals().items():
@@ -1416,16 +1413,6 @@ class cbase:
                     output.append(f"                uint8_t frame{modbus_n}_id = data->{variable_name}[0];")
                     output.append(f"                uint8_t frame{modbus_n}_len = data->{variable_name}[1];")
                     output.append(f"                if (frame{modbus_n}_id_last != frame{modbus_n}_id && frame{modbus_n}_len > 0) {{")
-                    if self.newhal:
-                        output.append(f"                    if (hal_get_bool(data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG)) {{")
-                    else:
-                        output.append(f"                    if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
-                    output.append(f'                        printf("> {plugin_instance.instances_name}.{data_name} (seq%i) ", frame{modbus_n}_id);')
-                    output.append(f"                        for (int i = 0; i < frame{modbus_n}_len; i++) {{")
-                    output.append(f'                            printf("%i ", data->{variable_name}[i + 2]);')
-                    output.append("                        }")
-                    output.append('                        printf("\\n");')
-                    output.append("                    }")
                     output.append(f"                    int len_rx = modbus({modbus_n}, (uint8_t *)(data->{variable_name} + 2), frame{modbus_n}_len, frame{modbus_n}_rx);")
                     output.append("                    if (len_rx > 0) {")
                     output.append("                        for (int cn = 0; cn < len_rx; cn++) {")
@@ -1434,17 +1421,6 @@ class cbase:
                     output.append(f"                        data->{modbus_rx[modbus_n]}[0] = frame{modbus_n}_id;")
                     output.append(f"                        data->{modbus_rx[modbus_n]}[1] = frame{modbus_n}_id;")
                     output.append(f"                        data->{modbus_rx[modbus_n]}[2] = len_rx;")
-                    if self.newhal:
-                        output.append(f"                        if (hal_get_bool(data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG)) {{")
-                    else:
-                        output.append(f"                        if (*data->SIGOUT_{self.prefix.upper()}_MODBUS_DEBUG) {{")
-                    output.append('                            printf("                                                        < rxdata ");')
-                    output.append("                            for (int i = 0; i < len_rx; i++) {")
-                    output.append(f'                                printf("%i ", frame{modbus_n}_rx[i ]);')
-                    output.append("                            }")
-                    output.append('                            printf("\\n");')
-                    output.append("                        }")
-
                     output.append("                    }")
                     output.append("                }")
                     output.append(f"                frame{modbus_n}_id_last = frame{modbus_n}_id;")

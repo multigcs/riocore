@@ -204,13 +204,6 @@ class Plugin(PluginBase):
                 "description": "modbus simulation",
                 "display": {"section": "status", "title": "Modbus-Simulation"},
             }
-            self.SIGNALS["modbus_debug"] = {
-                "direction": "output",
-                "bool": True,
-                "description": "modbus simulation debug output",
-                "display": {"section": "status", "title": "Modbus-Debug"},
-            }
-
             self.OPTIONS.update(
                 {
                     "modbus_port": {

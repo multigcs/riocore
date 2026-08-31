@@ -66,7 +66,6 @@ typedef struct {
     uint32_t   *fpga_timestamp;
     float *duration;
     bool   *SIGOUT_BOARD0_MODBUS_SIM;
-    bool   *SIGOUT_BOARD0_MODBUS_DEBUG;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_GREEN;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_BLUE;
     bool   *SIGOUT_BOARD0_BOARD0_WLED_0_RED;
@@ -145,8 +144,6 @@ data_t *register_signals(void) {
     *data->duration = rtapi_get_time();
     data->SIGOUT_BOARD0_MODBUS_SIM = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_MODBUS_SIM = 0;
-    data->SIGOUT_BOARD0_MODBUS_DEBUG = (bool*)malloc(sizeof(bool));
-    *data->SIGOUT_BOARD0_MODBUS_DEBUG = 0;
     data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = (bool*)malloc(sizeof(bool));
     *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = 0;
     data->SIGOUT_BOARD0_BOARD0_WLED_0_BLUE = (bool*)malloc(sizeof(bool));
@@ -666,9 +663,6 @@ int msgarrvd(void *context, char *topicName, int topicLen, MQTTClient_message *m
     if (strlen(topicName) == 21 && strcmp(topicName, "rio/board0/modbus_sim") == 0) {
         *data->SIGOUT_BOARD0_MODBUS_SIM = atoi((char*)message->payload);
     }
-    if (strlen(topicName) == 23 && strcmp(topicName, "rio/board0/modbus_debug") == 0) {
-        *data->SIGOUT_BOARD0_MODBUS_DEBUG = atoi((char*)message->payload);
-    }
     if (strlen(topicName) == 30 && strcmp(topicName, "rio/board0/board0_wled/0_green") == 0) {
         *data->SIGOUT_BOARD0_BOARD0_WLED_0_GREEN = atoi((char*)message->payload);
     }
@@ -721,7 +715,6 @@ int main(int argc, char **argv) {
     printf("\n");
     printf("pub:\n");
     printf("  SIGOUT_BOARD0_MODBUS_SIM\n");
-    printf("  SIGOUT_BOARD0_MODBUS_DEBUG\n");
     printf("  SIGOUT_BOARD0_BOARD0_WLED_0_GREEN\n");
     printf("  SIGOUT_BOARD0_BOARD0_WLED_0_BLUE\n");
     printf("  SIGOUT_BOARD0_BOARD0_WLED_0_RED\n");
@@ -763,11 +756,6 @@ int main(int argc, char **argv) {
     }
 
     if ((rc = MQTTClient_subscribe(client, "rio/board0/modbus_sim", 0)) != MQTTCLIENT_SUCCESS) {
-    	printf("Failed to subscribe, return code %d\n", rc);
-    	rc = EXIT_FAILURE;
-    }
-
-    if ((rc = MQTTClient_subscribe(client, "rio/board0/modbus_debug", 0)) != MQTTCLIENT_SUCCESS) {
     	printf("Failed to subscribe, return code %d\n", rc);
     	rc = EXIT_FAILURE;
     }

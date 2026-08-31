@@ -247,11 +247,6 @@ input:checked + .slider:before {
       <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/modbus_sim_set" /><span class="slider round"></span></label></div>
     </section>
     <section class="card">
-      <h2>board0 - modbus_debug</h2>
-      <div class="stat">&nbsp;</div>
-      <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/modbus_debug_set" /><span class="slider round"></span></label></div>
-    </section>
-    <section class="card">
       <h2>board0_wled - 0_green</h2>
       <div class="stat">&nbsp;</div>
       <div class="stat"><label class="switch"><input type="checkbox" id="rio/board0/board0_wled/0_green_set" /><span class="slider round"></span></label></div>
@@ -318,8 +313,6 @@ input:checked + .slider:before {
 
         document.getElementById("rio/board0/modbus_sim_set").addEventListener("change", publish, false);
         document.getElementById("rio/board0/modbus_sim_set").addEventListener("input", publish, false);
-        document.getElementById("rio/board0/modbus_debug_set").addEventListener("change", publish, false);
-        document.getElementById("rio/board0/modbus_debug_set").addEventListener("input", publish, false);
         document.getElementById("rio/board0/board0_wled/0_green_set").addEventListener("change", publish, false);
         document.getElementById("rio/board0/board0_wled/0_green_set").addEventListener("input", publish, false);
         document.getElementById("rio/board0/board0_wled/0_blue_set").addEventListener("change", publish, false);

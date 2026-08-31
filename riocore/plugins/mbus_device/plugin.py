@@ -414,7 +414,6 @@ class Plugin(PluginBase):
                     for vn in range(command["values"]):
                         byte_n = vn // 8
                         bit_n = vn - byte_n * 8
-                        print(vn, byte_n, bit_n)
                         output.append(f"        if ((frame_data[{3 + ((n_values - 1) - byte_n)}] & (1<<{bit_n})) > 0) {{")
                         output.append(f"            {command['var_prefix']}_{vn} = 1;")
                         output.append("        } else {")
