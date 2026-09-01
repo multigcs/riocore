@@ -36,10 +36,20 @@ class Plugin(PluginBase):
                 "default": False,
                 "comment": "manage sister tools (remap T)",
             },
+            "pocketcheck": {
+                "type": bool,
+                "default": False,
+                "comment": "check if tool pocket",
+            },
         }
 
     def ini(self, parent, ini_setup):
         sister = self.plugin_setup.get("sister", self.option_default("sister"))
+        pocketcheck = self.plugin_setup.get("pocketcheck", self.option_default("pocketcheck"))
+        if pocketcheck:
+            ini_setup["TOOLTRACKER"] = {
+                "POCKETCHECK": "YES",
+            }
         if sister:
             ini_setup["RS274NGC"]["REMAP|prepare"] = "T python=prepare"
             # ini_setup["RS274NGC"]["REMAP|M6"] = "M6 modalgroup=6 ngc=change"
@@ -60,8 +70,14 @@ class Plugin(PluginBase):
     def hal(self, parent):
         display = self.plugin_setup.get("display", self.option_default("display"))
         section = self.plugin_setup.get("section", self.option_default("section"))
+        pocketcheck = self.plugin_setup.get("pocketcheck", self.option_default("pocketcheck"))
         parent.halg.net_add("halui.spindle.0.is-on", "tooltracker.running")
         parent.halg.net_add("halui.tool.number", "tooltracker.tool")
+
+        if pocketcheck:
+            halpin = parent.ini_mdi_command("o<pocketcheck> call", title="Pocketcheck")
+            parent.halg.net_add("halui.machine.is-on AND oneshot(motion.is-all-homed, 0.3, 1, 0)", halpin)
+
         if display != "off":
             parent.vcp_values.append(
                 {

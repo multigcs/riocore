@@ -30,14 +30,26 @@ def prepare(self, **words):
     tool_table = inifile.find("EMCIO", "TOOL_TABLE")
     tools = tools_load(tool_table)
 
+    pocketcheck = bool(inifile.find("TOOLTRACKER", "POCKETCHECK") == "YES")
+
     # select usable tool or sister
     load = tool
     if load in tools:
         found = False
         for level in ("warning", "critical"):
+            if level == "critical":
+                print("tooltracker-remap: fallback, allow tools in warning state")
             select = tools[load]
             while select:
-                if select["timer"] < select[level]:
+                if pocketcheck and not stat.dout[int(select["P"])]:
+                    print(f"tooltracker-remap: no tool in pocket {select['P']}")
+                    if int(select["sister"]):
+                        select = tools[int(select["sister"])]
+                        print(f"tooltracker-remap: found sister {select['T']} in pocket {select['P']}")
+                    else:
+                        select = None
+
+                elif select["timer"] < select[level]:
                     # found usable tool
                     pocket = int(select["P"])
                     tool = int(select["T"])
@@ -59,6 +71,7 @@ def prepare(self, **words):
 
         if not found:
             print("tooltracker-remap: no usable tool found")
+            return "T%d: no usable tool found" % (tool)
 
     self.selected_tool = tool
     self.selected_pocket = pocket
