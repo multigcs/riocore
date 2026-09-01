@@ -649,14 +649,6 @@ class LinuxCNC:
             # ini_setup["DISPLAY"]["EMBED_TAB_LOCATION|RIO"] = "main_tab_widget"
             # ini_setup["DISPLAY"]["EMBED_TAB_COMMAND|RIO"] = "qtvcp rio-gui"
 
-        elif gui in {"flexgui"}:
-            ini_setup["DISPLAY"]["DISPLAY"] = "flexgui"
-            ini_setup["DISPLAY"]["TOOL_EDITOR"] = "tooledit"
-            ini_setup["DISPLAY"]["EMBED_TAB_NAME|RIO"] = "RIO"
-            ini_setup["FLEXGUI"] = {
-                "QSS": "flexgui.qss",
-            }
-
         elif gui.startswith("qtdragon"):
             qtdragon_setup = {
                 "DISPLAY": {
@@ -1565,7 +1557,7 @@ o<{oword}> endsub
     def vcp_gui(self):
         os.makedirs(self.configuration_path, exist_ok=True)
         linuxcnc_config = self.project.config["jdata"].get("linuxcnc", {})
-        json_path = self.project.config["json_path"]
+        # json_path = self.project.config["json_path"]
         gui = linuxcnc_config.get("gui", "axis")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
@@ -1574,54 +1566,7 @@ o<{oword}> endsub
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         ini_setup = self.ini_defaults(self.project.config["jdata"], num_joints=self.num_joints, axis_dict=self.project.axis_dict, gui_type=self.gui_type, ini_setup=self.ini_setup)
 
-        if gui in {"flexgui"}:
-            os.makedirs(os.path.join(self.configuration_path), exist_ok=True)
-            ini_setup["DISPLAY"]["DISPLAY"] = "./flexgui"
-            ini_setup["DISPLAY"]["GUI"] = "flexgui.ui"
-            ini_setup["FLEXGUI"] = {}
-            ini_setup["FLEXGUI"]["QSS"] = "flexgui.qss"
-            flexgui = linuxcnc_config.get("flexgui", "axis")
-            if flexgui:
-                for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "guis", flexgui, "*")):
-                    target_path = os.path.join(self.configuration_path, os.path.basename(source))
-                    if os.path.isfile(source):
-                        shutil.copy(source, target_path)
-                    else:
-                        shutil.copytree(source, target_path, dirs_exist_ok=True)
-
-            for uifile in glob.glob(os.path.join(json_path, "flexgui.ui")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(uifile))
-                shutil.copy(uifile, target_path)
-
-            for source in glob.glob(os.path.join(riocore_path, "gui", "flexgui", "*")):
-                if source.endswith("/guis"):
-                    continue
-                target_path = os.path.join(self.configuration_path, os.path.basename(source))
-                if os.path.isfile(source):
-                    shutil.copy(source, target_path)
-                else:
-                    shutil.copytree(source, target_path, dirs_exist_ok=True)
-                if target_path.endswith("/flexgui"):
-                    os.chmod(target_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH)
-
-            for qssfile in glob.glob(os.path.join(json_path, "flexgui.qss")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(qssfile))
-                shutil.copy(qssfile, target_path)
-            for pyfile in glob.glob(os.path.join(json_path, "flexgui.py")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                ini_setup["FLEXGUI"]["RESOURCES"] = "flexgui.py"
-                shutil.copy(pyfile, target_path)
-            for pyfile in glob.glob(os.path.join(json_path, "flexgui")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                shutil.copy(pyfile, target_path)
-            for pyfile in glob.glob(os.path.join(json_path, "libflexgui")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
-            for pyfile in glob.glob(os.path.join(json_path, "flexgui-images")):
-                target_path = os.path.join(self.configuration_path, os.path.basename(pyfile))
-                shutil.copytree(pyfile, target_path, dirs_exist_ok=True)
-
-        elif gui in {"tnc"}:
+        if gui in {"tnc"}:
             if tnc is None:
                 riocore.log("ERROR: no tnc installation found")
             else:

@@ -376,6 +376,7 @@ QLabel {{
             display_format = setup.get("format", "0.2f")
         else:
             display_format = setup.get("format", "d")
+        hal_type2 = hal_type.replace("u32", "s32")
         title = setup.get("title", name)
         self.draw_hbox_begin()
         self.draw_title(title)
@@ -403,9 +404,9 @@ QLabel {{
         self.cfgxml_data.append('      <property name="styleSheet">')
         self.cfgxml_data.append('       <string notr="true">font: 14pt &quot;Lato Heavy&quot;;</string>')
         self.cfgxml_data.append("      </property>")
-        for ptype in ("s32", "u32", "float", "bin"):
+        for ptype in ("s32", "float", "bit"):
             self.cfgxml_data.append(f'      <property name="{ptype}_pin_type" stdset="0">')
-            if ptype == hal_type:
+            if ptype == hal_type2:
                 self.cfgxml_data.append("       <bool>true</bool>")
             else:
                 self.cfgxml_data.append("       <bool>false</bool>")
@@ -413,6 +414,8 @@ QLabel {{
         self.cfgxml_data.append("     </widget>")
         self.cfgxml_data.append("    </item>")
         self.draw_hbox_end()
+        if hal_type == "u32":
+            return f"conv({self.prefix}.{halpin}, s32, u32)"
         return f"{self.prefix}.{halpin}"
 
     def draw_checkbutton(self, name, halpin, setup=None):
