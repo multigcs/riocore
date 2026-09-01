@@ -404,7 +404,7 @@ class Plugin(PluginBase):
                 if ctype == 3 and datatype == "bool":
                     n_values = (n_values + 15) // 16
 
-                output.append(f"    if (frame_len && data_addr == {address} && data_type == {ctype}) {{")
+                output.append(f"    if (frame_len > 0 && data_len > 0 && data_addr == {address} && data_type == {ctype}) {{")
                 if datatype == "float":
                     output.append("        float value = 0;")
                     output.append("        uint8_t farray[] = {0, 0, frame_data[4], frame_data[3]};")
