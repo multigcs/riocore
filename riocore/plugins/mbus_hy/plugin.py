@@ -1,5 +1,6 @@
 import os
 
+from riocore.checksums import crc16
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -430,3 +431,14 @@ class Plugin(PluginBase):
 
     def gateware_instances(self, gateware=None):
         return None
+
+    def on_error(self):
+        cmds = []
+        address = self.plugin_setup.get("address", self.option_default("address"))
+        for cmd in self.HYVFD_ON_ERROR_CMDS:
+            frame = [address, *cmd]
+            csum = crc16()
+            csum.update(frame)
+            frame += csum.intdigest()
+            cmds.append(frame)
+        return cmds

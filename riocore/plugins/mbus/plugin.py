@@ -25,7 +25,6 @@ class Plugin(PluginBase):
         self.TYPE = "frameio"
         self.PROVIDES = ["modbus"]
         self.NEEDS = ["fpga"]
-        self.ON_ERROR_CMDS = []
         self.OPTIONS.update(
             {
                 "baud": {
@@ -319,7 +318,12 @@ class Plugin(PluginBase):
         instance_parameter["ClkFrequency"] = self.system_setup["speed"]
         instance_parameter["Baud"] = baud
 
-        num_on_error_cmds = len(self.ON_ERROR_CMDS)
+        on_error_cmds = []
+        for device_instance in self.device_instances:
+            if hasattr(device_instance, "on_error"):
+                on_error_cmds += getattr(device_instance, "on_error")()
+
+        num_on_error_cmds = len(on_error_cmds)
         original_name = instance["arguments"]["txdata"]
         instance["arguments"]["txdata"] = f"{original_name}_TMP"
         instance["predefines"].append(f"reg [{instance_parameter['TX_BUFFERSIZE'] - 1}:0] {original_name}_TMP;")
@@ -334,9 +338,10 @@ class Plugin(PluginBase):
         instance["predefines"].append("        end else begin")
         instance["predefines"].append(f"            {self.instances_name}_cmd_counter <= 0;")
         instance["predefines"].append(f"            {self.instances_name}_frame_counter <= {self.instances_name}_frame_counter + 8'd1;")
+
         if num_on_error_cmds:
             instance["predefines"].append(f"            case ({self.instances_name}_cmd_num)")
-            for cn, cmd in enumerate(self.ON_ERROR_CMDS):
+            for cn, cmd in enumerate(on_error_cmds):
                 frame = []
                 for cbyte in reversed(cmd):
                     frame.append(f"8'd{cbyte}")

@@ -4,6 +4,7 @@ import os
 
 import riocore
 
+from riocore.checksums import crc16
 from riocore.plugins import PluginBase
 
 riocore_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -483,3 +484,18 @@ class Plugin(PluginBase):
 
     def gateware_instances(self, gateware=None):
         return None
+
+    def on_error(self):
+        cmds = []
+        address = self.plugin_setup.get("address", self.option_default("address"))
+        error_values = self.plugin_setup.get("error_values", self.option_default("error_values"))
+        if error_values:
+            cmd = []
+            for value in error_values.split():
+                cmd.append(int(value))
+            frame = [address, *cmd]
+            csum = crc16()
+            csum.update(frame)
+            frame += csum.intdigest()
+            cmds.append(frame)
+        return cmds
