@@ -1,0 +1,51 @@
+{
+  "comment": "N4D3E16 - 16channel Digital-In/Out",
+  "url": "",
+  "address": 14,
+  "timeout": 200,
+  "delay": 160,
+  "pins": {
+    "MODBUS": {
+      "direction": "output",
+      "edge": "target",
+      "pos": [
+        70,
+        165
+      ],
+      "type": [
+        "MODBUS"
+      ],
+      "bus": true
+    },
+    "MODBUS:OUT": {
+      "direction": "output",
+      "edge": "source",
+      "pos": [
+        70,
+        205
+      ],
+      "type": [
+        "PASSTHROUGH"
+      ],
+      "bus": true,
+      "pintype": "PASSTHROUGH",
+      "source": "MODBUS"
+    }
+  },
+  "commands": {
+    "in": {
+      "type": 3,
+      "register": 192,
+      "datatype": "bool",
+      "values": 16,
+      "error_values": ""
+    },
+    "out": {
+      "type": 6,
+      "register": 112,
+      "datatype": "bool",
+      "values": 16,
+      "error_values": ""
+    }
+  }
+}
