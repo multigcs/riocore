@@ -74,11 +74,8 @@ class Plugin(PluginBase):
         parent.halg.net_add("halui.spindle.0.is-on", "tooltracker.running")
         parent.halg.net_add("halui.tool.number", "tooltracker.tool")
 
-        if pocketcheck:
-            halpin = parent.ini_mdi_command("o<pocketcheck> call", title="Pocketcheck")
-            parent.halg.net_add("halui.machine.is-on AND oneshot(motion.is-all-homed, 0.3, 1, 0)", halpin)
-
         if display != "off":
+            """
             parent.vcp_values.append(
                 {
                     "direction": "input",
@@ -87,8 +84,24 @@ class Plugin(PluginBase):
                         "display": {
                             "section": section,
                             "group": "Tooltracker",
-                            "title": "Number",
+                            "title": "Number-Number",
                             "type": "number_u32",
+                            "unit": "#",
+                        },
+                    },
+                },
+            )
+            """
+            parent.vcp_values.append(
+                {
+                    "direction": "input",
+                    "halname": "iocontrol.0.tool-prep-pocket",
+                    "userconfig": {
+                        "display": {
+                            "section": section,
+                            "group": "Tooltracker",
+                            "title": "Pocket-Number",
+                            "type": "number_s32",
                             "unit": "#",
                         },
                     },
@@ -193,6 +206,27 @@ class Plugin(PluginBase):
                     },
                 },
             )
+
+        if pocketcheck:
+            halpin = parent.ini_mdi_command("o<pocketcheck> call", title="Pocketcheck")
+            parent.halg.net_add("(halui.machine.is-on AND oneshot(motion.is-all-homed, 0.3, 1, 0))", halpin)
+            for pocket in range(4):
+                parent.vcp_values.append(
+                    {
+                        "direction": "input",
+                        "halname": f"motion.digital-out-{pocket + 1:02d}",
+                        "userconfig": {
+                            "display": {
+                                "section": section,
+                                "group": "#Pocketcheck",
+                                "title": f"P{pocket + 1}",
+                                "type": "rectled",
+                                "color": "green",
+                                "off_color": "black",
+                            },
+                        },
+                    },
+                )
 
     @classmethod
     def component_loader(cls, instances):

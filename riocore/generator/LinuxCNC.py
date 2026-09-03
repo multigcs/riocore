@@ -353,7 +353,7 @@ class LinuxCNC:
         self.gui_type = ""
         self.gui_prefix = ""
         self.gui_tablocation = ""
-        if vcp_mode != "NONE":
+        if vcp_mode != "NONE" and vcp_type != "NONE":
             vcp_setup = riocore.gui_dict.get(gui, {}).get("vcp", {})
             if vcp_setup:
                 if vcp_type == "auto":

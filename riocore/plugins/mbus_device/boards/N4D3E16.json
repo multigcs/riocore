@@ -37,15 +37,13 @@
       "type": 3,
       "register": 192,
       "datatype": "bool",
-      "values": 16,
-      "error_values": ""
+      "values": 16
     },
     "out": {
       "type": 6,
       "register": 112,
       "datatype": "bool",
-      "values": 16,
-      "error_values": ""
+      "values": 16
     }
   }
 }

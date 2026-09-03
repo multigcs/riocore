@@ -79,6 +79,11 @@ class Plugin(PluginBase):
                     "unit": "ms",
                     "description": "maximum time the client needs to release the bus",
                 },
+                "error_values": {
+                    "default": "",
+                    "type": str,
+                    "description": "value send on error (space seperated list of integers - the command without addr and csum)",
+                },
             }
         )
         self.commands = {}
@@ -126,11 +131,6 @@ class Plugin(PluginBase):
                         "max": 999999.99,
                         "description": "value scale",
                     },
-                    "error_values": {
-                        "default": "",
-                        "type": str,
-                        "description": "value send on error",
-                    },
                     "cmdmapping": {
                         "default": "",
                         "type": str,
@@ -175,7 +175,6 @@ class Plugin(PluginBase):
             vmin = command.get("min", -99999)
             vmax = command.get("max", 99999)
             self.command_ids += 1
-
             direction = self.CTYPES[int(command["type"])][1]
             for vn in range(command["values"]):
                 if cmdmapping := command.get("cmdmapping"):
@@ -297,6 +296,7 @@ class Plugin(PluginBase):
         for name, command in self.commands.items():
             ctype = command["type"]
             datatype = command["datatype"]
+
             # TX
             output.append(f"uint8_t {self.title}_{name}_tx(uint8_t *frame) {{")
             output.append(f"    // ctype ({command['type']}): {self.CTYPES[command['type']]}")
@@ -324,7 +324,6 @@ class Plugin(PluginBase):
                 output.append("    // send request frame")
                 register = self.int2list(command["register"])
                 n_values = command["values"]
-                datatype = self.plugin_setup.get("datatype", self.option_default("datatype"))
                 if ctype == 3 and datatype == "bool":
                     n_values = (n_values + 15) // 16
                 n_values_list = self.int2list(n_values)
