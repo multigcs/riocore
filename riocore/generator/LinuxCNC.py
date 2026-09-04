@@ -593,6 +593,10 @@ class LinuxCNC:
             elif gui_type == "gladevcp":
                 ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
 
+        elif gui == "next":
+            ini_setup["DISPLAY"]["DISPLAY"] = "./next.py"
+            ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+
         elif gui == "gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui
             ini_setup["DISPLAY"]["CYCLE_TIME"] = "150"
@@ -870,7 +874,14 @@ class LinuxCNC:
         if not motion_probe_input:
             tool_touchplate = False
 
-        if gui in {"qtdragon_hd"}:
+        if gui in {"next"}:
+            source = os.path.join(riocore_path, "files", "next.py")
+            target = os.path.join(self.configuration_path, "next.py")
+            shutil.copy(source, target)
+            st = os.stat(target)
+            os.chmod(target, st.st_mode | stat.S_IEXEC)
+
+        elif gui in {"qtdragon_hd"}:
             qtdragon_pref = os.path.join(json_path, "qtdragon.pref")
             target_path = os.path.join(self.configuration_path, "qtdragon.pref")
             if not os.path.isfile(target_path):

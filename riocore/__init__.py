@@ -36,6 +36,10 @@ gui_dict = {
         "comment": "Tk based GUI (default)",
         "vcp": {"pyvcp": {"prefix": "pyvcp"}, "gladevcp": {"prefix": "gladevcp"}},
     },
+    "next": {
+        "comment": "fancy GUI for touchscreens",
+        "vcp": {"pyvcp": {"prefix": "pyvcp"}},
+    },
     "qtdragon": {
         "comment": "nice QT based GUI",
         "vcp": {"qtvcp": {"prefix": "qtdragon.rio-gui", "tablocation": ["tabWidget_utilities", "stackedWidget_mainTab", "tabWidget_setup"]}},
