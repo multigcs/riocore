@@ -19,6 +19,7 @@ from PyQt5 import QtSvg
 from PyQt5.QtCore import QRectF, QSize, QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QLinearGradient, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
+    QAction,
     QApplication,
     QFileDialog,
     QGroupBox,
@@ -107,6 +108,22 @@ jog_mode = False
 def ok_for_mdi():
     s.poll()
     return not s.estop and s.enabled and (s.homed.count(1) == s.joints) and (s.interp_state == linuxcnc.INTERP_IDLE)
+
+
+def toggle_estop():
+    s.poll()
+    if s.estop:
+        c.state(linuxcnc.STATE_ESTOP_RESET)
+    else:
+        c.state(linuxcnc.STATE_ESTOP)
+
+
+def toggle_enable():
+    s.poll()
+    if s.enabled:
+        c.state(linuxcnc.STATE_OFF)
+    else:
+        c.state(linuxcnc.STATE_ON)
 
 
 class View3D(Lcnc_3dGraphics):
@@ -304,10 +321,9 @@ class GradientLabel(QLabel):
                     self.parent.load_ngc(self.ctype[5:])
 
             elif self.text.lower() == "estop":
-                if self.enabled:
-                    c.state(linuxcnc.STATE_ESTOP_RESET)
-                else:
-                    c.state(linuxcnc.STATE_ESTOP)
+                toggle_estop()
+            elif self.text.lower() == "enable":
+                toggle_enable()
             elif self.text.lower() == "exit":
                 if not self.enabled:
                     c.state(linuxcnc.STATE_ESTOP)
@@ -318,11 +334,6 @@ class GradientLabel(QLabel):
                 c.wait_complete()
                 c.home(-1)
 
-            elif self.text.lower() == "enable":
-                if self.enabled:
-                    c.state(linuxcnc.STATE_OFF)
-                else:
-                    c.state(linuxcnc.STATE_ON)
             elif self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
                 axis = AXIS_NAMES.index(self.text[0])
                 c.jog(linuxcnc.JOG_STOP, jog_mode, axis)
@@ -1204,8 +1215,18 @@ class MainWindow(QMainWindow):
 
         self.estop = GradientLabel("ESTOP", size=14, color1=QColor("#993333"), color2=QColor("#FF6666"))
         title_layout.addWidget(self.estop, stretch=1)
+        toggle_estop_action = QAction("Toggle Estop", self)
+        toggle_estop_action.setShortcut("F1")
+        toggle_estop_action.triggered.connect(toggle_estop)
+        self.addAction(toggle_estop_action)
+
         self.enable = GradientLabel("ENABLE", size=14, color1=QColor("#339933"), color2=QColor("#66FF66"))
         title_layout.addWidget(self.enable, stretch=1)
+        toggle_enable_action = QAction("Toggle Enable", self)
+        toggle_enable_action.setShortcut("F2")
+        toggle_enable_action.triggered.connect(toggle_enable)
+        self.addAction(toggle_enable_action)
+
         title = GradientLabel("LinuxCNC - RIO")
         title_layout.addWidget(title, stretch=9)
         self.exit = GradientLabel("EXIT", size=14)
