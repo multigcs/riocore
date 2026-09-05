@@ -2,11 +2,13 @@
 #
 #
 
+import argparse
 import glob
 import os
 import sys
 import xml.etree.ElementTree as ET
 
+from datetime import datetime
 from functools import partial
 
 import gcode
@@ -81,7 +83,86 @@ class View3D(Lcnc_3dGraphics):
         if self.error_widget:
             self.error_widget.color1 = QColor("#ff6086")
             self.error_widget.color2 = QColor("#ff2036")
-            self.error_widget.setText(self.errortext)
+            self.error_widget.setError(self.errortext)
+
+
+class GradientFileEntry(QLabel):
+    def __init__(self, filename):
+        super().__init__(filename)
+        self.filename = filename
+        self.error = ""
+        color1 = QColor("#206086")
+        self.color1 = color1
+        color2 = QColor("#09405f")
+        self.color2 = color2
+        self.flag_clicked = False
+        self.enabled = True
+
+    clicked = pyqtSignal()
+
+    def setError(self, error):
+        self.error = error
+        self.update()
+
+    def _groove_rect(self):
+        return QRectF(0, 0, self.width(), self.height())
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        if not self.isEnabled():
+            p.setOpacity(0.4)
+
+        g = self._groove_rect()
+        grad = QLinearGradient(g.topLeft(), g.bottomRight())
+        if self.flag_clicked:
+            grad.setColorAt(0.0, self.color1)
+            grad.setColorAt(1.0, self.color2)
+        else:
+            grad.setColorAt(0.0, self.color2)
+            grad.setColorAt(1.0, self.color1)
+
+        # background
+        p.setPen(Qt.NoPen)
+        p.setBrush(QBrush(grad))
+        # p.drawRoundedRect(g, 2, 2)
+        p.drawRect(g)
+
+        # text
+        title = os.path.basename(self.filename)
+        font = QFont("Arial", 20, weight=QFont.Bold)
+        p.setFont(font)
+        p.setPen(QPen(Qt.white, 1))
+        p.drawText(QRectF(10, 10, self.width(), 40), Qt.AlignLeft, title)
+
+        font = QFont("Arial", 14)
+        p.setFont(font)
+        p.setPen(QPen(Qt.white, 1))
+
+        if self.error:
+            p.drawText(QRectF(30, 60, self.width(), self.height() - 40), Qt.AlignLeft, self.error)
+        else:
+            size = os.path.getsize(self.filename) / 1024
+            ctime = datetime.fromtimestamp(os.path.getctime(self.filename)).strftime("%H:%M %d.%m.%y")
+            mtime = datetime.fromtimestamp(os.path.getmtime(self.filename)).strftime("%H:%M %d.%m.%y")
+            p.drawText(QRectF(self.width() - 320, 10, 310, 30), Qt.AlignRight, f"Size: {size:0.2f}kb")
+            p.drawText(QRectF(self.width() - 320, 10 + 30 * 1, 310, 30), Qt.AlignRight, f"cTime: {ctime}")
+            p.drawText(QRectF(self.width() - 320, 10 + 30 * 2, 310, 30), Qt.AlignRight, f"mTime: {mtime}")
+            p.drawText(QRectF(10, self.height() - 35, self.width(), 30), Qt.AlignLeft, f"Filename: {self.filename}")
+
+    def minimumSizeHint(self):
+        return QSize(450, 200)
+
+    def mousePressEvent(self, event):
+        self.clicked.emit()
+        self.flag_clicked = True
+        self.update()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.flag_clicked = False
+        self.update()
+        super().mouseReleaseEvent(event)
 
 
 class GradientLabel(QLabel):
@@ -180,6 +261,10 @@ class GradientLabel(QLabel):
                     c.state(linuxcnc.STATE_ESTOP_RESET)
                 else:
                     c.state(linuxcnc.STATE_ESTOP)
+            elif self.text.lower() == "exit":
+                if not self.enabled:
+                    c.state(linuxcnc.STATE_ESTOP)
+                exit(0)
             elif self.text.lower() == "home":
                 c.mode(linuxcnc.MODE_MANUAL)
                 c.teleop_enable(0)
@@ -466,18 +551,6 @@ class ScreenMdi(QWidget):
         self.setLayout(layout)
 
         self.history = QListWidget()
-        self.history.setStyleSheet("""
-            QListWidget {
-                background-color: #2b2b2b;
-                color: #ffffff;
-                font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 14pt;
-            }
-            QScrollBar:vertical {
-                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
-                width: 36px;
-            }
-        """)
         self.history.addItem(QListWidgetItem("G0 X0 Y0"))
         self.history.addItem(QListWidgetItem("G0 X10 Y10"))
         self.history.addItem(QListWidgetItem("G0 X0 Y10"))
@@ -506,12 +579,6 @@ class ScreenMdi(QWidget):
         layout.addWidget(self.history)
 
         self.cmd = QLineEdit()
-        self.cmd.setStyleSheet("""
-            background-color: #5b5b5b;
-            color: #ffffff;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 14pt;
-        """)
         layout.addWidget(self.cmd)
 
 
@@ -543,17 +610,11 @@ class ScreenFiles(QWidget):
         self.filelist_layout = QVBoxLayout()
         filelist.setLayout(self.filelist_layout)
         scroll = QScrollArea()
-        scroll.setStyleSheet("""
-            QScrollBar:vertical {
-                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
-                width: 36px;
-            }
-        """)
         scroll.setWidget(filelist)
         scroll.setWidgetResizable(True)
         layout.addWidget(scroll)
 
-        self.reload()
+        # self.reload()
 
     def cleanLayout(self, layout):
         for i in reversed(range(layout.count())):
@@ -571,20 +632,18 @@ class ScreenFiles(QWidget):
         files = glob.glob(os.path.join(os.path.expanduser("~"), "*.ngc"))
         files.sort(key=os.path.getmtime)
         for filename in reversed(files):
-            title = os.path.basename(filename)
             entry_layout = QHBoxLayout()
             self.filelist_layout.addLayout(entry_layout, stretch=1)
 
             if os.path.isfile(f"{filename}.svg"):
                 preview = QtSvg.QSvgWidget(f"{filename}.svg")
-                preview.setStyleSheet("background-color: #000000;")
+                # preview.setStyleSheet("background-color: #000000;")
             else:
                 preview = GradientLabel("")
             preview.setFixedHeight(175)
             entry_layout.addWidget(preview, stretch=1)
 
-            entry_label = GradientLabel(title)
-            entry_label.setFixedHeight(175)
+            entry_label = GradientFileEntry(filename)
             entry_label.clicked.connect(partial(self.preview, filename, entry_label))
             entry_layout.addWidget(entry_label, stretch=4)
 
@@ -611,8 +670,6 @@ class SliderProxyStyle(QProxyStyle):
 class ScreenVcpTab(QWidget):
     def __init__(self, tab, halpins_in):
         super().__init__()
-        # self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f); color : white;")
-        # self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); color : white;")
         self.setStyleSheet("""
             background-color: #9fc31b;
             color : black;
@@ -931,16 +988,13 @@ class ScreenNgc(QWidget):
                 font-family: 'Consolas', 'Courier New', monospace;
                 font-size: 12pt;
             }
-            QScrollBar:vertical {
-                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
-                width: 36px;
-            }
         """)
         layout.addWidget(self.editor, stretch=5)
 
 
 class PyVCP:
-    def __init__(self, layout, xml_file):
+    def __init__(self, layout, xml_file, parent):
+        self.parent = parent
         self.layout = layout
         self.tabnames = []
         self.halpins_in = {}
@@ -956,12 +1010,6 @@ class PyVCP:
                     else:
                         self.screen_status = ScreenVcpTab(tab, self.halpins_in)
                         scroll = QScrollArea()
-                        scroll.setStyleSheet("""
-                            QScrollBar:vertical {
-                                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
-                                width: 36px;
-                            }
-                        """)
                         scroll.setWidget(self.screen_status)
                         scroll.setWidgetResizable(True)
                         self.layout.addWidget(scroll)
@@ -994,9 +1042,13 @@ class PyVCP:
                 print("missing:", pin, data, val)
 
     def buttons(self, layout):
+        def setTab(idx):
+            self.parent.center_stack.setCurrentIndex(0)
+            self.layout.setCurrentIndex(idx)
+
         for tab_n, tabname in enumerate(self.tabnames):
             btn_status = GradientLabel(tabname, 10)
-            btn_status.clicked.connect(partial(self.layout.setCurrentIndex, tab_n))
+            btn_status.clicked.connect(partial(setTab, tab_n))
             layout.addWidget(btn_status, stretch=1)
 
 
@@ -1005,14 +1057,59 @@ class MainWindow(QMainWindow):
     ngc_file = ""
     jog_speed = 40
 
-    def __init__(self):
+    def __init__(self, args):
         super().__init__()
         self.setWindowTitle("RIO-Next")
         self.resize(1200, 1920)
         # self.resize(800, 1080)
 
         mw = QWidget()
-        mw.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);")
+        mw.setStyleSheet("""
+QWidget {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);
+}
+
+QLineEdit {
+    background-color: #5b5b5b;
+    color: #ffffff;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 21px;
+}
+
+QListWidget {
+    background-color: #2b2b2b;
+    color: #ffffff;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 21px;
+}
+
+QScrollBar:vertical {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
+    border: 4px solid grey;
+    width: 56px;
+    margin: 62px 0px 62px 0px;
+}
+QScrollBar::handle:vertical {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #9fe31b, stop: 1 #78f023);
+    min-height: 60px;
+}
+QScrollBar::add-line:vertical {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #afc31b, stop: 1 #a8a023);
+    border: 4px solid grey;
+    height: 60px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #afc31b, stop: 1 #a8a023);
+    border: 4px solid grey;
+    height: 60px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}
+
+        """)
         main_layout = QVBoxLayout(mw)
         main_layout.setContentsMargins(0, 0, 0, 0)
         self.setCentralWidget(mw)
@@ -1067,10 +1164,12 @@ class MainWindow(QMainWindow):
 
         self.estop = GradientLabel("ESTOP", size=14, color1=QColor("#993333"), color2=QColor("#FF6666"))
         title_layout.addWidget(self.estop, stretch=1)
-        title = GradientLabel("LinuxCNC - RIO")
-        title_layout.addWidget(title, stretch=9)
         self.enable = GradientLabel("ENABLE", size=14, color1=QColor("#339933"), color2=QColor("#66FF66"))
         title_layout.addWidget(self.enable, stretch=1)
+        title = GradientLabel("LinuxCNC - RIO")
+        title_layout.addWidget(title, stretch=9)
+        self.exit = GradientLabel("EXIT", size=14)
+        title_layout.addWidget(self.exit, stretch=1)
 
         self.glview = View3D()
         top_layout.addWidget(self.glview, stretch=1)
@@ -1101,13 +1200,17 @@ class MainWindow(QMainWindow):
         center2r_layout.addWidget(self.center2r_stack, stretch=1)
 
         s.poll()
-        self.inifile = linuxcnc.ini(s.ini_filename)
+        self.ini_filename = s.ini_filename
+        if args.ini:
+            self.ini_filename = args.ini
+
+        self.inifile = linuxcnc.ini(self.ini_filename)
         xml_file = self.inifile.find("DISPLAY", "PYVCP")
         # self.joints = int(self.inifile.find("KINS", "JOINTS"))
 
         self.pyvcp = None
         if xml_file:
-            self.pyvcp = PyVCP(self.center2r_stack, xml_file)
+            self.pyvcp = PyVCP(self.center2r_stack, xml_file, self)
 
         btn_jog = GradientLabel("JOG", 14)
         btn_jog.clicked.connect(partial(self.view_set, "jog"))
@@ -1166,7 +1269,7 @@ class MainWindow(QMainWindow):
 
     def postgui(self):
         for filename in self.inifile.findall("HAL", "POSTGUI_HALFILE") or []:
-            ini_dir = os.path.dirname(s.ini_filename)
+            ini_dir = os.path.dirname(self.ini_filename)
             haltcl = ["haltcl", "-i", ini_dir, "-f", str(filename)]
             if filename.split(".")[-1] == "tcl":
                 haltcl = ["haltcl", "-i", ini_dir, str(filename)]
@@ -1241,8 +1344,17 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-ini", help="ini file", type=str, default=None)
+    parser.add_argument("--fullscreen", help="fullscreen", action="store_true")
+    args = parser.parse_args()
+
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(args)
     h.ready()
-    window.show()
+    if args.fullscreen:
+        # window.showFullScreen()
+        window.show()
+    else:
+        window.show()
     sys.exit(app.exec_())

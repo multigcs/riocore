@@ -594,7 +594,7 @@ class LinuxCNC:
                 ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
 
         elif gui == "next":
-            ini_setup["DISPLAY"]["DISPLAY"] = "./next.py"
+            ini_setup["DISPLAY"]["DISPLAY"] = "./next.py --fullscreen"
             ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
 
         elif gui == "gmoccapy":
