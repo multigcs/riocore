@@ -44,12 +44,61 @@ from PyQt5.QtWidgets import (
 )
 from qt5_graphics import Lcnc_3dGraphics
 
+stylesheet = """
+    QWidget {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);
+    }
+
+    QLineEdit {
+        background-color: #5b5b5b;
+        color: #ffffff;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 36px;
+    }
+
+    QPushButton {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b);
+        height: 50px;
+    }
+
+    QListWidget {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #206086, stop: 1 #09405f);
+        color: #ffffff;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 36px;
+    }
+
+    QScrollBar:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #206086, stop: 1 #09405f);
+        border: 4px solid grey;
+        width: 56px;
+        margin: 64px 0px 64px 0px;
+    }
+    QScrollBar::handle:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #444545, stop: 1 #ff4545);
+        min-height: 60px;
+    }
+    QScrollBar::sub-line:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff4545, stop: 1 #444545);
+        border: 4px solid grey;
+        height: 60px;
+        subcontrol-position: top;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::add-line:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff4545, stop: 1 #444545);
+        border: 4px solid grey;
+        height: 60px;
+        subcontrol-position: bottom;
+        subcontrol-origin: margin;
+    }
+"""
+
 AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
 
 s = linuxcnc.stat()
 c = linuxcnc.command()
 e = linuxcnc.error_channel()
-# h = hal.component(f"rg-{str(uuid.uuid4()).split('-')[0]}")
 h = hal.component("pyvcp")
 
 jog_mode = False
@@ -78,7 +127,6 @@ class View3D(Lcnc_3dGraphics):
         errortext = "G-Code error in " + os.path.basename(filename) + "\n" + "Near line " + str(seq) + " of\n" + filename + "\n" + error_str + "\n"
         print("gcode-error", errortext)
         print("error-widget", self.error_widget)
-        # self.emit("gcode-error", errortext)
         self.errortext = errortext
         if self.error_widget:
             self.error_widget.color1 = QColor("#ff6086")
@@ -125,7 +173,6 @@ class GradientFileEntry(QLabel):
         # background
         p.setPen(Qt.NoPen)
         p.setBrush(QBrush(grad))
-        # p.drawRoundedRect(g, 2, 2)
         p.drawRect(g)
 
         # text
@@ -543,6 +590,53 @@ class ScreenJog(QWidget):
 
 
 class ScreenMdi(QWidget):
+    mdi_commands = []
+
+    def history_reload(self):
+        history_file = os.path.join(os.path.expanduser("~"), ".axis_mdi_history")
+        if os.path.isfile(history_file):
+            self.mdi_commands = []
+            for cmd in open(history_file, "r").read().split("\n"):
+                if cmd:
+                    self.mdi_commands.append(cmd)
+        self.mdi_commands = self.mdi_commands[:100]
+        self.history.clear()
+        last_item = None
+        for cmd in self.mdi_commands:
+            last_item = QListWidgetItem(cmd)
+            self.history.addItem(last_item)
+        if last_item is not None:
+            self.history.scrollToItem(last_item)
+
+    def history_add(self, command):
+        if self.mdi_commands and self.mdi_commands[-1] != command:
+            self.mdi_commands = self.mdi_commands[:100]
+            self.mdi_commands.append(command)
+            history_file = os.path.join(os.path.expanduser("~"), ".axis_mdi_history")
+            open(history_file, "w").write("\n".join(self.mdi_commands))
+            self.history_reload()
+
+    def hselect(self, item):
+        self.cmdline.setText(item.text())
+
+    def hrun(self, item):
+        self.cmdline.setText(item.text())
+        self.run_cmd()
+
+    def stop_cmd(self):
+        c.abort()
+
+    def run_cmd(self):
+        command = self.cmdline.text()
+        if ok_for_mdi():
+            c.mode(linuxcnc.MODE_MDI)
+            c.wait_complete()
+            c.mdi(command)
+            self.history_add(command)
+            self.cmdline.setText("")
+        else:
+            print("ERROR: run_cmd:", command)
+
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
@@ -551,35 +645,26 @@ class ScreenMdi(QWidget):
         self.setLayout(layout)
 
         self.history = QListWidget()
-        self.history.addItem(QListWidgetItem("G0 X0 Y0"))
-        self.history.addItem(QListWidgetItem("G0 X10 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y0"))
-        self.history.addItem(QListWidgetItem("G0 X10 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y0"))
-        self.history.addItem(QListWidgetItem("G0 X10 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y0"))
-        self.history.addItem(QListWidgetItem("G0 X10 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y0"))
-        self.history.addItem(QListWidgetItem("G0 X10 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
-        self.history.addItem(QListWidgetItem("G0 X0 Y10"))
         layout.addWidget(self.history)
+        self.history_reload()
 
-        self.cmd = QLineEdit()
-        layout.addWidget(self.cmd)
+        self.history.itemClicked.connect(self.hselect)
+        self.history.itemDoubleClicked.connect(self.hrun)
+
+        cmd_layout = QHBoxLayout()
+        layout.addLayout(cmd_layout)
+
+        self.cmdline = QLineEdit()
+        self.cmdline.returnPressed.connect(self.run_cmd)
+        cmd_layout.addWidget(self.cmdline)
+
+        btn_cmd = QPushButton("RUN")
+        btn_cmd.clicked.connect(self.run_cmd)
+        cmd_layout.addWidget(btn_cmd)
+
+        btn_stop = QPushButton("STOP")
+        btn_stop.clicked.connect(self.stop_cmd)
+        cmd_layout.addWidget(btn_stop)
 
 
 class ScreenFiles(QWidget):
@@ -940,7 +1025,7 @@ class ScreenNgc(QWidget):
         layout.addLayout(hbox, stretch=5)
 
         btn_open = QPushButton(QIcon("open.png"), "OPEN")
-        btn_open.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        # btn_open.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_open.clicked.connect(parent.load_ngc)
         hbox.addWidget(btn_open, stretch=0)
 
@@ -1064,52 +1149,7 @@ class MainWindow(QMainWindow):
         # self.resize(800, 1080)
 
         mw = QWidget()
-        mw.setStyleSheet("""
-QWidget {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);
-}
-
-QLineEdit {
-    background-color: #5b5b5b;
-    color: #ffffff;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 21px;
-}
-
-QListWidget {
-    background-color: #2b2b2b;
-    color: #ffffff;
-    font-family: 'Consolas', 'Courier New', monospace;
-    font-size: 21px;
-}
-
-QScrollBar:vertical {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
-    border: 4px solid grey;
-    width: 56px;
-    margin: 62px 0px 62px 0px;
-}
-QScrollBar::handle:vertical {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #9fe31b, stop: 1 #78f023);
-    min-height: 60px;
-}
-QScrollBar::add-line:vertical {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #afc31b, stop: 1 #a8a023);
-    border: 4px solid grey;
-    height: 60px;
-    subcontrol-position: bottom;
-    subcontrol-origin: margin;
-}
-
-QScrollBar::sub-line:vertical {
-    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #afc31b, stop: 1 #a8a023);
-    border: 4px solid grey;
-    height: 60px;
-    subcontrol-position: top;
-    subcontrol-origin: margin;
-}
-
-        """)
+        mw.setStyleSheet(stylesheet)
         main_layout = QVBoxLayout(mw)
         main_layout.setContentsMargins(0, 0, 0, 0)
         self.setCentralWidget(mw)
