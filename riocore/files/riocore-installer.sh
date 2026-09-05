@@ -90,7 +90,7 @@ then
 	fi
 	echo "installing dependencies"
 	sudo apt-get update || doexit 1
-	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil python3-spidev openfpgaloader python3-smbus python3-magic || doexit 1
+	sudo apt-get -y install git python3 python3-pip python3-yaml python3-graphviz python3-pyqtgraph python3-pyqt5 python3-pyqt5.qtsvg python3-lxml python3-psutil python3-spidev openfpgaloader python3-smbus python3-magic xinput x11vnc || doexit 1
 fi
 
 if grep -s -q '"rio"' in $TEMPFILE
@@ -99,6 +99,8 @@ then
 	then
 		echo "installing riocore"
 		git clone https://github.com/multigcs/riocore.git || doexit 1
+		echo "installing rio hal component"
+		sudo halcompile --install riocore/riocore/files/rio.c
 	else
 		echo "riocore already installed"
 	fi
@@ -265,6 +267,18 @@ EOF
 
 #xrandr --output HDMI-1 --mode 1920x1080
 #xrandr --output HDMI-2 --mode 1920x1080
+
+# rotate right
+#xrandr --output HDMI-1 --rotate right
+#xrandr --output HDMI-2 --rotate right
+#xinput --set-prop 6 'Coordinate Transformation Matrix' 0 1 0 -1 0 1 0 0 1
+#xinput --set-prop 7 'Coordinate Transformation Matrix' 0 1 0 -1 0 1 0 0 1
+# rotate left
+#xrandr --output HDMI-1 --rotate left
+#xrandr --output HDMI-2 --rotate left
+#xinput --set-prop 6 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
+#xinput --set-prop 7 'Coordinate Transformation Matrix' 0 -1 1 1 0 0 0 0 1
+
 
 xset s off
 xset s noblank
