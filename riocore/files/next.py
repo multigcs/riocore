@@ -47,7 +47,7 @@ from qt5_graphics import Lcnc_3dGraphics
 
 stylesheet = """
     QWidget {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
     }
 
     QLineEdit {
@@ -100,7 +100,14 @@ AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
 s = linuxcnc.stat()
 c = linuxcnc.command()
 e = linuxcnc.error_channel()
-h = hal.component("pyvcp")
+h_vcp = hal.component("pyvcp")
+h_next = hal.component("next")
+
+for axis in ("x", "y", "z"):
+    h_next.newpin(f"axis.{axis}.jog-counts", hal.HAL_S32, hal.HAL_OUT)
+    h_next.newpin(f"axis.{axis}.jog-scale", hal.HAL_FLOAT, hal.HAL_IN)
+    h_next.newpin(f"axis.{axis}.cal", hal.HAL_FLOAT, hal.HAL_IN)
+
 
 jog_mode = False
 
@@ -524,13 +531,103 @@ class GradientSlider(QSlider):
         self.is_moving = False
 
 
+class JogImageXY(QLabel):
+    def __init__(self):
+        super(QLabel, self).__init__()
+        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #222323, stop: 1 #dd2323);")
+
+    def moveBegin(self, event):
+        self.new_x = event.pos().x()
+        self.new_y = event.pos().y()
+        self.old_x = self.new_x
+        self.old_y = self.new_y
+        self.old_counts_x = h_next["axis.x.jog-counts"]
+        self.old_counts_y = h_next["axis.y.jog-counts"]
+
+    def moveEnd(self, event):
+        pass
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.moveBegin(event)
+
+    def mouseReleaseEvent(self, event):
+        self.moveEnd(event)
+
+    def mouseMoveEvent(self, event):
+        diff_x = self.old_x - event.pos().x()
+        diff_y = self.old_y - event.pos().y()
+        s = 1.0
+        z = 1.0
+        offset_x = int(diff_x / z / s)
+        offset_y = int(diff_y / z / s)
+        x_scale = h_next["axis.x.jog-scale"]
+        y_scale = h_next["axis.y.jog-scale"]
+        if x_scale and y_scale:
+            cal_x = h_next["axis.x.cal"]
+            cal_y = h_next["axis.y.cal"]
+            h_next["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / x_scale * cal_x)
+            h_next["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * cal_y)
+
+
+class JogImageZ(QLabel):
+    def __init__(self):
+        super(QLabel, self).__init__()
+        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #444545, stop: 1 #ff4545);")
+
+    def moveBegin(self, event):
+        self.new_z = event.pos().y()
+        self.old_z = self.new_z
+        self.old_counts_z = h_next["axis.z.jog-counts"]
+
+    def moveEnd(self, event):
+        pass
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.moveBegin(event)
+
+    def mouseReleaseEvent(self, event):
+        self.moveEnd(event)
+
+    def mouseMoveEvent(self, event):
+        diff_z = self.old_z - event.pos().y()
+        s = 1.0
+        z = 1.0
+        offset_z = int(diff_z / z / s)
+        z_scale = h_next["axis.z.jog-scale"]
+        if z_scale:
+            cal_z = h_next["axis.z.cal"]
+            h_next["axis.z.jog-counts"] = self.old_counts_z + int(offset_z / z_scale * cal_z)
+
+
+class ScreenTJog(QWidget):
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        jogv = QVBoxLayout()
+        jogv.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(jogv)
+
+        tjl = GradientLabel("Touch-JOG")
+        jogv.addWidget(tjl, stretch=1)
+
+        jogh0 = QHBoxLayout()
+        jogv.addLayout(jogh0, stretch=5)
+
+        img_xy = JogImageXY()
+        jogh0.addWidget(img_xy, stretch=5)
+
+        img_z = JogImageZ()
+        jogh0.addWidget(img_z, stretch=1)
+
+
 class ScreenJog(QWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
         jogv = QVBoxLayout()
         jogv.setContentsMargins(0, 0, 0, 0)
-        # jogv.setSpacing(0)
         self.setLayout(jogv)
 
         color1 = QColor("#151514")
@@ -812,7 +909,7 @@ class ScreenVcpTab(QWidget):
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
-                            h.newpin(f"{halpin}", hal.HAL_BIT, hal.HAL_IN)
+                            h_vcp.newpin(f"{halpin}", hal.HAL_BIT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label)
                 elif child.tag in {"number", "s32", "u32"}:
                     anchor = "c"
@@ -835,11 +932,11 @@ class ScreenVcpTab(QWidget):
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
                             if child.tag in {"s32"}:
-                                h.newpin(f"{halpin}", hal.HAL_S32, hal.HAL_IN)
+                                h_vcp.newpin(f"{halpin}", hal.HAL_S32, hal.HAL_IN)
                             elif child.tag in {"u32"}:
-                                h.newpin(f"{halpin}", hal.HAL_U32, hal.HAL_IN)
+                                h_vcp.newpin(f"{halpin}", hal.HAL_U32, hal.HAL_IN)
                             else:
-                                h.newpin(f"{halpin}", hal.HAL_FLOAT, hal.HAL_IN)
+                                h_vcp.newpin(f"{halpin}", hal.HAL_FLOAT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label, vformat)
                 elif child.tag == "multilabel":
                     label = QLabel("<MULTILABEL>")
@@ -855,7 +952,7 @@ class ScreenVcpTab(QWidget):
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
                             for legend_n, legend_name in enumerate(legends):
-                                h.newpin(f"{halpin}.legend{legend_n}", hal.HAL_BIT, hal.HAL_IN)
+                                h_vcp.newpin(f"{halpin}.legend{legend_n}", hal.HAL_BIT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label, legends)
 
                 elif child.tag == "bar":
@@ -882,7 +979,7 @@ class ScreenVcpTab(QWidget):
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
-                            h.newpin(f"{halpin}", hal.HAL_FLOAT, hal.HAL_IN)
+                            h_vcp.newpin(f"{halpin}", hal.HAL_FLOAT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label)
 
                 elif child.tag == "scale":
@@ -909,12 +1006,12 @@ class ScreenVcpTab(QWidget):
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
-                            h.newpin(f"{halpin}-i", hal.HAL_S32, hal.HAL_OUT)
-                            h.newpin(f"{halpin}-f", hal.HAL_FLOAT, hal.HAL_OUT)
+                            h_vcp.newpin(f"{halpin}-i", hal.HAL_S32, hal.HAL_OUT)
+                            h_vcp.newpin(f"{halpin}-f", hal.HAL_FLOAT, hal.HAL_OUT)
 
                             def change(halpin, val):
-                                h[f"{halpin}-i"] = int(val / 10)
-                                h[f"{halpin}-f"] = val / 10
+                                h_vcp[f"{halpin}-i"] = int(val / 10)
+                                h_vcp[f"{halpin}-f"] = val / 10
 
                             label.valueChanged.connect(partial(change, halpin))
 
@@ -926,10 +1023,10 @@ class ScreenVcpTab(QWidget):
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
-                            h.newpin(f"{halpin}", hal.HAL_BIT, hal.HAL_OUT)
+                            h_vcp.newpin(f"{halpin}", hal.HAL_BIT, hal.HAL_OUT)
 
                             def change(halpin, val):
-                                h[f"{halpin}"] = val
+                                h_vcp[f"{halpin}"] = val
                                 if val:
                                     checkbox.setStyleSheet("background-color : red")
                                 else:
@@ -950,10 +1047,10 @@ class ScreenVcpTab(QWidget):
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
-                            h.newpin(f"{halpin}", hal.HAL_BIT, hal.HAL_OUT)
+                            h_vcp.newpin(f"{halpin}", hal.HAL_BIT, hal.HAL_OUT)
 
                             def change(halpin, val):
-                                h[f"{halpin}"] = val
+                                h_vcp[f"{halpin}"] = val
 
                             button.pressed.connect(partial(change, halpin, True))
                             button.released.connect(partial(change, halpin, False))
@@ -1036,7 +1133,7 @@ class ScreenNgc(QWidget):
         layout.addLayout(hbox, stretch=5)
 
         btn_open = QPushButton(QIcon("open.png"), "OPEN")
-        # btn_open.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        # btn_open.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_open.clicked.connect(parent.load_ngc)
         hbox.addWidget(btn_open, stretch=0)
 
@@ -1057,22 +1154,22 @@ class ScreenNgc(QWidget):
                 c.abort()
 
         btn_run = QPushButton(QIcon("play.png"), "RUN")
-        btn_run.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_run.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_run.clicked.connect(partial(prog_mode, "RUN"))
         hbox.addWidget(btn_run, stretch=0)
 
         btn_pause = QPushButton(QIcon("pause.png"), "PAUSE")
-        btn_pause.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_pause.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_pause.clicked.connect(partial(prog_mode, "PAUSE"))
         hbox.addWidget(btn_pause, stretch=0)
 
         btn_step = QPushButton(QIcon("step.png"), "STEP")
-        btn_step.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_step.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_step.clicked.connect(partial(prog_mode, "STEP"))
         hbox.addWidget(btn_step, stretch=0)
 
         btn_stop = QPushButton(QIcon("stop.png"), "STOP")
-        btn_stop.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_stop.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_stop.clicked.connect(partial(prog_mode, "STOP"))
         hbox.addWidget(btn_stop, stretch=0)
 
@@ -1114,24 +1211,24 @@ class PyVCP:
     def update(self):
         for pin, data in self.halpins_in.items():
             if data[0] in {"led", "rectled"}:
-                val = h[f"{pin}"]
+                val = h_vcp[f"{pin}"]
                 if val:
                     data[1].setText("X")
                 else:
                     data[1].setText("O")
             elif data[0] == "bar":
-                val = h[f"{pin}"]
+                val = h_vcp[f"{pin}"]
                 data[1].setValue(int(val * 10))
 
             elif data[0] in {"number", "s32", "u32"}:
-                val = h[f"{pin}"]
+                val = h_vcp[f"{pin}"]
                 vformat = data[2]
                 if vformat == "d":
                     vformat = "0.0f"
                 data[1].setText(f"{{value:{vformat}}}".format(value=val))
             elif data[0] == "multilabel":
                 for legend_n, legend_name in enumerate(data[2]):
-                    val = h[f"{pin}.legend{legend_n}"]
+                    val = h_vcp[f"{pin}.legend{legend_n}"]
                     if val is True:
                         data[1].setText(legend_name)
             else:
@@ -1254,6 +1351,9 @@ class MainWindow(QMainWindow):
         self.screen_ngc = ScreenNgc(self)
         self.center2l_stack.addWidget(self.screen_ngc)
 
+        self.screen_tjog = ScreenTJog(self)
+        self.center2l_stack.addWidget(self.screen_tjog)
+
         self.screen_files = ScreenFiles(self)
         self.center_stack.addWidget(self.screen_files)
 
@@ -1295,8 +1395,9 @@ class MainWindow(QMainWindow):
         btn_files.clicked.connect(partial(self.view_set, "files"))
         bottoml_layout.addWidget(btn_files, stretch=1)
 
-        glabel2 = GradientLabel("")
-        bottoml_layout.addWidget(glabel2, stretch=1)
+        btn_jog = GradientLabel("TJOG", 14)
+        btn_jog.clicked.connect(partial(self.view_set, "tjog"))
+        bottoml_layout.addWidget(btn_jog, stretch=1)
 
         glabel2 = GradientLabel("")
         bottoml_layout.addWidget(glabel2, stretch=1)
@@ -1315,6 +1416,7 @@ class MainWindow(QMainWindow):
             "jog": (0, 0, None),
             "mdi": (0, 1, None),
             "prog": (0, 2, None),
+            "tjog": (0, 3, None),
             "files": (1, None, None),
         }
         if mode == "files":
@@ -1412,7 +1514,8 @@ if __name__ == "__main__":
 
     app = QApplication(sys.argv)
     window = MainWindow(args)
-    h.ready()
+    h_vcp.ready()
+    h_next.ready()
     if args.fullscreen:
         # window.showFullScreen()
         window.show()

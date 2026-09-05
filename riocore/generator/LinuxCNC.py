@@ -2297,6 +2297,30 @@ if __name__ == "__main__":
             self.halg.net_add("iocontrol.0.tool-prepare", "iocontrol.0.tool-prepared", "tool-prepared")
             self.halg.net_add("iocontrol.0.tool-change", "iocontrol.0.tool-changed", "tool-changed")
 
+        if gui in {"next"}:
+            self.halg.postgui_components_add("next")
+            for axis_name, axis_config in self.project.axis_dict.items():
+                if axis_name not in {"X", "Y", "Z"}:
+                    continue
+                joints = axis_config["joints"]
+                axis_lower = axis_name.lower()
+                self.halg.net_add(f"next.axis.{axis_lower}.jog-counts", f"axis.{axis_lower}.jog-counts")
+                if axis_lower == "y":
+                    self.halg.setp_add(f"next.axis.{axis_lower}.cal", -0.1)
+                else:
+                    self.halg.setp_add(f"next.axis.{axis_lower}.cal", 0.1)
+                self.halg.setp_add(f"next.axis.{axis_lower}.jog-scale", 0.15)
+                self.halg.setp_add(f"axis.{axis_lower}.jog-vel-mode", 0)
+                self.halg.setp_add(f"axis.{axis_lower}.jog-enable", 1)
+                self.halg.setp_add(f"axis.{axis_lower}.jog-scale", 0.15)
+
+                for joint_setup in joints:
+                    joint = joint_setup["num"]
+                    self.halg.net_add(f"next.axis.{axis_lower}.jog-counts", f"joint.{joint}.jog-counts")
+                    self.halg.setp_add(f"joint.{joint}.jog-vel-mode", 0)
+                    self.halg.setp_add(f"joint.{joint}.jog-enable", 1)
+                    self.halg.setp_add(f"joint.{joint}.jog-scale", 0.15)
+
         self.mqtt_publisher = []
         for plugin_instance in self.project.plugin_instances:
             for signal_name, signal_config in plugin_instance.signals().items():
