@@ -13,6 +13,7 @@ COMMAND = re.compile(r"(?P<line>\d+) N\.* (?P<type>[A-Z_]+)\((?P<coords>.*)\)")
 parser = argparse.ArgumentParser()
 parser.add_argument("ngc", help="ngc file", nargs="?", type=str, default=None)
 parser.add_argument("--no-g0", help="do not fdraw G0 moves", action="store_true")
+parser.add_argument("--invert", help="dark background", action="store_true")
 args = parser.parse_args()
 
 filename = args.ngc
@@ -68,6 +69,9 @@ def draw_line(x1, y1, z1, x2, y2, z2, color):
 
 
 color = "black"
+if args.invert:
+    color = "white"
+
 for line in output:
     result = COMMAND.match(line.strip())
     if result:
@@ -89,10 +93,14 @@ for line in output:
             )
             if last_pos:
                 last_x, last_y, last_z = last_pos
+
+                arc_color = "black"
+                if args.invert:
+                    arc_color = "white"
                 if direction == "cw":
-                    svg_out.append(f'<g stroke="red" fill="none" style="stroke:{color};stroke-width:0.5"><path d="M {last_x} {last_y} A {radius} {radius} 0 0 1 {new_x} {new_y}" /></g>')
+                    svg_out.append(f'<g stroke="{arc_color}" fill="none" style="stroke:{color};stroke-width:0.5"><path d="M {last_x} {last_y} A {radius} {radius} 0 0 1 {new_x} {new_y}" /></g>')
                 else:
-                    svg_out.append(f'<g stroke="red" fill="none" style="stroke:{color};stroke-width:0.5"><path d="M {new_x} {new_y} A {radius} {radius} 0 0 1 {last_x} {last_y}" /></g>')
+                    svg_out.append(f'<g stroke="{arc_color}" fill="none" style="stroke:{color};stroke-width:0.5"><path d="M {new_x} {new_y} A {radius} {radius} 0 0 1 {last_x} {last_y}" /></g>')
             last_pos = (new_x, new_y, new_z)
         elif result["type"] in {"STRAIGHT_FEED", "STRAIGHT_TRAVERSE", "ARC_FEED"}:
             coords = result["coords"].split(",")
@@ -103,6 +111,8 @@ for line in output:
                 new_z = float(coords[4].strip())
 
             color = "black"
+            if args.invert:
+                color = "white"
             if result["type"] == "STRAIGHT_TRAVERSE":
                 color = "green"
             if last_pos:

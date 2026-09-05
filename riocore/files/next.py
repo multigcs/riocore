@@ -2,15 +2,18 @@
 #
 #
 
+import glob
 import os
 import sys
 import xml.etree.ElementTree as ET
 
 from functools import partial
 
+import gcode
 import hal
 import linuxcnc
 
+from PyQt5 import QtSvg
 from PyQt5.QtCore import QRectF, QSize, QTimer, Qt, pyqtSignal
 from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QLinearGradient, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
@@ -30,10 +33,12 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QSizePolicy,
     QSlider,
+    QSpacerItem,
     QStackedWidget,
     QStyle,
     QVBoxLayout,
     QWidget,
+    QWidgetItem,
 )
 from qt5_graphics import Lcnc_3dGraphics
 
@@ -54,20 +59,36 @@ def ok_for_mdi():
 
 
 class View3D(Lcnc_3dGraphics):
+    errortext = None
+    error_widget = None
+
     def __init__(self):
         super().__init__()
 
-    def report_gcode_error(self, arg1, arg2, arg3):
-        print("ERROR1", arg1)
-        print("ERROR2", arg2)
-        print("ERROR3", arg3)
-        print()
+    def load(self, filename, error_widget=None):
+        self.errortext = None
+        self.error_widget = error_widget
+        print("error-widget", error_widget)
+        super().load(filename)
+
+    def report_gcode_error(self, result, seq, filename):
+        error_str = gcode.strerror(result)
+        errortext = "G-Code error in " + os.path.basename(filename) + "\n" + "Near line " + str(seq) + " of\n" + filename + "\n" + error_str + "\n"
+        print("gcode-error", errortext)
+        print("error-widget", self.error_widget)
+        # self.emit("gcode-error", errortext)
+        self.errortext = errortext
+        if self.error_widget:
+            self.error_widget.color1 = QColor("#ff6086")
+            self.error_widget.color2 = QColor("#ff2036")
+            self.error_widget.setText(self.errortext)
 
 
 class GradientLabel(QLabel):
-    def __init__(self, text=None, size=20, color1=None, color2=None, parent=None):
+    def __init__(self, text=None, size=20, color1=None, color2=None, parent=None, ctype=None):
         super().__init__(text, parent)
         self.parent = parent
+        self.ctype = ctype
         self.text = text
         self.size = size
         if not color1:
@@ -80,6 +101,10 @@ class GradientLabel(QLabel):
         self.enabled = True
 
     clicked = pyqtSignal()
+
+    def setText(self, text):
+        self.text = text
+        self.update()
 
     def _groove_rect(self):
         return QRectF(0, 0, self.width(), self.height())
@@ -145,7 +170,12 @@ class GradientLabel(QLabel):
         self.flag_clicked = False
         self.update()
         if self.text:
-            if self.text.lower() == "estop":
+            if self.ctype:
+                if self.ctype.startswith("file:"):
+                    print("open", self.ctype[5:])
+                    self.parent.load_ngc(self.ctype[5:])
+
+            elif self.text.lower() == "estop":
                 if self.enabled:
                     c.state(linuxcnc.STATE_ESTOP_RESET)
                 else:
@@ -485,13 +515,90 @@ class ScreenMdi(QWidget):
         layout.addWidget(self.cmd)
 
 
-class ScreenProg(QWidget):
-    def __init__(self):
+class ScreenFiles(QWidget):
+    selected = None
+
+    def __init__(self, parent):
         super().__init__()
+        self.parent = parent
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         self.setLayout(layout)
+
+        buttons = QHBoxLayout()
+        layout.addLayout(buttons)
+
+        btn_load = GradientLabel("LOAD")
+        btn_load.setContentsMargins(0, 0, 0, 0)
+        btn_load.clicked.connect(self.load)
+        buttons.addWidget(btn_load)
+
+        btn_cancel = GradientLabel("CANCEL")
+        btn_cancel.setContentsMargins(0, 0, 0, 0)
+        btn_cancel.clicked.connect(self.cancel)
+        buttons.addWidget(btn_cancel)
+
+        filelist = QWidget()
+        self.filelist_layout = QVBoxLayout()
+        filelist.setLayout(self.filelist_layout)
+        scroll = QScrollArea()
+        scroll.setStyleSheet("""
+            QScrollBar:vertical {
+                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #78a023, stop: 1 #9fc31b);
+                width: 36px;
+            }
+        """)
+        scroll.setWidget(filelist)
+        scroll.setWidgetResizable(True)
+        layout.addWidget(scroll)
+
+        self.reload()
+
+    def cleanLayout(self, layout):
+        for i in reversed(range(layout.count())):
+            item = layout.itemAt(i)
+            if isinstance(item, QWidgetItem):
+                item.widget().close()
+            elif isinstance(item, QSpacerItem):
+                pass
+            elif item is not None:
+                self.cleanLayout(item.layout())
+            layout.removeItem(item)
+
+    def reload(self):
+        self.cleanLayout(self.filelist_layout)
+        files = glob.glob(os.path.join(os.path.expanduser("~"), "*.ngc"))
+        files.sort(key=os.path.getmtime)
+        for filename in reversed(files):
+            title = os.path.basename(filename)
+            entry_layout = QHBoxLayout()
+            self.filelist_layout.addLayout(entry_layout, stretch=1)
+
+            if os.path.isfile(f"{filename}.svg"):
+                preview = QtSvg.QSvgWidget(f"{filename}.svg")
+                preview.setStyleSheet("background-color: #000000;")
+            else:
+                preview = GradientLabel("")
+            preview.setFixedHeight(175)
+            entry_layout.addWidget(preview, stretch=1)
+
+            entry_label = GradientLabel(title)
+            entry_label.setFixedHeight(175)
+            entry_label.clicked.connect(partial(self.preview, filename, entry_label))
+            entry_layout.addWidget(entry_label, stretch=4)
+
+    def preview(self, filename, widget=None):
+        self.selected = filename
+        print("prev", widget)
+        self.parent.glview.load(filename, widget)
+
+    def load(self):
+        self.parent.load_ngc(self.selected)
+
+    def cancel(self):
+        self.parent.glview.load(self.parent.ngc_file)
+        self.parent.view_set("jog")
 
 
 class SliderProxyStyle(QProxyStyle):
@@ -543,6 +650,7 @@ class ScreenVcpTab(QWidget):
                     elif anchor == "c":
                         label.setAlignment(Qt.AlignCenter)
                     label.setContentsMargins(0, 0, 0, 0)
+                    label.setFixedHeight(45)
                     layout.addWidget(label)
                 elif child.tag in {"led", "rectled"}:
                     label = QLabel("[O]")
@@ -699,11 +807,11 @@ class ScreenVcpTab(QWidget):
 
                 elif child.tag == "labelframe":
                     frame = QGroupBox()
+                    frame.setTitle(child.attrib["text"])
                     vbox = QVBoxLayout()
-                    vbox.setContentsMargins(0, 0, 0, 0)
+                    vbox.setContentsMargins(5, 15, 5, 0)
                     vbox.setSpacing(0)
                     frame.setLayout(vbox)
-                    frame.setTitle(child.attrib["text"])
                     layout.addWidget(frame)
                     next_element(child, vbox, prefix=" " + prefix)
                 elif child.tag == "hbox":
@@ -904,7 +1012,7 @@ class MainWindow(QMainWindow):
         # self.resize(800, 1080)
 
         mw = QWidget()
-        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);")
+        mw.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, xy: 1, stop: 0 #151514, stop: 1 #15154f);")
         main_layout = QVBoxLayout(mw)
         main_layout.setContentsMargins(0, 0, 0, 0)
         self.setCentralWidget(mw)
@@ -917,9 +1025,17 @@ class MainWindow(QMainWindow):
         top_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addLayout(top_layout, stretch=1)
 
+        self.center_stack = QStackedWidget()
+        main_layout.addWidget(self.center_stack, stretch=3)
+
+        self.center_widget = QWidget()
+        self.center_layout = QVBoxLayout()
+        self.center_widget.setLayout(self.center_layout)
+        self.center_stack.addWidget(self.center_widget)
+
         center1_layout = QHBoxLayout()
         center1_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.addLayout(center1_layout, stretch=1)
+        self.center_layout.addLayout(center1_layout, stretch=1)
         center1l_layout = QVBoxLayout()
         center1l_layout.setContentsMargins(0, 0, 0, 0)
         center1_layout.addLayout(center1l_layout, stretch=1)
@@ -929,7 +1045,7 @@ class MainWindow(QMainWindow):
 
         center2_layout = QHBoxLayout()
         center2_layout.setContentsMargins(0, 0, 0, 0)
-        main_layout.addLayout(center2_layout, stretch=2)
+        self.center_layout.addLayout(center2_layout, stretch=2)
         center2l_layout = QVBoxLayout()
         center2l_layout.setContentsMargins(0, 0, 0, 0)
         center2_layout.addLayout(center2l_layout, stretch=1)
@@ -975,8 +1091,11 @@ class MainWindow(QMainWindow):
         self.center2l_stack.addWidget(self.screen_jog)
         self.screen_mdi = ScreenMdi()
         self.center2l_stack.addWidget(self.screen_mdi)
-        self.screen_prog = ScreenNgc(self)
-        self.center2l_stack.addWidget(self.screen_prog)
+        self.screen_ngc = ScreenNgc(self)
+        self.center2l_stack.addWidget(self.screen_ngc)
+
+        self.screen_files = ScreenFiles(self)
+        self.center_stack.addWidget(self.screen_files)
 
         self.center2r_stack = QStackedWidget()
         center2r_layout.addWidget(self.center2r_stack, stretch=1)
@@ -991,26 +1110,30 @@ class MainWindow(QMainWindow):
             self.pyvcp = PyVCP(self.center2r_stack, xml_file)
 
         btn_jog = GradientLabel("JOG", 14)
-        btn_jog.clicked.connect(partial(self.center2l_stack.setCurrentIndex, 0))
+        btn_jog.clicked.connect(partial(self.view_set, "jog"))
         bottoml_layout.addWidget(btn_jog, stretch=1)
 
         btn_mdi = GradientLabel("MDI", 14)
-        btn_mdi.clicked.connect(partial(self.center2l_stack.setCurrentIndex, 1))
+        btn_mdi.clicked.connect(partial(self.view_set, "mdi"))
         bottoml_layout.addWidget(btn_mdi, stretch=1)
 
-        def open_prog(idx):
-            self.center2l_stack.setCurrentIndex(idx)
+        def open_prog():
             if not os.path.isfile(self.ngc_file):
-                self.load_ngc()
+                self.view_set("files")
+            else:
+                self.view_set("prog")
 
         btn_prog = GradientLabel("PROG", 14)
-        btn_prog.clicked.connect(partial(open_prog, 2))
+        btn_prog.clicked.connect(open_prog)
         bottoml_layout.addWidget(btn_prog, stretch=1)
+
+        btn_files = GradientLabel("FILES", 14)
+        btn_files.clicked.connect(partial(self.view_set, "files"))
+        bottoml_layout.addWidget(btn_files, stretch=1)
 
         glabel2 = GradientLabel("")
         bottoml_layout.addWidget(glabel2, stretch=1)
-        glabel2 = GradientLabel("")
-        bottoml_layout.addWidget(glabel2, stretch=1)
+
         glabel2 = GradientLabel("")
         bottoml_layout.addWidget(glabel2, stretch=1)
 
@@ -1023,6 +1146,24 @@ class MainWindow(QMainWindow):
         self.timer.timeout.connect(self.runTimer)
         self.timer.start(100)
 
+    def view_set(self, mode):
+        views = {
+            "jog": (0, 0, None),
+            "mdi": (0, 1, None),
+            "prog": (0, 2, None),
+            "files": (1, None, None),
+        }
+        if mode == "files":
+            self.screen_files.reload()
+
+        if view := views.get(mode):
+            if view[0] is not None:
+                self.center_stack.setCurrentIndex(view[0])
+            if view[1] is not None:
+                self.center2l_stack.setCurrentIndex(view[1])
+            if view[2] is not None:
+                self.center2r_stack.setCurrentIndex(view[2])
+
     def postgui(self):
         for filename in self.inifile.findall("HAL", "POSTGUI_HALFILE") or []:
             ini_dir = os.path.dirname(s.ini_filename)
@@ -1033,20 +1174,24 @@ class MainWindow(QMainWindow):
             if ret != 0:
                 raise SystemExit(ret)
 
-    def load_ngc(self):
-        file_dialog = QFileDialog(self)
-        name = file_dialog.getOpenFileName(
-            self,
-            "Load a gCode file",
-            "./",
-            "gCode (*.ngc)",
-        )
-        if name[0]:
-            self.ngc_file = name[0]
+    def load_ngc(self, filename=None):
+        if not filename:
+            file_dialog = QFileDialog(self)
+            name = file_dialog.getOpenFileName(
+                self,
+                "Load a gCode file",
+                "./",
+                "gCode (*.ngc)",
+            )
+            filename = name[0]
+        if filename:
+            self.ngc_file = filename
             if os.path.isfile(self.ngc_file):
                 self.glview.load(self.ngc_file)
-                self.screen_prog.editor.setPlainText(open(self.ngc_file, "r").read())
+                self.screen_ngc.editor.setPlainText(open(self.ngc_file, "r").read())
                 c.program_open(self.ngc_file)
+                self.center_stack.setCurrentIndex(0)
+                self.center2l_stack.setCurrentIndex(2)
 
     def runTimer(self):
         s.poll()
