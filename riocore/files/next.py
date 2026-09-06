@@ -70,13 +70,13 @@ stylesheet = """
     }
 
     QScrollBar:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #206086, stop: 1 #09405f);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #242525, stop: 1 #df2525);
         border: 4px solid grey;
         width: 56px;
         margin: 64px 0px 64px 0px;
     }
     QScrollBar::handle:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #444545, stop: 1 #ff4545);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #206086, stop: 1 #09405f);
         min-height: 60px;
     }
     QScrollBar::sub-line:vertical {
@@ -98,6 +98,7 @@ stylesheet = """
 AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
 
 s = linuxcnc.stat()
+s.poll()
 c = linuxcnc.command()
 e = linuxcnc.error_channel()
 h_vcp = hal.component("pyvcp")
@@ -117,6 +118,13 @@ def ok_for_mdi():
     return not s.estop and s.enabled and (s.homed.count(1) == s.joints) and (s.interp_state == linuxcnc.INTERP_IDLE)
 
 
+def do_homing(axis=-1):
+    c.mode(linuxcnc.MODE_MANUAL)
+    c.teleop_enable(0)
+    c.wait_complete()
+    c.home(axis)
+
+
 def toggle_estop():
     s.poll()
     if s.estop:
@@ -131,6 +139,18 @@ def toggle_enable():
         c.state(linuxcnc.STATE_OFF)
     else:
         c.state(linuxcnc.STATE_ON)
+
+
+def cleanLayout(layout):
+    for i in reversed(range(layout.count())):
+        item = layout.itemAt(i)
+        if isinstance(item, QWidgetItem):
+            item.widget().close()
+        elif isinstance(item, QSpacerItem):
+            pass
+        elif item is not None:
+            cleanLayout(item.layout())
+        layout.removeItem(item)
 
 
 class View3D(Lcnc_3dGraphics):
@@ -304,7 +324,7 @@ class GradientLabel(QLabel):
         self.clicked.emit()
         self.flag_clicked = True
         self.update()
-        if self.text and self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
+        if self.text and len(self.text) == 2 and self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
             axis = AXIS_NAMES.index(self.text[0])
             speed = self.parent.jog_speed
             if self.text[1] == "-":
@@ -335,13 +355,7 @@ class GradientLabel(QLabel):
                 if not self.enabled:
                     c.state(linuxcnc.STATE_ESTOP)
                 exit(0)
-            elif self.text.lower() == "home":
-                c.mode(linuxcnc.MODE_MANUAL)
-                c.teleop_enable(0)
-                c.wait_complete()
-                c.home(-1)
-
-            elif self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
+            elif len(self.text) == 2 and self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
                 axis = AXIS_NAMES.index(self.text[0])
                 c.jog(linuxcnc.JOG_STOP, jog_mode, axis)
         super().mouseReleaseEvent(event)
@@ -601,6 +615,36 @@ class JogImageZ(QLabel):
             h_next["axis.z.jog-counts"] = self.old_counts_z + int(offset_z / z_scale * cal_z)
 
 
+class ScreenHome(QWidget):
+    def reload(self):
+        cleanLayout(self.homev)
+        home_top = QHBoxLayout()
+        self.homev.addLayout(home_top, stretch=1)
+
+        btn_back = GradientLabel("<-", parent=self.parent)
+        btn_back.clicked.connect(partial(self.parent.view_set, "jog"))
+        home_top.addWidget(btn_back, stretch=1)
+
+        title = GradientLabel("Home")
+        home_top.addWidget(title, stretch=5)
+
+        for n, pos in enumerate(s.position[: s.joints]):
+            btn_home = GradientLabel(AXIS_NAMES[n])
+            btn_home.clicked.connect(partial(do_homing, n))
+            self.homev.addWidget(btn_home, stretch=1)
+
+        home_all = GradientLabel("Home-ALL")
+        home_all.clicked.connect(partial(do_homing, -1))
+        self.homev.addWidget(home_all, stretch=1)
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        self.homev = QVBoxLayout()
+        self.homev.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(self.homev)
+
+
 class ScreenTJog(QWidget):
     def __init__(self, parent):
         super().__init__()
@@ -609,8 +653,15 @@ class ScreenTJog(QWidget):
         jogv.setContentsMargins(0, 0, 0, 0)
         self.setLayout(jogv)
 
+        jog_top = QHBoxLayout()
+        jogv.addLayout(jog_top, stretch=1)
+
+        btn_back = GradientLabel("<-", parent=self.parent)
+        btn_back.clicked.connect(partial(self.parent.view_set, "jog"))
+        jog_top.addWidget(btn_back, stretch=1)
+
         tjl = GradientLabel("Touch-JOG")
-        jogv.addWidget(tjl, stretch=1)
+        jog_top.addWidget(tjl, stretch=5)
 
         jogh0 = QHBoxLayout()
         jogv.addLayout(jogh0, stretch=5)
@@ -649,7 +700,6 @@ class ScreenJog(QWidget):
 
         jogh1 = QHBoxLayout()
         jogv.addLayout(jogh1, stretch=1)
-
         xp = GradientLabel("", color1=color1, color2=color2)
         jogh1.addWidget(xp, stretch=1)
         xp = GradientLabel("A-", parent=self.parent)
@@ -663,33 +713,32 @@ class ScreenJog(QWidget):
 
         jogh2 = QHBoxLayout()
         jogv.addLayout(jogh2, stretch=2)
-
-        xp = GradientLabel("", color1=color1, color2=color2)
-        jogh2.addWidget(xp, stretch=1)
+        btn_tjog = GradientLabel("TJOG", color1=QColor("#78a023"), color2=QColor("#9fc31b"), parent=self.parent)
+        btn_tjog.clicked.connect(partial(self.parent.view_set, "tjog"))
+        jogh2.addWidget(btn_tjog, stretch=1)
         xp = GradientLabel("Y+", parent=self.parent)
         jogh2.addWidget(xp, stretch=1)
-        xp = GradientLabel("Z+", parent=self.parent)
+        xp = GradientLabel("Z+", color1=QColor("#444545"), color2=QColor("#ff4545"), parent=self.parent)
         jogh2.addWidget(xp, stretch=1)
 
         jogh3 = QHBoxLayout()
         jogv.addLayout(jogh3, stretch=2)
-
         xp = GradientLabel("X-", parent=self.parent)
         jogh3.addWidget(xp, stretch=1)
-        xp = GradientLabel("HOME")
+        xp = GradientLabel("", color1=color1, color2=color2)
         jogh3.addWidget(xp, stretch=1)
         xp = GradientLabel("X+", parent=self.parent)
         jogh3.addWidget(xp, stretch=1)
 
         jogh4 = QHBoxLayout()
         jogv.addLayout(jogh4, stretch=2)
-
-        xp = GradientLabel("", color1=color1, color2=color2)
-        jogh4.addWidget(xp, stretch=1)
-        xp = GradientLabel("Y-", parent=self.parent)
-        jogh4.addWidget(xp, stretch=1)
-        xp = GradientLabel("Z-", parent=self.parent)
-        jogh4.addWidget(xp, stretch=1)
+        btn_home = GradientLabel("HOME", color1=QColor("#78a023"), color2=QColor("#9fc31b"))
+        btn_home.clicked.connect(partial(self.parent.view_set, "home"))
+        jogh4.addWidget(btn_home, stretch=1)
+        ym = GradientLabel("Y-", parent=self.parent)
+        jogh4.addWidget(ym, stretch=1)
+        zm = GradientLabel("Z-", color1=QColor("#444545"), color2=QColor("#ff4545"), parent=self.parent)
+        jogh4.addWidget(zm, stretch=1)
 
         slider_jog = GradientSlider(title="Jog-Speed", parent=self.parent)
         slider_jog.setRange(0, 100)
@@ -809,19 +858,8 @@ class ScreenFiles(QWidget):
 
         # self.reload()
 
-    def cleanLayout(self, layout):
-        for i in reversed(range(layout.count())):
-            item = layout.itemAt(i)
-            if isinstance(item, QWidgetItem):
-                item.widget().close()
-            elif isinstance(item, QSpacerItem):
-                pass
-            elif item is not None:
-                self.cleanLayout(item.layout())
-            layout.removeItem(item)
-
     def reload(self):
-        self.cleanLayout(self.filelist_layout)
+        cleanLayout(self.filelist_layout)
         files = glob.glob(os.path.join(os.path.expanduser("~"), "*.ngc"))
         files.sort(key=os.path.getmtime)
         for filename in reversed(files):
@@ -1354,6 +1392,9 @@ class MainWindow(QMainWindow):
         self.screen_tjog = ScreenTJog(self)
         self.center2l_stack.addWidget(self.screen_tjog)
 
+        self.screen_home = ScreenHome(self)
+        self.center2l_stack.addWidget(self.screen_home)
+
         self.screen_files = ScreenFiles(self)
         self.center_stack.addWidget(self.screen_files)
 
@@ -1395,9 +1436,13 @@ class MainWindow(QMainWindow):
         btn_files.clicked.connect(partial(self.view_set, "files"))
         bottoml_layout.addWidget(btn_files, stretch=1)
 
-        btn_jog = GradientLabel("TJOG", 14)
-        btn_jog.clicked.connect(partial(self.view_set, "tjog"))
-        bottoml_layout.addWidget(btn_jog, stretch=1)
+        # btn_tjog = GradientLabel("TJOG", 14)
+        # btn_tjog.clicked.connect(partial(self.view_set, "tjog"))
+        # bottoml_layout.addWidget(btn_tjog, stretch=1)
+
+        # btn_home = GradientLabel("HOME", 14)
+        # btn_home.clicked.connect(partial(self.view_set, "home"))
+        # bottoml_layout.addWidget(btn_home, stretch=1)
 
         glabel2 = GradientLabel("")
         bottoml_layout.addWidget(glabel2, stretch=1)
@@ -1417,10 +1462,13 @@ class MainWindow(QMainWindow):
             "mdi": (0, 1, None),
             "prog": (0, 2, None),
             "tjog": (0, 3, None),
+            "home": (0, 4, None),
             "files": (1, None, None),
         }
         if mode == "files":
             self.screen_files.reload()
+        if mode == "home":
+            self.screen_home.reload()
 
         if view := views.get(mode):
             if view[0] is not None:
