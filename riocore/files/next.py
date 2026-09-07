@@ -11,13 +11,15 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from functools import partial
 
+import cv2
 import gcode
 import hal
 import linuxcnc
+import numpy as np
 
 from PyQt5 import QtSvg
-from PyQt5.QtCore import QRectF, QSize, QTimer, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QLinearGradient, QPainter, QPen, QPixmap
+from PyQt5.QtCore import QRectF, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QImage, QLinearGradient, QPainter, QPen, QPixmap
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -645,6 +647,41 @@ class ScreenHome(QWidget):
         self.setLayout(self.homev)
 
 
+class CameraThread(QThread):
+    image = pyqtSignal(np.ndarray)
+
+    def __init__(self, device, options={}):
+        super().__init__()
+        self.device = device
+        self.options = options
+        self.width_source = options.get("width_source", 800)
+        self.height_source = options.get("height_source", 600)
+        self.capture = None
+
+    def start_capture(self):
+        self.capture = cv2.VideoCapture(self.device)
+        self.capture.set(3, self.width_source)
+        self.capture.set(4, self.height_source)
+
+    def stop_capture(self):
+        if self.capture:
+            self.capture.release()
+            self.capture = None
+
+    def run(self):
+        self.start_capture()
+        while self.capture:
+            try:
+                ret, frame = self.capture.read()
+                if ret:
+                    self.image.emit(frame)
+            except Exception as err:
+                print("ERROR: camjog", err)
+
+    def stop(self):
+        self.stop_capture()
+
+
 class ScreenTJog(QWidget):
     def __init__(self, parent):
         super().__init__()
@@ -661,16 +698,54 @@ class ScreenTJog(QWidget):
         jog_top.addWidget(btn_back, stretch=1)
 
         tjl = GradientLabel("Touch-JOG")
-        jog_top.addWidget(tjl, stretch=5)
+        jog_top.addWidget(tjl, stretch=9)
 
         jogh0 = QHBoxLayout()
-        jogv.addLayout(jogh0, stretch=5)
+        jogv.addLayout(jogh0, stretch=9)
 
-        img_xy = JogImageXY()
-        jogh0.addWidget(img_xy, stretch=5)
+        self.active = False
+        self.img_xy = JogImageXY()
+        jogh0.addWidget(self.img_xy, stretch=9)
 
         img_z = JogImageZ()
         jogh0.addWidget(img_z, stretch=1)
+
+        self.camera = CameraThread(0)
+        self.camera.image.connect(self.update_image)
+        self.camera.start()
+
+    def update_image(self, frame):
+        try:
+            if not self.active:
+                return
+
+            # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+            s = 1.0
+            z = 1.0
+            w = self.img_xy.width() // 4 * 4
+            h = self.img_xy.height()
+            cx = w // 2
+            cy = h // 2
+
+            # scale image
+            nw = int(w * s * z)
+            nh = int(h * s * z)
+            frame = cv2.resize(frame, (nw, nh), interpolation=cv2.INTER_LINEAR)
+
+            # draw center lines
+            cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
+            cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
+
+            # center image
+            offset_x = int(((cx * z) - cx) * s)
+            offset_y = int(((cy * z) - cy) * s)
+            frame = frame[offset_y : offset_y + int(h * s), offset_x : offset_x + int(w * s)]
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format_RGB888)
+            self.img_xy.setPixmap(QPixmap.fromImage(image))
+        except Exception as err:
+            print("ERROR: UPDATE IMAGE: ", err)
 
 
 class ScreenJog(QWidget):
@@ -1291,8 +1366,8 @@ class MainWindow(QMainWindow):
     def __init__(self, args):
         super().__init__()
         self.setWindowTitle("RIO-Next")
-        self.resize(1200, 1920)
-        # self.resize(800, 1080)
+        # self.resize(1200, 1920)
+        self.resize(800, 1080)
 
         mw = QWidget()
         mw.setStyleSheet(stylesheet)
@@ -1389,14 +1464,14 @@ class MainWindow(QMainWindow):
         self.screen_ngc = ScreenNgc(self)
         self.center2l_stack.addWidget(self.screen_ngc)
 
-        self.screen_tjog = ScreenTJog(self)
-        self.center2l_stack.addWidget(self.screen_tjog)
-
         self.screen_home = ScreenHome(self)
         self.center2l_stack.addWidget(self.screen_home)
 
         self.screen_files = ScreenFiles(self)
         self.center_stack.addWidget(self.screen_files)
+
+        self.screen_tjog = ScreenTJog(self)
+        self.center_stack.addWidget(self.screen_tjog)
 
         self.center2r_stack = QStackedWidget()
         center2r_layout.addWidget(self.center2r_stack, stretch=1)
@@ -1436,14 +1511,6 @@ class MainWindow(QMainWindow):
         btn_files.clicked.connect(partial(self.view_set, "files"))
         bottoml_layout.addWidget(btn_files, stretch=1)
 
-        # btn_tjog = GradientLabel("TJOG", 14)
-        # btn_tjog.clicked.connect(partial(self.view_set, "tjog"))
-        # bottoml_layout.addWidget(btn_tjog, stretch=1)
-
-        # btn_home = GradientLabel("HOME", 14)
-        # btn_home.clicked.connect(partial(self.view_set, "home"))
-        # bottoml_layout.addWidget(btn_home, stretch=1)
-
         glabel2 = GradientLabel("")
         bottoml_layout.addWidget(glabel2, stretch=1)
 
@@ -1461,14 +1528,15 @@ class MainWindow(QMainWindow):
             "jog": (0, 0, None),
             "mdi": (0, 1, None),
             "prog": (0, 2, None),
-            "tjog": (0, 3, None),
             "home": (0, 4, None),
             "files": (1, None, None),
+            "tjog": (2, None, None),
         }
         if mode == "files":
             self.screen_files.reload()
         if mode == "home":
             self.screen_home.reload()
+        self.screen_tjog.active = bool(mode == "tjog")
 
         if view := views.get(mode):
             if view[0] is not None:
