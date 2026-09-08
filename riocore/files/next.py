@@ -274,7 +274,7 @@ class GradientLabel(QLabel):
 
     def setText(self, text):
         self.text = text
-        self.update()
+        super().setText(text)
 
     def _groove_rect(self):
         return QRectF(0, 0, self.width(), self.height())
@@ -613,6 +613,7 @@ class CameraThread(QThread):
         self.capture = None
 
     def start_capture(self):
+        self.device = 1
         self.capture = cv2.VideoCapture(self.device)
         self.capture.set(3, self.width_source)
         self.capture.set(4, self.height_source)
@@ -1538,6 +1539,7 @@ class MainWindow(QMainWindow):
                 self.screen_tjog.pos_x.setText(f"X: {values['X']['pos']:0.3f} {self.units}")
             if "Y" in values:
                 self.screen_tjog.pos_y.setText(f"Y: {values['Y']['pos']:0.3f} {self.units}")
+                self.screen_tjog.pos_y.update()
             if "Z" in values:
                 self.screen_tjog.pos_z.setText(f"Z: {values['Z']['pos']:0.3f} {self.units}")
 
