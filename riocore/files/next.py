@@ -55,10 +55,6 @@ stylesheet = """
         margin: 0px 0px 0px 0px;
     }
 
-    QGroupBox {
-        margin: 6px 0px 0px 0px;
-    }
-
     QWidget#main {
         background-color: #454545;
         margin: 0px 0px 0px 0px;
@@ -102,7 +98,7 @@ stylesheet = """
     QLabel {
         color: #ffffff;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 21px;
     }
 
     QLabel#estop {
@@ -124,6 +120,31 @@ stylesheet = """
         font-size: 16px;
     }
 
+    QLabel#vcp_label {
+        font-size: 21px;
+    }
+    QPushButton#vcp_button {
+        font-size: 21px;
+    }
+    QLabel#vcp_number {
+        font-size: 21px;
+    }
+    QGroupBox#vcp_labelframe {
+        font-size: 21px;
+        margin: 16px 0px 0px 0px;
+    }
+
+"""
+"""
+QLabel#vcp_label
+QLabel#vcp_number
+QLabel#vcp_multilabel
+QProgressBar#vcp_bar
+QSlider#vcp_scale
+QPushButton#vcp_checkbutton
+QPushButton#vcp_button
+QGroupBox#vcp_labelframe
+LED#vcp_led
 """
 
 AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
@@ -974,7 +995,7 @@ class ScreenVcpTab(QWidget):
                             text = child2.text.strip('"')
                         # elif child2.tag == "width":
                         #    width = child2.text.strip('"')
-                    label = QLabel(text)
+                    label = QLabel(text, objectName="vcp_label")
                     # if width:
                     # label.setFixedWidth(int(width) * 12)
                     if anchor == "e":
@@ -993,7 +1014,7 @@ class ScreenVcpTab(QWidget):
                             on_color = QColor(child2.text.strip('"'))
                         if child2.tag == "off_color":
                             off_color = QColor(child2.text.strip('"'))
-                    label = LED(on_color=on_color, off_color=off_color, ltype=child.tag)
+                    label = LED(on_color=on_color, off_color=off_color, ltype=child.tag, objectName="vcp_led")
                     layout.addWidget(label)
                     for child2 in child:
                         if child2.tag == "halpin":
@@ -1008,7 +1029,7 @@ class ScreenVcpTab(QWidget):
                             vformat = child2.text.strip('"')
                         elif child2.tag == "anchor":
                             anchor = child2.text.strip('"')
-                    label = QLabel("<NUMBER>")
+                    label = QLabel("<NUMBER>", objectName="vcp_number")
                     if anchor == "e":
                         label.setAlignment(Qt.AlignRight)
                     elif anchor == "w":
@@ -1027,7 +1048,7 @@ class ScreenVcpTab(QWidget):
                                 h_vcp.newpin(f"{halpin}", hal.HAL_FLOAT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label, vformat)
                 elif child.tag == "multilabel":
-                    label = QLabel("<MULTILABEL>")
+                    label = QLabel("<MULTILABEL>", objectName="vcp_multilabel")
                     label.setAlignment(Qt.AlignCenter)
                     layout.addWidget(label)
                     legends = []
@@ -1057,7 +1078,7 @@ class ScreenVcpTab(QWidget):
                             vmax = child2.text.strip('"')
                         # elif child2.tag == "interval":
                         #    interval = child2.text.strip('"')
-                    label = QProgressBar()
+                    label = QProgressBar(objectName="vcp_bar")
                     label.setMinimum(int(vmin) * 10)
                     label.setMaximum(int(vmax) * 10)
                     label.setValue(50 * 10)
@@ -1082,7 +1103,7 @@ class ScreenVcpTab(QWidget):
                         #    resolution = child2.text.strip('"')
                         elif child2.tag == "initval":
                             initval = child2.text.strip('"')
-                    label = QSlider(Qt.Orientation.Horizontal)
+                    label = QSlider(Qt.Orientation.Horizontal, objectName="vcp_scale")
                     label.setStyle(SliderProxyStyle(label.style()))
                     label.setMinimum(int(vmin) * 10)
                     label.setMaximum(int(vmax) * 10)
@@ -1101,7 +1122,7 @@ class ScreenVcpTab(QWidget):
                             label.valueChanged.connect(partial(change, halpin))
 
                 elif child.tag == "checkbutton":
-                    checkbox = QPushButton()
+                    checkbox = QPushButton(objectName="vcp_checkbutton")
                     checkbox.setCheckable(True)
                     layout.addWidget(checkbox)
                     for child2 in child:
@@ -1124,7 +1145,7 @@ class ScreenVcpTab(QWidget):
                     for child2 in child:
                         if child2.tag == "text":
                             text = child2.text.strip('"')
-                    button = QPushButton(text)
+                    button = QPushButton(text, objectName="vcp_button")
                     layout.addWidget(button)
 
                     for child2 in child:
@@ -1139,7 +1160,7 @@ class ScreenVcpTab(QWidget):
                             button.released.connect(partial(change, halpin, False))
 
                 elif child.tag == "labelframe":
-                    frame = QGroupBox()
+                    frame = QGroupBox(objectName="vcp_labelframe")
                     frame.setTitle(child.attrib["text"])
                     vbox = QVBoxLayout()
                     vbox.setContentsMargins(5, 15, 5, 0)
@@ -1326,8 +1347,8 @@ class MainWindow(QMainWindow):
     def __init__(self, args):
         super().__init__()
         self.setWindowTitle("RIO-Next")
-        # self.resize(1200, 1920)
-        self.resize(800, 1080)
+        self.resize(1200, 1920)
+        #self.resize(800, 1080)
 
         s.poll()
         self.ini_filename = s.ini_filename
