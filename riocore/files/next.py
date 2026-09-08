@@ -50,50 +50,84 @@ from qt5_graphics import Lcnc_3dGraphics
 stylesheet = """
     QWidget {
         background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
+        color: #ffffff;
+        font-size: 14px;
+        margin: 2px 2px 2px 2px;
+    }
+
+    QWidget#main {
+        background-color: #454545;
+        margin: 0px 0px 0px 0px;
+    }
+    QHBoxLayout {
+        margin: 2px 2px 2px 2px;
+    }
+    QVBoxLayout {
+        margin: 2px 2px 2px 2px;
+    }
+
+    QScrollBar:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
+        border: 2px solid white;
+        width: 46px;
+        margin: 52px 1px 52px 1px;
+    }
+    QScrollBar::handle:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
+        border: 2px solid white;
+        min-height: 50px;
+    }
+    QScrollBar::sub-line:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
+        border: 2px solid white;
+        height: 50px;
+        subcontrol-position: top;
+        subcontrol-origin: margin;
+    }
+    QScrollBar::add-line:vertical {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
+        border: 2px solid white;
+        height: 50px;
+        subcontrol-position: bottom;
+        subcontrol-origin: margin;
     }
 
     QLineEdit {
         background-color: #5b5b5b;
         color: #ffffff;
         font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 36px;
+        font-size: 24px;
     }
-
-    QPushButton {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b);
-        height: 50px;
-    }
-
     QListWidget {
         background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #206086, stop: 1 #09405f);
         color: #ffffff;
         font-family: 'Consolas', 'Courier New', monospace;
-        font-size: 36px;
+        font-size: 24px;
     }
 
-    QScrollBar:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #242525, stop: 1 #df2525);
-        border: 4px solid grey;
-        width: 56px;
-        margin: 64px 0px 64px 0px;
+    QLabel {
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 16px;
     }
-    QScrollBar::handle:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #206086, stop: 1 #09405f);
-        min-height: 60px;
+
+    QLabel#estop {
+        background-color: green;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 16px;
     }
-    QScrollBar::sub-line:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff4545, stop: 1 #444545);
-        border: 4px solid grey;
-        height: 60px;
-        subcontrol-position: top;
-        subcontrol-origin: margin;
+    QLabel#enable {
+        background-color: green;
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 16px;
     }
-    QScrollBar::add-line:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ff4545, stop: 1 #444545);
-        border: 4px solid grey;
-        height: 60px;
-        subcontrol-position: bottom;
-        subcontrol-origin: margin;
+    QLabel#exit {
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #906086, stop: 1 #99405f);
+        color: #ffffff;
+        font-weight: bold;
+        font-size: 16px;
     }
 """
 
@@ -125,22 +159,6 @@ def do_homing(axis=-1):
     c.teleop_enable(0)
     c.wait_complete()
     c.home(axis)
-
-
-def toggle_estop():
-    s.poll()
-    if s.estop:
-        c.state(linuxcnc.STATE_ESTOP_RESET)
-    else:
-        c.state(linuxcnc.STATE_ESTOP)
-
-
-def toggle_enable():
-    s.poll()
-    if s.enabled:
-        c.state(linuxcnc.STATE_OFF)
-    else:
-        c.state(linuxcnc.STATE_ON)
 
 
 def cleanLayout(layout):
@@ -181,16 +199,12 @@ class View3D(Lcnc_3dGraphics):
 
 
 class GradientFileEntry(QLabel):
-    def __init__(self, filename):
-        super().__init__(filename)
+    def __init__(self, filename, objectName=None):
+        super().__init__("", objectName=objectName)
         self.filename = filename
         self.error = ""
-        color1 = QColor("#206086")
-        self.color1 = color1
-        color2 = QColor("#09405f")
-        self.color2 = color2
         self.flag_clicked = False
-        self.enabled = True
+        self.enabled = None
 
     clicked = pyqtSignal()
 
@@ -202,24 +216,12 @@ class GradientFileEntry(QLabel):
         return QRectF(0, 0, self.width(), self.height())
 
     def paintEvent(self, event):
+        super().paintEvent(event)
+
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
         if not self.isEnabled():
             p.setOpacity(0.4)
-
-        g = self._groove_rect()
-        grad = QLinearGradient(g.topLeft(), g.bottomRight())
-        if self.flag_clicked:
-            grad.setColorAt(0.0, self.color1)
-            grad.setColorAt(1.0, self.color2)
-        else:
-            grad.setColorAt(0.0, self.color2)
-            grad.setColorAt(1.0, self.color1)
-
-        # background
-        p.setPen(Qt.NoPen)
-        p.setBrush(QBrush(grad))
-        p.drawRect(g)
 
         # text
         title = os.path.basename(self.filename)
@@ -259,20 +261,14 @@ class GradientFileEntry(QLabel):
 
 
 class GradientLabel(QLabel):
-    def __init__(self, text=None, size=20, color1=None, color2=None, parent=None, ctype=None):
-        super().__init__(text, parent)
+    def __init__(self, text=None, parent=None, ctype=None, objectName=None):
+        super().__init__(text, parent, objectName=objectName)
+        self.setAlignment(Qt.AlignCenter)
         self.parent = parent
         self.ctype = ctype
         self.text = text
-        self.size = size
-        if not color1:
-            color1 = QColor("#206086")
-        self.color1 = color1
-        if not color2:
-            color2 = QColor("#09405f")
-        self.color2 = color2
         self.flag_clicked = False
-        self.enabled = True
+        self.enabled = None
 
     clicked = pyqtSignal()
 
@@ -283,42 +279,6 @@ class GradientLabel(QLabel):
     def _groove_rect(self):
         return QRectF(0, 0, self.width(), self.height())
 
-    def paintEvent(self, event):
-        p = QPainter(self)
-        p.setRenderHint(QPainter.Antialiasing)
-        if not self.isEnabled():
-            p.setOpacity(0.4)
-
-        g = self._groove_rect()
-        grad = QLinearGradient(g.topLeft(), g.bottomRight())
-        if not self.enabled:
-            if self.text:
-                if self.text.lower() == "estop":
-                    grad.setColorAt(0.0, QColor("#339933"))
-                    grad.setColorAt(1.0, QColor("#66FF66"))
-                else:
-                    grad.setColorAt(0.0, QColor("#999999"))
-                    grad.setColorAt(1.0, QColor("#ABABAB"))
-        elif self.flag_clicked:
-            grad.setColorAt(0.0, self.color1)
-            grad.setColorAt(1.0, self.color2)
-        else:
-            grad.setColorAt(0.0, self.color2)
-            grad.setColorAt(1.0, self.color1)
-
-        # background
-        p.setPen(Qt.NoPen)
-        p.setBrush(QBrush(grad))
-        # p.drawRoundedRect(g, 2, 2)
-        p.drawRect(g)
-
-        # text
-        if self.text:
-            font = QFont("Arial", self.size, weight=QFont.Bold)
-            p.setFont(font)
-            p.setPen(QPen(Qt.white, 1))
-            p.drawText(QRectF(0, 0, self.width(), self.height()), Qt.AlignCenter, self.text)
-
     def minimumSizeHint(self):
         return QSize(40, 70)
 
@@ -328,7 +288,10 @@ class GradientLabel(QLabel):
         self.update()
         if self.text and len(self.text) == 2 and self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
             axis = AXIS_NAMES.index(self.text[0])
-            speed = self.parent.jog_speed
+            speed = self.parent.jog_lspeed
+            if axis in {"A", "C"}:
+                # TODO: check lin/ang mode
+                speed = self.parent.jog_aspeed
             if self.text[1] == "-":
                 speed *= -1
             c.mode(linuxcnc.MODE_MANUAL)
@@ -350,9 +313,9 @@ class GradientLabel(QLabel):
                     self.parent.load_ngc(self.ctype[5:])
 
             elif self.text.lower() == "estop":
-                toggle_estop()
+                self.parent.toggle_estop()
             elif self.text.lower() == "enable":
-                toggle_enable()
+                self.parent.toggle_enable()
             elif self.text.lower() == "exit":
                 if not self.enabled:
                     c.state(linuxcnc.STATE_ESTOP)
@@ -365,34 +328,21 @@ class GradientLabel(QLabel):
 
 class GradientDRO(QLabel):
     def __init__(self, text=None, color1=None, color2=None, parent=None):
-        super().__init__(text, parent)
+        super().__init__("", objectName="dro")
+        self.parent = parent
         self.text = text
-        if not color1:
-            color1 = QColor("#206086")
-        self.color1 = color1
-        if not color2:
-            color2 = QColor("#09405f")
-        self.color2 = color2
         self.values = {}
 
     def _groove_rect(self):
         return QRectF(0, 0, self.width(), self.height())
 
     def paintEvent(self, event):
+        super().paintEvent(event)
+
         p = QPainter(self)
         p.setRenderHint(QPainter.Antialiasing)
         if not self.isEnabled():
             p.setOpacity(0.4)
-
-        g = self._groove_rect()
-        grad = QLinearGradient(g.topLeft(), g.bottomRight())
-        grad.setColorAt(0.0, self.color1)
-        grad.setColorAt(1.0, self.color2)
-
-        # background
-        p.setPen(Qt.NoPen)
-        p.setBrush(QBrush(grad))
-        p.drawRect(g)
 
         # text
         p.setPen(QPen(Qt.white, 1))
@@ -408,7 +358,7 @@ class GradientDRO(QLabel):
         py = 60
         for name, values in self.values.items():
             p.drawText(QRectF(40, py, self.width() - 80, pd), Qt.AlignLeft, f"{name}")
-            p.drawText(QRectF(40, py, self.width() - 80, pd), Qt.AlignRight, f"{values['pos']:0.3f}mm")
+            p.drawText(QRectF(40, py, self.width() - 80, pd), Qt.AlignRight, f"{values['pos']:0.3f} {self.parent.units}")
             py += pd
 
         font = QFont("Arial", 12)
@@ -416,13 +366,13 @@ class GradientDRO(QLabel):
         py = 60
         for name, values in self.values.items():
             p.drawText(QRectF(70, py, self.width() - 120, pd), Qt.AlignLeft, f"{'*' if values['homed'] else ''}")
-            p.drawText(QRectF(80, py + 14, self.width() - 120, pd + 14), Qt.AlignLeft, f"{values['velocity']:0.1f}mm/s")
+            p.drawText(QRectF(80, py + 14, self.width() - 120, pd + 14), Qt.AlignLeft, f"{values['velocity']:0.1f} {self.parent.units}/s")
             py += pd
 
 
 class GradientSlider(QSlider):
-    def __init__(self, title=None, color1=None, color2=None, image=None, parent=None):
-        super().__init__(Qt.Orientation.Horizontal, parent)
+    def __init__(self, title=None, color1=None, color2=None, image=None, parent=None, objectName=None):
+        super().__init__(Qt.Orientation.Horizontal, parent, objectName=objectName)
         self.parent = parent
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pixmap = None
@@ -452,8 +402,8 @@ class GradientSlider(QSlider):
 
     def minimumSizeHint(self):
         if self.pixmap:
-            return QSize(120, 100)
-        return QSize(120, 60)
+            return QSize(120, 60)
+        return QSize(120, 40)
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -541,16 +491,17 @@ class GradientSlider(QSlider):
             c.feedrate(self.value() / 100.0)
         elif self.title and self.title.split("-")[0].lower() == "spindle":
             c.spindleoverride(self.value() / 100.0, 0)
-        elif self.title and self.title.split("-")[0].lower() == "jog":
-            self.parent.jog_speed = self.value()
+        elif self.title and self.title.split("-")[0].lower() == "linear":
+            self.parent.jog_lspeed = self.value()
+        elif self.title and self.title.split("-")[0].lower() == "angular":
+            self.parent.jog_aspeed = self.value()
 
         self.is_moving = False
 
 
 class JogImageXY(QLabel):
-    def __init__(self):
-        super(QLabel, self).__init__()
-        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #222323, stop: 1 #dd2323);")
+    def __init__(self, objectName=None):
+        super().__init__("", objectName=objectName)
 
     def moveBegin(self, event):
         self.new_x = event.pos().x()
@@ -587,9 +538,8 @@ class JogImageXY(QLabel):
 
 
 class JogImageZ(QLabel):
-    def __init__(self):
-        super(QLabel, self).__init__()
-        self.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #444545, stop: 1 #ff4545);")
+    def __init__(self, objectName=None):
+        super().__init__("", objectName=objectName)
 
     def moveBegin(self, event):
         self.new_z = event.pos().y()
@@ -623,19 +573,22 @@ class ScreenHome(QWidget):
         home_top = QHBoxLayout()
         self.homev.addLayout(home_top, stretch=1)
 
-        btn_back = GradientLabel("<-", parent=self.parent)
+        btn_back = GradientLabel("<-", parent=self.parent, objectName="back")
         btn_back.clicked.connect(partial(self.parent.view_set, "jog"))
         home_top.addWidget(btn_back, stretch=1)
 
-        title = GradientLabel("Home")
+        title = GradientLabel("Home", parent=self.parent, objectName="screentitle")
         home_top.addWidget(title, stretch=5)
 
+        btn_space = GradientLabel("", parent=self.parent, objectName="btnnone")
+        home_top.addWidget(btn_space, stretch=1)
+
         for n, pos in enumerate(s.position[: s.joints]):
-            btn_home = GradientLabel(AXIS_NAMES[n])
+            btn_home = GradientLabel(AXIS_NAMES[n], parent=self.parent, objectName="home")
             btn_home.clicked.connect(partial(do_homing, n))
             self.homev.addWidget(btn_home, stretch=1)
 
-        home_all = GradientLabel("Home-ALL")
+        home_all = GradientLabel("Home-ALL", parent=self.parent, objectName="homeall")
         home_all.clicked.connect(partial(do_homing, -1))
         self.homev.addWidget(home_all, stretch=1)
 
@@ -643,16 +596,17 @@ class ScreenHome(QWidget):
         super().__init__()
         self.parent = parent
         self.homev = QVBoxLayout()
-        self.homev.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.homev)
 
 
 class CameraThread(QThread):
     image = pyqtSignal(np.ndarray)
 
-    def __init__(self, device, options={}):
+    def __init__(self, device, options=None):
         super().__init__()
         self.device = device
+        if not options:
+            options = {}
         self.options = options
         self.width_source = options.get("width_source", 800)
         self.height_source = options.get("height_source", 600)
@@ -687,27 +641,39 @@ class ScreenTJog(QWidget):
         super().__init__()
         self.parent = parent
         jogv = QVBoxLayout()
-        jogv.setContentsMargins(0, 0, 0, 0)
         self.setLayout(jogv)
 
         jog_top = QHBoxLayout()
         jogv.addLayout(jog_top, stretch=1)
 
-        btn_back = GradientLabel("<-", parent=self.parent)
+        btn_back = GradientLabel("<-", parent=self.parent, objectName="back")
         btn_back.clicked.connect(partial(self.parent.view_set, "jog"))
         jog_top.addWidget(btn_back, stretch=1)
 
-        tjl = GradientLabel("Touch-JOG")
+        tjl = GradientLabel("Touch-JOG", parent=self.parent, objectName="screentitle")
         jog_top.addWidget(tjl, stretch=9)
+
+        btn_space = GradientLabel("", parent=self.parent, objectName="btnnone")
+        jog_top.addWidget(btn_space, stretch=1)
+
+        jog_dro = QHBoxLayout()
+        jogv.addLayout(jog_dro, stretch=1)
+
+        self.pos_x = GradientLabel("X: ---", parent=self.parent, objectName="dro")
+        jog_dro.addWidget(self.pos_x, stretch=1)
+        self.pos_y = GradientLabel("Y: ---", parent=self.parent, objectName="dro")
+        jog_dro.addWidget(self.pos_y, stretch=1)
+        self.pos_z = GradientLabel("Z: ---", parent=self.parent, objectName="dro")
+        jog_dro.addWidget(self.pos_z, stretch=1)
 
         jogh0 = QHBoxLayout()
         jogv.addLayout(jogh0, stretch=9)
 
         self.active = False
-        self.img_xy = JogImageXY()
+        self.img_xy = JogImageXY(objectName="jogxy")
         jogh0.addWidget(self.img_xy, stretch=9)
 
-        img_z = JogImageZ()
+        img_z = JogImageZ(objectName="jogz")
         jogh0.addWidget(img_z, stretch=1)
 
         self.camera = CameraThread(0)
@@ -750,75 +716,76 @@ class ScreenTJog(QWidget):
 
 class ScreenJog(QWidget):
     def __init__(self, parent):
-        super().__init__()
+        super().__init__(objectName="jogbg")
         self.parent = parent
         jogv = QVBoxLayout()
-        jogv.setContentsMargins(0, 0, 0, 0)
         self.setLayout(jogv)
-
-        color1 = QColor("#151514")
-        color2 = QColor("#15154f")
 
         jogh0 = QHBoxLayout()
         jogv.addLayout(jogh0, stretch=1)
 
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh0.addWidget(xp, stretch=1)
         xp = GradientLabel("A+", parent=self.parent)
         jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh0.addWidget(xp, stretch=1)
         xp = GradientLabel("C+", parent=self.parent)
         jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh0.addWidget(xp, stretch=1)
 
         jogh1 = QHBoxLayout()
         jogv.addLayout(jogh1, stretch=1)
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh1.addWidget(xp, stretch=1)
         xp = GradientLabel("A-", parent=self.parent)
         jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh1.addWidget(xp, stretch=1)
         xp = GradientLabel("C-", parent=self.parent)
         jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh1.addWidget(xp, stretch=1)
 
         jogh2 = QHBoxLayout()
         jogv.addLayout(jogh2, stretch=2)
-        btn_tjog = GradientLabel("TJOG", color1=QColor("#78a023"), color2=QColor("#9fc31b"), parent=self.parent)
+        btn_tjog = GradientLabel("TJOG", objectName="btntjog", parent=self.parent)
         btn_tjog.clicked.connect(partial(self.parent.view_set, "tjog"))
         jogh2.addWidget(btn_tjog, stretch=1)
-        xp = GradientLabel("Y+", parent=self.parent)
+        xp = GradientLabel("Y+", objectName="btnjog", parent=self.parent)
         jogh2.addWidget(xp, stretch=1)
-        xp = GradientLabel("Z+", color1=QColor("#444545"), color2=QColor("#ff4545"), parent=self.parent)
+        xp = GradientLabel("Z+", objectName="btnjog", parent=self.parent)
         jogh2.addWidget(xp, stretch=1)
 
         jogh3 = QHBoxLayout()
         jogv.addLayout(jogh3, stretch=2)
-        xp = GradientLabel("X-", parent=self.parent)
+        xp = GradientLabel("X-", objectName="btnjog", parent=self.parent)
         jogh3.addWidget(xp, stretch=1)
-        xp = GradientLabel("", color1=color1, color2=color2)
+        xp = GradientLabel("", objectName="none")
         jogh3.addWidget(xp, stretch=1)
-        xp = GradientLabel("X+", parent=self.parent)
+        xp = GradientLabel("X+", objectName="btnjog", parent=self.parent)
         jogh3.addWidget(xp, stretch=1)
 
         jogh4 = QHBoxLayout()
         jogv.addLayout(jogh4, stretch=2)
-        btn_home = GradientLabel("HOME", color1=QColor("#78a023"), color2=QColor("#9fc31b"))
+        btn_home = GradientLabel("HOME", objectName="btnhome")
         btn_home.clicked.connect(partial(self.parent.view_set, "home"))
         jogh4.addWidget(btn_home, stretch=1)
-        ym = GradientLabel("Y-", parent=self.parent)
+        ym = GradientLabel("Y-", objectName="btnjog", parent=self.parent)
         jogh4.addWidget(ym, stretch=1)
-        zm = GradientLabel("Z-", color1=QColor("#444545"), color2=QColor("#ff4545"), parent=self.parent)
+        zm = GradientLabel("Z-", objectName="btnjog", parent=self.parent)
         jogh4.addWidget(zm, stretch=1)
 
-        slider_jog = GradientSlider(title="Jog-Speed", parent=self.parent)
-        slider_jog.setRange(0, 100)
-        slider_jog.setValue(50)
-        jogv.addWidget(slider_jog, stretch=1)
+        lslider_jog = GradientSlider(title="Linear-Speed", parent=self.parent, objectName="linear")
+        lslider_jog.setRange(0, int(parent.linear_velocity_max))
+        lslider_jog.setValue(int(parent.linear_velocity_default))
+        jogv.addWidget(lslider_jog, stretch=1)
+
+        aslider_jog = GradientSlider(title="Angular-Speed", parent=self.parent, objectName="angular")
+        aslider_jog.setRange(0, int(parent.angular_velocity_max))
+        aslider_jog.setValue(int(parent.angular_velocity_default))
+        jogv.addWidget(aslider_jog, stretch=1)
 
 
 class ScreenMdi(QWidget):
@@ -872,8 +839,6 @@ class ScreenMdi(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
         self.setLayout(layout)
 
         self.history = QListWidget()
@@ -890,11 +855,11 @@ class ScreenMdi(QWidget):
         self.cmdline.returnPressed.connect(self.run_cmd)
         cmd_layout.addWidget(self.cmdline)
 
-        btn_cmd = QPushButton("RUN")
+        btn_cmd = QPushButton("RUN", objectName="run")
         btn_cmd.clicked.connect(self.run_cmd)
         cmd_layout.addWidget(btn_cmd)
 
-        btn_stop = QPushButton("STOP")
+        btn_stop = QPushButton("STOP", objectName="stop")
         btn_stop.clicked.connect(self.stop_cmd)
         cmd_layout.addWidget(btn_stop)
 
@@ -906,24 +871,20 @@ class ScreenFiles(QWidget):
         super().__init__()
         self.parent = parent
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
         self.setLayout(layout)
 
         buttons = QHBoxLayout()
         layout.addLayout(buttons)
 
-        btn_load = GradientLabel("LOAD")
-        btn_load.setContentsMargins(0, 0, 0, 0)
+        btn_load = GradientLabel("LOAD", parent=self.parent, objectName="fileload")
         btn_load.clicked.connect(self.load)
         buttons.addWidget(btn_load)
 
-        btn_cancel = GradientLabel("CANCEL")
-        btn_cancel.setContentsMargins(0, 0, 0, 0)
+        btn_cancel = GradientLabel("CANCEL", parent=self.parent, objectName="filecancel")
         btn_cancel.clicked.connect(self.cancel)
         buttons.addWidget(btn_cancel)
 
-        filelist = QWidget()
+        filelist = QWidget(objectName="filebg")
         self.filelist_layout = QVBoxLayout()
         filelist.setLayout(self.filelist_layout)
         scroll = QScrollArea()
@@ -943,9 +904,8 @@ class ScreenFiles(QWidget):
 
             if os.path.isfile(f"{filename}.svg"):
                 preview = QtSvg.QSvgWidget(f"{filename}.svg")
-                # preview.setStyleSheet("background-color: #000000;")
             else:
-                preview = GradientLabel("")
+                preview = GradientLabel("", parent=self.parent, objectName="filenoimg")
             preview.setFixedHeight(175)
             entry_layout.addWidget(preview, stretch=1)
 
@@ -975,16 +935,9 @@ class SliderProxyStyle(QProxyStyle):
 
 class ScreenVcpTab(QWidget):
     def __init__(self, tab, halpins_in):
-        super().__init__()
-        self.setStyleSheet("""
-            background-color: #9fc31b;
-            color : black;
-            font-size: 22px;
-        """)
+        super().__init__(objectName="vcp")
 
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
         self.setLayout(layout)
 
         def next_element(element, layout, prefix=""):
@@ -993,7 +946,7 @@ class ScreenVcpTab(QWidget):
                 if child.tag == "label":
                     text = ""
                     anchor = "c"
-                    width = ""
+                    # width = ""
                     for child2 in child:
                         if child2.tag == "format":
                             vformat = child2.text.strip('"')
@@ -1001,23 +954,21 @@ class ScreenVcpTab(QWidget):
                             anchor = child2.text.strip('"')
                         elif child2.tag == "text":
                             text = child2.text.strip('"')
-                        elif child2.tag == "width":
-                            width = child2.text.strip('"')
+                        # elif child2.tag == "width":
+                        #    width = child2.text.strip('"')
                     label = QLabel(text)
-                    if width:
-                        label.setFixedWidth(int(width) * 15)
+                    # if width:
+                    # label.setFixedWidth(int(width) * 12)
                     if anchor == "e":
                         label.setAlignment(Qt.AlignRight)
                     elif anchor == "w":
                         label.setAlignment(Qt.AlignLeft)
                     elif anchor == "c":
                         label.setAlignment(Qt.AlignCenter)
-                    label.setContentsMargins(0, 0, 0, 0)
                     label.setFixedHeight(45)
                     layout.addWidget(label)
                 elif child.tag in {"led", "rectled"}:
                     label = QLabel("[O]")
-                    label.setContentsMargins(0, 0, 0, 0)
                     layout.addWidget(label)
                     for child2 in child:
                         if child2.tag == "halpin":
@@ -1039,7 +990,6 @@ class ScreenVcpTab(QWidget):
                         label.setAlignment(Qt.AlignLeft)
                     elif anchor == "c":
                         label.setAlignment(Qt.AlignCenter)
-                    label.setContentsMargins(0, 0, 0, 0)
                     layout.addWidget(label)
                     for child2 in child:
                         if child2.tag == "halpin":
@@ -1054,7 +1004,6 @@ class ScreenVcpTab(QWidget):
                 elif child.tag == "multilabel":
                     label = QLabel("<MULTILABEL>")
                     label.setAlignment(Qt.AlignCenter)
-                    label.setContentsMargins(0, 0, 0, 0)
                     layout.addWidget(label)
                     legends = []
                     for child2 in child:
@@ -1084,7 +1033,6 @@ class ScreenVcpTab(QWidget):
                         # elif child2.tag == "interval":
                         #    interval = child2.text.strip('"')
                     label = QProgressBar()
-                    label.setContentsMargins(0, 0, 0, 0)
                     label.setMinimum(int(vmin) * 10)
                     label.setMaximum(int(vmax) * 10)
                     label.setValue(50 * 10)
@@ -1111,7 +1059,6 @@ class ScreenVcpTab(QWidget):
                             initval = child2.text.strip('"')
                     label = QSlider(Qt.Orientation.Horizontal)
                     label.setStyle(SliderProxyStyle(label.style()))
-                    label.setContentsMargins(0, 0, 0, 0)
                     label.setMinimum(int(vmin) * 10)
                     label.setMaximum(int(vmax) * 10)
                     label.setValue(int(initval) * 10)
@@ -1130,7 +1077,6 @@ class ScreenVcpTab(QWidget):
 
                 elif child.tag == "checkbutton":
                     checkbox = QPushButton()
-                    checkbox.setContentsMargins(0, 0, 0, 0)
                     checkbox.setCheckable(True)
                     layout.addWidget(checkbox)
                     for child2 in child:
@@ -1140,13 +1086,13 @@ class ScreenVcpTab(QWidget):
 
                             def change(halpin, val):
                                 h_vcp[f"{halpin}"] = val
-                                if val:
-                                    checkbox.setStyleSheet("background-color : red")
-                                else:
-                                    checkbox.setStyleSheet("background-color : lightblue")
+                                # if val:
+                                #    checkbox.setStyleSheet("background-color : red")
+                                # else:
+                                #    checkbox.setStyleSheet("background-color : lightblue")
 
                             checkbox.clicked.connect(partial(change, halpin))
-                    checkbox.setStyleSheet("background-color : lightblue")
+                    # checkbox.setStyleSheet("background-color : lightblue")
 
                 elif child.tag == "button":
                     text = ""
@@ -1154,7 +1100,6 @@ class ScreenVcpTab(QWidget):
                         if child2.tag == "text":
                             text = child2.text.strip('"')
                     button = QPushButton(text)
-                    button.setContentsMargins(0, 0, 0, 0)
                     layout.addWidget(button)
 
                     for child2 in child:
@@ -1173,20 +1118,15 @@ class ScreenVcpTab(QWidget):
                     frame.setTitle(child.attrib["text"])
                     vbox = QVBoxLayout()
                     vbox.setContentsMargins(5, 15, 5, 0)
-                    vbox.setSpacing(0)
                     frame.setLayout(vbox)
                     layout.addWidget(frame)
                     next_element(child, vbox, prefix=" " + prefix)
                 elif child.tag == "hbox":
                     hbox = QHBoxLayout()
-                    hbox.setContentsMargins(0, 0, 0, 0)
-                    hbox.setSpacing(0)
                     layout.addLayout(hbox)
                     next_element(child, hbox, prefix=" " + prefix)
                 elif child.tag == "vbox":
                     vbox = QVBoxLayout()
-                    vbox.setContentsMargins(0, 0, 0, 0)
-                    vbox.setSpacing(0)
                     layout.addLayout(vbox)
                     next_element(child, vbox, prefix=" " + prefix)
 
@@ -1204,12 +1144,10 @@ class ScreenOverwrites(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        # layout.setSpacing(0)
         self.setLayout(layout)
 
         self.slider_feed = GradientSlider(title="Feed-Overwrite", image="touchprobe.png")
-        self.slider_feed.setRange(0, 100)
+        self.slider_feed.setRange(0, 300)
         layout.addWidget(self.slider_feed, stretch=2)
 
         self.slider_rapid = GradientSlider(title="Rapid-Overwrite", image="jogwheel.png")
@@ -1217,18 +1155,17 @@ class ScreenOverwrites(QWidget):
         layout.addWidget(self.slider_rapid, stretch=2)
 
         self.slider_spindle = GradientSlider(title="Spindle-Overwrite", image="valve.png")
-        self.slider_spindle.setRange(0, 100)
+        self.slider_spindle.setRange(0, 300)
         layout.addWidget(self.slider_spindle, stretch=2)
 
 
 class ScreenDro(QWidget):
-    def __init__(self):
+    def __init__(self, parent):
         super().__init__()
+        self.parent = parent
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
         self.setLayout(layout)
-        self.dro = GradientDRO("Position", color1=QColor("#78a023"), color2=QColor("#9fc31b"))
+        self.dro = GradientDRO("Position", parent=parent)
         layout.addWidget(self.dro, stretch=3)
 
 
@@ -1236,16 +1173,12 @@ class ScreenNgc(QWidget):
     def __init__(self, parent):
         super().__init__()
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
         self.setLayout(layout)
 
         hbox = QHBoxLayout()
-        hbox.setContentsMargins(0, 0, 0, 0)
-        hbox.setSpacing(0)
         layout.addLayout(hbox, stretch=5)
 
-        btn_open = QPushButton(QIcon("open.png"), "OPEN")
+        btn_open = QPushButton(QIcon("open.png"), "OPEN", objectName="progopen")
         # btn_open.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_open.clicked.connect(parent.load_ngc)
         hbox.addWidget(btn_open, stretch=0)
@@ -1266,35 +1199,35 @@ class ScreenNgc(QWidget):
             elif mode == "STOP":
                 c.abort()
 
-        btn_run = QPushButton(QIcon("play.png"), "RUN")
-        btn_run.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_run = QPushButton(QIcon("play.png"), "RUN", objectName="progrun")
+        # btn_run.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_run.clicked.connect(partial(prog_mode, "RUN"))
         hbox.addWidget(btn_run, stretch=0)
 
-        btn_pause = QPushButton(QIcon("pause.png"), "PAUSE")
-        btn_pause.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_pause = QPushButton(QIcon("pause.png"), "PAUSE", objectName="progpause")
+        # btn_pause.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_pause.clicked.connect(partial(prog_mode, "PAUSE"))
         hbox.addWidget(btn_pause, stretch=0)
 
-        btn_step = QPushButton(QIcon("step.png"), "STEP")
-        btn_step.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_step = QPushButton(QIcon("step.png"), "STEP", objectName="progstep")
+        # btn_step.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_step.clicked.connect(partial(prog_mode, "STEP"))
         hbox.addWidget(btn_step, stretch=0)
 
-        btn_stop = QPushButton(QIcon("stop.png"), "STOP")
-        btn_stop.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
+        btn_stop = QPushButton(QIcon("stop.png"), "STOP", objectName="progstop")
+        # btn_stop.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_stop.clicked.connect(partial(prog_mode, "STOP"))
         hbox.addWidget(btn_stop, stretch=0)
 
         self.editor = QPlainTextEdit()
-        self.editor.setStyleSheet("""
-            QPlainTextEdit {
-                background-color: #2b2b2b;
-                color: #ffffff;
-                font-family: 'Consolas', 'Courier New', monospace;
-                font-size: 12pt;
-            }
-        """)
+        # self.editor.setStyleSheet("""
+        #    QPlainTextEdit {
+        #        background-color: #2b2b2b;
+        #        color: #ffffff;
+        #        font-family: 'Consolas', 'Courier New', monospace;
+        #        font-size: 12pt;
+        #    }
+        # """)
         layout.addWidget(self.editor, stretch=5)
 
 
@@ -1353,7 +1286,7 @@ class PyVCP:
             self.layout.setCurrentIndex(idx)
 
         for tab_n, tabname in enumerate(self.tabnames):
-            btn_status = GradientLabel(tabname, 10)
+            btn_status = GradientLabel(tabname, parent=self.parent)
             btn_status.clicked.connect(partial(setTab, tab_n))
             layout.addWidget(btn_status, stretch=1)
 
@@ -1361,7 +1294,8 @@ class PyVCP:
 class MainWindow(QMainWindow):
     last_offsets = []
     ngc_file = ""
-    jog_speed = 40
+    jog_lspeed = 40
+    jog_aspeed = 5
 
     def __init__(self, args):
         super().__init__()
@@ -1369,18 +1303,28 @@ class MainWindow(QMainWindow):
         # self.resize(1200, 1920)
         self.resize(800, 1080)
 
-        mw = QWidget()
+        s.poll()
+        self.ini_filename = s.ini_filename
+        if args.ini:
+            self.ini_filename = args.ini
+
+        self.inifile = linuxcnc.ini(self.ini_filename)
+        xml_file = self.inifile.find("DISPLAY", "PYVCP")
+        self.units = self.inifile.find("TRAJ", "LINEAR_UNITS")
+        self.linear_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_LINEAR_VELOCITY") or 10.0)
+        self.linear_velocity_max = float(self.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or 20.0)
+        self.angular_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY") or 5.0)
+        self.angular_velocity_max = float(self.inifile.find("TRAJ", "MAX_ANGULAR_VELOCITY") or 10.0)
+
+        mw = QWidget(objectName="main")
         mw.setStyleSheet(stylesheet)
         main_layout = QVBoxLayout(mw)
-        main_layout.setContentsMargins(0, 0, 0, 0)
         self.setCentralWidget(mw)
 
         title_layout = QHBoxLayout()
-        title_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addLayout(title_layout, stretch=0)
 
         top_layout = QHBoxLayout()
-        top_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addLayout(top_layout, stretch=1)
 
         self.center_stack = QStackedWidget()
@@ -1392,54 +1336,45 @@ class MainWindow(QMainWindow):
         self.center_stack.addWidget(self.center_widget)
 
         center1_layout = QHBoxLayout()
-        center1_layout.setContentsMargins(0, 0, 0, 0)
         self.center_layout.addLayout(center1_layout, stretch=1)
         center1l_layout = QVBoxLayout()
-        center1l_layout.setContentsMargins(0, 0, 0, 0)
         center1_layout.addLayout(center1l_layout, stretch=1)
         center1r_layout = QVBoxLayout()
-        center1r_layout.setContentsMargins(0, 0, 0, 0)
         center1_layout.addLayout(center1r_layout, stretch=1)
 
         center2_layout = QHBoxLayout()
-        center2_layout.setContentsMargins(0, 0, 0, 0)
         self.center_layout.addLayout(center2_layout, stretch=2)
         center2l_layout = QVBoxLayout()
-        center2l_layout.setContentsMargins(0, 0, 0, 0)
         center2_layout.addLayout(center2l_layout, stretch=1)
         center2r_layout = QVBoxLayout()
-        center2r_layout.setContentsMargins(0, 0, 0, 0)
         center2_layout.addLayout(center2r_layout, stretch=1)
 
         bottom_layout = QHBoxLayout()
-        bottom_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addLayout(bottom_layout, stretch=0)
 
         bottoml_layout = QHBoxLayout()
-        bottoml_layout.setContentsMargins(0, 0, 0, 0)
         bottom_layout.addLayout(bottoml_layout, stretch=1)
 
         bottomr_layout = QHBoxLayout()
-        bottomr_layout.setContentsMargins(0, 0, 0, 0)
         bottom_layout.addLayout(bottomr_layout, stretch=1)
 
-        self.estop = GradientLabel("ESTOP", size=14, color1=QColor("#993333"), color2=QColor("#FF6666"))
+        self.estop = GradientLabel("ESTOP", objectName="estop", parent=self)
         title_layout.addWidget(self.estop, stretch=1)
         toggle_estop_action = QAction("Toggle Estop", self)
         toggle_estop_action.setShortcut("F1")
-        toggle_estop_action.triggered.connect(toggle_estop)
+        toggle_estop_action.triggered.connect(self.toggle_estop)
         self.addAction(toggle_estop_action)
 
-        self.enable = GradientLabel("ENABLE", size=14, color1=QColor("#339933"), color2=QColor("#66FF66"))
+        self.enable = GradientLabel("ENABLE", objectName="enable", parent=self)
         title_layout.addWidget(self.enable, stretch=1)
         toggle_enable_action = QAction("Toggle Enable", self)
         toggle_enable_action.setShortcut("F2")
-        toggle_enable_action.triggered.connect(toggle_enable)
+        toggle_enable_action.triggered.connect(self.toggle_enable)
         self.addAction(toggle_enable_action)
 
-        title = GradientLabel("LinuxCNC - RIO")
+        title = GradientLabel("LinuxCNC - RIO", objectName="screentitle")
         title_layout.addWidget(title, stretch=9)
-        self.exit = GradientLabel("EXIT", size=14)
+        self.exit = GradientLabel("EXIT", objectName="exit", parent=self)
         title_layout.addWidget(self.exit, stretch=1)
 
         self.glview = View3D()
@@ -1452,7 +1387,7 @@ class MainWindow(QMainWindow):
 
         self.center1r_stack = QStackedWidget()
         center1r_layout.addWidget(self.center1r_stack, stretch=1)
-        self.screen_dro = ScreenDro()
+        self.screen_dro = ScreenDro(self)
         self.center1r_stack.addWidget(self.screen_dro)
 
         self.center2l_stack = QStackedWidget()
@@ -1476,24 +1411,15 @@ class MainWindow(QMainWindow):
         self.center2r_stack = QStackedWidget()
         center2r_layout.addWidget(self.center2r_stack, stretch=1)
 
-        s.poll()
-        self.ini_filename = s.ini_filename
-        if args.ini:
-            self.ini_filename = args.ini
-
-        self.inifile = linuxcnc.ini(self.ini_filename)
-        xml_file = self.inifile.find("DISPLAY", "PYVCP")
-        # self.joints = int(self.inifile.find("KINS", "JOINTS"))
-
         self.pyvcp = None
         if xml_file:
             self.pyvcp = PyVCP(self.center2r_stack, xml_file, self)
 
-        btn_jog = GradientLabel("JOG", 14)
+        btn_jog = GradientLabel("JOG", objectName="btnjog")
         btn_jog.clicked.connect(partial(self.view_set, "jog"))
         bottoml_layout.addWidget(btn_jog, stretch=1)
 
-        btn_mdi = GradientLabel("MDI", 14)
+        btn_mdi = GradientLabel("MDI", objectName="btnmdi")
         btn_mdi.clicked.connect(partial(self.view_set, "mdi"))
         bottoml_layout.addWidget(btn_mdi, stretch=1)
 
@@ -1503,15 +1429,15 @@ class MainWindow(QMainWindow):
             else:
                 self.view_set("prog")
 
-        btn_prog = GradientLabel("PROG", 14)
+        btn_prog = GradientLabel("PROG", objectName="btnprog")
         btn_prog.clicked.connect(open_prog)
         bottoml_layout.addWidget(btn_prog, stretch=1)
 
-        btn_files = GradientLabel("FILES", 14)
+        btn_files = GradientLabel("FILES", objectName="btnfiles")
         btn_files.clicked.connect(partial(self.view_set, "files"))
         bottoml_layout.addWidget(btn_files, stretch=1)
 
-        glabel2 = GradientLabel("")
+        glabel2 = GradientLabel("", objectName="btnnone")
         bottoml_layout.addWidget(glabel2, stretch=1)
 
         if self.pyvcp:
@@ -1528,16 +1454,10 @@ class MainWindow(QMainWindow):
             "jog": (0, 0, None),
             "mdi": (0, 1, None),
             "prog": (0, 2, None),
-            "home": (0, 4, None),
+            "home": (0, 3, None),
             "files": (1, None, None),
             "tjog": (2, None, None),
         }
-        if mode == "files":
-            self.screen_files.reload()
-        if mode == "home":
-            self.screen_home.reload()
-        self.screen_tjog.active = bool(mode == "tjog")
-
         if view := views.get(mode):
             if view[0] is not None:
                 self.center_stack.setCurrentIndex(view[0])
@@ -1545,6 +1465,11 @@ class MainWindow(QMainWindow):
                 self.center2l_stack.setCurrentIndex(view[1])
             if view[2] is not None:
                 self.center2r_stack.setCurrentIndex(view[2])
+        if mode == "files":
+            self.screen_files.reload()
+        if mode == "home":
+            self.screen_home.reload()
+        self.screen_tjog.active = bool(mode == "tjog")
 
     def postgui(self):
         for filename in self.inifile.findall("HAL", "POSTGUI_HALFILE") or []:
@@ -1609,17 +1534,47 @@ class MainWindow(QMainWindow):
         if self.screen_dro.dro.values != values:
             self.screen_dro.dro.values = values
             self.screen_dro.dro.update()
+            if "X" in values:
+                self.screen_tjog.pos_x.setText(f"X: {values['X']['pos']:0.3f} {self.units}")
+            if "Y" in values:
+                self.screen_tjog.pos_y.setText(f"Y: {values['Y']['pos']:0.3f} {self.units}")
+            if "Z" in values:
+                self.screen_tjog.pos_z.setText(f"Z: {values['Z']['pos']:0.3f} {self.units}")
 
         if self.estop.enabled != s.estop:
             self.estop.enabled = s.estop
+            if self.estop.enabled:
+                self.estop.setStyleSheet("background-color : red")
+            else:
+                self.estop.setStyleSheet("")
+
             self.estop.update()
 
         if self.enable.enabled != s.enabled:
             self.enable.enabled = s.enabled
+            if self.enable.enabled:
+                self.enable.setStyleSheet("")
+            else:
+                self.enable.setStyleSheet("background-color: red")
+
             self.enable.update()
 
         if self.pyvcp:
             self.pyvcp.update()
+
+    def toggle_estop(self):
+        s.poll()
+        if s.estop:
+            c.state(linuxcnc.STATE_ESTOP_RESET)
+        else:
+            c.state(linuxcnc.STATE_ESTOP)
+
+    def toggle_enable(self):
+        s.poll()
+        if s.enabled:
+            c.state(linuxcnc.STATE_OFF)
+        else:
+            c.state(linuxcnc.STATE_ON)
 
 
 if __name__ == "__main__":
