@@ -255,10 +255,13 @@ class GradientFileEntry(QLabel):
 
 
 class LED(QPushButton):
-    def __init__(self, ltype=None, objectName=None):
+    def __init__(self, ltype=None, on_color=None, off_color=None, objectName=None):
         super().__init__("", objectName=objectName)
         self.setCheckable(True)
         self.ltype = ltype
+        self.on_color = on_color
+        self.off_color = off_color
+        self.on = False
 
     def paintEvent(self, event):
         p = QPainter(self)
@@ -266,22 +269,27 @@ class LED(QPushButton):
         if not self.isEnabled():
             p.setOpacity(0.4)
 
-        # text
-        p.setPen(QPen(Qt.white, 1))
-
         center = QPointF(self.width() / 2, self.height() / 2)
         rad = min(self.width(), self.height()) / 2
         grad = QRadialGradient(center, rad)
-        grad.setColorAt(0, QColor(255, 10, 10))
+        if self.on:
+            if self.on_color:
+                grad.setColorAt(0, self.on_color)
+            else:
+                grad.setColorAt(0, QColor(255, 10, 10))
+        else:
+            if self.off_color:
+                grad.setColorAt(0, self.off_color)
+            else:
+                grad.setColorAt(0, QColor(0, 0, 0))
         grad.setColorAt(1, QColor(0, 0, 0))
 
         p.setPen(Qt.NoPen)
-        p.setBrush(QBrush(QColor(0, 0, 0)))
-        p.drawRect(QRectF(0, 0, self.width(), self.height()))
-
-        p.setPen(Qt.NoPen)
         p.setBrush(QBrush(grad))
-        p.drawEllipse(center, rad, rad)
+        if self.ltype == "rectled":
+            p.drawRect(QRectF(self.width() / 2 - rad, self.height() / 2 - rad, rad*2, rad*2))
+        else:
+            p.drawEllipse(center, rad, rad)
 
 
 class GradientLabel(QLabel):
@@ -984,7 +992,14 @@ class ScreenVcpTab(QWidget):
                     label.setFixedHeight(45)
                     layout.addWidget(label)
                 elif child.tag in {"led", "rectled"}:
-                    label = LED("[O]")
+                    on_color = QColor(0, 255, 0)
+                    off_color = QColor(0, 0, 0)
+                    for child2 in child:
+                        if child2.tag == "on_color":
+                            on_color = QColor(child2.text.strip('"'))
+                        if child2.tag == "off_color":
+                            off_color = QColor(child2.text.strip('"'))
+                    label = LED(on_color=on_color, off_color=off_color, ltype=child.tag)
                     layout.addWidget(label)
                     for child2 in child:
                         if child2.tag == "halpin":
@@ -1275,9 +1290,10 @@ class PyVCP:
             if data[0] in {"led", "rectled"}:
                 val = h_vcp[f"{pin}"]
                 if val:
-                    data[1].setText("X")
+                    data[1].on = True
                 else:
-                    data[1].setText("O")
+                    data[1].on = False
+                data[1].update()
             elif data[0] == "bar":
                 val = h_vcp[f"{pin}"]
                 data[1].setValue(int(val * 10))
