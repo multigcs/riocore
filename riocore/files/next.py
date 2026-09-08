@@ -49,10 +49,14 @@ from qt5_graphics import Lcnc_3dGraphics
 
 stylesheet = """
     QWidget {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #252524, stop: 1 #25256f);
         color: #ffffff;
         font-size: 14px;
-        margin: 2px 2px 2px 2px;
+        margin: 0px 0px 0px 0px;
+    }
+
+    QGroupBox {
+        margin: 6px 0px 0px 0px;
     }
 
     QWidget#main {
@@ -61,25 +65,21 @@ stylesheet = """
     }
 
     QScrollBar:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
         border: 2px solid white;
         width: 46px;
         margin: 52px 1px 52px 1px;
     }
     QScrollBar::handle:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
         border: 2px solid white;
         min-height: 50px;
     }
     QScrollBar::sub-line:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
         border: 2px solid white;
         height: 50px;
         subcontrol-position: top;
         subcontrol-origin: margin;
     }
     QScrollBar::add-line:vertical {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
         border: 2px solid white;
         height: 50px;
         subcontrol-position: bottom;
@@ -118,11 +118,12 @@ stylesheet = """
         font-size: 16px;
     }
     QLabel#exit {
-        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #906086, stop: 1 #99405f);
+        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #f06086, stop: 1 #f9405f);
         color: #ffffff;
         font-weight: bold;
         font-size: 16px;
     }
+
 """
 
 AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
@@ -470,19 +471,26 @@ class GradientSlider(QSlider):
             p.drawPixmap(int(poffx), int(poffy), int(self.pixmap.width() * ps), int(self.pixmap.height() * ps), self.pixmap)
 
         # text
-        font = QFont("Arial", 20, weight=QFont.Bold)
+        font = QFont("Arial", 18, weight=QFont.Bold)
         p.setFont(font)
         p.setPen(QPen(Qt.white, 1))
         text = f"{self._fraction() * 100:2.0f}%"
-        p.drawText(QRectF(10, self.height() - 40, self.width() - 20, 40), Qt.AlignLeft, text)
+        if self.pixmap:
+            p.drawText(QRectF(10, self.height() - 40, self.width() - 20, 40), Qt.AlignLeft, text)
+        else:
+            p.drawText(QRectF(10, 10, self.width() - 20, self.height() - 20), Qt.AlignRight, text)
 
         if self.title:
             p.setFont(QFont("Arial", 12))
-            p.drawText(QRectF(self.width() / 3, 10.0, self.width() / 3 * 2, 30.0), Qt.AlignCenter, self.title)
+            if self.pixmap:
+                p.drawText(QRectF(self.width() / 3, 10.0, self.width() / 3 * 2, 30.0), Qt.AlignCenter, self.title)
+            else:
+                p.drawText(QRectF(10, 10.0, self.width() - 20, self.height() - 20), Qt.AlignLeft, self.title)
 
-        text = "400mm/s"
-        p.drawText(QRectF(10, self.height() - 40, self.width() - 20, 40), Qt.AlignRight, text)
-        p.drawLine(self.width() // 3, 10, self.width() // 3, self.height() - 10)
+        # text = "400mm/s"
+        # p.drawText(QRectF(10, self.height() - 40, self.width() - 20, 40), Qt.AlignRight, text)
+        if self.pixmap:
+            p.drawLine(self.width() // 3, 10, self.width() // 3, self.height() - 10)
 
     # ---------- mouse: map click/drag directly to a value ----------
     def mousePressEvent(self, event):
@@ -747,28 +755,16 @@ class ScreenJog(QWidget):
         jogh0 = QHBoxLayout()
         jogv.addLayout(jogh0, stretch=1)
 
-        xp = GradientLabel("", objectName="none")
+        xp = GradientLabel("A+", objectName="btnjog", parent=self.parent)
         jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("A+", parent=self.parent)
-        jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("", objectName="none")
-        jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("C+", parent=self.parent)
-        jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("", objectName="none")
+        xp = GradientLabel("C+", objectName="btnjog", parent=self.parent)
         jogh0.addWidget(xp, stretch=1)
 
         jogh1 = QHBoxLayout()
         jogv.addLayout(jogh1, stretch=1)
-        xp = GradientLabel("", objectName="none")
+        xp = GradientLabel("A-", objectName="btnjog", parent=self.parent)
         jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("A-", parent=self.parent)
-        jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("", objectName="none")
-        jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("C-", parent=self.parent)
-        jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("", objectName="none")
+        xp = GradientLabel("C-", objectName="btnjog", parent=self.parent)
         jogh1.addWidget(xp, stretch=1)
 
         jogh2 = QHBoxLayout()
@@ -938,7 +934,6 @@ class ScreenFiles(QWidget):
 
     def preview(self, filename, widget=None):
         self.selected = filename
-        print("prev", widget)
         self.parent.glview.load(filename, widget)
 
     def load(self):
