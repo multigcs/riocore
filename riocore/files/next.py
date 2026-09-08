@@ -261,6 +261,8 @@ class GradientFileEntry(QLabel):
 
 
 class GradientLabel(QLabel):
+    clicked = pyqtSignal()
+
     def __init__(self, text=None, parent=None, ctype=None, objectName=None):
         super().__init__(text, parent, objectName=objectName)
         self.setAlignment(Qt.AlignCenter)
@@ -270,17 +272,9 @@ class GradientLabel(QLabel):
         self.flag_clicked = False
         self.enabled = None
 
-    clicked = pyqtSignal()
-
     def setText(self, text):
         self.text = text
         super().setText(text)
-
-    def _groove_rect(self):
-        return QRectF(0, 0, self.width(), self.height())
-
-    def minimumSizeHint(self):
-        return QSize(40, 70)
 
     def mousePressEvent(self, event):
         self.clicked.emit()
@@ -309,9 +303,7 @@ class GradientLabel(QLabel):
         if self.text:
             if self.ctype:
                 if self.ctype.startswith("file:"):
-                    print("open", self.ctype[5:])
                     self.parent.load_ngc(self.ctype[5:])
-
             elif self.text.lower() == "estop":
                 self.parent.toggle_estop()
             elif self.text.lower() == "enable":
