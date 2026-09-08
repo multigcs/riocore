@@ -59,12 +59,6 @@ stylesheet = """
         background-color: #454545;
         margin: 0px 0px 0px 0px;
     }
-    QHBoxLayout {
-        margin: 2px 2px 2px 2px;
-    }
-    QVBoxLayout {
-        margin: 2px 2px 2px 2px;
-    }
 
     QScrollBar:vertical {
         background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #151514, stop: 1 #15154f);
