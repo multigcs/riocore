@@ -18,8 +18,8 @@ import linuxcnc
 import numpy as np
 
 from PyQt5 import QtSvg
-from PyQt5.QtCore import QRectF, QSize, QThread, QTimer, Qt, pyqtSignal
-from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QImage, QLinearGradient, QPainter, QPen, QPixmap
+from PyQt5.QtCore import QPointF, QRectF, QSize, QThread, QTimer, Qt, pyqtSignal
+from PyQt5.QtGui import QBrush, QColor, QFont, QIcon, QImage, QLinearGradient, QPainter, QPen, QPixmap, QRadialGradient
 from PyQt5.QtWidgets import (
     QAction,
     QApplication,
@@ -252,6 +252,36 @@ class GradientFileEntry(QLabel):
         self.flag_clicked = False
         self.update()
         super().mouseReleaseEvent(event)
+
+
+class LED(QPushButton):
+    def __init__(self, ltype=None, objectName=None):
+        super().__init__("", objectName=objectName)
+        self.setCheckable(True)
+        self.ltype = ltype
+
+    def paintEvent(self, event):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        if not self.isEnabled():
+            p.setOpacity(0.4)
+
+        # text
+        p.setPen(QPen(Qt.white, 1))
+
+        center = QPointF(self.width() / 2, self.height() / 2)
+        rad = min(self.width(), self.height()) / 2
+        grad = QRadialGradient(center, rad)
+        grad.setColorAt(0, QColor(255, 10, 10))
+        grad.setColorAt(1, QColor(0, 0, 0))
+
+        p.setPen(Qt.NoPen)
+        p.setBrush(QBrush(QColor(0, 0, 0)))
+        p.drawRect(QRectF(0, 0, self.width(), self.height()))
+
+        p.setPen(Qt.NoPen)
+        p.setBrush(QBrush(grad))
+        p.drawEllipse(center, rad, rad)
 
 
 class GradientLabel(QLabel):
@@ -599,7 +629,6 @@ class CameraThread(QThread):
         self.capture = None
 
     def start_capture(self):
-        self.device = 1
         self.capture = cv2.VideoCapture(self.device)
         self.capture.set(3, self.width_source)
         self.capture.set(4, self.height_source)
@@ -955,7 +984,7 @@ class ScreenVcpTab(QWidget):
                     label.setFixedHeight(45)
                     layout.addWidget(label)
                 elif child.tag in {"led", "rectled"}:
-                    label = QLabel("[O]")
+                    label = LED("[O]")
                     layout.addWidget(label)
                     for child2 in child:
                         if child2.tag == "halpin":
