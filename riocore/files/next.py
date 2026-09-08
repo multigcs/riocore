@@ -277,17 +277,16 @@ class LED(QPushButton):
                 grad.setColorAt(0, self.on_color)
             else:
                 grad.setColorAt(0, QColor(255, 10, 10))
+        elif self.off_color:
+            grad.setColorAt(0, self.off_color)
         else:
-            if self.off_color:
-                grad.setColorAt(0, self.off_color)
-            else:
-                grad.setColorAt(0, QColor(0, 0, 0))
+            grad.setColorAt(0, QColor(0, 0, 0))
         grad.setColorAt(1, QColor(0, 0, 0))
 
         p.setPen(Qt.NoPen)
         p.setBrush(QBrush(grad))
         if self.ltype == "rectled":
-            p.drawRect(QRectF(self.width() / 2 - rad, self.height() / 2 - rad, rad*2, rad*2))
+            p.drawRect(QRectF(self.width() / 2 - rad, self.height() / 2 - rad, rad * 2, rad * 2))
         else:
             p.drawEllipse(center, rad, rad)
 
