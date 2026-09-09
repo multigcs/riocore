@@ -1335,7 +1335,6 @@ class PyVCP:
 class ToggleSwitch(QPushButton):
     def __init__(self, parent=None, objectName=None):
         super().__init__(parent, objectName=objectName)
-        print("init")
         self.setCheckable(True)
         self.setMinimumWidth(70)
         self.setMinimumHeight(24)
