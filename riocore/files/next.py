@@ -1122,8 +1122,7 @@ class ScreenVcpTab(QWidget):
                             label.valueChanged.connect(partial(change, halpin))
 
                 elif child.tag == "checkbutton":
-                    checkbox = QPushButton(objectName="vcp_checkbutton")
-                    checkbox.setCheckable(True)
+                    checkbox = ToggleSwitch(objectName="vcp_checkbutton")
                     layout.addWidget(checkbox)
                     for child2 in child:
                         if child2.tag == "halpin":
@@ -1132,13 +1131,8 @@ class ScreenVcpTab(QWidget):
 
                             def change(halpin, val):
                                 h_vcp[f"{halpin}"] = val
-                                # if val:
-                                #    checkbox.setStyleSheet("background-color : red")
-                                # else:
-                                #    checkbox.setStyleSheet("background-color : lightblue")
 
                             checkbox.clicked.connect(partial(change, halpin))
-                    # checkbox.setStyleSheet("background-color : lightblue")
 
                 elif child.tag == "button":
                     text = ""
@@ -1336,6 +1330,46 @@ class PyVCP:
             btn_status = GradientLabel(tabname, parent=self.parent)
             btn_status.clicked.connect(partial(setTab, tab_n))
             layout.addWidget(btn_status, stretch=1)
+
+
+class ToggleSwitch(QPushButton):
+    def __init__(self, parent=None, objectName=None):
+        super().__init__(parent, objectName=objectName)
+        print("init")
+        self.setCheckable(True)
+        self.setMinimumWidth(70)
+        self.setMinimumHeight(24)
+
+    def paintEvent(self, event):
+        label = "OFF"
+        bg_color = QColor(100, 0, 0)
+        if self.isChecked():
+            label = "ON"
+            bg_color = QColor(0, 100, 0)
+
+        radius = 12
+        width = 34
+        center = self.rect().center()
+
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.translate(center)
+        painter.setBrush(QColor(0, 0, 0))
+
+        pen = QPen(Qt.black)
+        pen.setWidth(2)
+        painter.setPen(pen)
+
+        painter.drawRoundedRect(QRectF(-width, -radius, 2 * width, 2 * radius), radius, radius)
+        painter.setBrush(QBrush(bg_color))
+        sw_rect = QRectF(-radius, -radius, width + radius, 2 * radius)
+        if not self.isChecked():
+            sw_rect.moveLeft(-width)
+        painter.drawRoundedRect(sw_rect, radius, radius)
+
+        pen = QPen(Qt.white)
+        painter.setPen(pen)
+        painter.drawText(sw_rect, Qt.AlignCenter, label)
 
 
 class MainWindow(QMainWindow):
