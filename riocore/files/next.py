@@ -1347,8 +1347,8 @@ class MainWindow(QMainWindow):
     def __init__(self, args):
         super().__init__()
         self.setWindowTitle("RIO-Next")
-        self.resize(1200, 1920)
-        #self.resize(800, 1080)
+        # self.resize(1200, 1920)
+        self.resize(800, 1080)
 
         s.poll()
         self.ini_filename = s.ini_filename

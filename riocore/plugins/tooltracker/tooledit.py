@@ -271,7 +271,7 @@ class ToolEdit(QWidget):
         self.btn_reread.clicked.connect(lambda: self.load_file(self.filename))
         if linuxcnc is not None:
             self.btn_reload.clicked.connect(self.reload_linuxcnc)
-        self.btn_save.clicked.connect(lambda: self.save())
+        self.btn_save.clicked.connect(self.save)
         self.btn_saveas.clicked.connect(self.save_as)
         self.chk_all.toggled.connect(self.check_all)
 
@@ -295,7 +295,7 @@ class ToolEdit(QWidget):
         lay.addLayout(btns)
         lay.addWidget(self.lbl_file)
 
-        QShortcut(QKeySequence.Save, self, activated=lambda: self.save())
+        QShortcut(QKeySequence.Save, self, activated=self.save)
         QShortcut(QKeySequence.New, self, activated=self.add_tool)
         QShortcut(QKeySequence.Delete, self, activated=self.delete_tools)
 
@@ -565,7 +565,7 @@ class ToolEditWindow(QMainWindow):
         m = self.menuBar().addMenu("&File")
         act = QAction("&Open…", self, shortcut=QKeySequence.Open, triggered=self.open_file)
         m.addAction(act)
-        m.addAction(QAction("&Save", self, shortcut=QKeySequence.Save, triggered=lambda: self.editor.save()))
+        m.addAction(QAction("&Save", self, shortcut=QKeySequence.Save, triggered=self.editor.save))
         m.addAction(QAction("Save &As…", self, triggered=self.editor.save_as))
         m.addSeparator()
         m.addAction(QAction("&Quit", self, shortcut=QKeySequence.Quit, triggered=self.close))
