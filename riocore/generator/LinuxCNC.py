@@ -489,6 +489,9 @@ class LinuxCNC:
             ini_setup = copy.deepcopy(cls.INI_DEFAULTS)
 
         gui = linuxcnc_config.get("gui", "axis")
+        gui_width = linuxcnc_config.get("width", 1200)
+        gui_height = linuxcnc_config.get("height", 1920)
+        gui_fullscreen = linuxcnc_config.get("fullscreen", False)
         vcp_pos = linuxcnc_config.get("vcp_pos", "RIGHT")
         machinetype = linuxcnc_config.get("machinetype")
         embed_vismach = linuxcnc_config.get("embed_vismach")
@@ -594,7 +597,10 @@ class LinuxCNC:
                 ini_setup["DISPLAY"]["GLADEVCP"] = "-u rio-gui.py rio-gui.ui"
 
         elif gui == "next":
-            ini_setup["DISPLAY"]["DISPLAY"] = "./next.py --fullscreen"
+            fullscreen_opt = ""
+            if gui_fullscreen:
+                fullscreen_opt = "--fullscreen"
+            ini_setup["DISPLAY"]["DISPLAY"] = f"./next.py --fullscreen --width {gui_width} --height {gui_height} {fullscreen_opt}"
             ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
 
         elif gui == "gmoccapy":

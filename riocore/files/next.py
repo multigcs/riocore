@@ -1250,24 +1250,14 @@ class ScreenNgc(QWidget):
         hbox.addWidget(btn_pause, stretch=0)
 
         btn_step = QPushButton(QIcon("step.png"), "STEP", objectName="progstep")
-        # btn_step.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_step.clicked.connect(partial(prog_mode, "STEP"))
         hbox.addWidget(btn_step, stretch=0)
 
         btn_stop = QPushButton(QIcon("stop.png"), "STOP", objectName="progstop")
-        # btn_stop.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_stop.clicked.connect(partial(prog_mode, "STOP"))
         hbox.addWidget(btn_stop, stretch=0)
 
         self.editor = QPlainTextEdit()
-        # self.editor.setStyleSheet("""
-        #    QPlainTextEdit {
-        #        background-color: #2b2b2b;
-        #        color: #ffffff;
-        #        font-family: 'Consolas', 'Courier New', monospace;
-        #        font-size: 12pt;
-        #    }
-        # """)
         layout.addWidget(self.editor, stretch=5)
 
 
@@ -1380,8 +1370,7 @@ class MainWindow(QMainWindow):
     def __init__(self, args):
         super().__init__()
         self.setWindowTitle("RIO-Next")
-        # self.resize(1200, 1920)
-        self.resize(800, 1080)
+        self.resize(args.width, args.height)
 
         s.poll()
         self.ini_filename = s.ini_filename
@@ -1661,6 +1650,8 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-ini", help="ini file", type=str, default=None)
+    parser.add_argument("--width", help="window width", type=int, default=1200)
+    parser.add_argument("--height", help="window height", type=int, default=1920)
     parser.add_argument("--fullscreen", help="fullscreen", action="store_true")
     args = parser.parse_args()
 
