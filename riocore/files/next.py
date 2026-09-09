@@ -385,13 +385,10 @@ class GradientToolEntry(QLabel):
 
         p.drawText(QRectF(135, 18, self.width() - 155, 40), Qt.AlignLeft, f"P{self.tool.get('P', 0)}")
         p.drawText(QRectF(135, 18, self.width() - 155, 40), Qt.AlignRight, f"{self.tool.get('comment', '')}")
-        p.drawText(QRectF(180, 18, self.width() - 200, 40), Qt.AlignLeft, f"D: {float(self.tool.get('D', 0.0)):05.3f} {self.parent.units}")
-
         p.drawText(QRectF(self.width() - 300, 50, 280, 40), Qt.AlignLeft, f"Timer: {self.tool.get('timer', '')}s")
         p.drawText(QRectF(self.width() - 300, 70, 280, 40), Qt.AlignLeft, f"Warning: {self.tool.get('warning', '')}s")
         p.drawText(QRectF(self.width() - 300, 90, 280, 40), Qt.AlignLeft, f"Warning: {self.tool.get('critical', '')}s")
         p.drawText(QRectF(self.width() - 300, 110, 280, 40), Qt.AlignLeft, f"Sister: {self.tool.get('sister', '')}")
-
         p.drawText(QRectF(25, 50, self.width() - 40, self.height() - 60), Qt.AlignLeft, f"D: {float(self.tool.get('D', 0.0)):05.3f} {self.parent.units}")
 
         px = 0
@@ -482,7 +479,7 @@ class GradientLabel(QLabel):
         if self.text and len(self.text) == 2 and self.text[0] in AXIS_NAMES and self.text[1] in {"+", "-"}:
             axis = AXIS_NAMES.index(self.text[0])
             speed = self.parent.jog_lspeed
-            if axis in {"A", "C"}:
+            if axis in {"A", "B", "C"}:
                 # TODO: check lin/ang mode
                 speed = self.parent.jog_aspeed
             if self.text[1] == "-":
@@ -549,7 +546,7 @@ class GradientDRO(QLabel):
         py = 60
         for name, values in self.values.items():
             p.drawText(QRectF(40, py, self.width() - 80, pd), Qt.AlignLeft, f"{name}")
-            p.drawText(QRectF(40, py, self.width() - 80, pd), Qt.AlignRight, f"{values['pos']:0.3f} {self.parent.units}")
+            p.drawText(QRectF(40, py, self.width() - 80, pd), Qt.AlignRight, f"{values['pos']}")
             py += pd
 
         font = QFont("Arial", 12)
@@ -557,8 +554,8 @@ class GradientDRO(QLabel):
         py = 60
         for name, values in self.values.items():
             p.drawText(QRectF(65, py, self.width() - 120, pd), Qt.AlignLeft, f"{'*' if values['homed'] else ''}")
-            p.drawText(QRectF(80, py, self.width() - 120, pd), Qt.AlignLeft, f"{values['mpos']:0.1f} {self.parent.units}")
-            p.drawText(QRectF(80, py + 14, self.width() - 120, pd + 14), Qt.AlignLeft, f"{values['velocity']:0.1f} {self.parent.units}/s")
+            p.drawText(QRectF(80, py, self.width() - 120, pd), Qt.AlignLeft, f"{values['mpos']}")
+            p.drawText(QRectF(80, py + 14, self.width() - 120, pd + 14), Qt.AlignLeft, f"{values['velocity']}")
             py += pd
 
 
@@ -1579,6 +1576,7 @@ class MainWindow(QMainWindow):
         self.inifile = linuxcnc.ini(self.ini_filename)
         xml_file = self.inifile.find("DISPLAY", "PYVCP")
         self.units = self.inifile.find("TRAJ", "LINEAR_UNITS")
+        self.angular_units = self.inifile.find("TRAJ", "ANGULAR_UNITS")
         self.tooltable = self.inifile.find("EMCIO", "TOOL_TABLE")
         self.linear_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_LINEAR_VELOCITY") or 10.0)
         self.linear_velocity_max = float(self.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or 20.0)
@@ -1792,17 +1790,20 @@ class MainWindow(QMainWindow):
         if all(s.homed[: s.joints]):
             for n, pos in enumerate(s.position[: s.joints]):
                 values[AXIS_NAMES[n]] = {
-                    "pos": pos - s.g92_offset[n],
-                    "mpos": pos,
-                    "velocity": s.axis[n]["velocity"],
+                    "pos": f"{pos - s.g92_offset[n]:0.3f} {self.units}",
+                    "mpos": f"{pos:06.3f} {self.units}",
+                    "velocity": f"{s.axis[n]['velocity']:0.1f} {self.units}",
                     "homed": s.homed[n],
                 }
         else:
             for n, pos in enumerate(s.joint_position[: s.joints]):
+                units = self.units
+                if s.joint[n]["jointType"] == 2:
+                    units = self.angular_units
                 values[str(n)] = {
-                    "pos": pos,
-                    "mpos": pos,
-                    "velocity": s.joint[n]["velocity"],
+                    "pos": f"{pos:0.3f} {self.units}",
+                    "mpos": f"{pos:0.3f} {self.units}",
+                    "velocity": f"{s.joint[n]['velocity']:0.1f} {units}/s",
                     "homed": s.homed[n],
                 }
 
@@ -1816,12 +1817,12 @@ class MainWindow(QMainWindow):
             self.screen_dro.dro.values = values
             self.screen_dro.dro.update()
             if "X" in values:
-                self.screen_tjog.pos_x.setText(f"X: {values['X']['pos']:0.3f} {self.units}")
+                self.screen_tjog.pos_x.setText(f"X: {values['X']['pos']}")
             if "Y" in values:
-                self.screen_tjog.pos_y.setText(f"Y: {values['Y']['pos']:0.3f} {self.units}")
+                self.screen_tjog.pos_y.setText(f"Y: {values['Y']['pos']}")
                 self.screen_tjog.pos_y.update()
             if "Z" in values:
-                self.screen_tjog.pos_z.setText(f"Z: {values['Z']['pos']:0.3f} {self.units}")
+                self.screen_tjog.pos_z.setText(f"Z: {values['Z']['pos']}")
 
         if self.estop.enabled != s.estop:
             self.estop.enabled = s.estop
