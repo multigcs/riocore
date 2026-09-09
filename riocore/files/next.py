@@ -5,6 +5,7 @@
 import argparse
 import glob
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 
@@ -165,6 +166,76 @@ for axis in ("x", "y", "z"):
 jog_mode = False
 
 
+def tools_load(filename):
+    tools = {}
+    updated = False
+    with open(filename, "r") as tooltable:
+        for line in tooltable.read().split("\n"):
+            parts = line.strip().split(";", 1)
+            if parts[0]:
+                comment = ""
+                timer = 0
+                warning = 3600
+                critical = 4800
+                sister = 0
+                if len(parts) > 1:
+                    comment = parts[1].strip()
+                    res = re.findall("TT:[0-9]+/[0-9]+/[0-9]+/[0-9]+", comment, re.IGNORECASE)
+                    if res:
+                        timer, warning, critical, sister = res[0][3:].split("/")
+                        comment = comment.replace(res[0], "").strip()
+                    else:
+                        updated = True
+                else:
+                    updated = True
+
+                cols = parts[0].split()
+                tool_data = {
+                    "T": 0,  # T: Tool number (unique integer, 0 to 99999)
+                    "P": 0,  # P: Pocket number (integer, 1 to 99999; pocket 0 is the spindle)
+                    "X": 0.0,  # X: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "Y": 0.0,  # Y: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "Z": 0.0,  # Z: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "A": 0.0,  # A: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "B": 0.0,  # B: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "C": 0.0,  # C: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "U": 0.0,  # U: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "V": 0.0,  # V: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "W": 0.0,  # W: Axis tool offsets (floating-point numbers for length/radius compensation on specific axes)
+                    "D": 0.0,  # D: Tool diameter (absolute floating-point value)
+                    "I": 0.0,  # I: Front angle (lathe tools only, floating-point)
+                    "J": 0.0,  # J: Back angle (lathe tools only, floating-point)
+                    "Q": 0,  # Q: Tool orientation (lathe tools only, integer 0–9).
+                    "comment": comment,
+                    "timer": int(timer),
+                    "warning": int(warning),
+                    "critical": int(critical),
+                    "sister": int(sister),
+                }
+                for col in cols:
+                    vtype = col[0]
+                    value = col[1:]
+                    tool_data[vtype] = value
+                if tool_data["T"] != "0":
+                    tools[int(tool_data["T"])] = tool_data
+    if updated:
+        tools_save(filename, tools)
+    return tools
+
+
+def tools_save(filename, tools):
+    with open(filename, "w") as tooltable:
+        for tool_num, tool_data in tools.items():
+            line = []
+            for key, value in tool_data.items():
+                if key in {"comment", "timer", "warning", "critical", "sister"}:
+                    continue
+                line.append(f"{key}{value}")
+            line.append(f"; {tool_data['comment']} TT:{tool_data['timer']}/{tool_data['warning']}/{tool_data['critical']}/{tool_data['sister']}")
+            tooltable.write(" ".join(line))
+            tooltable.write("\n")
+
+
 def ok_for_mdi():
     s.poll()
     return not s.estop and s.enabled and (s.homed.count(1) == s.joints) and (s.interp_state == linuxcnc.INTERP_IDLE)
@@ -263,6 +334,81 @@ class GradientFileEntry(QLabel):
 
     def minimumSizeHint(self):
         return QSize(450, 200)
+
+    def mousePressEvent(self, event):
+        self.clicked.emit()
+        self.flag_clicked = True
+        self.update()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self.flag_clicked = False
+        self.update()
+        super().mouseReleaseEvent(event)
+
+
+class GradientToolEntry(QLabel):
+    def __init__(self, tool, parent=None, objectName=None):
+        super().__init__("", objectName=objectName)
+        self.parent = parent
+        self.tool = tool
+        self.error = ""
+        self.flag_clicked = False
+        self.enabled = None
+
+    clicked = pyqtSignal()
+
+    def setError(self, error):
+        self.error = error
+        self.update()
+
+    def _groove_rect(self):
+        return QRectF(0, 0, self.width(), self.height())
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        if not self.isEnabled():
+            p.setOpacity(0.4)
+
+        # text
+        font = QFont("Arial", 20, weight=QFont.Bold)
+        p.setFont(font)
+        p.setPen(QPen(Qt.white, 1))
+        p.drawText(QRectF(10, 10, self.width() - 20, 40), Qt.AlignLeft, f"Tool T{self.tool['T']}")
+
+        font = QFont("Arial", 14)
+        p.setFont(font)
+        p.setPen(QPen(Qt.white, 1))
+
+        p.drawText(QRectF(135, 18, self.width() - 155, 40), Qt.AlignLeft, f"P{self.tool.get('P', 0)}")
+        p.drawText(QRectF(135, 18, self.width() - 155, 40), Qt.AlignRight, f"{self.tool.get('comment', '')}")
+        p.drawText(QRectF(180, 18, self.width() - 200, 40), Qt.AlignLeft, f"D: {float(self.tool.get('D', 0.0)):05.3f} {self.parent.units}")
+
+        p.drawText(QRectF(self.width() - 300, 50, 280, 40), Qt.AlignLeft, f"Timer: {self.tool.get('timer', '')}s")
+        p.drawText(QRectF(self.width() - 300, 70, 280, 40), Qt.AlignLeft, f"Warning: {self.tool.get('warning', '')}s")
+        p.drawText(QRectF(self.width() - 300, 90, 280, 40), Qt.AlignLeft, f"Warning: {self.tool.get('critical', '')}s")
+        p.drawText(QRectF(self.width() - 300, 110, 280, 40), Qt.AlignLeft, f"Sister: {self.tool.get('sister', '')}")
+
+        p.drawText(QRectF(25, 50, self.width() - 40, self.height() - 60), Qt.AlignLeft, f"D: {float(self.tool.get('D', 0.0)):05.3f} {self.parent.units}")
+
+        px = 0
+        for axis in ("X", "Y", "Z"):
+            p.drawText(QRectF(25 + px, 70, self.width() - 40, self.height() - 60), Qt.AlignLeft, f"{axis}:{self.tool.get(axis, 0.0)}")
+            px += 90
+        px = 0
+        for axis in ("A", "B", "C"):
+            p.drawText(QRectF(25 + px, 90, self.width() - 40, self.height() - 60), Qt.AlignLeft, f"{axis}:{self.tool.get(axis, 0.0)}")
+            px += 90
+        px = 0
+        for axis in ("U", "V", "W"):
+            p.drawText(QRectF(25 + px, 110, self.width() - 40, self.height() - 60), Qt.AlignLeft, f"{axis}:{self.tool.get(axis, 0.0)}")
+            px += 90
+
+    def minimumSizeHint(self):
+        return QSize(450, 140)
 
     def mousePressEvent(self, event):
         self.clicked.emit()
@@ -410,7 +556,8 @@ class GradientDRO(QLabel):
         p.setFont(font)
         py = 60
         for name, values in self.values.items():
-            p.drawText(QRectF(70, py, self.width() - 120, pd), Qt.AlignLeft, f"{'*' if values['homed'] else ''}")
+            p.drawText(QRectF(65, py, self.width() - 120, pd), Qt.AlignLeft, f"{'*' if values['homed'] else ''}")
+            p.drawText(QRectF(80, py, self.width() - 120, pd), Qt.AlignLeft, f"{values['mpos']:0.1f} {self.parent.units}")
             p.drawText(QRectF(80, py + 14, self.width() - 120, pd + 14), Qt.AlignLeft, f"{values['velocity']:0.1f} {self.parent.units}/s")
             py += pd
 
@@ -965,6 +1112,58 @@ class ScreenFiles(QWidget):
         self.parent.view_set("jog")
 
 
+class ScreenTools(QWidget):
+    selected = None
+
+    def __init__(self, parent):
+        super().__init__()
+        self.parent = parent
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        buttons = QHBoxLayout()
+        layout.addLayout(buttons)
+
+        # btn_load = GradientLabel("LOAD", parent=self.parent, objectName="fileload")
+        # btn_load.clicked.connect(self.load)
+        # buttons.addWidget(btn_load)
+
+        # btn_cancel = GradientLabel("CANCEL", parent=self.parent, objectName="filecancel")
+        # btn_cancel.clicked.connect(self.cancel)
+        # buttons.addWidget(btn_cancel)
+
+        toollist = QWidget(objectName="filebg")
+        self.toollist_layout = QVBoxLayout()
+        toollist.setLayout(self.toollist_layout)
+        scroll = QScrollArea()
+        scroll.setWidget(toollist)
+        scroll.setWidgetResizable(True)
+        layout.addWidget(scroll)
+
+        self.reload()
+
+    def reload(self):
+        cleanLayout(self.toollist_layout)
+        tools = tools_load(self.parent.tooltable)
+        for tool_nr, tool in tools.items():
+            entry_layout = QHBoxLayout()
+            self.toollist_layout.addLayout(entry_layout, stretch=1)
+            entry_label = GradientToolEntry(tool, parent=self.parent)
+            # entry_label.clicked.connect(partial(self.preview, filename, entry_label))
+            entry_layout.addWidget(entry_label, stretch=1)
+
+    def preview(self, filename, widget=None):
+        self.selected = filename
+        self.parent.glview.load(filename, widget)
+
+    def load(self):
+        self.parent.load_ngc(self.selected)
+
+    def cancel(self):
+        self.parent.glview.load(self.parent.ngc_file)
+        self.parent.view_set("jog")
+
+
 class SliderProxyStyle(QProxyStyle):
     def pixelMetric(self, metric, option, widget):
         if metric in {QStyle.PM_SliderThickness, QStyle.PM_SliderLength}:
@@ -1380,6 +1579,7 @@ class MainWindow(QMainWindow):
         self.inifile = linuxcnc.ini(self.ini_filename)
         xml_file = self.inifile.find("DISPLAY", "PYVCP")
         self.units = self.inifile.find("TRAJ", "LINEAR_UNITS")
+        self.tooltable = self.inifile.find("EMCIO", "TOOL_TABLE")
         self.linear_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_LINEAR_VELOCITY") or 10.0)
         self.linear_velocity_max = float(self.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or 20.0)
         self.angular_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY") or 5.0)
@@ -1477,6 +1677,9 @@ class MainWindow(QMainWindow):
         self.screen_tjog = ScreenTJog(self)
         self.center_stack.addWidget(self.screen_tjog)
 
+        self.screen_tools = ScreenTools(self)
+        self.center_stack.addWidget(self.screen_tools)
+
         self.center2r_stack = QStackedWidget()
         center2r_layout.addWidget(self.center2r_stack, stretch=1)
 
@@ -1506,6 +1709,10 @@ class MainWindow(QMainWindow):
         btn_files.clicked.connect(partial(self.view_set, "files"))
         bottoml_layout.addWidget(btn_files, stretch=1)
 
+        btn_tools = GradientLabel("TOOLS", objectName="btntools")
+        btn_tools.clicked.connect(partial(self.view_set, "tools"))
+        bottoml_layout.addWidget(btn_tools, stretch=1)
+
         glabel2 = GradientLabel("", objectName="btnnone")
         bottoml_layout.addWidget(glabel2, stretch=1)
 
@@ -1526,6 +1733,7 @@ class MainWindow(QMainWindow):
             "home": (0, 3, None),
             "files": (1, None, None),
             "tjog": (2, None, None),
+            "tools": (3, None, None),
         }
         if view := views.get(mode):
             if view[0] is not None:
@@ -1536,6 +1744,8 @@ class MainWindow(QMainWindow):
                 self.center2r_stack.setCurrentIndex(view[2])
         if mode == "files":
             self.screen_files.reload()
+        if mode == "tools":
+            self.screen_tools.reload()
         if mode == "home":
             self.screen_home.reload()
         self.screen_tjog.active = bool(mode == "tjog")
@@ -1583,6 +1793,7 @@ class MainWindow(QMainWindow):
             for n, pos in enumerate(s.position[: s.joints]):
                 values[AXIS_NAMES[n]] = {
                     "pos": pos - s.g92_offset[n],
+                    "mpos": pos,
                     "velocity": s.axis[n]["velocity"],
                     "homed": s.homed[n],
                 }
@@ -1590,6 +1801,7 @@ class MainWindow(QMainWindow):
             for n, pos in enumerate(s.joint_position[: s.joints]):
                 values[str(n)] = {
                     "pos": pos,
+                    "mpos": pos,
                     "velocity": s.joint[n]["velocity"],
                     "homed": s.homed[n],
                 }
