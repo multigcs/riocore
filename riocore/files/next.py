@@ -1252,19 +1252,17 @@ class ScreenVcpTab(QWidget):
                 if child.tag == "label":
                     text = ""
                     anchor = "c"
-                    # width = ""
+                    width = ""
                     for child2 in child:
                         if child2.tag == "format":
                             vformat = child2.text.strip('"')
                         elif child2.tag == "anchor":
                             anchor = child2.text.strip('"')
                         elif child2.tag == "text":
-                            text = child2.text.strip('"')
-                        # elif child2.tag == "width":
-                        #    width = child2.text.strip('"')
+                            text = child2.text.strip('"').strip()
+                        elif child2.tag == "width":
+                            width = child2.text.strip('"')
                     label = QLabel(text, objectName="vcp_label")
-                    # if width:
-                    # label.setFixedWidth(int(width) * 12)
                     if anchor == "e":
                         label.setAlignment(Qt.AlignRight)
                     elif anchor == "w":
@@ -1272,7 +1270,10 @@ class ScreenVcpTab(QWidget):
                     elif anchor == "c":
                         label.setAlignment(Qt.AlignCenter)
                     label.setFixedHeight(45)
-                    layout.addWidget(label)
+                    if width == "-1":
+                        layout.addWidget(label, stretch=0)
+                    else:
+                        layout.addWidget(label, stretch=1)
                 elif child.tag in {"led", "rectled"}:
                     on_color = QColor(0, 255, 0)
                     off_color = QColor(0, 0, 0)
@@ -1303,7 +1304,7 @@ class ScreenVcpTab(QWidget):
                         label.setAlignment(Qt.AlignLeft)
                     elif anchor == "c":
                         label.setAlignment(Qt.AlignCenter)
-                    layout.addWidget(label)
+                    layout.addWidget(label, stretch=0)
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
@@ -1329,7 +1330,6 @@ class ScreenVcpTab(QWidget):
                             for legend_n, legend_name in enumerate(legends):
                                 h_vcp.newpin(f"{halpin}.legend{legend_n}", hal.HAL_BIT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label, legends)
-
                 elif child.tag == "bar":
                     vmin = "0"
                     vmax = "100"
@@ -1355,7 +1355,6 @@ class ScreenVcpTab(QWidget):
                             halpin = child2.text.strip('"')
                             h_vcp.newpin(f"{halpin}", hal.HAL_FLOAT, hal.HAL_IN)
                             halpins_in[halpin] = (child.tag, label)
-
                 elif child.tag == "scale":
                     vmin = "0"
                     vmax = "100"
@@ -1387,7 +1386,6 @@ class ScreenVcpTab(QWidget):
                                 h_vcp[f"{halpin}-f"] = val / 10
 
                             label.valueChanged.connect(partial(change, halpin))
-
                 elif child.tag == "checkbutton":
                     checkbox = ToggleSwitch(objectName="vcp_checkbutton")
                     layout.addWidget(checkbox)
@@ -1400,7 +1398,6 @@ class ScreenVcpTab(QWidget):
                                 h_vcp[f"{halpin}"] = val
 
                             checkbox.clicked.connect(partial(change, halpin))
-
                 elif child.tag == "button":
                     text = ""
                     for child2 in child:
@@ -1408,7 +1405,6 @@ class ScreenVcpTab(QWidget):
                             text = child2.text.strip('"')
                     button = QPushButton(text, objectName="vcp_button")
                     layout.addWidget(button)
-
                     for child2 in child:
                         if child2.tag == "halpin":
                             halpin = child2.text.strip('"')
@@ -1419,7 +1415,6 @@ class ScreenVcpTab(QWidget):
 
                             button.pressed.connect(partial(change, halpin, True))
                             button.released.connect(partial(change, halpin, False))
-
                 elif child.tag == "labelframe":
                     frame = QGroupBox(objectName="vcp_labelframe")
                     frame.setTitle(child.attrib["text"])
@@ -1436,10 +1431,8 @@ class ScreenVcpTab(QWidget):
                     vbox = QVBoxLayout()
                     layout.addLayout(vbox)
                     next_element(child, vbox, prefix=" " + prefix)
-
                 elif child.tag in {"boxanchor", "boxfill", "boxexpand", "font", "relief", ""}:
                     pass
-
                 else:
                     print("missing:", child.tag)
 

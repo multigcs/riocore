@@ -98,7 +98,7 @@ class pyvcp:
         e_font = etree.Element("font")
         e_font.text = '("Helvetica",9)'
         e_label.append(e_font)
-        if size >= 0 and not no_expand:
+        if size != 0 and not no_expand:
             e_width = etree.Element("width")
             e_width.text = str(size)
             e_label.append(e_width)
