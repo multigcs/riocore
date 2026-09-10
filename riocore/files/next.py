@@ -650,17 +650,17 @@ class GradientSlider(QSlider):
         else:
             text = f"{self.sliderPosition() / self.scale:0.0f} {self.units or ''}"
         if self.pixmap:
-            #p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignLeft|Qt.AlignBottom, text)
-            p.drawText(QRectF(self.width() / 3, 5, self.width() / 3 * 2, self.height() - 10.0), Qt.AlignBottom|Qt.AlignHCenter, text)
+            # p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignLeft|Qt.AlignBottom, text)
+            p.drawText(QRectF(self.width() / 3, 5, self.width() / 3 * 2, self.height() - 10.0), Qt.AlignBottom | Qt.AlignHCenter, text)
         else:
-            p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignRight|Qt.AlignVCenter, text)
+            p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignRight | Qt.AlignVCenter, text)
 
         if self.title:
             p.setFont(QFont("Arial", 12))
             if self.pixmap:
-                p.drawText(QRectF(self.width() / 3, 5, self.width() / 3 * 2, self.height() - 10.0), Qt.AlignTop|Qt.AlignHCenter, self.title)
+                p.drawText(QRectF(self.width() / 3, 5, self.width() / 3 * 2, self.height() - 10.0), Qt.AlignTop | Qt.AlignHCenter, self.title)
             else:
-                p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignLeft|Qt.AlignTop, self.title)
+                p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignLeft | Qt.AlignTop, self.title)
 
         if self.pixmap:
             p.drawLine(self.width() // 3, 10, self.width() // 3, self.height() - 10)
@@ -1003,6 +1003,76 @@ class ScreenJog(QWidget):
 class ScreenMdi(QWidget):
     mdi_commands = []
 
+    def __init__(self, parent=None):
+        super().__init__()
+        self.parent = parent
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        self.main_stack = QStackedWidget()
+        layout.addWidget(self.main_stack)
+
+        self.history = QListWidget()
+        self.history_reload()
+        self.history.itemClicked.connect(self.hselect)
+        self.history.itemDoubleClicked.connect(self.hrun)
+        self.main_stack.addWidget(self.history)
+
+        self.keys = QWidget(objectName="keys")
+        self.keys_layout = QVBoxLayout()
+        self.keys.setLayout(self.keys_layout)
+        self.main_stack.addWidget(self.keys)
+
+        def cmd_append(key):
+            if key == "<":
+                self.cmdline.backspace()
+            elif key == "SPACE":
+                self.cmdline.insert(" ")
+            else:
+                self.cmdline.insert(key)
+
+        keys = [
+            "G, M,  , F, I, J, S",
+            "D, H, K, L, P, Q, R, $",
+            ",".join(self.parent.coordinates),
+            "1, 2, 3, 4, 5, 6, 7, 8, 9, 0",
+            "<, SPACE, ., -",
+        ]
+
+        for rowkeys in keys:
+            row_layout = QHBoxLayout()
+            self.keys_layout.addLayout(row_layout, stretch=1)
+            for _key in rowkeys.split(","):
+                key = _key.strip()
+                btn = GradientLabel(key)
+                btn.clicked.connect(partial(cmd_append, key))
+                if key == "SPACE":
+                    row_layout.addWidget(btn, stretch=3)
+                else:
+                    row_layout.addWidget(btn, stretch=1)
+
+        cmd_layout = QHBoxLayout()
+        layout.addLayout(cmd_layout)
+
+        def stack_toggle(idx):
+            self.main_stack.setCurrentIndex(1 - self.main_stack.currentIndex())
+
+        btn_view = QPushButton("<>", objectName="stack")
+        btn_view.clicked.connect(partial(stack_toggle, 1))
+        cmd_layout.addWidget(btn_view)
+
+        self.cmdline = QLineEdit()
+        self.cmdline.returnPressed.connect(self.run_cmd)
+        cmd_layout.addWidget(self.cmdline)
+
+        btn_cmd = QPushButton("RUN", objectName="run")
+        btn_cmd.clicked.connect(self.run_cmd)
+        cmd_layout.addWidget(btn_cmd)
+
+        btn_stop = QPushButton("STOP", objectName="stop")
+        btn_stop.clicked.connect(self.stop_cmd)
+        cmd_layout.addWidget(btn_stop)
+
     def history_reload(self):
         history_file = os.path.join(os.path.expanduser("~"), ".axis_mdi_history")
         if os.path.isfile(history_file):
@@ -1047,33 +1117,6 @@ class ScreenMdi(QWidget):
             self.cmdline.setText("")
         else:
             print("ERROR: run_cmd:", command)
-
-    def __init__(self):
-        super().__init__()
-        layout = QVBoxLayout()
-        self.setLayout(layout)
-
-        self.history = QListWidget()
-        layout.addWidget(self.history)
-        self.history_reload()
-
-        self.history.itemClicked.connect(self.hselect)
-        self.history.itemDoubleClicked.connect(self.hrun)
-
-        cmd_layout = QHBoxLayout()
-        layout.addLayout(cmd_layout)
-
-        self.cmdline = QLineEdit()
-        self.cmdline.returnPressed.connect(self.run_cmd)
-        cmd_layout.addWidget(self.cmdline)
-
-        btn_cmd = QPushButton("RUN", objectName="run")
-        btn_cmd.clicked.connect(self.run_cmd)
-        cmd_layout.addWidget(btn_cmd)
-
-        btn_stop = QPushButton("STOP", objectName="stop")
-        btn_stop.clicked.connect(self.stop_cmd)
-        cmd_layout.addWidget(btn_stop)
 
 
 class ScreenFiles(QWidget):
@@ -1699,7 +1742,7 @@ class MainWindow(QMainWindow):
         center2l_layout.addWidget(self.center2l_stack, stretch=1)
         self.screen_jog = ScreenJog(self)
         self.center2l_stack.addWidget(self.screen_jog)
-        self.screen_mdi = ScreenMdi()
+        self.screen_mdi = ScreenMdi(self)
         self.center2l_stack.addWidget(self.screen_mdi)
         self.screen_ngc = ScreenNgc(self)
         self.center2l_stack.addWidget(self.screen_ngc)
