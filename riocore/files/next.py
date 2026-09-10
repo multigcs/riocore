@@ -1031,6 +1031,9 @@ class ScreenMdi(QWidget):
             else:
                 self.cmdline.insert(key)
 
+        def stack_toggle(idx):
+            self.main_stack.setCurrentIndex(1 - self.main_stack.currentIndex())
+
         keys = [
             "G, M,  , F, I, J, S",
             "D, H, K, L, P, Q, R, $",
@@ -1053,9 +1056,6 @@ class ScreenMdi(QWidget):
 
         cmd_layout = QHBoxLayout()
         layout.addLayout(cmd_layout)
-
-        def stack_toggle(idx):
-            self.main_stack.setCurrentIndex(1 - self.main_stack.currentIndex())
 
         btn_view = QPushButton("<>", objectName="stack")
         btn_view.clicked.connect(partial(stack_toggle, 1))
