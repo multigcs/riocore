@@ -886,6 +886,10 @@ class LinuxCNC:
             shutil.copy(source, target)
             st = os.stat(target)
             os.chmod(target, st.st_mode | stat.S_IEXEC)
+            os.makedirs(os.path.join(self.configuration_path, "next"), exist_ok=True)
+            for image in glob.glob(os.path.join(riocore_path, "files", "images", "next", "*.png")):
+                target = os.path.join(self.configuration_path, "next", os.path.basename(image))
+                shutil.copy(image, target)
 
         elif gui in {"qtdragon_hd"}:
             qtdragon_pref = os.path.join(json_path, "qtdragon.pref")

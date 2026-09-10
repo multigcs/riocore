@@ -562,11 +562,11 @@ class GradientDRO(QLabel):
 class GradientSlider(QSlider):
     def __init__(self, title=None, color1=None, color2=None, image=None, units=None, scale=1.0, dscale=1.0, parent=None, objectName=None):
         super().__init__(Qt.Orientation.Horizontal, parent, objectName=objectName)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.parent = parent
         self.units = units
         self.scale = scale
         self.dscale = dscale
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pixmap = None
         self.title = title
         if image is not None:
@@ -638,35 +638,36 @@ class GradientSlider(QSlider):
             poffy = (irh - nph) / 2
 
             p.drawPixmap(int(poffx), int(poffy), int(self.pixmap.width() * ps), int(self.pixmap.height() * ps), self.pixmap)
+        else:
+            self.pixmap = None
 
         # text
         font = QFont("Arial", 18, weight=QFont.Bold)
         p.setFont(font)
         p.setPen(QPen(Qt.white, 1))
-        # text = f"{self._fraction() * 100:2.0f}%"
         if self.scale > 1.0:
             text = f"{self.sliderPosition() / self.scale * self.dscale:0.0f} {self.units or ''}"
         else:
             text = f"{self.sliderPosition() / self.scale:0.0f} {self.units or ''}"
         if self.pixmap:
-            p.drawText(QRectF(10, self.height() - 30, self.width() - 20, 30), Qt.AlignLeft, text)
+            #p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignLeft|Qt.AlignBottom, text)
+            p.drawText(QRectF(self.width() / 3, 5, self.width() / 3 * 2, self.height() - 10.0), Qt.AlignBottom|Qt.AlignHCenter, text)
         else:
-            p.drawText(QRectF(10, 10, self.width() - 20, self.height() - 20), Qt.AlignRight, text)
+            p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignRight|Qt.AlignVCenter, text)
 
         if self.title:
             p.setFont(QFont("Arial", 12))
             if self.pixmap:
-                p.drawText(QRectF(self.width() / 3, 7.0, self.width() / 3 * 2, 20.0), Qt.AlignCenter, self.title)
+                p.drawText(QRectF(self.width() / 3, 5, self.width() / 3 * 2, self.height() - 10.0), Qt.AlignTop|Qt.AlignHCenter, self.title)
             else:
-                p.drawText(QRectF(10, 10, self.width() - 20, self.height() - 20), Qt.AlignLeft, self.title)
+                p.drawText(QRectF(5, 5, self.width() - 10, self.height() - 10), Qt.AlignLeft|Qt.AlignTop, self.title)
 
         if self.pixmap:
             p.drawLine(self.width() // 3, 10, self.width() // 3, self.height() - 10)
 
-    # ---------- mouse: map click/drag directly to a value ----------
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
-            self.setSliderDown(True)  # emits sliderPressed
+            self.setSliderDown(True)
             self.setSliderPosition(self._value_at(event.pos()))
             event.accept()
         else:
@@ -675,14 +676,14 @@ class GradientSlider(QSlider):
 
     def mouseMoveEvent(self, event):
         if self.isSliderDown():
-            self.setSliderPosition(self._value_at(event.pos()))  # sliderMoved / valueChanged
+            self.setSliderPosition(self._value_at(event.pos()))
             event.accept()
         else:
             super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton and self.isSliderDown():
-            self.setSliderDown(False)  # emits sliderReleased
+            self.setSliderDown(False)
             event.accept()
         else:
             super().mouseReleaseEvent(event)
@@ -987,13 +988,13 @@ class ScreenJog(QWidget):
             minus = GradientLabel("", objectName="btnjog", parent=self.parent)
         jogh4.addWidget(minus, stretch=1)
 
-        lslider_jog = GradientSlider(title="Linear-Speed", units=f"{self.parent.units}/m", scale=100.0, dscale=60.0, parent=self.parent, objectName="linear")
+        lslider_jog = GradientSlider(title="Linear-Speed", units=f"{self.parent.units}/m", scale=100.0, dscale=60.0, parent=self.parent, objectName="linear", image="next/jogwheel.png")
         lslider_jog.setRange(0, int(parent.linear_velocity_max * 100.0))
         lslider_jog.setValue(int(parent.linear_velocity_default * 100.0))
         jogv.addWidget(lslider_jog, stretch=1)
 
         if self.parent.angular_joints:
-            aslider_jog = GradientSlider(title="Angular-Speed", units=f"{self.parent.angular_units}/m", scale=100.0, dscale=60.0, parent=self.parent, objectName="angular")
+            aslider_jog = GradientSlider(title="Angular-Speed", units=f"{self.parent.angular_units}/m", scale=100.0, dscale=60.0, parent=self.parent, objectName="angular", image="next/jogwheel.png")
             aslider_jog.setRange(0, int(parent.angular_velocity_max * 100.0))
             aslider_jog.setValue(int(parent.angular_velocity_default * 100.0))
             jogv.addWidget(aslider_jog, stretch=1)
@@ -1409,15 +1410,15 @@ class ScreenOverwrites(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.slider_feed = GradientSlider(title="Feed-Overwrite", units="%", scale=100.0, dscale=100.0, image="touchprobe.png")
+        self.slider_feed = GradientSlider(title="Feed-Overwrite", units="%", scale=100.0, dscale=100.0, image="next/speed-override.png")
         self.slider_feed.setRange(0, int(parent.feed_override_max * 100.0))
         layout.addWidget(self.slider_feed, stretch=2)
 
-        self.slider_rapid = GradientSlider(title="Rapid-Overwrite", units="%", scale=100.0, dscale=100.0, image="jogwheel.png")
+        self.slider_rapid = GradientSlider(title="Rapid-Overwrite", units="%", scale=100.0, dscale=100.0, image="next/speed-override.png")
         self.slider_rapid.setRange(0, int(parent.feed_override_max * 100.0))
         layout.addWidget(self.slider_rapid, stretch=2)
 
-        self.slider_spindle = GradientSlider(title="Spindle-Overwrite", units="%", scale=100.0, dscale=100.0, image="valve.png")
+        self.slider_spindle = GradientSlider(title="Spindle-Overwrite", units="%", scale=100.0, dscale=100.0, image="next/valve.png")
         self.slider_spindle.setRange(int(parent.spindle_0_override_min * 100.0), int(parent.spindle_0_override_max * 100.0))
         layout.addWidget(self.slider_spindle, stretch=2)
 
@@ -1441,7 +1442,7 @@ class ScreenNgc(QWidget):
         hbox = QHBoxLayout()
         layout.addLayout(hbox, stretch=5)
 
-        btn_open = QPushButton(QIcon("open.png"), "OPEN", objectName="progopen")
+        btn_open = QPushButton(QIcon("next/open.png"), "OPEN", objectName="progopen")
         # btn_open.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_open.clicked.connect(parent.load_ngc)
         hbox.addWidget(btn_open, stretch=0)
@@ -1462,21 +1463,21 @@ class ScreenNgc(QWidget):
             elif mode == "STOP":
                 c.abort()
 
-        btn_run = QPushButton(QIcon("play.png"), "RUN", objectName="progrun")
+        btn_run = QPushButton(QIcon("next/play.png"), "RUN", objectName="progrun")
         # btn_run.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_run.clicked.connect(partial(prog_mode, "RUN"))
         hbox.addWidget(btn_run, stretch=0)
 
-        btn_pause = QPushButton(QIcon("pause.png"), "PAUSE", objectName="progpause")
+        btn_pause = QPushButton(QIcon("next/pause.png"), "PAUSE", objectName="progpause")
         # btn_pause.setStyleSheet("background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #78a023, stop: 1 #9fc31b); height: 50px;")
         btn_pause.clicked.connect(partial(prog_mode, "PAUSE"))
         hbox.addWidget(btn_pause, stretch=0)
 
-        btn_step = QPushButton(QIcon("step.png"), "STEP", objectName="progstep")
+        btn_step = QPushButton(QIcon("next/step.png"), "STEP", objectName="progstep")
         btn_step.clicked.connect(partial(prog_mode, "STEP"))
         hbox.addWidget(btn_step, stretch=0)
 
-        btn_stop = QPushButton(QIcon("stop.png"), "STOP", objectName="progstop")
+        btn_stop = QPushButton(QIcon("next/stop.png"), "STOP", objectName="progstop")
         btn_stop.clicked.connect(partial(prog_mode, "STOP"))
         hbox.addWidget(btn_stop, stretch=0)
 
