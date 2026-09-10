@@ -560,9 +560,12 @@ class GradientDRO(QLabel):
 
 
 class GradientSlider(QSlider):
-    def __init__(self, title=None, color1=None, color2=None, image=None, parent=None, objectName=None):
+    def __init__(self, title=None, color1=None, color2=None, image=None, units=None, scale=1.0, dscale=1.0, parent=None, objectName=None):
         super().__init__(Qt.Orientation.Horizontal, parent, objectName=objectName)
         self.parent = parent
+        self.units = units
+        self.scale = scale
+        self.dscale = dscale
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.pixmap = None
         self.title = title
@@ -575,6 +578,7 @@ class GradientSlider(QSlider):
             color2 = QColor("#09405f")
         self.color2 = color2
         self.is_moving = False
+        self.setValue(int(scale))
 
     def _groove_rect(self):
         return QRectF(0, 0, self.width(), self.height())
@@ -639,21 +643,23 @@ class GradientSlider(QSlider):
         font = QFont("Arial", 18, weight=QFont.Bold)
         p.setFont(font)
         p.setPen(QPen(Qt.white, 1))
-        text = f"{self._fraction() * 100:2.0f}%"
+        # text = f"{self._fraction() * 100:2.0f}%"
+        if self.scale > 1.0:
+            text = f"{self.sliderPosition() / self.scale * self.dscale:0.0f} {self.units or ''}"
+        else:
+            text = f"{self.sliderPosition() / self.scale:0.0f} {self.units or ''}"
         if self.pixmap:
-            p.drawText(QRectF(10, self.height() - 40, self.width() - 20, 40), Qt.AlignLeft, text)
+            p.drawText(QRectF(10, self.height() - 30, self.width() - 20, 30), Qt.AlignLeft, text)
         else:
             p.drawText(QRectF(10, 10, self.width() - 20, self.height() - 20), Qt.AlignRight, text)
 
         if self.title:
             p.setFont(QFont("Arial", 12))
             if self.pixmap:
-                p.drawText(QRectF(self.width() / 3, 10.0, self.width() / 3 * 2, 30.0), Qt.AlignCenter, self.title)
+                p.drawText(QRectF(self.width() / 3, 7.0, self.width() / 3 * 2, 20.0), Qt.AlignCenter, self.title)
             else:
-                p.drawText(QRectF(10, 10.0, self.width() - 20, self.height() - 20), Qt.AlignLeft, self.title)
+                p.drawText(QRectF(10, 10, self.width() - 20, self.height() - 20), Qt.AlignLeft, self.title)
 
-        # text = "400mm/s"
-        # p.drawText(QRectF(10, self.height() - 40, self.width() - 20, 40), Qt.AlignRight, text)
         if self.pixmap:
             p.drawLine(self.width() // 3, 10, self.width() // 3, self.height() - 10)
 
@@ -682,15 +688,15 @@ class GradientSlider(QSlider):
             super().mouseReleaseEvent(event)
 
         if self.title and self.title.split("-")[0].lower() == "rapid":
-            c.rapidrate(self.value() / 100.0)
+            c.rapidrate(self.value() / self.scale)
         elif self.title and self.title.split("-")[0].lower() == "feed":
-            c.feedrate(self.value() / 100.0)
+            c.feedrate(self.value() / self.scale)
         elif self.title and self.title.split("-")[0].lower() == "spindle":
-            c.spindleoverride(self.value() / 100.0, 0)
+            c.spindleoverride(self.value() / self.scale)
         elif self.title and self.title.split("-")[0].lower() == "linear":
-            self.parent.jog_lspeed = self.value()
+            self.parent.jog_lspeed = self.value() / self.scale
         elif self.title and self.title.split("-")[0].lower() == "angular":
-            self.parent.jog_aspeed = self.value()
+            self.parent.jog_aspeed = self.value() / self.scale
 
         self.is_moving = False
 
@@ -981,15 +987,15 @@ class ScreenJog(QWidget):
             minus = GradientLabel("", objectName="btnjog", parent=self.parent)
         jogh4.addWidget(minus, stretch=1)
 
-        lslider_jog = GradientSlider(title="Linear-Speed", parent=self.parent, objectName="linear")
-        lslider_jog.setRange(0, int(parent.linear_velocity_max))
-        lslider_jog.setValue(int(parent.linear_velocity_default))
+        lslider_jog = GradientSlider(title="Linear-Speed", units=f"{self.parent.units}/m", scale=100.0, dscale=60.0, parent=self.parent, objectName="linear")
+        lslider_jog.setRange(0, int(parent.linear_velocity_max * 100.0))
+        lslider_jog.setValue(int(parent.linear_velocity_default * 100.0))
         jogv.addWidget(lslider_jog, stretch=1)
 
         if self.parent.angular_joints:
-            aslider_jog = GradientSlider(title="Angular-Speed", parent=self.parent, objectName="angular")
-            aslider_jog.setRange(0, int(parent.angular_velocity_max))
-            aslider_jog.setValue(int(parent.angular_velocity_default))
+            aslider_jog = GradientSlider(title="Angular-Speed", units=f"{self.parent.angular_units}/m", scale=100.0, dscale=60.0, parent=self.parent, objectName="angular")
+            aslider_jog.setRange(0, int(parent.angular_velocity_max * 100.0))
+            aslider_jog.setValue(int(parent.angular_velocity_default * 100.0))
             jogv.addWidget(aslider_jog, stretch=1)
 
 
@@ -1398,21 +1404,21 @@ class ScreenVcpTab(QWidget):
 
 
 class ScreenOverwrites(QWidget):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.slider_feed = GradientSlider(title="Feed-Overwrite", image="touchprobe.png")
-        self.slider_feed.setRange(0, 300)
+        self.slider_feed = GradientSlider(title="Feed-Overwrite", units="%", scale=100.0, dscale=100.0, image="touchprobe.png")
+        self.slider_feed.setRange(0, int(parent.feed_override_max * 100.0))
         layout.addWidget(self.slider_feed, stretch=2)
 
-        self.slider_rapid = GradientSlider(title="Rapid-Overwrite", image="jogwheel.png")
-        self.slider_rapid.setRange(0, 100)
+        self.slider_rapid = GradientSlider(title="Rapid-Overwrite", units="%", scale=100.0, dscale=100.0, image="jogwheel.png")
+        self.slider_rapid.setRange(0, int(parent.feed_override_max * 100.0))
         layout.addWidget(self.slider_rapid, stretch=2)
 
-        self.slider_spindle = GradientSlider(title="Spindle-Overwrite", image="valve.png")
-        self.slider_spindle.setRange(0, 300)
+        self.slider_spindle = GradientSlider(title="Spindle-Overwrite", units="%", scale=100.0, dscale=100.0, image="valve.png")
+        self.slider_spindle.setRange(int(parent.spindle_0_override_min * 100.0), int(parent.spindle_0_override_max * 100.0))
         layout.addWidget(self.slider_spindle, stretch=2)
 
 
@@ -1600,6 +1606,9 @@ class MainWindow(QMainWindow):
         self.units = self.inifile.find("TRAJ", "LINEAR_UNITS")
         self.angular_units = self.inifile.find("TRAJ", "ANGULAR_UNITS")
         self.tooltable = self.inifile.find("EMCIO", "TOOL_TABLE")
+        self.spindle_0_override_min = float(self.inifile.find("DISPLAY", "MIN_SPINDLE_0_OVERRIDE") or 0.1)
+        self.spindle_0_override_max = float(self.inifile.find("DISPLAY", "MAX_SPINDLE_0_OVERRIDE") or 1.5)
+        self.feed_override_max = float(self.inifile.find("DISPLAY", "MAX_FEED_OVERRIDE") or 1.5)
         self.linear_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_LINEAR_VELOCITY") or 10.0)
         self.linear_velocity_max = float(self.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or 20.0)
         self.angular_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY") or 5.0)
@@ -1677,7 +1686,7 @@ class MainWindow(QMainWindow):
 
         self.center1l_stack = QStackedWidget()
         center1l_layout.addWidget(self.center1l_stack, stretch=1)
-        self.screen_overwrites = ScreenOverwrites()
+        self.screen_overwrites = ScreenOverwrites(self)
         self.center1l_stack.addWidget(self.screen_overwrites)
 
         self.center1r_stack = QStackedWidget()
@@ -1820,7 +1829,7 @@ class MainWindow(QMainWindow):
                 values[AXIS_NAMES[n]] = {
                     "pos": f"{pos - s.g92_offset[n]:0.3f} {self.units}",
                     "mpos": f"{pos:06.3f} {self.units}",
-                    "velocity": f"{s.axis[n]['velocity']:0.1f} {self.units}",
+                    "velocity": f"{s.axis[n]['velocity'] * 60.0:0.0f} {self.units}/m",
                     "homed": s.homed[n],
                 }
         else:
@@ -1831,7 +1840,7 @@ class MainWindow(QMainWindow):
                 values[str(n)] = {
                     "pos": f"{pos:0.3f} {self.units}",
                     "mpos": f"{pos:0.3f} {self.units}",
-                    "velocity": f"{s.joint[n]['velocity']:0.1f} {units}/s",
+                    "velocity": f"{s.joint[n]['velocity'] * 60.0:0.0f} {units}/m",
                     "homed": s.homed[n],
                 }
 
