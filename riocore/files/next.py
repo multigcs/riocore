@@ -917,59 +917,80 @@ class ScreenJog(QWidget):
         jogv = QVBoxLayout()
         self.setLayout(jogv)
 
-        jogh0 = QHBoxLayout()
-        jogv.addLayout(jogh0, stretch=1)
+        if any(char in self.parent.coordinates for char in ("A", "B", "C", "U", "V", "W")):
+            jogh0 = QHBoxLayout()
+            jogv.addLayout(jogh0, stretch=1)
+            for axis in self.parent.coordinates:
+                if axis in {"X", "Y", "Z"}:
+                    continue
+                plus = GradientLabel(f"{axis}+", objectName="btnjog", parent=self.parent)
+                jogh0.addWidget(plus, stretch=1)
 
-        xp = GradientLabel("A+", objectName="btnjog", parent=self.parent)
-        jogh0.addWidget(xp, stretch=1)
-        xp = GradientLabel("C+", objectName="btnjog", parent=self.parent)
-        jogh0.addWidget(xp, stretch=1)
-
-        jogh1 = QHBoxLayout()
-        jogv.addLayout(jogh1, stretch=1)
-        xp = GradientLabel("A-", objectName="btnjog", parent=self.parent)
-        jogh1.addWidget(xp, stretch=1)
-        xp = GradientLabel("C-", objectName="btnjog", parent=self.parent)
-        jogh1.addWidget(xp, stretch=1)
+            jogh1 = QHBoxLayout()
+            jogv.addLayout(jogh1, stretch=1)
+            for axis in self.parent.coordinates:
+                if axis in {"X", "Y", "Z"}:
+                    continue
+                minus = GradientLabel(f"{axis}-", objectName="btnjog", parent=self.parent)
+                jogh1.addWidget(minus, stretch=1)
 
         jogh2 = QHBoxLayout()
         jogv.addLayout(jogh2, stretch=2)
         btn_tjog = GradientLabel("TJOG", objectName="btntjog", parent=self.parent)
         btn_tjog.clicked.connect(partial(self.parent.view_set, "tjog"))
         jogh2.addWidget(btn_tjog, stretch=1)
-        xp = GradientLabel("Y+", objectName="btnjog", parent=self.parent)
-        jogh2.addWidget(xp, stretch=1)
-        xp = GradientLabel("Z+", objectName="btnjog", parent=self.parent)
-        jogh2.addWidget(xp, stretch=1)
+        if "Y" in self.parent.coordinates:
+            plus = GradientLabel("Y+", objectName="btnjog", parent=self.parent)
+        else:
+            plus = GradientLabel("", objectName="btnjog", parent=self.parent)
+        jogh2.addWidget(plus, stretch=1)
+        if "Z" in self.parent.coordinates:
+            plus = GradientLabel("Z+", objectName="btnjog", parent=self.parent)
+        else:
+            plus = GradientLabel("", objectName="btnjog", parent=self.parent)
+        jogh2.addWidget(plus, stretch=1)
 
         jogh3 = QHBoxLayout()
         jogv.addLayout(jogh3, stretch=2)
-        xp = GradientLabel("X-", objectName="btnjog", parent=self.parent)
-        jogh3.addWidget(xp, stretch=1)
+        if "X" in self.parent.coordinates:
+            minus = GradientLabel("X-", objectName="btnjog", parent=self.parent)
+        else:
+            minus = GradientLabel("", objectName="btnjog", parent=self.parent)
+        jogh3.addWidget(minus, stretch=1)
         xp = GradientLabel("", objectName="none")
         jogh3.addWidget(xp, stretch=1)
-        xp = GradientLabel("X+", objectName="btnjog", parent=self.parent)
-        jogh3.addWidget(xp, stretch=1)
+        if "X" in self.parent.coordinates:
+            plus = GradientLabel("X+", objectName="btnjog", parent=self.parent)
+        else:
+            plus = GradientLabel("", objectName="btnjog", parent=self.parent)
+        jogh3.addWidget(plus, stretch=1)
 
         jogh4 = QHBoxLayout()
         jogv.addLayout(jogh4, stretch=2)
         btn_home = GradientLabel("HOME", objectName="btnhome")
         btn_home.clicked.connect(partial(self.parent.view_set, "home"))
         jogh4.addWidget(btn_home, stretch=1)
-        ym = GradientLabel("Y-", objectName="btnjog", parent=self.parent)
-        jogh4.addWidget(ym, stretch=1)
-        zm = GradientLabel("Z-", objectName="btnjog", parent=self.parent)
-        jogh4.addWidget(zm, stretch=1)
+        if "X" in self.parent.coordinates:
+            minus = GradientLabel("Y-", objectName="btnjog", parent=self.parent)
+        else:
+            minus = GradientLabel("", objectName="btnjog", parent=self.parent)
+        jogh4.addWidget(minus, stretch=1)
+        if "Z" in self.parent.coordinates:
+            minus = GradientLabel("Z-", objectName="btnjog", parent=self.parent)
+        else:
+            minus = GradientLabel("", objectName="btnjog", parent=self.parent)
+        jogh4.addWidget(minus, stretch=1)
 
         lslider_jog = GradientSlider(title="Linear-Speed", parent=self.parent, objectName="linear")
         lslider_jog.setRange(0, int(parent.linear_velocity_max))
         lslider_jog.setValue(int(parent.linear_velocity_default))
         jogv.addWidget(lslider_jog, stretch=1)
 
-        aslider_jog = GradientSlider(title="Angular-Speed", parent=self.parent, objectName="angular")
-        aslider_jog.setRange(0, int(parent.angular_velocity_max))
-        aslider_jog.setValue(int(parent.angular_velocity_default))
-        jogv.addWidget(aslider_jog, stretch=1)
+        if self.parent.angular_joints:
+            aslider_jog = GradientSlider(title="Angular-Speed", parent=self.parent, objectName="angular")
+            aslider_jog.setRange(0, int(parent.angular_velocity_max))
+            aslider_jog.setValue(int(parent.angular_velocity_default))
+            jogv.addWidget(aslider_jog, stretch=1)
 
 
 class ScreenMdi(QWidget):
@@ -1575,6 +1596,7 @@ class MainWindow(QMainWindow):
 
         self.inifile = linuxcnc.ini(self.ini_filename)
         xml_file = self.inifile.find("DISPLAY", "PYVCP")
+        self.coordinates = self.inifile.find("TRAJ", "COORDINATES")
         self.units = self.inifile.find("TRAJ", "LINEAR_UNITS")
         self.angular_units = self.inifile.find("TRAJ", "ANGULAR_UNITS")
         self.tooltable = self.inifile.find("EMCIO", "TOOL_TABLE")
@@ -1582,6 +1604,12 @@ class MainWindow(QMainWindow):
         self.linear_velocity_max = float(self.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or 20.0)
         self.angular_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY") or 5.0)
         self.angular_velocity_max = float(self.inifile.find("TRAJ", "MAX_ANGULAR_VELOCITY") or 10.0)
+        self.angular_joints = False
+        for n, pos in enumerate(s.joint_position[: s.joints]):
+            if s.joint[n]["jointType"] == 2:
+                self.angular_joints = True
+        if any(char in self.coordinates for char in ("A", "B", "C")):
+            self.angular_joints = True
 
         mw = QWidget(objectName="main")
         mw.setStyleSheet(stylesheet)
