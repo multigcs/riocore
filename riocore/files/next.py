@@ -726,18 +726,22 @@ class JogImageXY(QLabel):
         self.draw_buffer = []
         self.line_buffer = []
         self.circle = []
-        self.points = [[200, 200, 0]]
+        self.points = []
         self.point_select = None
         self.mode = self.JOG
         self.last = None
         self.last_angle = None
         self.start = None
+        self.flag = False
 
     def mode_toggle(self):
-        self.mode = 1 - self.mode
+        if self.mode != self.DRAW:
+            self.mode = self.DRAW
         self.draw_buffer = []
         self.line_buffer = []
         self.circle = []
+        self.point_select = None
+        self.points = []
 
     def mode_text(self):
         if self.mode == 0:
@@ -761,27 +765,38 @@ class JogImageXY(QLabel):
 
     def mousePressEvent(self, event):
         pos = (event.pos().x(), event.pos().y())
+        self.flag = False
         if self.points:
             for point_n, point in enumerate(self.points):
                 if abs(point[0] - pos[0]) < 10 and abs(point[1] - pos[1]) < 10:
                     print("select", point_n, point)
                     self.point_select = point_n
+                    self.flag = True
 
-        if self.point_select is not None and len(self.points) > self.point_select:
+            if abs(20 - pos[0]) < 20 and abs(20 - pos[1]) < 20:
+                print("invert", self.points)
+                for point in self.points:
+                    point[2] = point[2] + 180
+                self.flag = True
+
+        if self.flag or (self.point_select is not None and len(self.points) > self.point_select):
             pass
         elif self.mode == self.DRAW:
             self.draw_buffer = [pos]
             self.line_buffer = []
             self.last = pos
             self.start = pos
+            self.point_select = None
 
         elif self.mode == self.JOG and event.button() == Qt.LeftButton:
             self.moveBegin(event)
 
     def mouseReleaseEvent(self, event):
         self.moveEnd(event)
-        if self.point_select is not None and len(self.points) > self.point_select:
+        if self.flag:
             pass
+        elif self.point_select is not None:
+            self.point_select = None
         elif self.mode == self.DRAW:
             pos = (event.pos().x(), event.pos().y())
             if self.line_buffer and len(self.line_buffer) > 2:
@@ -1078,6 +1093,8 @@ class ScreenTJog(QWidget):
                     dir_x = int(point[0] - radius * math.sin(point[2] * math.pi / 180))
                     dir_y = int(point[1] + radius * math.cos(point[2] * math.pi / 180))
                     cv2.line(frame, (int(point[0]), int(point[1])), (dir_x, dir_y), (255, 255, 0), 3)
+
+                    cv2.circle(frame, (20, 20), 10, (0, 0, 255), 3)
 
             # center image
             offset_x = int(((cx * z) - cx) * s)
