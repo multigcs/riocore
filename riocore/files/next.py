@@ -785,7 +785,8 @@ class JogImageXY(QLabel):
             if abs(20 - pos[0]) < 20 and abs(20 - pos[1]) < 20:
                 print("invert", self.points)
                 for point in self.points:
-                    point[2] = point[2] + 180
+                    if point[2] is not None:
+                        point[2] = point[2] + 180
                 self.flag = True
 
         if self.flag or (self.point_select is not None and len(self.points) > self.point_select):
@@ -844,6 +845,7 @@ class JogImageXY(QLabel):
                     self.points = [
                         [start1[0], start1[1], lines[0][2] + 180],
                         [start2[0], start2[1], lines[1][2] + 180],
+                        [lines[0][1][0], lines[0][1][1], None],
                     ]
                 elif len(lines) == 4:
                     print("rect")
@@ -861,6 +863,7 @@ class JogImageXY(QLabel):
                         [start2[0], start2[1], lines[1][2] + 180],
                         [start3[0], start3[1], lines[2][2] + 180],
                         [start4[0], start4[1], lines[3][2] + 180],
+                        [lines[0][1][0], lines[0][1][1], None],
                     ]
                 elif len(lines) > 6:
                     center = [lines[0][0][0], lines[0][0][1]]
@@ -1110,11 +1113,16 @@ class ScreenTJog(QWidget):
             # draw points
             if self.img_xy.points:
                 for point in self.img_xy.points:
-                    radius = 60
-                    target = point_offset(point, radius, point[2] * math.pi / 180)
+                    if point[2] is not None:
+                        radius = 60
+                        target = point_offset(point, radius, point[2] * math.pi / 180)
+                        cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 0), 3)
+                    else:
+                        cv2.circle(frame, (int(point[0]), int(point[1])), 5, (255, 0, 0), 3)
                     cv2.circle(frame, (int(point[0]), int(point[1])), 10, (255, 0, 0), 3)
-                    cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 0), 3)
-                    cv2.circle(frame, (20, 20), 10, (0, 0, 255), 3)
+
+                # invert button
+                cv2.circle(frame, (20, 20), 10, (0, 0, 255), 3)
 
             # center image
             offset_x = int(((cx * z) - cx) * s)
