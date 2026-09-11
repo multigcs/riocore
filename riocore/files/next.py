@@ -737,6 +737,9 @@ class JogImageXY(QLabel):
     def mode_toggle(self):
         if self.mode != self.DRAW:
             self.mode = self.DRAW
+        else:
+            self.mode = self.JOG
+
         self.draw_buffer = []
         self.line_buffer = []
         self.circle = []
