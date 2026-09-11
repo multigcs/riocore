@@ -879,6 +879,9 @@ class JogImageXY(QLabel):
                     radius = int(radius / len(lines))
                     print("circle", center, radius)
                     self.circle = (center, radius)
+                    self.points = [
+                        [center[0], center[1], None],
+                    ]
                 for line in lines:
                     distance = math.dist(line[0], line[1])
                     print(line, distance)
