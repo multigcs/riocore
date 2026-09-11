@@ -791,6 +791,8 @@ class JogImageXY(QLabel):
         if self.flag or (self.point_select is not None and len(self.points) > self.point_select):
             pass
         elif self.mode == self.DRAW:
+            self.points = []
+            self.circle = []
             self.draw_buffer = [pos]
             self.line_buffer = []
             self.last = pos
@@ -1090,21 +1092,20 @@ class ScreenTJog(QWidget):
             cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
             cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
 
-            # draw circle
-            if self.img_xy.circle:
-                cv2.circle(frame, self.img_xy.circle[0], self.img_xy.circle[1], (255, 0, 255), 3)
-
-            # draw lines
-            if self.img_xy.line_buffer:
-                for line in self.img_xy.line_buffer:
-                    cv2.line(frame, line[0], line[1], (255, 0, 255), 3)
-
             # draw drawing
             if self.img_xy.draw_buffer:
                 last = self.img_xy.draw_buffer[0]
                 for point in self.img_xy.draw_buffer:
-                    cv2.line(frame, last, point, (255, 255, 0), 3)
+                    cv2.line(frame, last, point, (255, 255, 1), 1)
                     last = point
+
+            if self.img_xy.circle:
+                # draw circle
+                cv2.circle(frame, self.img_xy.circle[0], self.img_xy.circle[1], (255, 0, 255), 2)
+            elif self.img_xy.line_buffer:
+                # draw lines
+                for line in self.img_xy.line_buffer:
+                    cv2.line(frame, line[0], line[1], (255, 0, 255), 2)
 
             # draw points
             if self.img_xy.points:
