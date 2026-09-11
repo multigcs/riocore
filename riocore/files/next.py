@@ -249,6 +249,12 @@ def line_center(p_1, p_2):
     return (center_x, center_y)
 
 
+def point_offset(point, radius, angle):
+    pos_x = int(point[0] - radius * math.sin(angle))
+    pos_y = int(point[1] + radius * math.cos(angle))
+    return (pos_x, pos_y)
+
+
 def ok_for_mdi():
     s.poll()
     return not s.estop and s.enabled and (s.homed.count(1) == s.joints) and (s.interp_state == linuxcnc.INTERP_IDLE)
@@ -828,20 +834,32 @@ class JogImageXY(QLabel):
                     else:
                         print("corner")
                     # set probe points
+                    radius = 20
                     center1 = line_center(lines[0][0], lines[0][1])
                     center2 = line_center(lines[1][0], lines[1][1])
-                    radius = 20
-                    start1_x = int(center1[0] - radius * math.sin(lines[0][2] * math.pi / 180))
-                    start1_y = int(center1[1] + radius * math.cos(lines[0][2] * math.pi / 180))
-
-                    start2_x = int(center2[0] - radius * math.sin(lines[1][2] * math.pi / 180))
-                    start2_y = int(center2[1] + radius * math.cos(lines[1][2] * math.pi / 180))
+                    start1 = point_offset(center1, radius, lines[0][2] * math.pi / 180)
+                    start2 = point_offset(center2, radius, lines[1][2] * math.pi / 180)
                     self.points = [
-                        [start1_x, start1_y, lines[0][2] + 180],
-                        [start2_x, start2_y, lines[1][2] + 180],
+                        [start1[0], start1[1], lines[0][2] + 180],
+                        [start2[0], start2[1], lines[1][2] + 180],
                     ]
                 elif len(lines) == 4:
                     print("rect")
+                    radius = 20
+                    center1 = line_center(lines[0][0], lines[0][1])
+                    center2 = line_center(lines[1][0], lines[1][1])
+                    center3 = line_center(lines[2][0], lines[2][1])
+                    center4 = line_center(lines[3][0], lines[3][1])
+                    start1 = point_offset(center1, radius, lines[0][2] * math.pi / 180)
+                    start2 = point_offset(center2, radius, lines[1][2] * math.pi / 180)
+                    start3 = point_offset(center3, radius, lines[2][2] * math.pi / 180)
+                    start4 = point_offset(center4, radius, lines[3][2] * math.pi / 180)
+                    self.points = [
+                        [start1[0], start1[1], lines[0][2] + 180],
+                        [start2[0], start2[1], lines[1][2] + 180],
+                        [start3[0], start3[1], lines[2][2] + 180],
+                        [start4[0], start4[1], lines[3][2] + 180],
+                    ]
                 elif len(lines) > 6:
                     center = [lines[0][0][0], lines[0][0][1]]
                     for line in lines[1:]:
@@ -1092,11 +1110,9 @@ class ScreenTJog(QWidget):
             if self.img_xy.points:
                 for point in self.img_xy.points:
                     radius = 60
+                    target = point_offset(point, radius, point[2] * math.pi / 180)
                     cv2.circle(frame, (int(point[0]), int(point[1])), 10, (255, 0, 0), 3)
-                    dir_x = int(point[0] - radius * math.sin(point[2] * math.pi / 180))
-                    dir_y = int(point[1] + radius * math.cos(point[2] * math.pi / 180))
-                    cv2.line(frame, (int(point[0]), int(point[1])), (dir_x, dir_y), (255, 255, 0), 3)
-
+                    cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 0), 3)
                     cv2.circle(frame, (20, 20), 10, (0, 0, 255), 3)
 
             # center image
