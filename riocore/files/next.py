@@ -718,6 +718,7 @@ class JogImageXY(QLabel):
         super().__init__("", objectName=objectName)
         self.draw_buffer = []
         self.line_buffer = []
+        self.circle = []
         self.mode = self.JOG
 
         self.last = None
@@ -728,6 +729,7 @@ class JogImageXY(QLabel):
         self.mode = 1 - self.mode
         self.draw_buffer = []
         self.line_buffer = []
+        self.circle = []
 
     def mode_text(self):
         if self.mode == 0:
@@ -772,6 +774,43 @@ class JogImageXY(QLabel):
                     point = self.line_buffer[0][0]
             self.line_buffer.append((self.start, point, self.last_angle))
             self.last_angle = None
+
+            if self.line_buffer:
+                lines = []
+                for line in self.line_buffer:
+                    distance = math.dist(line[0], line[1])
+                    if distance > 20:
+                        lines.append(line)
+                if len(lines) == 2:
+                    if lines[0][2] == 90.0 and lines[1][2] == 0.0:
+                        print("bottom/left corner")
+                    elif lines[0][2] == 0.0 and lines[1][2] == -90.0:
+                        print("bottom/right corner")
+                    elif lines[0][2] == -90.0 and lines[1][2] == 180.0:
+                        print("top/right corner")
+                    elif lines[0][2] == 180.0 and lines[1][2] == 90.0:
+                        print("top/left corner")
+                    else:
+                        print("corner")
+                elif len(lines) == 4:
+                    print("rect")
+                elif len(lines) > 6:
+                    center = [lines[0][0][0], lines[0][0][1]]
+                    for line in lines[1:]:
+                        center[0] += line[0][0]
+                        center[1] += line[0][1]
+                    center[0] = int(center[0] / len(lines))
+                    center[1] = int(center[1] / len(lines))
+                    radius = 0
+                    for line in lines:
+                        distance = math.dist(center, line[0])
+                        radius += distance
+                    radius = int(radius / len(lines))
+                    print("circle", center, radius)
+                    self.circle = (center, radius)
+                for line in lines:
+                    distance = math.dist(line[0], line[1])
+                    print(line, distance)
 
     def mouseMoveEvent(self, event):
         if self.mode == self.DRAW:
@@ -990,11 +1029,15 @@ class ScreenTJog(QWidget):
                     cv2.line(frame, last, point, (255, 255, 0), 3)
                     last = point
 
-            # draw lnes
+            # draw lines
             if self.img_xy.line_buffer:
                 for line in self.img_xy.line_buffer:
                     cv2.line(frame, line[0], line[1], (255, 0, 255), 3)
                     last = point
+
+            # draw circle
+            if self.img_xy.circle:
+                cv2.circle(frame, self.img_xy.circle[0], self.img_xy.circle[1], (255, 0, 255), 3)
 
             # center image
             offset_x = int(((cx * z) - cx) * s)
