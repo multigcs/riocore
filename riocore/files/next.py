@@ -84,6 +84,19 @@ stylesheet = """
         subcontrol-origin: margin;
     }
 
+    QPushButton {
+        font-weight: bold;
+        font-size: 21px;
+        min-width: 63px;
+        min-height: 54px;
+    }
+
+    QPlainTextEdit#progedit {
+        color: #ffffff;
+        font-family: 'Consolas', 'Courier New', monospace;
+        font-size: 24px;
+    }
+
     QLineEdit {
         background-color: #5b5b5b;
         color: #ffffff;
@@ -100,7 +113,8 @@ stylesheet = """
     QLabel {
         color: #ffffff;
         font-weight: bold;
-        font-size: 21px;
+        font-size: 27px;
+        min-height: 54px;
     }
 
     QLabel#estop {
@@ -123,17 +137,37 @@ stylesheet = """
     }
 
     QLabel#vcp_label {
-        font-size: 21px;
+        font-size: 27px;
+        min-height: 54px;
     }
     QPushButton#vcp_button {
-        font-size: 21px;
-    }
-    QLabel#vcp_number {
-        font-size: 21px;
+        font-size: 27px;
     }
     QGroupBox#vcp_labelframe {
-        font-size: 21px;
-        margin: 16px 0px 0px 0px;
+        font-size: 27px;
+    }
+
+    QProgressBar#vcp_bar {
+        font-weight: bold;
+        font-size: 27px;
+        min-width: 220px;
+        min-height: 54px;
+    }
+    QSlider#vcp_scale {
+        font-weight: bold;
+        font-size: 27px;
+        min-width: 220px;
+        min-height: 54px;
+    }
+    ToggleSwitch#vcp_checkbutton {
+        font-weight: bold;
+        min-width: 120px;
+        min-height: 54px;
+    }
+    QLabel#vcp_number {
+        font-weight: bold;
+        font-size: 31px;
+        min-height: 54px;
     }
 
 """
@@ -148,6 +182,11 @@ QPushButton#vcp_button
 QGroupBox#vcp_labelframe
 LED#vcp_led
 """
+
+draw_min_angle = 45
+draw_min_lenght = 15
+probe_circe_size = 40
+probe_lenght = 100
 
 AXIS_NAMES = ["X", "Y", "Z", "A", "B", "C", "U", "V", "W"]
 
@@ -777,12 +816,12 @@ class JogImageXY(QLabel):
         self.flag = False
         if self.points:
             for point_n, point in enumerate(self.points):
-                if abs(point[0] - pos[0]) < 10 and abs(point[1] - pos[1]) < 10:
+                if abs(point[0] - pos[0]) < probe_circe_size and abs(point[1] - pos[1]) < probe_circe_size:
                     print("select", point_n, point)
                     self.point_select = point_n
                     self.flag = True
 
-            if abs(20 - pos[0]) < 20 and abs(20 - pos[1]) < 20:
+            if abs(probe_circe_size - pos[0]) < probe_circe_size and abs(probe_circe_size - pos[1]) < probe_circe_size:
                 print("invert", self.points)
                 for point in self.points:
                     if point[2] is not None:
@@ -837,27 +876,26 @@ class JogImageXY(QLabel):
                     else:
                         print("corner")
                     # set probe points
-                    radius = 20
                     center1 = line_center(lines[0][0], lines[0][1])
                     center2 = line_center(lines[1][0], lines[1][1])
-                    start1 = point_offset(center1, radius, lines[0][2] * math.pi / 180)
-                    start2 = point_offset(center2, radius, lines[1][2] * math.pi / 180)
+                    start1 = point_offset(center1, probe_circe_size, lines[0][2] * math.pi / 180)
+                    start2 = point_offset(center2, probe_circe_size, lines[1][2] * math.pi / 180)
+                    touch = line_center(start1, start2)
                     self.points = [
                         [start1[0], start1[1], lines[0][2] + 180],
                         [start2[0], start2[1], lines[1][2] + 180],
-                        [lines[0][1][0], lines[0][1][1], None],
+                        [touch[0], touch[1], None],
                     ]
                 elif len(lines) == 4:
                     print("rect")
-                    radius = 20
                     center1 = line_center(lines[0][0], lines[0][1])
                     center2 = line_center(lines[1][0], lines[1][1])
                     center3 = line_center(lines[2][0], lines[2][1])
                     center4 = line_center(lines[3][0], lines[3][1])
-                    start1 = point_offset(center1, radius, lines[0][2] * math.pi / 180)
-                    start2 = point_offset(center2, radius, lines[1][2] * math.pi / 180)
-                    start3 = point_offset(center3, radius, lines[2][2] * math.pi / 180)
-                    start4 = point_offset(center4, radius, lines[3][2] * math.pi / 180)
+                    start1 = point_offset(center1, probe_circe_size, lines[0][2] * math.pi / 180)
+                    start2 = point_offset(center2, probe_circe_size, lines[1][2] * math.pi / 180)
+                    start3 = point_offset(center3, probe_circe_size, lines[2][2] * math.pi / 180)
+                    start4 = point_offset(center4, probe_circe_size, lines[3][2] * math.pi / 180)
                     self.points = [
                         [start1[0], start1[1], lines[0][2] + 180],
                         [start2[0], start2[1], lines[1][2] + 180],
@@ -885,6 +923,7 @@ class JogImageXY(QLabel):
                 for line in lines:
                     distance = math.dist(line[0], line[1])
                     print(line, distance)
+            self.draw_buffer = []
 
     def mouseMoveEvent(self, event):
         pos = (event.pos().x(), event.pos().y())
@@ -896,9 +935,10 @@ class JogImageXY(QLabel):
         elif self.mode == self.DRAW:
             self.draw_buffer = [pos, *self.draw_buffer[:500]]
             distance = math.dist(self.last, pos)
-            if distance > 10:
+            if distance > draw_min_lenght:
                 angle = angle_of_line(self.last, pos) * 180 / math.pi
-                angle = (angle + 22.5) // 45 * 45
+                # angle = (angle + 22.5) // 45 * 45
+                angle = (angle + draw_min_angle // 2) // draw_min_angle * draw_min_angle
                 if angle == -180:
                     angle = 180
                 if self.last_angle != angle and self.last_angle is not None:
@@ -1050,9 +1090,9 @@ class ScreenTJog(QWidget):
             self.mode.setText(self.img_xy.mode_text())
             self.mode.update()
 
-        self.mode = GradientLabel("JOG", parent=self.parent, objectName="draw")
+        self.mode = GradientLabel("JOG", parent=self.parent, objectName="mode")
         self.mode.clicked.connect(mode_toggle)
-        jog_dro.addWidget(self.mode, stretch=0)
+        jog_dro.addWidget(self.mode, stretch=1)
 
         self.pos_x = GradientLabel("X: ---", parent=self.parent, objectName="dro")
         jog_dro.addWidget(self.pos_x, stretch=1)
@@ -1100,8 +1140,9 @@ class ScreenTJog(QWidget):
 
             # draw drawing
             if self.img_xy.draw_buffer:
-                last = self.img_xy.draw_buffer[0]
-                for point in self.img_xy.draw_buffer:
+                draw_buffer = self.img_xy.draw_buffer[0:]
+                last = draw_buffer[0]
+                for point in draw_buffer:
                     cv2.line(frame, last, point, (255, 255, 1), 1)
                     last = point
 
@@ -1110,22 +1151,21 @@ class ScreenTJog(QWidget):
                 cv2.circle(frame, self.img_xy.circle[0], self.img_xy.circle[1], (255, 0, 255), 2)
             elif self.img_xy.line_buffer:
                 # draw lines
-                for line in self.img_xy.line_buffer:
+                for line in self.img_xy.line_buffer[0:]:
                     cv2.line(frame, line[0], line[1], (255, 0, 255), 2)
 
             # draw points
             if self.img_xy.points:
-                for point in self.img_xy.points:
+                for point in self.img_xy.points[0:]:
                     if point[2] is not None:
-                        radius = 60
-                        target = point_offset(point, radius, point[2] * math.pi / 180)
+                        target = point_offset(point, probe_lenght, point[2] * math.pi / 180)
                         cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 0), 3)
                     else:
-                        cv2.circle(frame, (int(point[0]), int(point[1])), 5, (255, 0, 0), 3)
-                    cv2.circle(frame, (int(point[0]), int(point[1])), 10, (255, 0, 0), 3)
+                        cv2.circle(frame, (int(point[0]), int(point[1])), probe_circe_size // 2, (255, 0, 0), 3)
+                    cv2.circle(frame, (int(point[0]), int(point[1])), probe_circe_size, (255, 0, 0), 3)
 
                 # invert button
-                cv2.circle(frame, (20, 20), 10, (0, 0, 255), 3)
+                cv2.circle(frame, (20, 20), probe_circe_size, (0, 0, 255), 3)
 
             # center image
             offset_x = int(((cx * z) - cx) * s)
@@ -1638,9 +1678,9 @@ class ScreenVcpTab(QWidget):
                             button.released.connect(partial(change, halpin, False))
                 elif child.tag == "labelframe":
                     frame = QGroupBox(objectName="vcp_labelframe")
-                    frame.setTitle(child.attrib["text"])
-                    vbox = QVBoxLayout()
-                    vbox.setContentsMargins(5, 15, 5, 0)
+                    # frame.setTitle(child.attrib["text"])
+                    vbox = QVBoxLayout(objectName="vcp_labelframe")
+                    vbox.addWidget(QLabel(child.attrib["text"], objectName="vcp_labelframe"))
                     frame.setLayout(vbox)
                     layout.addWidget(frame)
                     next_element(child, vbox, prefix=" " + prefix)
@@ -1738,7 +1778,7 @@ class ScreenNgc(QWidget):
         btn_stop.clicked.connect(partial(prog_mode, "STOP"))
         hbox.addWidget(btn_stop, stretch=0)
 
-        self.editor = QPlainTextEdit()
+        self.editor = QPlainTextEdit(objectName="progedit")
         layout.addWidget(self.editor, stretch=5)
 
 
@@ -1807,8 +1847,6 @@ class ToggleSwitch(QPushButton):
     def __init__(self, parent=None, objectName=None):
         super().__init__(parent, objectName=objectName)
         self.setCheckable(True)
-        self.setMinimumWidth(70)
-        self.setMinimumHeight(24)
 
     def paintEvent(self, event):
         label = "OFF"
@@ -1817,8 +1855,8 @@ class ToggleSwitch(QPushButton):
             label = "ON"
             bg_color = QColor(0, 100, 0)
 
-        radius = 12
-        width = 34
+        radius = 20
+        width = 54
         center = self.rect().center()
 
         painter = QPainter(self)
