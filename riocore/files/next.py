@@ -4,6 +4,7 @@
 
 import argparse
 import glob
+import math
 import os
 import re
 import sys
@@ -234,6 +235,11 @@ def tools_save(filename, tools):
             line.append(f"; {tool_data['comment']} TT:{tool_data['timer']}/{tool_data['warning']}/{tool_data['critical']}/{tool_data['sister']}")
             tooltable.write(" ".join(line))
             tooltable.write("\n")
+
+
+def angle_of_line(p_1, p_2):
+    """Gets the angle of a single line."""
+    return math.atan2(p_2[1] - p_1[1], p_2[0] - p_1[0])
 
 
 def ok_for_mdi():
@@ -703,8 +709,34 @@ class GradientSlider(QSlider):
 
 
 class JogImageXY(QLabel):
+    JOG = 0
+    DRAW = 1
+    SET = 2
+    mode = 0
+
     def __init__(self, objectName=None):
         super().__init__("", objectName=objectName)
+        self.draw_buffer = []
+        self.line_buffer = []
+        self.mode = self.JOG
+
+        self.last = None
+        self.last_angle = None
+        self.start = None
+
+    def mode_toggle(self):
+        self.mode = 1 - self.mode
+        self.draw_buffer = []
+        self.line_buffer = []
+
+    def mode_text(self):
+        if self.mode == 0:
+            return "JOG"
+        if self.mode == 1:
+            return "DRAW"
+        if self.mode == 2:
+            return "SET"
+        return "---"
 
     def moveBegin(self, event):
         self.new_x = event.pos().x()
@@ -718,26 +750,62 @@ class JogImageXY(QLabel):
         pass
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            self.moveBegin(event)
+        if self.mode == self.DRAW:
+            point = (event.pos().x(), event.pos().y())
+            self.draw_buffer = [point]
+            self.line_buffer = []
+            self.last = point
+            self.start = point
+
+        elif self.mode == self.JOG:
+            if event.button() == Qt.LeftButton:
+                self.moveBegin(event)
 
     def mouseReleaseEvent(self, event):
         self.moveEnd(event)
+        if self.mode == self.DRAW:
+            point = (event.pos().x(), event.pos().y())
+            if self.line_buffer and len(self.line_buffer) > 2:
+                # close polygon
+                distance = math.dist(self.line_buffer[0][0], point)
+                if distance < 50:
+                    point = self.line_buffer[0][0]
+            self.line_buffer.append((self.start, point, self.last_angle))
+            self.last_angle = None
 
     def mouseMoveEvent(self, event):
-        diff_x = self.old_x - event.pos().x()
-        diff_y = self.old_y - event.pos().y()
-        s = 1.0
-        z = 1.0
-        offset_x = int(diff_x / z / s)
-        offset_y = int(diff_y / z / s)
-        x_scale = h_next["axis.x.jog-scale"]
-        y_scale = h_next["axis.y.jog-scale"]
-        if x_scale and y_scale:
-            cal_x = h_next["axis.x.cal"]
-            cal_y = h_next["axis.y.cal"]
-            h_next["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / x_scale * cal_x)
-            h_next["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * cal_y)
+        if self.mode == self.DRAW:
+            point = (event.pos().x(), event.pos().y())
+            self.draw_buffer = [point, *self.draw_buffer[:500]]
+
+            distance = math.dist(self.last, point)
+            if distance > 10:
+                angle = angle_of_line(self.last, point) * 180 / math.pi
+                angle = (angle + 22.5) // 45 * 45
+                if angle == -180:
+                    angle = 180
+
+                if self.last_angle != angle and self.last_angle is not None:
+                    self.line_buffer.append((self.start, point, self.last_angle))
+                    self.start = point
+
+                self.last = point
+                self.last_angle = angle
+
+        elif self.mode == self.JOG:
+            diff_x = self.old_x - event.pos().x()
+            diff_y = self.old_y - event.pos().y()
+            s = 1.0
+            z = 1.0
+            offset_x = int(diff_x / z / s)
+            offset_y = int(diff_y / z / s)
+            x_scale = h_next["axis.x.jog-scale"]
+            y_scale = h_next["axis.y.jog-scale"]
+            if x_scale and y_scale:
+                cal_x = h_next["axis.x.cal"]
+                cal_y = h_next["axis.y.cal"]
+                h_next["axis.x.jog-counts"] = self.old_counts_x + int(offset_x / x_scale * cal_x)
+                h_next["axis.y.jog-counts"] = self.old_counts_y + int(offset_y / y_scale * cal_y)
 
 
 class JogImageZ(QLabel):
@@ -862,6 +930,15 @@ class ScreenTJog(QWidget):
         jog_dro = QHBoxLayout()
         jogv.addLayout(jog_dro, stretch=1)
 
+        def mode_toggle():
+            self.img_xy.mode_toggle()
+            self.mode.setText(self.img_xy.mode_text())
+            self.mode.update()
+
+        self.mode = GradientLabel("JOG", parent=self.parent, objectName="draw")
+        self.mode.clicked.connect(mode_toggle)
+        jog_dro.addWidget(self.mode, stretch=0)
+
         self.pos_x = GradientLabel("X: ---", parent=self.parent, objectName="dro")
         jog_dro.addWidget(self.pos_x, stretch=1)
         self.pos_y = GradientLabel("Y: ---", parent=self.parent, objectName="dro")
@@ -905,6 +982,19 @@ class ScreenTJog(QWidget):
             # draw center lines
             cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
             cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
+
+            # draw drawing
+            if self.img_xy.draw_buffer:
+                last = self.img_xy.draw_buffer[0]
+                for point in self.img_xy.draw_buffer:
+                    cv2.line(frame, last, point, (255, 255, 0), 3)
+                    last = point
+
+            # draw lnes
+            if self.img_xy.line_buffer:
+                for line in self.img_xy.line_buffer:
+                    cv2.line(frame, line[0], line[1], (255, 0, 255), 3)
+                    last = point
 
             # center image
             offset_x = int(((cx * z) - cx) * s)
