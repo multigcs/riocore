@@ -242,6 +242,13 @@ def angle_of_line(p_1, p_2):
     return math.atan2(p_2[1] - p_1[1], p_2[0] - p_1[0])
 
 
+def line_center(p_1, p_2):
+    """Gets the center point between 2 points."""
+    center_x = (p_1[0] + p_2[0]) / 2
+    center_y = (p_1[1] + p_2[1]) / 2
+    return (center_x, center_y)
+
+
 def ok_for_mdi():
     s.poll()
     return not s.estop and s.enabled and (s.homed.count(1) == s.joints) and (s.interp_state == linuxcnc.INTERP_IDLE)
@@ -719,8 +726,9 @@ class JogImageXY(QLabel):
         self.draw_buffer = []
         self.line_buffer = []
         self.circle = []
+        self.points = [[200, 200, 0]]
+        self.point_select = None
         self.mode = self.JOG
-
         self.last = None
         self.last_angle = None
         self.start = None
@@ -752,27 +760,36 @@ class JogImageXY(QLabel):
         pass
 
     def mousePressEvent(self, event):
-        if self.mode == self.DRAW:
-            point = (event.pos().x(), event.pos().y())
-            self.draw_buffer = [point]
-            self.line_buffer = []
-            self.last = point
-            self.start = point
+        pos = (event.pos().x(), event.pos().y())
+        if self.points:
+            for point_n, point in enumerate(self.points):
+                if abs(point[0] - pos[0]) < 10 and abs(point[1] - pos[1]) < 10:
+                    print("select", point_n, point)
+                    self.point_select = point_n
 
-        elif self.mode == self.JOG:
-            if event.button() == Qt.LeftButton:
-                self.moveBegin(event)
+        if self.point_select is not None and len(self.points) > self.point_select:
+            pass
+        elif self.mode == self.DRAW:
+            self.draw_buffer = [pos]
+            self.line_buffer = []
+            self.last = pos
+            self.start = pos
+
+        elif self.mode == self.JOG and event.button() == Qt.LeftButton:
+            self.moveBegin(event)
 
     def mouseReleaseEvent(self, event):
         self.moveEnd(event)
-        if self.mode == self.DRAW:
-            point = (event.pos().x(), event.pos().y())
+        if self.point_select is not None and len(self.points) > self.point_select:
+            pass
+        elif self.mode == self.DRAW:
+            pos = (event.pos().x(), event.pos().y())
             if self.line_buffer and len(self.line_buffer) > 2:
                 # close polygon
-                distance = math.dist(self.line_buffer[0][0], point)
+                distance = math.dist(self.line_buffer[0][0], pos)
                 if distance < 50:
-                    point = self.line_buffer[0][0]
-            self.line_buffer.append((self.start, point, self.last_angle))
+                    pos = self.line_buffer[0][0]
+            self.line_buffer.append((self.start, pos, self.last_angle))
             self.last_angle = None
 
             if self.line_buffer:
@@ -783,7 +800,7 @@ class JogImageXY(QLabel):
                         lines.append(line)
                 if len(lines) == 2:
                     if lines[0][2] == 90.0 and lines[1][2] == 0.0:
-                        print("bottom/left corner")
+                        print("bottom/left corner", lines[0])
                     elif lines[0][2] == 0.0 and lines[1][2] == -90.0:
                         print("bottom/right corner")
                     elif lines[0][2] == -90.0 and lines[1][2] == 180.0:
@@ -792,6 +809,19 @@ class JogImageXY(QLabel):
                         print("top/left corner")
                     else:
                         print("corner")
+                    # set probe points
+                    center1 = line_center(lines[0][0], lines[0][1])
+                    center2 = line_center(lines[1][0], lines[1][1])
+                    radius = 20
+                    start1_x = int(center1[0] - radius * math.sin(lines[0][2] * math.pi / 180))
+                    start1_y = int(center1[1] + radius * math.cos(lines[0][2] * math.pi / 180))
+
+                    start2_x = int(center2[0] - radius * math.sin(lines[1][2] * math.pi / 180))
+                    start2_y = int(center2[1] + radius * math.cos(lines[1][2] * math.pi / 180))
+                    self.points = [
+                        [start1_x, start1_y, lines[0][2] + 180],
+                        [start2_x, start2_y, lines[1][2] + 180],
+                    ]
                 elif len(lines) == 4:
                     print("rect")
                 elif len(lines) > 6:
@@ -813,22 +843,24 @@ class JogImageXY(QLabel):
                     print(line, distance)
 
     def mouseMoveEvent(self, event):
-        if self.mode == self.DRAW:
-            point = (event.pos().x(), event.pos().y())
-            self.draw_buffer = [point, *self.draw_buffer[:500]]
+        pos = (event.pos().x(), event.pos().y())
 
-            distance = math.dist(self.last, point)
+        if self.point_select is not None and len(self.points) > self.point_select:
+            angle = self.points[self.point_select][2]
+            self.points[self.point_select] = [pos[0], pos[1], angle]
+
+        elif self.mode == self.DRAW:
+            self.draw_buffer = [pos, *self.draw_buffer[:500]]
+            distance = math.dist(self.last, pos)
             if distance > 10:
-                angle = angle_of_line(self.last, point) * 180 / math.pi
+                angle = angle_of_line(self.last, pos) * 180 / math.pi
                 angle = (angle + 22.5) // 45 * 45
                 if angle == -180:
                     angle = 180
-
                 if self.last_angle != angle and self.last_angle is not None:
-                    self.line_buffer.append((self.start, point, self.last_angle))
-                    self.start = point
-
-                self.last = point
+                    self.line_buffer.append((self.start, pos, self.last_angle))
+                    self.start = pos
+                self.last = pos
                 self.last_angle = angle
 
         elif self.mode == self.JOG:
@@ -1022,6 +1054,15 @@ class ScreenTJog(QWidget):
             cv2.line(frame, (0, nh // 2), (nw, nh // 2), (255, 0, 0), 1)
             cv2.line(frame, (nw // 2, 0), (nw // 2, nh), (255, 0, 0), 1)
 
+            # draw circle
+            if self.img_xy.circle:
+                cv2.circle(frame, self.img_xy.circle[0], self.img_xy.circle[1], (255, 0, 255), 3)
+
+            # draw lines
+            if self.img_xy.line_buffer:
+                for line in self.img_xy.line_buffer:
+                    cv2.line(frame, line[0], line[1], (255, 0, 255), 3)
+
             # draw drawing
             if self.img_xy.draw_buffer:
                 last = self.img_xy.draw_buffer[0]
@@ -1029,15 +1070,14 @@ class ScreenTJog(QWidget):
                     cv2.line(frame, last, point, (255, 255, 0), 3)
                     last = point
 
-            # draw lines
-            if self.img_xy.line_buffer:
-                for line in self.img_xy.line_buffer:
-                    cv2.line(frame, line[0], line[1], (255, 0, 255), 3)
-                    last = point
-
-            # draw circle
-            if self.img_xy.circle:
-                cv2.circle(frame, self.img_xy.circle[0], self.img_xy.circle[1], (255, 0, 255), 3)
+            # draw points
+            if self.img_xy.points:
+                for point in self.img_xy.points:
+                    radius = 60
+                    cv2.circle(frame, (int(point[0]), int(point[1])), 10, (255, 0, 0), 3)
+                    dir_x = int(point[0] - radius * math.sin(point[2] * math.pi / 180))
+                    dir_y = int(point[1] + radius * math.cos(point[2] * math.pi / 180))
+                    cv2.line(frame, (int(point[0]), int(point[1])), (dir_x, dir_y), (255, 255, 0), 3)
 
             # center image
             offset_x = int(((cx * z) - cx) * s)
