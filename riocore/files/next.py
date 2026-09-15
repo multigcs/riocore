@@ -49,6 +49,7 @@ from PyQt5.QtWidgets import (
 )
 from qt5_graphics import Lcnc_3dGraphics
 
+# background-image: url(/tmp/blue-bg.png);
 stylesheet = """
     QWidget {
         background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #252524, stop: 1 #25256f);
@@ -1162,7 +1163,9 @@ class ScreenTJog(QWidget):
                         cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 0), 3)
                     else:
                         cv2.circle(frame, (int(point[0]), int(point[1])), probe_circe_size // 2, (255, 0, 0), 3)
-                    cv2.circle(frame, (int(point[0]), int(point[1])), probe_circe_size, (255, 0, 0), 3)
+
+                    cv2.circle(frame, (int(point[0]), int(point[1])), int(probe_circe_size // 3 * 2), (255, 255, 255), -1)
+                    cv2.circle(frame, (int(point[0]), int(point[1])), int(probe_circe_size), (255, 255, 255), 1)
 
                 # invert button
                 cv2.circle(frame, (20, 20), probe_circe_size, (0, 0, 255), 3)
