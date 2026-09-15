@@ -8,5 +8,5 @@ class Plugin(PluginBase):
         self.INFO = "only an image for the flow plan"
         self.DESCRIPTION = ""
         self.KEYWORDS = ""
-        self.IMAGES = list(PluginImages.images)
+        self.IMAGES = list(PluginImages().images)
         self.TYPE = "background"
