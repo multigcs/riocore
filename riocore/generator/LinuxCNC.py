@@ -600,8 +600,18 @@ class LinuxCNC:
             fullscreen_opt = ""
             if gui_fullscreen:
                 fullscreen_opt = "--fullscreen"
+
+            cam = linuxcnc_config.get("camera", {})
+            cam_device = cam.get("device", 0)
+            cam_width = cam.get("width", 800)
+            cam_height = cam.get("height", 600)
             ini_setup["DISPLAY"]["DISPLAY"] = f"./next.py --fullscreen --width {gui_width} --height {gui_height} {fullscreen_opt}"
             ini_setup["DISPLAY"]["PYVCP"] = "rio-gui.xml"
+            if "CAMERA" not in ini_setup:
+                ini_setup["CAMERA"] = {}
+            ini_setup["CAMERA"]["DEVICE"] = cam_device
+            ini_setup["CAMERA"]["WIDTH"] = cam_width
+            ini_setup["CAMERA"]["HEIGHT"] = cam_height
 
         elif gui == "gmoccapy":
             ini_setup["DISPLAY"]["DISPLAY"] = gui

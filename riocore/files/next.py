@@ -1029,20 +1029,20 @@ class ScreenHome(QWidget):
 class CameraThread(QThread):
     image = pyqtSignal(np.ndarray)
 
-    def __init__(self, device, options=None):
+    def __init__(self, options=None):
         super().__init__()
-        self.device = device
         if not options:
             options = {}
         self.options = options
-        self.width_source = options.get("width_source", 800)
-        self.height_source = options.get("height_source", 600)
+        self.width = options.get("width", 800)
+        self.height = options.get("height", 600)
+        self.device = options.get("device", 1)
         self.capture = None
 
     def start_capture(self):
         self.capture = cv2.VideoCapture(self.device)
-        self.capture.set(3, self.width_source)
-        self.capture.set(4, self.height_source)
+        self.capture.set(3, self.width)
+        self.capture.set(4, self.height)
 
     def stop_capture(self):
         if self.capture:
@@ -1112,7 +1112,7 @@ class ScreenTJog(QWidget):
         img_z = JogImageZ(objectName="jogz")
         jogh0.addWidget(img_z, stretch=1)
 
-        self.camera = CameraThread(0)
+        self.camera = CameraThread(self.parent.camera)
         self.camera.image.connect(self.update_image)
         self.camera.start()
 
@@ -1912,6 +1912,13 @@ class MainWindow(QMainWindow):
         self.linear_velocity_max = float(self.inifile.find("TRAJ", "MAX_LINEAR_VELOCITY") or 20.0)
         self.angular_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY") or 5.0)
         self.angular_velocity_max = float(self.inifile.find("TRAJ", "MAX_ANGULAR_VELOCITY") or 10.0)
+
+        self.camera = {
+            "device": int(self.inifile.find("CAMERA", "DEVICE") or 1),
+            "width": int(self.inifile.find("CAMERA", "WIDTH") or 800),
+            "height": int(self.inifile.find("CAMERA", "HEIGHT") or 600),
+        }
+
         self.angular_joints = False
         for n, pos in enumerate(s.joint_position[: s.joints]):
             if s.joint[n]["jointType"] == 2:
