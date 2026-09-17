@@ -863,7 +863,7 @@ class JogImageXY(QLabel):
                 lines = []
                 for line in self.line_buffer:
                     distance = math.dist(line[0], line[1])
-                    if distance > 20:
+                    if distance > 50:
                         lines.append(line)
                 if len(lines) == 2:
                     if lines[0][2] == 90.0 and lines[1][2] == 0.0:
@@ -881,13 +881,14 @@ class JogImageXY(QLabel):
                     center2 = line_center(lines[1][0], lines[1][1])
                     start1 = point_offset(center1, probe_circe_size, lines[0][2] * math.pi / 180)
                     start2 = point_offset(center2, probe_circe_size, lines[1][2] * math.pi / 180)
-                    touch = line_center(start1, start2)
+                    # touch = line_center(start1, start2)
+                    touch = (start2[0], start1[1])
                     self.points = [
                         [start1[0], start1[1], lines[0][2] + 180],
                         [start2[0], start2[1], lines[1][2] + 180],
                         [touch[0], touch[1], None],
                     ]
-                elif len(lines) == 4:
+                elif len(lines) == 4 and math.dist(lines[0][0], lines[3][1]) < 50:
                     print("rect")
                     center1 = line_center(lines[0][0], lines[0][1])
                     center2 = line_center(lines[1][0], lines[1][1])
@@ -897,12 +898,13 @@ class JogImageXY(QLabel):
                     start2 = point_offset(center2, probe_circe_size, lines[1][2] * math.pi / 180)
                     start3 = point_offset(center3, probe_circe_size, lines[2][2] * math.pi / 180)
                     start4 = point_offset(center4, probe_circe_size, lines[3][2] * math.pi / 180)
+                    touch = (start2[0], start1[1])
                     self.points = [
                         [start1[0], start1[1], lines[0][2] + 180],
                         [start2[0], start2[1], lines[1][2] + 180],
                         [start3[0], start3[1], lines[2][2] + 180],
                         [start4[0], start4[1], lines[3][2] + 180],
-                        [lines[0][1][0], lines[0][1][1], None],
+                        [touch[0], touch[1], None],
                     ]
                 elif len(lines) > 6:
                     center = [lines[0][0][0], lines[0][0][1]]
@@ -918,7 +920,17 @@ class JogImageXY(QLabel):
                     radius = int(radius / len(lines))
                     print("circle", center, radius)
                     self.circle = (center, radius)
+
+                    start1 = point_offset(center, radius - 40, 0 * math.pi / 180)
+                    start2 = point_offset(center, radius - 40, 90 * math.pi / 180)
+                    start3 = point_offset(center, radius - 40, 180 * math.pi / 180)
+                    start4 = point_offset(center, radius - 40, 270 * math.pi / 180)
+
                     self.points = [
+                        [start1[0], start1[1], 0],
+                        [start2[0], start2[1], 90],
+                        [start3[0], start3[1], 180],
+                        [start4[0], start4[1], 270],
                         [center[0], center[1], None],
                     ]
                 for line in lines:
@@ -1158,14 +1170,18 @@ class ScreenTJog(QWidget):
             # draw points
             if self.img_xy.points:
                 for point in self.img_xy.points[0:]:
-                    if point[2] is not None:
-                        target = point_offset(point, probe_lenght, point[2] * math.pi / 180)
-                        cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 0), 3)
-                    else:
-                        cv2.circle(frame, (int(point[0]), int(point[1])), probe_circe_size // 2, (255, 0, 0), 3)
-
                     cv2.circle(frame, (int(point[0]), int(point[1])), int(probe_circe_size // 3 * 2), (255, 255, 255), -1)
                     cv2.circle(frame, (int(point[0]), int(point[1])), int(probe_circe_size), (255, 255, 255), 1)
+                    cv2.circle(frame, (int(point[0]), int(point[1])), 10, (0, 0, 255), -1)
+
+                    if point[2] is not None:
+                        # probe side
+                        target = point_offset(point, probe_lenght, point[2] * math.pi / 180)
+                        cv2.line(frame, (int(point[0]), int(point[1])), target, (255, 255, 255), 1)
+                        cv2.circle(frame, target, 5, (0, 0, 255), -1)
+                    else:
+                        # probe down
+                        cv2.circle(frame, (int(point[0]), int(point[1])), 14, (0, 0, 255), 1)
 
                 # invert button
                 cv2.circle(frame, (20, 20), probe_circe_size, (0, 0, 255), 3)
