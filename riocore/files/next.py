@@ -1089,8 +1089,8 @@ class ScreenTJog(QWidget):
         btn_back.clicked.connect(partial(self.parent.view_set, "jog"))
         jog_top.addWidget(btn_back, stretch=1)
 
-        tjl = GradientLabel("Touch-JOG", parent=self.parent, objectName="screentitle")
-        jog_top.addWidget(tjl, stretch=9)
+        self.tjl = GradientLabel("Touch-JOG", parent=self.parent, objectName="screentitle")
+        jog_top.addWidget(self.tjl, stretch=9)
 
         btn_space = GradientLabel("", parent=self.parent, objectName="btnnone")
         jog_top.addWidget(btn_space, stretch=1)
@@ -1100,10 +1100,16 @@ class ScreenTJog(QWidget):
 
         def mode_toggle():
             self.img_xy.mode_toggle()
-            self.mode.setText(self.img_xy.mode_text())
+            if self.img_xy.mode_text() == "JOG":
+                self.mode.setText("PROBE")
+                self.tjl.setText("Touch-JOG")
+            else:
+                self.mode.setText("JOG")
+                self.tjl.setText("Probe-Draw")
+
             self.mode.update()
 
-        self.mode = GradientLabel("JOG", parent=self.parent, objectName="mode")
+        self.mode = GradientLabel("DRAW", parent=self.parent, objectName="mode")
         self.mode.clicked.connect(mode_toggle)
         jog_dro.addWidget(self.mode, stretch=1)
 
