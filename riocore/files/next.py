@@ -1124,9 +1124,10 @@ class ScreenTJog(QWidget):
         img_z = JogImageZ(objectName="jogz")
         jogh0.addWidget(img_z, stretch=1)
 
-        self.camera = CameraThread(self.parent.camera)
-        self.camera.image.connect(self.update_image)
-        self.camera.start()
+        if self.parent.camera_cfg:
+            self.camera = CameraThread(self.parent.camera_cfg)
+            self.camera.image.connect(self.update_image)
+            self.camera.start()
 
     def update_image(self, frame):
         try:
@@ -1904,6 +1905,7 @@ class MainWindow(QMainWindow):
     ngc_file = ""
     jog_lspeed = 40
     jog_aspeed = 5
+    camera_cfg = {}
 
     def __init__(self, args):
         super().__init__()
@@ -1929,11 +1931,12 @@ class MainWindow(QMainWindow):
         self.angular_velocity_default = float(self.inifile.find("TRAJ", "DEFAULT_ANGULAR_VELOCITY") or 5.0)
         self.angular_velocity_max = float(self.inifile.find("TRAJ", "MAX_ANGULAR_VELOCITY") or 10.0)
 
-        self.camera = {
-            "device": int(self.inifile.find("CAMERA", "DEVICE") or 1),
-            "width": int(self.inifile.find("CAMERA", "WIDTH") or 800),
-            "height": int(self.inifile.find("CAMERA", "HEIGHT") or 600),
-        }
+        if self.inifile.find("CAMERA", "DEVICE"):
+            self.camera_cfg = {
+                "device": int(self.inifile.find("CAMERA", "DEVICE")),
+                "width": int(self.inifile.find("CAMERA", "WIDTH") or 800),
+                "height": int(self.inifile.find("CAMERA", "HEIGHT") or 600),
+            }
 
         self.angular_joints = False
         for n, pos in enumerate(s.joint_position[: s.joints]):
