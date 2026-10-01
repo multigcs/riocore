@@ -1,15 +1,13 @@
 
-module udpoti
-    #(
-         parameter RESOLUTION = 100,
-         parameter DIVIDER = 100000
-     )
-     (
-         input clk,
-         input wire [31:0] value,
-         output reg updown = 0,
-         output reg increment = 0
-     );
+module udpoti #(
+    parameter RESOLUTION = 100,
+    parameter DIVIDER = 100000
+) (
+    input clk,
+    input wire [31:0] value,
+    output reg updown = 0,
+    output reg increment = 0
+);
 
     reg ctrl_clk = 0;
     reg [31:0] counter = 0;
@@ -25,7 +23,7 @@ module udpoti
 
     reg [31:0] init_counter = RESOLUTION;
     reg [31:0] pos = 0;
-    always @ (posedge ctrl_clk) begin
+    always @(posedge ctrl_clk) begin
         if (init == 1) begin
             updown <= 0;
             if (init_counter > 0) begin

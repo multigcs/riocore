@@ -1,15 +1,21 @@
 
-module uart
-    #(parameter BUFFER_SIZE_RX=80, parameter BUFFER_SIZE_TX=80, parameter MSGID=32'h74697277, parameter ClkFrequency=12000000, parameter Baud=2000000, parameter CSUM=0, parameter DEBUG=0)
-     (
-         input clk, // clock signal
-         output reg [BUFFER_SIZE_RX-1:0] rx_data = 0, // received data
-         input [BUFFER_SIZE_TX-1:0] tx_data, // data to send
-         output reg sync = 0, // new pkg received
-         output reg tx_enable = 0, // tx enable pin for rs485
-         output tx, // tx pin
-         input rx // rx pin
-     );
+module uart #(
+    parameter BUFFER_SIZE_RX = 80,
+    parameter BUFFER_SIZE_TX = 80,
+    parameter MSGID = 32'h74697277,
+    parameter ClkFrequency = 12000000,
+    parameter Baud = 2000000,
+    parameter CSUM = 0,
+    parameter DEBUG = 0
+) (
+    input clk,  // clock signal
+    output reg [BUFFER_SIZE_RX-1:0] rx_data = 0,  // received data
+    input [BUFFER_SIZE_TX-1:0] tx_data,  // data to send
+    output reg sync = 0,  // new pkg received
+    output reg tx_enable = 0,  // tx enable pin for rs485
+    output tx,  // tx pin
+    input rx  // rx pin
+);
 
     localparam BUFFER_SIZE_RX2 = BUFFER_SIZE_RX + (CSUM * 8);
     localparam BUFFER_SIZE_TX2 = BUFFER_SIZE_TX + (CSUM * 8);
@@ -27,21 +33,21 @@ module uart
     wire RxD_endofpacket;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-                .clk (clk),
-                .RxD (rx),
-                .RxD_data_ready (RxD_data_ready),
-                .RxD_data (RxD_data),
-                .RxD_idle (RxD_idle),
-                .RxD_endofpacket (RxD_endofpacket)
-            );
+        .clk(clk),
+        .RxD(rx),
+        .RxD_data_ready(RxD_data_ready),
+        .RxD_data(RxD_data),
+        .RxD_idle(RxD_idle),
+        .RxD_endofpacket(RxD_endofpacket)
+    );
 
     uart_tx #(ClkFrequency, Baud) uart_tx1 (
-                .clk (clk),
-                .TxD_start (TxD_start),
-                .TxD_data (TxD_data),
-                .TxD (tx),
-                .TxD_busy (TxD_busy)
-            );
+        .clk(clk),
+        .TxD_start(TxD_start),
+        .TxD_data(TxD_data),
+        .TxD(tx),
+        .TxD_busy(TxD_busy)
+    );
 
     reg tx_state = 0;
     reg [7:0] rx_counter = 0;
@@ -55,7 +61,7 @@ module uart
         if (RxD_endofpacket == 1) begin
             if ((MSGID == 0 || rx_data_buffer[BUFFER_SIZE_RX2 - 1:BUFFER_SIZE_RX2 - 32] == MSGID) && (CSUM == 0 || rx_csum == rx_data_buffer[7:0])) begin
                 if (CSUM == 1) begin
-                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2 - 1:8];
+                    rx_data <= rx_data_buffer[BUFFER_SIZE_RX2-1:8];
 
                     tx_data_buffer <= {tx_data, 8'd0};
                     tx_csum <= 0;
@@ -84,19 +90,19 @@ module uart
 
         end else if (tx_state == 1) begin
             if (TxD_start == 0 && TxD_busy == 0) begin
-                TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 1 - 7];
-                tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 1 - 7];
+                TxD_data <= tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-1-7];
+                tx_csum <= tx_csum + tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-1-7];
                 TxD_start <= 1;
             end else if (TxD_start == 1) begin
                 TxD_start <= 0;
                 if (tx_counter < BUFFER_SIZE_TX2 / 8 - 1) begin
                     tx_counter <= tx_counter + 1'd1;
                     if (CSUM == 0) begin
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
-                    end else if (tx_counter < BUFFER_SIZE_TX2/8 - 1 - 1) begin
-                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2 - 8 - 1:0], 8'd0};
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2-8-1:0], 8'd0};
+                    end else if (tx_counter < BUFFER_SIZE_TX2 / 8 - 1 - 1) begin
+                        tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE_TX2-8-1:0], 8'd0};
                     end else begin
-                        tx_data_buffer[BUFFER_SIZE_TX2 - 1:BUFFER_SIZE_TX2 - 8] <= tx_csum;
+                        tx_data_buffer[BUFFER_SIZE_TX2-1:BUFFER_SIZE_TX2-8] <= tx_csum;
                     end
                 end else begin
                     tx_state <= 0;
@@ -109,7 +115,7 @@ module uart
 
         end else if (RxD_data_ready == 1) begin
             if (rx_counter < BUFFER_SIZE_RX2 / 8) begin
-                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2 - 1 - 8:0], RxD_data};
+                rx_data_buffer <= {rx_data_buffer[BUFFER_SIZE_RX2-1-8:0], RxD_data};
                 if (rx_counter < BUFFER_SIZE_RX2 / 8 - 1) begin
                     rx_csum <= rx_csum + RxD_data;
                 end

@@ -1,21 +1,21 @@
 
-module tlc549c
-    #(parameter DIVIDER = 24)
-     (
-         input		clk,
-         input		miso,
-         output 	sclk,
-         output reg	sel = 0,
-         output reg	[7:0] value = 0
-     );
+module tlc549c #(
+    parameter DIVIDER = 24
+) (
+    input clk,
+    input miso,
+    output sclk,
+    output reg sel = 0,
+    output reg [7:0] value = 0
+);
 
-    reg	[7:0] value_buf = 0;
-    reg	[3:0] cnt = 0;
+    reg [7:0] value_buf = 0;
+    reg [3:0] cnt = 0;
     reg sclk_valid = 0;
     reg sel_valid = 0;
 
     reg clk_1m = 0;
-    reg [31:0]counter_1m = 0;
+    reg [31:0] counter_1m = 0;
     always @(posedge clk) begin
         if (counter_1m == 0) begin
             counter_1m <= DIVIDER;
@@ -26,7 +26,7 @@ module tlc549c
     end
 
     reg clk_40k = 0;
-    reg [31:0]counter_40k = 0;
+    reg [31:0] counter_40k = 0;
     always @(posedge clk_1m) begin
         if (counter_40k == 0) begin
             counter_40k <= 12;
@@ -37,9 +37,9 @@ module tlc549c
     end
 
     always @(posedge clk_1m) begin
-        if(clk_40k == 0) begin
+        if (clk_40k == 0) begin
             cnt <= 0;
-        end else if(cnt == 10) begin
+        end else if (cnt == 10) begin
             cnt <= 10;
         end else begin
             cnt <= cnt + 1'b1;
@@ -51,7 +51,7 @@ module tlc549c
     assign sclk = sclk_valid ? clk_1m : 1'b0;
 
     always @(posedge sclk) begin
-        if(sel == 0) begin
+        if (sel == 0) begin
             value_buf <= {miso, value_buf[7:1]};
         end
     end

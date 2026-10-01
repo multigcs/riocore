@@ -1,5 +1,5 @@
 
-`timescale 1ns/100ps
+`timescale 1ns / 100ps
 
 module testb;
     reg clk = 0;
@@ -23,10 +23,8 @@ module testb;
         $dumpvars(4, value);
 
         value = 1023;
-        #500
-        value = 1;
-        #500
-        value = 512;
+        #500 value = 1;
+        #500 value = 512;
 
         #1000 $finish;
 
@@ -35,11 +33,11 @@ module testb;
     tlc5615 #(
         .DIVIDER(1)
     ) tlc5615 (
-        .clk(clk),
+        .clk  (clk),
         .value(value),
-        .mosi(mosi),
-        .sclk(sclk),
-        .sel(sel)
+        .mosi (mosi),
+        .sclk (sclk),
+        .sel  (sel)
     );
 
 endmodule

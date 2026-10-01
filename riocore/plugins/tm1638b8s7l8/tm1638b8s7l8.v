@@ -1,30 +1,30 @@
 
-module tm1638b8s7l8
-    #(parameter DIVIDER = 1000)
-    (
-        input clk,
-        output sw0,
-        output sw1,
-        output sw2,
-        output sw3,
-        output sw4,
-        output sw5,
-        output sw6,
-        output sw7,
-        input led0,
-        input led1,
-        input led2,
-        input led3,
-        input led4,
-        input led5,
-        input led6,
-        input led7,
-        input signed [23:0] number1,
-        input [7:0] number2,
-        output reg sel = 1,
-        output reg sclk = 1,
-        inout data
-    );
+module tm1638b8s7l8 #(
+    parameter DIVIDER = 1000
+) (
+    input clk,
+    output sw0,
+    output sw1,
+    output sw2,
+    output sw3,
+    output sw4,
+    output sw5,
+    output sw6,
+    output sw7,
+    input led0,
+    input led1,
+    input led2,
+    input led3,
+    input led4,
+    input led5,
+    input led6,
+    input led7,
+    input signed [23:0] number1,
+    input [7:0] number2,
+    output reg sel = 1,
+    output reg sclk = 1,
+    inout data
+);
 
     wire dataIn;
     reg dataOut = 0;
@@ -56,7 +56,7 @@ module tm1638b8s7l8
 
     reg [31:0] data_read = 0;
     reg [3:0] prefix = 4'hb;
-    
+
     reg dot0 = 0;
     reg dot1 = 0;
     reg dot2 = 0;
@@ -94,16 +94,16 @@ module tm1638b8s7l8
     );
 
     bin2bcd bin2bcd1 (
-        .bin (numberAbs[15:0]),
-        .bcd (bcd)
+        .bin(numberAbs[15:0]),
+        .bcd(bcd)
     );
 
     bin2bcd bin2bcd2 (
-        .bin (number2),
-        .bcd (bcd2)
+        .bin(number2),
+        .bcd(bcd2)
     );
 
-    wire [3:0] nums [0:7];
+    wire [3:0] nums[0:7];
     wire [7:0] int1b;
     wire [7:0] int10b;
     wire [7:0] int1;
@@ -135,7 +135,7 @@ module tm1638b8s7l8
             numberAbs <= number1;
             prefix <= 4'hb;
         end
-            num <= nums[digit_pos[2:0]];
+        num <= nums[digit_pos[2:0]];
         if (state == 0) begin
             sclk <= 1;
             sel <= 0;
@@ -190,7 +190,7 @@ module tm1638b8s7l8
                         cmd[16] <= leds[digit_pos[2:0]];
                         cmd[15] <= dots[digit_pos[2:0]];
                         cmd[14:8] <= digit;
-                        cmd[7:0] <= 8'hc0 + (digit_pos<<1);
+                        cmd[7:0] <= 8'hc0 + (digit_pos << 1);
                         cmd_size <= 8'd24;
                         read_cmd <= 0;
                         digit_pos <= digit_pos + 1;
@@ -211,10 +211,10 @@ module tm1638b8s7l8
 endmodule
 
 module seven_segments (
-        input wire clk,
-        input wire [3:0] binary,
-        output reg [6:0] display = 0
-    );
+    input wire clk,
+    input wire [3:0] binary,
+    output reg [6:0] display = 0
+);
 
     always @(binary) begin
         case (binary)
@@ -239,13 +239,13 @@ module seven_segments (
     end
 endmodule
 
-module bin2bcd(
-        input [15:0] bin,
-        output reg [23:0] bcd = 0
-    );
+module bin2bcd (
+    input [15:0] bin,
+    output reg [23:0] bcd = 0
+);
     integer i;
     always @(bin) begin
-        bcd=0;
+        bcd = 0;
         for (i = 0; i < 16; i = i + 1) begin
             if (bcd[3:0] >= 5) bcd[3:0] = bcd[3:0] + 4'd3;
             if (bcd[7:4] >= 5) bcd[7:4] = bcd[7:4] + 4'd3;
@@ -253,7 +253,7 @@ module bin2bcd(
             if (bcd[15:12] >= 5) bcd[15:12] = bcd[15:12] + 4'd3;
             if (bcd[19:16] >= 5) bcd[19:16] = bcd[19:16] + 4'd3;
             if (bcd[23:20] >= 5) bcd[23:20] = bcd[23:20] + 4'd3;
-            bcd = {bcd[22:0], bin[15 - i]};
+            bcd = {bcd[22:0], bin[15-i]};
         end
     end
 endmodule

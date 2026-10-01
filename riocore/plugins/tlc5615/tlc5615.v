@@ -1,17 +1,17 @@
 
-module tlc5615
-    #(parameter DIVIDER = 100000)
-     (
-         input clk,
-         output reg mosi = 0,
-         output reg sclk = 0,
-         output reg sel = 1,
-         input wire [9:0] value
-     );
+module tlc5615 #(
+    parameter DIVIDER = 100000
+) (
+    input clk,
+    output reg mosi = 0,
+    output reg sclk = 0,
+    output reg sel = 1,
+    input wire [9:0] value
+);
 
-    localparam STATE_START = 0;
-    localparam STATE_SEND  = 1;
-    localparam STATE_STOP  = 2;
+    localparam STATE_START  = 0;
+    localparam STATE_SEND   = 1;
+    localparam STATE_STOP   = 2;
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
 
     reg [7:0] state = 0;
@@ -31,12 +31,12 @@ module tlc5615
     end
 
     always @(posedge mclk) begin
-        case(state)
+        case (state)
             STATE_START: begin
                 sclk <= 0;
                 sel <= 0;
                 data_pos <= 0;
-                data <= {value, 2'd3}; 
+                data <= {value, 2'd3};
                 state <= 1;
                 next_clk <= 0;
             end
@@ -47,7 +47,7 @@ module tlc5615
                 end else if (data_pos < 12) begin
                     sclk <= 0;
                     next_clk <= 1;
-                    mosi <= data[11 - data_pos];
+                    mosi <= data[11-data_pos];
                     data_pos <= data_pos + 1;
                 end else begin
                     state <= 2;
