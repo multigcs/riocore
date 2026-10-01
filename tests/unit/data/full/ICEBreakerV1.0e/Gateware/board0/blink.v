@@ -1,10 +1,11 @@
 
-module blink
-    #(parameter DIVIDER = 100000, parameter DIVIDER_BITS = 24)
-    (
-        input wire clk, // clock signal
-        output wire led // output pin
-    );
+module blink #(
+    parameter DIVIDER = 100000,
+    parameter DIVIDER_BITS = 24
+) (
+    input  wire clk,  // clock signal
+    output wire led   // output pin
+);
     reg rled = 0;
     reg [DIVIDER_BITS-1:0] counter = 0;
     assign led = rled;

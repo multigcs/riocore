@@ -2,31 +2,29 @@
     UDP-Interface based on W5500 chip
 */
 
-module w5500
-    #(
-         parameter BUFFER_SIZE_RX=16'd64,
-         parameter BUFFER_SIZE_TX=16'd64,
-         parameter MSGID=32'h74697277,
-         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
-         parameter NET_MASK={8'd255, 8'd255, 8'd255, 8'd0},
-         parameter GW_ADDR={8'd192, 8'd168, 8'd10, 8'd1},
-         parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
-         parameter PORT=2390,
-         parameter DIVIDER=3,
-         parameter DIVIDER_BITS=31
-     )
-     (
-         input clk, // clock signal
-         output mosi, // mosi pin
-         input miso, // miso pin
-         output sclk, // slck pin
-         output sel, // select pin
-         input intr, // interupt pin
-         output rst, // reset pin
-         input [BUFFER_SIZE_TX-1:0] tx_data, // send buffer
-         output [BUFFER_SIZE_RX-1:0] rx_data, // receive buffer
-         output reg sync = 0 // sync flag (new package received)
-     );
+module w5500 #(
+    parameter BUFFER_SIZE_RX = 16'd64,
+    parameter BUFFER_SIZE_TX = 16'd64,
+    parameter MSGID = 32'h74697277,
+    parameter IP_ADDR = {8'd192, 8'd168, 8'd10, 8'd194},
+    parameter NET_MASK = {8'd255, 8'd255, 8'd255, 8'd0},
+    parameter GW_ADDR = {8'd192, 8'd168, 8'd10, 8'd1},
+    parameter MAC_ADDR = {8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
+    parameter PORT = 2390,
+    parameter DIVIDER = 3,
+    parameter DIVIDER_BITS = 31
+) (
+    input clk,  // clock signal
+    output mosi,  // mosi pin
+    input miso,  // miso pin
+    output sclk,  // slck pin
+    output sel,  // select pin
+    input intr,  // interupt pin
+    output rst,  // reset pin
+    input [BUFFER_SIZE_TX-1:0] tx_data,  // send buffer
+    output [BUFFER_SIZE_RX-1:0] rx_data,  // receive buffer
+    output reg sync = 0  // sync flag (new package received)
+);
 
     reg [DIVIDER_BITS:0] clk_counter = 0;
     reg mclk = 0;
@@ -75,150 +73,157 @@ module w5500
         end
     end
 
-    wiznet5500 #(.IP_ADDR(IP_ADDR), .NET_MASK(NET_MASK), .GW_ADDR(GW_ADDR), .MAC_ADDR(MAC_ADDR), .PORT(PORT), .BUFFER_SIZE_RX(BUFFER_SIZE_RX), .BUFFER_SIZE_TX(BUFFER_SIZE_TX), .MSGID(MSGID)) eth_iface (
-                   .clk(mclk),
-                   .rst(rst),
-                   .miso(miso),
-                   .mosi(mosi),
-                   .spi_clk(sclk),
-                   .spi_chip_select_n(sel),
-                   .is_available(ethernet_available),
-                   .data_input(data_to_ethernet),
-                   .data_input_valid(data_out_valid),
-                   .data_output(rx_data),
-                   .data_output_valid(data_output_valid),
-                   .flush_requested(flush_requested)
-               );
+    wiznet5500 #(
+        .IP_ADDR(IP_ADDR),
+        .NET_MASK(NET_MASK),
+        .GW_ADDR(GW_ADDR),
+        .MAC_ADDR(MAC_ADDR),
+        .PORT(PORT),
+        .BUFFER_SIZE_RX(BUFFER_SIZE_RX),
+        .BUFFER_SIZE_TX(BUFFER_SIZE_TX),
+        .MSGID(MSGID)
+    ) eth_iface (
+        .clk(mclk),
+        .rst(rst),
+        .miso(miso),
+        .mosi(mosi),
+        .spi_clk(sclk),
+        .spi_chip_select_n(sel),
+        .is_available(ethernet_available),
+        .data_input(data_to_ethernet),
+        .data_input_valid(data_out_valid),
+        .data_output(rx_data),
+        .data_output_valid(data_output_valid),
+        .flush_requested(flush_requested)
+    );
 endmodule
 
 
 
 // based on: https://github.com/harout/concurrent-data-capture
-module wiznet5500
-    #(
-         parameter IP_ADDR = {8'd192, 8'd168, 8'd10, 8'd194},
-         parameter NET_MASK={8'd255, 8'd255, 8'd255, 8'd0},
-         parameter GW_ADDR={8'd192, 8'd168, 8'd10, 8'd1},
-         parameter MAC_ADDR = {8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
-         parameter PORT = 2390,
-         parameter BUFFER_SIZE_RX = 192,
-         parameter BUFFER_SIZE_TX = 192,
-         parameter MSGID=32'h74697277
-     )
-     (
-         input clk,
-         output reg rst = 0,
-         input miso,
-         input data_input_valid,
-         input [BUFFER_SIZE_TX-1:0] data_input,
-         output reg [BUFFER_SIZE_RX-1:0] data_output = 0,
-         input flush_requested,
-         output reg mosi = 1'd0,
-         output reg spi_clk = 1'b0,
-         output reg spi_chip_select_n = 1'd0,
-         output reg data_output_valid = 0,
-         output is_available
-     );
+module wiznet5500 #(
+    parameter IP_ADDR = {8'd192, 8'd168, 8'd10, 8'd194},
+    parameter NET_MASK = {8'd255, 8'd255, 8'd255, 8'd0},
+    parameter GW_ADDR = {8'd192, 8'd168, 8'd10, 8'd1},
+    parameter MAC_ADDR = {8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
+    parameter PORT = 2390,
+    parameter BUFFER_SIZE_RX = 192,
+    parameter BUFFER_SIZE_TX = 192,
+    parameter MSGID = 32'h74697277
+) (
+    input clk,
+    output reg rst = 0,
+    input miso,
+    input data_input_valid,
+    input [BUFFER_SIZE_TX-1:0] data_input,
+    output reg [BUFFER_SIZE_RX-1:0] data_output = 0,
+    input flush_requested,
+    output reg mosi = 1'd0,
+    output reg spi_clk = 1'b0,
+    output reg spi_chip_select_n = 1'd0,
+    output reg data_output_valid = 0,
+    output is_available
+);
 
-    localparam HEADER_SIZE  = 8'd64;
-    localparam HEADER_IP_OFFSET  = 8'd0;
-    localparam HEADER_PORT_OFFSET  = 8'd32;
+    localparam HEADER_SIZE             = 8'd64;
+    localparam HEADER_IP_OFFSET        = 8'd0;
+    localparam HEADER_PORT_OFFSET      = 8'd32;
 
-    localparam WRITE_S0  = 8'b00001100;
-    localparam READ_S0   = 8'b00001000;
-    localparam WRITE_REG = 8'b00000100;
+    localparam WRITE_S0                = 8'b00001100;
+    localparam READ_S0                 = 8'b00001000;
+    localparam WRITE_REG               = 8'b00000100;
 
-    localparam STAT_SOCK_UDP = 8'h22;
+    localparam STAT_SOCK_UDP           = 8'h22;
 
     // Set PHY to 100 megabits / second, full duplex
-    localparam SET_PHY_MODE = 32'b00000000_00101110_00000100_11011000;
+    localparam SET_PHY_MODE            = 32'b00000000_00101110_00000100_11011000;
 
     // Set/read our MAC address.
-    localparam SET_MAC_ADDRESS_BYTE_0  =  {8'h00, 8'b00001001, WRITE_REG};
-    localparam SET_MAC_ADDRESS_BYTE_1  =  {8'h00, 8'b00001010, WRITE_REG};
-    localparam SET_MAC_ADDRESS_BYTE_2  =  {8'h00, 8'b00001011, WRITE_REG};
-    localparam SET_MAC_ADDRESS_BYTE_3  =  {8'h00, 8'b00001100, WRITE_REG};
-    localparam SET_MAC_ADDRESS_BYTE_4  =  {8'h00, 8'b00001101, WRITE_REG};
-    localparam SET_MAC_ADDRESS_BYTE_5  =  {8'h00, 8'b00001110, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_0  = {8'h00, 8'b00001001, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_1  = {8'h00, 8'b00001010, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_2  = {8'h00, 8'b00001011, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_3  = {8'h00, 8'b00001100, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_4  = {8'h00, 8'b00001101, WRITE_REG};
+    localparam SET_MAC_ADDRESS_BYTE_5  = {8'h00, 8'b00001110, WRITE_REG};
 
     // Set/read our IP address.
-    localparam SET_SOURCE_IP_ADDRESS_0  =  {8'h00, 8'b00001111, WRITE_REG};
-    localparam SET_SOURCE_IP_ADDRESS_1  =  {8'h00, 8'b00010000, WRITE_REG};
-    localparam SET_SOURCE_IP_ADDRESS_2  =  {8'h00, 8'b00010001, WRITE_REG};
-    localparam SET_SOURCE_IP_ADDRESS_3  =  {8'h00, 8'b00010010, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_0 = {8'h00, 8'b00001111, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_1 = {8'h00, 8'b00010000, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_2 = {8'h00, 8'b00010001, WRITE_REG};
+    localparam SET_SOURCE_IP_ADDRESS_3 = {8'h00, 8'b00010010, WRITE_REG};
 
     // Set/read out gateway address.
-    localparam SET_GATEWAY_ADDRESS_0    = {8'h00, 8'b00000001, WRITE_REG};
-    localparam SET_GATEWAY_ADDRESS_1    = {8'h00, 8'b00000010, WRITE_REG};
-    localparam SET_GATEWAY_ADDRESS_2    = {8'h00, 8'b00000011, WRITE_REG};
-    localparam SET_GATEWAY_ADDRESS_3    = {8'h00, 8'b00000100, WRITE_REG};
+    localparam SET_GATEWAY_ADDRESS_0   = {8'h00, 8'b00000001, WRITE_REG};
+    localparam SET_GATEWAY_ADDRESS_1   = {8'h00, 8'b00000010, WRITE_REG};
+    localparam SET_GATEWAY_ADDRESS_2   = {8'h00, 8'b00000011, WRITE_REG};
+    localparam SET_GATEWAY_ADDRESS_3   = {8'h00, 8'b00000100, WRITE_REG};
 
     // Set/read out subnet mask.
-    localparam SET_SUBNET_MASK_0  = {8'h00, 8'b00000101, WRITE_REG};
-    localparam SET_SUBNET_MASK_1  = {8'h00, 8'b00000110, WRITE_REG};
-    localparam SET_SUBNET_MASK_2  = {8'h00, 8'b00000111, WRITE_REG};
-    localparam SET_SUBNET_MASK_3  = {8'h00, 8'b00001000, WRITE_REG};
+    localparam SET_SUBNET_MASK_0       = {8'h00, 8'b00000101, WRITE_REG};
+    localparam SET_SUBNET_MASK_1       = {8'h00, 8'b00000110, WRITE_REG};
+    localparam SET_SUBNET_MASK_2       = {8'h00, 8'b00000111, WRITE_REG};
+    localparam SET_SUBNET_MASK_3       = {8'h00, 8'b00001000, WRITE_REG};
 
     // Set the socket mode to UDP with no blocking
-    localparam SET_SOCKET_0_MODE  = {16'h0000, WRITE_S0, 8'b00000010};
+    localparam SET_SOCKET_0_MODE       = {16'h0000, WRITE_S0, 8'b00000010};
 
     // Set socket 0's destination IP address (169.254.0.123)
-    localparam SET_SOCKET_0_DST_IP_0 = {8'h00, 8'b00001100, WRITE_S0};
-    localparam SET_SOCKET_0_DST_IP_1 = {8'h00, 8'b00001101, WRITE_S0};
-    localparam SET_SOCKET_0_DST_IP_2 = {8'h00, 8'b00001110, WRITE_S0};
-    localparam SET_SOCKET_0_DST_IP_3 = {8'h00, 8'b00001111, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_0   = {8'h00, 8'b00001100, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_1   = {8'h00, 8'b00001101, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_2   = {8'h00, 8'b00001110, WRITE_S0};
+    localparam SET_SOCKET_0_DST_IP_3   = {8'h00, 8'b00001111, WRITE_S0};
 
     // Set socket 0's destination port to 5000. Requires two commands.
-    localparam SET_SOCKET_0_DST_PRT_0 = {8'h00, 8'b00010000, WRITE_S0};
-    localparam SET_SOCKET_0_DST_PRT_1 = {8'h00, 8'b00010001, WRITE_S0};
+    localparam SET_SOCKET_0_DST_PRT_0  = {8'h00, 8'b00010000, WRITE_S0};
+    localparam SET_SOCKET_0_DST_PRT_1  = {8'h00, 8'b00010001, WRITE_S0};
 
     // Set the socket source port number to 5000. Requires two commands.
     localparam SET_SOCKET_0_SRC_PORT_0 = {8'h00, 8'b00000100, WRITE_S0};
     localparam SET_SOCKET_0_SRC_PORT_1 = {8'h00, 8'b00000101, WRITE_S0};
 
     // Set socket 0's TX buffer size to 16kilobytes
-    localparam S0_RXBUF_SIZE  = 16'h1E;
-    localparam SET_SOCKET_0_RX_BFR_SZ = {S0_RXBUF_SIZE, WRITE_S0, 8'd16};
-    localparam S0_TXBUF_SIZE  = 16'h1F;
-    localparam SET_SOCKET_0_TX_BFR_SZ = {S0_TXBUF_SIZE, WRITE_S0, 8'd16};
+    localparam S0_RXBUF_SIZE           = 16'h1E;
+    localparam SET_SOCKET_0_RX_BFR_SZ  = {S0_RXBUF_SIZE, WRITE_S0, 8'd16};
+    localparam S0_TXBUF_SIZE           = 16'h1F;
+    localparam SET_SOCKET_0_TX_BFR_SZ  = {S0_TXBUF_SIZE, WRITE_S0, 8'd16};
 
-    localparam OPEN_SOCKET_0 =       {8'h00, 8'b00000001, WRITE_S0, 8'b00000001};
-    localparam READ_SOCKET_0_STATE = {8'h00, 8'b00000011, READ_S0,  8'b00100010};
+    localparam OPEN_SOCKET_0           = {8'h00, 8'b00000001, WRITE_S0, 8'b00000001};
+    localparam READ_SOCKET_0_STATE     = {8'h00, 8'b00000011, READ_S0, 8'b00100010};
 
-    localparam SEND_PACKET_SOCKET_0 = {8'h00, 8'b00000001, WRITE_S0, 8'b00100000};
+    localparam SEND_PACKET_SOCKET_0    = {8'h00, 8'b00000001, WRITE_S0, 8'b00100000};
 
-    localparam GET_S0_RX_RSR0 = {16'h0026, READ_S0, 8'd0};
-    localparam GET_S0_RX_RSR1 = {16'h0027, READ_S0, 8'd0};
-    localparam S0_CR_40 = {16'h0001, WRITE_S0, 8'b01000000};
+    localparam GET_S0_RX_RSR0          = {16'h0026, READ_S0, 8'd0};
+    localparam GET_S0_RX_RSR1          = {16'h0027, READ_S0, 8'd0};
+    localparam S0_CR_40                = {16'h0001, WRITE_S0, 8'b01000000};
 
-    localparam SET_S0_RX_RD0 = {16'h0028, WRITE_S0};
-    localparam SET_S0_RX_RD1 = {16'h0029, WRITE_S0};
+    localparam SET_S0_RX_RD0           = {16'h0028, WRITE_S0};
+    localparam SET_S0_RX_RD1           = {16'h0029, WRITE_S0};
 
-    localparam SET_S0_TX_WR0 = {16'h0024, WRITE_S0};
-    localparam SET_S0_TX_WR1 = {16'h0025, WRITE_S0};
+    localparam SET_S0_TX_WR0           = {16'h0024, WRITE_S0};
+    localparam SET_S0_TX_WR1           = {16'h0025, WRITE_S0};
 
-    localparam BSB_S0_TX_RWB_WRITE = 8'b00010100;
-    localparam BSB_S0_RX_RWB_READ  = 8'b00011000;
+    localparam BSB_S0_TX_RWB_WRITE     = 8'b00010100;
+    localparam BSB_S0_RX_RWB_READ      = 8'b00011000;
 
-    localparam STATE_UNDEFINED =	     5'd0;
-    localparam STATE_IDLE =              5'd1;
-    localparam STATE_SENDING_COMMAND =   5'd2;
-    localparam STATE_INITIALIZING =      5'd3;
-    localparam STATE_PUSHING_DATA =      5'd4;
-    localparam STATE_UPDATING_TX_PTR =   5'd5;
-    localparam STATE_SENDING_PACKET =	 5'd6;
-    localparam STATE_PULLING_DATA =	     5'd7;
-    localparam STATE_RX_START =	         5'd8;
-    localparam STATE_RX_WRITE_PTR1 =     5'd9;
-    localparam STATE_RX_WRITE_PTR0 =     5'd10;
-    localparam STATE_RX_DONE =	         5'd11;
-    localparam STATE_SET_IP_0 =	         5'd12;
-    localparam STATE_SET_IP_1 =	         5'd13;
-    localparam STATE_SET_IP_2 =	         5'd14;
-    localparam STATE_SET_IP_3 =	         5'd15;
-    localparam STATE_SET_PORT_0 =	     5'd16;
-    localparam STATE_SET_PORT_1 =	     5'd17;
-    localparam STATE_STARTDELAY =	     5'd18;
+    localparam STATE_UNDEFINED         = 5'd0;
+    localparam STATE_IDLE              = 5'd1;
+    localparam STATE_SENDING_COMMAND   = 5'd2;
+    localparam STATE_INITIALIZING      = 5'd3;
+    localparam STATE_PUSHING_DATA      = 5'd4;
+    localparam STATE_UPDATING_TX_PTR   = 5'd5;
+    localparam STATE_SENDING_PACKET    = 5'd6;
+    localparam STATE_PULLING_DATA      = 5'd7;
+    localparam STATE_RX_START          = 5'd8;
+    localparam STATE_RX_WRITE_PTR1     = 5'd9;
+    localparam STATE_RX_WRITE_PTR0     = 5'd10;
+    localparam STATE_RX_DONE           = 5'd11;
+    localparam STATE_SET_IP_0          = 5'd12;
+    localparam STATE_SET_IP_1          = 5'd13;
+    localparam STATE_SET_IP_2          = 5'd14;
+    localparam STATE_SET_IP_3          = 5'd15;
+    localparam STATE_SET_PORT_0        = 5'd16;
+    localparam STATE_SET_PORT_1        = 5'd17;
+    localparam STATE_STARTDELAY        = 5'd18;
 
     reg is_busy = 1'b0;
     reg [BUFFER_SIZE_RX+HEADER_SIZE+24-1:0] rx_buffer = 0;
@@ -255,9 +260,9 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_TX_WR1, tx_buffer_write_pointer[7:0]};
             next_state <= STATE_UPDATING_TX_PTR;
-         `ifdef WIZNET5500_READ_DATA
+`ifdef WIZNET5500_READ_DATA
             data_read_valid <= 1'b0;
-         `endif         
+`endif
         end else if (state == STATE_UPDATING_TX_PTR) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -266,9 +271,9 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= {SET_S0_TX_WR0, tx_buffer_write_pointer[15:8]};
             next_state <= STATE_SENDING_PACKET;
-         `ifdef WIZNET5500_READ_DATA
+`ifdef WIZNET5500_READ_DATA
             data_read_valid <= 1'b0;
-         `endif         
+`endif
         end else if (state == STATE_SENDING_PACKET) begin
             spi_clk <= 1'b0;
             state <= STATE_SENDING_COMMAND;
@@ -277,15 +282,15 @@ module wiznet5500
             is_busy <= 1'b1;
             current_instruction <= SEND_PACKET_SOCKET_0;
             next_state <= STATE_UNDEFINED;
-         `ifdef WIZNET5500_READ_DATA         
+`ifdef WIZNET5500_READ_DATA
             data_read_valid <= 1'b0;
-         `endif
+`endif
 
 
         end else if (state == STATE_RX_START) begin
             rx_buffer_read_pointer <= rx_buffer_read_pointer + data_read[7:0];
 
-            if (rx_size == (BUFFER_SIZE_RX+HEADER_SIZE)) begin
+            if (rx_size == (BUFFER_SIZE_RX + HEADER_SIZE)) begin
                 rx_buffer_valid <= 1;
                 current_instruction <= {8'd0, rx_buffer_read_pointer, BSB_S0_RX_RWB_READ};
                 spi_clk <= 1'b0;
@@ -298,7 +303,7 @@ module wiznet5500
                 state <= STATE_RX_WRITE_PTR1;
                 is_busy <= 1'b1;
             end
-        end else if (state == STATE_PULLING_DATA && spi_clock_count > (rx_size+24-1)) begin
+        end else if (state == STATE_PULLING_DATA && spi_clock_count > (rx_size + 24 - 1)) begin
             spi_chip_select_n <= 1'b1;
             state <= STATE_RX_WRITE_PTR1;
             is_busy <= 1'b1;
@@ -414,9 +419,9 @@ module wiznet5500
                 spi_clock_count <= 10'd0;
                 is_busy <= 1'b1;
                 current_instruction <= READ_SOCKET_0_STATE;
-         `ifdef WIZNET5500_READ_DATA
+`ifdef WIZNET5500_READ_DATA
                 data_read_valid <= 1'b0;
-         `endif
+`endif
             end
         end else if (state == STATE_INITIALIZING) begin
             spi_clk <= 1'b0;
@@ -440,9 +445,9 @@ module wiznet5500
                 6: current_instruction <= {SET_MAC_ADDRESS_BYTE_5, MAC_ADDR[7:0]};
 
                 // Set our IP address
-                7: current_instruction <= {SET_SOURCE_IP_ADDRESS_0, IP_ADDR[31:24]};
-                8: current_instruction <= {SET_SOURCE_IP_ADDRESS_1, IP_ADDR[23:16]};
-                9: current_instruction <= {SET_SOURCE_IP_ADDRESS_2, IP_ADDR[15:8]};
+                7:  current_instruction <= {SET_SOURCE_IP_ADDRESS_0, IP_ADDR[31:24]};
+                8:  current_instruction <= {SET_SOURCE_IP_ADDRESS_1, IP_ADDR[23:16]};
+                9:  current_instruction <= {SET_SOURCE_IP_ADDRESS_2, IP_ADDR[15:8]};
                 10: current_instruction <= {SET_SOURCE_IP_ADDRESS_3, IP_ADDR[7:0]};
 
                 // Set the gateway address
@@ -513,7 +518,7 @@ module wiznet5500
             spi_chip_select_n <= 1'b1;
             state <= STATE_IDLE;
             // n bytes are pushed per message
-            tx_buffer_write_pointer <= tx_buffer_write_pointer + (BUFFER_SIZE_TX/16'd8);
+            tx_buffer_write_pointer <= tx_buffer_write_pointer + (BUFFER_SIZE_TX / 16'd8);
             is_busy <= 1'b0;
         end else if (state == STATE_SENDING_COMMAND || state == STATE_PUSHING_DATA || state == STATE_PULLING_DATA) begin
             // We are effectively clocking the module at half the clock rate
@@ -531,7 +536,7 @@ module wiznet5500
                     is_check_rx <= 0;
                     rx_timer <= 4'd0;
                     rx_size <= {data_read[7:0], 3'd0};
-                    if (data_read[7:0] >= (BUFFER_SIZE_RX+HEADER_SIZE)) begin
+                    if (data_read[7:0] >= (BUFFER_SIZE_RX + HEADER_SIZE)) begin
                         rx_checks <= 4'd0;
                         state <= STATE_RX_START;
                     end else if (data_read[7:0] > 8'd0) begin
@@ -564,17 +569,17 @@ module wiznet5500
         if (spi_clk == 1'b0 && state == STATE_SENDING_COMMAND && spi_clock_count >= 24 && spi_clock_count <= 31) begin
             data_read <= {data_read[6:0], miso};
         end else if (spi_clk == 1'b0 && state == STATE_PULLING_DATA && spi_clock_count) begin
-            rx_buffer <= {rx_buffer[BUFFER_SIZE_RX+HEADER_SIZE+24 - 2:0], miso};
+            rx_buffer <= {rx_buffer[BUFFER_SIZE_RX+HEADER_SIZE+24-2:0], miso};
         end
     end
 
     always @(posedge clk) begin
         if (spi_clk == 1'b1 && state == STATE_SENDING_COMMAND && spi_clock_count < 32) begin
-            mosi <= current_instruction[8'd31 - spi_clock_count];
+            mosi <= current_instruction[8'd31-spi_clock_count];
         end else if (spi_clk == 1'b1 && state == STATE_PUSHING_DATA && spi_clock_count < BUFFER_SIZE_TX+24) begin
-            mosi <= tx_buffer[(BUFFER_SIZE_TX+24-1) - spi_clock_count];
+            mosi <= tx_buffer[(BUFFER_SIZE_TX+24-1)-spi_clock_count];
         end else if (spi_clk == 1'b1 && state == STATE_PULLING_DATA && spi_clock_count < 24) begin
-            mosi <= current_instruction[8'd23 - spi_clock_count];
+            mosi <= current_instruction[8'd23-spi_clock_count];
         end
     end
 

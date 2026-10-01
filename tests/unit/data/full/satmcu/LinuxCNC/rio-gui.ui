@@ -1037,13 +1037,10 @@ QLabel {
       <property name="s32_pin_type" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="u32_pin_type" stdset="0">
-       <bool>false</bool>
-      </property>
       <property name="float_pin_type" stdset="0">
        <bool>true</bool>
       </property>
-      <property name="bin_pin_type" stdset="0">
+      <property name="bit_pin_type" stdset="0">
        <bool>false</bool>
       </property>
      </widget>
@@ -1372,13 +1369,10 @@ QLabel {
       <property name="s32_pin_type" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="u32_pin_type" stdset="0">
-       <bool>false</bool>
-      </property>
       <property name="float_pin_type" stdset="0">
        <bool>true</bool>
       </property>
-      <property name="bin_pin_type" stdset="0">
+      <property name="bit_pin_type" stdset="0">
        <bool>false</bool>
       </property>
      </widget>
@@ -1435,13 +1429,10 @@ QLabel {
       <property name="s32_pin_type" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="u32_pin_type" stdset="0">
-       <bool>false</bool>
-      </property>
       <property name="float_pin_type" stdset="0">
        <bool>true</bool>
       </property>
-      <property name="bin_pin_type" stdset="0">
+      <property name="bit_pin_type" stdset="0">
        <bool>false</bool>
       </property>
      </widget>
@@ -1498,13 +1489,10 @@ QLabel {
       <property name="s32_pin_type" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="u32_pin_type" stdset="0">
-       <bool>false</bool>
-      </property>
       <property name="float_pin_type" stdset="0">
        <bool>true</bool>
       </property>
-      <property name="bin_pin_type" stdset="0">
+      <property name="bit_pin_type" stdset="0">
        <bool>false</bool>
       </property>
      </widget>
@@ -2106,13 +2094,10 @@ QLabel {
       <property name="s32_pin_type" stdset="0">
        <bool>false</bool>
       </property>
-      <property name="u32_pin_type" stdset="0">
-       <bool>false</bool>
-      </property>
       <property name="float_pin_type" stdset="0">
        <bool>true</bool>
       </property>
-      <property name="bin_pin_type" stdset="0">
+      <property name="bit_pin_type" stdset="0">
        <bool>false</bool>
       </property>
      </widget>

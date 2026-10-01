@@ -307,6 +307,7 @@
           <text>"&#176;C        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -665,6 +666,7 @@
           <text>"&#176;C        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -688,6 +690,7 @@
           <text>"&#176;C        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -711,6 +714,7 @@
           <text>"&#176;C        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -734,6 +738,7 @@
           <text>"&#176;C        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
     </vbox>
@@ -759,6 +764,7 @@
           <text>"mA        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -782,6 +788,7 @@
           <text>"mA        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -805,6 +812,7 @@
           <text>"mA        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -828,6 +836,7 @@
           <text>"mA        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
     </vbox>
@@ -895,6 +904,7 @@
           <text>"RPM       "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -936,6 +946,7 @@
           <text>"A         "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -959,6 +970,7 @@
           <text>"RPM       "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -982,6 +994,7 @@
           <text>"V         "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -1005,6 +1018,7 @@
           <text>"V         "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
     </vbox>
@@ -1030,6 +1044,7 @@
           <text>"V         "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -1053,6 +1068,7 @@
           <text>"A         "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -1076,6 +1092,7 @@
           <text>"W         "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -1099,6 +1116,7 @@
           <text>"Cos       "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -1122,6 +1140,7 @@
           <text>"Hz        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>
@@ -1145,6 +1164,7 @@
           <text>"kWh       "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
     </vbox>

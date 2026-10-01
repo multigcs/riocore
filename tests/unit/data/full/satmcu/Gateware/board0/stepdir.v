@@ -1,17 +1,18 @@
 /*
     step/dir generator
 */
-module stepdir
-    #(parameter PULSE_LEN = 2, parameter DIR_DELAY = 1)
-    (
-        input clk, // clock signal
-        input enable, // enable signal
-        input signed [31:0] velocity, // velocity input
-        output reg signed [31:0] position = 32'd0, // position feedback
-        output reg dir = 0, // dir pin
-        output reg step = 0, // step pin
-        output en // enable pin
-    );
+module stepdir #(
+    parameter PULSE_LEN = 2,
+    parameter DIR_DELAY = 1
+) (
+    input clk,  // clock signal
+    input enable,  // enable signal
+    input signed [31:0] velocity,  // velocity input
+    output reg signed [31:0] position = 32'd0,  // position feedback
+    output reg dir = 0,  // dir pin
+    output reg step = 0,  // step pin
+    output en  // enable pin
+);
     wire dirFlag;
     assign dirFlag = (velocity >= 0);
     reg dir_changed = 0;
@@ -20,7 +21,7 @@ module stepdir
     reg [31:0] pulseEnd = 32'd0;
     assign en = enable;
 
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (dirFlag) begin
             velocityAbs <= velocity;
         end else begin
@@ -28,7 +29,7 @@ module stepdir
         end
     end
 
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (PULSE_LEN == 0) begin
             pulseEnd <= velocityAbs / 2;
         end else begin
@@ -36,7 +37,7 @@ module stepdir
         end
     end
 
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if ((velocity != 0 && enable == 1 && jointCounter < velocityAbs) || step || dir_changed) begin
             if (step == 0 && dir != dirFlag) begin
                 dir <= dirFlag;

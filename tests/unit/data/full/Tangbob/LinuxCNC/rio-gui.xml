@@ -130,6 +130,7 @@
           <text>"&#176;C        "</text>
           <anchor>"w"</anchor>
           <font>("Helvetica",9)</font>
+          <width>-1</width>
         </label>
       </hbox>
       <hbox>

@@ -1,14 +1,17 @@
 
-module mbus
-    #(parameter RX_BUFFERSIZE=64, parameter TX_BUFFERSIZE=64, parameter ClkFrequency=12000000, parameter Baud=9600)
-    (
-        input clk, // clock signal
-        input rx, // rx pin
-        output tx, // tx pin
-        output wire tx_enable, // tx enable pin for rs485
-        output reg [RX_BUFFERSIZE-1:0] rxdata = 0, // received data
-        input [TX_BUFFERSIZE-1:0] txdata // data to send
-    );
+module mbus #(
+    parameter RX_BUFFERSIZE = 64,
+    parameter TX_BUFFERSIZE = 64,
+    parameter ClkFrequency = 12000000,
+    parameter Baud = 9600
+) (
+    input clk,  // clock signal
+    input rx,  // rx pin
+    output tx,  // tx pin
+    output wire tx_enable,  // tx enable pin for rs485
+    output reg [RX_BUFFERSIZE-1:0] rxdata = 0,  // received data
+    input [TX_BUFFERSIZE-1:0] txdata  // data to send
+);
 
     reg [31:0] counter = 0;
     reg [7:0] value_n = 0;
@@ -35,12 +38,12 @@ module mbus
     wire RxD_endofpacket;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-        .clk (clk),
-        .RxD (rx),
-        .RxD_data_ready (RxD_data_ready),
-        .RxD_data (RxD_data),
-        .RxD_idle (RxD_idle),
-        .RxD_endofpacket (RxD_endofpacket)
+        .clk(clk),
+        .RxD(rx),
+        .RxD_data_ready(RxD_data_ready),
+        .RxD_data(RxD_data),
+        .RxD_idle(RxD_idle),
+        .RxD_endofpacket(RxD_endofpacket)
     );
 
     always @(posedge clk) begin
@@ -68,11 +71,11 @@ module mbus
     reg [7:0] TxD_data = 0;
 
     uart_tx #(ClkFrequency, Baud) uart_tx1 (
-        .clk (clk),
-        .TxD (tx),
-        .TxD_data (TxD_data),
-        .TxD_start (TxD_start),
-        .TxD_busy (TxD_busy)
+        .clk(clk),
+        .TxD(tx),
+        .TxD_data(TxD_data),
+        .TxD_start(TxD_start),
+        .TxD_busy(TxD_busy)
     );
 
     reg tx_state = 0;
@@ -94,7 +97,7 @@ module mbus
                 if (txlen > 1) begin
                     tx_counter <= tx_counter + 8'd1;
                     TxD_data <= txbuffer[7:0];
-                    
+
                     txbuffer <= {8'd0, txbuffer[TX_BUFFERSIZE-17:8]};
                     txlen <= txlen - 8'd1;
 
@@ -110,14 +113,14 @@ module mbus
 
             end
         end else begin
-        
+
             if (counter < ClkFrequency / 100) begin
                 counter <= counter + 1;
             end else begin
                 //tx_state <= 1;
                 counter <= 0;
                 value_n <= value_n + 8'd1;
-                
+
             end
         end
     end

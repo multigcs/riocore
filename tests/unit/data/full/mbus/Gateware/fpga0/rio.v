@@ -366,6 +366,12 @@ module rio (
             end else begin
                 mbmaster0_cmd_counter <= 0;
                 mbmaster0_frame_counter <= mbmaster0_frame_counter + 8'd1;
+                case (mbmaster0_cmd_num)
+                    0: begin
+                        mbmaster0_cmd_num <= 0;
+                        VAROUT128_MBMASTER0_TXDATA_TMP[63:0] <= {8'd142, 8'd241, 8'd8, 8'd1, 8'd3, 8'd1, 8'd6, mbmaster0_frame_counter}; // send cmd on error
+                    end
+                endcase
             end
         end else begin
             VAROUT128_MBMASTER0_TXDATA_TMP <= VAROUT128_MBMASTER0_TXDATA;
