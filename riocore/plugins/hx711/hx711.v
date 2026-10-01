@@ -1,12 +1,13 @@
 
-module hx711
-    #(parameter DIVIDER = 100, parameter MODE = 0)
-    (
-        input clk,
-        input miso,
-        output reg sclk = 0,
-        output reg [23:0] weight = 'd0
-    );
+module hx711 #(
+    parameter DIVIDER = 100,
+    parameter MODE = 0
+) (
+    input clk,
+    input miso,
+    output reg sclk = 0,
+    output reg [23:0] weight = 'd0
+);
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] counter = 0;
