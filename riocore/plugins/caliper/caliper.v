@@ -1,20 +1,21 @@
 
-module caliper
-    #(parameter TIMEOUT=10000)
-    (
-        input clk,
-        input data,
-        input clock,
-        output reg mode = 0,
-        output reg [23:0] position = 0
-    );
+module caliper #(
+    parameter TIMEOUT = 10000
+) (
+    input clk,
+    input data,
+    input clock,
+    output reg mode = 0,
+    output reg [23:0] position = 0
+);
 
     localparam TIMEOUT_BITS = clog2(TIMEOUT + 1);
     reg [TIMEOUT_BITS-1:0] counter = 0;
     reg [7:0] data_pos = 0;
     reg [21:0] tmp_position = 0;
-    reg[2:0] CLOCKr; always @(posedge clk) CLOCKr <= {CLOCKr[1:0], clock};
-    wire CLOCK_risingedge = (CLOCKr[2:1]==2'b01);
+    reg [2:0] CLOCKr;
+    always @(posedge clk) CLOCKr <= {CLOCKr[1:0], clock};
+    wire CLOCK_risingedge = (CLOCKr[2:1] == 2'b01);
 
     always @(posedge clk) begin
         if (counter == 0) begin

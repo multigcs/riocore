@@ -1,23 +1,23 @@
 
-module freqin
-    #(parameter RESET_CNT = 25000000)
-     (
-         input clk,
-         input freq,
-         output reg valid = 0,
-         output reg [31:0] frequency = 0
-     );
+module freqin #(
+    parameter RESET_CNT = 25000000
+) (
+    input clk,
+    input freq,
+    output reg valid = 0,
+    output reg [31:0] frequency = 0
+);
 
     localparam CNT_BITS = clog2(RESET_CNT + 1);
 
     reg [CNT_BITS:0] freq_cnt = 0;
     reg error = 1;
 
-    reg[2:0] SIGr;  always @(posedge clk) SIGr <= {SIGr[1:0], freq};
-    wire SIG_risingedge = (SIGr[2:1]==2'b01);
+    reg [2:0] SIGr;
+    always @(posedge clk) SIGr <= {SIGr[1:0], freq};
+    wire SIG_risingedge = (SIGr[2:1] == 2'b01);
 
-    always @(posedge clk)
-    begin
+    always @(posedge clk) begin
         if (SIG_risingedge) begin
             if (error == 0) begin
                 frequency <= freq_cnt + 1;

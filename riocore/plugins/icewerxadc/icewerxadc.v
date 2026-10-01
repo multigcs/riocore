@@ -1,15 +1,16 @@
 
-module icewerxadc
-    #(parameter ClkFrequency=12000000, parameter Baud=250000)
-    (
-        input clk,
-        input rx,
-        output tx,
-        output reg [9:0] adc1,
-        output reg [9:0] adc2,
-        output reg [9:0] adc3,
-        output reg [9:0] adc4
-    );
+module icewerxadc #(
+    parameter ClkFrequency = 12000000,
+    parameter Baud = 250000
+) (
+    input clk,
+    input rx,
+    output tx,
+    output reg [9:0] adc1,
+    output reg [9:0] adc2,
+    output reg [9:0] adc3,
+    output reg [9:0] adc4
+);
 
     reg [15:0] rxbuffer = 0;
     reg [31:0] counter = 0;
@@ -22,12 +23,12 @@ module icewerxadc
     wire RxD_endofpacket;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-        .clk (clk),
-        .RxD (rx),
-        .RxD_data_ready (RxD_data_ready),
-        .RxD_data (RxD_data),
-        .RxD_idle (RxD_idle),
-        .RxD_endofpacket (RxD_endofpacket)
+        .clk(clk),
+        .RxD(rx),
+        .RxD_data_ready(RxD_data_ready),
+        .RxD_data(RxD_data),
+        .RxD_idle(RxD_idle),
+        .RxD_endofpacket(RxD_endofpacket)
     );
 
     always @(posedge clk) begin
@@ -60,11 +61,11 @@ module icewerxadc
     reg [7:0] TxD_data = 0;
 
     uart_tx #(ClkFrequency, Baud) uart_tx1 (
-        .clk (clk),
-        .TxD (tx),
-        .TxD_data (TxD_data),
-        .TxD_start (TxD_start),
-        .TxD_busy (TxD_busy)
+        .clk(clk),
+        .TxD(tx),
+        .TxD_data(TxD_data),
+        .TxD_start(TxD_start),
+        .TxD_busy(TxD_busy)
     );
 
     reg tx_state = 0;
