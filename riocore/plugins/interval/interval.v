@@ -1,19 +1,19 @@
 
-module interval
-    #(parameter DIVIDER = 255)
-     (
-         input clk,
-         input enable,
-         input [23:0] ontime,
-         input [23:0] interval,
-         output reg out = 0
-     );
+module interval #(
+    parameter DIVIDER = 255
+) (
+    input clk,
+    input enable,
+    input [23:0] ontime,
+    input [23:0] interval,
+    output reg out = 0
+);
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] counter = 0;
     reg [23:0] timer = 0;
 
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (counter == DIVIDER) begin
             counter <= 0;
             // each second

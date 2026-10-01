@@ -1,14 +1,15 @@
 
-module pwmout
-    #(parameter DIVIDER = 255, parameter BITWIDTH = 32)
-     (
-         input clk, // clock signal
-         input signed [BITWIDTH-1:0] dty, // duty cycle
-         input enable, // enable signal
-         output reg dir = 0, // direction pin
-         output pwm, // pwm pin
-         output en // enable pin
-     );
+module pwmout #(
+    parameter DIVIDER  = 255,
+    parameter BITWIDTH = 32
+) (
+    input clk,  // clock signal
+    input signed [BITWIDTH-1:0] dty,  // duty cycle
+    input enable,  // enable signal
+    output reg dir = 0,  // direction pin
+    output pwm,  // pwm pin
+    output en  // enable pin
+);
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] counter = 0;
@@ -16,7 +17,7 @@ module pwmout
     reg pulse = 0;
     assign en = enable;
     assign pwm = pulse;
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (dty > 0) begin
             dtyAbs <= dty;
             dir <= 1;

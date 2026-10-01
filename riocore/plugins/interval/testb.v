@@ -1,5 +1,5 @@
 
-`timescale 1ns/100ps
+`timescale 1ns / 100ps
 
 module testb;
     reg clk = 0;
@@ -25,11 +25,9 @@ module testb;
         enable = 1;
         interval = 50;
         ontime = 10;
-        #1000
-        ontime = 20;
+        #1000 ontime = 20;
 
-        #1000
-        interval = 30;
+        #1000 interval = 30;
         ontime = 10;
 
 
