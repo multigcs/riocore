@@ -1,13 +1,13 @@
 
-module max6675
-    #(parameter DIVIDER = 1000)
-    (
-        input clk,
-        input miso,
-        output reg sclk = 0,
-        output reg sel = 1,
-        output reg [15:0] temperature = 'd0
-    );
+module max6675 #(
+    parameter DIVIDER = 1000
+) (
+    input clk,
+    input miso,
+    output reg sclk = 0,
+    output reg sel = 1,
+    output reg [15:0] temperature = 'd0
+);
 
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
 

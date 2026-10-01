@@ -1,15 +1,15 @@
 
 module max10adc (
-        input clk,
-        output reg [15:0] adc0,
-        output reg [15:0] adc1,
-        output reg [15:0] adc2,
-        output reg [15:0] adc3,
-        output reg [15:0] adc4,
-        output reg [15:0] adc5,
-        output reg [15:0] adc6,
-        output reg [15:0] adc7
-    );
+    input clk,
+    output reg [15:0] adc0,
+    output reg [15:0] adc1,
+    output reg [15:0] adc2,
+    output reg [15:0] adc3,
+    output reg [15:0] adc4,
+    output reg [15:0] adc5,
+    output reg [15:0] adc6,
+    output reg [15:0] adc7
+);
 
     wire sys_clk;
     wire command_ready;
@@ -20,7 +20,7 @@ module max10adc (
     wire response_endofpacket;
     reg [4:0] command_channel = 0;
 
-    always @ (posedge sys_clk) begin
+    always @(posedge sys_clk) begin
         if (response_valid) begin
             command_channel <= command_channel + 1;
             case (response_channel)
@@ -38,19 +38,19 @@ module max10adc (
     end
 
     max10adc_ip max10adc0 (
-        .clk_clk                              (clk),
-        .reset_reset_n                        (1'b1),
-        .modular_adc_0_command_valid          (1'b1),
-        .modular_adc_0_command_channel        (command_channel+1),
-        .modular_adc_0_command_startofpacket  (1'b1),
-        .modular_adc_0_command_endofpacket    (1'b1),
-        .modular_adc_0_command_ready          (command_ready),
-        .modular_adc_0_response_valid         (response_valid),
-        .modular_adc_0_response_channel       (response_channel),
-        .modular_adc_0_response_data          (response_data),
-        .modular_adc_0_response_startofpacket (response_startofpacket),
-        .modular_adc_0_response_endofpacket   (response_endofpacket),
-        .clock_bridge_sys_out_clk_clk         (sys_clk)
+        .clk_clk                             (clk),
+        .reset_reset_n                       (1'b1),
+        .modular_adc_0_command_valid         (1'b1),
+        .modular_adc_0_command_channel       (command_channel + 1),
+        .modular_adc_0_command_startofpacket (1'b1),
+        .modular_adc_0_command_endofpacket   (1'b1),
+        .modular_adc_0_command_ready         (command_ready),
+        .modular_adc_0_response_valid        (response_valid),
+        .modular_adc_0_response_channel      (response_channel),
+        .modular_adc_0_response_data         (response_data),
+        .modular_adc_0_response_startofpacket(response_startofpacket),
+        .modular_adc_0_response_endofpacket  (response_endofpacket),
+        .clock_bridge_sys_out_clk_clk        (sys_clk)
     );
 
 endmodule

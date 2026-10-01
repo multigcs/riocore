@@ -1,30 +1,28 @@
 /* verilator lint_off WIDTH */
 
-module max7219
-    #(
-        parameter DIVIDER = 22,
-        parameter BRIGHTNESS = 8'h04,
-        parameter DISPLAYS = 2,
-        parameter DOT_POS = 2
-     )
-     (
-         input clk,
-         output reg mosi = 0,
-         output reg sclk = 0,
-         output reg sel = 1,
-         input wire [(24 * DISPLAYS)-1:0] values
-     );
+module max7219 #(
+    parameter DIVIDER = 22,
+    parameter BRIGHTNESS = 8'h04,
+    parameter DISPLAYS = 2,
+    parameter DOT_POS = 2
+) (
+    input clk,
+    output reg mosi = 0,
+    output reg sclk = 0,
+    output reg sel = 1,
+    input wire [(24 * DISPLAYS)-1:0] values
+);
 
     reg signed [23:0] value = 0;
 
-    localparam DIVIDER_BITS = clog2(DIVIDER + 1);
+    localparam DIVIDER_BITS         = clog2(DIVIDER + 1);
     localparam INIT_DECODEMODE_NONE = {8'h09, 8'h00};
     localparam INIT_INTENSE         = {8'h0a, BRIGHTNESS};
     localparam INIT_SCANLIMIT       = {8'h0b, 8'h07};
     localparam INIT_SD_NORMALOP     = {8'h0c, 8'h01};
     localparam INIT_DT_NORMALOP     = {8'h0f, 8'h01};
 
-    parameter cmd = 8'd0;
+    parameter  cmd                  = 8'd0;
     reg [7:0] state = 0;
     reg [7:0] data_pos = 0;
     reg [DIVIDER_BITS:0] counter = 0;
@@ -44,8 +42,8 @@ module max7219
     reg [3:0] prefix = 4'hb;
 
     max7_bin2bcd bin2bcd1 (
-        .bin (numberAbs),
-        .bcd (bcd)
+        .bin(numberAbs),
+        .bcd(bcd)
     );
 
     max7_seven_segments sg0 (
@@ -54,7 +52,7 @@ module max7219
         .display(digit)
     );
 
-    wire [3:0] nums [0:7];
+    wire [3:0] nums[0:7];
     assign nums[7] = 4'hb;
     assign nums[6] = prefix;
     assign nums[5] = bcd[23:20];
@@ -90,14 +88,14 @@ module max7219
             data_pos <= 0;
             state <= 1;
             next_clk <= 0;
-            value <= values[24 + 24 * display_n - 1-:24];
+            value <= values[24+24*display_n-1-:24];
         end else if (state == 1) begin
             if (next_clk == 1) begin
                 next_clk <= 0;
                 sclk <= 1;
             end else if (data_pos < 16 * DISPLAYS) begin
                 sclk <= 0;
-                mosi <= cmddata[16 * DISPLAYS - 1 - data_pos];
+                mosi <= cmddata[16*DISPLAYS-1-data_pos];
                 next_clk <= 1;
                 data_pos <= data_pos + 1;
             end else begin
@@ -110,29 +108,29 @@ module max7219
             state <= state + 1;
             val <= nums[digit_num];
         end else if (state == 3) begin
-            case(initcnt)
+            case (initcnt)
                 0: begin
-                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_DECODEMODE_NONE;
+                    cmddata[16+display_n*16-1-:16] <= INIT_DECODEMODE_NONE;
                     initcnt <= initcnt + 1;
                 end
                 1: begin
-                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_INTENSE;
+                    cmddata[16+display_n*16-1-:16] <= INIT_INTENSE;
                     initcnt <= initcnt + 1;
                 end
                 2: begin
-                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_SCANLIMIT;
+                    cmddata[16+display_n*16-1-:16] <= INIT_SCANLIMIT;
                     initcnt <= initcnt + 1;
                 end
                 3: begin
-                    cmddata[16 + display_n * 16 - 1-:16] <= INIT_SD_NORMALOP;
+                    cmddata[16+display_n*16-1-:16] <= INIT_SD_NORMALOP;
                     initcnt <= initcnt + 1;
                 end
                 4: begin
                     if (digit_num < 8) begin
                         if (digit_num == DOT_POS) begin
-                            cmddata[16 + display_n * 16 - 1-:16] <= {digit_num + 4'd1, 1'd1, digit};
+                            cmddata[16+display_n*16-1-:16] <= {digit_num + 4'd1, 1'd1, digit};
                         end else begin
-                            cmddata[16 + display_n * 16 - 1-:16] <= {digit_num + 4'd1, 1'd0, digit};
+                            cmddata[16+display_n*16-1-:16] <= {digit_num + 4'd1, 1'd0, digit};
                         end
                         digit_num <= digit_num + 1;
                     end else begin
@@ -152,10 +150,10 @@ module max7219
 endmodule
 
 module max7_seven_segments (
-        input wire clk,
-        input wire [3:0] binary,
-        output reg [6:0] display = 'd0
-    );
+    input wire clk,
+    input wire [3:0] binary,
+    output reg [6:0] display = 'd0
+);
     /*
             6
 
@@ -190,13 +188,13 @@ module max7_seven_segments (
     end
 endmodule
 
-module max7_bin2bcd(
-        input [19:0] bin,
-        output reg [23:0] bcd = 'd0
-    );
+module max7_bin2bcd (
+    input [19:0] bin,
+    output reg [23:0] bcd = 'd0
+);
     integer i;
     always @(bin) begin
-        bcd=0;
+        bcd = 0;
         for (i = 0; i < 20; i = i + 1) begin
             if (bcd[3:0] >= 5) bcd[3:0] = bcd[3:0] + 4'd3;
             if (bcd[7:4] >= 5) bcd[7:4] = bcd[7:4] + 4'd3;
@@ -204,7 +202,7 @@ module max7_bin2bcd(
             if (bcd[15:12] >= 5) bcd[15:12] = bcd[15:12] + 4'd3;
             if (bcd[19:16] >= 5) bcd[19:16] = bcd[19:16] + 4'd3;
             if (bcd[23:20] >= 5) bcd[23:20] = bcd[23:20] + 4'd3;
-            bcd = {bcd[22:0], bin[19 - i]};
+            bcd = {bcd[22:0], bin[19-i]};
         end
     end
 endmodule

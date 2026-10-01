@@ -1,32 +1,31 @@
 
-module keymatrix
-    #(
-        parameter COLS = 4,
-        parameter ROWS = 4,
-        parameter VALUE_BITS = 4,
-        parameter DIVIDER = 1000,
-        parameter ROW_BITS = 8,
-        parameter COL_BITS = 8,
-        parameter DIVIDER_BITS = 31
-    ) (
-         input clk,
-         output reg [COLS - 1:0] cols = 0,
-         input [ROWS - 1:0] rows,
-         output reg [VALUE_BITS - 1:0] value = 0
-     );
+module keymatrix #(
+    parameter COLS = 4,
+    parameter ROWS = 4,
+    parameter VALUE_BITS = 4,
+    parameter DIVIDER = 1000,
+    parameter ROW_BITS = 8,
+    parameter COL_BITS = 8,
+    parameter DIVIDER_BITS = 31
+) (
+    input clk,
+    output reg [COLS - 1:0] cols = 0,
+    input [ROWS - 1:0] rows,
+    output reg [VALUE_BITS - 1:0] value = 0
+);
 
     reg [DIVIDER_BITS - 1:0] delay = 0;
     reg [1:0] step = 0;
     reg [ROW_BITS - 1:0] row = 0;
     reg [COL_BITS - 1:0] col = 0;
     reg [VALUE_BITS - 1:0] read = 0;
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (step == 0) begin
             if (col == 0 && row == 0) begin
                 value <= read;
                 read <= 0;
             end
-            cols <= ~(1<<col);
+            cols <= ~(1 << col);
             step <= 1;
         end else if (step == 1) begin
             if (delay == 0) begin

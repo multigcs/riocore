@@ -1,5 +1,5 @@
 
-`timescale 1ns/100ps
+`timescale 1ns / 100ps
 
 module testb;
     reg clk = 0;
@@ -22,24 +22,15 @@ module testb;
         $dumpvars(4, value);
 
         value = 65535;
-        #30
-        enable = 1;
-        #30
-        value = 62000;
-        #60
-        value = 55536;
-        #60
-        value = 45536;
-        #60
-        value = 32768;
-        #60
-        value = 22768;
-        #60
-        value = 12768;
-        #60
-        value = 2768;
-        #60
-        value = 0;
+        #30 enable = 1;
+        #30 value = 62000;
+        #60 value = 55536;
+        #60 value = 45536;
+        #60 value = 32768;
+        #60 value = 22768;
+        #60 value = 12768;
+        #60 value = 2768;
+        #60 value = 0;
 
         #60 $finish;
     end

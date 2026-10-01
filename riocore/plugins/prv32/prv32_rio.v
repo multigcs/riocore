@@ -1,14 +1,14 @@
 
 module prv32_rio_vin (
-        input wire         clk,
-        input wire         reset_n,
-        input wire         vin_sel,
-        input wire [31:0]  vin_data_i,
-        input wire         we,
-        output wire        vin_ready,
-        output wire [31:0]  vin_data_o,
-        output reg [31:0]  vin
-    );
+    input  wire        clk,
+    input  wire        reset_n,
+    input  wire        vin_sel,
+    input  wire [31:0] vin_data_i,
+    input  wire        we,
+    output wire        vin_ready,
+    output wire [31:0] vin_data_o,
+    output reg  [31:0] vin
+);
 
     assign vin_ready = vin_sel;
     assign vin_data_o = vin;
@@ -23,46 +23,46 @@ module prv32_rio_vin (
 endmodule
 
 module prv32_rio_vout (
-        input wire         clk,
-        input wire         reset_n,
-        input wire         vout_sel,
-        input wire [31:0]  vout_data_i,
-        input wire         we,
-        output wire        vout_ready,
-        output wire [31:0] vout_data_o,
-        input wire [31:0]  vout
-    );
+    input  wire        clk,
+    input  wire        reset_n,
+    input  wire        vout_sel,
+    input  wire [31:0] vout_data_i,
+    input  wire        we,
+    output wire        vout_ready,
+    output wire [31:0] vout_data_o,
+    input  wire [31:0] vout
+);
 
     assign vout_ready = vout_sel;
     assign vout_data_o = vout;
 endmodule
 
 module prv32_utimer (
-        input wire         clk,
-        input wire         reset_n,
-        input wire         utimer_sel,
-        input wire [31:0]  utimer_data_i,
-        input wire         we,
-        output wire        utimer_ready,
-        output wire [31:0] utimer_data_o,
-        input wire [31:0] systimer
-    );
+    input  wire        clk,
+    input  wire        reset_n,
+    input  wire        utimer_sel,
+    input  wire [31:0] utimer_data_i,
+    input  wire        we,
+    output wire        utimer_ready,
+    output wire [31:0] utimer_data_o,
+    input  wire [31:0] systimer
+);
 
     assign utimer_ready = utimer_sel;
     assign utimer_data_o = systimer;
 endmodule
 
 module prv32_pwm (
-        input wire         clk,
-        input wire         reset_n,
-        input wire         pwm_sel,
-        input wire [31:0]  pwm_data_i,
-        input wire [2:0]   pwm_addr,
-        input wire         we,
-        output wire        pwm_ready,
-        output wire [31:0] pwm_data_o,
-        output reg         pwm
-    );
+    input  wire        clk,
+    input  wire        reset_n,
+    input  wire        pwm_sel,
+    input  wire [31:0] pwm_data_i,
+    input  wire [ 2:0] pwm_addr,
+    input  wire        we,
+    output wire        pwm_ready,
+    output wire [31:0] pwm_data_o,
+    output reg         pwm
+);
 
     reg [31:0] pwm_total;
     reg [31:0] pwm_value;
