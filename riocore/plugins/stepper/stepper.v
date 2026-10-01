@@ -1,18 +1,16 @@
 
-module stepper
-    #(
-        parameter STEPTYPE = 1
-    )
-    (
-        input clk, // clock signal
-        input enable, // enable segnal
-        input signed [31:0] velocity, // step velocity
-        output signed [31:0] position, // feedback position
-        output a1, // phase a1
-        output a2, // phase a2
-        output b1, // phase b1
-        output b2 // phase b2
-    );
+module stepper #(
+    parameter STEPTYPE = 1
+) (
+    input clk,  // clock signal
+    input enable,  // enable segnal
+    input signed [31:0] velocity,  // step velocity
+    output signed [31:0] position,  // feedback position
+    output a1,  // phase a1
+    output a2,  // phase a2
+    output b1,  // phase b1
+    output b2  // phase b2
+);
 
     localparam TYPE_WAVE = 0;
     localparam TYPE_FULL = 1;
@@ -27,7 +25,7 @@ module stepper
 
     reg double = 0;
     reg [2:0] unipos = 0;
-    reg [3:0] seq [0:7];
+    reg [3:0] seq[0:7];
     initial begin
         if (STEPTYPE == TYPE_WAVE || STEPTYPE == TYPE_HALF) begin
             if (STEPTYPE == TYPE_WAVE) begin
@@ -62,7 +60,7 @@ module stepper
     assign b2 = enable && (seq[unipos][3]);
 
     assign position = positionMem;
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (DIR) begin
             velocityAbs <= velocity;
         end else begin

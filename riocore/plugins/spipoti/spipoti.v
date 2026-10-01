@@ -1,14 +1,15 @@
 /* verilator lint_off WIDTH */
 
-module spipoti
-    #(parameter WIDTH = 8, DIVIDER = 100000)
-     (
-         input clk, // clock signal
-         output reg mosi = 0, // mosi pin
-         output reg sclk = 0, // clock pin
-         output reg sel = 1, // select pin
-         input wire [7:0] value // poti value
-     );
+module spipoti #(
+    parameter WIDTH = 8,
+    DIVIDER = 100000
+) (
+    input clk,  // clock signal
+    output reg mosi = 0,  // mosi pin
+    output reg sclk = 0,  // clock pin
+    output reg sel = 1,  // select pin
+    input wire [7:0] value  // poti value
+);
     parameter cmd = 8'd0;
     reg [7:0] state = 0;
     reg [7:0] data_pos = 0;
@@ -37,7 +38,7 @@ module spipoti
                 sclk = 1;
             end else if (data_pos < 16) begin
                 sclk = 0;
-                mosi = cmddata[15 - data_pos];
+                mosi = cmddata[15-data_pos];
                 next_clk = 1;
                 data_pos = data_pos + 1;
             end else begin

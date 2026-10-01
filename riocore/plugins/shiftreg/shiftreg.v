@@ -1,18 +1,16 @@
 /* verilator lint_off WIDTHTRUNC */
-module shiftreg
-    #(
-         parameter WIDTH = 8,
-         parameter DIVIDER = 100000
-     )
-     (
-         input clk,
-         output reg out = 0,
-         input in,
-         output reg sclk = 0,
-         output reg load = 1,
-         output reg [WIDTH-1:0] data_in = 0,
-         input [WIDTH-1:0] data_out
-     );
+module shiftreg #(
+    parameter WIDTH   = 8,
+    parameter DIVIDER = 100000
+) (
+    input clk,
+    output reg out = 0,
+    input in,
+    output reg sclk = 0,
+    output reg load = 1,
+    output reg [WIDTH-1:0] data_in = 0,
+    input [WIDTH-1:0] data_out
+);
     reg [7:0] data_pos = 0;
     reg [31:0] counter = 0;
     reg [8:0] state = 0;
@@ -31,7 +29,7 @@ module shiftreg
                     data_pos <= data_pos + 8'd1;
                 end else if (data_pos < WIDTH) begin
                     data_in[data_pos] = in;
-                    out = data_out[WIDTH - 1 - data_pos];
+                    out = data_out[WIDTH-1-data_pos];
                     delay <= 1;
                 end else begin
                     load <= 1'd0;

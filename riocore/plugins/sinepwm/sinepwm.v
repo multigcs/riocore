@@ -1,15 +1,16 @@
 /* verilator lint_off WIDTH */
 /* verilator lint_off DECLFILENAME */
 
-module sinepwm
-    #(parameter START = 0, parameter DIVIDER = 1000)
-     (
-         input clk,
-         input enable,
-         input signed [31:0] freq,
-         output en,
-         output pwm_out
-     );
+module sinepwm #(
+    parameter START   = 0,
+    parameter DIVIDER = 1000
+) (
+    input clk,
+    input enable,
+    input signed [31:0] freq,
+    output en,
+    output pwm_out
+);
 
     assign en = enable;
 
@@ -29,8 +30,7 @@ module sinepwm
         end
     end
 
-    always@ (posedge(pwmclk))
-    begin
+    always @(posedge (pwmclk)) begin
         clk_cnt <= clk_cnt + 1;
         if (freq < 0) begin
             freq_abs <= -freq;
@@ -62,7 +62,7 @@ module sinepwm
         end
     end
 
-    reg [7:0] sine_tbl [0:29];
+    reg [7:0] sine_tbl[0:29];
     initial begin
         sine_tbl[0] = 128;
         sine_tbl[1] = 153;
@@ -98,22 +98,22 @@ module sinepwm
 
     wire dir1;
     sine_pwm sine_pwm1 (
-      .clk (pwmclk),
-      .dty ({24'h000000, dty}),
-      .dir (dir1),
-      .pwm (pwm_out)
+        .clk(pwmclk),
+        .dty({24'h000000, dty}),
+        .dir(dir1),
+        .pwm(pwm_out)
     );
 
 endmodule
 
-module sine_pwm
-    #(parameter DIVIDER = 255)
-     (
-         input clk,
-         input signed [31:0] dty,
-         output dir,
-         output pwm
-     );
+module sine_pwm #(
+    parameter DIVIDER = 255
+) (
+    input clk,
+    input signed [31:0] dty,
+    output dir,
+    output pwm
+);
     reg [31:0] dtyAbs = 32'd0;
 
     reg pulse = 0;
@@ -121,7 +121,7 @@ module sine_pwm
     reg direction = 0;
     assign dir = direction;
     reg [31:0] counter = 32'd0;
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (dty > 32'd0) begin
             dtyAbs <= dty;
             direction <= 1'd1;

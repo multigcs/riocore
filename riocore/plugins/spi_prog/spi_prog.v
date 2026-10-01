@@ -1,33 +1,37 @@
 
-module spi_prog
-    #(parameter BUFFER_SIZE_RX=64, parameter BUFFER_SIZE_TX=64, parameter MSGID=32'h74697277)
-     (
-         input clk, // clock signal
-         input mosi, // mosi pin
-         output reg miso = 1, // miso pin
-         input sclk, // clock pin
-         input sel, // select pin
-         input prog,
-         output reg reboot = 1,
-         output reg eeprom_mosi = 1,
-         input eeprom_miso,
-         output reg eeprom_sclk = 1,
-         output reg eeprom_sel = 1,
-         input [BUFFER_SIZE_TX-1:0] tx_data, // data to send
-         output [BUFFER_SIZE_RX-1:0] rx_data, // received data
-         output reg sync = 0 // new pkg received
-     );
-    reg[2:0] SCKr;  always @(posedge clk) SCKr <= {SCKr[1:0], sclk};
-    wire SCK_risingedge = (SCKr[2:1]==2'b01);  // now we can detect SCK rising edges
-    wire SCK_fallingedge = (SCKr[2:1]==2'b10);  // and falling edges
-    reg[2:0] SSELr;  always @(posedge clk) SSELr <= {SSELr[1:0], sel};
+module spi_prog #(
+    parameter BUFFER_SIZE_RX = 64,
+    parameter BUFFER_SIZE_TX = 64,
+    parameter MSGID = 32'h74697277
+) (
+    input clk,  // clock signal
+    input mosi,  // mosi pin
+    output reg miso = 1,  // miso pin
+    input sclk,  // clock pin
+    input sel,  // select pin
+    input prog,
+    output reg reboot = 1,
+    output reg eeprom_mosi = 1,
+    input eeprom_miso,
+    output reg eeprom_sclk = 1,
+    output reg eeprom_sel = 1,
+    input [BUFFER_SIZE_TX-1:0] tx_data,  // data to send
+    output [BUFFER_SIZE_RX-1:0] rx_data,  // received data
+    output reg sync = 0  // new pkg received
+);
+    reg [2:0] SCKr;
+    always @(posedge clk) SCKr <= {SCKr[1:0], sclk};
+    wire SCK_risingedge = (SCKr[2:1] == 2'b01);  // now we can detect SCK rising edges
+    wire SCK_fallingedge = (SCKr[2:1] == 2'b10);  // and falling edges
+    reg [2:0] SSELr;
+    always @(posedge clk) SSELr <= {SSELr[1:0], sel};
     wire SSEL_active = ~SSELr[1];  // SSEL is active low
-    wire SSEL_startmessage = (SSELr[2:1]==2'b10);  // message starts at falling edge
-    wire SSEL_endmessage = (SSELr[2:1]==2'b01);  // message stops at rising edge
-    reg[15:0] bitcnt;
-    reg[BUFFER_SIZE_RX-1:0] byte_data_received;
-    reg[BUFFER_SIZE_RX-1:0] byte_data_receive;
-    reg[BUFFER_SIZE_TX-1:0] byte_data_sent;
+    wire SSEL_startmessage = (SSELr[2:1] == 2'b10);  // message starts at falling edge
+    wire SSEL_endmessage = (SSELr[2:1] == 2'b01);  // message stops at rising edge
+    reg [15:0] bitcnt;
+    reg [BUFFER_SIZE_RX-1:0] byte_data_received;
+    reg [BUFFER_SIZE_RX-1:0] byte_data_receive;
+    reg [BUFFER_SIZE_TX-1:0] byte_data_sent;
     assign rx_data = byte_data_received;
 
     reg prog_active = 0;
@@ -43,7 +47,7 @@ module spi_prog
         if (~SSEL_active) begin
             bitcnt <= 16'd0;
         end else if (~prog) begin
-            if(SCK_risingedge) begin
+            if (SCK_risingedge) begin
                 bitcnt <= bitcnt + 16'd1;
                 byte_data_receive <= {byte_data_receive[BUFFER_SIZE_RX-2:0], mosi};
             end
@@ -60,14 +64,12 @@ module spi_prog
     end
     always @(posedge clk) begin
         if (SSEL_active && ~prog) begin
-            if(SSEL_startmessage) begin
+            if (SSEL_startmessage) begin
                 byte_data_sent <= tx_data;
             end else begin
-                if(SCK_fallingedge) begin
-                    if(bitcnt==16'd0)
-                        byte_data_sent <= 0;  // after that, we send 0s
-                    else
-                        byte_data_sent <= {byte_data_sent[BUFFER_SIZE_TX-2:0], 1'b0};
+                if (SCK_fallingedge) begin
+                    if (bitcnt == 16'd0) byte_data_sent <= 0;  // after that, we send 0s
+                    else byte_data_sent <= {byte_data_sent[BUFFER_SIZE_TX-2:0], 1'b0};
                 end
             end
         end

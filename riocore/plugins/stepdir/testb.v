@@ -1,5 +1,5 @@
 
-`timescale 1ns/100ps
+`timescale 1ns / 100ps
 
 module testb;
     reg clk = 0;
@@ -35,19 +35,18 @@ module testb;
         $dumpvars(10, position2);
 
         velocity = 50;
-        #1000
-        velocity = 0;
-        #100
-        velocity = -100;
-        #870
-        velocity = -50;
-        #1000
-        velocity = 50;
+        #1000 velocity = 0;
+        #100 velocity = -100;
+        #870 velocity = -50;
+        #1000 velocity = 50;
 
-        # 1000 $finish;
+        #1000 $finish;
     end
 
-    stepdir #(.PULSE_LEN(30), .DIR_DELAY(20)) stepdirstepdir (
+    stepdir #(
+        .PULSE_LEN(30),
+        .DIR_DELAY(20)
+    ) stepdirstepdir (
         .clk(clk),
         .velocity(velocity),
         .enable(enable),
@@ -57,7 +56,10 @@ module testb;
         .en(en)
     );
 
-    stepdir #(.PULSE_LEN(10), .DIR_DELAY(151)) stepdirstepdir2 (
+    stepdir #(
+        .PULSE_LEN(10),
+        .DIR_DELAY(151)
+    ) stepdirstepdir2 (
         .clk(clk),
         .velocity(velocity),
         .enable(enable),
