@@ -1,14 +1,15 @@
 
-module rioencoder
-    #(parameter ClkFrequency=12000000, parameter Baud=2000000)
-    (
-        input clk,
-        input rx,
-        output reg rw = 0,
-        output reg [15:0] angle,
-        output reg signed [15:0] temperature,
-        output reg signed [31:0] revs
-    );
+module rioencoder #(
+    parameter ClkFrequency = 12000000,
+    parameter Baud = 2000000
+) (
+    input clk,
+    input rx,
+    output reg rw = 0,
+    output reg [15:0] angle,
+    output reg signed [15:0] temperature,
+    output reg signed [31:0] revs
+);
 
     parameter PKG_SIZZE = 80;
 
@@ -27,12 +28,12 @@ module rioencoder
     assign csum_calc = rxbuffer[79:72] ^ rxbuffer[71:64] ^ rxbuffer[63:56] ^ rxbuffer[55:48] ^ rxbuffer[47:40] ^ rxbuffer[39:32] ^ rxbuffer[31:24] ^ rxbuffer[23:16];
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-        .clk (clk),
-        .RxD (rx),
-        .RxD_data_ready (RxD_data_ready),
-        .RxD_data (RxD_data),
-        .RxD_idle (RxD_idle),
-        .RxD_endofpacket (RxD_endofpacket)
+        .clk(clk),
+        .RxD(rx),
+        .RxD_data_ready(RxD_data_ready),
+        .RxD_data(RxD_data),
+        .RxD_idle(RxD_idle),
+        .RxD_endofpacket(RxD_endofpacket)
     );
 
     always @(posedge clk) begin

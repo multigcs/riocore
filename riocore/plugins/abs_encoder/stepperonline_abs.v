@@ -1,17 +1,18 @@
 
-module stepperonline_abs
-    #(parameter ClkFrequency=32400000, parameter Baud=2500000)
-    (
-        input clk,
-        input rx,
-        output tx,
-        output reg tx_enable = 1,
-        output reg [31:0] angle = 0,
-        output reg [31:0] revs = 0,
-        output wire [15:0] angle16,
-        output reg [7:0] tmp1 = 0,
-        output reg [7:0] tmp2 = 0
-    );
+module stepperonline_abs #(
+    parameter ClkFrequency = 32400000,
+    parameter Baud = 2500000
+) (
+    input clk,
+    input rx,
+    output tx,
+    output reg tx_enable = 1,
+    output reg [31:0] angle = 0,
+    output reg [31:0] revs = 0,
+    output wire [15:0] angle16,
+    output reg [7:0] tmp1 = 0,
+    output reg [7:0] tmp2 = 0
+);
 
     assign angle16 = angle[16:1];
 
@@ -24,12 +25,12 @@ module stepperonline_abs
     wire RxD_endofpacket;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-        .clk (clk),
-        .RxD (rx),
-        .RxD_data_ready (RxD_data_ready),
-        .RxD_data (RxD_data),
-        .RxD_idle (RxD_idle),
-        .RxD_endofpacket (RxD_endofpacket)
+        .clk(clk),
+        .RxD(rx),
+        .RxD_data_ready(RxD_data_ready),
+        .RxD_data(RxD_data),
+        .RxD_idle(RxD_idle),
+        .RxD_endofpacket(RxD_endofpacket)
     );
 
     reg TxD_start = 0;
@@ -37,11 +38,11 @@ module stepperonline_abs
     reg [7:0] TxD_data = 0;
 
     uart_tx #(ClkFrequency, Baud, 1) uart_tx1 (
-        .clk (clk),
-        .TxD (tx),
-        .TxD_data (TxD_data),
-        .TxD_start (TxD_start),
-        .TxD_busy (TxD_busy)
+        .clk(clk),
+        .TxD(tx),
+        .TxD_data(TxD_data),
+        .TxD_start(TxD_start),
+        .TxD_busy(TxD_busy)
     );
 
     reg [7:0] state = 0;

@@ -1,20 +1,21 @@
 
-module panasonic_abs
-    #(parameter ClkFrequency=32400000, parameter Baud=2500000)
-    (
-        input clk,
-        input rx,
-        output tx,
-        input [7:0] cmd,
-        output reg tx_enable = 1,
-        output reg debug_bit = 0,
-        output reg signed [31:0] position,
-        output reg signed [15:0] angle,
-        output reg [7:0] tmp1,
-        output reg [7:0] tmp2,
-        output reg [7:0] csum,
-        output reg [31:0] debug_data
-    );
+module panasonic_abs #(
+    parameter ClkFrequency = 32400000,
+    parameter Baud = 2500000
+) (
+    input clk,
+    input rx,
+    output tx,
+    input [7:0] cmd,
+    output reg tx_enable = 1,
+    output reg debug_bit = 0,
+    output reg signed [31:0] position,
+    output reg signed [15:0] angle,
+    output reg [7:0] tmp1,
+    output reg [7:0] tmp2,
+    output reg [7:0] csum,
+    output reg [31:0] debug_data
+);
 
     reg [127:0] rxbuffer = 0;
     reg [7:0] rxlen = 0;
@@ -26,12 +27,12 @@ module panasonic_abs
     wire RxD_endofpacket;
 
     uart_rx #(ClkFrequency, Baud) uart_rx1 (
-        .clk (clk),
-        .RxD (rx),
-        .RxD_data_ready (RxD_data_ready),
-        .RxD_data (RxD_data),
-        .RxD_idle (RxD_idle),
-        .RxD_endofpacket (RxD_endofpacket)
+        .clk(clk),
+        .RxD(rx),
+        .RxD_data_ready(RxD_data_ready),
+        .RxD_data(RxD_data),
+        .RxD_idle(RxD_idle),
+        .RxD_endofpacket(RxD_endofpacket)
     );
 
     reg TxD_start = 0;
@@ -39,11 +40,11 @@ module panasonic_abs
     reg [7:0] TxD_data = 0;
 
     uart_tx #(ClkFrequency, Baud, 0) uart_tx1 (
-        .clk (clk),
-        .TxD (tx),
-        .TxD_data (TxD_data),
-        .TxD_start (TxD_start),
-        .TxD_busy (TxD_busy)
+        .clk(clk),
+        .TxD(tx),
+        .TxD_data(TxD_data),
+        .TxD_start(TxD_start),
+        .TxD_busy(TxD_busy)
     );
 
     reg [7:0] state = 0;
@@ -64,7 +65,7 @@ module panasonic_abs
         end else if (state == 1) begin
             // stop tx
             state <= 2;
-            
+
             // rx timeout 1.0ms
             counter <= ClkFrequency / 1000;
 

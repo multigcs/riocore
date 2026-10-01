@@ -1,25 +1,26 @@
 
-module yaskawa_abs
-    #(parameter DELAY=3, parameter DELAY_NEXT=4)
-    (
-        input clk,
-        input rx,
-        output reg tx = 0,
-        output reg tx_enable = 0,
-        output reg debug_bit = 0,
-        output rx_synced,
-        output reg batt_error = 0,
-        // input wire [7:0] delay,
-        output reg [7:0] temp = 0,
-        // output reg [7:0] scounter = 0,
-        // output reg [15:0] fcounter = 0,
-        // output reg [15:0] speed = 0,
-        // output reg [7:0] fine_pos = 0,
-        output reg [15:0] angle = 0,
-        output reg [31:0] position = 0,
-        output reg [15:0] csum = 0,
-        output reg [31:0] debug_data = 0
-    );
+module yaskawa_abs #(
+    parameter DELAY = 3,
+    parameter DELAY_NEXT = 4
+) (
+    input clk,
+    input rx,
+    output reg tx = 0,
+    output reg tx_enable = 0,
+    output reg debug_bit = 0,
+    output rx_synced,
+    output reg batt_error = 0,
+    // input wire [7:0] delay,
+    output reg [7:0] temp = 0,
+    // output reg [7:0] scounter = 0,
+    // output reg [15:0] fcounter = 0,
+    // output reg [15:0] speed = 0,
+    // output reg [7:0] fine_pos = 0,
+    output reg [15:0] angle = 0,
+    output reg [31:0] position = 0,
+    output reg [15:0] csum = 0,
+    output reg [31:0] debug_data = 0
+);
 
     reg [59:0] request_seq = 60'b01111110_1_011111_011111_011111_01111110_0101010101010101010101010;
     reg [127:0] rx_data = 0;
@@ -53,11 +54,11 @@ module yaskawa_abs
                         manchester_bit <= 0;
                         bit_pos <= bit_pos + 8'd1;
                     end
-                 end else begin
+                end else begin
                     tx_enable <= 0;
                     receiving <= 1;
                     bit_pos <= 0;
-                 end
+                end
                 delay_counter <= DELAY;
                 // delay_counter <= delay;
             end else begin
@@ -75,7 +76,7 @@ module yaskawa_abs
                     sync_stat <= 0;
                     delay_counter <= DELAY_NEXT;
                     receiving <= 0;
-debug_bit <= ~debug_bit;
+                    debug_bit <= ~debug_bit;
                 end else begin
                     timeout <= timeout - 16'd1;
                 end
@@ -84,7 +85,7 @@ debug_bit <= ~debug_bit;
 
                 if (receiving == 1) begin
                     // rx (skip first 13 bits)
-                    rx_data[bit_pos - 13] <= rx_synced;
+                    rx_data[bit_pos-13] <= rx_synced;
 
                     // skipping stuffing bit (after 5x1)
                     if (rx_synced == 1 && last_bit == 1) begin
@@ -120,13 +121,13 @@ debug_bit <= ~debug_bit;
                         // speed <= rx_data[55:40];
                         // ??? <= rx_data[59:56];
                         // fine_pos <= {4'd0, rx_data[59:56]};
-                        angle <= rx_data[75+1:60+1]; // part of the position (cut to 16bit)
+                        angle <= rx_data[75+1:60+1];  // part of the position (cut to 16bit)
                         position <= rx_data[91:60];
                         // ??? <= rx_data[95:92];
                         csum <= rx_data[111:96];
                     end
 
-                    debug_data <= bit_pos; // debug_data
+                    debug_data <= bit_pos;  // debug_data
 
                     // start new request
                     stuffing <= 0;
