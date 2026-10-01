@@ -1,19 +1,19 @@
 
 module dis7seg (
-        input clk,
-        input signed [31:0] value,
-        output reg en1 = 'd0,
-        output reg en2 = 'd0,
-        output reg en3 = 'd0,
-        output reg en4 = 'd0,
-        output wire seg_a,
-        output wire seg_b,
-        output wire seg_c,
-        output wire seg_d,
-        output wire seg_e,
-        output wire seg_f,
-        output wire seg_g
-    );
+    input clk,
+    input signed [31:0] value,
+    output reg en1 = 'd0,
+    output reg en2 = 'd0,
+    output reg en3 = 'd0,
+    output reg en4 = 'd0,
+    output wire seg_a,
+    output wire seg_b,
+    output wire seg_c,
+    output wire seg_d,
+    output wire seg_e,
+    output wire seg_f,
+    output wire seg_g
+);
 
 
     wire [6:0] display;
@@ -28,9 +28,9 @@ module dis7seg (
     wire [19:0] bcd;
 
     bin2bcd bin2bcd1 (
-                .bin (value[15:0]),
-                .bcd (bcd)
-            );
+        .bin(value[15:0]),
+        .bcd(bcd)
+    );
     wire [7:0] int1;
     wire [7:0] int10;
     wire [7:0] int100;
@@ -89,20 +89,20 @@ module dis7seg (
 
 
     seven_segments ss1 (
-                       .clk(clk),
-                       .binary(digit),
-                       .display(display)
-                   );
+        .clk(clk),
+        .binary(digit),
+        .display(display)
+    );
 
 endmodule
 
-module bin2bcd(
-        input [15:0] bin,
-        output reg [19:0] bcd = 'd0
-    );
+module bin2bcd (
+    input [15:0] bin,
+    output reg [19:0] bcd = 'd0
+);
     integer i;
     always @(bin) begin
-        bcd=0;
+        bcd = 0;
         for (i = 0; i < 16; i = i + 1) begin
             if (bcd[3:0] >= 5) bcd[3:0] = bcd[3:0] + 4'd3;
             if (bcd[7:4] >= 5) bcd[7:4] = bcd[7:4] + 4'd3;
@@ -110,7 +110,7 @@ module bin2bcd(
             if (bcd[15:12] >= 5) bcd[15:12] = bcd[15:12] + 4'd3;
             if (bcd[19:16] >= 5) bcd[19:16] = bcd[19:16] + 4'd3;
 
-            bcd = {bcd[18:0], bin[15 - i]};
+            bcd = {bcd[18:0], bin[15-i]};
         end
     end
 endmodule
@@ -118,10 +118,10 @@ endmodule
 
 
 module seven_segments (
-        input wire clk,
-        input wire [3:0] binary,
-        output reg [6:0] display = 'd0
-    );
+    input wire clk,
+    input wire [3:0] binary,
+    output reg [6:0] display = 'd0
+);
 
     always @(binary) begin
         case (binary)
