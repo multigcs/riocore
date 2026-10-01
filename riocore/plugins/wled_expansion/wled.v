@@ -1,17 +1,15 @@
 
-module wled
-    #(
-        parameter CLK_MHZ = 27,
-        parameter NUM_LEDS = 1,
-        parameter LEVEL = 255
-    )
-     (
-         input clk,
-         input [NUM_LEDS-1:0] green,
-         input [NUM_LEDS-1:0] blue,
-         input [NUM_LEDS-1:0] red,
-         output data
-     );
+module wled #(
+    parameter CLK_MHZ = 27,
+    parameter NUM_LEDS = 1,
+    parameter LEVEL = 255
+) (
+    input clk,
+    input [NUM_LEDS-1:0] green,
+    input [NUM_LEDS-1:0] blue,
+    input [NUM_LEDS-1:0] red,
+    output data
+);
 
     // Green, Red, Blue
     reg [23:0] rgb_data = 0;
@@ -46,13 +44,16 @@ module wled
         end
     end
 
-    ws2812 #(.CLK_MHZ(CLK_MHZ), .NUM_LEDS(NUM_LEDS)) ws2812a (
-               .rgb_data (rgb_data),
-               .led_num (led_num),
-               .write(write),
-               .clk(clk),
-               .data(data)
-           );
+    ws2812 #(
+        .CLK_MHZ (CLK_MHZ),
+        .NUM_LEDS(NUM_LEDS)
+    ) ws2812a (
+        .rgb_data(rgb_data),
+        .led_num(led_num),
+        .write(write),
+        .clk(clk),
+        .data(data)
+    );
 
 endmodule
 
