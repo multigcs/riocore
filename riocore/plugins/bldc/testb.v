@@ -1,5 +1,5 @@
 
-`timescale 1ns/100ps
+`timescale 1ns / 100ps
 
 module testb;
     reg clk = 0;

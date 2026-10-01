@@ -1,19 +1,17 @@
 
-module quadencoderz
-    #(
-         parameter BITS = 32,
-         parameter QUAD_TYPE = 0
-     )
-     (
-         input clk,
-         input a,
-         input b,
-         input z,
-         input indexenable,
-         input nocntreset,
-         output reg indexout = 0,
-         output signed [BITS-1:0] position
-     );
+module quadencoderz #(
+    parameter BITS = 32,
+    parameter QUAD_TYPE = 0
+) (
+    input clk,
+    input a,
+    input b,
+    input z,
+    input indexenable,
+    input nocntreset,
+    output reg indexout = 0,
+    output signed [BITS-1:0] position
+);
     reg [2:0] quadA_delayed = 0;
     reg [2:0] quadB_delayed = 0;
     reg [2:0] quadZ_delayed = 0;
@@ -24,7 +22,7 @@ module quadencoderz
     wire count_direction = quadA_delayed[1] ^ quadB_delayed[2];
     reg signed [BITS-1:0] count = 0;
     reg indexwait = 0;
-    assign position = $signed(count>>>QUAD_TYPE);
+    assign position = $signed(count >>> QUAD_TYPE);
     always @(posedge clk) begin
         if (indexenable == 1 && indexout == 1 && quadZ_delayed == 1) begin
             indexout <= 0;
@@ -40,7 +38,7 @@ module quadencoderz
             end
         end
         if (count_enable) begin
-            if(count_direction) begin
+            if (count_direction) begin
                 count <= count + 1;
             end else begin
                 count <= count - 1;
