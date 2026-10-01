@@ -15,7 +15,7 @@ format:
 vformat: riocore/plugins/*/*.v
 	for file in $^ ; do \
 	  echo "reformating" $${file} ; \
-	  riocore/files/vformat.sh $${file}
+	  riocore/files/vformat.sh $${file} ; \
 	done
 
 check:
