@@ -1,12 +1,12 @@
 
-module rcservo
-    #(parameter DIVIDER = 255)
-     (
-         input clk,
-         input signed [31:0] position,
-         input enable,
-         output pwm
-     );
+module rcservo #(
+    parameter DIVIDER = 255
+) (
+    input clk,
+    input signed [31:0] position,
+    input enable,
+    output pwm
+);
     localparam DIVIDER_BITS = clog2(DIVIDER + 1);
     reg [DIVIDER_BITS:0] counter = 0;
 
@@ -14,7 +14,7 @@ module rcservo
     reg pulse = 0;
     assign pwm = pulse;
 
-    always @ (posedge clk) begin
+    always @(posedge clk) begin
         if (position > 0) begin
             positionAbs <= position;
         end else begin

@@ -1,15 +1,16 @@
 
-module canbus_tx
-    #(parameter DIVIDER=54, parameter DATA_BYTES=4)
-    (
-        input clk,
-        output reg tx = 1'b1,
-        input wire [DATA_BITS-1:0] tx_data,
-        input wire [10:0] tx_arib,
-        input wire [3:0] tx_dlc,
-        input wire start,
-        output reg busy = 1'd0
-    );
+module canbus_tx #(
+    parameter DIVIDER = 54,
+    parameter DATA_BYTES = 4
+) (
+    input clk,
+    output reg tx = 1'b1,
+    input wire [DATA_BITS-1:0] tx_data,
+    input wire [10:0] tx_arib,
+    input wire [3:0] tx_dlc,
+    input wire start,
+    output reg busy = 1'd0
+);
 
 
     reg [31:0] clk_counter = 0;
@@ -18,12 +19,7 @@ module canbus_tx
     localparam DATA_BITS = (DATA_BYTES * 8);
     localparam FRAME_SIZE = (34 + DATA_BITS);
 
-    localparam IDLE  = 4'd0,
-               START = 4'd2,
-               SEND  = 4'd3,
-               ACK   = 4'd4,
-               END   = 4'd5,
-               DONE  = 4'd6;
+    localparam IDLE = 4'd0, START = 4'd2, SEND = 4'd3, ACK = 4'd4, END = 4'd5, DONE = 4'd6;
 
     reg [3:0] state = IDLE;
     reg [7:0] bit_count = 0;
@@ -40,13 +36,13 @@ module canbus_tx
     reg crcdel = 1'b1;
 
     wire [FRAME_SIZE-1:0] tx_frm;
-    assign tx_frm = { arib, rtr , ide, r0, dlc , data[DATA_BITS-1:0], tx_crc, crcdel };
+    assign tx_frm = {arib, rtr, ide, r0, dlc, data[DATA_BITS-1:0], tx_crc, crcdel};
 
     reg [4:0] stuff_check = 5'b10011;
 
     wire tx_next;
-    assign tx_next = tx_frm[(FRAME_SIZE-1) - bit_count];
-    wire[14:0] tx_crc_next;
+    assign tx_next = tx_frm[(FRAME_SIZE-1)-bit_count];
+    wire [14:0] tx_crc_next;
     assign tx_crc_next = {tx_crc[13:0], 1'b0} ^ (tx_crc[14] ^ tx_next ? 15'h4599 : 15'h0);
 
     always @(posedge clk) begin
@@ -87,12 +83,12 @@ module canbus_tx
                         tx <= tx_next;
                         stuff_check <= {stuff_check[3:0], tx_next};
 
-                        if (bit_count < FRAME_SIZE-16) begin
+                        if (bit_count < FRAME_SIZE - 16) begin
                             tx_crc <= tx_crc_next;
                         end
 
                         bit_count <= bit_count + 1;
-                        if (bit_count == FRAME_SIZE-1) begin
+                        if (bit_count == FRAME_SIZE - 1) begin
                             bit_count <= 0;
                             state <= ACK;
                         end

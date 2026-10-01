@@ -1,31 +1,29 @@
 
-module rmii
-    #(
-         parameter BUFFER_SIZE=16'd64,
-         parameter MSGID=32'h74697277,
-         parameter IP_ADDR={8'd192, 8'd168, 8'd10, 8'd194},
-         parameter NET_MASK={8'd255, 8'd255, 8'd255, 8'd0},
-         parameter GW_ADDR={8'd192, 8'd168, 8'd10, 8'd1},
-         parameter MAC_ADDR={8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
-         parameter PORT=2390,
-         parameter DIVIDER=27
-    )
-    (
-        input clk,
-        output reg [BUFFER_SIZE-1:0] rx_data,
-        input [BUFFER_SIZE-1:0] tx_data,
-        output reg sync,
-        output phyrst,
-        input netrmii_clk50m,
-        input netrmii_rx_crs,
-        output netrmii_mdc,
-        output netrmii_txen,
-        inout netrmii_mdio,
-        output netrmii_txd_0,
-        output netrmii_txd_1,
-        input netrmii_rxd_0,
-        input netrmii_rxd_1
-    );
+module rmii #(
+    parameter BUFFER_SIZE = 16'd64,
+    parameter MSGID = 32'h74697277,
+    parameter IP_ADDR = {8'd192, 8'd168, 8'd10, 8'd194},
+    parameter NET_MASK = {8'd255, 8'd255, 8'd255, 8'd0},
+    parameter GW_ADDR = {8'd192, 8'd168, 8'd10, 8'd1},
+    parameter MAC_ADDR = {8'hAA, 8'hAF, 8'hFA, 8'hCC, 8'hE3, 8'h1C},
+    parameter PORT = 2390,
+    parameter DIVIDER = 27
+) (
+    input clk,
+    output reg [BUFFER_SIZE-1:0] rx_data,
+    input [BUFFER_SIZE-1:0] tx_data,
+    output reg sync,
+    output phyrst,
+    input netrmii_clk50m,
+    input netrmii_rx_crs,
+    output netrmii_mdc,
+    output netrmii_txen,
+    inout netrmii_mdio,
+    output netrmii_txd_0,
+    output netrmii_txd_1,
+    input netrmii_rxd_0,
+    input netrmii_rxd_1
+);
 
     reg soft_rst = 0;
     reg [31:0] rst_counter = 0;
@@ -51,28 +49,28 @@ module rmii
     reg [BUFFER_SIZE-1:0] tx_data_buffer;
     reg [BUFFER_SIZE-1:0] rx_data_buffer;
 
-	wire clk50m;
-	wire ready;
-	wire eth_rx_head_av;
-	wire [31:0] eth_rx_head;
-	wire eth_rx_data_av;
-	wire [7:0] eth_rx_data;
-	reg eth_rx_head_rdy;
-	reg [31:0] eth_tx_ip;
-	reg [15:0] eth_tx_dst_port;
-	reg eth_tx_req;
-	reg [7:0] eth_tx_data;
-	reg eth_tx_data_av;
-	wire eth_tx_req_rdy;
-	wire eth_tx_data_rdy;
+    wire clk50m;
+    wire ready;
+    wire eth_rx_head_av;
+    wire [31:0] eth_rx_head;
+    wire eth_rx_data_av;
+    wire [7:0] eth_rx_data;
+    reg eth_rx_head_rdy;
+    reg [31:0] eth_tx_ip;
+    reg [15:0] eth_tx_dst_port;
+    reg eth_tx_req;
+    reg [7:0] eth_tx_data;
+    reg eth_tx_data_av;
+    wire eth_tx_req_rdy;
+    wire eth_tx_data_rdy;
 
     udp #(
-        .ip_adr(IP_ADDR),
+        .ip_adr (IP_ADDR),
         .mac_adr(MAC_ADDR),
 
-        .arp_refresh_interval(50000000*15), // 15 seconds    
-        .arp_max_life_time(50000000*30) // 30 seconds
-    )udp_inst(
+        .arp_refresh_interval(50000000 * 15),  // 15 seconds    
+        .arp_max_life_time(50000000 * 30)  // 30 seconds
+    ) udp_inst (
         .clk1m(clk1m),
         .rst(soft_rst),
         .clk50m(clk50m),
@@ -108,7 +106,7 @@ module rmii
     reg [7:0] eth_rx_counter = 8'd0;
     reg [7:0] eth_tx_counter = 8'd0;
 
-	always @(posedge clk50m or negedge ready) begin
+    always @(posedge clk50m or negedge ready) begin
         if (ready == 0) begin
             eth_tx_state <= 4'd0;
             eth_rx_state <= 4'd0;
@@ -140,8 +138,8 @@ module rmii
             end
 
             // receive
-            case(eth_rx_state)
-                0:begin
+            case (eth_rx_state)
+                0: begin
                     // wait for header
                     if (eth_rx_head_av) begin
                         eth_rx_head_rdy <= 1'b1;
@@ -150,16 +148,16 @@ module rmii
                         eth_rx_head_rdy <= 1'b0;
                     end
                 end
-                1:begin
+                1: begin
                     // read ip from header
                     eth_tx_ip <= eth_rx_head;
                     eth_rx_state <= 4'd2;
                 end
-                2:begin
+                2: begin
                     // read ??? from header
                     eth_rx_state <= 4'd3;
                 end
-                3:begin
+                3: begin
                     // read port from header
                     if (eth_rx_head[15:0] == PORT) begin
                         eth_tx_dst_port <= eth_rx_head[31:16];
@@ -168,18 +166,18 @@ module rmii
                         eth_rx_state <= 4'd0;
                     end
                 end
-                4:begin
+                4: begin
                     // wait for data received
                 end
             endcase
 
 
             // transmit
-            case(eth_tx_state)
-                0:begin
+            case (eth_tx_state)
+                0: begin
                     // wait for trigger by new rx package
                 end
-                1:begin
+                1: begin
                     // wait for tx ready
                     if (eth_tx_req_rdy) begin
                         // set data to transmit
@@ -188,9 +186,9 @@ module rmii
                         eth_tx_state <= 4'd2;
                     end
                 end
-                2:begin
+                2: begin
                     // send data
-                    if (eth_tx_counter <= (BUFFER_SIZE-1) / 8) begin
+                    if (eth_tx_counter <= (BUFFER_SIZE - 1) / 8) begin
                         eth_tx_data_av <= 1;
                         eth_tx_data <= tx_data_buffer[BUFFER_SIZE-1:BUFFER_SIZE-1-7];
                         tx_data_buffer <= {tx_data_buffer[BUFFER_SIZE-1-8:0], 8'd0};
@@ -200,14 +198,14 @@ module rmii
                         eth_tx_state <= 4'd3;
                     end
                 end
-                3:begin
+                3: begin
                     // start transmit
                     if (eth_tx_req_rdy) begin
                         eth_tx_req <= 1'b1;
                         eth_tx_state <= 4'd4;
                     end
                 end
-                4:begin
+                4: begin
                     // transmit done
                     eth_tx_req <= 1'b0;
                     eth_tx_state <= 4'd0;

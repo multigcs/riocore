@@ -1,23 +1,24 @@
 
-module riodrive
-    #(parameter DIVIDER=53, parameter IDIVIDER=53)
-    (
-        input clk,
-        input sync,
-        output reg error = 1'd0,
-        input rx,
-        output wire tx,
-        input enable,
-        input wire [31:0] velocity,
-        output reg [31:0] position = 'd0,
-        output reg [15:0] power = 'd0,
-        output reg [7:0] temp = 'd0,
-        output reg [3:0] state = 'd0,
-        output reg traj = 'd0,
-        output reg mot = 'd0,
-        output reg enc = 'd0,
-        output reg ctrl = 'd0
-    );
+module riodrive #(
+    parameter DIVIDER  = 53,
+    parameter IDIVIDER = 53
+) (
+    input clk,
+    input sync,
+    output reg error = 1'd0,
+    input rx,
+    output wire tx,
+    input enable,
+    input wire [31:0] velocity,
+    output reg [31:0] position = 'd0,
+    output reg [15:0] power = 'd0,
+    output reg [7:0] temp = 'd0,
+    output reg [3:0] state = 'd0,
+    output reg traj = 'd0,
+    output reg mot = 'd0,
+    output reg enc = 'd0,
+    output reg ctrl = 'd0
+);
 
     localparam IDIVIDER_BITS = clog2(IDIVIDER + 1);
     localparam ITDIVIDER_BITS = clog2(IDIVIDER * 3 + 1);
@@ -79,7 +80,8 @@ module riodrive
 
 
     canbus_rx #(
-        .DIVIDER(DIVIDER), .DATA_BYTES(RX_DATA_BYTES)
+        .DIVIDER(DIVIDER),
+        .DATA_BYTES(RX_DATA_BYTES)
     ) canbus_rx0 (
         .clk(clk),
         .tx(rx_ack),
@@ -91,7 +93,8 @@ module riodrive
     );
 
     canbus_tx #(
-        .DIVIDER(DIVIDER), .DATA_BYTES(TX_DATA_BYTES)
+        .DIVIDER(DIVIDER),
+        .DATA_BYTES(TX_DATA_BYTES)
     ) canbus_tx0 (
         .clk(clk),
         .tx(tx_out),
