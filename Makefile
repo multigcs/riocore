@@ -12,6 +12,12 @@ format:
 	 --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/ \
 	 --exclude riocore/plugins/*/files/
 
+vformat: riocore/plugins/*/*.v
+	for file in $^ ; do \
+	  echo "reformating" $${file} ; \
+	  verible-verilog-format --assignment_statement_alignment flush-left --module_net_variable_alignment flush-left --indentation_spaces 4 $${file} > $${file}.formated && mv $${file}.formated $${file} || rm $${file}.formated; \
+	done
+
 check:
 	ruff check bin/rio* riocore/*.py riocore/configs riocore/files riocore/generator riocore/gui riocore/plugins \
 	 --exclude riocore/plugins/fpga/generator/toolchains/greenpak/shrike_gen/ \
