@@ -18,7 +18,6 @@ modbus device
 | N4DAC02 | <img height="48" src="boards/N4DAC02.png"> |
 | N4DOK32 | <img height="48" src="boards/N4DOK32.png"> |
 | NT18B07 | <img height="48" src="boards/NT18B07.png"> |
-| WK600 VFD | <img height="48" src="boards/WK600.png"> |
 
 ## Pins:
 *FPGA-pins*
