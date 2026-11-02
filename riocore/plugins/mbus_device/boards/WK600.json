@@ -1,0 +1,21 @@
+{
+  "comment": "CNWeiken WK600 VFD",
+  "address": 1,
+  "timeout": 200,
+  "delay": 100,
+  "priority": 9,
+  "pins": {
+    "MODBUS": {"direction": "output", "edge": "target", "pos": [15, 110], "type": ["MODBUS"], "bus": true}
+  },
+  "commands": {
+    "set_speed": {
+      "type": 6,
+      "register": 4096,
+      "values": 1,
+      "datatype": "int",
+      "scale": 100,
+      "error_values": "0",
+      "direction": "output"
+    }
+  }
+}
