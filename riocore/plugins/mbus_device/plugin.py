@@ -137,7 +137,7 @@ class Plugin(PluginBase):
                     },
                 }
             )
-            self.PINDEFAULTS = {"MODBUS": {"direction": "output", "edge": "target", "type": ["MODBUS"]}}
+            self.PINDEFAULTS = {"MODBUS": {"direction": "output", "edge": "target", "type": ["MODBUS"], "bus": True}}
 
             command = {}
             for key in ("type", "register", "datatype", "values", "scale", "cmdmapping", "address", "priority", "delay", "timeout"):
