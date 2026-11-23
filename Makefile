@@ -36,7 +36,7 @@ reset_tests:
 	make unittests
 
 verilator:
-	find ./riocore/ -type f | grep ".v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
+	find ./riocore/ -type f | grep "\.v$$" | xargs -r -l verilator --lint-only -Wno-WIDTHEXPAND riocore/files/verilog/globals.v
 
 readmes:
 	PYTHONPATH=. riocore/files/plugininfo.py -g
