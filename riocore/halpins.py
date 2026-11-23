@@ -70,6 +70,10 @@ JOINT_OPTIONS = {
         "type": "select",
         "options": ["YES", "NO"],
     },
+    "home_is_shared": {
+        "type": "select",
+        "options": ["YES", "NO"],
+    },
 }
 
 JOINT_OPTIONS_SOFT = {
@@ -1070,6 +1074,7 @@ INI_HELPTEXT = {
         "HOME_LATCH_VEL": "Specifies the speed and direction that LinuxCNC uses when it makes its final accurate determination of the home switch (if present) and index pulse location (if present)",
         "HOME_FINAL_VEL": "It specifies the speed that LinuxCNC uses when it makes its move from HOME_OFFSET to the HOME position",
         "HOME_USE_INDEX": "Specifies whether or not there is an index pulse",
+        "HOME_IS_SHARED": "Multiple joints may use the same homing pin",
         "HOME_OFFSET": "Contains the location of the home switch or index pulse, in joint coordinates",
         "HOME_IGNORE_LIMITS": "This flag determines whether LinuxCNC will ignore the limit switch inputs",
         "DEADBAND": "How close is close enough to consider the motor in position, in machine units",
