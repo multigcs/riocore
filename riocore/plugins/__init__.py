@@ -143,7 +143,7 @@ class PluginBase:
             self.OPTIONS = NEW_OPTIONS
 
         self.update_title()
-        self.signal_prefix = (self.plugin_setup.get("name") or self.instances_name).replace(" ", "_")
+        self.signal_prefix = self.instances_name.replace(" ", "_")
         if self.TYPE == "expansion":
             self.expansion_prefix = self.instances_name.upper()
 
@@ -350,7 +350,7 @@ class PluginBase:
             for key in setup:
                 if key in self.plugin_setup:
                     setup[key] = self.plugin_setup[key]
-            signal_prefix = (self.PREFIX or self.title or self.instances_name).replace(" ", "_").replace("<", "-lt-").replace(">", "-gt-")
+            signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_").replace("<", "-lt-").replace(">", "-gt-")
             halname = f"{signal_prefix}.{name}"
             direction_short = setup["direction"].upper().replace("PUT", "")
             signals[name]["signal_prefix"] = signal_prefix

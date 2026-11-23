@@ -121,7 +121,7 @@
           <width>15</width>
         </label>
         <scale>
-          <halpin>"Float1.value"</halpin>
+          <halpin>"signal0.value"</halpin>
           <min_>-100</min_>
           <max_>100</max_>
           <resolution>0.1</resolution>
@@ -141,7 +141,7 @@
           <width>15</width>
         </label>
         <scale>
-          <halpin>"Float2.value"</halpin>
+          <halpin>"signal1.value"</halpin>
           <min_>-100</min_>
           <max_>100</max_>
           <resolution>0.1</resolution>
@@ -161,7 +161,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Float1-Limited.value"</halpin>
+          <halpin>"signal2.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-100</min_>
           <max_>100</max_>
@@ -183,7 +183,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Float1-Deadzone.value"</halpin>
+          <halpin>"signal3.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-100</min_>
           <max_>100</max_>
@@ -205,7 +205,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"abs-Float1.value"</halpin>
+          <halpin>"signal4.value"</halpin>
           <bar_height>15</bar_height>
           <min_>0</min_>
           <max_>100</max_>
@@ -227,7 +227,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Float1+Float2.value"</halpin>
+          <halpin>"signal5.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-200</min_>
           <max_>200</max_>
@@ -249,7 +249,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Float1-Float2.value"</halpin>
+          <halpin>"signal6.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-200</min_>
           <max_>200</max_>
@@ -271,7 +271,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Float1*Float2.value"</halpin>
+          <halpin>"signal7.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-10000</min_>
           <max_>10000</max_>
@@ -293,7 +293,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Float1/5.value"</halpin>
+          <halpin>"signal8.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-20</min_>
           <max_>20</max_>
@@ -315,7 +315,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Float1-lt-Float2.value"</halpin>
+          <halpin>"signal12.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -334,7 +334,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Float1-gt-Float2.value"</halpin>
+          <halpin>"signal13.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -353,7 +353,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"-20-gt-Float1-lt-20.value"</halpin>
+          <halpin>"signal14.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -376,7 +376,7 @@
               <width>15</width>
             </label>
             <bar>
-              <halpin>"Float1-Min.value"</halpin>
+              <halpin>"signal9.value"</halpin>
               <bar_height>15</bar_height>
               <min_>-100</min_>
               <max_>100</max_>
@@ -398,7 +398,7 @@
               <width>15</width>
             </label>
             <bar>
-              <halpin>"Float1-Max.value"</halpin>
+              <halpin>"signal10.value"</halpin>
               <bar_height>15</bar_height>
               <min_>-100</min_>
               <max_>100</max_>
@@ -420,7 +420,7 @@
               <width>15</width>
             </label>
             <checkbutton>
-              <halpin>"Reset.value"</halpin>
+              <halpin>"signal11.value"</halpin>
               <anchor>"e"</anchor>
               <initval>0</initval>
               <width>13</width>
@@ -441,7 +441,7 @@
           <width>15</width>
         </label>
         <checkbutton>
-          <halpin>"Bool1.value"</halpin>
+          <halpin>"signal15.value"</halpin>
           <anchor>"e"</anchor>
           <initval>0</initval>
           <width>13</width>
@@ -458,7 +458,7 @@
           <width>15</width>
         </label>
         <checkbutton>
-          <halpin>"Bool2.value"</halpin>
+          <halpin>"signal16.value"</halpin>
           <anchor>"e"</anchor>
           <initval>0</initval>
           <width>13</width>
@@ -475,7 +475,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Bool1-inv.value"</halpin>
+          <halpin>"signal17.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -494,7 +494,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Bool1-and-Bool2.value"</halpin>
+          <halpin>"signal18.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -513,7 +513,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Bool1-or-Bool2.value"</halpin>
+          <halpin>"signal19.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -532,7 +532,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Bool1-toggle.value"</halpin>
+          <halpin>"signal20.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -551,7 +551,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Bool1-delay.value"</halpin>
+          <halpin>"signal21.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -570,7 +570,7 @@
           <width>30</width>
         </label>
         <led>
-          <halpin>"Bool1-oneshot.value"</halpin>
+          <halpin>"signal22.value"</halpin>
           <size>16</size>
           <on_color>"yellow"</on_color>
           <off_color>"red"</off_color>
@@ -589,7 +589,7 @@
           <width>15</width>
         </label>
         <bar>
-          <halpin>"Mux.value"</halpin>
+          <halpin>"signal23.value"</halpin>
           <bar_height>15</bar_height>
           <min_>-100</min_>
           <max_>100</max_>

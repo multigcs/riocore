@@ -124,7 +124,7 @@ class Plugin(PluginBase):
             project = config
         else:
             project = riocore.Project(copy.deepcopy(config))
-        firmware_path = os.path.join(project.config["output_path"], "Firmware", self.title)
+        firmware_path = os.path.join(project.config["output_path"], "Firmware", self.instances_name)
         if not os.path.exists(firmware_path):
             riocore.log(f"ERROR: path not exist, please run generator first: {firmware_path}")
             return None

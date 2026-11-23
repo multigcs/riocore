@@ -255,7 +255,7 @@ class Plugin(PluginBase):
             ctype = command["type"]
 
             # CHECK
-            output.append(f"uint8_t {self.title}_{name}_changed() {{")
+            output.append(f"uint8_t {self.instances_name}_{name}_changed() {{")
             output.append(f"    // ctype ({command['type']}): {self.CTYPES[command['type']]}")
             output.append("    uint8_t changed = 0;")
 
@@ -298,7 +298,7 @@ class Plugin(PluginBase):
             datatype = command["datatype"]
 
             # TX
-            output.append(f"uint8_t {self.title}_{name}_tx(uint8_t *frame) {{")
+            output.append(f"uint8_t {self.instances_name}_{name}_tx(uint8_t *frame) {{")
             output.append(f"    // ctype ({command['type']}): {self.CTYPES[command['type']]}")
 
             if cmdmapping := command.get("cmdmapping"):
@@ -392,7 +392,7 @@ class Plugin(PluginBase):
             datatype = command["datatype"]
 
             # RX
-            output.append(f"void {self.title}_{name}_rx(uint8_t *frame_data, uint8_t frame_len) {{")
+            output.append(f"void {self.instances_name}_{name}_rx(uint8_t *frame_data, uint8_t frame_len) {{")
             output.append(f"    // ctype ({command['type']}): {self.CTYPES[command['type']]}")
 
             if ctype in {3, 4}:

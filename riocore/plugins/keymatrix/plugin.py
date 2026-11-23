@@ -143,7 +143,7 @@ class Plugin(PluginBase):
             """
         if signal_name.startswith("key"):
             bit = int(signal_name[3:])
-            signal_prefix = (self.PREFIX or self.title or self.instances_name).replace(" ", "_").replace("<", "-lt-").replace(">", "-gt-").replace(".", "_")
+            signal_prefix = (self.PREFIX or self.instances_name).replace(" ", "_").replace("<", "-lt-").replace(">", "-gt-").replace(".", "_")
             return f"""
     if (data->VARIN8_{self.instances_name.upper()}_VALUE == {bit + 1}) {{
         *data->SIGIN_{signal_prefix.upper()}_KEY{bit} = 1;
