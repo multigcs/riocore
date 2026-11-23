@@ -1947,12 +1947,11 @@ if __name__ == "__main__":
 
                     gui_gen.draw_hbox_end()
 
-                elif machinetype in {"xyzac-trt-kins"}:
-                    if hasattr(gui_gen, "draw_multilabel"):
-                        pname = gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["IDENTITY", "XYZAC", "USERK"]})
-                        self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
-                        self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
-                        self.halg.net_add("kinstype.is-2", f"{pname}.legend2")
+                elif machinetype in {"xyzac-trt-kins"} and hasattr(gui_gen, "draw_multilabel"):
+                    pname = gui_gen.draw_multilabel("kinstype", "kinstype", setup={"legends": ["IDENTITY", "XYZAC", "USERK"]})
+                    self.halg.net_add("kinstype.is-0", f"{pname}.legend0")
+                    self.halg.net_add("kinstype.is-1", f"{pname}.legend1")
+                    self.halg.net_add("kinstype.is-2", f"{pname}.legend2")
 
                 # buttons
                 gui_gen.draw_frame_begin("MDI-Commands")
