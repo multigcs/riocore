@@ -15,6 +15,7 @@ modbus device
 | DDS519MR | <img height="48" src="boards/DDS519MR.png"> |
 | MA01_AXCX4020 | <img height="48" src="boards/MA01_AXCX4020.png"> |
 | MA01_XACX0440 | <img height="48" src="boards/MA01_XACX0440.png"> |
+| N4D3E16 | <img height="48" src="boards/N4D3E16.png"> |
 | N4DAC02 | <img height="48" src="boards/N4DAC02.png"> |
 | N4DOK32 | <img height="48" src="boards/N4DOK32.png"> |
 | NT18B07 | <img height="48" src="boards/NT18B07.png"> |
@@ -46,7 +47,7 @@ device type
 
  * type: select
  * default: generic
- * options: generic, 303E32DC812, DDS519MR, MA01_AXCX4020, MA01_XACX0440, N4DAC02, N4DOK32, NT18B07, XYMD02
+ * options: generic, 303E32DC812, DDS519MR, MA01_AXCX4020, MA01_XACX0440, N4D3E16, N4DAC02, N4DOK32, NT18B07, XYMD02
 
 ### address:
 device address
@@ -82,6 +83,12 @@ maximum time the client needs to release the bus
  * default: 200
  * unit: ms
 
+### error_values:
+value send on error (space seperated list of integers - the command without addr and csum)
+
+ * type: str
+ * default: 
+
 ### ctype:
 comamnd / function code
 
@@ -108,7 +115,7 @@ number of values
 
  * type: int
  * min: 1
- * max: 16
+ * max: 32
  * default: 1
 
 ### datatype:
@@ -125,12 +132,6 @@ value scale
  * min: -999999.99
  * max: 999999.99
  * default: 1.0
-
-### error_values:
-value send on error
-
- * type: str
- * default: 
 
 ### cmdmapping:
 mapping single bool outputs to int cmd value (needed for some VFD's)

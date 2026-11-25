@@ -71,6 +71,12 @@ max tx buffer size
  * default: 128
  * unit: bits
 
+### debug:
+activate debug output
+
+ * type: bool
+ * default: False
+
 
 ## Signals:
 *signals/pins in LinuxCNC*

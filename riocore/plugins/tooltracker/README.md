@@ -2,6 +2,10 @@
 
 <img align="right" width="320" src="image.png">
 
+
+| :warning: EXPERIMENTAL |
+|:-----------------------|
+
 **simple tool time tracker**
 
 simple tool time tracker
@@ -26,16 +30,26 @@ hardware type
  * type: imgselect
  * default: generic
 
-### debug:
+### section:
 
- * type: bool
- * default: False
+ * type: str
+ * default: tooltracker
 
 ### display:
 
  * type: select
  * default: bar
  * options: off, bar, meter
+
+### sister:
+
+ * type: bool
+ * default: False
+
+### pocketcheck:
+
+ * type: bool
+ * default: False
 
 
 ## Signals:
